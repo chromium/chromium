@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/bit_cast.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -9114,11 +9115,11 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-base::ByteCount WebGLRenderingContextBase::AllocatedBufferSize() const {
+base::ByteSize WebGLRenderingContextBase::AllocatedBufferSize() const {
   if (!Host() || isContextLost()) {
-    return base::ByteCount();
+    return base::ByteSize();
   }
-  base::ByteCount result = GetDrawingBuffer()->EstimatedSizeInBytes();
+  base::ByteSize result = GetDrawingBuffer()->EstimatedSizeInBytes();
 
   auto* provider = resource_provider_.get();
   if (provider) {

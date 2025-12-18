@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 
+#include "base/byte_size.h"
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
@@ -70,17 +71,17 @@ CanvasRenderingContext::CanvasRenderingContext(
   CHECK(host_);
 }
 
-base::ByteCount CanvasRenderingContext::AllocatedBufferSize() const {
+base::ByteSize CanvasRenderingContext::AllocatedBufferSize() const {
   if (!Host() || isContextLost()) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
   const gfx::Size& size = DrawingBufferSize();
   if (size.IsEmpty()) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
   int buffer_count = AllocatedBufferCountPerPixel();
   return buffer_count *
-         base::ByteCount(GetSharedImageFormat().EstimatedSizeInBytes(size));
+         base::ByteSize(GetSharedImageFormat().EstimatedSizeInBytes(size));
 }
 
 void CanvasRenderingContext::Dispose() {

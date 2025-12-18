@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -78,9 +78,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual const KURL& GetExecutionContextUrl() const = 0;
 
   void UpdateMemoryUsage();
-  base::ByteCount GetMemoryUsage() const {
-    return externally_allocated_memory_;
-  }
+  base::ByteSize GetMemoryUsage() const { return externally_allocated_memory_; }
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
@@ -171,7 +169,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
 
   // GPU Memory Management
-  base::ByteCount externally_allocated_memory_;
+  base::ByteSize externally_allocated_memory_;
   // NO_UNIQUE_ADDRESS allows making this member empty in production.
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

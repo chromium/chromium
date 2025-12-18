@@ -89,13 +89,11 @@ void CanvasRenderingContextHost::NotifyCachesOfSwitchingFrame() {
 }
 
 void CanvasRenderingContextHost::UpdateMemoryUsage() {
-  base::ByteCount externally_allocated_memory =
+  base::ByteSize externally_allocated_memory =
       RenderingContext() ? RenderingContext()->AllocatedBufferSize()
-                         : base::ByteCount(0);
+                         : base::ByteSize(0);
 
-  // Subtracting two intptr_t that are known to be positive will never
-  // underflow.
-  base::ByteCount delta_bytes =
+  base::ByteSizeDelta delta_bytes =
       externally_allocated_memory - externally_allocated_memory_;
 
   // TODO(junov): We assume that it is impossible to be inside a FastAPICall

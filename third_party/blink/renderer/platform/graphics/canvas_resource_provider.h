@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -212,8 +213,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   gfx::ColorSpace GetColorSpace() const override { return color_space_; }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
-  virtual base::ByteCount EstimatedSizeInBytes() const {
-    return base::ByteCount(format_.EstimatedSizeInBytes(size_));
+  virtual base::ByteSize EstimatedSizeInBytes() const {
+    return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
   // Returns true if the resource can be used by the display compositor.
   virtual bool SupportsDirectCompositing() const = 0;
@@ -523,7 +524,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return this;
   }
   bool IsAccelerated() const final { return is_accelerated_; }
-  base::ByteCount EstimatedSizeInBytes() const override;
+  base::ByteSize EstimatedSizeInBytes() const override;
   bool SupportsDirectCompositing() const override { return true; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;

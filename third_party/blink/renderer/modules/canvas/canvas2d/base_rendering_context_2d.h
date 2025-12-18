@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -95,12 +96,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
 
   void ResetInternal() override;
 
-  base::ByteCount AllocatedBufferSize() const override {
+  base::ByteSize AllocatedBufferSize() const override {
     auto* provider = GetResourceProvider();
     if (provider) {
       return provider->EstimatedSizeInBytes();
     }
-    return base::ByteCount();
+    return base::ByteSize();
   }
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;

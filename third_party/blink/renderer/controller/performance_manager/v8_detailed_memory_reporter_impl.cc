@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -194,8 +194,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
     for (const auto& entry :
          CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
       ExecutionContextToken token = entry.value->GetExecutionContextToken();
-      base::ByteSize memory_used =
-          base::ByteSize::FromDeprecatedByteCount(entry.key->GetMemoryUsage());
+      base::ByteSize memory_used = entry.key->GetMemoryUsage();
       if (memory_used.is_zero()) {
         // Ignore canvas elements that do not have buffers.
         continue;

@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -893,7 +894,7 @@ void DrawingBuffer::ColorBuffer::BeginAccess(const gpu::SyncToken& sync_token,
       shared_image_texture_->BeginAccess(sync_token, readonly);
 }
 
-base::ByteCount DrawingBuffer::ColorBuffer::EstimatedSizeInBytes() const {
+base::ByteSize DrawingBuffer::ColorBuffer::EstimatedSizeInBytes() const {
   return shared_image->EstimatedSizeInBytes();
 }
 
@@ -1217,8 +1218,8 @@ bool DrawingBuffer::CopyToVideoFrame(
       .has_value();
 }
 
-base::ByteCount DrawingBuffer::EstimatedSizeInBytes() const {
-  base::ByteCount result;
+base::ByteSize DrawingBuffer::EstimatedSizeInBytes() const {
+  base::ByteSize result;
   if (back_color_buffer_) {
     result += back_color_buffer_->EstimatedSizeInBytes();
   }
@@ -1229,13 +1230,13 @@ base::ByteCount DrawingBuffer::EstimatedSizeInBytes() const {
     result += buffer->EstimatedSizeInBytes();
   }
   if (staging_texture_needed_ || SampleCount() > 0) {
-    result +=
-        base::ByteCount(color_buffer_format_.EstimatedSizeInBytes(size_)) *
-        (SampleCount() + staging_texture_needed_);
+    result += base::ByteSize(color_buffer_format_.EstimatedSizeInBytes(size_)) *
+              (SampleCount() + staging_texture_needed_);
   }
   if (HasDepthBuffer() || HasStencilBuffer()) {
     result += std::max(SampleCount(), 1) *
-              base::ByteCount(4 * size_.width() * size_.height());
+              base::ByteSize(base::checked_cast<uint64_t>(4 * size_.width() *
+                                                          size_.height()));
   }
   return result;
 }

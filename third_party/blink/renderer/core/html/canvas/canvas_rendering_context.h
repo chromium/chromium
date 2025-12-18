@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -299,7 +300,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
   virtual void Reshape(int width, int height) {}
 
-  virtual base::ByteCount AllocatedBufferSize() const;
+  virtual base::ByteSize AllocatedBufferSize() const;
   virtual int AllocatedBufferCountPerPixel() const { return 1; }
   virtual gfx::Size DrawingBufferSize() const {
     const CanvasRenderingContextHost* host = Host();

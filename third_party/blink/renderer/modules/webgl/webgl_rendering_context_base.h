@@ -30,6 +30,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
@@ -681,7 +682,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void Trace(Visitor*) const override;
 
   // Returns approximate gpu memory allocated.
-  base::ByteCount AllocatedBufferSize() const override;
+  base::ByteSize AllocatedBufferSize() const override;
   int AllocatedBufferCountPerPixel() const override { NOTREACHED(); }
 
   // Returns the drawing buffer size after it is, probably, has scaled down

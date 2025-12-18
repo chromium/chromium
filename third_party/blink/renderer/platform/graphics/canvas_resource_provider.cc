@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -713,9 +714,8 @@ bool CanvasResourceProviderSharedImage::OverwriteImage(
   return true;
 }
 
-base::ByteCount CanvasResourceProviderSharedImage::EstimatedSizeInBytes()
-    const {
-  base::ByteCount result;
+base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
+  base::ByteSize result;
   if (resource_) {
     result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
   }
