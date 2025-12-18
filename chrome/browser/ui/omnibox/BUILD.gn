@@ -200,6 +200,7 @@ if (!is_android) {
     sources = [
       "chrome_omnibox_navigation_observer_unittest.cc",
       "clipboard_utils_unittest.cc",
+      "omnibox_context_menu_controller_unittest.cc",
       "omnibox_controller_unittest.cc",
       "omnibox_edit_model_unittest.cc",
       "omnibox_next_features_unittest.cc",
