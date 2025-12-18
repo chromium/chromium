@@ -8,6 +8,9 @@ This is the concatenated contents of all files inside the placeholder srcjar.
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public interface SampleForAnnotationProcessor {
   public interface Natives {
     public org.jni_zero.SampleForAnnotationProcessor bar(org.jni_zero.SampleForAnnotationProcessor sample);
@@ -45,6 +48,9 @@ public interface SampleForAnnotationProcessor {
 
 package android.content;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public interface Context {
 }
 
@@ -57,6 +63,9 @@ public interface Context {
 
 package android.view;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public interface View {
 }
 
@@ -69,6 +78,9 @@ public interface View {
 
 package org.stubs;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public interface MyClass {
   public interface SecondNestedInterface {}
 }

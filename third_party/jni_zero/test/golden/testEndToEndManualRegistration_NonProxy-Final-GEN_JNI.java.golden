@@ -4,5 +4,8 @@
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class GEN_JNI {
 }

@@ -4,6 +4,9 @@
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class module_GEN_JNI {
   public static void org_jni_1zero_SampleModule_foo() {
     J.module_N.V();

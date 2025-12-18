@@ -3,6 +3,7 @@
 //
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.internal.NullUnmarked;
@@ -10,6 +11,7 @@ import org.jni_zero.internal.Nullable;
 import org.jni_zero.module_GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
+@Generated("JNI Zero")
 @NullUnmarked
 class SampleModuleJni implements SampleModule.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

@@ -4,6 +4,9 @@
 
 package J;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class module_N {
   // Original name: org.jni_zero.SampleModule#bar
   public static native boolean MejItBT4(boolean a);

@@ -4,6 +4,9 @@
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class module_GEN_JNI {
   public static boolean org_jni_1zero_SampleModule_bar(boolean a) {
     return J.module_N.MejItBT4(a);

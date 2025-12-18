@@ -21,6 +21,7 @@ class _Context:
         f'{self.jni_obj.java_class.full_name_with_slashes}Jni')
     self.type_resolver = java_types.TypeResolver(self.proxy_class)
     imports = jni_obj.GetClassesToBeImported() + [
+        java_types.JavaClass('javax/annotation/processing/Generated'),
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
         java_types.JavaClass('org/jni_zero/internal/NullUnmarked'),
@@ -131,6 +132,7 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
   class_name = ctx.proxy_class.name
   if not ctx.is_per_file:
     sb('@CheckDiscard("crbug.com/993421")\n')
+  sb('@Generated("JNI Zero")\n')
   sb('@NullUnmarked\n')
   sb(f'{visibility}class {class_name} implements {ctx.interface_name}')
   with sb.block():

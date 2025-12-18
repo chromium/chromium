@@ -4,6 +4,9 @@
 
 package J;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class N {
   public static final long WHOLE_HASH = 4128442159926458844L;
   public static final long PRIORITY_HASH = 1L;

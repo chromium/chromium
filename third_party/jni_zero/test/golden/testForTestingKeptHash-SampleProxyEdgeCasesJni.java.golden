@@ -4,6 +4,7 @@
 package org.jni_zero;
 
 import java.util.Map;
+import javax.annotation.processing.Generated;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
@@ -14,6 +15,7 @@ import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
+@Generated("JNI Zero")
 @NullUnmarked
 class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;
