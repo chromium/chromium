@@ -36,7 +36,6 @@ static_library("growth") {
     "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/ownership",
@@ -81,6 +80,8 @@ source_set("unit_tests") {
   sources = [
     "campaigns_manager_client_unittest.cc",
     "campaigns_manager_session_unittest.cc",
+    "campaigns_manager_test_helper.cc",
+    "campaigns_manager_test_helper.h",
     "install_web_app_action_unittest.cc",
     "mock_ui_performer_observer.cc",
     "mock_ui_performer_observer.h",

@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -75,8 +74,10 @@ Profile* GetProfile() {
 CampaignsManagerClientImpl::CampaignsManagerClientImpl(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(CHECK_DEREF(variations_service)),
       component_manager_ash_(std::move(component_manager_ash)) {
   CHECK(component_manager_ash_);
 
@@ -204,7 +205,7 @@ const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
 }
 
 const std::string CampaignsManagerClientImpl::GetCountryCode() const {
-  return g_browser_process->variations_service()->GetStoredPermanentCountry();
+  return variations_service_->GetStoredPermanentCountry();
 }
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {

@@ -11,8 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/campaigns_manager_test_helper.h"
 #include "chrome/browser/ash/growth/metrics.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -63,10 +63,7 @@ constexpr char kImpressionHistogramName1000[] =
 
 class CampaignsManagerClientTest : public testing::Test {
  public:
-  CampaignsManagerClientTest()
-      : browser_process_platform_part_test_api_(
-            g_browser_process->platform_part()) {}
-
+  CampaignsManagerClientTest() = default;
   CampaignsManagerClientTest(const CampaignsManagerClientTest&) = delete;
   CampaignsManagerClientTest& operator=(const CampaignsManagerClientTest&) =
       delete;
@@ -77,39 +74,30 @@ class CampaignsManagerClientTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kGrowthCampaignsCrOSEvents);
     SetupProfileManager();
-    InitializeComponentManager();
-    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()
-            ->GetFeatures()
-            ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->component_manager_ash());
+
+    // Initialize ComponentManagerAsh.
+    cros_component_manager_ = base::MakeRefCounted<FakeComponentManagerAsh>();
+    cros_component_manager_->set_queue_load_requests(true);
+    cros_component_manager_->set_supported_components({kCampaignsComponent});
+
+    // Initialize CampaignsManager and CampaignsManagerClientImpl.
+    test_helper_.InitializeCampaignsManager(cros_component_manager_);
+    campaigns_manager_client_ = test_helper_.campaigns_manager_client_impl();
+    ASSERT_TRUE(campaigns_manager_client_);
+
     metrics_recorder_.Initialize();
   }
 
   void TearDown() override {
+    campaigns_manager_client_ = nullptr;
+    test_helper_.ShutdownCampaignsManager();
     cros_component_manager_ = nullptr;
-    browser_process_platform_part_test_api_.ShutdownComponentManager();
-    campaigns_manager_client_.reset();
+
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
   }
 
  protected:
-  void InitializeComponentManager() {
-    auto fake_cros_component_manager =
-        base::MakeRefCounted<FakeComponentManagerAsh>();
-    fake_cros_component_manager->set_queue_load_requests(true);
-    fake_cros_component_manager->set_supported_components(
-        {kCampaignsComponent});
-    cros_component_manager_ = fake_cros_component_manager.get();
-
-    browser_process_platform_part_test_api_.InitializeComponentManager(
-        std::move(fake_cros_component_manager));
-  }
-
   bool FinishComponentLoad(
       const base::FilePath& mount_path,
       component_updater::FakeComponentManagerAsh::Error error) {
@@ -176,15 +164,15 @@ class CampaignsManagerClientTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
-  raw_ptr<FakeComponentManagerAsh> cros_component_manager_ = nullptr;
+  raw_ptr<CampaignsManagerClientImpl> campaigns_manager_client_ = nullptr;
+  scoped_refptr<FakeComponentManagerAsh> cros_component_manager_ = nullptr;
   base::HistogramTester histogram_tester_;
   metrics::structured::TestStructuredMetricsRecorder metrics_recorder_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
+  CampaignsManagerTestHelper test_helper_;
 };
 
 TEST_F(CampaignsManagerClientTest, LoadCampaignsComponent) {

@@ -11,13 +11,14 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/campaigns_manager_test_helper.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,9 +47,7 @@ constexpr char kNudgePayloadTemplate[] = R"(
 class ShowNudgeActionPerformerTest : public testing::Test {
  public:
   ShowNudgeActionPerformerTest()
-      : browser_process_platform_part_test_api_(
-            TestingBrowserProcess::GetGlobal()->platform_part()),
-        profile_manager_(std::make_unique<TestingProfileManager>(
+      : profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())) {}
   ShowNudgeActionPerformerTest(const ShowNudgeActionPerformerTest&) = delete;
   ShowNudgeActionPerformerTest& operator=(const ShowNudgeActionPerformerTest&) =
@@ -58,18 +57,10 @@ class ShowNudgeActionPerformerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    // Needed for the component_manager_ash() call below.
-    browser_process_platform_part_test_api_.InitializeComponentManager(
+    // ShowNudgeActionPerformer depends on CampaignsManager.
+    campaign_manager_test_helper_.InitializeCampaignsManager(
         base::MakeRefCounted<component_updater::FakeComponentManagerAsh>());
-
-    client_ = std::make_unique<CampaignsManagerClientImpl>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()
-            ->GetFeatures()
-            ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->component_manager_ash());
+    ASSERT_TRUE(growth::CampaignsManager::Get());
 
     action_ = std::make_unique<ShowNudgeActionPerformer>();
     scoped_observation_.Observe(action_.get());
@@ -81,8 +72,7 @@ class ShowNudgeActionPerformerTest : public testing::Test {
     profile_manager_->DeleteAllTestingProfiles();
     action_->SetAnchoredViewForTesting(std::nullopt);
 
-    client_.reset();
-    browser_process_platform_part_test_api_.ShutdownComponentManager();
+    campaign_manager_test_helper_.ShutdownCampaignsManager();
   }
 
   void SetTestAnchoredView(bool has_anchor_view) {
@@ -116,7 +106,6 @@ class ShowNudgeActionPerformerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
 
   base::RunLoop action_success_run_loop_;
   base::RunLoop action_failed_run_loop_;
@@ -132,7 +121,8 @@ class ShowNudgeActionPerformerTest : public testing::Test {
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       scoped_observation_{&mock_observer_};
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<CampaignsManagerClientImpl> client_;
+
+  CampaignsManagerTestHelper campaign_manager_test_helper_;
 };
 
 TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {

@@ -11,8 +11,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/feature_engagement",
   "+chrome/browser/metrics",
   "+chrome/browser/policy",
@@ -41,6 +39,11 @@ specific_include_rules = {
   ],
 
   ".*_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/browser/global_features.h",
+  ],
+  "campaigns_manager_test_helper\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
   ],
 }

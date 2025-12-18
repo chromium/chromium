@@ -33,15 +33,20 @@ namespace growth {
 class CampaignsManager;
 }  // namespace growth
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                                    public UiActionPerformer::Observer {
  public:
-  // `local_state` and `application_locale_storage` must be non-null, and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage`, and `variations_service` must
+  // be non-null and must outlive `this`.
   // `component_manager_ash` must be non-null.
   CampaignsManagerClientImpl(
       PrefService* local_state,
       ApplicationLocaleStorage* application_locale_storage,
+      variations::VariationsService* variations_service,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash);
   CampaignsManagerClientImpl(const CampaignsManagerClientImpl&) = delete;
@@ -104,6 +109,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
 
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<variations::VariationsService> variations_service_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
 
