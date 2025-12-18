@@ -10,4 +10,5 @@ found in the LICENSE file.
     </drawable>
     <drawable name="btn_delete_24dp">@drawable/ic_cancel_fill_24dp</drawable>
     <drawable name="btn_info">@drawable/ic_info_24dp</drawable>
+    <drawable name="ic_settings_gear_24dp">@drawable/ic_settings_24dp</drawable>
 </resources>

@@ -12,4 +12,5 @@ found in the LICENSE file.
     </drawable>
     <!--    TODO(crbug.com/465845023): Cleanup delete icon usage-->
     <drawable name="ic_delete_white_24dp">@drawable/ic_delete_fill_24dp</drawable>
+    <drawable name="settings_cog">@drawable/ic_settings_24dp</drawable>
 </resources>
