@@ -42,8 +42,8 @@ enum class ImportDataItemImportStatus : NSUInteger {
 /// Number of items.
 @property(nonatomic, readonly) int count;
 
-/// Number of invalid items; Applicable for passwords only; value will be 0 for
-/// other types.
+/// Number of invalid items; Applicable for passwords and passkeys only; value
+/// will be 0 for other types.
 @property(nonatomic, assign) int invalidCount;
 
 /// Initializer with data item type.

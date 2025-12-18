@@ -242,6 +242,11 @@ UIView* GetCheckmark() {
       kMinImportingTime);
 }
 
+- (ImportDataItemType)itemTypeForIndexPath:(NSIndexPath*)indexPath {
+  NSNumber* identifier = [_dataSource itemIdentifierForIndexPath:indexPath];
+  return static_cast<ImportDataItemType>(identifier.unsignedIntegerValue);
+}
+
 #pragma mark - ImportDataItemConsumer
 
 - (void)populateItem:(ImportDataItem*)item {
@@ -362,12 +367,17 @@ UIView* GetCheckmark() {
       break;
   }
   if (item.invalidCount > 0) {
-    /// Concatenate string for invalid passwords.
-    CHECK_EQ(item.type, ImportDataItemType::kPasswords);
+    /// Concatenate string for invalid passwords or passkeys.
+    CHECK(item.type == ImportDataItemType::kPasswords ||
+          item.type == ImportDataItemType::kPasskeys)
+        << "Unsupported type: " << static_cast<int>(item.type);
     CHECK_EQ(item.status, ImportDataItemImportStatus::kImported);
-    std::u16string invalidCountString = l10n_util::GetPluralStringFUTF16(
-        IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
-        item.invalidCount);
+    int messageId =
+        item.type == ImportDataItemType::kPasswords
+            ? IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS
+            : IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSKEYS;
+    std::u16string invalidCountString =
+        l10n_util::GetPluralStringFUTF16(messageId, item.invalidCount);
     description = l10n_util::GetNSStringF(IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
                                           base::SysNSStringToUTF16(description),
                                           invalidCountString);

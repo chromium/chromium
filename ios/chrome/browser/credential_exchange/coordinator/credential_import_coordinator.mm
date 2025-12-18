@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
 #import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
@@ -207,15 +208,25 @@
   [self.delegate credentialImportCoordinatorDidFinish:self];
 }
 
-- (void)didTapInfoButton {
-  CHECK_GT(_mediator.invalidPasswords.count, 0u);
-  DataImportInvalidCredentialsViewController* invalidPasswordsViewController =
-      [[DataImportInvalidCredentialsViewController alloc]
-          initWithInvalidCredentials:_mediator.invalidPasswords
-                                type:CredentialType::kPassword];
-  [self presentViewController:
-            [[UINavigationController alloc]
-                initWithRootViewController:invalidPasswordsViewController]];
+- (void)didTapInfoButtonForType:(ImportDataItemType)type {
+  switch (type) {
+    case ImportDataItemType::kPasswords: {
+      CHECK_GT(_mediator.invalidPasswords.count, 0u);
+      [self presentInvalidCredentials:_mediator.invalidPasswords
+                                 type:CredentialType::kPassword];
+      break;
+    }
+    case ImportDataItemType::kPasskeys: {
+      CHECK_GT(_mediator.invalidPasskeys.count, 0u);
+      [self presentInvalidCredentials:_mediator.invalidPasskeys
+                                 type:CredentialType::kPasskey];
+      break;
+    }
+    case ImportDataItemType::kBookmarks:
+    case ImportDataItemType::kHistory:
+    case ImportDataItemType::kPayment:
+      NOTREACHED() << "Those types are not supported in credential exchange";
+  }
 }
 
 #pragma mark - DataImportCredentialConflictResolutionViewControllerDelegate
@@ -298,16 +309,22 @@
   [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
 }
 
-// Presents `viewController` and returns `YES` if no other view controller is
-// being presented. Returns `NO` otherwise.
-- (BOOL)presentViewController:(UIViewController*)viewController {
+// Presents the invalid credentials view for `credentials` with `type`.
+- (void)presentInvalidCredentials:(NSArray<CredentialImportItem*>*)credentials
+                             type:(CredentialType)type {
   if (_viewController.presentedViewController) {
-    return NO;
+    return;
   }
-  [_viewController presentViewController:viewController
-                                animated:YES
-                              completion:nil];
-  return YES;
+  DataImportInvalidCredentialsViewController* invalidCredentialsViewController =
+      [[DataImportInvalidCredentialsViewController alloc]
+          initWithInvalidCredentials:credentials
+                                type:type];
+  [_viewController
+      presentViewController:
+          [[UINavigationController alloc]
+              initWithRootViewController:invalidCredentialsViewController]
+                   animated:YES
+                 completion:nil];
 }
 
 // Starts reauthCoordinator. Once started, it observes scene state changes and

@@ -52,7 +52,8 @@ constexpr int kExpectedItemCount = 2;
 - (void)tableView:(UITableView*)tableView
     accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
   CHECK_EQ(tableView, _tableView);
-  [self.delegate didTapInfoButton];
+  [self.delegate
+      didTapInfoButtonForType:[_tableView itemTypeForIndexPath:indexPath]];
 }
 
 #pragma mark - CredentialImportConsumer

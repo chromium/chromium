@@ -133,13 +133,15 @@
   [_consumer setImportDataItem:item];
 }
 
-- (void)onPasskeysImported:(int)passkeysImported {
-  // TODO(crbug.com/450982128): Handle displaying errors.
-  [_consumer
-      setImportDataItem:[[ImportDataItem alloc]
-                            initWithType:ImportDataItemType::kPasskeys
-                                  status:ImportDataItemImportStatus::kImported
-                                   count:passkeysImported]];
+- (void)onPasskeysImported:(int)passkeysImported
+                   invalid:(NSArray<PasskeyImportItem*>*)invalid {
+  _invalidPasskeys = [self passkeyItemsWithFaviconDataSource:invalid];
+  ImportDataItem* item =
+      [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasskeys
+                                    status:ImportDataItemImportStatus::kImported
+                                     count:passkeysImported];
+  item.invalidCount = self.invalidPasskeys.count;
+  [_consumer setImportDataItem:item];
 }
 
 - (void)onImportFinished {

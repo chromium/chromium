@@ -130,6 +130,7 @@ std::string DataToString(NSData* data) {
                          selectedPasskeyIds:
                              (const std::vector<int>&)selectedPasskeyIds {
   __weak __typeof(_delegate) weakDelegate = _delegate;
+  __weak __typeof(self) weakSelf = self;
   base::RepeatingClosure allCredentialTypesImportedClosure =
       base::BarrierClosure(_presentCredentialTypesCount, base::BindOnce(^{
                              [weakDelegate onImportFinished];
@@ -143,11 +144,10 @@ std::string DataToString(NSData* data) {
         }).Then(allCredentialTypesImportedClosure));
   }
   if (_passkeys.count > 0) {
-    _passkeyImporter->FinishImport(selectedPasskeyIds,
-                                   base::BindOnce(^(int passkeysImported) {
-                                     [weakDelegate
-                                         onPasskeysImported:passkeysImported];
-                                   }).Then(allCredentialTypesImportedClosure));
+    _passkeyImporter->FinishImport(
+        selectedPasskeyIds, base::BindOnce(^(int passkeysImported) {
+                              [weakSelf onPasskeysImported:passkeysImported];
+                            }).Then(allCredentialTypesImportedClosure));
   }
 }
 
@@ -315,6 +315,13 @@ std::string DataToString(NSData* data) {
                                                      .conflicts];
   [_delegate showConflictResolutionScreenWithPasswords:passwords
                                               passkeys:passkeys];
+}
+
+- (void)onPasskeysImported:(int)passkeysImported {
+  [_delegate onPasskeysImported:passkeysImported
+                        invalid:[PasskeyImportItem
+                                    passkeyImportItemsFromImportedPasskeyInfos:
+                                        _passkeyImportResult.errors]];
 }
 
 @end

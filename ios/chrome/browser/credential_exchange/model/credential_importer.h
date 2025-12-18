@@ -41,7 +41,8 @@ class SavedPasswordsPresenter;
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results;
 
 // Updates the status of the passkey import in the UI.
-- (void)onPasskeysImported:(int)passkeysImported;
+- (void)onPasskeysImported:(int)passkeysImported
+                   invalid:(NSArray<PasskeyImportItem*>*)invalid;
 
 // Updates the status of the UI after importing all credential types finished.
 - (void)onImportFinished;

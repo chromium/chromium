@@ -8,11 +8,13 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+enum class ImportDataItemType : NSUInteger;
+
 @protocol
     CredentialImportViewControllerDelegate <PromoStyleViewControllerDelegate>
 
-// Called when user tapped the info button.
-- (void)didTapInfoButton;
+// Called when user tapped the info button for a row with `type`.
+- (void)didTapInfoButtonForType:(ImportDataItemType)type;
 
 @end
 

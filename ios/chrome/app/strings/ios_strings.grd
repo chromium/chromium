@@ -3354,6 +3354,11 @@
           =1 {Imported {count} history item}
           other {Imported {count} history items}}
       </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSKEYS" desc="The description of the 'Passkey' row displayed on an import screen displaying the number of passkeys that has failed to be imported. Will not be displayed when all passkeys are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
+        {count, plural,
+          =1 {Couldn't import {count} passkey}
+          other {Couldn't import {count} passkeys}}
+      </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS" desc="The description of the 'Password' row displayed on an import screen displaying the number of passwords that has failed to be imported. Will not be displayed when all passwords are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
         {count, plural,
           =1 {Couldn't import {count} password}

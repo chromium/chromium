@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 
 @protocol DataImportImportStageTransitionHandler;
+enum class ImportDataItemType : NSUInteger;
 
 /// View controller for the import data screen.
 @interface ImportDataItemTableView
@@ -33,6 +34,9 @@
 
 /// Notifies the table view that user has initiated importing items.
 - (void)notifyImportStart;
+
+/// Returns the type of the item at `indexPath`.
+- (ImportDataItemType)itemTypeForIndexPath:(NSIndexPath*)indexPath;
 
 @end
 

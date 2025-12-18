@@ -56,6 +56,9 @@ class FaviconLoader;
 // Passwords that were not imported due to errors.
 @property(nonatomic, copy) NSArray<PasswordImportItem*>* invalidPasswords;
 
+// Passkeys that were not imported due to errors.
+@property(nonatomic, copy) NSArray<PasskeyImportItem*>* invalidPasskeys;
+
 // `UUID` is a token received from the OS during app launch, required to be
 // passed back to the OS to receive the credential data.
 - (instancetype)initWithUUID:(NSUUID*)UUID
