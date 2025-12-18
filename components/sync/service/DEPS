@@ -29,5 +29,8 @@ include_rules = [
 specific_include_rules = {
   "sync_service_impl_unittest\.cc": [
     "+components/sync_preferences",
+  ],
+  "device_statistics_request\.cc": [
+    "+third_party/zlib/google",
   ]
 }

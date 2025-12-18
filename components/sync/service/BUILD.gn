@@ -23,6 +23,8 @@ static_library("service") {
     "data_type_manager_observer.h",
     "data_type_status_table.cc",
     "data_type_status_table.h",
+    "device_statistics_request.cc",
+    "device_statistics_request.h",
     "get_all_nodes_request_barrier.cc",
     "get_all_nodes_request_barrier.h",
     "get_types_with_unsynced_data_request_barrier.cc",

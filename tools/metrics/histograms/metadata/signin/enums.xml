@@ -798,6 +798,7 @@ chromium-metrics-reviews@google.com.
   <int value="83" label="Ash Boca Classroom Page Handler"/>
   <int value="84" label="Ash Scanner Keyed Service"/>
   <int value="85" label="Autotest Private Api"/>
+  <int value="86" label="Sync Device Statistics Metrics"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

@@ -1161,6 +1161,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="GU_TRIGGER"/>
   <int value="13" label="(deprecated) RETRY"/>
   <int value="14" label="PROGRAMMATIC"/>
+  <int value="15" label="DEVICE_STATISTICS_METRICS"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/protocol/sync_enums.proto:SyncGetUpdatesOrigin) -->

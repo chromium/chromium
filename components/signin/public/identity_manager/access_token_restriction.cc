@@ -24,6 +24,9 @@ namespace {
 const char* const kExtensionsIdentityAPIOAuthConsumerName =
     "extensions_identity_api";
 
+const char* const kSyncDeviceStatisticsMetricsOAuthConsumerName =
+    "sync_device_statistics_metrics";
+
 // Returns true if `scope` is a Google OAuth2 API scope that do not require user
 // to be signed in to the browser.
 bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
@@ -231,7 +234,11 @@ OAuth2ScopeRestriction GetOAuth2ScopeRestriction(const std::string& scope) {
 }
 
 bool IsPrivilegedOAuth2Consumer(const std::string& consumer_name) {
-  return consumer_name == kExtensionsIdentityAPIOAuthConsumerName;
+  // TODO(crbug.com/465716865): Remove
+  // kSyncDeviceStatisticsMetricsOAuthConsumerName once metrics collection is
+  // completed.
+  return consumer_name == kExtensionsIdentityAPIOAuthConsumerName ||
+         consumer_name == kSyncDeviceStatisticsMetricsOAuthConsumerName;
 }
 
 }  // namespace signin

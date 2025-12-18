@@ -115,6 +115,8 @@ constexpr char kAshDriveIntegrationName[] = "ash_drive_integration";
 constexpr char kAshClassroomPageHandlerName[] = "ash_classroom_page_handler";
 constexpr char kAshScannerKeyedServiceName[] = "ash_scanner_keyed_service";
 constexpr char kAshAutotestPrivateApiName[] = "ash_autotest_private_api";
+constexpr char kSyncDeviceStatisticsMetricsName[] =
+    "sync_device_statistics_metrics";
 
 }  // namespace
 
@@ -524,6 +526,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       // This consumer id should be converted using
       // GetOAuthConsumerForDynamicScopes().
       NOTREACHED();
+    case OAuthConsumerId::kSyncDeviceStatisticsMetrics:
+      return OAuthConsumer(
+          /*name=*/kSyncDeviceStatisticsMetricsName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
   }
 }
 

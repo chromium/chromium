@@ -222,6 +222,8 @@ message SyncEnums {
     // DEPRECATED_RETRY = 13;
     PROGRAMMATIC = 14;  // A GU to programmatically enable/disable a
                         // datatype, often due to error handling.
+    DEVICE_STATISTICS_METRICS = 15;  // A request for data about the user's
+                                     // syncing devices, for metrics purposes.
 
     reserved 13;
     reserved "RETRY";

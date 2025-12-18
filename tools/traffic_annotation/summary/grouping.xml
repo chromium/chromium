@@ -392,6 +392,7 @@ after discussions on the right group.
       <annotation id="legion_service_get_token"/>
       <annotation id="metrics_report_private_metrics"/>
       <annotation id="scam_detection_model_execution"/>
+      <annotation id="sync_device_statistics_metrics"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

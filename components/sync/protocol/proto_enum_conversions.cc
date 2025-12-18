@@ -387,7 +387,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::ErrorType error_type) {
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::GetUpdatesOrigin origin) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, GetUpdatesOrigin, UNKNOWN_ORIGIN,
-                     PROGRAMMATIC);
+                     DEVICE_STATISTICS_METRICS);
   switch (origin) {
     ENUM_CASE(sync_pb::SyncEnums, UNKNOWN_ORIGIN);
     ENUM_CASE(sync_pb::SyncEnums, PERIODIC);
@@ -397,6 +397,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::GetUpdatesOrigin origin) {
     ENUM_CASE(sync_pb::SyncEnums, RECONFIGURATION);
     ENUM_CASE(sync_pb::SyncEnums, GU_TRIGGER);
     ENUM_CASE(sync_pb::SyncEnums, PROGRAMMATIC);
+    ENUM_CASE(sync_pb::SyncEnums, DEVICE_STATISTICS_METRICS);
   }
   NOTREACHED();
 }
@@ -630,8 +631,8 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::CardBenefitSource card_benefit_source) {
-  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, CardBenefitSource, SOURCE_UNKNOWN,
-                     SOURCE_CURINOS);
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard, CardBenefitSource,
+                     SOURCE_UNKNOWN, SOURCE_CURINOS);
   switch (card_benefit_source) {
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_UNKNOWN);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, SOURCE_AMEX);
