@@ -17,18 +17,18 @@ namespace {
 // TODO(chcunningham): Find some authoritative list of frame rates.
 // Framerates in this list go way beyond typical values to account for changes
 // to playback rate.
-const int kFrameRateBuckets[] = {5,   10,  20,  25,  30,  40,  50,   60,
-                                 70,  80,  90,  100, 120, 150, 200,  250,
-                                 300, 350, 400, 450, 500, 550, 600,  650,
-                                 700, 750, 800, 850, 900, 950, 1000, 1500};
+constexpr auto kFrameRateBuckets =
+    std::to_array<int>({5,   10,  20,  25,  30,  40,  50,  60,  70,   80,  90,
+                        100, 120, 150, 200, 250, 300, 350, 400, 450,  500, 550,
+                        600, 650, 700, 750, 800, 850, 900, 950, 1000, 1500});
 
 // A mix of width and height dimensions for common and not-so-common resolutions
 // spanning 50p -> 12K.
 // TODO(chcunningham): Ponder these a bit more.
-const int kSizeBuckets[] = {
-    50,   100,  144,  240,  256,  280,  360,  426,  480,   640,   720,
-    854,  960,  1080, 1280, 1440, 1920, 2160, 2560, 2880,  3160,  3840,
-    4128, 4320, 5120, 6144, 7360, 7680, 8000, 9000, 10000, 11000, 11520};
+constexpr auto kSizeBuckets = std::to_array<int>(
+    {50,   100,  144,  240,  256,  280,  360,  426,  480,   640,   720,
+     854,  960,  1080, 1280, 1440, 1920, 2160, 2560, 2880,  3160,  3840,
+     4128, 4320, 5120, 6144, 7360, 7680, 8000, 9000, 10000, 11000, 11520});
 
 // Pixel buckets that are used to quantize the resolution to limit the amount of
 // information that is stored and exposed through the API. The pixel size
@@ -67,16 +67,16 @@ gfx::Size GetSizeBucket(const gfx::Size& raw_size) {
 
   // Round width and height to first bucket >= |raw_size| dimensions. See
   // explanation in header file.
-  const int* width_bound = std::lower_bound(
-      std::begin(kSizeBuckets), std::end(kSizeBuckets), raw_size.width());
-  const int* height_bound = std::lower_bound(
-      std::begin(kSizeBuckets), std::end(kSizeBuckets), raw_size.height());
+  auto width_bound = std::ranges::lower_bound(kSizeBuckets, raw_size.width());
+  auto height_bound = std::ranges::lower_bound(kSizeBuckets, raw_size.height());
 
   // If no bucket is larger than the raw dimension, just use the last bucket.
-  if (width_bound == std::end(kSizeBuckets))
-    UNSAFE_TODO(--width_bound);
-  if (height_bound == std::end(kSizeBuckets))
-    UNSAFE_TODO(--height_bound);
+  if (width_bound == kSizeBuckets.end()) {
+    --width_bound;
+  }
+  if (height_bound == kSizeBuckets.end()) {
+    --height_bound;
+  }
 
   return gfx::Size(*width_bound, *height_bound);
 }
@@ -85,20 +85,21 @@ int GetFpsBucket(double raw_fps) {
   int rounded_fps = std::round(raw_fps);
 
   // Find the first bucket that is strictly > than |rounded_fps|.
-  const int* upper_bound =
-      std::upper_bound(std::begin(kFrameRateBuckets),
-                       std::end(kFrameRateBuckets), std::round(rounded_fps));
+  auto upper_bound =
+      std::ranges::upper_bound(kFrameRateBuckets, std::round(rounded_fps));
 
   // If no bucket is larger than |rounded_fps|, just used the last bucket;
-  if (upper_bound == std::end(kFrameRateBuckets))
-    return *(UNSAFE_TODO(upper_bound - 1));
+  if (upper_bound == kFrameRateBuckets.end()) {
+    return *(upper_bound - 1);
+  }
 
   // Return early if its the first bucket.
-  if (upper_bound == std::begin(kFrameRateBuckets))
+  if (upper_bound == kFrameRateBuckets.begin()) {
     return *upper_bound;
+  }
 
   int higher_bucket = *upper_bound;
-  int previous_bucket = *(UNSAFE_TODO(upper_bound - 1));
+  int previous_bucket = *(upper_bound - 1);
   if (std::abs(previous_bucket - rounded_fps) <
       std::abs(higher_bucket - rounded_fps)) {
     return previous_bucket;
