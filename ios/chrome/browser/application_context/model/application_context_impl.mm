@@ -396,15 +396,31 @@ net_log::NetExportFileWriter* ApplicationContextImpl::GetNetExportFileWriter() {
 }
 
 network_time::NetworkTimeTracker*
-ApplicationContextImpl::GetNetworkTimeTracker() {
+ApplicationContextImpl::GetNetworkTimeTrackerMaybeUninitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
-    network_time_tracker_.reset(new network_time::NetworkTimeTracker(
-        base::WrapUnique(new base::DefaultClock),
-        base::WrapUnique(new base::DefaultTickClock), GetLocalState(),
-        GetSharedURLLoaderFactory(), std::nullopt));
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
+        std::make_unique<base::DefaultClock>(),
+        std::make_unique<base::DefaultTickClock>(),
+        /*pref_service=*/nullptr,
+        /*url_loader_factory=*/nullptr,
+        /*fetch_behavior=*/std::nullopt);
+    CHECK(!network_time_tracker_->is_initialized());
   }
   return network_time_tracker_.get();
+}
+
+network_time::NetworkTimeTracker*
+ApplicationContextImpl::GetNetworkTimeTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* network_time_tracker = GetNetworkTimeTrackerMaybeUninitialized();
+  if (!network_time_tracker->is_initialized()) {
+    network_time_tracker->Initialize(
+        /*pref_service=*/GetLocalState(),
+        /*url_loader_factory=*/GetSharedURLLoaderFactory());
+    CHECK(network_time_tracker->is_initialized());
+  }
+  return network_time_tracker;
 }
 
 IOSChromeIOThread* ApplicationContextImpl::GetIOSChromeIOThread() {

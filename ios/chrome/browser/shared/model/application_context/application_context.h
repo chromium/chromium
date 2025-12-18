@@ -170,7 +170,18 @@ class ApplicationContext {
 
   virtual net_log::NetExportFileWriter* GetNetExportFileWriter() = 0;
 
-  // Gets the NetworkTimeTracker.
+  // Gets the NetworkTimeTracker. The returned NetworkTimeTracker may not be
+  // fully initialized, but it can be subscribed to. It is permitted to call
+  // this method very early during startup (i.e., before the local state pref
+  // service and network services have started). This function may safely be
+  // called multiple times; it is idempotent.
+  virtual network_time::NetworkTimeTracker*
+  GetNetworkTimeTrackerMaybeUninitialized() = 0;
+
+  // Gets the NetworkTimeTracker. The returned NetworkTimeTracker will be fully
+  // initialized. It is not safe to call this method before threads are created,
+  // local state is initialized, and network services are started. This function
+  // may safely be called multiple times; it is idempotent.
   virtual network_time::NetworkTimeTracker* GetNetworkTimeTracker() = 0;
 
   // Gets the IOSChromeIOThread.
