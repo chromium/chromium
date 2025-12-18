@@ -60,9 +60,9 @@ std::vector<uint8_t> Base64Decode(const std::string* base_64_string) {
   return decoded_data;
 }
 
-// Extracts all parameters required to build a PublicKeyCredentialUserEntity
-// object from the provided dictionary.
-device::PublicKeyCredentialUserEntity ExtractUserEntity(
+// Builds a PublicKeyCredentialUserEntity object from the parameters contained
+// in the provided dictionary.
+device::PublicKeyCredentialUserEntity BuildUserEntity(
     const base::Value::Dict* dict) {
   device::PublicKeyCredentialUserEntity user_entity;
   if (!dict) {
@@ -88,9 +88,9 @@ device::PublicKeyCredentialUserEntity ExtractUserEntity(
   return user_entity;
 }
 
-// Extracts all parameters required to build a PublicKeyCredentialRpEntity
-// object from the provided dictionary.
-device::PublicKeyCredentialRpEntity ExtractRpEntity(
+// Builds a PublicKeyCredentialRpEntity object from the parameters contained in
+// the provided dictionary.
+device::PublicKeyCredentialRpEntity BuildRpEntity(
     const base::Value::Dict* dict) {
   device::PublicKeyCredentialRpEntity rp_entity;
   if (!dict) {
@@ -111,7 +111,7 @@ device::PublicKeyCredentialRpEntity ExtractRpEntity(
 }
 
 // Converts the provided string to a UserVerificationRequirement enum.
-device::UserVerificationRequirement ExtractUserVerification(
+device::UserVerificationRequirement ToUserVerificationRequirement(
     const std::string* user_verification) {
   if (!user_verification) {
     // Fall back to the `kPreferred` UV requirement as per the WebAuthn spec.
@@ -125,7 +125,7 @@ device::UserVerificationRequirement ExtractUserVerification(
 }
 
 // Reads a list of PublicKeyCredentialDescriptor from the provided list.
-std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
+std::vector<device::PublicKeyCredentialDescriptor> ReadCredentials(
     const base::Value::List* serialized_descriptors) {
   std::vector<device::PublicKeyCredentialDescriptor> credential_descriptors;
   if (!serialized_descriptors) {
@@ -166,9 +166,9 @@ std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
   return credential_descriptors;
 }
 
-// Extracts all parameters required to build a PasskeyRequestParams object from
-// the provided dictionary.
-PasskeyRequestParams ExtractRequestParams(const base::Value::Dict& dict) {
+// Builds a PasskeyRequestParams object from the parameters contained in the
+// provided dictionary.
+PasskeyRequestParams BuildRequestParams(const base::Value::Dict& dict) {
   const std::string* frame_id = dict.FindString(kFrameId);
   const std::string* request_id = dict.FindString(kRequestId);
   const base::Value::Dict* request_dict = dict.FindDict(kRequest);
@@ -177,25 +177,26 @@ PasskeyRequestParams ExtractRequestParams(const base::Value::Dict& dict) {
   }
 
   return PasskeyRequestParams(
-      *frame_id, *request_id, ExtractRpEntity(dict.FindDict(kRpEntity)),
+      *frame_id, *request_id, BuildRpEntity(dict.FindDict(kRpEntity)),
       Base64Decode(request_dict->FindString(kChallenge)),
-      ExtractUserVerification(request_dict->FindString(kUserVerification)));
+      ToUserVerificationRequirement(
+          request_dict->FindString(kUserVerification)));
 }
 
 }  // namespace
 
-AssertionRequestParams ExtractAssertionRequestParams(
+AssertionRequestParams BuildAssertionRequestParams(
     const base::Value::Dict& dict) {
   return AssertionRequestParams(
-      ExtractRequestParams(dict),
-      ExtractCredentials(dict.FindList(kAllowCredentials)));
+      BuildRequestParams(dict),
+      ReadCredentials(dict.FindList(kAllowCredentials)));
 }
 
-RegistrationRequestParams ExtractRegistrationRequestParams(
+RegistrationRequestParams BuildRegistrationRequestParams(
     const base::Value::Dict& dict) {
   return RegistrationRequestParams(
-      ExtractRequestParams(dict), ExtractUserEntity(dict.FindDict(kUserEntity)),
-      ExtractCredentials(dict.FindList(kExcludeCredentials)));
+      BuildRequestParams(dict), BuildUserEntity(dict.FindDict(kUserEntity)),
+      ReadCredentials(dict.FindList(kExcludeCredentials)));
 }
 
 }  // namespace webauthn

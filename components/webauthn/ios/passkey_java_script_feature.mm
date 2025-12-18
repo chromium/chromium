@@ -72,12 +72,12 @@ GetPlaceholderReplacements() {
   };
 }
 
-// Extracts the type of log event received.
+// Reads the type of log event received.
 // Returns std::nullopt on any non log event or invalid log event.
 std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
-ExtractLogEventType(const std::string& event,
-                    const base::Value::Dict& dict,
-                    const PasskeyTabHelper& tab_helper) {
+ReadLogEventType(const std::string& event,
+                 const base::Value::Dict& dict,
+                 const PasskeyTabHelper& tab_helper) {
   if (event == kLogGetRequest) {
     return kGetRequested;
   } else if (event == kLogCreateRequest) {
@@ -240,7 +240,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     passkey_tab_helper->LogEvent(
         PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
     passkey_tab_helper->HandleGetRequestedEvent(
-        ExtractAssertionRequestParams(dict));
+        BuildAssertionRequestParams(dict));
     return;
   } else if (*event == kHandleCreateRequest) {
     if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
@@ -252,12 +252,12 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
         PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
             kCreateRequested);
     passkey_tab_helper->HandleCreateRequestedEvent(
-        ExtractRegistrationRequestParams(dict));
+        BuildRegistrationRequestParams(dict));
     return;
   }
 
   std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
-      log_event_type = ExtractLogEventType(*event, dict, *passkey_tab_helper);
+      log_event_type = ReadLogEventType(*event, dict, *passkey_tab_helper);
 
   if (log_event_type.has_value()) {
     passkey_tab_helper->LogEvent(*log_event_type);

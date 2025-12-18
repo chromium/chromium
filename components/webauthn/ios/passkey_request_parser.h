@@ -10,14 +10,14 @@
 
 namespace webauthn {
 
-// Extracts all parameters required to build an ExtractAssertionRequestParams
-// object from the provided dictionary.
-AssertionRequestParams ExtractAssertionRequestParams(
+// Builds an ExtractAssertionRequestParams object from the parameters contained
+// in the provided dictionary.
+AssertionRequestParams BuildAssertionRequestParams(
     const base::Value::Dict& dict);
 
-// Extracts all parameters required to build a RegistrationRequestParams object
-// from the provided dictionary.
-RegistrationRequestParams ExtractRegistrationRequestParams(
+// Build a RegistrationRequestParams object from the parameters contained in the
+// provided dictionary.
+RegistrationRequestParams BuildRegistrationRequestParams(
     const base::Value::Dict& dict);
 
 }  // namespace webauthn
