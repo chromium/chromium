@@ -49,7 +49,7 @@ export function getHtml(this: TopToolbarElement) {
   <cr-lazy-render-lit id="menu" .template="${() => html`
     <cr-action-menu>
       <button class="dropdown-item" @click="${this.onOpenInNewTabClick_}">
-        <cr-icon icon="cr:open-in-new"></cr-icon>
+        <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
         $i18n{openInNewTab}
       </button>
       <hr>
