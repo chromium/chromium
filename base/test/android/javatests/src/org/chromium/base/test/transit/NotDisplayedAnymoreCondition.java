@@ -4,10 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
 import android.view.View;
 
 import androidx.test.espresso.Root;
@@ -18,6 +14,7 @@ import org.hamcrest.StringDescription;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Fulfilled when no matching Views exist and are displayed. */
@@ -25,23 +22,16 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
     private final Matcher<View> mMatcher;
     private final @Nullable ViewElement<?> mViewElement;
 
-    private static final String VERBOSE_DESCRIPTION =
-            "(view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() to return"
-                    + " non-empty rectangle)";
-    private static final String SUCCINCT_DESCRIPTION = "isDisplayed()";
-
     public NotDisplayedAnymoreCondition(
             @Nullable ViewElement<?> viewElement, Matcher<View> matcher) {
         super();
         mViewElement = viewElement;
-        mMatcher = allOf(matcher, isDisplayed());
+        mMatcher = matcher;
     }
 
     @Override
     public String buildDescription() {
-        return "No more view: "
-                + StringDescription.toString(mMatcher)
-                        .replace(VERBOSE_DESCRIPTION, SUCCINCT_DESCRIPTION);
+        return "No more displayed view: " + StringDescription.toString(mMatcher);
     }
 
     @Override
@@ -78,12 +68,20 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
             }
             rootsToSearch = InternalViewFinder.findRoots(rootSpec);
         }
-        List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
+        List<ViewAndRoot> allMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
+        List<ViewConditions.DisplayedEvaluation> displayedMatches = new ArrayList<>();
+        for (ViewAndRoot viewAndRoot : allMatches) {
+            ViewConditions.DisplayedEvaluation displayedEvaluation =
+                    ViewConditions.evaluateMatch(viewAndRoot, /* displayedPercentageRequired= */ 1);
+            if (displayedEvaluation.didMatch) {
+                displayedMatches.add(displayedEvaluation);
+            }
+        }
 
-        if (viewMatches.isEmpty()) {
+        if (displayedMatches.isEmpty()) {
             return fulfilled();
         } else {
-            return notFulfilled(ViewConditions.writeMatchingViewsStatusMessage(viewMatches));
+            return notFulfilled(ViewConditions.writeDisplayedViewsStatusMessage(displayedMatches));
         }
     }
 }

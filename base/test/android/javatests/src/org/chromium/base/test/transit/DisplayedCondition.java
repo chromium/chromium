@@ -4,7 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import static org.chromium.base.test.util.ViewPrinter.Options.PRINT_SHALLOW;
 import static org.chromium.base.test.util.ViewPrinter.Options.PRINT_SHALLOW_WITH_BOUNDS;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -105,53 +104,42 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
 
         List<Root> roots = InternalViewFinder.findRoots(rootSpec);
 
-        List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(roots, mMatcher);
+        List<ViewAndRoot> allMatches = InternalViewFinder.findViews(roots, mMatcher);
+        List<ViewConditions.DisplayedEvaluation> displayedEvaluations = new ArrayList<>();
+        List<ViewConditions.DisplayedEvaluation> displayedMatches = new ArrayList<>();
+        for (ViewAndRoot viewAndRoot : allMatches) {
+            ViewConditions.DisplayedEvaluation displayedEvaluation =
+                    ViewConditions.evaluateMatch(
+                            viewAndRoot, mOptions.mDisplayedPercentageRequired);
+            displayedEvaluations.add(displayedEvaluation);
+            if (displayedEvaluation.didMatch) {
+                displayedMatches.add(displayedEvaluation);
+            }
+        }
 
-        if (viewMatches.size() != 1) {
-            return notFulfilled(ViewConditions.writeMatchingViewsStatusMessage(viewMatches))
+        if (displayedMatches.isEmpty()) {
+            if (allMatches.isEmpty()) {
+                return notFulfilled("No matching Views").withoutResult();
+            } else {
+                return notFulfilled(
+                                "Matched only non-displayed Views: "
+                                        + ViewConditions.writeDisplayedViewsStatusMessage(
+                                                displayedEvaluations))
+                        .withoutResult();
+            }
+        } else if (displayedMatches.size() > 1) {
+            return notFulfilled(ViewConditions.writeDisplayedViewsStatusMessage(displayedMatches))
                     .withoutResult();
         }
-        ViewAndRoot matchedViewAndRoot = viewMatches.get(0);
 
-        View matchedView = matchedViewAndRoot.view;
+        assert displayedMatches.size() == 1;
+        ViewConditions.DisplayedEvaluation displayedMatch = displayedMatches.get(0);
+
+        View matchedView = displayedMatch.viewAndRoot.view;
 
         boolean fulfilled = true;
         messages.add(ViewPrinter.describeView(matchedView, PRINT_SHALLOW_WITH_BOUNDS));
-
-        int visibility = matchedView.getVisibility();
-        if (visibility != View.VISIBLE) {
-            fulfilled = false;
-            messages.add(String.format("visibility = %s", visibilityIntToString(visibility)));
-        } else {
-            View view = matchedView;
-            while (view.getParent() instanceof View) {
-                view = (View) view.getParent();
-                visibility = view.getVisibility();
-                if (visibility != View.VISIBLE) {
-                    fulfilled = false;
-                    messages.add(
-                            String.format(
-                                    "visibility of ancestor [%s] = %s",
-                                    ViewPrinter.describeView(view, PRINT_SHALLOW),
-                                    visibilityIntToString(visibility)));
-                    break;
-                }
-            }
-        }
-
-        if (mOptions.mDisplayedPercentageRequired > 0) {
-            DisplayedPortion portion = DisplayedPortion.ofView(matchedView);
-            if (portion.mPercentage < mOptions.mDisplayedPercentageRequired) {
-                fulfilled = false;
-                messages.add(
-                        String.format(
-                                "%d%% displayed, expected >= %d%%",
-                                portion.mPercentage, mOptions.mDisplayedPercentageRequired));
-                messages.add("% displayed calculation: " + portion);
-            } else {
-                messages.add(String.format("%d%% displayed", portion.mPercentage));
-            }
-        }
+        messages.addAll(displayedMatch.messages);
 
         if (mOptions.mExpectEnabled) {
             if (!matchedView.isEnabled()) {
@@ -207,20 +195,11 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
         String message = String.join("; ", messages);
         if (fulfilled) {
             assumeNonNull(typedView);
-            mMatchedRoot = matchedViewAndRoot.root;
+            mMatchedRoot = displayedMatch.viewAndRoot.root;
             return fulfilled(message).withResult(typedView);
         } else {
             return notFulfilled(message).withoutResult();
         }
-    }
-
-    private static String visibilityIntToString(int visibility) {
-        return switch (visibility) {
-            case View.VISIBLE -> "VISIBLE";
-            case View.INVISIBLE -> "INVISIBLE";
-            case View.GONE -> "GONE";
-            default -> "invalid";
-        };
     }
 
     /**
