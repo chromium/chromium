@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,12 +79,10 @@ class CookieControlsController final
   struct Status {
     Status(CookieControlsState controls_state,
            CookieControlsEnforcement enforcement,
-           CookieBlocking3pcdStatus blocking_status,
            base::Time expiration);
     ~Status();
     CookieControlsState controls_state;
     CookieControlsEnforcement enforcement;
-    CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
   };
 

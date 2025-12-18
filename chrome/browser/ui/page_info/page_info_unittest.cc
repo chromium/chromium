@@ -37,7 +37,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/core/features.h"
@@ -1733,7 +1732,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsState::kBlocked3pc,
                                CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -1756,7 +1754,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsState::kAllowed3pc,
                                CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());

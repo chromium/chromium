@@ -187,8 +187,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     }
 
     @Override
-    public void onStatusChanged(
-            int controlsState, int enforcement, int blockingStatus, long expiration) {
+    public void onStatusChanged(int controlsState, int enforcement, long expiration) {
         mControlsState = controlsState;
         mEnforcement = enforcement;
         mExpiration = expiration;

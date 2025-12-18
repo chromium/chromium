@@ -397,14 +397,11 @@ PageInfo::~PageInfo() {
 
 void PageInfo::OnStatusChanged(CookieControlsState controls_state,
                                CookieControlsEnforcement enforcement,
-                               CookieBlocking3pcdStatus blocking_status,
                                base::Time expiration) {
   if (controls_state_ != controls_state || enforcement != enforcement_ ||
-      blocking_status != blocking_status_ ||
       expiration != cookie_exception_expiration_) {
     controls_state_ = controls_state;
     enforcement_ = enforcement;
-    blocking_status_ = blocking_status;
     cookie_exception_expiration_ = expiration;
     PresentSiteData(base::DoNothing());
   }
@@ -1644,7 +1641,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #endif
   cookies_info.controls_state = controls_state_;
   cookies_info.enforcement = enforcement_;
-  cookies_info.blocking_status = blocking_status_;
   cookies_info.expiration = cookie_exception_expiration_;
   cookies_info.is_incognito = delegate_->IsIncognitoProfile();
   ui_->SetCookieInfo(cookies_info);

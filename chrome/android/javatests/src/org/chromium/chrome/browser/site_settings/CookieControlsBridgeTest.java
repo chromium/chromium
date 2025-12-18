@@ -32,7 +32,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -64,7 +63,6 @@ public class CookieControlsBridgeTest {
         public void onStatusChanged(
                 @CookieControlsState int controlsState,
                 @CookieControlsEnforcement int enforcement,
-                @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
             mCookieControlsVisible = controlsState != CookieControlsState.HIDDEN;
             mThirdPartyCookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;

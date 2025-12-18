@@ -62,7 +62,6 @@ void CookieControlsBridge::UpdateWebContents(
 void CookieControlsBridge::OnStatusChanged(
     CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   // Only invoke the callback when there is a change.
   if (controls_state_ == controls_state && enforcement_ == enforcement &&
@@ -76,14 +75,13 @@ void CookieControlsBridge::OnStatusChanged(
 
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<int>(controls_state_),
-      static_cast<int>(enforcement_), static_cast<int>(blocking_status),
+      static_cast<int>(enforcement_),
       expiration.InMillisecondsSinceUnixEpoch());
 }
 
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     CookieControlsState controls_state,
-    CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
   // This function's main use is for web's User Bypass icon, which
   // does not observe `OnStatusChanged`. Since the Clank icon does

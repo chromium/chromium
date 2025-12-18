@@ -7,7 +7,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 
@@ -23,9 +22,6 @@ class CookieControlsObserver : public base::CheckedObserver {
       CookieControlsState controls_state,
       // Represents if cookie settings are enforced (ex. by policy).
       CookieControlsEnforcement enforcement,
-      // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
-      // NOTE: Will be obsolete and removed with the cleanup of Mode B.
-      CookieBlocking3pcdStatus blocking_status,
       // The expiration time of the active UB exception if it is present.
       base::Time expiration) {}
 
@@ -36,8 +32,6 @@ class CookieControlsObserver : public base::CheckedObserver {
       bool icon_visible,
       // The state of the controls for the UI to change.
       CookieControlsState controls_state,
-      // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
-      CookieBlocking3pcdStatus blocking_status,
       // Whether we should highlight the user bypass icon.
       bool should_highlight) {}
 

@@ -141,7 +141,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -208,7 +207,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private boolean mShouldHighlightCookieControlsIcon;
-    private int mBlockingStatus3pcd;
     private @MonotonicNonNull BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @SuppressWarnings("NullAway")
@@ -2010,12 +2008,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mShouldHighlightCookieControlsIcon = shouldHighlight;
         }
 
-        @Override
-        public void onStatusChanged(
-                int controlsState, int enforcement, int blockingStatus, long expiration) {
-            mBlockingStatus3pcd = blockingStatus;
-        }
-
         private void cacheRegularState() {
             String assertMsg =
                     "mPreBandingState already exists! mPreBandingState = " + mPreBandingState;
@@ -2277,9 +2269,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onPageLoadStopped() {
-            if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
-                return;
-            }
             if (mPageInfoIphController == null) {
                 Tab currentTab = getCurrentTab();
                 if (currentTab == null) return;

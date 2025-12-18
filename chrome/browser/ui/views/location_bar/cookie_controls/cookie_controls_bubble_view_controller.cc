@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
@@ -125,9 +124,7 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
         IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
   } else {
     label_title = l10n_util::GetPluralStringFUTF16(
-        blocking_status_ == CookieBlocking3pcdStatus::kLimited
-            ? IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE
-            : IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
+        IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
         content_settings::CookieControlsUtil::GetDaysToExpiration(expiration));
     label_description =
         IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
@@ -142,18 +139,14 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
-      blocking_status_ == CookieBlocking3pcdStatus::kLimited
-          ? IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE
-          : IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
+      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
   bubble_view_->GetContentView()->SetCookiesLabel(l10n_util::GetStringUTF16(
-      blocking_status_ == CookieBlocking3pcdStatus::kLimited
-          ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE
-          : IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
+      IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 }
 
 void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
@@ -201,9 +194,7 @@ CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
 void CookieControlsBubbleViewController::OnStatusChanged(
     CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
-  blocking_status_ = blocking_status;
   controls_state_ = controls_state;
   if (controls_state_ == CookieControlsState::kHidden) {
     bubble_view_->CloseWidget();

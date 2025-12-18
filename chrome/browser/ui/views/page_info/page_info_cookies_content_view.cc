@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
@@ -238,7 +237,7 @@ void PageInfoCookiesContentView::SyncSettingsLinkClicked(
 void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
   SetCookiesDescription();
   SetThirdPartyCookiesInfo(cookie_info.controls_state, cookie_info.enforcement,
-                           cookie_info.blocking_status, cookie_info.expiration);
+                           cookie_info.expiration);
 
   // Ensure the separator is only initialized once.
   if (!cookies_dialog_button_) {
@@ -264,7 +263,6 @@ void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
 void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
     CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   std::u16string title_text;
   int description;
@@ -286,9 +284,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
       } else {
         // Handle temporary site exception.
         title_text = l10n_util::GetPluralStringFUTF16(
-            blocking_status == CookieBlocking3pcdStatus::kLimited
-                ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE
-                : IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE,
+            IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE,
             CookieControlsUtil::GetDaysToExpiration(expiration));
         description =
             IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION;
@@ -303,18 +299,11 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
 }
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
-    CookieControlsState controls_state,
-    CookieBlocking3pcdStatus blocking_status) {
-  std::u16string subtitle;
-  if (controls_state == CookieControlsState::kBlocked3pc) {
-    subtitle = l10n_util::GetStringUTF16(
-        blocking_status == CookieBlocking3pcdStatus::kLimited
-            ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE
-            : IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE);
-  } else {
-    subtitle = l10n_util::GetStringUTF16(
-        IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
-  }
+    CookieControlsState controls_state) {
+  std::u16string subtitle = l10n_util::GetStringUTF16(
+      controls_state == CookieControlsState::kBlocked3pc
+          ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE
+          : IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
   third_party_cookies_toggle_->SetIsOn(controls_state ==
                                        CookieControlsState::kAllowed3pc);
   third_party_cookies_toggle_->SetID(
@@ -344,7 +333,6 @@ void PageInfoCookiesContentView::SetCookiesDescription() {
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   if (controls_state == CookieControlsState::kHidden) {
     third_party_cookies_container_->SetVisible(false);
@@ -352,8 +340,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   }
   third_party_cookies_container_->SetVisible(true);
   SetThirdPartyCookiesTitleAndDescription(controls_state, enforcement,
-                                          blocking_status, expiration);
-  SetThirdPartyCookiesToggle(controls_state, blocking_status);
+                                          expiration);
+  SetThirdPartyCookiesToggle(controls_state);
   third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(
       controls_state == CookieControlsState::kAllowed3pc));
   third_party_cookies_row_->SetID(

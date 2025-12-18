@@ -24,7 +24,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
@@ -190,7 +189,6 @@ class CookieControlsBubbleViewPixelTest
 
   void SetStatus(CookieControlsState controls_state,
                  CookieControlsEnforcement enforcement,
-                 CookieBlocking3pcdStatus blocking_status,
                  int days_to_expiration) {
     // ShowBubble will initialize the view controller.
     cookie_controls_coordinator_->ShowBubble(
@@ -205,8 +203,7 @@ class CookieControlsBubbleViewPixelTest
     // after OnStatusChanged() is called it will pull state from
     // CookieControlsController, which has not been updated to reflect what is
     // needed for this test.
-    view_controller()->OnStatusChanged(controls_state, enforcement,
-                                       blocking_status, expiration);
+    view_controller()->OnStatusChanged(controls_state, enforcement, expiration);
     if (!IsPageActionMigrated(PageActionIconType::kCookieControls)) {
       static_cast<CookieControlsIconView*>(cookie_controls_icon())
           ->ExecuteForTesting();
@@ -228,8 +225,7 @@ class CookieControlsBubbleViewPixelTest
           ->ExecuteForTesting();
     }
 
-    SetStatus(controls_state_, enforcement_,
-              CookieBlocking3pcdStatus::kNotIn3pcd, days_to_expiration_);
+    SetStatus(controls_state_, enforcement_, days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
     // Even with the waiter, it's possible that the toggle is in the process

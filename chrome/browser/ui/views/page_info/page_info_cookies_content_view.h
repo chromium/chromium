@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -61,38 +60,29 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
   // text using:
   // `controls_state`: state of controls to display
-  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
-  // setting)
-  // `status: current 3PC blocking status
-  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
-  // limited, blocked)
-  // `expiration`: duration of site exception
+  // `enforcement`: type of enforcement on 3PCs (e.g. policy, user setting)
+  // `expiration`: duration of exception (if any)
   void SetThirdPartyCookiesTitleAndDescription(
       CookieControlsState controls_state,
       CookieControlsEnforcement enforcement,
-      CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
 
   // Sets properties for `third_party_cookies_toggle_` using:
   // `controls_state`: state of controls to display
-  // `status: current 3PC blocking status
-  void SetThirdPartyCookiesToggle(CookieControlsState controls_state,
-                                  CookieBlocking3pcdStatus blocking_status);
+  void SetThirdPartyCookiesToggle(CookieControlsState controls_state);
 
   // Sets `cookie_description_label_` text and style.
   void SetCookiesDescription();
 
-  // Updates the new third-party cookies section using:
+  // Updates info for the third-party cookies section using:
   // `controls_state`: state of controls to display
-  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
-  // limited, blocked)
+  // `enforcement`: type of enforcement on 3PCs (e.g. policy, user setting)
   // `expiration`: duration of site exception
   void SetThirdPartyCookiesInfo(CookieControlsState controls_state,
                                 CookieControlsEnforcement enforcement,
-                                CookieBlocking3pcdStatus blocking_status,
                                 base::Time expiration);
 
-  // Updates toggles state according to info.
+  // Updates toggles state based on `are_cookies_blocked`.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
 
   //  Checks if `rws_button_` should be initiated and if so does it and sets its
@@ -103,15 +93,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // placeholder information if necessary.
   void InitRwsButton(bool is_managed);
 
-  // Initializes the new third-party cookies section. The section starts out
-  // hidden and is only shown when third-party cookies are blocked or there is
-  // an active exception.
+  // Initializes the third-party cookies section. The section starts hidden and
+  // is only shown if third-party cookies are blocked or there is an exception.
   void AddThirdPartyCookiesContainer();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // There is a ChromeOS enterprise policy which allows moving user's cookies
-  // across devices. In that case, we add a section which mentions it in Cookies
-  // subpage in page info.
+  // There is a ChromeOS enterprise policy which allows moving users' cookies
+  // across devices. If this is the case, we add a section explaining it to
+  // the cookies subpage.
   void MaybeAddSyncDisclaimer();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

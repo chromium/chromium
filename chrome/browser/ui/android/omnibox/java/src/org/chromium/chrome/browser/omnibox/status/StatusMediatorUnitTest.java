@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
@@ -591,29 +590,14 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphCookieControls_showIphOnlyWhenNotIn3pcd() {
+    public void iphCookieControls() {
         setupCookieControlsTest();
         mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.NOT_IN3PCD,
-                /* expiration= */ 0);
+                CookieControlsState.BLOCKED3PC, /* enforcement= */ 0, /* expiration= */ 0);
 
         mMediator.onHighlightCookieControl(true);
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        // Not in 3PCD, IPH is shown.
-        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
-
-        mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        mMediator.onHighlightCookieControl(true);
-        Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-        // Limited 3PCD, IPH is NOT shown.
         verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
     }
 
@@ -634,10 +618,7 @@ public final class StatusMediatorUnitTest {
         doReturn(null).when(mTab).getWebContents();
 
         mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
+                CookieControlsState.BLOCKED3PC, /* enforcement= */ 0, /* expiration= */ 0);
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mMediator.onHighlightCookieControl(true);

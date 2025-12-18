@@ -14,13 +14,11 @@ public interface CookieControlsObserver {
      *
      * @param controlsState An enum indicating the state of the controls for the UI to change.
      * @param enforcement An enum indicating enforcement of cookie policies.
-     * @param blockingStatus An enum indicating the cookie blocking status for 3PCD.
      * @param expiration Expiration of the cookie blocking exception.
      */
     default void onStatusChanged(
             @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
-            @CookieBlocking3pcdStatus int blockingStatus,
             long expiration) {}
 
     /** Called when we should surface a visual indicator due to potential site breakage. */

@@ -18,7 +18,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/core/page_info_action.h"
 #include "components/safe_browsing/buildflags.h"
@@ -319,7 +318,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsState controls_state,
                        CookieControlsEnforcement enforcement,
-                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
 
   // Populates this object's UI state with provided security context. This
@@ -499,9 +497,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
-
-  CookieBlocking3pcdStatus blocking_status_ =
-      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
 

@@ -25,7 +25,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
@@ -129,14 +128,11 @@ CookieControlsController::CookieControlsController(
   cookie_observation_.Observe(cookie_settings_.get());
 }
 
-CookieControlsController::Status::Status(
-    CookieControlsState controls_state,
-    CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration)
+CookieControlsController::Status::Status(CookieControlsState controls_state,
+                                         CookieControlsEnforcement enforcement,
+                                         base::Time expiration)
     : controls_state(controls_state),
       enforcement(enforcement),
-      blocking_status(blocking_status),
       expiration(expiration) {}
 CookieControlsController::Status::~Status() = default;
 
@@ -167,10 +163,9 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
       ShouldHighlightUserBypass(status.controls_state);
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.controls_state, status.enforcement,
-                             status.blocking_status, status.expiration);
+                             status.expiration);
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible, status.controls_state, status.blocking_status,
-        should_highlight);
+        icon_visible, status.controls_state, should_highlight);
   }
 }
 
@@ -178,16 +173,14 @@ CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return {CookieControlsState::kHidden,
-            CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
+            CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
 
   const GURL& url = web_contents->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
     return {CookieControlsState::kHidden,
-            CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
+            CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
 
   SettingInfo info;
@@ -204,8 +197,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
                                      : CookieControlsState::kBlocked3pc;
   }
 
-  return {controls_state, enforcement, CookieBlocking3pcdStatus::kNotIn3pcd,
-          info.metadata.expiration()};
+  return {controls_state, enforcement, info.metadata.expiration()};
 }
 
 CookieControlsEnforcement
@@ -358,8 +350,7 @@ void CookieControlsController::UpdateUserBypass() {
       ShouldHighlightUserBypass(status.controls_state);
   for (auto& observer : observers_) {
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible, status.controls_state, status.blocking_status,
-        should_highlight);
+        icon_visible, status.controls_state, should_highlight);
   }
 }
 

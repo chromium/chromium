@@ -41,7 +41,6 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -116,7 +115,6 @@ public class StatusMediator
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
-    private int mBlockingStatus3pcd;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
     private Drawable mDefaultStatusBackground;
@@ -686,18 +684,10 @@ public class StatusMediator
         if (shouldHighlight) {
             animateCookieControlsIcon(
                     () -> {
-                        if (mBlockingStatus3pcd == CookieBlocking3pcdStatus.NOT_IN3PCD) {
-                            mPageInfoIphController.showCookieControlsIph(
-                                    getIphTimeout(), R.string.cookie_controls_iph_message);
-                        }
+                        mPageInfoIphController.showCookieControlsIph(
+                                getIphTimeout(), R.string.cookie_controls_iph_message);
                     });
         }
-    }
-
-    @Override
-    public void onStatusChanged(
-            int cookieControlsState, int enforcement, int blockingStatus, long expiration) {
-        mBlockingStatus3pcd = blockingStatus;
     }
 
     private void animateCookieControlsIcon(Runnable onAnimationFinished) {

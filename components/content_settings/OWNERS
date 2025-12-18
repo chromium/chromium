@@ -9,5 +9,4 @@ per-file ...cookie_settings*=dylancutler@google.com
 # Owners of cookie_controls UI and logic:
 per-file ...cookie_controls*=file://components/privacy_sandbox/OWNERS
 per-file ...CookieControls*=file://components/privacy_sandbox/OWNERS
-per-file core/common/cookie_blocking_3pcd_status.h=file://components/privacy_sandbox/OWNERS
 per-file core/common/cookie_controls_state.h=file://components/privacy_sandbox/OWNERS
