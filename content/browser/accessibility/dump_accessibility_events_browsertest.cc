@@ -528,8 +528,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-tree-expand.html"));
 }
 
+// TODO(crbug.com/372910798): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaTreeItemFocus) {
+                       DISABLED_AccessibilityEventsAriaTreeItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
 }
 
