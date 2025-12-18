@@ -92,6 +92,11 @@
 
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
                              passkeyCount:(NSInteger)passkeyCount {
+  if (passwordCount == 0 && passkeyCount == 0) {
+    [_delegate showNothingImportedScreen];
+    return;
+  }
+
   self.importingPasskeys = passkeyCount > 0;
   [_consumer
       setImportDataItem:[[ImportDataItem alloc]

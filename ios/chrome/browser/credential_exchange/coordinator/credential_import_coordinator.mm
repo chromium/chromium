@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
@@ -76,6 +78,9 @@
   // passed. Used for requiring authentication when the app is
   // backgrounded/foregrounded with credential import opened.
   LocalReauthenticationCoordinator* _reauthCoordinator;
+
+  // Coordinator for displaying alerts in the import flow.
+  AlertCoordinator* _alertCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -138,6 +143,27 @@
                                         animated:YES
                                       completion:nil];
   [self startReauthCoordinator];
+}
+
+- (void)showNothingImportedScreen {
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE);
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  __weak id<CredentialImportCoordinatorDelegate> weakDelegate = _delegate;
+  __weak __typeof(self) weakSelf = self;
+  [_alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CLOSE)
+                action:^{
+                  [weakDelegate credentialImportCoordinatorDidFinish:weakSelf];
+                }
+                 style:UIAlertActionStyleCancel];
+  [_alertCoordinator start];
 }
 
 - (void)showConflictResolutionScreenWithPasswords:

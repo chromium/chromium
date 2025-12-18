@@ -32,6 +32,9 @@ class FaviconLoader;
 // Notifies the delegate to display the import screen.
 - (void)showImportScreen;
 
+// Notifies the delegate to display the "nothing imported" alert.
+- (void)showNothingImportedScreen;
+
 // Notifies the delegate to display a conflict resolution screen.
 - (void)showConflictResolutionScreenWithPasswords:
             (NSArray<PasswordImportItem*>*)passwords
