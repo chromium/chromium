@@ -18,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -52,6 +51,7 @@
 #include "content/public/browser/download_item_utils.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -690,7 +690,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         // `web_contents()` may be nullptr in several cases, if the tab owning
         // the download was opened by a download link, a restored page, or an
         // external application. For those cases, download to drive directly.
-        //
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
         // ProcessEnterpriseDownloadResult will run via
         // dialog callback.
         base::OnceClosure keep_closure = base::BindOnce(
@@ -717,6 +718,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
                 FORCE_SAVE_TO_CLOUD,
             nullptr);
         return;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       }
     }
   } else if (enterprise_connectors::ResultIsFailClosed(result) &&
