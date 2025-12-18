@@ -164,10 +164,9 @@ void OnDeviceSpeechRecognitionImpl::Install(
 
     // Call `GetSubscriber()` to trigger the download and installation of
     // the model.
-    // TODO(crbug.com/446260680): Use
-    // OnDeviceFeature::kOnDeviceSpeechRecognition.
     model_broker_client_
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
+        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::
+                            kOnDeviceSpeechRecognition)
         .WaitForClient(base::BindOnce(
             &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
             weak_ptr_factory_.GetWeakPtr()));
