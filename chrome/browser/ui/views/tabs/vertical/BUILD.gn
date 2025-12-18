@@ -116,6 +116,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "vertical_tab_drag_interactive_uitest.cc",
     "vertical_tab_strip_bottom_container_interactive_uitest.cc",
     "vertical_tab_strip_controller_interactive_uitest.cc",
     "vertical_tab_strip_top_container_interactive_uitest.cc",
@@ -134,6 +135,7 @@ source_set("interactive_ui_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/views",
   ]
 }
