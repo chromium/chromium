@@ -300,6 +300,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
       {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
       {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
+      {"shortcutsInactivityRemovalMsg",
+       IDS_NTP_MOST_VISITED_SHORTCUTS_INACTIVITY_REMOVAL},
 
       // Customize button and dialog.
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},

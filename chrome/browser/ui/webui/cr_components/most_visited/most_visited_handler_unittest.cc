@@ -151,4 +151,19 @@ TEST_P(ShortcutsAutoRemovalPrefTest, OnMostVisitedTileNavigation) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
+// Verify that UndoMostVisitedAutoRemoval restores shortcuts visibility and
+// disables future auto removal.
+TEST_P(ShortcutsAutoRemovalPrefTest, UndoMostVisitedAutoRemoval) {
+  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
+  // Hide the shortcuts to test that the undo method sets it to true.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+
+  handler_->UndoMostVisitedAutoRemoval();
+
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+}
+
 }  // namespace

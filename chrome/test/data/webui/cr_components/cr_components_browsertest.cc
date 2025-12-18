@@ -203,6 +203,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ExpandableTiles) {
           "runMochaSuite('ExpandableTiles');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShortcutsAutoRemovalToast) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShortcutsAutoRemovalToast');");
+}
+
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);

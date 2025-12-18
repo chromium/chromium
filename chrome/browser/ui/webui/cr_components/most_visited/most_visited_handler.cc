@@ -163,6 +163,12 @@ void MostVisitedHandler::ReorderMostVisitedTile(
   }
 }
 
+void MostVisitedHandler::UndoMostVisitedAutoRemoval() {
+  DisableShortcutsAutoRemoval(profile_);
+  // Set the pref to true to show the shortcuts.
+  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+}
+
 void MostVisitedHandler::UndoMostVisitedTileAction(
     ntp_tiles::TileSource source) {
   if (IsFromEnterpriseShortcut(source)) {
