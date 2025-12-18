@@ -221,8 +221,9 @@ ClientSideDetectionIntelligentScanDelegateAndroid::
       remote_model_executor_(remote_model_executor),
       is_feature_enabled_(
           !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) &&
-          base::FeatureList::IsEnabled(
-              kClientSideDetectionSendIntelligentScanInfoAndroid)),
+          (base::FeatureList::IsEnabled(
+               kClientSideDetectionSendIntelligentScanInfoAndroid) ||
+           kCsdImageEmbeddingMatchWithIntelligentScan.Get())),
       is_server_model_enabled_(base::FeatureList::IsEnabled(
           kClientSideDetectionServerModelForScamDetectionAndroid)) {
   if (!is_feature_enabled_) {
@@ -248,6 +249,12 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
   }
   if (!IsEnhancedProtectionEnabled(*pref_)) {
     return false;
+  }
+  if (verdict->client_side_detection_type() ==
+          ClientSideDetectionType::IMAGE_EMBEDDING_MATCH &&
+      verdict->is_phishing() &&
+      kCsdImageEmbeddingMatchWithIntelligentScan.Get()) {
+    return true;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kScamDetectionKeyboardLockTriggerAndroid) &&

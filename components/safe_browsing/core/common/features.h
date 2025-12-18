@@ -89,6 +89,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 // Enables sending a CSD ping when a page's image embedding matches a
 // target image embedding.
 BASE_DECLARE_FEATURE(kClientSideDetectionImageEmbeddingMatch);
+// Specifies whether to trigger the intelligent scan along with the image
+// embedding match.
+extern const base::FeatureParam<bool>
+    kCsdImageEmbeddingMatchWithIntelligentScan;
 
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very

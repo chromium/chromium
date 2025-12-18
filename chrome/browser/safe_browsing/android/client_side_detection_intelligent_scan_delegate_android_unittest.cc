@@ -130,6 +130,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kClientSideDetectionSendIntelligentScanInfoAndroid, {}},
          {kClientSideDetectionShowScamVerdictWarningAndroid, {}},
+         {kClientSideDetectionImageEmbeddingMatch,
+          {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
          {kClientSideDetectionServerModelForScamDetectionAndroid,
           {{"MaxIntelligentScansPerDay", "3"}}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
@@ -144,6 +146,28 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
       ClientSideDetectionType::FORCE_REQUEST);
   verdict.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
   EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateAndroidTest,
+    ShouldRequestIntelligentScan_ImageEmbeddingMatch_RequestIntelligentScan) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(true);
+  EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateAndroidTest,
+    ShouldRequestIntelligentScan_ImageEmbeddingMatch_DoNotRequestIntelligentScan) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(false);
+  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -708,6 +732,30 @@ TEST_F(
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
       /*log_failed_eligibility_reason=*/false));
+}
+
+class
+    ClientSideDetectionIntelligentScanDelegateAndroidTestWithImageEmbeddingDisabled
+    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
+ protected:
+  ClientSideDetectionIntelligentScanDelegateAndroidTestWithImageEmbeddingDisabled() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kClientSideDetectionSendIntelligentScanInfoAndroid, {}},
+         {kClientSideDetectionImageEmbeddingMatch,
+          {{"CsdImageEmbeddingMatchWithIntelligentScan", "false"}}}},
+        /*disabled_features=*/{kClientSideDetectionKillswitch});
+  }
+};
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateAndroidTestWithImageEmbeddingDisabled,
+    ShouldRequestIntelligentScan_DoNotRequestIntelligentScan) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(true);
+  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
 }
 
 }  // namespace safe_browsing

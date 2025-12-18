@@ -101,6 +101,9 @@ BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
 
 BASE_FEATURE(kClientSideDetectionImageEmbeddingMatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kCsdImageEmbeddingMatchWithIntelligentScan{
+    &kClientSideDetectionImageEmbeddingMatch,
+    "CsdImageEmbeddingMatchWithIntelligentScan", /*default_value=*/false};
 
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
