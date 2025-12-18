@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -203,10 +204,12 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet opens on autofocus events.
 - (void)testAutofocusOnProactiveBottomSheet {
-  [self loadSignupAutofocusPage];
+  [ChromeCoordinatorAppInterface startPasswordSuggestionCoordinator];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:UseGeneratedPasswordButton()];
+
+  [ChromeCoordinatorAppInterface stopCoordinator];
 }
 
 // Tests that the keyboard appears if the "Use Keyboard" button is

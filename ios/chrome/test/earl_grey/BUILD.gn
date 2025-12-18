@@ -189,6 +189,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/partial_translate/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:eg_app_support+eg2",
+    "//ios/chrome/browser/passwords/ui_bundled",
     "//ios/chrome/browser/passwords/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg_app_support+eg2",
     "//ios/chrome/browser/permissions/ui_bundled:eg_app_support+eg2",

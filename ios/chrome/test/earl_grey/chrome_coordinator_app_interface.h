@@ -52,6 +52,7 @@
 + (void)startSnackbarCoordinator;
 + (void)startReadingListCoordinator;
 + (void)startBookmarksCoordinator;
++ (void)startPasswordSuggestionCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;

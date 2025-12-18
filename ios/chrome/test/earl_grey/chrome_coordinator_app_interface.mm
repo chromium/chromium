@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
@@ -369,6 +370,26 @@
   self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
   [coordinator presentBookmarks];
+}
+
++ (void)startPasswordSuggestionCoordinator {
+  NSString* testPasswordSuggestion = @"TestSuggestion123!";
+  base::WeakPtr<web::WebFrame> nullWebFrame;
+  void (^testDecisionHandler)(BOOL) = ^(BOOL accept) {
+  };
+  BOOL isProactive = YES;
+
+  PasswordSuggestionCoordinator* coordinator =
+      [[PasswordSuggestionCoordinator alloc]
+          initWithBaseViewController:[self rootViewController]
+                             browser:self.helper.browser
+                  passwordSuggestion:testPasswordSuggestion
+                               frame:nullWebFrame
+                     decisionHandler:testDecisionHandler
+                           proactive:isProactive];
+
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
 }
 
 #pragma mark - Private
