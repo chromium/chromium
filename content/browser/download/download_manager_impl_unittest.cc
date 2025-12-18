@@ -212,8 +212,9 @@ download::MockDownloadItemImpl* MockDownloadItemFactory::GetItem(int id) {
 }
 
 download::MockDownloadItemImpl* MockDownloadItemFactory::PopItem() {
-  if (items_.empty())
+  if (items_.empty()) {
     return nullptr;
+  }
 
   auto first_item = items_.begin();
   download::MockDownloadItemImpl* result = first_item->second;
@@ -257,8 +258,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
   DCHECK(!base::Contains(items_, download_id));
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
-  EXPECT_CALL(*result, GetId())
-      .WillRepeatedly(Return(download_id));
+  EXPECT_CALL(*result, GetId()).WillRepeatedly(Return(download_id));
   EXPECT_CALL(*result, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
   EXPECT_CALL(*result, IsTransient()).WillRepeatedly(Return(transient));
   items_[download_id] = result;
@@ -273,8 +273,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateActiveItem(
 
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
-  EXPECT_CALL(*result, GetId())
-      .WillRepeatedly(Return(download_id));
+  EXPECT_CALL(*result, GetId()).WillRepeatedly(Return(download_id));
   EXPECT_CALL(*result, GetGuid())
       .WillRepeatedly(
           ReturnRefOfCopy(base::Uuid::GenerateRandomV4().AsLowercaseString()));
@@ -342,8 +341,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateSavePageItem(
 
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
-  EXPECT_CALL(*result, GetId())
-      .WillRepeatedly(Return(download_id));
+  EXPECT_CALL(*result, GetId()).WillRepeatedly(Return(download_id));
   items_[download_id] = result;
 
   return result;
@@ -551,9 +549,7 @@ class DownloadManagerTest : public testing::Test {
     return *mock_download_manager_delegate_;
   }
 
-  MockDownloadManagerObserver& GetMockObserver() {
-    return *observer_;
-  }
+  MockDownloadManagerObserver& GetMockObserver() { return *observer_; }
 
   void DownloadTargetDeterminedCallback(
       download::DownloadTargetInfo target_info) {
@@ -707,8 +703,7 @@ TEST_F(DownloadManagerTest, DetermineDownloadTarget_False) {
   EXPECT_CALL(GetMockDownloadManagerDelegate(),
               DetermineDownloadTarget(&item, _))
       .WillOnce(Return(false));
-  EXPECT_CALL(item, GetForcedFilePath())
-      .WillOnce(ReturnRef(path));
+  EXPECT_CALL(item, GetForcedFilePath()).WillOnce(ReturnRef(path));
 
   // Confirm that the callback was called with the right values in this case.
   DetermineDownloadTarget(&item);
@@ -722,8 +717,9 @@ TEST_F(DownloadManagerTest, DetermineDownloadTarget_False) {
 }
 
 TEST_F(DownloadManagerTest, GetDownloadByGuid) {
-  for (uint32_t i = 0; i < 4; ++i)
+  for (uint32_t i = 0; i < 4; ++i) {
     AddItemToManager();
+  }
 
   download::MockDownloadItemImpl& item = GetMockDownloadItem(0);
   download::DownloadItem* result =
