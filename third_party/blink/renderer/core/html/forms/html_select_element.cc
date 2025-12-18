@@ -1339,7 +1339,7 @@ void HTMLSelectElement::TypeAheadFind(const KeyboardEvent& event) {
   const bool customizable_select_popup =
       select_type_->IsAppearanceBasePicker() && select_type_->PopupIsVisible();
   const bool customizable_select_in_page =
-      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !UsesMenuList() && IsAppearanceBase();
 
   if (customizable_select_popup || customizable_select_in_page) {
@@ -1956,7 +1956,7 @@ FocusableState HTMLSelectElement::SupportsFocus(
   // if appropriate, which we will make use of here.
   FocusableState superclass_focusable =
       HTMLFormControlElementWithState::SupportsFocus(update_behavior);
-  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !UsesMenuList() && IsAppearanceBase()) {
     // In this case, the child option elements are focusable and keyboard
     // navigating to this element should just go straight to the options. Call
@@ -1989,7 +1989,7 @@ bool HTMLSelectElement::SupportsBaseAppearanceInternal(
   if (RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) {
     if (UsesMenuList() && IsMultiple()) {
       return false;
     }

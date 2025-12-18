@@ -516,7 +516,7 @@
     ]
   },
   {
-    "prefix": "customizable-select-in-page-disabled",
+    "prefix": "customizable-select-listbox-disabled",
     "platforms": [
       "Linux"
     ],
@@ -525,7 +525,7 @@
       "wpt_internal/html/semantics/forms/the-select-element"
     ],
     "args": [
-      "--disable-features=CustomizableSelectInPage"
+      "--disable-features=CustomizableSelectListbox"
     ],
     "expires": "Aug 1, 2026",
     "owners": [

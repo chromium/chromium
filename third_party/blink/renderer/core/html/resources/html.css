@@ -960,10 +960,10 @@ select {
 }
 
 select:disabled {
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
         opacity: -internal-auto-base(0.7, unset);
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
         opacity: 0.7;
     }
 }
@@ -974,7 +974,7 @@ select:disabled {
    (to solve a nasty scrollbar location problem) */
 select:-internal-list-box {
     appearance: auto;
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
       border-radius: -internal-auto-base(2px, 0);
       align-items: -internal-auto-base(flex-start, initial);
       overflow-inline: -internal-auto-base(hidden, auto);
@@ -986,7 +986,7 @@ select:-internal-list-box {
       box-sizing: -internal-auto-base(border-box, initial);
       block-size: -internal-auto-base(initial, calc(max(24px, 1lh) * attr(size type(<integer>), 4)));
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
       border-radius: 2px;
       align-items: flex-start;
       overflow-inline: hidden;
@@ -1004,10 +1004,10 @@ select:not(:-internal-list-box) {
    |extraPaddingForOptionInsideOptgroup| in list_picker.js, which is the
    padding for select optgroup option. */
 select:-internal-list-box optgroup option {
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
         padding-inline-start: -internal-auto-base(20px, 0.5em);
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
         padding-inline-start: 20px;
     }
 }
@@ -1032,7 +1032,7 @@ select:-internal-list-box:focus option:checked:disabled {
 }
 
 /* option selected, list-box not focused */
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
     select:-internal-list-box option:checked,
     select:-internal-list-box option:checked:hover {
         background-color: -internal-auto-base(light-dark(#cecece, #545454), transparent);
@@ -1051,7 +1051,7 @@ select:-internal-list-box:focus option:checked:disabled {
             color-mix(in lab, currentColor 50%, transparent));
     }
 }
-@supports not blink-feature(CustomizableSelectInPage) {
+@supports not blink-feature(CustomizableSelectListbox) {
     select:-internal-list-box option:checked,
     select:-internal-list-box option:checked:hover {
         background-color: light-dark(#cecece, #545454);
@@ -1062,14 +1062,14 @@ select:-internal-list-box:focus option:checked:disabled {
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
         color: -internal-auto-base(light-dark(gray, #aaa), color-mix(in lab, currentColor 50%, transparent));
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
         color: light-dark(gray, #aaa);
     }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
     select:-internal-list-box:disabled option:checked {
         /* base color is set to inherit here because we are inheriting a color that
          * is already 50% transparent from select:disabled. */
@@ -1093,12 +1093,12 @@ select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
     outline-offset: -1px;
 }
 
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
     select option:enabled:hover {
         background-color: -internal-auto-base(initial, color-mix(in lab, currentColor 10%, transparent));
     }
 }
-@supports not blink-feature(CustomizableSelectInPage) {
+@supports not blink-feature(CustomizableSelectListbox) {
     select:-internal-list-box option:hover {
         background-color: initial;
     }
@@ -1115,7 +1115,7 @@ optgroup::-internal-optgroup-label {
 }
 
 option {
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
         font-weight: -internal-auto-base(normal, inherit);
         display: -internal-auto-base(block, flex);
         padding-inline: -internal-auto-base(2px, 0.5em);
@@ -1127,7 +1127,7 @@ option {
         gap: -internal-auto-base(unset, 0.5em);
         align-items: -internal-auto-base(unset, center);
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
         font-weight: normal;
         display: block;
         padding-inline: 2px;
@@ -1160,10 +1160,10 @@ textarea:disabled {
   border-color: rgba(118, 118, 118, 0.3);
 }
 select:disabled {
-  @supports blink-feature(CustomizableSelectInPage) {
+  @supports blink-feature(CustomizableSelectListbox) {
     border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), currentColor);
   }
-  @supports not blink-feature(CustomizableSelectInPage) {
+  @supports not blink-feature(CustomizableSelectListbox) {
     border-color: rgba(118, 118, 118, 0.3);
   }
 }
@@ -1172,16 +1172,16 @@ select:disabled,
 optgroup:disabled,
 option:disabled,
 select[disabled]>option {
-    @supports blink-feature(CustomizableSelectInPage) {
+    @supports blink-feature(CustomizableSelectListbox) {
         color: -internal-auto-base(
             light-dark(GrayText, #aaa),
             color-mix(in lab, currentColor 50%, transparent));
     }
-    @supports not blink-feature(CustomizableSelectInPage) {
+    @supports not blink-feature(CustomizableSelectListbox) {
         color: light-dark(GrayText, #aaa);
     }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
     /* base color is set to inherit here because we are inheriting a color that
      * is already 50% transparent from select:disabled. */
     select:disabled option,
@@ -1910,7 +1910,7 @@ dialog:where(:modal) {
     user-select: -internal-auto-base(auto, none);
   }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   select {
     font: -internal-auto-base(-webkit-small-control, inherit);
     text-shadow: -internal-auto-base(none, inherit);
@@ -2131,7 +2131,7 @@ dialog:where(:modal) {
     color: color-mix(in lab, currentColor 50%, transparent);
   }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   /* :-internal-list-box is needed here in order to get precedence over this
    * selector: select:-internal-list-box option:enabled:hover */
   select:-internal-list-box option:enabled:active {
@@ -2139,12 +2139,12 @@ dialog:where(:modal) {
   }
 }
 
-@supports not blink-feature(CustomizableSelectInPage) {
+@supports not blink-feature(CustomizableSelectListbox) {
   select:not(:-internal-list-box):not([multiple]) option::checkmark {
     content: '\2713';
   }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   select option::checkmark {
     content: '\2713';
   }
@@ -2222,13 +2222,13 @@ select::-internal-select-autofill-preview-text {
   }
 }
 
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   select:-internal-list-box::picker-icon {
     display: none !important;
   }
 }
 
-@supports not blink-feature(CustomizableSelectInPage) {
+@supports not blink-feature(CustomizableSelectListbox) {
   select:not(:-internal-list-box):not([multiple]) optgroup::-internal-optgroup-label {
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block: -internal-auto-base(0 1px, 0);
@@ -2243,7 +2243,7 @@ select::-internal-select-autofill-preview-text {
     font-weight: normal;
   }
 }
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   select optgroup::-internal-optgroup-label {
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block: -internal-auto-base(0 1px, 0);
@@ -2284,7 +2284,7 @@ select::-internal-select-autofill-preview-text {
  * ::-internal-option-label-container. */
 /* TODO(crbug.com/393500003): Some :-internal-list-box and multiple checks
  * here could be removed if we make -internal-auto-base() work better. */
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   option::-internal-option-label-container {
     display: -internal-auto-base(contents, none);
   }
@@ -2300,7 +2300,7 @@ select::-internal-select-autofill-preview-text {
     display: none;
   }
 }
-@supports not blink-feature(CustomizableSelectInPage) {
+@supports not blink-feature(CustomizableSelectListbox) {
   option::-internal-option-label-container {
     display: contents;
   }
@@ -2325,7 +2325,7 @@ select::-internal-select-autofill-preview-text {
   }
 }
 
-@supports blink-feature(CustomizableSelectInPage) {
+@supports blink-feature(CustomizableSelectListbox) {
   /* Don't allow nested <optgroup>s. */
   select optgroup optgroup {
     display: none;

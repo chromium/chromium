@@ -144,7 +144,7 @@ FocusableState HTMLOptionElement::SupportsFocus(
     bool base_with_picker =
         select->UsesMenuList() && popover && popover->popoverOpen();
     bool base_in_page =
-        RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+        RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
         !select->UsesMenuList() && select->IsAppearanceBase();
     if (base_with_picker || base_in_page) {
       // If this option is being rendered as regular web content inside a
@@ -166,7 +166,7 @@ bool HTMLOptionElement::IsKeyboardFocusableSlow(
   if (!HTMLElement::IsKeyboardFocusableSlow(update_behavior)) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() ||
+  if (!RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() ||
       !OwnerSelectElement() || OwnerSelectElement()->UsesMenuList()) {
     return true;
   }
@@ -571,7 +571,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   }
 
   const bool appearance_base_in_page =
-      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !select->UsesMenuList() && select->IsAppearanceBase();
 
   if (!appearance_base_in_page && !select->PickerIsPopover()) {

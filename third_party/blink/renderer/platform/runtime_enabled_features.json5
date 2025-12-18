@@ -1781,7 +1781,7 @@
     {
       // appearance:base-select for <select multiple> and <select size=n>
       // https://issues.chromium.org/issues/357649033
-      name: "CustomizableSelectInPage",
+      name: "CustomizableSelectListbox",
       status: "experimental",
       depends_on: ["SelectMobileDesktopParity"],
     },
@@ -1789,7 +1789,7 @@
       // appearance:base-select for <select multiple size=1> with a picker.
       name: "CustomizableSelectMultiplePopup",
       status: "experimental",
-      depends_on: ["CustomizableSelectInPage"],
+      depends_on: ["CustomizableSelectListbox"],
     },
     // see crbug.com/341313078
     {
