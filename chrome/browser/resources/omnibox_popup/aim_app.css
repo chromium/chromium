@@ -10,7 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
+  --composebox-context-menu-entrypoint-button-color: var(--color-sys-on-surface);
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
   --cr-composebox-file-thumbnail-remove-button-fill-color: var(--color-omnibox-results-icon);
@@ -26,6 +26,7 @@
   --cr-composebox-text-container-padding-block-start: 0;
   --search-animated-glif-rotation-duration: 2000ms;
   --cr-composebox-cancel-button-top: 5px;
+  --cr-composebox-voice-icon-fill-color: var(--color-sys-on-surface);
 }
 
 cr-composebox {
@@ -82,6 +83,10 @@ cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-ico
   --cr-icon-button-size: 28px;
   left: 12px;
   top: 14px;
+}
+
+cr-composebox::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
