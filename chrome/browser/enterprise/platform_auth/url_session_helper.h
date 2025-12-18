@@ -27,15 +27,18 @@ namespace url_session_helper {
 // will be set to its value.
 // Returns nil if conversion of URL or method fails.
 // Will ignore headers where conversion between std::string and NSString failed.
-// Only supports request body of type network::DataElementBytes, for other types
-// body will be set to nil.
+// Headers are allowlisted, see kRequestHeadersAllowlist in the .mm file for
+// details.
+// Only supports request body of type network::DataElementBytes, for
+// other types body will be set to nil.
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
                                      base::TimeDelta timeout);
 
 // Only converts: mime_type, content_length, network_accessed
 // and http headers.
-// When converting http headers will use hard-coded HTTP 1.1 for simplicity.
-// Assumes response is not nil.
+// Headers are allowlisted, see kResponseHeadersAllowlist in the .mm file for
+// details. When converting HTTP headers will use hard-coded HTTP 1.1 for
+// simplicity. Assumes response is not nil.
 network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
     NSURLResponse* response);
 
