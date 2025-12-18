@@ -1696,7 +1696,6 @@ source_set("platform_browser_tests") {
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
       "//components/proxy_config",
       "//components/reading_list/core:test_support",
-      "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/tabs:public",
       "//components/web_package",
       "//components/web_package/test_support",
@@ -1713,6 +1712,10 @@ source_set("platform_browser_tests") {
       "//chrome/test/data/extensions/",
       "//extensions/test/data/",
     ]
+
+    if (safe_browsing_mode != 0) {
+      deps += [ "//components/safe_browsing/content/common:file_type_policies_test_support" ]
+    }
 
     if (is_android) {
       deps += [ "//components/feed:feature_list" ]

@@ -55,7 +55,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -102,6 +102,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/download/download_display.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #endif
 #endif
 
@@ -3371,7 +3375,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Tests that overriding a dangerous file extension to a safe extension will
 // trigger the dangerous prompt and will not change the extension.
 // TODO(crbug.com/405219117): Port to desktop Android when the dangerous
@@ -3450,7 +3454,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(downloads_directory().AppendASCII("overridden.swf"),
             item->GetTargetFilePath());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
@@ -4626,6 +4630,7 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // TODO(crbug.com/450662444): Enable this test on desktop Android when the
 // DownloadDangerPrompt is implemented.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
@@ -4670,6 +4675,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   observer->WaitForFinished();
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 // Test that file deletion event is correctly generated after download
 // completion.
