@@ -91,8 +91,8 @@ auto GetStructMapFuzzUnion(fuzz::mojom::FuzzDummyStructPtr in) {
 auto GetComplexFuzzUnion(fuzz::mojom::FuzzUnionPtr in) {
   std::remove_reference<decltype(in->get_fuzz_complex())>::type complex_map;
   std::remove_reference<decltype(complex_map.value()[0])>::type outer;
-  std::remove_reference<decltype(
-      outer[fuzz::mojom::FuzzEnum::FUZZ_VALUE0])>::type inner;
+  std::remove_reference<
+      decltype(outer[fuzz::mojom::FuzzEnum::FUZZ_VALUE0])>::type inner;
   std::remove_reference<decltype(inner['z'])>::type center;
 
   center.emplace();
@@ -167,8 +167,8 @@ auto GetFuzzStructNullableArrayValue() {
 auto GetFuzzStructComplexValue() {
   decltype(fuzz::mojom::FuzzStruct::fuzz_complex) complex_map;
   std::remove_reference<decltype(complex_map.value()[0])>::type outer;
-  std::remove_reference<decltype(
-      outer[fuzz::mojom::FuzzEnum::FUZZ_VALUE0])>::type inner;
+  std::remove_reference<
+      decltype(outer[fuzz::mojom::FuzzEnum::FUZZ_VALUE0])>::type inner;
   std::remove_reference<decltype(inner['z'])>::type center;
 
   center.emplace();

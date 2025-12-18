@@ -63,8 +63,9 @@ struct HashTraits<std::vector<T>, false> {
 template <typename T>
 struct HashTraits<std::optional<std::vector<T>>, false> {
   static size_t Hash(size_t seed, const std::optional<std::vector<T>>& value) {
-    if (!value)
+    if (!value) {
       return HashCombine(seed, 0);
+    }
 
     return Hash(seed, *value);
   }

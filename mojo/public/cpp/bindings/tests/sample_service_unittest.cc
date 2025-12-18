@@ -56,8 +56,9 @@ FooPtr MakeFoo() {
   }
 
   std::vector<uint8_t> data(10);
-  for (size_t i = 0; i < data.size(); ++i)
+  for (size_t i = 0; i < data.size(); ++i) {
     data[i] = static_cast<uint8_t>(data.size() - i);
+  }
 
   std::vector<mojo::ScopedDataPipeConsumerHandle> input_streams(2);
   std::vector<mojo::ScopedDataPipeProducerHandle> output_streams(2);
@@ -77,8 +78,9 @@ FooPtr MakeFoo() {
   std::vector<std::vector<bool>> array_of_array_of_bools(2);
   for (size_t i = 0; i < 2; ++i) {
     std::vector<bool> array_of_bools(2);
-    for (size_t j = 0; j < 2; ++j)
+    for (size_t j = 0; j < 2; ++j) {
       array_of_bools[j] = j;
+    }
     array_of_array_of_bools[i] = std::move(array_of_bools);
   }
 
@@ -143,8 +145,9 @@ void CheckFoo(const Foo& foo) {
 }
 
 void PrintSpacer(int depth) {
-  for (int i = 0; i < depth; ++i)
+  for (int i = 0; i < depth; ++i) {
     std::cout << "   ";
+  }
 }
 
 void Print(int depth, const char* name, bool value) {
@@ -205,10 +208,11 @@ template <typename T>
 void Print(int depth,
            const char* name,
            const std::optional<std::vector<T>>& array) {
-  if (array)
+  if (array) {
     Print(depth, name, *array);
-  else
+  } else {
     Print(depth, name, std::vector<T>());
+  }
 }
 
 void Print(int depth, const char* name, const FooPtr& foo) {
@@ -243,10 +247,12 @@ void DumpHex(const uint8_t* bytes, size_t num_bytes) {
       continue;
     }
 
-    if (i % 2 == 1)
+    if (i % 2 == 1) {
       std::cout << " ";
-    if (i % 8 == 7)
+    }
+    if (i % 8 == 7) {
       std::cout << " ";
+    }
   }
 }
 
@@ -260,8 +266,9 @@ class ServiceImpl : public Service {
 
     // We mainly check that we're given the expected arguments.
     EXPECT_FALSE(foo.is_null());
-    if (!foo.is_null())
+    if (!foo.is_null()) {
       CheckFoo(*foo);
+    }
     EXPECT_EQ(BazOptions::EXTRA, baz);
 
     mojo::Remote<Port> port(std::move(pending_port));

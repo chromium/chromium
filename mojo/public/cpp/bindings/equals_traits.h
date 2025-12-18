@@ -46,10 +46,12 @@ struct EqualsTraits {
 template <typename T>
 struct EqualsTraits<std::optional<T>> {
   static bool Equals(const std::optional<T>& a, const std::optional<T>& b) {
-    if (!a && !b)
+    if (!a && !b) {
       return true;
-    if (!a || !b)
+    }
+    if (!a || !b) {
       return false;
+    }
 
     // NOTE: Not just Equals() because that's EqualsTraits<>::Equals() and we
     // want mojo::Equals() for things like std::optional<std::vector<T>>.
@@ -60,11 +62,13 @@ struct EqualsTraits<std::optional<T>> {
 template <typename T>
 struct EqualsTraits<std::vector<T>> {
   static bool Equals(const std::vector<T>& a, const std::vector<T>& b) {
-    if (a.size() != b.size())
+    if (a.size() != b.size()) {
       return false;
+    }
     for (size_t i = 0; i < a.size(); ++i) {
-      if (!mojo::Equals(a[i], b[i]))
+      if (!mojo::Equals(a[i], b[i])) {
         return false;
+      }
     }
     return true;
   }
@@ -74,12 +78,14 @@ template <typename K, typename V>
 struct EqualsTraits<base::flat_map<K, V>> {
   static bool Equals(const base::flat_map<K, V>& a,
                      const base::flat_map<K, V>& b) {
-    if (a.size() != b.size())
+    if (a.size() != b.size()) {
       return false;
+    }
     for (const auto& element : a) {
       auto iter = b.find(element.first);
-      if (iter == b.end() || !mojo::Equals(element.second, iter->second))
+      if (iter == b.end() || !mojo::Equals(element.second, iter->second)) {
         return false;
+      }
     }
     return true;
   }

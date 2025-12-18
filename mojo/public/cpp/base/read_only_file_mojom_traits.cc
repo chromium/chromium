@@ -55,8 +55,9 @@ bool IsPhysicalFile(base::File& file) {
   // This may block but in practice this is unlikely for already opened
   // physical files.
   struct stat st;
-  if (fstat(file.GetPlatformFile(), &st) != 0)
+  if (fstat(file.GetPlatformFile(), &st) != 0) {
     return false;
+  }
   return S_ISREG(st.st_mode);
 #endif
 }

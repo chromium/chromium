@@ -26,8 +26,10 @@ bool ValidateControlRequestWithResponse(Message* message) {
   ValidationContext validation_context(message->payload(),
                                        message->payload_num_bytes(), 0, 0,
                                        message, "ControlRequestValidator");
-  if (!ValidateMessageIsRequestExpectingResponse(message, &validation_context))
+  if (!ValidateMessageIsRequestExpectingResponse(message,
+                                                 &validation_context)) {
     return false;
+  }
 
   switch (message->header()->name) {
     case interface_control::kRunMessageId:
@@ -42,8 +44,9 @@ bool ValidateControlRequestWithoutResponse(Message* message) {
   ValidationContext validation_context(message->payload(),
                                        message->payload_num_bytes(), 0, 0,
                                        message, "ControlRequestValidator");
-  if (!ValidateMessageIsRequestWithoutResponse(message, &validation_context))
+  if (!ValidateMessageIsRequestWithoutResponse(message, &validation_context)) {
     return false;
+  }
 
   switch (message->header()->name) {
     case interface_control::kRunOrClosePipeMessageId:
@@ -68,15 +71,16 @@ ControlMessageHandler::ControlMessageHandler(InterfaceEndpointClient* owner,
                                              uint32_t interface_version)
     : owner_(owner), interface_version_(interface_version) {}
 
-ControlMessageHandler::~ControlMessageHandler() {
-}
+ControlMessageHandler::~ControlMessageHandler() {}
 
 bool ControlMessageHandler::Accept(Message* message) {
-  if (!ValidateControlRequestWithoutResponse(message))
+  if (!ValidateControlRequestWithoutResponse(message)) {
     return false;
+  }
 
-  if (message->header()->name == interface_control::kRunOrClosePipeMessageId)
+  if (message->header()->name == interface_control::kRunOrClosePipeMessageId) {
     return RunOrClosePipe(message);
+  }
 
   NOTREACHED();
 }
@@ -84,11 +88,13 @@ bool ControlMessageHandler::Accept(Message* message) {
 bool ControlMessageHandler::AcceptWithResponder(
     Message* message,
     std::unique_ptr<MessageReceiverWithStatus> responder) {
-  if (!ValidateControlRequestWithResponse(message))
+  if (!ValidateControlRequestWithResponse(message)) {
     return false;
+  }
 
-  if (message->header()->name == interface_control::kRunMessageId)
+  if (message->header()->name == interface_control::kRunMessageId) {
     return Run(message, std::move(responder));
+  }
 
   NOTREACHED();
 }
@@ -132,16 +138,19 @@ bool ControlMessageHandler::RunOrClosePipe(Message* message) {
   Deserialize<interface_control::RunOrClosePipeMessageParamsDataView>(
       params, &params_ptr, message);
   auto& input = *params_ptr->input;
-  if (input.is_require_version())
+  if (input.is_require_version()) {
     return interface_version_ >= input.get_require_version()->version;
+  }
   if (input.is_enable_idle_tracking()) {
     return owner_->AcceptEnableIdleTracking(base::Microseconds(
         input.get_enable_idle_tracking()->timeout_in_microseconds));
   }
-  if (input.is_message_ack())
+  if (input.is_message_ack()) {
     return owner_->AcceptMessageAck();
-  if (input.is_notify_idle())
+  }
+  if (input.is_notify_idle()) {
     return owner_->AcceptNotifyIdle();
+  }
   return false;
 }
 

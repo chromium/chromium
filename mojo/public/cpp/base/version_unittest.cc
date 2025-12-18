@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/version.h"
+
 #include "mojo/public/cpp/base/version_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/version.mojom.h"

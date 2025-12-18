@@ -283,8 +283,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   std::unique_ptr<MessageType> TakeUnserializedContext() {
     auto generic_context = TakeUnserializedContext(
         reinterpret_cast<uintptr_t>(&MessageType::kMessageTag));
-    if (!generic_context)
+    if (!generic_context) {
       return nullptr;
+    }
     return base::WrapUnique(
         generic_context.release()->template SafeCast<MessageType>());
   }

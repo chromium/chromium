@@ -72,8 +72,9 @@ class MessagePipePerfTest : public test::MojoTestBase {
                            static_cast<unsigned>(message_size_));
     base::PerfTimeLogger logger(test_name.c_str());
 
-    for (int i = 0; i < message_count_; ++i)
+    for (int i = 0; i < message_count_; ++i) {
       WriteWaitThenRead(mp);
+    }
 
     logger.Done();
   }
@@ -109,8 +110,9 @@ class MessagePipePerfTest : public test::MojoTestBase {
                MOJO_RESULT_OK);
 
       // Empty message indicates quit.
-      if (buffer.empty())
+      if (buffer.empty()) {
         break;
+      }
 
       CHECK_EQ(
           WriteMessageRaw(MessagePipeHandle(mp), buffer.data(), buffer.size(),

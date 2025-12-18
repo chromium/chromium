@@ -42,7 +42,7 @@ namespace viz {
 class CompositorFrameSinkImpl;
 class FrameSinkManagerImpl;
 class ExternalBeginFrameSourceMojoMac;
-}
+}  // namespace viz
 
 namespace mojo {
 

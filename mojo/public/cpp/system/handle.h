@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_SYSTEM_HANDLE_H_
 
 #include <stdint.h>
+
 #include <limits>
 
 #include "base/check_op.h"
@@ -135,8 +136,9 @@ class ScopedHandleBase {
 
  private:
   void CloseIfNecessary() {
-    if (handle_.is_valid())
+    if (handle_.is_valid()) {
       handle_.Close();
+    }
   }
 
   HandleType handle_;
@@ -204,8 +206,7 @@ static_assert(sizeof(ScopedHandle) == sizeof(Handle),
 // Note: There's nothing to do, since the argument will be destroyed when it
 // goes out of scope.
 template <class HandleType>
-inline void Close(ScopedHandleBase<HandleType> /*handle*/) {
-}
+inline void Close(ScopedHandleBase<HandleType> /*handle*/) {}
 
 // Most users should typically use |Close()| (above) instead.
 inline MojoResult CloseRaw(Handle handle) {

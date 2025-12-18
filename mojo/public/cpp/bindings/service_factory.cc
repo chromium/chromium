@@ -29,12 +29,14 @@ bool ServiceFactory::RunService(GenericPendingReceiver receiver,
   MessagePipeHandle pipe = receiver.pipe();
 
   auto it = constructors_.find(*receiver.interface_name());
-  if (it == constructors_.end())
+  if (it == constructors_.end()) {
     return false;
+  }
 
   auto instance = it->second.Run(std::move(receiver));
-  if (!instance)
+  if (!instance) {
     return false;
+  }
 
   auto disconnect_callback =
       base::BindOnce(&ServiceFactory::OnInstanceDisconnected,

@@ -60,8 +60,9 @@ PlatformChannelEndpoint NamedPlatformChannel::ConnectToServer(
 PlatformChannelEndpoint NamedPlatformChannel::ConnectToServer(
     const base::CommandLine& command_line) {
   ServerName name = command_line.GetSwitchValueNative(kNamedHandleSwitch);
-  if (name.empty())
+  if (name.empty()) {
     return PlatformChannelEndpoint();
+  }
   return ConnectToServer(name);
 }
 

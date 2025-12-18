@@ -142,8 +142,9 @@ class AssociatedRemote {
   // If invoked at all, |handler| will be scheduled asynchronously using the
   // AssociatedRemote's bound SequencedTaskRunner.
   void set_disconnect_handler(base::OnceClosure handler) {
-    if (is_connected())
+    if (is_connected()) {
       internal_state_.set_connection_error_handler(std::move(handler));
+    }
   }
 
   // Similar to above but the handler receives additional metadata if provided
@@ -178,8 +179,9 @@ class AssociatedRemote {
 
   // Similar to the method above, but also specifies a disconnect reason.
   void ResetWithReason(uint32_t custom_reason, const std::string& description) {
-    if (internal_state_.is_bound())
+    if (internal_state_.is_bound()) {
       internal_state_.CloseWithReason(custom_reason, description);
+    }
     reset();
   }
 

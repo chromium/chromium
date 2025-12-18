@@ -15,16 +15,20 @@ WatcherSet::~WatcherSet() = default;
 
 void WatcherSet::NotifyState(const HandleSignalsState& state) {
   // Avoid notifying watchers if they have already seen this state.
-  if (last_known_state_.has_value() && state.equals(last_known_state_.value()))
+  if (last_known_state_.has_value() &&
+      state.equals(last_known_state_.value())) {
     return;
+  }
   last_known_state_ = state;
-  for (const auto& entry : watchers_)
+  for (const auto& entry : watchers_) {
     entry.first->NotifyHandleState(owner_, state);
+  }
 }
 
 void WatcherSet::NotifyClosed() {
-  for (const auto& entry : watchers_)
+  for (const auto& entry : watchers_) {
     entry.first->NotifyHandleClosed(owner_);
+  }
 }
 
 MojoResult WatcherSet::Add(const scoped_refptr<WatcherDispatcher>& watcher,
@@ -37,8 +41,9 @@ MojoResult WatcherSet::Add(const scoped_refptr<WatcherDispatcher>& watcher,
     it = result.first;
   }
 
-  if (!it->second.contexts.insert(context).second)
+  if (!it->second.contexts.insert(context).second) {
     return MOJO_RESULT_ALREADY_EXISTS;
+  }
 
   if (last_known_state_.has_value() &&
       !current_state.equals(last_known_state_.value())) {
@@ -54,17 +59,20 @@ MojoResult WatcherSet::Add(const scoped_refptr<WatcherDispatcher>& watcher,
 
 MojoResult WatcherSet::Remove(WatcherDispatcher* watcher, uintptr_t context) {
   auto it = watchers_.find(watcher);
-  if (it == watchers_.end())
+  if (it == watchers_.end()) {
     return MOJO_RESULT_NOT_FOUND;
+  }
 
   ContextSet& contexts = it->second.contexts;
   auto context_it = contexts.find(context);
-  if (context_it == contexts.end())
+  if (context_it == contexts.end()) {
     return MOJO_RESULT_NOT_FOUND;
+  }
 
   contexts.erase(context_it);
-  if (contexts.empty())
+  if (contexts.empty()) {
     watchers_.erase(it);
+  }
 
   return MOJO_RESULT_OK;
 }

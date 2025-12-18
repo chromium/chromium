@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/base/proto_wrapper_mojom_traits.h"
-
 #include "mojo/public/cpp/base/proto_wrapper.h"
+
+#include "mojo/public/cpp/base/proto_wrapper_mojom_traits.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "mojo/public/cpp/base/test.pb.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

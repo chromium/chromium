@@ -262,8 +262,7 @@ inline MojoResult CreateDataPipe(
     ScopedDataPipeConsumerHandle& data_pipe_consumer) {
   DataPipeProducerHandle producer_handle;
   DataPipeConsumerHandle consumer_handle;
-  MojoResult rv = MojoCreateDataPipe(options,
-                                     producer_handle.mutable_value(),
+  MojoResult rv = MojoCreateDataPipe(options, producer_handle.mutable_value(),
                                      consumer_handle.mutable_value());
   // Reset even on failure (reduces the chances that a "stale"/incorrect handle
   // will be used).

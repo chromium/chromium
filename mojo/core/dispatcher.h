@@ -37,7 +37,7 @@ namespace ports {
 class PortRef;
 class UserMessageEvent;
 struct PortName;
-}
+}  // namespace ports
 
 class Dispatcher;
 class PlatformSharedMemoryMapping;

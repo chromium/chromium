@@ -16,8 +16,9 @@ class NativeEnum_Data {
 
   static bool IsKnownValue(int32_t value) { return false; }
 
-  static bool Validate(int32_t value,
-                       ValidationContext* validation_context) { return true; }
+  static bool Validate(int32_t value, ValidationContext* validation_context) {
+    return true;
+  }
 };
 
 }  // namespace internal

@@ -49,8 +49,9 @@ struct CloneTraits {
 template <typename T>
 struct CloneTraits<std::optional<T>> {
   static std::optional<T> Clone(const std::optional<T>& input) {
-    if (!input)
+    if (!input) {
       return std::nullopt;
+    }
 
     return std::optional<T>(mojo::Clone(*input));
   }
@@ -61,8 +62,9 @@ struct CloneTraits<std::vector<T>> {
   static std::vector<T> Clone(const std::vector<T>& input) {
     std::vector<T> result;
     result.reserve(input.size());
-    for (const auto& element : input)
+    for (const auto& element : input) {
       result.push_back(mojo::Clone(element));
+    }
 
     return result;
   }

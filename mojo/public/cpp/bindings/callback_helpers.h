@@ -89,8 +89,9 @@ class CallbackWithDeleteHelper<void(Args...)> {
   CallbackWithDeleteHelper& operator=(const CallbackWithDeleteHelper&) = delete;
 
   ~CallbackWithDeleteHelper() {
-    if (delete_callback_)
+    if (delete_callback_) {
       std::move(delete_callback_).Run();
+    }
   }
 
   void Run(Args... args) {

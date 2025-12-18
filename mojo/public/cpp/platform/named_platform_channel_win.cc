@@ -70,8 +70,9 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
     const Options& options,
     ServerName* server_name) {
   ServerName name = options.server_name;
-  if (name.empty())
+  if (name.empty()) {
     name = GenerateRandomServerName();
+  }
 
   PSECURITY_DESCRIPTOR security_desc = nullptr;
   ULONG security_desc_len = 0;
@@ -111,8 +112,9 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
   std::wstring pipe_name = GetPipeNameFromServerName(options.server_name);
 
   // Note: This may block.
-  if (!::WaitNamedPipeW(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT))
+  if (!::WaitNamedPipeW(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT)) {
     return PlatformChannelEndpoint();
+  }
 
   const DWORD kDesiredAccess = GENERIC_READ | GENERIC_WRITE;
   // The SECURITY_ANONYMOUS flag means that the server side cannot impersonate

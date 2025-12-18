@@ -98,15 +98,17 @@ class StructPtr {
   // TODO(crbug.com/41326459): Get rid of Equals in favor of the operator. Same
   // for Hash.
   bool Equals(const StructPtr& other) const {
-    if (is_null() || other.is_null())
+    if (is_null() || other.is_null()) {
       return is_null() && other.is_null();
+    }
     return ptr_->Equals(*other.ptr_);
   }
 
   // Hashes based on the pointee (which might be null).
   size_t Hash(size_t seed) const {
-    if (is_null())
+    if (is_null()) {
       return internal::HashCombine(seed, 0);
+    }
     return ptr_->Hash(seed);
   }
 
@@ -224,15 +226,17 @@ class InlinedStructPtr {
 
   // Compares the pointees (which might both be null).
   bool Equals(const InlinedStructPtr& other) const {
-    if (is_null() || other.is_null())
+    if (is_null() || other.is_null()) {
       return is_null() && other.is_null();
+    }
     return storage_.value.Equals(other.storage_.value);
   }
 
   // Hashes based on the pointee (which might be null).
   size_t Hash(size_t seed) const {
-    if (is_null())
+    if (is_null()) {
       return internal::HashCombine(seed, 0);
+    }
     return storage_.value.Hash(seed);
   }
 
@@ -350,8 +354,9 @@ bool operator!=(const Ptr& lhs, const Ptr& rhs) {
 // than valid pointers.
 template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
 bool operator<(const Ptr& lhs, const Ptr& rhs) {
-  if (!lhs || !rhs)
+  if (!lhs || !rhs) {
     return bool{lhs} < bool{rhs};
+  }
   return *lhs < *rhs;
 }
 

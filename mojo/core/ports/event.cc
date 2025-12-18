@@ -117,8 +117,9 @@ Event::~Event() = default;
 
 // static
 ScopedEvent Event::Deserialize(const void* buffer, size_t num_bytes) {
-  if (num_bytes < sizeof(SerializedHeader))
+  if (num_bytes < sizeof(SerializedHeader)) {
     return nullptr;
+  }
 
   const auto* header = static_cast<const SerializedHeader*>(buffer);
   const PortName& port_name = header->port_name;
@@ -231,19 +232,22 @@ ScopedEvent UserMessageEvent::Deserialize(const PortName& port_name,
                                           uint64_t control_sequence_num,
                                           const void* buffer,
                                           size_t num_bytes) {
-  if (num_bytes < sizeof(UserMessageEventData))
+  if (num_bytes < sizeof(UserMessageEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const UserMessageEventData*>(buffer);
   base::CheckedNumeric<size_t> port_data_size = data->num_ports;
   port_data_size *= sizeof(PortDescriptor) + sizeof(PortName);
-  if (!port_data_size.IsValid())
+  if (!port_data_size.IsValid()) {
     return nullptr;
+  }
 
   base::CheckedNumeric<size_t> total_size = port_data_size.ValueOrDie();
   total_size += sizeof(UserMessageEventData);
-  if (!total_size.IsValid() || num_bytes < total_size.ValueOrDie())
+  if (!total_size.IsValid() || num_bytes < total_size.ValueOrDie()) {
     return nullptr;
+  }
 
   auto event = base::WrapUnique(new UserMessageEvent(
       port_name, from_port, control_sequence_num, data->sequence_num));
@@ -268,8 +272,9 @@ UserMessageEvent::UserMessageEvent(const PortName& port_name,
       sequence_num_(sequence_num) {}
 
 size_t UserMessageEvent::GetSizeIfSerialized() const {
-  if (!message_)
+  if (!message_) {
     return 0;
+  }
   return message_->GetSizeIfSerialized();
 }
 
@@ -342,8 +347,9 @@ ScopedEvent ObserveProxyEvent::Deserialize(const PortName& port_name,
                                            uint64_t control_sequence_num,
                                            const void* buffer,
                                            size_t num_bytes) {
-  if (num_bytes < sizeof(ObserveProxyEventData))
+  if (num_bytes < sizeof(ObserveProxyEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const ObserveProxyEventData*>(buffer);
   return std::make_unique<ObserveProxyEvent>(
@@ -390,8 +396,9 @@ ScopedEvent ObserveProxyAckEvent::Deserialize(const PortName& port_name,
                                               uint64_t control_sequence_num,
                                               const void* buffer,
                                               size_t num_bytes) {
-  if (num_bytes < sizeof(ObserveProxyAckEventData))
+  if (num_bytes < sizeof(ObserveProxyAckEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const ObserveProxyAckEventData*>(buffer);
   return std::make_unique<ObserveProxyAckEvent>(
@@ -422,8 +429,9 @@ ScopedEvent ObserveClosureEvent::Deserialize(const PortName& port_name,
                                              uint64_t control_sequence_num,
                                              const void* buffer,
                                              size_t num_bytes) {
-  if (num_bytes < sizeof(ObserveClosureEventData))
+  if (num_bytes < sizeof(ObserveClosureEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const ObserveClosureEventData*>(buffer);
   return std::make_unique<ObserveClosureEvent>(
@@ -456,8 +464,9 @@ ScopedEvent MergePortEvent::Deserialize(const PortName& port_name,
                                         uint64_t control_sequence_num,
                                         const void* buffer,
                                         size_t num_bytes) {
-  if (num_bytes < sizeof(MergePortEventData))
+  if (num_bytes < sizeof(MergePortEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const MergePortEventData*>(buffer);
   return std::make_unique<MergePortEvent>(
@@ -495,8 +504,9 @@ ScopedEvent UserMessageReadAckRequestEvent::Deserialize(
     uint64_t control_sequence_num,
     const void* buffer,
     size_t num_bytes) {
-  if (num_bytes < sizeof(UserMessageReadAckRequestEventData))
+  if (num_bytes < sizeof(UserMessageReadAckRequestEventData)) {
     return nullptr;
+  }
 
   const auto* data =
       static_cast<const UserMessageReadAckRequestEventData*>(buffer);
@@ -533,8 +543,9 @@ ScopedEvent UserMessageReadAckEvent::Deserialize(const PortName& port_name,
                                                  uint64_t control_sequence_num,
                                                  const void* buffer,
                                                  size_t num_bytes) {
-  if (num_bytes < sizeof(UserMessageReadAckEventData))
+  if (num_bytes < sizeof(UserMessageReadAckEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const UserMessageReadAckEventData*>(buffer);
   return std::make_unique<UserMessageReadAckEvent>(
@@ -571,8 +582,9 @@ ScopedEvent UpdatePreviousPeerEvent::Deserialize(const PortName& port_name,
                                                  uint64_t control_sequence_num,
                                                  const void* buffer,
                                                  size_t num_bytes) {
-  if (num_bytes < sizeof(UpdatePreviousPeerEventData))
+  if (num_bytes < sizeof(UpdatePreviousPeerEventData)) {
     return nullptr;
+  }
 
   const auto* data = static_cast<const UpdatePreviousPeerEventData*>(buffer);
   return std::make_unique<UpdatePreviousPeerEvent>(

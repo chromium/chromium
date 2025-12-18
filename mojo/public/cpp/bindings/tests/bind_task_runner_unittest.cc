@@ -73,8 +73,9 @@ class TestTaskRunner : public base::SequencedTaskRunner {
           {
             base::AutoUnlock unlocker(lock_);
             std::move(task).Run();
-            if (quit_called_)
+            if (quit_called_) {
               return;
+            }
           }
         }
       }
@@ -135,10 +136,11 @@ class IntegerSenderImpl : public IntegerSender {
   void set_echo_handler(const EchoHandler& handler) { echo_handler_ = handler; }
 
   void Echo(int32_t value, EchoCallback callback) override {
-    if (echo_handler_.is_null())
+    if (echo_handler_.is_null()) {
       std::move(callback).Run(value);
-    else
+    } else {
       echo_handler_.Run(value, std::move(callback));
+    }
   }
   void Send(int32_t value) override { NOTREACHED(); }
 

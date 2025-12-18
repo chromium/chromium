@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,8 +31,9 @@ bool ValidateControlResponse(Message* message) {
   ValidationContext validation_context(message->payload(),
                                        message->payload_num_bytes(), 0, 0,
                                        message, "ControlResponseValidator");
-  if (!ValidateMessageIsResponse(message, &validation_context))
+  if (!ValidateMessageIsResponse(message, &validation_context)) {
     return false;
+  }
 
   switch (message->header()->name) {
     case interface_control::kRunMessageId:
@@ -61,8 +63,9 @@ class RunResponseForwardToCallback : public MessageReceiver {
 };
 
 bool RunResponseForwardToCallback::Accept(Message* message) {
-  if (!ValidateControlResponse(message))
+  if (!ValidateControlResponse(message)) {
     return false;
+  }
 
   interface_control::internal::RunResponseMessageParams_Data* params =
       reinterpret_cast<
@@ -119,8 +122,9 @@ void RunVersionCallback(
     base::OnceCallback<void(uint32_t)> callback,
     interface_control::RunResponseMessageParamsPtr run_response) {
   uint32_t version = 0u;
-  if (run_response->output && run_response->output->is_query_version_result())
+  if (run_response->output && run_response->output->is_query_version_result()) {
     version = run_response->output->get_query_version_result()->version;
+  }
   std::move(callback).Run(version);
 }
 
@@ -137,8 +141,9 @@ ControlMessageProxy::ControlMessageProxy(InterfaceEndpointClient* owner)
 ControlMessageProxy::~ControlMessageProxy() {
   // If this is destroyed in the middle of a flush, make sure the callback is
   // still run.
-  if (!pending_flush_callback_.is_null())
+  if (!pending_flush_callback_.is_null()) {
     RunFlushForTestingClosure();
+  }
 }
 
 void ControlMessageProxy::QueryVersion(
@@ -207,8 +212,9 @@ void ControlMessageProxy::NotifyIdle() {
 
 void ControlMessageProxy::OnConnectionError() {
   encountered_error_ = true;
-  if (!pending_flush_callback_.is_null())
+  if (!pending_flush_callback_.is_null()) {
     RunFlushForTestingClosure();
+  }
 }
 
 }  // namespace internal

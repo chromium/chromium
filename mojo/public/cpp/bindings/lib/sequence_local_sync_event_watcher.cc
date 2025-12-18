@@ -98,8 +98,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     {
       base::AutoLock lock(ready_watchers_lock_);
       ready_watchers_.erase(iter->first);
-      if (ready_watchers_.empty())
+      if (ready_watchers_.empty()) {
         event_.Reset();
+      }
     }
 
     registered_watchers_.erase(iter);
@@ -109,8 +110,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
       // Check if the SequenceLocalStorageMap is valid before doing this to
       // avoid races at shutdown when other objects use SequenceLocalStorageSlot
       // and indirectly call to here.
-      if (base::internal::SequenceLocalStorageMap::IsSetForCurrentThread())
+      if (base::internal::SequenceLocalStorageMap::IsSetForCurrentThread()) {
         GetStorageSlot().reset();
+      }
     }
   }
 
@@ -124,8 +126,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 
     // If we didn't have any ready watchers before, the event may not have
     // been signaled. Signal it to ensure that |OnEventSignaled()| is run.
-    if (must_signal)
+    if (must_signal) {
       event_.Signal();
+    }
   }
 
   void ResetForWatcher(const SequenceLocalSyncEventWatcher* watcher) {
@@ -134,8 +137,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 
     // No more watchers are ready, so we can reset the event. The next watcher
     // to call |SignalForWatcher()| will re-signal the event.
-    if (ready_watchers_.empty())
+    if (ready_watchers_.empty()) {
       event_.Reset();
+    }
   }
 
   bool SyncWatch(const SequenceLocalSyncEventWatcher* watcher,
@@ -161,8 +165,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     // |SyncWatch()| may delete |this|.
     auto weak_self = weak_ptr_factory_.GetWeakPtr();
     bool result = event_watcher_.SyncWatch(stop_flags);
-    if (!weak_self)
+    if (!weak_self) {
       return false;
+    }
 
     top_watcher_state_ = outer_watcher_state;
     top_watcher_ = outer_watcher;
@@ -222,8 +227,9 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
         watcher->callback_.Run();
 
         // The callback may have deleted |this|.
-        if (!weak_self)
+        if (!weak_self) {
           return;
+        }
       }
     }
   }

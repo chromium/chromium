@@ -57,8 +57,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
 
   // Please see comments on the same method of InterfaceEndpointClient.
   void ResetFromAnotherSequenceUnsafe() {
-    if (endpoint_client_)
+    if (endpoint_client_) {
       endpoint_client_->ResetFromAnotherSequenceUnsafe();
+    }
   }
 
  protected:
@@ -322,8 +323,9 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
         [](ReportBadMessageCallback inner_callback,
            base::WeakPtr<AssociatedReceiver> receiver, std::string_view error) {
           std::move(inner_callback).Run(error);
-          if (receiver)
+          if (receiver) {
             receiver->reset();
+          }
         },
         mojo::GetBadMessageCallback(), weak_ptr_factory_.GetWeakPtr());
   }

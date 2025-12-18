@@ -89,8 +89,9 @@ inline void EncodePointer(const void* ptr, uint64_t* offset) {
 
 // Note: This function doesn't validate the encoded pointer value.
 inline const void* DecodePointer(const uint64_t* offset) {
-  if (!*offset)
+  if (!*offset) {
     return nullptr;
+  }
   return UNSAFE_TODO(reinterpret_cast<const char*>(offset) + *offset);
 }
 

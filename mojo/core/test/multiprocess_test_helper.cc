@@ -173,10 +173,11 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
 
   if (!switch_string.empty()) {
     CHECK(!command_line.HasSwitch(switch_string));
-    if (!switch_value.empty())
+    if (!switch_value.empty()) {
       command_line.AppendSwitchASCII(switch_string, switch_value);
-    else
+    } else {
       command_line.AppendSwitch(switch_string);
+    }
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -314,10 +315,11 @@ void MultiprocessTestHelper::ChildSetup() {
 
   if (run_as_broker_client) {
     IncomingInvitation invitation;
-    if (async)
+    if (async) {
       invitation = IncomingInvitation::AcceptAsync(std::move(endpoint));
-    else
+    } else {
       invitation = IncomingInvitation::Accept(std::move(endpoint));
+    }
     primordial_pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
   } else {
     primordial_pipe = GetChildIsolatedConnection().Connect(std::move(endpoint));

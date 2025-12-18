@@ -165,8 +165,9 @@ struct UnionTraits<test::UnionWithTraitsDataView,
 
   static test::UnionWithTraitsDataView::Tag GetTag(
       const std::unique_ptr<test::UnionWithTraitsBase>& data) {
-    if (data->type() == test::UnionWithTraitsBase::Type::INT32)
+    if (data->type() == test::UnionWithTraitsBase::Type::INT32) {
       return test::UnionWithTraitsDataView::Tag::kFInt32;
+    }
 
     return test::UnionWithTraitsDataView::Tag::kFStruct;
   }
@@ -226,8 +227,9 @@ struct StructTraits<test::StructNestedForceSerializeDataView,
 
   static bool Read(test::StructNestedForceSerializeDataView data,
                    test::StructNestedForceSerializeImpl* out) {
-    if (!data.ReadForce(&out->force()))
+    if (!data.ReadForce(&out->force())) {
       return false;
+    }
     out->set_was_deserialized();
     return true;
   }

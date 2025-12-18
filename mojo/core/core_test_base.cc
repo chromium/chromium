@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "mojo/core/core_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"

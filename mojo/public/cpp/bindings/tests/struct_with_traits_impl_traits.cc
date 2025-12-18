@@ -55,8 +55,9 @@ bool StructTraits<test::StructWithTraitsDataView, test::StructWithTraitsImpl>::
     Read(test::StructWithTraits::DataView data,
          test::StructWithTraitsImpl* out) {
   test::EnumWithTraitsImpl f_enum;
-  if (!data.ReadFEnum(&f_enum))
+  if (!data.ReadFEnum(&f_enum)) {
     return false;
+  }
   out->set_enum(f_enum);
 
   out->set_bool(data.f_bool());
@@ -71,8 +72,9 @@ bool StructTraits<test::StructWithTraitsDataView, test::StructWithTraitsImpl>::
   }
   out->set_string(f_string2);
 
-  if (!data.ReadFStringArray(&out->get_mutable_string_array()))
+  if (!data.ReadFStringArray(&out->get_mutable_string_array())) {
     return false;
+  }
 
   // We can't deserialize as a std::set, so we have to manually copy from the
   // data view.
@@ -84,14 +86,17 @@ bool StructTraits<test::StructWithTraitsDataView, test::StructWithTraitsImpl>::
     out->get_mutable_string_set().insert(value);
   }
 
-  if (!data.ReadFStruct(&out->get_mutable_struct()))
+  if (!data.ReadFStruct(&out->get_mutable_struct())) {
     return false;
+  }
 
-  if (!data.ReadFStructArray(&out->get_mutable_struct_array()))
+  if (!data.ReadFStructArray(&out->get_mutable_struct_array())) {
     return false;
+  }
 
-  if (!data.ReadFStructMap(&out->get_mutable_struct_map()))
+  if (!data.ReadFStructMap(&out->get_mutable_struct_map())) {
     return false;
+  }
 
   return true;
 }

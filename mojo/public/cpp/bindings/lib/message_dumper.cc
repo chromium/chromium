@@ -28,8 +28,9 @@ void WriteMessage(uint64_t identifier,
                   const mojo::MessageDumper::MessageEntry& entry) {
   static uint64_t num = 0;
 
-  if (!entry.interface_name)
+  if (!entry.interface_name) {
     return;
+  }
 
   base::FilePath message_directory =
       DumpDirectory()

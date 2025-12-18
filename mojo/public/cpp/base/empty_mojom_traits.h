@@ -14,8 +14,7 @@ namespace mojo {
 
 template <>
 struct StructTraits<mojo_base::mojom::EmptyDataView, ::std::monostate> {
-  static bool Read(mojo_base::mojom::EmptyDataView data,
-                   std::monostate* out) {
+  static bool Read(mojo_base::mojom::EmptyDataView data, std::monostate* out) {
     return true;
   }
 };

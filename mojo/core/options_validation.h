@@ -66,8 +66,9 @@ class UserOptionsReader {
  private:
   static inline size_t GetSizeForReader(const Options* options) {
     uint32_t struct_size = *reinterpret_cast<const uint32_t*>(options);
-    if (struct_size < sizeof(uint32_t))
+    if (struct_size < sizeof(uint32_t)) {
       return 0;
+    }
 
     return std::min(static_cast<size_t>(struct_size), sizeof(Options));
   }

@@ -43,8 +43,9 @@ mojo::ScopedInterfaceEndpointHandle
 GenericPendingAssociatedReceiver::PassHandleIfNameIs(
     const char* interface_name) {
   DCHECK(is_valid());
-  if (interface_name_ == interface_name)
+  if (interface_name_ == interface_name) {
     return PassHandle();
+  }
   return mojo::ScopedInterfaceEndpointHandle();
 }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "mojo/public/cpp/system/wait_set.h"
 
 #include <array>
@@ -370,8 +369,9 @@ TEST_F(WaitSetTest, NoStarvation) {
       wait_set.Wait(&ready_event, &num_ready_handles,
                     base::span_from_ref(ready_handle),
                     base::span_from_ref(ready_result));
-      if (ready_event)
+      if (ready_event) {
         ready_events.insert(ready_event);
+      }
 
       if (num_ready_handles) {
         EXPECT_EQ(1u, num_ready_handles);

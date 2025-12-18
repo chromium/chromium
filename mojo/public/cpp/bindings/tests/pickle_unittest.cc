@@ -74,7 +74,9 @@ void ExpectError(Remote<T>* proxy, base::OnceClosure callback) {
 }
 
 template <typename Func, typename Arg>
-void RunSimpleLambda(Func func, Arg arg) { func(std::move(arg)); }
+void RunSimpleLambda(Func func, Arg arg) {
+  func(std::move(arg));
+}
 
 template <typename Arg, typename Func>
 base::OnceCallback<void(Arg)> BindSimpleLambda(Func func) {
@@ -351,8 +353,9 @@ TEST_F(PickleTest, PickleArrayArray) {
   ScopedForceMessageSerialization force_serialization;
   auto proxy = ConnectToChromiumService();
   auto pickle_arrays = std::vector<std::vector<PickledStructChromium>>(2);
-  for (size_t i = 0; i < 2; ++i)
+  for (size_t i = 0; i < 2; ++i) {
     pickle_arrays[i] = std::vector<PickledStructChromium>(2);
+  }
 
   pickle_arrays[0][0].set_foo(1);
   pickle_arrays[0][0].set_bar(2);
@@ -406,17 +409,16 @@ TEST_F(PickleTest, PickleContainer) {
   EXPECT_FALSE(pickle_container.Equals(PickleContainer::New()));
   {
     base::RunLoop run_loop;
-    proxy->PassPickleContainer(std::move(pickle_container),
-                               BindSimpleLambda<PickleContainerPtr>(
-                                   [&](PickleContainerPtr passed) {
-                                     ASSERT_FALSE(passed.is_null());
-                                     EXPECT_EQ(42, passed->f_struct.foo());
-                                     EXPECT_EQ(43, passed->f_struct.bar());
-                                     EXPECT_EQ(0, passed->f_struct.baz());
-                                     EXPECT_EQ(PickledEnumChromium::VALUE_1,
-                                               passed->f_enum);
-                                     run_loop.Quit();
-                                   }));
+    proxy->PassPickleContainer(
+        std::move(pickle_container),
+        BindSimpleLambda<PickleContainerPtr>([&](PickleContainerPtr passed) {
+          ASSERT_FALSE(passed.is_null());
+          EXPECT_EQ(42, passed->f_struct.foo());
+          EXPECT_EQ(43, passed->f_struct.bar());
+          EXPECT_EQ(0, passed->f_struct.baz());
+          EXPECT_EQ(PickledEnumChromium::VALUE_1, passed->f_enum);
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 }

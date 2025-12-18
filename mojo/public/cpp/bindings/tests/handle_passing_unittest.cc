@@ -83,8 +83,9 @@ class SampleFactoryImpl : public sample::Factory {
                ScopedMessagePipeHandle pipe,
                DoStuffCallback callback) override {
     std::string text1;
-    if (pipe.is_valid())
+    if (pipe.is_valid()) {
       EXPECT_TRUE(ReadTextMessage(pipe.get(), &text1));
+    }
 
     std::string text2;
     if (request->pipe.is_valid()) {
@@ -162,7 +163,6 @@ class HandlePassingTest : public BindingsTestBase {
   void TearDown() override { PumpMessages(); }
 
   void PumpMessages() { base::RunLoop().RunUntilIdle(); }
-
 };
 
 void DoStuff(bool* got_response,

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/values.h"
+
 #include <string>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
-#include "base/values.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -64,7 +65,8 @@ TEST(ValuesStructTraitsTest, DoubleValue) {
 
 TEST(ValuesStructTraitsTest, StringValue) {
   static constexpr const char* kTestCases[] = {
-      "", "ascii",
+      "",
+      "ascii",
       // 🎆: Unicode FIREWORKS
       "\xf0\x9f\x8e\x86",
   };

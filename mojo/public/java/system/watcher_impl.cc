@@ -46,8 +46,9 @@ class WatcherImpl {
     MojoResult result =
         watcher_.Watch(mojo::Handle(static_cast<MojoHandle>(mojo_handle)),
                        static_cast<MojoHandleSignals>(signals), ready_callback);
-    if (result != MOJO_RESULT_OK)
+    if (result != MOJO_RESULT_OK) {
       java_watcher_.Reset();
+    }
 
     return result;
   }
@@ -62,8 +63,9 @@ class WatcherImpl {
     DCHECK(!java_watcher_.is_null());
 
     base::android::ScopedJavaGlobalRef<jobject> java_watcher_preserver;
-    if (result == MOJO_RESULT_CANCELLED)
+    if (result == MOJO_RESULT_CANCELLED) {
       java_watcher_preserver = std::move(java_watcher_);
+    }
 
     Java_WatcherImpl_onHandleReady(
         base::android::AttachCurrentThread(),
@@ -90,13 +92,11 @@ static jint JNI_WatcherImpl_Start(JNIEnv* env,
   return watcher->Start(env, obj, mojo_handle, signals);
 }
 
-static void JNI_WatcherImpl_Cancel(JNIEnv* env,
-                                   jlong watcher_ptr) {
+static void JNI_WatcherImpl_Cancel(JNIEnv* env, jlong watcher_ptr) {
   reinterpret_cast<WatcherImpl*>(watcher_ptr)->Cancel();
 }
 
-static void JNI_WatcherImpl_Delete(JNIEnv* env,
-                                   jlong watcher_ptr) {
+static void JNI_WatcherImpl_Delete(JNIEnv* env, jlong watcher_ptr) {
   delete reinterpret_cast<WatcherImpl*>(watcher_ptr);
 }
 

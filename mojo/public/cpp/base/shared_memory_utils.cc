@@ -20,8 +20,9 @@ namespace {
 base::WritableSharedMemoryRegion CreateWritableSharedMemoryRegion(size_t size) {
   mojo::ScopedSharedBufferHandle handle =
       mojo::SharedBufferHandle::Create(size);
-  if (!handle.is_valid())
+  if (!handle.is_valid()) {
     return base::WritableSharedMemoryRegion();
+  }
 
   return mojo::UnwrapWritableSharedMemoryRegion(std::move(handle));
 }
@@ -30,8 +31,9 @@ base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(
     size_t size,
     base::SharedMemoryMapper* mapper) {
   auto writable_region = CreateWritableSharedMemoryRegion(size);
-  if (!writable_region.IsValid())
+  if (!writable_region.IsValid()) {
     return {};
+  }
 
   base::WritableSharedMemoryMapping mapping = writable_region.Map(mapper);
   return {base::WritableSharedMemoryRegion::ConvertToReadOnly(
@@ -41,8 +43,9 @@ base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(
 
 base::UnsafeSharedMemoryRegion CreateUnsafeSharedMemoryRegion(size_t size) {
   auto writable_region = CreateWritableSharedMemoryRegion(size);
-  if (!writable_region.IsValid())
+  if (!writable_region.IsValid()) {
     return base::UnsafeSharedMemoryRegion();
+  }
 
   return base::WritableSharedMemoryRegion::ConvertToUnsafe(
       std::move(writable_region));

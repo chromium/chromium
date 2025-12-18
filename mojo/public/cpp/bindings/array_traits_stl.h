@@ -57,12 +57,8 @@ struct ArrayTraits<std::set<T>> {
   static ConstIterator GetBegin(const std::set<T>& input) {
     return input.begin();
   }
-  static void AdvanceIterator(ConstIterator& iterator) {
-    ++iterator;
-  }
-  static const T& GetValue(ConstIterator& iterator) {
-    return *iterator;
-  }
+  static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
+  static const T& GetValue(ConstIterator& iterator) { return *iterator; }
 };
 
 // This ArrayTraits specialization is used only for serialization.
@@ -138,8 +134,9 @@ struct ArrayTraits<std::array<T, N>> {
 
   // std::array is fixed size but this is called during deserialization.
   static bool Resize(std::array<T, N>& input, size_t size) {
-    if (size != N)
+    if (size != N) {
       return false;
+    }
     return true;
   }
 };

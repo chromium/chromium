@@ -24,14 +24,17 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
   // Extra validation of the struct header:
   do {
     if (header->version == 0) {
-      if (header->num_bytes == sizeof(internal::MessageHeader))
+      if (header->num_bytes == sizeof(internal::MessageHeader)) {
         break;
+      }
     } else if (header->version == 1) {
-      if (header->num_bytes == sizeof(internal::MessageHeaderV1))
+      if (header->num_bytes == sizeof(internal::MessageHeaderV1)) {
         break;
+      }
     } else if (header->version == 2) {
-      if (header->num_bytes == sizeof(internal::MessageHeaderV2))
+      if (header->num_bytes == sizeof(internal::MessageHeaderV2)) {
         break;
+      }
     } else if (header->version == 3) {
       if (header->num_bytes == sizeof(internal::MessageHeaderV3)) {
         break;
@@ -67,8 +70,9 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     return false;
   }
 
-  if (header->version < 2)
+  if (header->version < 2) {
     return true;
+  }
 
   auto* header_v2 = static_cast<const internal::MessageHeaderV2*>(header);
   // For the payload pointer:
@@ -116,8 +120,7 @@ MessageHeaderValidator::MessageHeaderValidator()
     : MessageHeaderValidator("MessageHeaderValidator") {}
 
 MessageHeaderValidator::MessageHeaderValidator(const std::string& description)
-    : description_(description) {
-}
+    : description_(description) {}
 
 void MessageHeaderValidator::SetDescription(const std::string& description) {
   description_ = description;
@@ -125,8 +128,9 @@ void MessageHeaderValidator::SetDescription(const std::string& description) {
 
 bool MessageHeaderValidator::Accept(Message* message) {
   // Don't bother validating unserialized message headers.
-  if (!message->is_serialized())
+  if (!message->is_serialized()) {
     return true;
+  }
 
   // Pass 0 as number of handles and associated endpoint handles because we
   // don't expect any in the header, even if |message| contains handles.
@@ -135,11 +139,13 @@ bool MessageHeaderValidator::Accept(Message* message) {
       description_.c_str());
 
   if (!internal::ValidateStructHeaderAndClaimMemory(message->data(),
-                                                    &validation_context))
+                                                    &validation_context)) {
     return false;
+  }
 
-  if (!IsValidMessageHeader(message->header(), &validation_context))
+  if (!IsValidMessageHeader(message->header(), &validation_context)) {
     return false;
+  }
 
   return true;
 }

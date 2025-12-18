@@ -72,12 +72,14 @@ class DataPipeReader {
         }
       } while (read_result == MOJO_RESULT_OK);
 
-      if (read_result == MOJO_RESULT_SHOULD_WAIT)
+      if (read_result == MOJO_RESULT_SHOULD_WAIT) {
         return;
+      }
     }
 
-    if (result != MOJO_RESULT_CANCELLED)
+    if (result != MOJO_RESULT_CANCELLED) {
       watcher_.Cancel();
+    }
 
     std::move(on_read_done_).Run();
   }
@@ -162,10 +164,11 @@ class TestObserver : public FilteredDataSource::Filter {
   void OnRead(base::span<char> buffer,
               FilteredDataSource::ReadResult* result) override {
     base::AutoLock auto_lock(lock_);
-    if (result->result == MOJO_RESULT_OK)
+    if (result->result == MOJO_RESULT_OK) {
       observer_data_->bytes_read += result->bytes_read;
-    else
+    } else {
       observer_data_->num_read_errors++;
+    }
   }
 
   void OnDone() override {
@@ -183,8 +186,9 @@ TEST_F(DataPipeProducerTest, WriteFromFile) {
   const std::string kTestStringFragment = "Hello, world!";
   constexpr size_t kNumRepetitions = 1000;
   std::string test_string;
-  for (size_t i = 0; i < kNumRepetitions; ++i)
+  for (size_t i = 0; i < kNumRepetitions; ++i) {
     test_string += kTestStringFragment;
+  }
 
   base::FilePath path = CreateTempFileWithContents(test_string);
 

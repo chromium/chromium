@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/span.h"
-
-
-
 #include "mojo/public/cpp/system/invitation.h"
 
 #include <optional>
@@ -18,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -97,11 +94,12 @@ class MAYBE_InvitationCppTest
   ~MAYBE_InvitationCppTest() override = default;
 
  protected:
-  void LaunchChildTestClient(const std::string& test_client_name,
-                             base::span<ScopedMessagePipeHandle> primordial_pipes,
-                             InvitationType invitation_type,
-                             TransportType transport_type,
-                             const ProcessErrorCallback& error_callback = {}) {
+  void LaunchChildTestClient(
+      const std::string& test_client_name,
+      base::span<ScopedMessagePipeHandle> primordial_pipes,
+      InvitationType invitation_type,
+      TransportType transport_type,
+      const ProcessErrorCallback& error_callback = {}) {
     base::CommandLine command_line(
         base::GetMultiProcessTestChildBaseCommandLine());
 
@@ -152,13 +150,15 @@ class MAYBE_InvitationCppTest
 
     child_process_ = base::SpawnMultiProcessTestChild(
         test_client_name, command_line, launch_options);
-    if (channel)
+    if (channel) {
       channel->RemoteProcessLaunchAttempted();
+    }
 
     OutgoingInvitation invitation;
     if (invitation_type != InvitationType::kIsolated) {
-      for (uint64_t name = 0; name < primordial_pipes.size(); ++name)
+      for (uint64_t name = 0; name < primordial_pipes.size(); ++name) {
         primordial_pipes[name] = invitation.AttachMessagePipe(name);
+      }
     }
 
 #if BUILDFLAG(IS_WIN)

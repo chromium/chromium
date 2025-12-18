@@ -6,7 +6,6 @@
 
 #include <utility>
 
-
 namespace mojo {
 namespace core {
 

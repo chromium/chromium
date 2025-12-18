@@ -52,8 +52,9 @@ void SerializeAssociatedInterfaceInfo(ScopedInterfaceEndpointHandle handle,
 }
 
 ScopedHandle DeserializeHandle(const Handle_Data& data, Message& message) {
-  if (!data.is_valid())
+  if (!data.is_valid()) {
     return {};
+  }
 
   auto& handles = *message.mutable_handles();
   DCHECK_LT(data.value, handles.size());
@@ -65,15 +66,17 @@ void DeserializeHandleAsReceiver(const Handle_Data& data,
                                  PendingReceiverState& receiver_state) {
   receiver_state.pipe =
       ScopedMessagePipeHandle::From(DeserializeHandle(data, message));
-  if (message.receiver_connection_group())
+  if (message.receiver_connection_group()) {
     receiver_state.connection_group = *message.receiver_connection_group();
+  }
 }
 
 ScopedInterfaceEndpointHandle DeserializeAssociatedEndpointHandle(
     const AssociatedEndpointHandle_Data& data,
     Message& message) {
-  if (!data.is_valid())
+  if (!data.is_valid()) {
     return {};
+  }
 
   auto& handles = *message.mutable_associated_endpoint_handles();
   DCHECK_LT(data.value, handles.size());

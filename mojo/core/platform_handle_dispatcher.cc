@@ -25,8 +25,9 @@ Dispatcher::Type PlatformHandleDispatcher::GetType() const {
 
 MojoResult PlatformHandleDispatcher::Close() {
   base::AutoLock lock(lock_);
-  if (is_closed_ || in_transit_)
+  if (is_closed_ || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
   is_closed_ = true;
   platform_handle_.reset();
   return MOJO_RESULT_OK;
@@ -44,16 +45,18 @@ bool PlatformHandleDispatcher::EndSerialize(void* destination,
                                             ports::PortName* ports,
                                             PlatformHandle* handles) {
   base::AutoLock lock(lock_);
-  if (is_closed_)
+  if (is_closed_) {
     return false;
+  }
   handles[0] = std::move(platform_handle_);
   return true;
 }
 
 bool PlatformHandleDispatcher::BeginTransit() {
   base::AutoLock lock(lock_);
-  if (in_transit_)
+  if (in_transit_) {
     return false;
+  }
   in_transit_ = !is_closed_;
   return in_transit_;
 }

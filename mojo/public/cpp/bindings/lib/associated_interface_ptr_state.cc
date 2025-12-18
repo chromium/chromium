@@ -29,8 +29,9 @@ void AssociatedInterfacePtrStateBase::QueryVersion(
 }
 
 void AssociatedInterfacePtrStateBase::RequireVersion(uint32_t version) {
-  if (version <= version_)
+  if (version <= version_) {
     return;
+  }
 
   version_ = version;
   endpoint_client_->RequireVersion(version);

@@ -85,8 +85,9 @@ scoped_refptr<DataPipeConsumerDispatcher> DataPipeConsumerDispatcher::Create(
                                      std::move(shared_ring_buffer), options,
                                      pipe_id);
   base::AutoLock lock(consumer->lock_);
-  if (!consumer->InitializeNoLock())
+  if (!consumer->InitializeNoLock()) {
     return nullptr;
+  }
   return consumer;
 }
 
@@ -106,47 +107,54 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
     uint32_t* num_bytes) {
   base::AutoLock lock(lock_);
 
-  if (!shared_ring_buffer_.IsValid() || in_transit_)
+  if (!shared_ring_buffer_.IsValid() || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
-  if (in_two_phase_read_)
+  if (in_two_phase_read_) {
     return MOJO_RESULT_BUSY;
+  }
 
   const bool had_new_data = new_data_available_;
   new_data_available_ = false;
 
   if ((options.flags & MOJO_READ_DATA_FLAG_QUERY)) {
     if ((options.flags & MOJO_READ_DATA_FLAG_PEEK) ||
-        (options.flags & MOJO_READ_DATA_FLAG_DISCARD))
+        (options.flags & MOJO_READ_DATA_FLAG_DISCARD)) {
       return MOJO_RESULT_INVALID_ARGUMENT;
+    }
     DCHECK(!(options.flags & MOJO_READ_DATA_FLAG_DISCARD));  // Handled above.
     DVLOG_IF(2, elements) << "Query mode: ignoring non-null |elements|";
     *num_bytes = static_cast<uint32_t>(bytes_available_);
 
-    if (had_new_data)
+    if (had_new_data) {
       watchers_.NotifyState(GetHandleSignalsStateNoLock());
+    }
     return MOJO_RESULT_OK;
   }
 
   bool discard = false;
   if ((options.flags & MOJO_READ_DATA_FLAG_DISCARD)) {
     // These flags are mutally exclusive.
-    if (options.flags & MOJO_READ_DATA_FLAG_PEEK)
+    if (options.flags & MOJO_READ_DATA_FLAG_PEEK) {
       return MOJO_RESULT_INVALID_ARGUMENT;
+    }
     DVLOG_IF(2, elements) << "Discard mode: ignoring non-null |elements|";
     discard = true;
   }
 
   uint32_t max_num_bytes_to_read = *num_bytes;
-  if (max_num_bytes_to_read % options_.element_num_bytes != 0)
+  if (max_num_bytes_to_read % options_.element_num_bytes != 0) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
   bool all_or_none = options.flags & MOJO_READ_DATA_FLAG_ALL_OR_NONE;
   uint32_t min_num_bytes_to_read = all_or_none ? max_num_bytes_to_read : 0;
 
   if (min_num_bytes_to_read > bytes_available_) {
-    if (had_new_data)
+    if (had_new_data) {
       watchers_.NotifyState(GetHandleSignalsStateNoLock());
+    }
     return peer_closed_ ? MOJO_RESULT_FAILED_PRECONDITION
                         : MOJO_RESULT_OUT_OF_RANGE;
   }
@@ -172,11 +180,13 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
     uint32_t tail_bytes_to_copy =
         std::min(options_.capacity_num_bytes - read_offset_, bytes_to_read);
     uint32_t head_bytes_to_copy = bytes_to_read - tail_bytes_to_copy;
-    if (tail_bytes_to_copy > 0)
+    if (tail_bytes_to_copy > 0) {
       UNSAFE_TODO(memcpy(destination, data + read_offset_, tail_bytes_to_copy));
-    if (head_bytes_to_copy > 0)
+    }
+    if (head_bytes_to_copy > 0) {
       UNSAFE_TODO(
           memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy));
+    }
   }
   *num_bytes = bytes_to_read;
 
@@ -200,18 +210,21 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
     const void** buffer,
     uint32_t* buffer_num_bytes) {
   base::AutoLock lock(lock_);
-  if (!shared_ring_buffer_.IsValid() || in_transit_)
+  if (!shared_ring_buffer_.IsValid() || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
-  if (in_two_phase_read_)
+  if (in_two_phase_read_) {
     return MOJO_RESULT_BUSY;
+  }
 
   const bool had_new_data = new_data_available_;
   new_data_available_ = false;
 
   if (bytes_available_ == 0) {
-    if (had_new_data)
+    if (had_new_data) {
       watchers_.NotifyState(GetHandleSignalsStateNoLock());
+    }
     return peer_closed_ ? MOJO_RESULT_FAILED_PRECONDITION
                         : MOJO_RESULT_SHOULD_WAIT;
   }
@@ -229,19 +242,22 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
   *buffer_num_bytes = bytes_to_read;
   two_phase_max_bytes_read_ = bytes_to_read;
 
-  if (had_new_data)
+  if (had_new_data) {
     watchers_.NotifyState(GetHandleSignalsStateNoLock());
+  }
 
   return MOJO_RESULT_OK;
 }
 
 MojoResult DataPipeConsumerDispatcher::EndReadData(uint32_t num_bytes_read) {
   base::AutoLock lock(lock_);
-  if (!in_two_phase_read_)
+  if (!in_two_phase_read_) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  if (in_transit_)
+  if (in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
   CHECK(shared_ring_buffer_.IsValid());
 
@@ -278,8 +294,9 @@ MojoResult DataPipeConsumerDispatcher::AddWatcherRef(
     const scoped_refptr<WatcherDispatcher>& watcher,
     uintptr_t context) {
   base::AutoLock lock(lock_);
-  if (is_closed_ || in_transit_)
+  if (is_closed_ || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
   return watchers_.Add(watcher, context, GetHandleSignalsStateNoLock());
 }
 
@@ -287,8 +304,9 @@ MojoResult DataPipeConsumerDispatcher::RemoveWatcherRef(
     WatcherDispatcher* watcher,
     uintptr_t context) {
   base::AutoLock lock(lock_);
-  if (is_closed_ || in_transit_)
+  if (is_closed_ || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
   return watchers_.Remove(watcher, context);
 }
 
@@ -331,8 +349,9 @@ bool DataPipeConsumerDispatcher::EndSerialize(
   PlatformHandle ignored_handle;
   ExtractPlatformHandlesFromSharedMemoryRegionHandle(
       region_handle.PassPlatformHandle(), &handle, &ignored_handle);
-  if (!handle.is_valid() || ignored_handle.is_valid())
+  if (!handle.is_valid() || ignored_handle.is_valid()) {
     return false;
+  }
 
   platform_handles[0] = std::move(handle);
   return true;
@@ -340,8 +359,9 @@ bool DataPipeConsumerDispatcher::EndSerialize(
 
 bool DataPipeConsumerDispatcher::BeginTransit() {
   base::AutoLock lock(lock_);
-  if (in_transit_)
+  if (in_transit_) {
     return false;
+  }
   in_transit_ = !in_two_phase_read_;
   return in_transit_;
 }
@@ -467,8 +487,9 @@ DataPipeConsumerDispatcher::~DataPipeConsumerDispatcher() {
 
 bool DataPipeConsumerDispatcher::InitializeNoLock() {
   lock_.AssertAcquired();
-  if (!shared_ring_buffer_.IsValid())
+  if (!shared_ring_buffer_.IsValid()) {
     return false;
+  }
 
   DCHECK(!ring_buffer_mapping_.IsValid());
   ring_buffer_mapping_ = shared_ring_buffer_.Map();
@@ -488,8 +509,9 @@ bool DataPipeConsumerDispatcher::InitializeNoLock() {
 
 MojoResult DataPipeConsumerDispatcher::CloseNoLock() {
   lock_.AssertAcquired();
-  if (is_closed_ || in_transit_)
+  if (is_closed_ || in_transit_) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
   is_closed_ = true;
   ring_buffer_mapping_ = base::WritableSharedMemoryMapping();
   shared_ring_buffer_ = base::UnsafeSharedMemoryRegion();
@@ -511,8 +533,9 @@ HandleSignalsState DataPipeConsumerDispatcher::GetHandleSignalsStateNoLock()
   if (shared_ring_buffer_.IsValid() && bytes_available_) {
     if (!in_two_phase_read_) {
       rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_READABLE;
-      if (new_data_available_)
+      if (new_data_available_) {
         rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+      }
     }
     rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
   } else if (!peer_closed_ && shared_ring_buffer_.IsValid()) {
@@ -520,16 +543,18 @@ HandleSignalsState DataPipeConsumerDispatcher::GetHandleSignalsStateNoLock()
   }
 
   if (shared_ring_buffer_.IsValid()) {
-    if (new_data_available_ || !peer_closed_)
+    if (new_data_available_ || !peer_closed_) {
       rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+    }
   }
 
   if (peer_closed_) {
     rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   } else {
     rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
-    if (peer_remote_)
+    if (peer_remote_) {
       rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    }
   }
   rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
 
@@ -553,8 +578,9 @@ void DataPipeConsumerDispatcher::OnPortStatusChanged() {
   // We stop observing the control port as soon it's transferred, but this can
   // race with events which are raised right before that happens. This is fine
   // to ignore.
-  if (transferred_)
+  if (transferred_) {
     return;
+  }
 
   DVLOG(1) << "Control port status changed for data pipe producer " << pipe_id_;
 
@@ -580,8 +606,9 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
     do {
       rv = node_controller_->node()->GetMessage(control_port_, &message_event,
                                                 nullptr);
-      if (rv != ports::OK)
+      if (rv != ports::OK) {
         peer_closed_ = true;
+      }
       if (message_event) {
         auto* message = message_event->GetMessage<UserMessageImpl>();
         if (message->user_payload_size() < sizeof(DataPipeControlMessage)) {
@@ -620,8 +647,9 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
   }
 
   bool has_new_data = bytes_available_ != previous_bytes_available;
-  if (has_new_data)
+  if (has_new_data) {
     new_data_available_ = true;
+  }
 
   if (peer_closed_ != was_peer_closed || has_new_data ||
       peer_remote_ != was_peer_remote) {

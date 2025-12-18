@@ -69,8 +69,9 @@ CreateSharedMemoryRegionHandleFromPlatformHandles(
 MojoResult UnwrapAndClonePlatformProcessHandle(
     const MojoPlatformProcessHandle* process_handle,
     base::Process& process) {
-  if (process_handle->struct_size < sizeof(*process_handle))
+  if (process_handle->struct_size < sizeof(*process_handle)) {
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
 #if BUILDFLAG(IS_WIN)
   base::ProcessHandle in_handle = reinterpret_cast<base::ProcessHandle>(

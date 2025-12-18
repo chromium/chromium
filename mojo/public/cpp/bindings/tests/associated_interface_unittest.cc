@@ -245,8 +245,9 @@ class TestSender {
   void Send(int32_t value) {
     CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-    if (value > max_value_to_send_)
+    if (value > max_value_to_send_) {
       return;
+    }
 
     remote_->Send(value);
 
@@ -308,8 +309,9 @@ class TestReceiver {
   void SendMethodCalled(int32_t value) {
     values_.push_back(value);
 
-    if (values_.size() >= expected_calls_)
+    if (values_.size() >= expected_calls_) {
       std::move(notify_finish_).Run();
+    }
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -342,8 +344,9 @@ class NotificationCounter {
       finshed = current_count_ == total_count_;
     }
 
-    if (finshed)
+    if (finshed) {
       std::move(notify_finish_).Run();
+    }
   }
 
  private:
@@ -432,8 +435,9 @@ TEST_F(AssociatedInterfaceTest, MultiThreadAccess) {
                     receivers[1].values().end());
 
   std::sort(all_values.begin(), all_values.end());
-  for (size_t i = 0; i < all_values.size(); ++i)
+  for (size_t i = 0; i < all_values.size(); ++i) {
     ASSERT_EQ(static_cast<int32_t>(i + 1), all_values[i]);
+  }
 }
 
 TEST_F(AssociatedInterfaceTest, FIFO) {
@@ -507,8 +511,9 @@ TEST_F(AssociatedInterfaceTest, FIFO) {
   EXPECT_EQ(static_cast<size_t>(kMaxValue / 2), receivers[1].values().size());
 
   for (size_t i = 0; i < 2; ++i) {
-    for (size_t j = 1; j < receivers[i].values().size(); ++j)
+    for (size_t j = 1; j < receivers[i].values().size(); ++j) {
       EXPECT_LT(receivers[i].values()[j - 1], receivers[i].values()[j]);
+    }
   }
 }
 
@@ -587,8 +592,9 @@ class PingServiceImpl : public PingService {
 
   // PingService:
   void Ping(PingCallback callback) override {
-    if (ping_handler_)
+    if (ping_handler_) {
       ping_handler_.Run();
+    }
     std::move(callback).Run();
   }
 

@@ -136,8 +136,9 @@ MojoResult CreateOrExtendSerializedEventMessage(
   size_t num_handles = original_num_handles + num_new_handles;
 
   // We now have enough information to fully allocate the message storage.
-  if (num_ports > event->num_ports())
+  if (num_ports > event->num_ports()) {
     event->ReservePorts(num_ports);
+  }
   const size_t event_size = event->GetSerializedSize();
   const size_t total_size = event_size + header_size + payload_size;
   const size_t total_buffer_size =
@@ -183,8 +184,9 @@ MojoResult CreateOrExtendSerializedEventMessage(
     auto handles_in_transit = original_message->TakeHandles();
     if (!handles_in_transit.empty()) {
       handles.resize(num_handles);
-      for (size_t i = 0; i < handles_in_transit.size(); ++i)
+      for (size_t i = 0; i < handles_in_transit.size(); ++i) {
         handles[i] = handles_in_transit[i].TakeHandle();
+      }
     }
     UNSAFE_TODO(
         memcpy(reinterpret_cast<char*>(header) + header_size,
@@ -199,16 +201,18 @@ MojoResult CreateOrExtendSerializedEventMessage(
         UNSAFE_TODO(new_dispatcher_headers + num_new_dispatchers));
   }
 
-  if (handles.empty() && num_new_handles)
+  if (handles.empty() && num_new_handles) {
     handles.resize(num_new_handles);
+  }
 
   header->num_dispatchers =
       base::CheckedNumeric<uint32_t>(total_num_dispatchers).ValueOrDie();
 
   // |header_size| is the total number of bytes preceding the message payload,
   // including all dispatcher headers and serialized dispatcher state.
-  if (!base::IsValueInRangeForNumericType<uint32_t>(header_size))
+  if (!base::IsValueInRangeForNumericType<uint32_t>(header_size)) {
     return MOJO_RESULT_OUT_OF_RANGE;
+  }
 
   header->header_size = static_cast<uint32_t>(header_size);
 
@@ -248,12 +252,14 @@ MojoResult CreateOrExtendSerializedEventMessage(
       // Release any platform handles we've accumulated. Their dispatchers
       // retain ownership when message creation fails, so these are not actually
       // leaking.
-      for (auto& handle : handles)
+      for (auto& handle : handles) {
         handle.release();
+      }
 
       // Leave the original message in place on failure if applicable.
-      if (original_message)
+      if (original_message) {
         *out_message = std::move(original_message);
+      }
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
 
@@ -330,16 +336,18 @@ UserMessageImpl::~UserMessageImpl() {
         ExtractSerializedHandles(ExtractBadHandlePolicy::kSkip, handles.data());
     if (result == MOJO_RESULT_OK) {
       for (auto handle : handles) {
-        if (handle != MOJO_HANDLE_INVALID)
+        if (handle != MOJO_HANDLE_INVALID) {
           Core::Get()->Close(handle);
+        }
       }
     }
 
     if (!pending_handle_attachments_.empty()) {
       Core::Get()->ReleaseDispatchersForTransit(pending_handle_attachments_,
                                                 false);
-      for (const auto& dispatcher : pending_handle_attachments_)
+      for (const auto& dispatcher : pending_handle_attachments_) {
         Core::Get()->Close(dispatcher.local_handle);
+      }
     }
   }
 
@@ -369,8 +377,9 @@ MojoResult UserMessageImpl::CreateEventForNewSerializedMessage(
   MojoResult rv = CreateOrExtendSerializedEventMessage(
       event.get(), num_bytes, num_bytes, dispatchers, num_dispatchers,
       &channel_message, &header, &header_size, &user_payload);
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return rv;
+  }
   event->AttachMessage(base::WrapUnique(
       new UserMessageImpl(event.get(), std::move(channel_message), header,
                           header_size, user_payload, num_bytes)));
@@ -385,16 +394,19 @@ std::unique_ptr<UserMessageImpl> UserMessageImpl::CreateFromChannelMessage(
     void* payload,
     size_t payload_size) {
   DCHECK(channel_message);
-  if (payload_size < sizeof(MessageHeader))
+  if (payload_size < sizeof(MessageHeader)) {
     return nullptr;
+  }
 
   auto* header = static_cast<MessageHeader*>(payload);
   const size_t header_size = header->header_size;
-  if (header_size > payload_size)
+  if (header_size > payload_size) {
     return nullptr;
+  }
 
-  if (header->num_dispatchers > kMaxMojoHandleAttachments)
+  if (header->num_dispatchers > kMaxMojoHandleAttachments) {
     return nullptr;
+  }
 
   void* user_payload =
       UNSAFE_TODO(static_cast<uint8_t*>(payload) + header_size);
@@ -410,8 +422,9 @@ Channel::MessagePtr UserMessageImpl::FinalizeEventMessage(
   auto* message = message_event->GetMessage<UserMessageImpl>();
   DCHECK(message->IsSerialized());
 
-  if (!message->is_committed_)
+  if (!message->is_committed_) {
     return nullptr;
+  }
 
   Channel::MessagePtr channel_message = std::move(message->channel_message_);
   message->user_payload_ = nullptr;
@@ -456,12 +469,15 @@ MojoResult UserMessageImpl::SetContext(
     uintptr_t context,
     MojoMessageContextSerializer serializer,
     MojoMessageContextDestructor destructor) {
-  if (!context && (serializer || destructor))
+  if (!context && (serializer || destructor)) {
     return MOJO_RESULT_INVALID_ARGUMENT;
-  if (context && HasContext())
+  }
+  if (context && HasContext()) {
     return MOJO_RESULT_ALREADY_EXISTS;
-  if (IsSerialized())
+  }
+  if (IsSerialized()) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
   context_ = context;
   context_serializer_ = serializer;
   context_destructor_ = destructor;
@@ -503,15 +519,17 @@ MojoResult UserMessageImpl::ReserveCapacity(uint32_t payload_buffer_size) {
 MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
                                        const MojoHandle* handles,
                                        uint32_t num_handles) {
-  if (HasContext())
+  if (HasContext()) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
   std::vector<Dispatcher::DispatcherInTransit> dispatchers;
   if (num_handles > 0) {
     MojoResult acquire_result = Core::Get()->AcquireDispatchersForTransit(
         handles, num_handles, &dispatchers);
-    if (acquire_result != MOJO_RESULT_OK)
+    if (acquire_result != MOJO_RESULT_OK) {
       return acquire_result;
+    }
   }
 
   if (!IsSerialized()) {
@@ -526,8 +544,9 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
       Core::Get()->ReleaseDispatchersForTransit(dispatchers,
                                                 rv == MOJO_RESULT_OK);
     }
-    if (rv != MOJO_RESULT_OK)
+    if (rv != MOJO_RESULT_OK) {
       return MOJO_RESULT_ABORTED;
+    }
 
     user_payload_size_ = additional_payload_size;
     channel_message_ = std::move(channel_message);
@@ -575,11 +594,13 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
 }
 
 MojoResult UserMessageImpl::CommitSize() {
-  if (!IsSerialized())
+  if (!IsSerialized()) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  if (is_committed_)
+  if (is_committed_) {
     return MOJO_RESULT_OK;
+  }
 
   if (!pending_handle_attachments_.empty()) {
     CreateOrExtendSerializedEventMessage(
@@ -596,21 +617,24 @@ MojoResult UserMessageImpl::CommitSize() {
 }
 
 MojoResult UserMessageImpl::SerializeIfNecessary() {
-  if (IsSerialized())
+  if (IsSerialized()) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
   DCHECK(HasContext());
   DCHECK(!has_serialized_handles_);
-  if (!context_serializer_)
+  if (!context_serializer_) {
     return MOJO_RESULT_NOT_FOUND;
+  }
 
   uintptr_t context = context_;
   context_ = 0;
   context_serializer_(reinterpret_cast<MojoMessageHandle>(message_event_),
                       context);
 
-  if (context_destructor_)
+  if (context_destructor_) {
     context_destructor_(context);
+  }
 
   has_serialized_handles_ = true;
   return MOJO_RESULT_OK;
@@ -619,21 +643,25 @@ MojoResult UserMessageImpl::SerializeIfNecessary() {
 MojoResult UserMessageImpl::ExtractSerializedHandles(
     ExtractBadHandlePolicy bad_handle_policy,
     MojoHandle* handles) {
-  if (!IsSerialized())
+  if (!IsSerialized()) {
     return MOJO_RESULT_FAILED_PRECONDITION;
+  }
 
-  if (!has_serialized_handles_)
+  if (!has_serialized_handles_) {
     return MOJO_RESULT_NOT_FOUND;
+  }
 
   const MessageHeader* header = static_cast<const MessageHeader*>(header_);
   const DispatcherHeader* dispatcher_headers =
       reinterpret_cast<const DispatcherHeader*>(UNSAFE_TODO(header + 1));
 
-  if (header->num_dispatchers > std::numeric_limits<uint16_t>::max())
+  if (header->num_dispatchers > std::numeric_limits<uint16_t>::max()) {
     return MOJO_RESULT_ABORTED;
+  }
 
-  if (header->num_dispatchers == 0)
+  if (header->num_dispatchers == 0) {
     return MOJO_RESULT_OK;
+  }
 
   has_serialized_handles_ = false;
 
@@ -643,8 +671,9 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
   size_t data_payload_index =
       sizeof(MessageHeader) +
       header->num_dispatchers * sizeof(DispatcherHeader);
-  if (data_payload_index > header->header_size)
+  if (data_payload_index > header->header_size) {
     return MOJO_RESULT_ABORTED;
+  }
   const char* dispatcher_data = reinterpret_cast<const char*>(
       UNSAFE_TODO(dispatcher_headers + header->num_dispatchers));
   size_t port_index = 0;
@@ -701,8 +730,9 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
     platform_handle_index = next_platform_handle_index.ValueOrDie();
   }
 
-  if (!Core::Get()->AddDispatchersFromTransit(dispatchers, handles))
+  if (!Core::Get()->AddDispatchersFromTransit(dispatchers, handles)) {
     return MOJO_RESULT_ABORTED;
+  }
 
   return MOJO_RESULT_OK;
 }
@@ -746,8 +776,9 @@ bool UserMessageImpl::WillBeRoutedExternally() {
 }
 
 size_t UserMessageImpl::GetSizeIfSerialized() const {
-  if (!IsSerialized())
+  if (!IsSerialized()) {
     return 0;
+  }
   return user_payload_size_;
 }
 

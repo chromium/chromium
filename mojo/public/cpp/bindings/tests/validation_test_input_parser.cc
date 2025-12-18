@@ -165,8 +165,7 @@ ValidationTestInputParser::ValidationTestInputParser(const std::string& input,
   error_message_->clear();
 }
 
-ValidationTestInputParser::~ValidationTestInputParser() {
-}
+ValidationTestInputParser::~ValidationTestInputParser() {}
 
 bool ValidationTestInputParser::Run() {
   std::string_view item;
@@ -310,8 +309,9 @@ bool ValidationTestInputParser::ParseFloatingPoint(
 bool ValidationTestInputParser::ParseBinarySequence(
     const DataType& type,
     std::string_view value_string) {
-  if (value_string.size() != 8)
+  if (value_string.size() != 8) {
     return false;
+  }
 
   uint8_t value = 0;
   for (const auto& c : value_string) {
@@ -347,8 +347,9 @@ bool ValidationTestInputParser::ParseAnchor(const DataType& type,
 
   std::map<std::string_view, PendingDistanceItem>::const_iterator iter =
       pending_distance_items_.find(value_string);
-  if (iter == pending_distance_items_.end())
+  if (iter == pending_distance_items_.end()) {
     return false;
+  }
 
   PendingDistanceItem dist_item = iter->second;
   pending_distance_items_.erase(iter);
@@ -368,16 +369,18 @@ bool ValidationTestInputParser::ParseAnchor(const DataType& type,
 bool ValidationTestInputParser::ParseHandles(const DataType& type,
                                              std::string_view value_string) {
   // It should be the first item.
-  if (!data_->empty())
+  if (!data_->empty()) {
     return false;
+  }
 
   uint64_t value;
   if (!ConvertToUnsignedInteger(value_string, &value)) {
     return false;
   }
 
-  if (value > std::numeric_limits<size_t>::max())
+  if (value > std::numeric_limits<size_t>::max()) {
     return false;
+  }
 
   *num_handles_ = static_cast<size_t>(value);
   return true;

@@ -117,8 +117,9 @@ class KeyValueStoreImpl : public base::RefCountedThreadSafe<KeyValueStoreImpl>,
 
     // Shutdown all WriterImpls too.
     auto shutdown = base::BarrierClosure(writers_.size(), std::move(callback));
-    for (auto& writer : writers_)
+    for (auto& writer : writers_) {
       writer->ShutDown(base::BindOnce(shutdown));
+    }
   }
 
   // mojom::KeyValueStore implementation:
@@ -389,8 +390,9 @@ class KeyValueStoreClientImpl : public mojom::KeyValueStoreClient {
 
   // mojom::KeyValueStoreClient implementation:
   void OnSnapshotTaken() override {
-    if (snapshot_taken_callback_)
+    if (snapshot_taken_callback_) {
       snapshot_taken_callback_.Run();
+    }
   }
 
  private:

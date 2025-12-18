@@ -69,8 +69,9 @@ void HandleSignalTracker::OnNotify(MojoResult result,
                                    const HandleSignalsState& state) {
   last_known_state_ = state;
   Arm();
-  if (notification_callback_)
+  if (notification_callback_) {
     notification_callback_.Run(state);
+  }
 }
 
 }  // namespace mojo

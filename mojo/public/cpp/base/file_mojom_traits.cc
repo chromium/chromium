@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/base/file_mojom_traits.h"
+
 #include "base/files/file.h"
 
 namespace mojo {

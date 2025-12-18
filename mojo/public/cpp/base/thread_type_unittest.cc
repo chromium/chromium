@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/base/thread_type_mojom_traits.h"
-
 #include "base/threading/platform_thread.h"
+#include "mojo/public/cpp/base/thread_type_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo_base::thread_type_unittest {

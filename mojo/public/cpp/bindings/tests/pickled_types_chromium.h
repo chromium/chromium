@@ -16,7 +16,7 @@
 namespace base {
 class Pickle;
 class PickleIterator;
-}
+}  // namespace base
 
 namespace mojo {
 namespace test {

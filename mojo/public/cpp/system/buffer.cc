@@ -18,13 +18,15 @@ ScopedSharedBufferHandle SharedBufferHandle::Create(uint64_t num_bytes) {
 ScopedSharedBufferHandle SharedBufferHandle::Clone(
     SharedBufferHandle::AccessMode access_mode) const {
   ScopedSharedBufferHandle result;
-  if (!is_valid())
+  if (!is_valid()) {
     return result;
+  }
 
   MojoDuplicateBufferHandleOptions options = {
       sizeof(options), MOJO_DUPLICATE_BUFFER_HANDLE_FLAG_NONE};
-  if (access_mode == AccessMode::READ_ONLY)
+  if (access_mode == AccessMode::READ_ONLY) {
     options.flags |= MOJO_DUPLICATE_BUFFER_HANDLE_FLAG_READ_ONLY;
+  }
   SharedBufferHandle result_handle;
   MojoDuplicateBufferHandle(value(), &options, result_handle.mutable_value());
   result.reset(result_handle);

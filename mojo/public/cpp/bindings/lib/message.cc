@@ -155,8 +155,9 @@ void CreateSerializedMessageObject(uint32_t name,
   CHECK_EQ(MOJO_RESULT_OK, rv);
   if (handles) {
     // Handle ownership has been taken by MojoAppendMessageData.
-    for (size_t i = 0; i < handles->size(); ++i)
+    for (size_t i = 0; i < handles->size(); ++i) {
       std::ignore = handles->at(i).release();
+    }
   }
 
   internal::Buffer payload_buffer(handle.get(), total_size, buffer,
@@ -313,8 +314,9 @@ Message::Message(ScopedMessageHandle handle,
   uint32_t buffer_size;
   MojoResult attach_result = MojoAppendMessageData(
       handle_.get().value(), 0, nullptr, 0, nullptr, &buffer, &buffer_size);
-  if (attach_result != MOJO_RESULT_OK)
+  if (attach_result != MOJO_RESULT_OK) {
     return;
+  }
 
   payload_buffer_ = internal::Buffer(handle_.get(), 0, buffer, buffer_size);
   WriteMessageHeaderV1(header.name, header.flags, trace_nonce,
@@ -355,8 +357,9 @@ Message::Message(base::span<const uint8_t> payload,
   CHECK_EQ(MOJO_RESULT_OK, rv);
 
   // Handle ownership has been taken by MojoAppendMessageData.
-  for (auto& handle : handles)
+  for (auto& handle : handles) {
     std::ignore = handle.release();
+  }
 
   payload_buffer_ = internal::Buffer(buffer, payload.size(), payload.size());
   std::ranges::copy(payload, static_cast<uint8_t*>(payload_buffer_.data()));
@@ -445,8 +448,9 @@ void Message::Reset() {
 }
 
 const uint8_t* Message::payload() const {
-  if (version() < 2)
+  if (version() < 2) {
     return UNSAFE_TODO(data() + header())->num_bytes;
+  }
 
   DCHECK(!header_v2()->payload.is_null());
   return static_cast<const uint8_t*>(header_v2()->payload.Get());
@@ -462,9 +466,10 @@ uint32_t Message::payload_num_bytes() const {
         reinterpret_cast<uintptr_t>(header_v2()->payload.Get());
     auto payload_end =
         reinterpret_cast<uintptr_t>(header_v2()->payload_interface_ids.Get());
-    if (!payload_end)
+    if (!payload_end) {
       payload_end =
           reinterpret_cast<uintptr_t>(UNSAFE_TODO(data() + data_num_bytes()));
+    }
     DCHECK_GE(payload_end, payload_begin);
     num_bytes = payload_end - payload_begin;
   }
@@ -563,15 +568,17 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
 
 bool Message::DeserializeAssociatedEndpointHandles(
     AssociatedGroupController* group_controller) {
-  if (!serialized_)
+  if (!serialized_) {
     return true;
+  }
 
   auto& endpoint_handles = *mutable_associated_endpoint_handles();
   endpoint_handles.clear();
 
   uint32_t num_ids = payload_num_interface_ids();
-  if (num_ids == 0)
+  if (num_ids == 0) {
     return true;
+  }
 
   endpoint_handles.reserve(num_ids);
   uint32_t* ids = header_v2()->payload_interface_ids.Get()->storage();
@@ -607,8 +614,9 @@ void Message::NotifyPeerClosureForSerializedHandles(
 
 void Message::SerializeIfNecessary() {
   MojoResult rv = MojoSerializeMessage(handle_->value(), nullptr);
-  if (rv == MOJO_RESULT_FAILED_PRECONDITION)
+  if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     return;
+  }
 
   // Reconstruct this Message instance from the serialized message's handle.
   ScopedMessageHandle handle = std::move(handle_);
@@ -621,14 +629,16 @@ Message::TakeUnserializedContext(uintptr_t tag) {
   uintptr_t context_value = 0;
   MojoResult rv =
       MojoGetMessageContext(handle_->value(), nullptr, &context_value);
-  if (rv == MOJO_RESULT_NOT_FOUND)
+  if (rv == MOJO_RESULT_NOT_FOUND) {
     return nullptr;
+  }
   DCHECK_EQ(MOJO_RESULT_OK, rv);
 
   auto* context =
       reinterpret_cast<internal::UnserializedMessageContext*>(context_value);
-  if (context->tag() != tag)
+  if (context->tag() != tag) {
     return nullptr;
+  }
 
   // Detach the context from the message.
   rv = MojoSetMessageContext(handle_->value(), 0, nullptr, nullptr, nullptr);

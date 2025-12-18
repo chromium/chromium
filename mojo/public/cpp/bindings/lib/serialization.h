@@ -73,8 +73,9 @@ DataArrayType SerializeImpl(UserType* input) {
   Message message = SerializeAsMessageImpl<MojomType>(input);
   uint32_t size = message.payload_num_bytes();
   DataArrayType result(size);
-  if (size)
+  if (size) {
     UNSAFE_TODO(memcpy(&result.front(), message.payload(), size));
+  }
   return result;
 }
 
@@ -114,8 +115,9 @@ bool DeserializeImpl(Message& message,
         &message);
   }
 
-  if (aligned_input_buffer)
+  if (aligned_input_buffer) {
     free(aligned_input_buffer);
+  }
 
   return result;
 }

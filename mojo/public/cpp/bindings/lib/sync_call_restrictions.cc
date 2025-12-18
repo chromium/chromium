@@ -77,8 +77,9 @@ void SyncCallRestrictions::AssertSyncCallAllowed() {
     return;
   }
 
-  if (GetSequenceLocalScopedAllowCount() > 0)
+  if (GetSequenceLocalScopedAllowCount() > 0) {
     return;
+  }
 
   LOG(FATAL) << "Mojo sync calls are not allowed in this process because "
              << "they can lead to jank and deadlock. If you must make an "
@@ -94,16 +95,18 @@ void SyncCallRestrictions::DisallowSyncCall() {
 
 // static
 void SyncCallRestrictions::IncreaseScopedAllowCount() {
-  if (!SyncCallRestrictionsEnforceable())
+  if (!SyncCallRestrictionsEnforceable()) {
     return;
+  }
 
   ++GetSequenceLocalScopedAllowCount();
 }
 
 // static
 void SyncCallRestrictions::DecreaseScopedAllowCount() {
-  if (!SyncCallRestrictionsEnforceable())
+  if (!SyncCallRestrictionsEnforceable()) {
     return;
+  }
 
   DCHECK_GT(GetSequenceLocalScopedAllowCount(), 0u);
   --GetSequenceLocalScopedAllowCount();

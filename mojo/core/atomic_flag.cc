@@ -7,7 +7,7 @@
 namespace mojo {
 namespace core {
 
-AtomicFlag::AtomicFlag(): flag_(false) {}
+AtomicFlag::AtomicFlag() : flag_(false) {}
 
 }  // namespace core
 }  // namespace mojo

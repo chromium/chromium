@@ -18,8 +18,8 @@ namespace test {
 class RectBlink {
  public:
   RectBlink() {}
-  RectBlink(int x, int y, int width, int height) :
-      x_(x), y_(y), width_(width), height_(height) {
+  RectBlink(int x, int y, int width, int height)
+      : x_(x), y_(y), width_(width), height_(height) {
     DCHECK_GE(x_, 0);
     DCHECK_GE(y_, 0);
     DCHECK_GE(width_, 0);

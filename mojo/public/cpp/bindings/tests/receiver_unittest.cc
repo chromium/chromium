@@ -55,8 +55,9 @@ class ServiceImpl : public sample::Service {
   ServiceImpl& operator=(const ServiceImpl&) = delete;
 
   ~ServiceImpl() override {
-    if (destruction_callback_)
+    if (destruction_callback_) {
       std::move(destruction_callback_).Run();
+    }
   }
 
  private:
@@ -342,8 +343,9 @@ class PingServiceImpl : public test::PingService {
 
   // test::PingService:
   void Ping(PingCallback callback) override {
-    if (ping_handler_)
+    if (ping_handler_) {
       ping_handler_.Run();
+    }
     std::move(callback).Run();
   }
 
@@ -729,8 +731,9 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
       *next_receiver_storage_ = std::move(receiver);
       next_receiver_storage_ = nullptr;
     }
-    if (wait_loop_)
+    if (wait_loop_) {
       wait_loop_->Quit();
+    }
   }
 
   void BindReceiver(GenericPendingReceiver receiver) override {
@@ -738,8 +741,9 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
       *next_receiver_storage_ = std::move(receiver);
       next_receiver_storage_ = nullptr;
     }
-    if (wait_loop_)
+    if (wait_loop_) {
       wait_loop_->Quit();
+    }
   }
 
   void BindOptionalAssociatedReceiver(
@@ -748,8 +752,9 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
       *next_associated_receiver_storage_ = std::move(receiver);
       next_associated_receiver_storage_ = nullptr;
     }
-    if (wait_loop_)
+    if (wait_loop_) {
       wait_loop_->Quit();
+    }
   }
 
   void BindAssociatedReceiver(
@@ -758,14 +763,16 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
       *next_associated_receiver_storage_ = std::move(receiver);
       next_associated_receiver_storage_ = nullptr;
     }
-    if (wait_loop_)
+    if (wait_loop_) {
       wait_loop_->Quit();
+    }
   }
 
  private:
   void OnDisconnect() {
-    if (wait_loop_)
+    if (wait_loop_) {
       wait_loop_->Quit();
+    }
     connected_ = false;
   }
 

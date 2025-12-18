@@ -535,31 +535,31 @@ TYPED_TEST(SyncMethodCommonTest, CallSyncMethodAsynchronously) {
 #define SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name) \
   fixture_name##name##_SequencedTaskRunnerTestSuffix
 
-#define SEQUENCED_TASK_RUNNER_TYPED_TEST(fixture_name, name)        \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)   \
-      : public fixture_name<TypeParam> {                            \
-    void Run() override;                                            \
-  };                                                                \
-  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {               \
-    RunTestOnSequencedTaskRunner(                                   \
-        std::make_unique<SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
-                             fixture_name, name) < TypeParam>> ()); \
-  }                                                                 \
-  template <typename TypeParam>                                     \
-  void SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name,          \
+#define SEQUENCED_TASK_RUNNER_TYPED_TEST(fixture_name, name)                \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)           \
+      : public fixture_name<TypeParam> {                                    \
+    void Run() override;                                                    \
+  };                                                                        \
+  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {                       \
+    RunTestOnSequencedTaskRunner(std::make_unique <                         \
+                                 SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
+                                     fixture_name, name) < TypeParam >>()); \
+  }                                                                         \
+  template <typename TypeParam>                                             \
+  void SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name,                  \
                                              name)<TypeParam>::Run()
 
-#define SEQUENCED_TASK_RUNNER_TYPED_TEST_F(fixture_name, name)      \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name);  \
-  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {               \
-    RunTestOnSequencedTaskRunner(                                   \
-        std::make_unique<SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
-                             fixture_name, name) < TypeParam>> ()); \
-  }                                                                 \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)   \
+#define SEQUENCED_TASK_RUNNER_TYPED_TEST_F(fixture_name, name)              \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name);          \
+  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {                       \
+    RunTestOnSequencedTaskRunner(std::make_unique <                         \
+                                 SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
+                                     fixture_name, name) < TypeParam >>()); \
+  }                                                                         \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)           \
       : public fixture_name<TypeParam>
 
 SEQUENCED_TASK_RUNNER_TYPED_TEST(SyncMethodOnSequenceCommonTest,
@@ -978,8 +978,9 @@ TYPED_TEST(SyncMethodCommonTest,
 
   // SharedRemote doesn't guarantee that messages are delivered before the
   // disconnect handler, so skip it for this test.
-  if (TypeParam::kIsSharedRemoteTest)
+  if (TypeParam::kIsSharedRemoteTest) {
     return;
+  }
 
   using Interface = typename TypeParam::Interface;
   Remote<Interface> remote;
@@ -1335,14 +1336,16 @@ class PingerImpl : public mojom::Pinger, public mojom::SimplePinger {
   }
 
   void Ping(PingCallback callback) override {
-    if (pong_sender_ && same_pipe_pong_sender_)
+    if (pong_sender_ && same_pipe_pong_sender_) {
       DoPong();
+    }
     std::move(callback).Run();
   }
 
   void PingNoInterrupt(PingNoInterruptCallback callback) override {
-    if (pong_sender_ && same_pipe_pong_sender_)
+    if (pong_sender_ && same_pipe_pong_sender_) {
       DoPong();
+    }
     std::move(callback).Run();
   }
 

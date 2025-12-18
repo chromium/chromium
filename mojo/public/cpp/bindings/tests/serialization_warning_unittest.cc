@@ -193,8 +193,9 @@ TEST_F(SerializationWarningTest, ArrayOfStrings) {
   using MojomType = ArrayDataView<StringDataView>;
 
   std::vector<std::string> test_array(3);
-  for (size_t i = 0; i < test_array.size(); ++i)
+  for (size_t i = 0; i < test_array.size(); ++i) {
     test_array[i] = "hello";
+  }
 
   constexpr const ContainerValidateParams& validate_params_0 =
       GetArrayValidator<0, true, &GetArrayValidator<0, false, nullptr>()>();

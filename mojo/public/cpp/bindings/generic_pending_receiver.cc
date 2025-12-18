@@ -40,8 +40,9 @@ mojo::ScopedMessagePipeHandle GenericPendingReceiver::PassPipe() {
 mojo::ScopedMessagePipeHandle GenericPendingReceiver::PassPipeIfNameIs(
     const char* interface_name) {
   DCHECK(is_valid());
-  if (interface_name_ == interface_name)
+  if (interface_name_ == interface_name) {
     return PassPipe();
+  }
   return mojo::ScopedMessagePipeHandle();
 }
 

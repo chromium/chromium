@@ -266,8 +266,9 @@ TEST_F(DataViewTest, Map) {
   ASSERT_TRUE(map_data_view.ReadValues(&values));
 
   std::unordered_map<std::string, int32_t> map;
-  for (size_t i = 0; i < 2; ++i)
+  for (size_t i = 0; i < 2; ++i) {
     map[keys[i]] = values[i];
+  }
 
   EXPECT_EQ(1, map["1"]);
   EXPECT_EQ(2, map["2"]);

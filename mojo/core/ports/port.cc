@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/core/ports/port.h"
+
 #include <utility>
 
 namespace mojo {
@@ -34,11 +35,13 @@ Port::Port(uint64_t next_sequence_num_to_send,
 Port::~Port() = default;
 
 bool Port::IsNextEvent(const NodeName& from_node, const Event& event) {
-  if (from_node != prev_node_name)
+  if (from_node != prev_node_name) {
     return false;
+  }
 
-  if (event.from_port() != prev_port_name)
+  if (event.from_port() != prev_port_name) {
     return false;
+  }
 
   DCHECK_GE(event.control_sequence_num(), next_control_sequence_num_to_receive);
   return event.control_sequence_num() == next_control_sequence_num_to_receive;
@@ -46,8 +49,9 @@ bool Port::IsNextEvent(const NodeName& from_node, const Event& event) {
 
 void Port::NextEvent(NodeName* from_node, ScopedEvent* event) {
   auto it = control_event_queues_.find({prev_node_name, prev_port_name});
-  if (it == control_event_queues_.end())
+  if (it == control_event_queues_.end()) {
     return;
+  }
 
   auto& msg_queue = it->second;
   // There must always be one entry since we delete the queue after processing
@@ -55,8 +59,9 @@ void Port::NextEvent(NodeName* from_node, ScopedEvent* event) {
   DCHECK_GE(msg_queue.size(), 1lu);
 
   if (msg_queue[0]->control_sequence_num() !=
-      next_control_sequence_num_to_receive)
+      next_control_sequence_num_to_receive) {
     return;
+  }
 
   std::pop_heap(msg_queue.begin(), msg_queue.end());
   *from_node = prev_node_name;
@@ -80,8 +85,9 @@ void Port::TakePendingMessages(
   for (auto& node_queue_pair : control_event_queues_) {
     auto& events = node_queue_pair.second;
     for (auto& event : events) {
-      if (event->type() != Event::Type::kUserMessage)
+      if (event->type() != Event::Type::kUserMessage) {
         continue;
+      }
       messages.emplace_back(Event::Cast<UserMessageEvent>(&event));
     }
   }

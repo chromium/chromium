@@ -38,8 +38,9 @@ TEST(ValidationContextTest, ConstructorRangeOverflow) {
         ToPtr(std::numeric_limits<uintptr_t>::max() - 3000), 1));
   }
 
-  if (sizeof(size_t) <= sizeof(uint32_t))
+  if (sizeof(size_t) <= sizeof(uint32_t)) {
     return;
+  }
 
   {
     // Test handle index range overflow.
@@ -51,8 +52,8 @@ TEST(ValidationContextTest, ConstructorRangeOverflow) {
     EXPECT_FALSE(context.ClaimHandle(
         Handle_Data(std::numeric_limits<uint32_t>::max() - 1)));
 
-    EXPECT_TRUE(context.ClaimHandle(
-        Handle_Data(internal::kEncodedInvalidHandleValue)));
+    EXPECT_TRUE(
+        context.ClaimHandle(Handle_Data(internal::kEncodedInvalidHandleValue)));
   }
 
   {
@@ -151,10 +152,10 @@ TEST(ValidationContextTest, ClaimHandle) {
     EXPECT_FALSE(context.ClaimHandle(Handle_Data(8)));
 
     // Should return true for invalid handle.
-    EXPECT_TRUE(context.ClaimHandle(
-        Handle_Data(internal::kEncodedInvalidHandleValue)));
-    EXPECT_TRUE(context.ClaimHandle(
-        Handle_Data(internal::kEncodedInvalidHandleValue)));
+    EXPECT_TRUE(
+        context.ClaimHandle(Handle_Data(internal::kEncodedInvalidHandleValue)));
+    EXPECT_TRUE(
+        context.ClaimHandle(Handle_Data(internal::kEncodedInvalidHandleValue)));
   }
 
   {
@@ -164,8 +165,8 @@ TEST(ValidationContextTest, ClaimHandle) {
     EXPECT_FALSE(context.ClaimHandle(Handle_Data(0)));
 
     // Should still return true for invalid handle.
-    EXPECT_TRUE(context.ClaimHandle(
-        Handle_Data(internal::kEncodedInvalidHandleValue)));
+    EXPECT_TRUE(
+        context.ClaimHandle(Handle_Data(internal::kEncodedInvalidHandleValue)));
   }
 
   {
@@ -183,8 +184,8 @@ TEST(ValidationContextTest, ClaimHandle) {
     EXPECT_FALSE(context.ClaimHandle(Handle_Data(0)));
 
     // Should still return true for invalid handle.
-    EXPECT_TRUE(context.ClaimHandle(
-        Handle_Data(internal::kEncodedInvalidHandleValue)));
+    EXPECT_TRUE(
+        context.ClaimHandle(Handle_Data(internal::kEncodedInvalidHandleValue)));
   }
 }
 

@@ -81,10 +81,11 @@ struct Serializer<AssociatedInterfaceRequestDataView<Base>,
       return false;
     }
     auto handle = DeserializeAssociatedEndpointHandle(*input, *message);
-    if (!handle.is_valid())
+    if (!handle.is_valid()) {
       *output = PendingAssociatedReceiver<T>();
-    else
+    } else {
       *output = PendingAssociatedReceiver<T>(std::move(handle));
+    }
     return true;
   }
 };

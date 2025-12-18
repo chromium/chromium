@@ -69,14 +69,17 @@ ports::ScopedEvent DeserializeEventMessage(
   void* data;
   size_t size;
   bool valid = NodeChannel::GetEventMessageData(*channel_message, &data, &size);
-  if (!valid)
+  if (!valid) {
     return nullptr;
+  }
   auto event = ports::Event::Deserialize(data, size);
-  if (!event)
+  if (!event) {
     return nullptr;
+  }
 
-  if (event->type() != ports::Event::Type::kUserMessage)
+  if (event->type() != ports::Event::Type::kUserMessage) {
     return event;
+  }
 
   // User messages require extra parsing.
   const size_t event_size = event->GetSerializedSize();
@@ -89,8 +92,9 @@ ports::ScopedEvent DeserializeEventMessage(
   auto message = UserMessageImpl::CreateFromChannelMessage(
       message_event.get(), std::move(channel_message),
       UNSAFE_TODO(static_cast<uint8_t*>(data) + event_size), size - event_size);
-  if (!message)
+  if (!message) {
     return nullptr;
+  }
 
   message->set_source_node(from_node);
   message_event->AttachMessage(std::move(message));
@@ -327,8 +331,9 @@ base::WritableSharedMemoryRegion NodeController::CreateSharedBuffer(
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   // Shared buffer creation failure is fatal, so always use the broker when we
   // have one; unless of course the embedder forces us not to.
-  if (!GetConfiguration().force_direct_shared_memory_allocation && broker_)
+  if (!GetConfiguration().force_direct_shared_memory_allocation && broker_) {
     return broker_->GetWritableSharedMemoryRegion(num_bytes);
+  }
 #endif
   return base::WritableSharedMemoryRegion::Create(num_bytes);
 }
@@ -539,8 +544,9 @@ void NodeController::AcceptBrokerClientInvitationOnIOThread(
     }
   }
   bootstrap_inviter_channel_->Start();
-  if (broker_host_handle)
+  if (broker_host_handle) {
     bootstrap_inviter_channel_->BindBrokerHost(std::move(*broker_host_handle));
+  }
 }
 
 void NodeController::ConnectIsolatedOnIOThread(
@@ -592,8 +598,9 @@ scoped_refptr<NodeChannel> NodeController::GetPeerChannel(
     const ports::NodeName& name) {
   base::AutoLock lock(peers_lock_);
   auto it = peers_.find(name);
-  if (it == peers_.end())
+  if (it == peers_.end()) {
     return nullptr;
+  }
   return it->second;
 }
 
@@ -607,8 +614,9 @@ scoped_refptr<NodeChannel> NodeController::GetInviterChannel() {
 }
 
 scoped_refptr<NodeChannel> NodeController::GetBrokerChannel() {
-  if (GetConfiguration().is_broker_process)
+  if (GetConfiguration().is_broker_process) {
     return nullptr;
+  }
 
   ports::NodeName broker_name;
   {
@@ -657,8 +665,9 @@ void NodeController::AddPeer(const ports::NodeName& name,
     }
   }
 
-  if (start_channel)
+  if (start_channel) {
     channel->Start();
+  }
 
   // Flush any queued message we need to deliver to this node.
   while (!pending_messages.empty()) {
@@ -699,8 +708,9 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     base::AutoLock lock(reserved_ports_lock_);
     auto it = reserved_ports_.find(name);
     if (it != reserved_ports_.end()) {
-      for (auto& entry : it->second)
+      for (auto& entry : it->second) {
         ports_to_close.emplace_back(entry.second);
+      }
       reserved_ports_.erase(it);
     }
   }
@@ -715,20 +725,23 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
   // If the error comes from the inviter channel, we also need to cancel any
   // port merge requests, so that errors can be propagated to the message
   // pipes.
-  if (is_inviter)
+  if (is_inviter) {
     CancelPendingPortMerges();
+  }
 
   auto connection_it = pending_isolated_connections_.find(name);
   if (connection_it != pending_isolated_connections_.end()) {
     IsolatedConnection& connection = connection_it->second;
     ports_to_close.push_back(connection.local_port);
-    if (!connection.name.empty())
+    if (!connection.name.empty()) {
       named_isolated_connections_.erase(connection.name);
+    }
     pending_isolated_connections_.erase(connection_it);
   }
 
-  for (const auto& port : ports_to_close)
+  for (const auto& port : ports_to_close) {
     node_->ClosePort(port);
+  }
 
   node_->LostConnectionToNode(name);
   AttemptShutdownIfRequested();
@@ -737,8 +750,9 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
 void NodeController::SendPeerEvent(const ports::NodeName& name,
                                    ports::ScopedEvent event) {
   Channel::MessagePtr event_message = SerializeEventMessage(std::move(event));
-  if (!event_message)
+  if (!event_message) {
     return;
+  }
   scoped_refptr<NodeChannel> peer = GetPeerChannel(name);
 #if BUILDFLAG(IS_WIN)
   if (event_message->has_handles()) {
@@ -788,10 +802,11 @@ void NodeController::SendPeerEvent(const ports::NodeName& name,
       peer = it->second;
     }
   }
-  if (needs_introduction)
+  if (needs_introduction) {
     broker->RequestIntroduction(name);
-  else if (peer)
+  } else if (peer) {
     peer->SendChannelMessage(std::move(event_message));
+  }
 }
 
 void NodeController::DropAllPeers() {
@@ -813,10 +828,12 @@ void NodeController::DropAllPeers() {
 
   {
     base::AutoLock lock(peers_lock_);
-    for (const auto& peer : peers_)
+    for (const auto& peer : peers_) {
       all_peers.push_back(peer.second);
-    for (const auto& peer : pending_invitations_)
+    }
+    for (const auto& peer : pending_invitations_) {
       all_peers.push_back(peer.second);
+    }
     peers_.clear();
     pending_invitations_.clear();
     pending_peer_messages_.clear();
@@ -824,20 +841,23 @@ void NodeController::DropAllPeers() {
     named_isolated_connections_.clear();
   }
 
-  for (const auto& peer : all_peers)
+  for (const auto& peer : all_peers) {
     peer->ShutDown();
+  }
 
-  if (destroy_on_io_thread_shutdown_)
+  if (destroy_on_io_thread_shutdown_) {
     delete this;
+  }
 }
 
 void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
-  if (node == name_)
+  if (node == name_) {
     node_->AcceptEvent(name_, std::move(event));
-  else
+  } else {
     SendPeerEvent(node, std::move(event));
+  }
 
   AttemptShutdownIfRequested();
 }
@@ -1181,13 +1201,15 @@ void NodeController::OnRequestPortMerge(
     }
     local_port = port_it->second;
     port_map.erase(port_it);
-    if (port_map.empty())
+    if (port_map.empty()) {
       reserved_ports_.erase(it);
+    }
   }
 
   int rv = node_->MergePorts(local_port, from_node, connector_port_name);
-  if (rv != ports::OK)
+  if (rv != ports::OK) {
     DLOG(ERROR) << "MergePorts failed: " << rv;
+  }
 }
 
 void NodeController::OnRequestIntroduction(const ports::NodeName& from_node,
@@ -1321,10 +1343,11 @@ void NodeController::OnRelayEventMessage(const ports::NodeName& from_node,
   }
 
   scoped_refptr<NodeChannel> peer = GetPeerChannel(destination);
-  if (peer)
+  if (peer) {
     peer->EventMessageFromRelay(from_node, std::move(message));
-  else
+  } else {
     DLOG(ERROR) << "Dropping relay message for unknown node " << destination;
+  }
 }
 
 void NodeController::OnEventMessageFromRelay(const ports::NodeName& from_node,
@@ -1356,8 +1379,9 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
   IsolatedConnection& connection = it->second;
   scoped_refptr<NodeChannel> channel = std::move(connection.channel);
   ports::PortRef local_port = connection.local_port;
-  if (!connection.name.empty())
+  if (!connection.name.empty()) {
     named_isolated_connections_[connection.name] = peer_name;
+  }
   pending_isolated_connections_.erase(it);
   DCHECK(channel);
 
@@ -1375,8 +1399,9 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
   // We need to choose one side to initiate the port merge. It doesn't matter
   // who does it as long as they don't both try. Simple solution: pick the one
   // with the "smaller" port name.
-  if (local_port.name() < port_name)
+  if (local_port.name() < port_name) {
     node()->MergePorts(local_port, peer_name, port_name);
+  }
 }
 
 void NodeController::OnChannelError(const ports::NodeName& from_node,
@@ -1398,13 +1423,15 @@ void NodeController::CancelPendingPortMerges() {
   {
     base::AutoLock lock(pending_port_merges_lock_);
     reject_pending_merges_ = true;
-    for (const auto& port : pending_port_merges_)
+    for (const auto& port : pending_port_merges_) {
       ports_to_close.push_back(port.second);
+    }
     pending_port_merges_.clear();
   }
 
-  for (const auto& port : ports_to_close)
+  for (const auto& port : ports_to_close) {
     node_->ClosePort(port);
+  }
 }
 
 void NodeController::DestroyOnIOThreadShutdown() {
@@ -1412,14 +1439,16 @@ void NodeController::DestroyOnIOThreadShutdown() {
 }
 
 void NodeController::AttemptShutdownIfRequested() {
-  if (!shutdown_callback_flag_)
+  if (!shutdown_callback_flag_) {
     return;
+  }
 
   base::OnceClosure callback;
   {
     base::AutoLock lock(shutdown_lock_);
-    if (shutdown_callback_.is_null())
+    if (shutdown_callback_.is_null()) {
       return;
+    }
     if (!node_->CanShutdownCleanly(
             ports::Node::ShutdownPolicy::ALLOW_LOCAL_PORTS)) {
       DVLOG(2) << "Unable to cleanly shut down node " << name_;
@@ -1450,13 +1479,15 @@ void NodeController::ForceDisconnectProcessForTestingOnIOThread(
     NodeChannel* channel = peer.second.get();
     if (channel->HasRemoteProcessHandle()) {
       base::Process process(channel->CloneRemoteProcessHandle());
-      if (process.Pid() == process_id)
+      if (process.Pid() == process_id) {
         peers_to_drop.emplace(peer.first, peer.second);
+      }
     }
   }
 
-  for (auto& peer : peers_to_drop)
+  for (auto& peer : peers_to_drop) {
     DropPeer(peer.first, peer.second.get());
+  }
 #endif
 }
 

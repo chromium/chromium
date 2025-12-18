@@ -55,8 +55,9 @@ void BindingStateBase::FlushAsync(AsyncFlusher flusher) {
 }
 
 void BindingStateBase::Close() {
-  if (!router_)
+  if (!router_) {
     return;
+  }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -67,8 +68,9 @@ void BindingStateBase::Close() {
 
 void BindingStateBase::CloseWithReason(uint32_t custom_reason,
                                        std::string_view description) {
-  if (endpoint_client_)
+  if (endpoint_client_) {
     endpoint_client_->CloseWithReason(custom_reason, description);
+  }
 
   Close();
 }
@@ -78,8 +80,9 @@ ReportBadMessageCallback BindingStateBase::GetBadMessageCallback() {
       [](ReportBadMessageCallback inner_callback,
          base::WeakPtr<BindingStateBase> binding, std::string_view error) {
         std::move(inner_callback).Run(error);
-        if (binding)
+        if (binding) {
           binding->Close();
+        }
       },
       mojo::GetBadMessageCallback(), weak_ptr_factory_.GetWeakPtr());
 }

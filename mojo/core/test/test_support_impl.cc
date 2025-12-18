@@ -34,8 +34,9 @@ base::FilePath ResolveSourceRootRelativePath(const char* relative_path) {
 
   for (std::string_view component : base::SplitStringPiece(
            relative_path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (!component.empty())
+    if (!component.empty()) {
       path = path.AppendASCII(component);
+    }
   }
 
   return path;
@@ -69,8 +70,9 @@ char** TestSupportImpl::EnumerateSourceRootRelativeDirectory(
   std::vector<std::string> names;
   base::FileEnumerator e(ResolveSourceRootRelativePath(relative_path), false,
                          base::FileEnumerator::FILES);
-  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next())
+  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
     names.push_back(name.BaseName().AsUTF8Unsafe());
+  }
 
   // |names.size() + 1| for null terminator.
   char** rv = static_cast<char**>(calloc(names.size() + 1, sizeof(char*)));
@@ -90,4 +92,4 @@ char** TestSupportImpl::EnumerateSourceRootRelativeDirectory(
   return rv;
 }
 
-} // namespace mojo::core::test
+}  // namespace mojo::core::test

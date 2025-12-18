@@ -35,19 +35,23 @@ bool MessageDispatcher::Accept(Message* message) {
 
   DCHECK(sink_);
   if (validator_) {
-    if (!validator_->Accept(message))
+    if (!validator_->Accept(message)) {
       return false;
+    }
   }
 
-  if (!filter_)
+  if (!filter_) {
     return sink_->Accept(message);
+  }
 
   base::WeakPtr<MessageDispatcher> weak_self = weak_factory_.GetWeakPtr();
-  if (!filter_->WillDispatch(message))
+  if (!filter_->WillDispatch(message)) {
     return false;
+  }
   bool result = sink_->Accept(message);
-  if (!weak_self)
+  if (!weak_self) {
     return result;
+  }
   filter_->DidDispatchOrReject(message, result);
   return result;
 }

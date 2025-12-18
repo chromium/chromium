@@ -38,8 +38,9 @@ bool ParamTraits<mojo::test::PickledStructChromium>::Read(
     base::PickleIterator* iter,
     param_type* p) {
   int foo, bar;
-  if (!iter->ReadInt(&foo) || !iter->ReadInt(&bar))
+  if (!iter->ReadInt(&foo) || !iter->ReadInt(&bar)) {
     return false;
+  }
 
   p->set_foo(foo);
   p->set_bar(bar);

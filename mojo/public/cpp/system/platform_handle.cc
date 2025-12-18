@@ -40,8 +40,9 @@ base::ScopedPlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
 
 ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
     base::subtle::PlatformSharedMemoryRegion region) {
-  if (!region.IsValid())
+  if (!region.IsValid()) {
     return ScopedSharedBufferHandle();
+  }
 
   MojoPlatformSharedMemoryRegionAccessMode access_mode;
   switch (region.GetMode()) {
@@ -95,15 +96,17 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
   MojoResult result = MojoWrapPlatformSharedMemoryRegion(
       platform_handles, num_platform_handles, region.GetSize(), &mojo_guid,
       access_mode, nullptr, &mojo_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return ScopedSharedBufferHandle();
+  }
   return ScopedSharedBufferHandle(SharedBufferHandle(mojo_handle));
 }
 
 base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
     ScopedSharedBufferHandle mojo_handle) {
-  if (!mojo_handle.is_valid())
+  if (!mojo_handle.is_valid()) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
 
   MojoPlatformHandle platform_handles[2];
   platform_handles[0].struct_size = sizeof(platform_handles[0]);
@@ -115,47 +118,59 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
   MojoResult result = MojoUnwrapPlatformSharedMemoryRegion(
       mojo_handle.release().value(), nullptr, platform_handles,
       &num_platform_handles, &size, &mojo_guid, &access_mode);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
 
   base::subtle::ScopedPlatformSharedMemoryHandle region_handle;
 #if BUILDFLAG(IS_WIN)
-  if (num_platform_handles != 1)
+  if (num_platform_handles != 1) {
     return base::subtle::PlatformSharedMemoryRegion();
-  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE)
+  }
+  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
   region_handle.Set(reinterpret_cast<HANDLE>(platform_handles[0].value));
 #elif BUILDFLAG(IS_FUCHSIA)
-  if (num_platform_handles != 1)
+  if (num_platform_handles != 1) {
     return base::subtle::PlatformSharedMemoryRegion();
-  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
+  }
+  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
   region_handle.reset(static_cast<zx_handle_t>(platform_handles[0].value));
 #elif BUILDFLAG(IS_APPLE)
-  if (num_platform_handles != 1)
+  if (num_platform_handles != 1) {
     return base::subtle::PlatformSharedMemoryRegion();
-  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT)
+  }
+  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
   region_handle.reset(static_cast<mach_port_t>(platform_handles[0].value));
 #elif BUILDFLAG(IS_ANDROID)
-  if (num_platform_handles != 1)
+  if (num_platform_handles != 1) {
     return base::subtle::PlatformSharedMemoryRegion();
-  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR)
+  }
+  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
   region_handle.reset(static_cast<int>(platform_handles[0].value));
 #else
   if (access_mode == MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
-    if (num_platform_handles != 2)
+    if (num_platform_handles != 2) {
       return base::subtle::PlatformSharedMemoryRegion();
+    }
   } else if (num_platform_handles != 1) {
     return base::subtle::PlatformSharedMemoryRegion();
   }
-  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR)
+  if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR) {
     return base::subtle::PlatformSharedMemoryRegion();
+  }
   region_handle.fd.reset(static_cast<int>(platform_handles[0].value));
   if (num_platform_handles == 2) {
-    if (platform_handles[1].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR)
+    if (platform_handles[1].type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR) {
       return base::subtle::PlatformSharedMemoryRegion();
+    }
     region_handle.readonly_fd.reset(
         static_cast<int>(platform_handles[1].value));
   }
@@ -203,8 +218,9 @@ ScopedHandle WrapPlatformHandle(PlatformHandle handle) {
   MojoHandle wrapped_handle;
   MojoResult result =
       MojoWrapPlatformHandle(&platform_handle, nullptr, &wrapped_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return ScopedHandle();
+  }
   return ScopedHandle(Handle(wrapped_handle));
 }
 
@@ -217,8 +233,9 @@ PlatformHandle UnwrapPlatformHandle(ScopedHandle handle) {
   platform_handle.struct_size = sizeof(platform_handle);
   MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
                                                nullptr, &platform_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return PlatformHandle();
+  }
   return PlatformHandle::FromMojoPlatformHandle(&platform_handle);
 }
 
@@ -243,8 +260,9 @@ MojoResult UnwrapPlatformFile(ScopedHandle handle,
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
   MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
                                                nullptr, &platform_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return result;
+  }
 
   if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_INVALID) {
     *file = base::ScopedPlatformFile();

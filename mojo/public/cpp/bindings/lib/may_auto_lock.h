@@ -20,8 +20,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
  public:
   explicit MayAutoLock(std::optional<base::Lock>* lock)
       : lock_(lock->has_value() ? &lock->value() : nullptr) {
-    if (lock_)
+    if (lock_) {
       lock_->Acquire();
+    }
   }
 
   MayAutoLock(const MayAutoLock&) = delete;
@@ -56,8 +57,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
   MayAutoUnlock& operator=(const MayAutoUnlock&) = delete;
 
   ~MayAutoUnlock() {
-    if (lock_)
+    if (lock_) {
       lock_->Acquire();
+    }
   }
 
  private:

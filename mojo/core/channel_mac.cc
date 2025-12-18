@@ -368,8 +368,9 @@ class ChannelMac : public Channel,
       // |send_buffer_contains_message_| will be set to true. The Mojo message
       // object can be destroyed at this point.
       pending_messages_.pop_front();
-      if (!did_send)
+      if (!did_send) {
         break;
+      }
     }
   }
 
@@ -524,8 +525,9 @@ class ChannelMac : public Channel,
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-    if (self_)
+    if (self_) {
       ShutDownOnIOThread();
+    }
   }
 
   // base::MessagePumpKqueue::MachPortWatcher:
@@ -551,8 +553,9 @@ class ChannelMac : public Channel,
         mach_msg(header, rcv_options, 0, header->msgh_size, receive_port_.get(),
                  /*timeout=*/0, MACH_PORT_NULL);
     if (kr != KERN_SUCCESS) {
-      if (kr == MACH_RCV_TIMED_OUT)
+      if (kr == MACH_RCV_TIMED_OUT) {
         return;
+      }
       MACH_LOG(ERROR, kr) << "mach_msg receive";
       OnError(Error::kDisconnected);
       return;
@@ -570,8 +573,9 @@ class ChannelMac : public Channel,
 
     if (header->msgh_id == kChannelMacHandshakeMsgId) {
       buffer.Seek(0);
-      if (ReceiveHandshake(buffer))
+      if (ReceiveHandshake(buffer)) {
         scoped_message.Disarm();
+      }
       return;
     }
 

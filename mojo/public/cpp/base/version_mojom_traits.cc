@@ -13,8 +13,9 @@ bool StructTraits<mojo_base::mojom::VersionDataView, base::Version>::Read(
     mojo_base::mojom::VersionDataView data,
     base::Version* out) {
   std::vector<uint32_t> components;
-  if (!data.ReadComponents(&components))
+  if (!data.ReadComponents(&components)) {
     return false;
+  }
 
   *out = base::Version(std::move(components));
   return true;

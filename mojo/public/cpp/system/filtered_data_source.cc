@@ -14,8 +14,9 @@ FilteredDataSource::FilteredDataSource(
 }
 
 FilteredDataSource::~FilteredDataSource() {
-  if (filter_)
+  if (filter_) {
     filter_->OnDone();
+  }
 }
 
 uint64_t FilteredDataSource::GetLength() const {
@@ -26,8 +27,9 @@ FilteredDataSource::ReadResult FilteredDataSource::Read(
     uint64_t offset,
     base::span<char> buffer) {
   ReadResult result = source_->Read(offset, buffer);
-  if (filter_)
+  if (filter_) {
     filter_->OnRead(buffer, &result);
+  }
   return result;
 }
 

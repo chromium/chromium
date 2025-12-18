@@ -459,8 +459,9 @@ Channel::MessagePtr Channel::Message::Deserialize(
     size_t data_num_bytes,
     HandlePolicy handle_policy,
     base::ProcessHandle from_process) {
-  if (data_num_bytes < sizeof(LegacyHeader))
+  if (data_num_bytes < sizeof(LegacyHeader)) {
     return nullptr;
+  }
 
   const LegacyHeader* legacy_header =
       reinterpret_cast<const LegacyHeader*>(data);
@@ -473,8 +474,9 @@ Channel::MessagePtr Channel::Message::Deserialize(
   // If a message isn't explicitly identified as type NORMAL_LEGACY, it is
   // expected to have a full-size header.
   const Header* header = nullptr;
-  if (legacy_header->message_type != MessageType::NORMAL_LEGACY)
+  if (legacy_header->message_type != MessageType::NORMAL_LEGACY) {
     header = reinterpret_cast<const Header*>(data);
+  }
 
   uint32_t extra_header_size = 0;
   auto data_span = UNSAFE_TODO(
@@ -569,8 +571,9 @@ Channel::MessagePtr Channel::Message::Deserialize(
     HANDLE handle = base::win::Uint32ToHandle(
         UNSAFE_TODO(static_cast<ComplexMessage*>(message.get())->handles_[i])
             .handle);
-    if (PlatformHandleInTransit::IsPseudoHandle(handle))
+    if (PlatformHandleInTransit::IsPseudoHandle(handle)) {
       return nullptr;
+    }
     if (from_process == base::kNullProcessHandle) {
       handles[i] = PlatformHandleInTransit(
           PlatformHandle(base::win::ScopedHandle(handle)));
@@ -646,8 +649,9 @@ base::span<const char> Channel::Message::payload_span() const {
 }
 
 size_t Channel::Message::payload_size() const {
-  if (is_legacy_message())
+  if (is_legacy_message()) {
     return legacy_header()->num_bytes - sizeof(LegacyHeader);
+  }
   return size_ - header()->num_header_bytes;
 }
 
@@ -746,9 +750,10 @@ ComplexMessage::ComplexMessage(size_t capacity,
 #if BUILDFLAG(IS_WIN)
     handles_ = reinterpret_cast<HandleEntry*>(mutable_extra_header());
     // Initialize all handles to invalid values.
-    for (size_t i = 0; i < max_handles_; ++i)
+    for (size_t i = 0; i < max_handles_; ++i) {
       UNSAFE_TODO(handles_[i]).handle =
           base::win::HandleToUint32(INVALID_HANDLE_VALUE);
+    }
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     mach_ports_header_ =
         reinterpret_cast<MachPortsExtraHeader*>(mutable_extra_header());
@@ -762,8 +767,9 @@ ComplexMessage::ComplexMessage(size_t capacity,
 }
 
 size_t ComplexMessage::capacity() const {
-  if (is_legacy_message())
+  if (is_legacy_message()) {
     return capacity_ - sizeof(LegacyHeader);
+  }
   return capacity_ - header()->num_header_bytes;
 }
 
@@ -832,8 +838,9 @@ void ComplexMessage::SetHandles(
   UNSAFE_TODO(memset(handles_, 0, extra_header_size()));
   for (size_t i = 0; i < handle_vector_.size(); i++) {
     HANDLE handle = handle_vector_[i].remote_handle();
-    if (handle == INVALID_HANDLE_VALUE)
+    if (handle == INVALID_HANDLE_VALUE) {
       handle = handle_vector_[i].handle().GetHandle().Get();
+    }
     UNSAFE_TODO(handles_[i]).handle = base::win::HandleToUint32(handle);
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1067,8 +1074,9 @@ void Channel::WriteNextIpczMessage(
 char* Channel::GetReadBuffer(size_t* buffer_capacity) {
   DCHECK(read_buffer_);
   size_t required_capacity = *buffer_capacity;
-  if (!required_capacity)
+  if (!required_capacity) {
     required_capacity = kReadBufferSize;
+  }
 
   *buffer_capacity = required_capacity;
   return read_buffer_->Reserve(required_capacity);
@@ -1296,8 +1304,9 @@ Channel::DispatchResult Channel::TryDispatchMessage(
 }
 
 void Channel::OnError(Error error) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnChannelError(error);
+  }
 }
 
 bool Channel::OnControlMessage(Message::MessageType message_type,

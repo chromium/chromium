@@ -44,15 +44,17 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
   MojoResult AddEvent(base::WaitableEvent* event) {
     auto result = user_events_.insert(event);
-    if (result.second)
+    if (result.second) {
       return MOJO_RESULT_OK;
+    }
     return MOJO_RESULT_ALREADY_EXISTS;
   }
 
   MojoResult RemoveEvent(base::WaitableEvent* event) {
     auto it = user_events_.find(event);
-    if (it == user_events_.end())
+    if (it == user_events_.end()) {
       return MOJO_RESULT_NOT_FOUND;
+    }
     user_events_.erase(it);
     return MOJO_RESULT_OK;
   }
@@ -65,8 +67,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     {
       base::AutoLock lock(lock_);
 
-      if (handle_to_context_.count(handle))
+      if (handle_to_context_.count(handle)) {
         return MOJO_RESULT_ALREADY_EXISTS;
+      }
       DCHECK(!contexts_.count(context->context_value()));
 
       handle_to_context_[handle] = context;
@@ -109,8 +112,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       cancelled_contexts_.clear();
 
       auto it = handle_to_context_.find(handle);
-      if (it == handle_to_context_.end())
+      if (it == handle_to_context_.end()) {
         return MOJO_RESULT_NOT_FOUND;
+      }
 
       context = std::move(it->second);
       handle_to_context_.erase(it);
@@ -179,8 +183,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
         } else if (rv == MOJO_RESULT_NOT_FOUND) {
           // Nothing to watch. If there are no user events, always signal to
           // avoid deadlock.
-          if (user_events_.empty())
+          if (user_events_.empty()) {
             handle_event_.Signal();
+          }
         } else {
           // Watcher must be armed now. No need to manually signal.
           DCHECK_EQ(MOJO_RESULT_OK, rv);
@@ -195,8 +200,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
     absl::InlinedVector<base::WaitableEvent*, 4> events;
     events.resize(user_events_.size() + 1);
-    if (waitable_index_shift_ > user_events_.size())
+    if (waitable_index_shift_ > user_events_.size()) {
       waitable_index_shift_ = 0;
+    }
 
     size_t dest_index = waitable_index_shift_++;
     events[dest_index] = &handle_event_;

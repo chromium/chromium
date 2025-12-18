@@ -91,8 +91,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateSharedBuffer(
   return Java_CoreImpl_newResultAndLong(env, result, handle);
 }
 
-static jint JNI_CoreImpl_Close(JNIEnv* env,
-                               jlong mojo_handle) {
+static jint JNI_CoreImpl_Close(JNIEnv* env, jlong mojo_handle) {
   return MojoClose(mojo_handle);
 }
 
@@ -148,8 +147,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
   ScopedMessageHandle message;
   MojoResult result =
       ReadMessageNew(MessagePipeHandle(mojo_handle), &message, flags);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
+  }
   DCHECK(message.is_valid());
 
   result = MojoSerializeMessage(message->value(), nullptr);
@@ -170,8 +170,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
                                 handles.data(), &num_handles);
   }
 
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
+  }
 
   // Extend handles to 64-bit values if necessary.
   std::vector<int64_t> java_handles(handles.size());
@@ -335,8 +336,9 @@ static jint JNI_CoreImpl_GetNativeBufferOffset(JNIEnv* env,
   jint offset =
       reinterpret_cast<uintptr_t>(env->GetDirectBufferAddress(buffer.obj())) %
       alignment;
-  if (offset == 0)
+  if (offset == 0) {
     return 0;
+  }
   return alignment - offset;
 }
 

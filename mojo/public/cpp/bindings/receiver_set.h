@@ -371,8 +371,9 @@ class ReceiverSetBase {
   // Similar to the method above, but also specifies a disconnect reason.
   void ClearWithReason(uint32_t custom_reason_code,
                        const std::string& description) {
-    for (auto& entry : state_.entries())
+    for (auto& entry : state_.entries()) {
       entry.second->receiver().ResetWithReason(custom_reason_code, description);
+    }
 
     Clear();
   }
@@ -485,8 +486,9 @@ class ReceiverSetBase {
   [[nodiscard]] ImplPointerType SwapImplForTesting(ReceiverId id,
                                                    ImplPointerType new_impl) {
     auto it = state_.entries().find(id);
-    if (it == state_.entries().end())
+    if (it == state_.entries().end()) {
       return nullptr;
+    }
 
     ReceiverEntry& entry = static_cast<ReceiverEntry&>(it->second->receiver());
     return entry.SwapImplForTesting(std::move(new_impl));

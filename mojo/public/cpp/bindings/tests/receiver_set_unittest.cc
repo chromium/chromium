@@ -131,8 +131,9 @@ class PingImpl : public PingService {
  private:
   // PingService:
   void Ping(PingCallback callback) override {
-    if (!ping_handler_.is_null())
+    if (!ping_handler_.is_null()) {
       ping_handler_.Run();
+    }
     std::move(callback).Run();
   }
 
@@ -432,14 +433,16 @@ class PingProviderImpl : public AssociatedPingProvider, public PingService {
   // AssociatedPingProvider:
   void GetPing(PendingAssociatedReceiver<PingService> receiver) override {
     ping_receivers_.Add(this, std::move(receiver), new_ping_context_);
-    if (!new_ping_handler_.is_null())
+    if (!new_ping_handler_.is_null()) {
       new_ping_handler_.Run();
+    }
   }
 
   // PingService:
   void Ping(PingCallback callback) override {
-    if (!ping_handler_.is_null())
+    if (!ping_handler_.is_null()) {
       ping_handler_.Run();
+    }
     std::move(callback).Run();
   }
 

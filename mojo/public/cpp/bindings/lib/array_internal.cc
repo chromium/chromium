@@ -29,12 +29,10 @@ std::string MakeMessageWithExpectedArraySize(const char* message,
   return stream.str();
 }
 
-ArrayDataTraits<bool>::BitRef::~BitRef() {
-}
+ArrayDataTraits<bool>::BitRef::~BitRef() {}
 
 ArrayDataTraits<bool>::BitRef::BitRef(uint8_t* storage, uint8_t mask)
-    : storage_(storage), mask_(mask) {
-}
+    : storage_(storage), mask_(mask) {}
 
 ArrayDataTraits<bool>::BitRef& ArrayDataTraits<bool>::BitRef::operator=(
     bool value) {

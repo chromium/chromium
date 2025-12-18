@@ -46,8 +46,9 @@ template <typename T>
 bool ValidatePointer(const Pointer<T>& input,
                      ValidationContext* validation_context) {
   bool result = ValidateEncodedPointer(&input.offset);
-  if (!result)
+  if (!result) {
     ReportValidationError(validation_context, VALIDATION_ERROR_ILLEGAL_POINTER);
+  }
 
   return result;
 }
@@ -118,8 +119,9 @@ template <typename T>
 bool ValidatePointerNonNullable(const T& input,
                                 int field_index,
                                 ValidationContext* validation_context) {
-  if (input.offset)
+  if (input.offset) {
     return true;
+  }
   ReportNonNullableValidationError(validation_context,
                                    VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
                                    field_index);
@@ -130,8 +132,9 @@ template <typename T>
 bool ValidateInlinedUnionNonNullable(const T& input,
                                      int field_index,
                                      ValidationContext* validation_context) {
-  if (!input.is_null())
+  if (!input.is_null()) {
     return true;
+  }
   ReportNonNullableValidationError(validation_context,
                                    VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
                                    field_index);

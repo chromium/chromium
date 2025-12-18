@@ -314,8 +314,8 @@ TEST(UnionTest, SerializeIsNullNotInlined) {
 TEST(UnionTest, NullValidation) {
   void* buf = nullptr;
   mojo::internal::ValidationContext validation_context(buf, 0, 0, 0);
-  EXPECT_TRUE(internal::PodUnion_Data::Validate(
-      buf, &validation_context, false));
+  EXPECT_TRUE(
+      internal::PodUnion_Data::Validate(buf, &validation_context, false));
 }
 
 TEST(UnionTest, OOBValidation) {

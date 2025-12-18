@@ -41,8 +41,9 @@ class WidgetImpl : public mojom::Widget {
 
   // mojom::Widget:
   void Click() override {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer->OnClick();
+    }
   }
 
   void AddObserver(
