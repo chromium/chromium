@@ -16,6 +16,8 @@
          } ],
          "type": "Form"
       }, {
+         "type": "NonStruct"
+      }, {
          "attributes": [ {
             "O": "PrintField",
             "Role": "rb"
@@ -24,6 +26,8 @@
             "checked": "on"
          } ],
          "type": "Form"
+      }, {
+         "type": "NonStruct"
       } ]
    } ]
 }
