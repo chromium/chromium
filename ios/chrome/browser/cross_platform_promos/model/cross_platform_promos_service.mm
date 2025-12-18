@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "base/json/values_util.h"
 #import "base/time/time.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -60,8 +61,12 @@ CrossPlatformPromosService::CrossPlatformPromosService(ProfileIOS* profile)
 
 CrossPlatformPromosService::~CrossPlatformPromosService() = default;
 void CrossPlatformPromosService::OnApplicationWillEnterForeground() {
-  Update16thActiveDay();
-  MaybeShowPromo();
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled()) {
+    Update16thActiveDay();
+  }
+  if (MobilePromoOnDesktopEnabled()) {
+    MaybeShowPromo();
+  }
 }
 
 void CrossPlatformPromosService::ShowLensPromo(Browser* browser) {

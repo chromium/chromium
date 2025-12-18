@@ -1126,6 +1126,12 @@ const char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 const char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";
 
+const char kMobilePromoOnDesktopRecordActiveDaysName[] =
+    "Mobile Promo On Desktop Record Active Days";
+const char kMobilePromoOnDesktopRecordActiveDaysDescription[] =
+    "When enabled, records the user's number of active days for the mobile "
+    "promo on desktop.";
+
 const char kMostVisitedTilesCustomizationName[] =
     "Most Visited Tiles Customization on iOS";
 const char kMostVisitedTilesCustomizationDescription[] =

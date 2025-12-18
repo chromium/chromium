@@ -7105,6 +7105,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "mobile-promo-on-desktop-data-collection",
+    "owners": ["hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 148
+  },
+  {
     "name": "mobile-promo-on-desktop-force-promo-type",
     "owners": [ "hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 148
