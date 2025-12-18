@@ -173,6 +173,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
       "GlicOnboardingApiTest",
+      "GlicApiTestHibernateOnMemoryUsage",
   };
 }
 
@@ -632,6 +633,18 @@ class GlicApiTestHibernateAllOnMemoryPressure : public GlicApiTest {
  public:
   GlicApiTestHibernateAllOnMemoryPressure() {
     feature_list_.InitAndEnableFeature(kGlicHibernateAllOnMemoryPressure);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestHibernateOnMemoryUsage : public GlicApiTest {
+ public:
+  GlicApiTestHibernateOnMemoryUsage() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicHibernateOnMemoryUsage,
+        {{"threshold_mb", "1"}, {"polling_interval", "500ms"}});
   }
 
  private:
@@ -3570,6 +3583,29 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithGeminiActOnWebPolicy,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
+                       testHibernateOnMemoryUsage) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+
+  // Open Glic, verify it's active.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  RegisterConversation("test_id"));
+  GlicInstanceImpl* instance = GetGlicInstanceImpl();
+
+  base::HistogramTester histogram_tester;
+  // Close Glic (make it inactive).
+  RunTestSequence(CloseGlic());
+
+  // Wait and verify that IsHibernated() becomes true.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsHibernated(); }));
+
+  // Check that the histogram was recorded.
+  histogram_tester.ExpectTotalCount("Glic.Instance.MemoryUsageAtThreshold", 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicGetHostCapabilityApiTest,
@@ -3675,6 +3711,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicOnboardingApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestHibernateOnMemoryUsage,
+                         DefaultTestParamSet(),
+                         WithTestParams::PrintTestVariant);
 
 }  // namespace
 }  // namespace glic

@@ -64,6 +64,11 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
                                 target);
 }
 
+void GlicInstanceCoordinatorMetrics::OnHighMemoryUsage(int memory_mb) {
+  base::UmaHistogramMemoryLargeMB("Glic.Instance.MemoryUsageAtThreshold",
+                                  memory_mb);
+}
+
 void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   if (!base::FeatureList::IsEnabled(

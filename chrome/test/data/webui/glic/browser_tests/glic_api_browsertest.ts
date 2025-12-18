@@ -37,6 +37,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
+  async testHibernateOnMemoryUsage() {}
+
   async testDoNothing() {}
 
   async testWebClientReadyOnFullLoad() {}
