@@ -6,6 +6,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kAIRelaxUserActivationReqs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAIRelaxUserActivationReqs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace blink
