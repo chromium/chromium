@@ -621,10 +621,6 @@ const char kEnableTraitCollectionRegistrationDescription[] =
     "When enabled, UI elements will only observe and respond to the UITraits "
     "to which they have been registered.";
 
-const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
-const char kEnableiPadFeedGhostCardsDescription[] =
-    "Enables ghost cards placeholder when feed is loading on iPads.";
-
 const char kEnhancedCalendarName[] = "Enable Enhanced Calendar integration";
 const char kEnhancedCalendarDescription[] =
     "When enabled, the enhanced calendar flow will be available to eligible "

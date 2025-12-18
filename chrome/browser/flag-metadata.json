@@ -3788,11 +3788,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-ipad-feed-ghost-cards",
-    "owners": [ "ginnyhuang@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-isolated-sandboxed-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     "expiry_milestone": 145

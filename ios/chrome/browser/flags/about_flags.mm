@@ -1887,11 +1887,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kReaderModeOmniboxEntrypointName,
      flag_descriptions::kReaderModeOmniboxEntrypointDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableReaderModeOmniboxEntryPoint)},
-
-    {"enable-ipad-feed-ghost-cards",
-     flag_descriptions::kEnableiPadFeedGhostCardsName,
-     flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},

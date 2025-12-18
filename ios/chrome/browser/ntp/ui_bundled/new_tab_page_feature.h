@@ -55,9 +55,6 @@ BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 // Feature flag to enable sending discover feedback to an updated target
 BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 
-// Feature flag to enable ghost cards on the iPad feeds.
-BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
-
 // Feature flag to enable in-product help for swipe action on the Feed.
 BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 
@@ -115,9 +112,6 @@ bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
 
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();
-
-// Whether ghost cards are enabled on the iPad feeds.
-bool IsiPadFeedGhostCardsEnabled();
 
 // Returns the enabled variation of feature kFeedSwipeInProductHelp.
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation();

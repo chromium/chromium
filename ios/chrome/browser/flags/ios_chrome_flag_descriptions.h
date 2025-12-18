@@ -375,9 +375,6 @@ extern const char kEnableTraitCollectionRegistrationDescription[];
 extern const char kEnableVariationsGoogleGroupFilteringName[];
 extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
-extern const char kEnableiPadFeedGhostCardsName[];
-extern const char kEnableiPadFeedGhostCardsDescription[];
-
 extern const char kEnhancedCalendarName[];
 extern const char kEnhancedCalendarDescription[];
 
