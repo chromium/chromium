@@ -16,6 +16,10 @@ extern NSString* const kPageInfoSecurityViewAccessibilityIdentifier;
 // Accessibility identifier for the navigation bar of page info view.
 extern NSString* const kPageInfoViewNavigationBarAccessibilityIdentifier;
 
+// Accessibility identifier for the "done" button in the navigation bar of page
+// info view.
+extern NSString* const kPageInfoViewNavigationDoneButtonAccessibilityIdentifier;
+
 // Accessibility identifier for the navigation bar of page info's security view.
 extern NSString* const
     kPageInfoSecurityViewNavigationBarAccessibilityIdentifier;

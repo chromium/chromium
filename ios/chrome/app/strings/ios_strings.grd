@@ -3087,6 +3087,9 @@
       <message name="IDS_IOS_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
         Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">BEGIN_LINK</ph>history.google.com<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_HISTORY_SELECT_BUTTON" desc="Text for select button contained in the history page toolbar.">
+          Select
+      </message>
       <message name="IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence is meant to reassure users that they can always change their mind and opt out again. Separately, the second sentence explains how history data may be used to personalise the user's experience in other services.  The tone should be friendly and reassuring.">
         You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>

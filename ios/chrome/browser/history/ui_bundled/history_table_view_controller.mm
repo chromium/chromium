@@ -120,14 +120,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.title = l10n_util::GetNSString(IDS_HISTORY_TITLE);
   // Configures NavigationController Toolbar buttons.
   [self configureViewsForNonEditModeWithAnimation:NO];
-  // Adds the "Done" button and hooks it up to `dismissHistory`.
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(dismissHistory)];
-  [dismissButton setAccessibilityIdentifier:
-                     kHistoryNavigationControllerDoneButtonIdentifier];
-  self.navigationItem.rightBarButtonItem = dismissButton;
 
   // SearchController Configuration.
   // Init the searchController with nil so the results are displayed on the same
@@ -158,7 +150,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
 
-  // Place the search bar in the navigation bar.
+  // Configures the navigation bar with a search bar and done button.
   [self updateNavigationBar];
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 }
@@ -334,7 +326,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.deleteButton.enabled =
       [[self.tableView indexPathsForSelectedRows] count];
   self.editButton.enabled = !self.empty;
-  [self setToolbarItems:[self toolbarButtons] animated:animated];
+  [self setToolbarItems:[self createToolbarButtons] animated:animated];
 }
 
 // Configure the navigationItem contents for the current state.
@@ -362,7 +354,30 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     self.navigationItem.searchController = self.searchController;
     self.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeAutomatic;
+    self.navigationItem.rightBarButtonItem =
+        [self createNavigationBarDoneButton];
   }
+}
+
+// Returns a done button for the navigation bar. Disables edit mode or dimisses
+// the view when tapped.
+- (UIBarButtonItem*)createNavigationBarDoneButton {
+  UIBarButtonItem* doneButton;
+  UIBarButtonSystemItem buttonItem;
+  SEL action;
+  BOOL isEditingWithoutActiveSearch =
+      self.isEditing && self.searchController.searchBar.text.length == 0;
+
+  buttonItem = isEditingWithoutActiveSearch ? UIBarButtonSystemItemDone
+                                            : UIBarButtonSystemItemClose;
+  action = isEditingWithoutActiveSearch ? @selector(exitEditMode)
+                                        : @selector(dismissHistory);
+  doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:buttonItem
+                                                             target:self
+                                                             action:action];
+  doneButton.accessibilityIdentifier =
+      kHistoryNavigationControllerDoneButtonIdentifier;
+  return doneButton;
 }
 
 #pragma mark - HistoryConsumer
@@ -455,21 +470,41 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   [self.delegate dismissViewController:self];
 }
 
-- (NSArray<UIBarButtonItem*>*)toolbarButtons {
+// Dismisses the search controller when there's a touch event on the scrim.
+- (void)dismissSearchController:(UIControl*)sender {
+  if (self.searchController.active) {
+    self.searchController.active = NO;
+  }
+}
+
+// Returns toolbar buttons for the current state of the view.
+- (NSArray<UIBarButtonItem*>*)createToolbarButtons {
   if ([self isEmptyState]) {
     return @[
       [self createSpacerButton], self.clearBrowsingDataButton,
       [self createSpacerButton]
     ];
   }
+
   if (self.isEditing) {
-    return @[ self.deleteButton, [self createSpacerButton], self.cancelButton ];
+    // Configure toolbar in edit mode based on whether there is a search in
+    // progress.
+    BOOL isShowingSearchResults =
+        self.searchController.searchBar.text.length != 0 &&
+        self.searchController.active;
+
+    return isShowingSearchResults
+        ? @[ self.deleteButton, [self createSpacerButton], self.cancelButton ]
+        : @[ [self createSpacerButton], self.deleteButton, [self createSpacerButton] ];
   }
+
+  // Not in edit mode or search mode.
   return @[
     self.clearBrowsingDataButton, [self createSpacerButton], self.editButton
   ];
 }
 
+// Returns a toolbar button spacer.
 - (UIBarButtonItem*)createSpacerButton {
   return [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -477,11 +512,24 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                            action:nil];
 }
 
-// Dismisses the search controller when there's a touch event on the scrim.
-- (void)dismissSearchController:(UIControl*)sender {
-  if (self.searchController.active) {
-    self.searchController.active = NO;
-  }
+//  Exits edit mode and updates the view.
+- (void)exitEditMode {
+  [self animateViewsConfigurationForEditingChange];
+  [self updateNavigationBar];
+}
+
+// Called when the delete button is tapped. Removes selected items from history
+// and updates the view.
+- (void)didTapDeleteButton {
+  [super deleteSelectedItemsFromHistory];
+  [self setEditing:NO animated:NO];
+  [self updateNavigationBar];
+}
+
+// Called when the edit button is tapped. Updates the view for edit mode.
+- (void)didTapEditButton {
+  [self animateViewsConfigurationForEditingChange];
+  [self updateNavigationBar];
 }
 
 // Shows scrim overlay and hide toolbar.
@@ -552,8 +600,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (UIBarButtonItem*)cancelButton {
   if (!_cancelButton) {
-    NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_CANCEL_EDITING_BUTTON);
+    NSString* titleString = l10n_util::GetNSString(IDS_DONE);
     _cancelButton = [[UIBarButtonItem alloc]
         initWithTitle:titleString
                 style:UIBarButtonItemStylePlain
@@ -585,13 +632,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (UIBarButtonItem*)deleteButton {
   if (!_deleteButton) {
-    NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_DELETE_SELECTED_ENTRIES_BUTTON);
     _deleteButton = [[UIBarButtonItem alloc]
-        initWithTitle:titleString
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(deleteSelectedItemsFromHistory)];
+        initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                             target:self
+                             action:@selector(didTapDeleteButton)];
+    _deleteButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_HISTORY_DELETE_SELECTED_ENTRIES_BUTTON);
     _deleteButton.accessibilityIdentifier =
         kHistoryToolbarDeleteButtonIdentifier;
     _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
@@ -602,12 +648,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (UIBarButtonItem*)editButton {
   if (!_editButton) {
     NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_START_EDITING_BUTTON);
-    _editButton = [[UIBarButtonItem alloc]
-        initWithTitle:titleString
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(animateViewsConfigurationForEditingChange)];
+        l10n_util::GetNSString(IDS_IOS_HISTORY_SELECT_BUTTON);
+    _editButton =
+        [[UIBarButtonItem alloc] initWithTitle:titleString
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapEditButton)];
     _editButton.accessibilityIdentifier = kHistoryToolbarEditButtonIdentifier;
     // Buttons don't conform to dynamic types. So it's safe to just use the
     // default font size.

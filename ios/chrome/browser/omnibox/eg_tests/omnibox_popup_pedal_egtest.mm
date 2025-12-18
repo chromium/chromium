@@ -4,6 +4,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
@@ -356,8 +357,9 @@ NSString* const kDinoSearchString = @"dino game";
       waitForUIElementToAppearWithMatcher:chrome_test_util::HistoryTableView()];
 
   // Close the Visit history page.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       chrome_test_util::HistoryTableView()];

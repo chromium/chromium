@@ -647,7 +647,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that dismissing the full history reveals the Last Visited subpage.
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
       performAction:grey_tap()
               error:nil];
 

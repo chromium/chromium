@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_table_view_controller_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
+#import "ios/chrome/browser/page_info/constants/page_info_constants.h"
 #import "ios/chrome/browser/page_info/last_visited/page_info_last_visited_view_controller_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -80,8 +81,8 @@ enum ItemType : NSInteger {
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
                            action:@selector(dismissLastVisited)];
-  [dismissButton setAccessibilityIdentifier:
-                     kHistoryNavigationControllerDoneButtonIdentifier];
+  dismissButton.accessibilityIdentifier =
+      kPageInfoViewNavigationDoneButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = dismissButton;
 }
 
