@@ -6,10 +6,15 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
+#include "net/http/http_version.h"
 #include "services/network/public/cpp/data_element.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace url_session_helper {
 
@@ -62,6 +67,57 @@ NSData* ConvertRequestBody(
   return body_data;
 }
 
+// Returns nullptr if status code is invalid.
+// Ignores headers with invalid names or values.
+scoped_refptr<net::HttpResponseHeaders> ConvertNSHTTPURLResponseToHeaders(
+    NSHTTPURLResponse* http_response) {
+  std::optional<net::HttpStatusCode> status_code =
+      net::TryToGetHttpStatusCode(http_response.statusCode);
+  // If the status code returned by URLSession is invalid we return a response
+  // without the headers.
+  if (!status_code.has_value()) {
+    return nullptr;
+  }
+
+  const std::string status_line = base::JoinString(
+      {base::ToString(status_code.value()),
+       net::GetHttpReasonPhrase(std::move(status_code.value()))},
+      " ");
+
+  // There is not public accessor for the HTTP version from NSHTTPURLResponse so
+  // we use 1.1 by default, it is enough for our needs.
+  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1),
+                                            status_line);
+
+  NSDictionary<NSString*, NSString*>* headers = http_response.allHeaderFields;
+
+  // Builder.AddHeader() doesn't copy the string, the copy is only made once
+  // Build() is called. Because of this we need to make sure the strings are
+  // valid until then.
+  std::vector<std::pair<std::string, std::string>> headers_to_add;
+  headers_to_add.reserve(headers.count);
+
+  for (NSString* key in headers) {
+    NSString* value = headers[key];
+    std::string header_name = base::SysNSStringToUTF8(key);
+    std::string header_value = base::SysNSStringToUTF8(value);
+    // SysNSStringToUTF8 returns an empty string if argument was nil or
+    // invalid.
+    if (!header_name.empty() && !header_value.empty() &&
+        net::HttpUtil::IsValidHeaderName(header_name) &&
+        net::HttpUtil::IsValidHeaderValue(header_value)) {
+      headers_to_add.emplace_back(std::move(header_name),
+                                  std::move(header_value));
+    }
+  }
+
+  for (const auto& [key, value] : headers_to_add) {
+    builder.AddHeader(key, value);
+  }
+
+  return builder.Build();
+}
+
 }  // namespace
 
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
@@ -97,6 +153,26 @@ NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
   ns_request.timeoutInterval = timeout_in_seconds;
   ns_request.HTTPBody = body;
   return ns_request;
+}
+
+network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
+    NSURLResponse* ns_response) {
+  CHECK(ns_response);
+  network::mojom::URLResponseHeadPtr response =
+      network::mojom::URLResponseHead::New();
+
+  if (ns_response.MIMEType) {
+    response->mime_type = base::SysNSStringToUTF8(ns_response.MIMEType);
+  }
+  response->content_length = ns_response.expectedContentLength;
+  response->network_accessed = true;
+
+  if ([ns_response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSHTTPURLResponse* http_response = (NSHTTPURLResponse*)ns_response;
+    response->headers = ConvertNSHTTPURLResponseToHeaders(http_response);
+  }
+
+  return response;
 }
 
 }  // namespace url_session_helper

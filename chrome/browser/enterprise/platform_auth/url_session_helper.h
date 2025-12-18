@@ -11,6 +11,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 // URLSession is Apple's API for performing URL requests. This namespace
 // provides a few helper functions to convert between Chrome's network objects
@@ -26,6 +27,13 @@ namespace url_session_helper {
 // body will be set to nil.
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
                                      int timeout_in_seconds);
+
+// Only converts: mime_type, content_length, network_accessed
+// and http headers.
+// When converting http headers will use hard-coded HTTP 1.1 for simplicity.
+// Assumes response is not nil.
+network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
+    NSURLResponse* response);
 
 }  // namespace url_session_helper
 

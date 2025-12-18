@@ -6,14 +6,17 @@
 
 #import <Foundation/Foundation.h>
 
+#include <cstring>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/gurl.h"
@@ -40,11 +43,14 @@ constexpr char kHeaderKey[] = "X-Custom-Header";
 constexpr char kHeaderVal[] = "custom-val";
 constexpr char kAnotherHeaderKey[] = "User-Agent";
 constexpr char kAnotherHeaderVal[] = "Chrome";
+constexpr char kInvalidHeaderName[] = "Invalid@Name";
 constexpr char kInitiator[] = "https://initiator.com";
 constexpr char kContent[] = "payload";
 constexpr char kOrigin[] = "Origin";
 constexpr int kTimeout = 10;
 constexpr char kInvalidString[] = "\x80";
+constexpr char kContentLength[] = "Content-Length";
+constexpr char kContentType[] = "Content-Type";
 
 }  // namespace
 
@@ -225,6 +231,67 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithInvalidMethod) {
   request.method = kInvalidString;
   NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   EXPECT_EQ(nil, result);
+}
+
+TEST(UrlSessionHelperTest, ConvertNSURLResponse_BasicHttp200) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kContentType) : @"text/html",
+    @(kContentLength) : @"42",
+    @(kHeaderKey) : @(kHeaderVal)
+  };
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:200
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:headers];
+  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+
+  ASSERT_TRUE(head);
+  EXPECT_EQ(head->mime_type, "text/html");
+  EXPECT_EQ(head->content_length, 42);
+  EXPECT_TRUE(head->network_accessed);
+
+  ASSERT_TRUE(head->headers);
+  EXPECT_EQ(head->headers->response_code(), 200);
+  EXPECT_EQ(head->headers->GetStatusLine(), "HTTP/1.1 200 OK");
+  ASSERT_TRUE(head->headers->HasHeader(kHeaderKey));
+  EXPECT_EQ(head->headers->GetNormalizedHeader(kHeaderKey).value(), kHeaderVal);
+}
+
+TEST(UrlSessionHelperTest, ConvertNSURLResponse_Http404) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:404
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:@{}];
+
+  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+
+  ASSERT_TRUE(head);
+  ASSERT_TRUE(head->headers);
+  EXPECT_EQ(head->headers->response_code(), 404);
+}
+
+TEST(UrlSessionHelperTest, ConvertNSURLResponse_FiltersInvalidHeaders) {
+  NSURL* url = [NSURL URLWithString:@(kUrl)];
+  NSDictionary* headers = @{
+    @(kHeaderKey) : @(kHeaderVal),
+    @(kInvalidHeaderName) : @(kHeaderVal),
+  };
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url
+                                  statusCode:200
+                                 HTTPVersion:@"HTTP/1.1"
+                                headerFields:headers];
+
+  network::mojom::URLResponseHeadPtr head = ConvertNSURLResponse(response);
+
+  ASSERT_TRUE(head->headers);
+  EXPECT_TRUE(head->headers->HasHeader(kHeaderKey));
+  EXPECT_FALSE(head->headers->HasHeader(kInvalidHeaderName));
+  EXPECT_FALSE(head->headers->HasHeader(kAnotherHeaderKey));
 }
 
 }  // namespace url_session_helper
