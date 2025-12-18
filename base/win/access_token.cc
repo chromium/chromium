@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/access_token.h"
 
 #include <windows.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
@@ -152,8 +148,17 @@ std::optional<T> GetTokenInfoFixed(HANDLE token,
 template <typename T>
 T* GetType(std::optional<std::vector<char>>& info) {
   DCHECK(info);
-  DCHECK(info->size() >= sizeof(T));
-  return reinterpret_cast<T*>(info->data());
+  CHECK(info->size() >= sizeof(T));
+  // SAFETY: We ensure a check is made on the size before casting. This is to
+  // support accessing a C-style API and unsafe access is unavoidable.
+  return UNSAFE_BUFFERS(reinterpret_cast<T*>(info->data()));
+}
+
+template <typename T>
+span<T> GetArraySpan(T* ptr, size_t size) {
+  // SAFETY: This is to support accessing a C-style API, we have to trust that
+  // the size and pointer values are valid.
+  return UNSAFE_BUFFERS(span(ptr, size));
 }
 
 std::vector<AccessToken::Group> GetGroupsFromToken(
@@ -170,9 +175,9 @@ std::vector<AccessToken::Group> GetGroupsFromToken(
   TOKEN_GROUPS* groups_ptr = GetType<TOKEN_GROUPS>(groups);
   std::vector<AccessToken::Group> ret;
   ret.reserve(groups_ptr->GroupCount);
-  for (DWORD index = 0; index < groups_ptr->GroupCount; ++index) {
-    ret.emplace_back(UnwrapSid(Sid::FromPSID(groups_ptr->Groups[index].Sid)),
-                     groups_ptr->Groups[index].Attributes);
+  for (const auto& group :
+       GetArraySpan(groups_ptr->Groups, groups_ptr->GroupCount)) {
+    ret.emplace_back(UnwrapSid(Sid::FromPSID(group.Sid)), group.Attributes);
   }
   return ret;
 }
@@ -287,7 +292,7 @@ std::optional<DWORD> AdjustPrivilege(const ScopedHandle& token,
   return attributes;
 }
 
-std::optional<PTOKEN_SECURITY_ATTRIBUTE_V1> FindSecurityAttribute(
+std::optional<const TOKEN_SECURITY_ATTRIBUTE_V1*> FindSecurityAttribute(
     std::optional<std::vector<char>>& buffer,
     std::wstring_view name) {
   if (!buffer) {
@@ -299,9 +304,10 @@ std::optional<PTOKEN_SECURITY_ATTRIBUTE_V1> FindSecurityAttribute(
     return std::nullopt;
   }
 
-  for (ULONG i = 0; i < info->AttributeCount; ++i) {
-    if (UnicodeStringToView(info->pAttributeV1[i].Name) == name) {
-      return &info->pAttributeV1[i];
+  for (const auto& attr :
+       GetArraySpan(info->pAttributeV1, info->AttributeCount)) {
+    if (UnicodeStringToView(attr.Name) == name) {
+      return &attr;
     }
   }
 
@@ -588,9 +594,9 @@ std::vector<AccessToken::Privilege> AccessToken::Privileges() const {
   TOKEN_PRIVILEGES* privileges_ptr = GetType<TOKEN_PRIVILEGES>(privileges);
   std::vector<AccessToken::Privilege> ret;
   ret.reserve(privileges_ptr->PrivilegeCount);
-  for (DWORD index = 0; index < privileges_ptr->PrivilegeCount; ++index) {
-    ret.emplace_back(ConvertLuid(privileges_ptr->Privileges[index].Luid),
-                     privileges_ptr->Privileges[index].Attributes);
+  for (const auto& privilege : GetArraySpan(privileges_ptr->Privileges,
+                                            privileges_ptr->PrivilegeCount)) {
+    ret.emplace_back(ConvertLuid(privilege.Luid), privilege.Attributes);
   }
   return ret;
 }
@@ -715,8 +721,7 @@ std::optional<AccessToken> AccessToken::CreateAppContainer(
   return FromToken(token_handle.get(), desired_access);
 }
 
-std::optional<bool> AccessToken::SetPrivilege(const std::wstring& name,
-                                              bool enable) {
+std::optional<bool> AccessToken::SetPrivilege(wcstring_view name, bool enable) {
   std::optional<DWORD> attrs =
       AdjustPrivilege(token_, name.c_str(), enable ? SE_PRIVILEGE_ENABLED : 0);
   if (!attrs) {
@@ -725,7 +730,7 @@ std::optional<bool> AccessToken::SetPrivilege(const std::wstring& name,
   return !!(*attrs & SE_PRIVILEGE_ENABLED);
 }
 
-bool AccessToken::RemovePrivilege(const std::wstring& name) {
+bool AccessToken::RemovePrivilege(wcstring_view name) {
   return AdjustPrivilege(token_, name.c_str(), SE_PRIVILEGE_REMOVED)
       .has_value();
 }
@@ -744,8 +749,8 @@ bool AccessToken::RemoveAllPrivileges() {
     return false;
   }
 
-  for (auto& privilege : span(&token_privileges->Privileges[0],
-                              token_privileges->PrivilegeCount)) {
+  for (auto& privilege : GetArraySpan(token_privileges->Privileges,
+                                      token_privileges->PrivilegeCount)) {
     privilege.Attributes = SE_PRIVILEGE_REMOVED;
   }
   return ::AdjustTokenPrivileges(
@@ -806,11 +811,11 @@ std::optional<std::wstring> AccessToken::GetSecurityAttributeString(
     std::wstring_view name) const {
   std::optional<std::vector<char>> buffer =
       GetTokenInfo(token_.get(), TokenSecurityAttributes);
-  const auto attr = FindSecurityAttribute(buffer, name);
+  auto attr = FindSecurityAttribute(buffer, name);
   if (!attr) {
     return std::nullopt;
   }
-  PTOKEN_SECURITY_ATTRIBUTE_V1 attr_val = *attr;
+  const TOKEN_SECURITY_ATTRIBUTE_V1* attr_val = *attr;
   if (attr_val == nullptr ||
       attr_val->ValueType != TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ||
       attr_val->ValueCount < 1) {

@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
@@ -305,13 +306,13 @@ class BASE_EXPORT AccessToken {
   // |enable| specify whether to enable or disable the privilege.
   // Returns the previous enable state of the privilege, or nullopt if failed.
   // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
-  std::optional<bool> SetPrivilege(const std::wstring& name, bool enable);
+  std::optional<bool> SetPrivilege(wcstring_view name, bool enable);
 
   // Remove a privilege permanently from the token.
   // |name| the name of the privilege to remove.
   // Returns true if successfully removed the privilege.
   // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
-  bool RemovePrivilege(const std::wstring& name);
+  bool RemovePrivilege(wcstring_view name);
 
   // Permanently remove all privileges from the token.
   // Returns true if the operation was successful.
