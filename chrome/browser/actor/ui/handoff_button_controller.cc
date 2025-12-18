@@ -14,7 +14,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -121,9 +121,17 @@ class GradientBubbleFrameView : public views::BubbleFrameView {
       shadow_flags.setAntiAlias(true);
       SkPoint center = SkPoint::Make(button_bounds_f.CenterPoint().x(),
                                      button_bounds_f.CenterPoint().y());
-      const SkColor colors[] = {
-          SkColorSetARGB(255, 79, 161, 255), SkColorSetARGB(255, 79, 161, 255),
-          SkColorSetARGB(255, 52, 107, 241), SkColorSetARGB(255, 52, 107, 241)};
+      std::vector<SkColor> colors;
+      if (base::FeatureList::IsEnabled(features::kActorUiThemed)) {
+        SkColor primary_color =
+            GetColorProvider()->GetColor(kColorActorUiHandoffButtonBorder);
+        colors = {primary_color, primary_color, primary_color, primary_color};
+      } else {
+        colors = {SkColorSetARGB(255, 79, 161, 255),
+                  SkColorSetARGB(255, 79, 161, 255),
+                  SkColorSetARGB(255, 52, 107, 241),
+                  SkColorSetARGB(255, 52, 107, 241)};
+      }
       const SkScalar pos[] = {0.0f, 0.4f, 0.6f, 1.0f};
       std::vector<SkColor4f> color4fs;
       for (const auto& color : colors) {
