@@ -596,6 +596,19 @@ void WidgetInputHandlerManager::ObserveGestureEventOnMainThread(
                                     std::move(observe_gesture_event_closure));
 }
 
+void WidgetInputHandlerManager::PostHandwritingRadiusToInputThread(
+    int handwriting_radius) {
+  base::OnceClosure init_closure = base::BindOnce(
+      [](base::WeakPtr<WidgetInputHandlerManager> weak_ptr, int radius) {
+        if (weak_ptr && weak_ptr->input_handler_proxy_) {
+          weak_ptr->input_handler_proxy_->SetHandwritingRadiusOnInputThread(
+              radius);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), handwriting_radius);
+  InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
+}
+
 void WidgetInputHandlerManager::LogInputTimingUMA() {
   bool should_emit_uma;
   {

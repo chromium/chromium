@@ -517,6 +517,15 @@ void WidgetBase::UpdateVisualProperties(
   VisualProperties visual_properties = visual_properties_from_browser;
   auto& screen_info = visual_properties.screen_infos.mutable_current();
 
+  // Update the handwriting radius on the input thread since the value read in
+  // the browser proc could have potentially changed.
+  if (screen_info.handwriting_radius > 0) {
+    // TODO(crbug.com/355578906): Turn ScreenInfo::handwriting_radius into an
+    // optional. There's currently no way to differentiate 0 from uninitialized.
+    widget_input_handler_manager_->PostHandwritingRadiusToInputThread(
+        screen_info.handwriting_radius);
+  }
+
   // Web tests can override the device scale factor in the renderer.
   if (auto scale_factor = client_->GetTestingDeviceScaleFactorOverride()) {
     screen_info.device_scale_factor = scale_factor;

@@ -43,6 +43,11 @@ class ElasticOverscrollController;
 
 namespace blink {
 
+// TODO(crbug.com/355578906): This needs to match
+// kStylusWritableAdjustmentSizeDip for parity. Move this to a common location
+// instead of having 2 different constants with the same value.
+inline constexpr unsigned int kStylusWritingHitTestRadius = 30;
+
 namespace test {
 class InputHandlerProxyTest;
 class InputHandlerProxyEventQueueTest;
@@ -214,6 +219,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // hit test for a GestureScrollBegin, to avoid posting a frame before the
   // compositor thread has had a chance to update the scroll offset.
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const;
+
+  void SetHandwritingRadiusOnInputThread(int handwriting_radius);
+  int HandwritingRadiusOnInputThread() const { return handwriting_radius_; }
 
   void RequestCallbackAfterEventQueueFlushed(base::OnceClosure callback);
 
@@ -419,6 +427,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   std::optional<int> currently_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
+
+  // Set by the main thread. This is relevant when calculating the TouchAction
+  // for "near-miss" pointer scenarios.
+  int handwriting_radius_ = blink::kStylusWritingHitTestRadius;
 
   // Tracks whether the first scroll update gesture event has been seen after a
   // scroll begin. This is set/reset when scroll gestures are processed in

@@ -229,6 +229,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     return suppressing_input_events_state_;
   }
 
+  void PostHandwritingRadiusToInputThread(int handwriting_radius);
+  int HandwritingRadiusOnInputThread() const {
+    return input_handler_proxy_->HandwritingRadiusOnInputThread();
+  }
+
  private:
   friend class ThreadSafeRefCounted<WidgetInputHandlerManager>;
   ~WidgetInputHandlerManager() override;

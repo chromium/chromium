@@ -22,6 +22,11 @@ class LocalFrame;
 class MouseEventManager;
 class WebPointerProperties;
 
+// Width and height of area of rectangle to hit test for potentially important
+// input fields to write into. This improves the chances of writing into the
+// intended input if the user starts writing close to it.
+inline const size_t kStylusWritableAdjustmentSizeDip = 30;
+
 // This class takes care of dispatching all pointer events and keeps track of
 // properties of active pointer events.
 class CORE_EXPORT PointerEventManager final
@@ -300,7 +305,7 @@ class CORE_EXPORT PointerEventManager final
 
   // The area around an editable region where handwriting should still be
   // possible.
-  std::optional<int> handwriting_radius_;
+  int handwriting_radius_ = kStylusWritableAdjustmentSizeDip;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the
