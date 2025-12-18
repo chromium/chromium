@@ -1232,20 +1232,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ("prompt", QueryPermission(GetPrimaryMainFrame(), kHostB));
 }
 
-class RequestStorageAccessForWithCHIPSBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseRelatedWebsiteSet,
-        base::StrCat({R"({"primary": "https://)", kHostA,
-                      R"(", "associatedSites": ["https://)", kHostC, R"("])",
-                      R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        RequestStorageAccessFor_CoexistsWithCHIPS) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
