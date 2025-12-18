@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -91,10 +92,11 @@ NSString* const kDataImportInvalidCredentialsSection =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
+  int messageId = _credentialType == CredentialType::kPassword
+                      ? IDS_IOS_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION
+                      : IDS_IOS_IMPORT_INVALID_PASSKEY_LIST_DESCRIPTION;
   NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
-      initWithString:
-          l10n_util::GetNSString(
-              IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION)
+      initWithString:l10n_util::GetNSString(messageId)
           attributes:attributes];
   [header setAttributedString:attributedText];
   return header;

@@ -506,6 +506,12 @@ Things to consider:
             =1 {This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
             other {This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
       </message>
+      <message name="IDS_IOS_IMPORT_INVALID_PASSKEY_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passkeys. [iOS only]">
+        The following passkeys were not imported to Password Manager, because they don't match with the requirements.
+      </message>
+      <message name="IDS_IOS_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passwords. [iOS only]">
+        The following passwords were not imported to Password Manager, because they don't match with the requirements.
+      </message>
       <message name="IDS_IOS_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing passwords in Password Manager and those imported from Safari. [iOS only]">
         You already have passwords for these accounts in your Password Manager. If you choose to import one of the passwords below, it will replace the existing one.
       </message>

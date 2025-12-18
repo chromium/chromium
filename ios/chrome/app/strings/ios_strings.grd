@@ -5869,9 +5869,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE" desc="Bar button on the top right of the view that lists all invalid passwords. Tapping on this button dismisses the view. [iOS only]">
         Close
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passwords. [iOS only]">
-        The following passwords were not imported to Google Password Manager, because they don't match with the requirements.
-      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_TITLE" desc="Title of the view that lists all invalid passwords. [iOS only]">
         Invalid data
       </message>
