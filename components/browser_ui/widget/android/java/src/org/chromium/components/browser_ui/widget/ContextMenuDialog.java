@@ -222,7 +222,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                                     new RectProvider(mRect))
                                             .setSmartAnchorWithMaxWidth(true)
                                             .setVerticalOverlapAnchor(true)
-                                            .setOutsideTouchable(false)
+                                            .setOutsideTouchable(true)
                                             .setAnimateFromAnchor(true)
                                             // Set popup focusable so the screen reader can announce
                                             // the popup properly, and key press events are handled
