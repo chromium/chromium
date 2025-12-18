@@ -67,30 +67,37 @@ article :is(ul, ol, figure) * {
 }
 
 /* Text rules. */
+
+/* General rules applying to all elements. */
 html {
     font-size: 16px;
 }
 
+/* Applies to the majority of text on the page. */
 body {
     font-weight: normal;
     line-height: 1.5rem; /* 24px */
 }
 
+/* Title-specific rules applying to h1 tags and the title holder. */
 #title-holder, h1 {
-    font-size: 2rem; /* 32px */
-    line-height: 3rem; /* 48px */
+    font-size: 1.75rem; /* 28px */
+    line-height: 2.1875rem; /* 35px */
     font-weight: bold;
 }
 
-h2[itemprop="description"], h3, h4, h5, h6 {
-    font-size: 1rem;
-    font-weight: normal;
+/* Subtitle-specific rules which also apply to headings smaller than h1. */
+h2, h3, h4, h5, h6 {
+    font-size: 1.25rem; /* 20px */
     line-height: 1.5rem; /* 24px */
+    font-weight: normal;
 }
 
-h2 {
-  font-size: 1.25rem; /* 20px */
-  line-height: 1.75rem; /* 28px */
+/* Image caption text styling rules. */
+img, figcaption, picture:first-child + p:last-child {
+  font-size: 0.75rem; /* 12px */
+  line-height: 0.9375rem; /* 15px */
+  font-style: italic;
 }
 
 /* Styles for images and captions. */
@@ -118,12 +125,6 @@ img.distilled-full-width-img {
   img.distilled-inline-img {
     filter: invert(1) hue-rotate(180deg);
   }
-}
-
-img, figcaption, picture:first-child + p:last-child {
-  font-size: 0.75rem; /* 12px */
-  line-height: 1.125rem; /* 18px */
-  font-style: italic;
 }
 
 /* Styles for SVGs that use a local resource pointer. */
