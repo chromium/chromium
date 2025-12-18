@@ -879,12 +879,14 @@ class Converter {
             const AIPageContentMap& page_content_map,
             const GetRenderFrameInfo get_render_frame_info,
             FrameTokenSet& frame_token_set,
-            AIPageContentResult& page_content_result)
+            blink::mojom::PageMetadata& page_metadata,
+            optimization_guide::proto::AnnotatedPageContent& page_content_proto)
       : options_(std::move(options)),
         page_content_map_(page_content_map),
         get_render_frame_info_(get_render_frame_info),
         frame_token_set_(frame_token_set),
-        page_content_result_(page_content_result) {}
+        page_metadata_(page_metadata),
+        page_content_proto_(page_content_proto) {}
   ~Converter() = default;
 
   base::expected<void, std::string> ConvertNode(
@@ -948,7 +950,6 @@ class Converter {
             absl::Overload{
                 [&](const blink::mojom::AIPageContentPtr& page_content) mutable
                     -> base::expected<void, std::string> {
-                  AddPasswordRedactionData(*page_content);
                   auto* proto_child_frame_node =
                       proto_node->add_children_nodes();
 
@@ -1069,7 +1070,7 @@ class Converter {
     }
 
     optimization_guide::proto::PopupWindow* popup_window =
-        page_content_proto().mutable_popup_window();
+        page_content_proto_->mutable_popup_window();
 
     // First, walk the popup's DOM tree to create proto::ContentNodes.
     RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
@@ -1095,16 +1096,6 @@ class Converter {
     return options_;
   }
 
-  void AddPasswordRedactionData(
-      const blink::mojom::AIPageContent& mojom_page_content) {
-    page_content_result_->visible_bounding_boxes_for_password_redaction.insert(
-        page_content_result_->visible_bounding_boxes_for_password_redaction
-            .begin(),
-        mojom_page_content.visible_bounding_boxes_for_password_redaction
-            .begin(),
-        mojom_page_content.visible_bounding_boxes_for_password_redaction.end());
-  }
-
  private:
   // `mojom_iframe_data` holds information about the iframe provided by the
   // embedder. It comes from the iframe node in the ContentNode tree pulled from
@@ -1119,23 +1110,17 @@ class Converter {
       const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
       optimization_guide::proto::IframeData* proto_iframe_data) {
     ConvertFrameData(render_frame_info, mojom_local_frame_data,
-                     proto_iframe_data->mutable_frame_data(), page_metadata(),
+                     proto_iframe_data->mutable_frame_data(), *page_metadata_,
                      *frame_token_set_);
-  }
-
-  blink::mojom::PageMetadata& page_metadata() {
-    return *page_content_result_->metadata;
-  }
-  optimization_guide::proto::AnnotatedPageContent& page_content_proto() {
-    return page_content_result_->proto;
   }
 
   blink::mojom::AIPageContentOptionsPtr options_;
   raw_ref<const AIPageContentMap> page_content_map_;
   GetRenderFrameInfo get_render_frame_info_;
   raw_ref<FrameTokenSet> frame_token_set_;
-  raw_ref<AIPageContentResult> page_content_result_;
+  raw_ref<blink::mojom::PageMetadata> page_metadata_;
   ConvertAIPageContentToProtoSession session_;
+  raw_ref<optimization_guide::proto::AnnotatedPageContent> page_content_proto_;
 };
 
 // Private helper template to handle both mutable and const traversals for
@@ -1220,8 +1205,7 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
 
   Converter converter(std::move(main_frame_options), page_content_map,
                       get_render_frame_info, frame_token_set,
-                      page_content_result);
-  converter.AddPasswordRedactionData(*main_frame_page_content);
+                      *page_content_result.metadata, page_content_result.proto);
 
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,

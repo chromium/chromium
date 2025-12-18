@@ -133,8 +133,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddMetaData(
         const LocalFrame& frame,
         Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
-    void AddNodeGeometry(const LayoutObject& object,
-                         mojom::blink::AIPageContentAttributes& attributes);
+    void AddNodeGeometry(
+        const LayoutObject& object,
+        mojom::blink::AIPageContentAttributes& attributes) const;
     void AddAnnotatedRoles(const LayoutObject& object,
                            Vector<mojom::blink::AIPageContentAnnotatedRole>&
                                annotated_roles) const;
@@ -155,13 +156,6 @@ class MODULES_EXPORT AIPageContentAgent final
     void ComputeHitTestableNodesInViewport(const LocalFrame& frame);
 
     void UpdateLifecycle(Document& document);
-
-    void TrackPasswordRedactionIfNeeded(
-        const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes,
-        std::optional<gfx::Rect> visible_bounding_box = std::nullopt);
-
-    Vector<gfx::Rect> visible_bounding_box_for_passwords_;
 
     // The set of nodes which are involved in a user interaction and must
     // produce a ContentNode.

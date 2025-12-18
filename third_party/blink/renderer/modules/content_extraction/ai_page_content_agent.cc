@@ -1167,8 +1167,6 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   CHECK(root_node);
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
-  page_content->visible_bounding_boxes_for_password_redaction =
-      std::move(visible_bounding_box_for_passwords_);
 
   if (stack_depth_exceeded_) {
     ukm::builders::OptimizationGuide_AIPageContentAgent(document.UkmSourceID())
@@ -1688,40 +1686,13 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
   }
 }
 
-void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
-    const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes,
-    std::optional<gfx::Rect> visible_bounding_box) {
-  if (!options_->include_passwords_for_redaction) {
-    return;
-  }
-
-  if (!attributes.form_control_data) {
-    return;
-  }
-
-  switch (attributes.form_control_data->redaction_decision) {
-    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyPassword:
-      return;
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_HasBeenPassword:
-      break;
-  }
-
-  visible_bounding_box_for_passwords_.push_back(
-      visible_bounding_box.value_or(ComputeVisibleBoundingBox(object)));
-}
-
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) {
+    mojom::blink::AIPageContentAttributes& attributes) const {
   // When in non-actionable mode, we only want to add geometry for the
   // accessibility focused node.
   if (!actionable_mode() &&
       attributes.dom_node_id != accessibility_focused_node_id_) {
-    TrackPasswordRedactionIfNeeded(object, attributes);
     return;
   }
 
@@ -1752,8 +1723,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   //   users and immediately hit-testable without scrolling.
   geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
-  TrackPasswordRedactionIfNeeded(object, attributes,
-                                 geometry.visible_bounding_box);
 
   // Validate the relationship between outer and visible bounding boxes
   // TODO(aleventhal): restore for Canary builds.
