@@ -24678,6 +24678,8 @@ Called by update_net_error_codes.py.-->
   <int value="413" label="IQY"/>
   <int value="414" label="LIBRARY-MS"/>
   <int value="415" label="DNG"/>
+  <int value="416" label="JSON"/>
+  <int value="417" label="MD"/>
 </enum>
 
 <enum name="ScanFailureProgress">
