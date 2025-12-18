@@ -742,7 +742,7 @@ static void ErrorFunc(void*, const char*, ...) {
   // FIXME: It would be nice to display error messages somewhere.
 }
 
-static void InitializeLibXMLIfNecessary() {
+static void EnsureLibXMLInitialized() {
   static bool did_init = false;
   if (did_init)
     return;
@@ -756,7 +756,7 @@ static void InitializeLibXMLIfNecessary() {
 scoped_refptr<XMLParserContext> XMLParserContext::CreateStringParser(
     xmlSAXHandlerPtr handlers,
     void* user_data) {
-  InitializeLibXMLIfNecessary();
+  EnsureLibXMLInitialized();
   xmlParserCtxtPtr parser =
       xmlCreatePushParserCtxt(handlers, nullptr, nullptr, 0, nullptr);
 
@@ -780,7 +780,7 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
     xmlSAXHandlerPtr handlers,
     void* user_data,
     const std::string& chunk) {
-  InitializeLibXMLIfNecessary();
+  EnsureLibXMLInitialized();
 
   // appendFragmentSource() checks that the length doesn't overflow an int.
   xmlParserCtxtPtr parser = xmlCreateMemoryParserCtxt(
@@ -1745,6 +1745,11 @@ xmlDocPtr XmlDocPtrForString(Document* document,
                              const String& url) {
   if (source.empty())
     return nullptr;
+
+  // In situations where the XMLDocumentParserRs is used as the primary parser,
+  // this might be the first call into libxml2.
+  EnsureLibXMLInitialized();
+
   // Parse in a single chunk into an xmlDocPtr
   // FIXME: Hook up error handlers so that a failure to parse the main
   // document results in good error messages.
