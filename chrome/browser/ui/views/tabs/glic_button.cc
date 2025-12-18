@@ -262,7 +262,8 @@ void GlicButton::ShowDefaultLabel() {
     return;
   }
   // If the label should not show, no further animation is needed.
-  if (!ShouldShowLabel()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskNudgeUiFix) &&
+      !ShouldShowLabel()) {
     // Reset is_animating_text_ in case it was set earlier.
     is_animating_text_ = false;
     return;
