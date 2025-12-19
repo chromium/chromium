@@ -6,7 +6,6 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {expect} from '//webui-test/chai.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {FilterSettings} from 'chrome://updater/event_list/filter_bar.js';
 import {FilterBarElement} from 'chrome://updater/event_list/filter_bar.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -126,9 +125,9 @@ suite('FilterBarElement', () => {
     await clearFilters();
     expect(filterBar.shadowRoot.querySelectorAll('.chip').length).to.equal(0);
 
-    let capturedEvent: CustomEvent<FilterSettings>|null = null;
+    let capturedEvent: Event|null = null;
     const onFiltersChanged = (e: Event) => {
-      capturedEvent = e as CustomEvent<FilterSettings>;
+      capturedEvent = e;
     };
     filterBar.addEventListener('filters-changed', onFiltersChanged);
 
@@ -138,10 +137,8 @@ suite('FilterBarElement', () => {
       await microtasksFinished();
     });
 
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(1);
-
     expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail).to.deep.equal(filterBar.filterSettings);
+    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(1);
     expect(capturedEvent!.bubbles).to.be.true;
     expect(capturedEvent!.composed).to.be.true;
 

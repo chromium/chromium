@@ -44,7 +44,7 @@ export class EventListItemElement extends CrLitElement {
       event: {type: Object},
       eventDate: {type: Object},
       processMap: {type: Object},
-      expanded: {type: Boolean},
+      expanded: {type: Boolean, notify: true},
       error: {type: Boolean, reflect: true},
     };
   }

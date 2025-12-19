@@ -28,6 +28,8 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';
+import {createDefaultFilterSettings} from './filter_settings.js';
+import type {FilterSettings} from './filter_settings.js';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
   year: 'numeric',
@@ -36,17 +38,6 @@ const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
   hour: '2-digit',
   minute: '2-digit',
 });
-
-/**
- * The filter settings for the event list.
- */
-export interface FilterSettings {
-  activeAppFilters: Set<string>;
-  activeEventTypeFilters: Set<EventType>;
-  activeUpdateOutcomeFilters: Set<CommonUpdateOutcome>;
-  startDateFilter: Date|null;
-  endDateFilter: Date|null;
-}
 
 export enum FilterCategory {
   APP = 'app',
@@ -97,21 +88,7 @@ export class FilterBarElement extends CrLitElement {
 
   private eventTracker: EventTracker = new EventTracker();
 
-  accessor filterSettings: FilterSettings = {
-    activeAppFilters: (() => {
-      const defaultApps = loadTimeData.getString('defaultAppFilters');
-      return new Set(defaultApps === '' ? [] : defaultApps.split(','));
-    })(),
-    activeEventTypeFilters: new Set<EventType>([
-      'INSTALL',
-      'UPDATE',
-      'UNINSTALL',
-    ]),
-    activeUpdateOutcomeFilters:
-        new Set<CommonUpdateOutcome>(['UPDATED', 'UPDATE_ERROR']),
-    startDateFilter: null,
-    endDateFilter: null,
-  };
+  accessor filterSettings: FilterSettings = createDefaultFilterSettings();
   protected accessor filterOrder: FilterCategory[] = [];
   protected accessor filterMenuState: FilterMenuState = 'closed';
   protected accessor menuHost: 'chip'|'input' = 'input';
@@ -324,7 +301,7 @@ export class FilterBarElement extends CrLitElement {
 
   private async onFiltersChanged() {
     await this.updateComplete;
-    this.fire('filters-changed', this.filterSettings);
+    this.fire('filters-changed');
     this.requestUpdate();
   }
 

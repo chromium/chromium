@@ -1180,13 +1180,14 @@ export function mergeEvents(events: HistoryEvent[]):
 }
 
 /**
- * Returns the app ID associated with an event, if any.
+ * Returns the lower-case app ID associated with an event, if any.
  */
 export function getAppId(
     event: HistoryEvent|MergedHistoryEvent,
     ): string|undefined {
   const eventWithAppId = isMergedHistoryEvent(event) ? event.startEvent : event;
-  return 'appId' in eventWithAppId ? eventWithAppId.appId : undefined;
+  return 'appId' in eventWithAppId ? eventWithAppId.appId?.toLowerCase() :
+                                     undefined;
 }
 
 /**

@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,6 +49,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"apply", IDS_UPDATER_APPLY},
       {"cancel", IDS_UPDATER_CANCEL},
       {"clearAllFilters", IDS_UPDATER_CLEAR_ALL_FILTERS},
+      {"collapseAll", IDS_UPDATER_COLLAPSE_ALL},
       {"commandLine", IDS_UPDATER_COMMAND_LINE},
       {"commandOutcome", IDS_UPDATER_COMMAND_OUTCOME},
       {"common", IDS_UPDATER_COMMON},
@@ -68,6 +70,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"eventTypeUNINSTALL", IDS_UPDATER_EVENT_TYPE_UNINSTALL},
       {"eventTypeUPDATE", IDS_UPDATER_EVENT_TYPE_UPDATE},
       {"eventTypeUPDATER_PROCESS", IDS_UPDATER_EVENT_TYPE_UPDATER_PROCESS},
+      {"expandAll", IDS_UPDATER_EXPAND_ALL},
       {"filterChipApp", IDS_UPDATER_FILTER_CHIP_APP},
       {"filterChipDate", IDS_UPDATER_FILTER_CHIP_DATE},
       {"filterChipEventType", IDS_UPDATER_FILTER_CHIP_EVENT_TYPE},
@@ -97,6 +100,14 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"updaterVersion", IDS_UPDATER_UPDATER_VERSION},
       {"viewRawDetails", IDS_UPDATER_VIEW_RAW_DETAILS},
   });
+
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("parseErrorEvents",
+                                            IDS_UPDATER_PARSE_ERROR_EVENTS);
+  plural_string_handler->AddLocalizedString("undatedEvents",
+                                            IDS_UPDATER_UNDATED_EVENTS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   int32_t num_known_apps = 0;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

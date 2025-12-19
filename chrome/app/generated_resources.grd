@@ -19815,6 +19815,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_CLEAR_ALL_FILTERS" desc="Tooltip or accessibility label for a button that removes all active search filters.">
         Clear all filters
       </message>
+      <message name="IDS_UPDATER_COLLAPSE_ALL" desc="Label for a button that collapses all expanded items in a list.">
+        Collapse All
+      </message>
       <message name="IDS_UPDATER_COMMAND_LINE" desc="Label preceding the command line of an executed program in the summary of a logged Chrome Updater event">
         Command line:
       </message>
@@ -19875,6 +19878,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_EVENT_TYPE_UPDATER_PROCESS" desc="Label for an action carried out by the Chrome Updater in which it starts or stops a local system process.">
         Updater Process
       </message>
+      <message name="IDS_UPDATER_EXPAND_ALL" desc="Label for a button that expands all collapsed items in a list.">
+        Expand All
+      </message>
       <message name="IDS_UPDATER_FILTER_CHIP_APP" desc="Text displayed in a filter chip showing the selected application's names or identifier strings.">
         App: <ph name="APPS">$1<ex>Google Chrome, Google Chrome Beta, Google Chrome Canary, {6BBAE539-2232-434A-A4E5-9A33560C6284}</ex></ph>
       </message>
@@ -19914,6 +19920,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_OUTCOME_UNKNOWN" desc="Summary of an event carried out by the Chrome Updater where the outcome is unknown.">
         Operation completed with unknown outcome
       </message>
+      <message name="IDS_UPDATER_PARSE_ERROR_EVENTS" desc="Message indicating that one or more events could not be parsed and are hidden from the Chrome Updater event log.">
+        {NUM_EVENTS, plural, =1 {1 event could not be parsed and is not shown} other {# events could not be parsed and are not shown}}
+      </message>
       <message name="IDS_UPDATER_PERSISTED_DATA_SUMMARY" desc="Summary of an event indicating how many apps are registered.">
         <ph name="APP_COUNT">$1<ex>5</ex></ph> apps registered
       </message>
@@ -19931,6 +19940,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_START_DATE" desc="Label for the start date input field.">
         Start Date:
+      </message>
+      <message name="IDS_UPDATER_UNDATED_EVENTS" desc="Message indicating that the timestamp of one or more events was not able to determined. Events without timestamps can't be displayed in the Chrome Updater event log.">
+        {NUM_EVENTS, plural, =1 {1 event could not be dated and is not shown} other {# events could not be dated and are not shown}}
       </message>
       <message name="IDS_UPDATER_UNINSTALL_SUMMARY" desc="Summary of an uninstall event, including version and reason.">
         Uninstalled version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>, reason: <ph name="REASON">$2<ex>NO_APPS_REMAINING</ex></ph>

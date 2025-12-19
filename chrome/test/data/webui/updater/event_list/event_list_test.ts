@@ -1,0 +1,372 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://updater/event_list/event_list.js';
+
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
+import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+suite('EventListElement', () => {
+  let element: EventListElement;
+
+  function clearFilters() {
+    element.filterSettings.activeAppFilters.clear();
+    element.filterSettings.activeEventTypeFilters.clear();
+    element.filterSettings.activeUpdateOutcomeFilters.clear();
+    element.filterSettings.startDateFilter = null;
+    element.filterSettings.endDateFilter = null;
+    element.updateEventEntries();
+    element.requestUpdate();
+  }
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = document.createElement('event-list');
+    clearFilters();
+    document.body.appendChild(element);
+    await microtasksFinished();
+  });
+
+  test('initializes with default values', () => {
+    assertEquals(0, element.messages.length);
+    assertEquals(
+        0, element.shadowRoot.querySelectorAll('event-list-item').length);
+  });
+
+  test('parses and displays events', async () => {
+    const messages = [
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '0',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'updaterVersion': '123.0.142.0',
+        'timestamp': '2025-11-24T12:00:00Z',
+        'scope': 'USER',
+      },
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '182165200000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'exitCode': '0',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '1000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'errors': [],
+        'appId': '{app1}',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '2000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'errors': [],
+        'version': '1.0',
+      },
+    ];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('event-list-item');
+    assertEquals(2, items.length);
+    assertEquals('INSTALL', items[0]!.event?.eventType);
+  });
+
+  test('handles parse errors', async () => {
+    const messages = [
+      {'invalid': 'data'},
+    ];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    assertEquals(
+        1, element.shadowRoot.querySelectorAll('raw-event-details').length);
+  });
+
+  test('handles events without dates', async () => {
+    const messages = [{
+      'eventType': 'INSTALL',
+      'eventId': '1',
+      'deviceUptime': '1000',
+      'pid': '100',
+      'processToken': 'token1',
+      'bound': 'START',
+      'errors': [],
+      'appId': '{app1}',
+    }];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    assertEquals(
+        1, element.shadowRoot.querySelectorAll('raw-event-details').length);
+  });
+
+  test('filters events', async () => {
+    const messages = [
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '0',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'updaterVersion': '123.0.142.0',
+        'timestamp': '2025-11-24T12:00:00Z',
+        'scope': 'USER',
+      },
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '182165200000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'exitCode': '0',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '1000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'errors': [],
+        'appId': '{app1}',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '2000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'errors': [],
+        'version': '1.0',
+      },
+      {
+        'eventType': 'UPDATE',
+        'eventId': '2',
+        'deviceUptime': '3000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'errors': [],
+        'appId': '{app2}',
+      },
+      {
+        'eventType': 'UPDATE',
+        'eventId': '2',
+        'deviceUptime': '4000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'errors': [],
+        'outcome': 'UPDATED',
+        'nextVersion': '2.0',
+      },
+    ];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    assertEquals(
+        3, element.shadowRoot.querySelectorAll('event-list-item').length);
+
+    element.filterSettings.activeAppFilters.add('{app1}');
+    element.updateEventEntries();
+    element.requestUpdate();
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('event-list-item');
+    assertEquals(1, items.length);
+    assertEquals(
+        'INSTALL', ((items[0] as EventListItemElement).event as any).eventType);
+  });
+
+  test('expands and collapses all', async () => {
+    const messages = [
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '0',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'updaterVersion': '123.0.142.0',
+        'timestamp': '2025-11-24T12:00:00Z',
+        'scope': 'USER',
+      },
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '182165200000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'exitCode': '0',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '1000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'errors': [],
+        'appId': '{app1}',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '2000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'errors': [],
+        'version': '1.0',
+      },
+    ];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    const expandButton =
+        element.shadowRoot.querySelector<CrButtonElement>('#expand-all');
+    assertTrue(!!expandButton);
+
+    // Items should begin collapsed.
+    assertFalse(
+        Array.of(...element.shadowRoot.querySelectorAll('event-list-item'))
+            .every(item => item.expanded));
+    assertEquals(
+        loadTimeData.getString('expandAll'), expandButton.textContent.trim());
+
+    expandButton.click();
+    await microtasksFinished();
+    assertTrue(
+        Array.of(...element.shadowRoot.querySelectorAll('event-list-item'))
+            .every(item => item.expanded));
+    assertEquals(
+        loadTimeData.getString('collapseAll'), expandButton.textContent.trim());
+
+    expandButton.click();
+    await microtasksFinished();
+    assertFalse(
+        Array.of(...element.shadowRoot.querySelectorAll('event-list-item'))
+            .every(item => item.expanded));
+    assertEquals(
+        loadTimeData.getString('expandAll'), expandButton.textContent.trim());
+  });
+
+  test('displays list breaks', async () => {
+    const messages = [
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '0',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'timestamp': '2025-12-17T12:00:00Z',
+      },
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p1',
+        'deviceUptime': '182165200000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'exitCode': '0',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '1000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'START',
+        'appId': '{app1}',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '1',
+        'deviceUptime': '2000',
+        'pid': '100',
+        'processToken': 'token1',
+        'bound': 'END',
+        'version': '1.0',
+      },
+      // Second process more than 1 hour later
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p2',
+        'deviceUptime': '0',
+        'pid': '200',
+        'processToken': 'token2',
+        'bound': 'START',
+        'timestamp': '2025-12-17T14:00:00Z',
+      },
+      {
+        'eventType': 'UPDATER_PROCESS',
+        'eventId': 'p2',
+        'deviceUptime': '182165200000',
+        'pid': '200',
+        'processToken': 'token2',
+        'bound': 'END',
+        'exitCode': '0',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '2',
+        'deviceUptime': '1000',
+        'pid': '200',
+        'processToken': 'token2',
+        'bound': 'START',
+        'appId': '{app2}',
+      },
+      {
+        'eventType': 'INSTALL',
+        'eventId': '2',
+        'deviceUptime': '2000',
+        'pid': '200',
+        'processToken': 'token2',
+        'bound': 'END',
+        'version': '2.0',
+      },
+    ];
+
+    element.messages = messages;
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('event-list-item');
+    assertEquals(4, items.length);
+
+    const listBreaks = element.shadowRoot.querySelectorAll('.event-list-break');
+    assertEquals(1, listBreaks.length);
+
+    const label =
+        listBreaks[0]!.querySelector('.event-list-break-label')!.textContent;
+    const p1Date = new Date('2025-12-17T12:00:00Z');
+    assertStringContains(label, p1Date.toLocaleString());
+  });
+});

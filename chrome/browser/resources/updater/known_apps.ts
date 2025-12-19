@@ -11,7 +11,7 @@
 import {loadTimeData} from './i18n_setup.js';
 
 /**
- * Produces a map of app names to their app IDs.
+ * Produces a map of app names to their lower-case app IDs.
  */
 export function getKnownApps(): Map<string, string[]> {
   const numApps = loadTimeData.getInteger('numKnownApps');
@@ -19,7 +19,9 @@ export function getKnownApps(): Map<string, string[]> {
   for (let i = 0; i < numApps; i++) {
     apps.set(
         loadTimeData.getString(`knownAppName${i}`),
-        loadTimeData.getString(`knownAppIds${i}`).split(','));
+        loadTimeData.getString(`knownAppIds${i}`)
+            .split(',')
+            .map(appId => appId.toLowerCase()));
   }
   return apps;
 }

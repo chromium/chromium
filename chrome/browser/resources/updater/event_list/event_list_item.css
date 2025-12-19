@@ -71,6 +71,7 @@ cr-expand-button {
 .event-type-column {
   flex-basis: 20%;
   flex-shrink: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
