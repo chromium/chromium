@@ -221,9 +221,14 @@ void BrokerHost::ReadlinkFileForIPC(const char* requested_filename,
   if (result < 0) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
+  } else if (static_cast<size_t>(result) > PATH_MAX) {
+    RAW_CHECK(reply->AddIntToMessage(result));
+    return;
   }
+  // At this point, `result` is guaranteed to be in the range [0, PATH_MAX]
   RAW_CHECK(reply->AddIntToMessage(result));
-  RAW_CHECK(reply->AddDataToMessage(buf, result));
+  auto byte_span = base::as_byte_span(buf).first(static_cast<size_t>(result));
+  RAW_CHECK(reply->AddDataToMessage(byte_span));
 }
 
 void BrokerHost::RmdirFileForIPC(const char* requested_filename,
@@ -282,8 +287,7 @@ void BrokerHost::StatFileForIPC(BrokerCommand command_type,
       return;
     }
     RAW_CHECK(reply->AddIntToMessage(0));
-    RAW_CHECK(
-        reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
+    RAW_CHECK(reply->AddDataToMessage(base::byte_span_from_ref(sb)));
   } else {
 #if defined(__NR_fstatat64)
     DCHECK(command_type == COMMAND_STAT64);
@@ -296,8 +300,8 @@ void BrokerHost::StatFileForIPC(BrokerCommand command_type,
       return;
     }
     RAW_CHECK(reply->AddIntToMessage(0));
-    RAW_CHECK(
-        reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
+    RAW_CHECK(reply->AddDataToMessage(
+        base::byte_span_from_ref(reinterpret_cast<char*>(&sb))));
 #else  // defined(__NR_fstatat64)
     // We should not reach here on 64-bit systems, as the *stat*64() are only
     // necessary on 32-bit.
