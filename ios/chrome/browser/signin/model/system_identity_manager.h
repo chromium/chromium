@@ -97,9 +97,6 @@ class SystemIdentityManager {
   // Callback invoked when the `FetchTokenAuthURL()` operation completes.
   using AuthenticatedURLCallback = base::OnceCallback<void(NSURL*, NSError*)>;
 
-  // Callback invoked when `IsSubjectToParentalControls()` operations complete.
-  using FetchCapabilityCallback = base::OnceCallback<void(CapabilityResult)>;
-
   // Callback invoked when the `FetchCapabilitie()` operation completes.
   using FetchCapabilitiesCallback =
       base::OnceCallback<void(std::map<std::string, CapabilityResult>)>;
@@ -114,13 +111,6 @@ class SystemIdentityManager {
   SystemIdentityManager& operator=(const SystemIdentityManager&) = delete;
 
   virtual ~SystemIdentityManager();
-
-  // Asynchronously returns the value of the account capability that determines
-  // whether parental controls should be applied to `identity`.
-  //
-  // This is a wrapper around `FetchCapabilities()`.
-  void IsSubjectToParentalControls(id<SystemIdentity> identity,
-                                   FetchCapabilityCallback callback);
 
   // Adds/removes observers.
   void AddObserver(SystemIdentityManagerObserver* observer);
