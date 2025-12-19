@@ -607,7 +607,3 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
                        PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
-
-// Adding a new test? Awesome. But API tests are the old hotness. The new
-// hotness is api_test_utils. See tabs_test.cc for an example.
-// We are trying to phase out many uses of API tests as they tend to be flaky.
