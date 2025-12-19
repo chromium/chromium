@@ -125,6 +125,10 @@ interface Page {
   // Communicates to WebUI that the AIM page that is loaded is the zero state.
   // Zero state means no queries have been submitted yet in this thread.
   OnZeroStateChange(bool is_zero_state);
+
+  // Called by the browser process (C++) to notify the UI if the current page
+  // is an AI page or not.
+  OnAiPageStatusChanged(bool is_ai_page);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.
