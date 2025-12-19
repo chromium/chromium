@@ -120,8 +120,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback,
+      base::OnceCallback<
+          void(const base::expected<viz::CopyOutputBitmapWithMetadata,
+                                    std::string>&)> callback,
       bool capture_exact_surface_id,
       base::TimeDelta ipc_delay);
   bool CanCopyFromCompositingSurface() const;

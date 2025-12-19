@@ -88,16 +88,15 @@ class TabContentManager::TabReadbackRequest {
   virtual ~TabReadbackRequest() = default;
 
   void OnFinishGetTabThumbnailBitmap(
-      const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
-    if (bitmap.drawsNothing() || drop_after_readback_) {
+      const content::CopyFromSurfaceResult& result) {
+    if (!result.has_value() || drop_after_readback_) {
       std::move(end_callback_).Run(0.f, SkBitmap());
       return;
     }
 
-    SkBitmap result_bitmap = bitmap;
+    SkBitmap result_bitmap = result->bitmap;
     result_bitmap.setImmutable();
-    std::move(end_callback_).Run(thumbnail_scale_, bitmap);
+    std::move(end_callback_).Run(thumbnail_scale_, result->bitmap);
   }
 
   void SetToDropAfterReadback() { drop_after_readback_ = true; }

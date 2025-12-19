@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -43,6 +44,9 @@ struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace content {
+
+using CopyFromSurfaceResult =
+    base::expected<viz::CopyOutputBitmapWithMetadata, std::string>;
 
 class RenderWidgetHost;
 class TouchSelectionControllerClientManager;
@@ -236,8 +240,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) = 0;
+      base::OnceCallback<void(const CopyFromSurfaceResult&)> callback) = 0;
 
   // Ensures that all surfaces are synchronized for the next call to
   // CopyFromSurface. This is used by web tests.

@@ -313,16 +313,15 @@ class HeadlessWebContentsImpl::PendingFrame final
     has_damage_ = ack.has_damage;
   }
 
-  void OnReadbackComplete(const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
+  void OnReadbackComplete(const content::CopyFromSurfaceResult& result) {
     TRACE_EVENT2(
         "headless", "HeadlessWebContentsImpl::PendingFrame::OnReadbackComplete",
-        "sequence_number", sequence_number_, "success", !bitmap.drawsNothing());
-    if (bitmap.drawsNothing()) {
+        "sequence_number", sequence_number_, "success", result.has_value());
+    if (!result.has_value()) {
       LOG(WARNING) << "Readback from surface failed.";
       return;
     }
-    bitmap_ = std::make_unique<SkBitmap>(bitmap);
+    bitmap_ = std::make_unique<SkBitmap>(result->bitmap);
   }
 
   base::WeakPtr<PendingFrame> AsWeakPtr() {

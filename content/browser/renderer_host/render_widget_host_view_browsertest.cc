@@ -162,11 +162,11 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
 
   // Callback when using CopyFromSurface() API.
   void FinishCopyFromSurface(base::OnceClosure quit_closure,
-                             const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
+                             const content::CopyFromSurfaceResult& result) {
     ++callback_invoke_count_;
-    if (!bitmap.drawsNothing())
+    if (result.has_value()) {
       ++frames_captured_;
+    }
     std::move(quit_closure).Run();
   }
 
@@ -1189,8 +1189,8 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         test_url_("data:text/html,<!doctype html>") {}
 
   void VerifyResult(base::OnceClosure quit_callback,
-                    const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
+                    const content::CopyFromSurfaceResult& result) {
+    const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
     if (bitmap.drawsNothing()) {
       readback_result_ = READBACK_FAILED;
       std::move(quit_callback).Run();
@@ -1805,7 +1805,7 @@ void CheckSurfaceRangeRemovedAfterCopy(
     viz::SurfaceRange range,
     CompositorImpl* compositor,
     base::RepeatingClosure resume_test,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   // The surface range is removed first when the browser receives the result
   // of the copy request. Then the result callback (including this function) is
   // run.
@@ -1879,10 +1879,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
 
 namespace {
 
-void AssertSnapshotIsPureWhite(
-    base::RepeatingClosure resume_test,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap snapshot = result.bitmap;
+void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
+                               const content::CopyFromSurfaceResult& result) {
+  const SkBitmap& snapshot = result.has_value() ? result->bitmap : SkBitmap();
   for (int r = 0; r < snapshot.height(); ++r) {
     for (int c = 0; c < snapshot.width(); ++c) {
       ASSERT_EQ(snapshot.getColor(c, r), SK_ColorWHITE);

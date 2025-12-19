@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
 
@@ -35,10 +36,6 @@ struct InnerTextResult;
 namespace optimization_guide {
 struct AIPageContentResult;
 }  // namespace optimization_guide
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 using GetIsContextualSearchboxCallback =
     lens::mojom::LensSidePanelPageHandler::GetIsContextualSearchboxCallback;
@@ -333,7 +330,7 @@ class LensSearchContextualizationController {
   void OnScreenshotCapturedForUpdate(
       int attempt_id,
       base::OnceCallback<void(const SkBitmap&)> callback,
-      const viz::CopyOutputBitmapWithMetadata& result);
+      const content::CopyFromSurfaceResult& result);
 
   // Handles the screenshot after it has been taken for the contextual flow.
   void OnScreenshotTakenForContextual(OnPageContextUpdatedCallback callback,
@@ -344,7 +341,7 @@ class LensSearchContextualizationController {
   // Fetches the bounding boxes of all images within the current viewport.
   void FetchViewportImageBoundingBoxes(
       OnScreenshotTakenCallback callback,
-      const viz::CopyOutputBitmapWithMetadata& result);
+      const content::CopyFromSurfaceResult& result);
 
   // Creates the mojo bounding boxes for the significant regions.
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(

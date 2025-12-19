@@ -413,8 +413,9 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
 }
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
   auto ui_thread_callback = base::BindOnce(
       &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,

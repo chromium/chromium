@@ -23,6 +23,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
@@ -32,10 +33,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace content {
 
@@ -149,8 +146,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback);
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
   void CopyFromCompositingSurfaceAsTexture(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,

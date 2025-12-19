@@ -3566,10 +3566,9 @@ void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
 void RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived(
     int snapshot_id,
     int retry_count,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   static constexpr int kMaxRetries = 5;
-  const SkBitmap& bitmap = result.bitmap;
-  if (bitmap.drawsNothing() && retry_count < kMaxRetries) {
+  if (!result.has_value() && retry_count < kMaxRetries) {
     GetView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
         base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
@@ -3579,8 +3578,8 @@ void RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived(
   }
   // If all retries have failed, we return an empty image.
   gfx::Image image;
-  if (!bitmap.drawsNothing()) {
-    image = gfx::Image::CreateFrom1xBitmap(bitmap);
+  if (result.has_value()) {
+    image = gfx::Image::CreateFrom1xBitmap(result->bitmap);
   }
   // Any pending snapshots with a lower ID than the one received are considered
   // to be implicitly complete, and returned the same snapshot data.

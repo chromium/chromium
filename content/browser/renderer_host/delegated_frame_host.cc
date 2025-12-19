@@ -29,6 +29,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -145,8 +146,7 @@ void DelegatedFrameHost::WasHidden(HiddenCause cause) {
 void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
 
   ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
@@ -161,16 +161,15 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
       viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
-          [](base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
              ui::Compositor::ScopedKeepSurfaceAliveCallback keep_alive,
              std::unique_ptr<viz::CopyOutputResult> result) {
             if (keep_alive) {
               std::move(keep_alive).RunAndReset();
             }
-            auto scoped_bitmap = result->ScopedAccessSkBitmap();
             std::move(callback).Run(
-                scoped_bitmap.GetOutScopedBitmapAndMetadata());
+                result->ScopedAccessSkBitmap().GetOutScopedBitmapAndMetadata());
           },
           std::move(callback), std::move(keep_surface_alive)));
 }

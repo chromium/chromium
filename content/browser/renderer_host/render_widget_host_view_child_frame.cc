@@ -34,6 +34,7 @@
 #include "content/common/features.h"
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
@@ -868,10 +869,10 @@ uint64_t RenderWidgetHostViewChildFrame::GetNSViewId() const {
 void RenderWidgetHostViewChildFrame::CopyFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!IsSurfaceAvailableForCopy()) {
-    std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
+    std::move(callback).Run(base::unexpected<std::string>(
+        "CopyFromSurface not implemented for this platform."));
     return;
   }
 
@@ -880,12 +881,11 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
           viz::CopyOutputRequest::ResultFormat::RGBA,
           viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
-              [](base::OnceCallback<void(
-                     const viz::CopyOutputBitmapWithMetadata&)> callback,
+              [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
+                     callback,
                  std::unique_ptr<viz::CopyOutputResult> result) {
-                auto scoped_bitmap = result->ScopedAccessSkBitmap();
-                std::move(callback).Run(
-                    scoped_bitmap.GetOutScopedBitmapAndMetadata());
+                std::move(callback).Run(result->ScopedAccessSkBitmap()
+                                            .GetOutScopedBitmapAndMetadata());
               },
               std::move(callback)));
 

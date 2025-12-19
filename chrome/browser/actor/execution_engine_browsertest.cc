@@ -504,9 +504,9 @@ class ExecutionEnginePixelBrowserTest : public ExecutionEngineBrowserTest {
     web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
         base::BindLambdaForTesting(
-            [&](const viz::CopyOutputBitmapWithMetadata& result) {
-              const SkBitmap& bitmap = result.bitmap;
-              ASSERT_FALSE(bitmap.drawsNothing());
+            [&](const content::CopyFromSurfaceResult& result) {
+              ASSERT_TRUE(result.has_value());
+              const SkBitmap& bitmap = result->bitmap;
               for (int x = 0; x < bitmap.width() && !found_red; ++x) {
                 for (int y = 0; y < bitmap.height() && !found_red; ++y) {
                   if (bitmap.getColor(x, y) == SK_ColorRED) {

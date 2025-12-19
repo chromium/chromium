@@ -225,7 +225,7 @@ class OmniboxClient {
   // with the arguments being the index of the result, the URL of the bitmap,
   // and the bitmap itself.
   using BitmapFetchedCallback = base::RepeatingCallback<
-      void(int result_index, const GURL& icon_url, const SkBitmap& bitmap)>;
+      void(int result_index, const GURL& icon_url, const SkBitmap bitmap)>;
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
                                bool should_preload,

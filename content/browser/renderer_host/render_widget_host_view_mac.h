@@ -52,10 +52,6 @@ namespace input {
 class CursorManager;
 }  // namespace input
 
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
-
 @protocol RenderWidgetHostViewMacDelegate;
 
 @class NSAccessibilityRemoteUIElement;
@@ -158,8 +154,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) override;
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
   void EnsureSurfaceSynchronizedForWebTest() override;
   ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void FocusedNodeChanged(bool is_editable_node,

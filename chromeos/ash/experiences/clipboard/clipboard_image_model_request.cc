@@ -333,8 +333,8 @@ void ClipboardImageModelRequest::CopySurface() {
 
 void ClipboardImageModelRequest::OnCopyComplete(
     float device_scale_factor,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   if (!deliver_image_model_callback_) {
     Stop(RequestStopReason::kMultipleCopyCompletion);
     return;

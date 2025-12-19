@@ -843,11 +843,14 @@ void LensSearchContextualizationController::CaptureScreenshot(
 void LensSearchContextualizationController::OnScreenshotCapturedForUpdate(
     int attempt_id,
     base::OnceCallback<void(const SkBitmap&)> callback,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   if (attempt_id != screenshot_attempt_id_) {
     return;
   }
-  std::move(callback).Run(result.bitmap);
+
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  std::move(callback).Run(
+      result.value_or(viz::CopyOutputBitmapWithMetadata()).bitmap);
 }
 
 void LensSearchContextualizationController::DidCaptureScreenshot(
@@ -1008,8 +1011,9 @@ void LensSearchContextualizationController::
 
 void LensSearchContextualizationController::FetchViewportImageBoundingBoxes(
     OnScreenshotTakenCallback callback,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   content::RenderFrameHost* render_frame_host =
       lens_search_controller_->GetTabInterface()
           ->GetContents()

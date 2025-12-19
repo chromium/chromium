@@ -317,10 +317,10 @@ void TabContextualizationController::DownscaleScreenshotAndContinue(
     base::ScopedClosureRunner decrement_capturer_count_runner,
     std::optional<lens::ImageEncodingOptions> image_options,
     CaptureScreenshotCallback callback,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   // `DecrementCapturerCount()` is called when `decrement_capturer_count_runner`
   // goes out of scope.
-  const SkBitmap& screenshot = result.bitmap;
+  const SkBitmap& screenshot = result.has_value() ? result->bitmap : SkBitmap();
 
   if (screenshot.drawsNothing() || !image_options.has_value()) {
     std::move(callback).Run(screenshot);

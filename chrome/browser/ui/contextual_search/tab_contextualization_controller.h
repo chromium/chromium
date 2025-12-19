@@ -18,6 +18,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "pdf/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -26,10 +27,6 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace optimization_guide {
 class PageContextEligibility;
@@ -147,7 +144,7 @@ class TabContextualizationController : public content::WebContentsObserver {
       base::ScopedClosureRunner decrement_capturer_count_runner,
       std::optional<lens::ImageEncodingOptions> image_options,
       CaptureScreenshotCallback callback,
-      const viz::CopyOutputBitmapWithMetadata& result);
+      const content::CopyFromSurfaceResult& result);
 
   // Called when screenshot is captured. Calls the callback with the supplied
   // contextual input data including the screenshot.

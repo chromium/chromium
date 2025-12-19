@@ -108,8 +108,8 @@ TEST_F(DelegatedFrameHostTest, NoCopyOutputRequestWithNoValidSurface) {
       /*output_size=*/gfx::Size(),
       base::BindOnce(
           [](base::RepeatingClosure quit_closure,
-             const viz::CopyOutputBitmapWithMetadata& result) {
-            EXPECT_TRUE(result.bitmap.empty());
+             const content::CopyFromSurfaceResult& result) {
+            EXPECT_FALSE(result.has_value());
             quit_closure.Run();
           },
           run_loop.QuitClosure()));

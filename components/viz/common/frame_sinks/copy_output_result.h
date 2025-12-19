@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_RESULT_H_
 
 #include <array>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -305,9 +306,13 @@ class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
   // It makes a copy of the content in CopyOutputResult if it is needed.
   SkBitmap GetOutScopedBitmap() const;
 
-  // Returns a SkBitmap along with other metadata. Makes a copy of the content
-  // in CopyOutputResult if needed.
-  CopyOutputBitmapWithMetadata GetOutScopedBitmapAndMetadata() const;
+  // Returns a base::expected<CopyOutputBitmapWithMetadata, std::string>.
+  // On success, the expected value contains a CopyOutputBitmapWithMetadata,
+  // where the encapsulated SkBitmap is guaranteed to be non-empty.
+  // On failure, the expected value contains a std::string describing the error.
+  // This function makes a copy of the content in CopyOutputResult if needed.
+  base::expected<CopyOutputBitmapWithMetadata, std::string>
+  GetOutScopedBitmapAndMetadata() const;
 
  private:
   friend class CopyOutputResult;

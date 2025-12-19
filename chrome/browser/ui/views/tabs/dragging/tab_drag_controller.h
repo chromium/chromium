@@ -30,6 +30,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -52,9 +53,6 @@ namespace views {
 class View;
 class ViewTracker;
 }  // namespace views
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 namespace tabs {
 class TabModel;
 }
@@ -340,7 +338,7 @@ class TabDragController : public views::WidgetObserver,
   // `window_scale` is the scale of the window that `thumbnail` was captured
   // from.
   void OnTabThumbnailAvailable(float window_scale,
-                               const viz::CopyOutputBitmapWithMetadata& result);
+                               const content::CopyFromSurfaceResult& result);
 
   // Starts a regular drag and drop session as a fallback if RunMoveLoop() is
   // not supported and no drag session is currently running. `context` is used

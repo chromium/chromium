@@ -137,7 +137,7 @@ PermissionUiSelector::GeolocationAccuracy GetPredictedGeolocationAccuracy(
     case permissions::PermissionPrediction::GeolocationPrediction::
         ACCURACY_APPROXIMATE:
       return PermissionUiSelector::GeolocationAccuracy::kApproximate;
-  };
+  }
 }
 
 }  // namespace
@@ -268,18 +268,18 @@ void PermissionsAiUiSelector::InquireOnDeviceAiv4AndServerModelIfAvailable(
 void PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel(
     base::TimeTicks snapshot_inquire_start_time,
     ModelExecutionData model_data,
-    const SkBitmap& snapshot) {
+    const SkBitmap* snapshot) {
   VLOG(1) << "[PermissionsAI] OnSnapshotTakenForOnDeviceModel";
   PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
       model_data.model_type, snapshot_inquire_start_time,
-      /*success=*/!snapshot.drawsNothing());
-  if (snapshot.drawsNothing()) {
+      /*success=*/!snapshot->isNull());
+  if (snapshot->isNull() || snapshot->drawsNothing()) {
     VLOG(1) << "[PermissionsAI] The page's snapshot is empty; skipping AivX "
                "on-device model execution.";
     return InquireServerModel(model_data.features,
                               std::move(model_data.request_metadata));
   }
-  model_data.snapshot = std::move(snapshot);
+  model_data.snapshot = std::move(*snapshot);
   ExecuteOnDeviceAivXModel(std::move(model_data));
 }
 
@@ -800,15 +800,17 @@ void PermissionsAiUiSelector::TakeSnapshot(
   if (snapshot_for_testing_.has_value()) {
     OnSnapshotTakenForOnDeviceModel(snapshot_inquire_start_time,
                                     std::move(model_data),
-                                    snapshot_for_testing_.value());
+                                    &snapshot_for_testing_.value());
   } else if (!host_view) {
     VLOG(1) << "[CPSS] Snapshot cannot be taken because host_view is nullptr.";
     FinishRequest(Decision::UseNormalUiAndShowNoWarning());
   } else {
     host_view->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
-        base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
-          return result.bitmap;
+        base::BindOnce([](const content::CopyFromSurfaceResult& result) {
+          // TODO(crbug.com/466199824): Update callsite to handle error
+          // case.
+          return result.has_value() ? &result->bitmap : nullptr;
         })
             .Then(base::BindOnce(
                 &PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel,

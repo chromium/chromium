@@ -80,8 +80,9 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
   view->CopyFromSurface(
       source_rect,  // An empty rect will capture the entire surface.
       gfx::Size(),  // Result contains device-level detail.
-      base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
-        return result.bitmap;
+      base::BindOnce([](const content::CopyFromSurfaceResult& result) {
+        // TODO(crbug.com/466199824): Update callsite to handle error case.
+        return result.value_or(viz::CopyOutputBitmapWithMetadata()).bitmap;
       }).Then(std::move(callback)));
 
 #if BUILDFLAG(IS_CHROMEOS)

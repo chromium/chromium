@@ -70,10 +70,6 @@ class LatencyInfo;
 enum class DomCode : uint32_t;
 }  // namespace ui
 
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}
-
 namespace content {
 
 class DevicePosturePlatformProvider;
@@ -136,8 +132,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) override;
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateVideoCapturer()
       override;
   display::ScreenInfo GetScreenInfo() const override;
@@ -177,8 +173,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void CopyFromExactSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback);
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
 
   // For testing only.
   virtual ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting();
@@ -187,8 +182,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void CopyFromExactSurfaceWithIpcDelay(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback,
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
       base::TimeDelta ipc_delay);
 
   // Returns whethere there's a touch sequence active on Viz.
@@ -250,8 +244,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& src_subrect,
       const gfx::Size& dst_size,
       float scale_factor,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback);
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
 
   void SetWidgetType(WidgetType widget_type);
 

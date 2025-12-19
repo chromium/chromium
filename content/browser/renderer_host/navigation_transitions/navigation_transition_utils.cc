@@ -639,8 +639,11 @@ bool NavigationTransitionUtils::
     static_cast<RenderWidgetHostViewBase*>(rwhv)
         ->CopyFromExactSurfaceWithIpcDelay(
             /*src_rect=*/gfx::Rect(), output_size,
-            base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
-              return result.bitmap;
+            base::BindOnce([](const content::CopyFromSurfaceResult& result) {
+              // TODO(crbug.com/466199824): Update callsite to handle error
+              // case.
+              return result.value_or(viz::CopyOutputBitmapWithMetadata())
+                  .bitmap;
             })
                 .Then(base::BindOnce(
                     &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),

@@ -190,7 +190,7 @@ void OmniboxController::SetPopupStateValidationCallback(
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const GURL& icon_url,
-                                                const SkBitmap& bitmap) {
+                                                SkBitmap bitmap) {
   if (!icon_url.is_empty()) {
     edit_model_->SetIconBitmap(icon_url, bitmap);
   } else {

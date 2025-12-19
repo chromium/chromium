@@ -618,8 +618,12 @@ void ChromeOmniboxClient::OnResultChanged(
               base::BindPostTask(
                   base::SequencedTaskRunner::GetCurrentDefault(),
                   base::BindOnce(
-                      [](const viz::CopyOutputBitmapWithMetadata& result) {
-                        return result.bitmap;
+                      [](const content::CopyFromSurfaceResult& result) {
+                        // TODO(crbug.com/466199824): Update callsite to handle
+                        // error case.
+                        return result
+                            .value_or(viz::CopyOutputBitmapWithMetadata())
+                            .bitmap;
                       })
                       .Then(base::BindOnce(on_bitmap_fetched, result_index,
                                            GURL()))));

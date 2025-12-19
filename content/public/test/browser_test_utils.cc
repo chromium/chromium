@@ -4488,11 +4488,11 @@ bool CompareWebContentsOutputToReference(
     base::RunLoop run_loop;
     rwh->GetView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
-        base::BindLambdaForTesting([&](const viz::CopyOutputBitmapWithMetadata&
+        base::BindLambdaForTesting([&](const content::CopyFromSurfaceResult&
                                            result) {
-          const SkBitmap& bitmap = result.bitmap;
+          ASSERT_TRUE(result.has_value());
+          const SkBitmap& bitmap = result->bitmap;
           base::ScopedAllowBlockingForTesting allow_blocking;
-          ASSERT_FALSE(bitmap.drawsNothing());
 
           SkBitmap clipped_bitmap;
           bitmap.extractSubset(

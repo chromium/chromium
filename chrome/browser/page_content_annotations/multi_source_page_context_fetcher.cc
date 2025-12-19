@@ -413,8 +413,13 @@ class PageContextFetcher : public content::WebContentsObserver {
         kScreenshotTimeout.Get());
   }
 
-  void ReceivedViewportBitmap(const viz::CopyOutputBitmapWithMetadata& result) {
-    ReceivedViewportBitmapOrError(&result.bitmap);
+  void ReceivedViewportBitmap(const content::CopyFromSurfaceResult& result) {
+    if (!result.has_value()) {
+      ReceivedViewportBitmapOrError(base::unexpected(result.error()));
+      return;
+    }
+
+    ReceivedViewportBitmapOrError(base::ok(&result->bitmap));
   }
 
   void ReceivedViewportBitmapOrError(

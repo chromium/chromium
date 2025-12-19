@@ -426,11 +426,12 @@ class ViewTransitionCaptureTest
 
  protected:
   SkBitmap TakeScreenshot() {
-    base::test::TestFuture<const viz::CopyOutputBitmapWithMetadata&>
-        future_bitmap;
+    base::test::TestFuture<const content::CopyFromSurfaceResult&> future_bitmap;
     shell()->web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(), future_bitmap.GetCallback());
-    return future_bitmap.Take().bitmap;
+    return future_bitmap.Take()
+        .value_or(viz::CopyOutputBitmapWithMetadata())
+        .bitmap;
   }
 
   void WaitForSurfaceAnimationManager(RenderFrameHost* render_frame_host) {

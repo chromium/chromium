@@ -9122,8 +9122,8 @@ class NavigationBrowserTestPaintHoldingSubframe
     }
   }
 
-  void OnCopyDone(const viz::CopyOutputBitmapWithMetadata& result) {
-    bitmap_ = result.bitmap;
+  void OnCopyDone(const content::CopyFromSurfaceResult& result) {
+    bitmap_ = result.value_or(viz::CopyOutputBitmapWithMetadata()).bitmap;
     run_loop_->Quit();
   }
 

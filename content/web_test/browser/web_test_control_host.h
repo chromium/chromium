@@ -29,6 +29,7 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/web_test/browser/leak_detector.h"
 #include "content/web_test/browser/web_test_tracing_controller.h"
@@ -41,10 +42,6 @@
 #include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace content {
 class DevToolsProtocolTestBindings;
@@ -312,7 +309,7 @@ class WebTestControlHost : public WebContentsObserver,
   void PrepareRendererForNextWebTest();
   void PrepareRendererForNextWebTestDone();
 
-  void OnPixelDumpCaptured(const viz::CopyOutputBitmapWithMetadata& result);
+  void OnPixelDumpCaptured(const content::CopyFromSurfaceResult& result);
   void ReportResults();
   void EnqueueSurfaceCopyRequest();
 

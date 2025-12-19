@@ -5,6 +5,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 
 #include <cstddef>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -321,9 +322,15 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
   return bitmap_copy;
 }
 
-CopyOutputBitmapWithMetadata
+base::expected<CopyOutputBitmapWithMetadata, std::string>
 CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmapAndMetadata() const {
-  return CopyOutputBitmapWithMetadata{.bitmap = GetOutScopedBitmap()};
+  SkBitmap bitmap = GetOutScopedBitmap();
+  if (bitmap.drawsNothing()) {
+    return base::unexpected<std::string>(
+        "SkBitmap is empty or null; no pixel data available");
+  }
+
+  return CopyOutputBitmapWithMetadata{.bitmap = std::move(bitmap)};
 }
 
 VIZ_COMMON_EXPORT SharedImageFormat

@@ -298,12 +298,15 @@ ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
 
 void ThumbnailTabHelper::StoreThumbnailForTabSwitch(
     base::TimeTicks start_time,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
                              base::Milliseconds(1), base::Seconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap, std::nullopt);
+  if (!result.has_value()) {
+    return;
+  }
+
+  StoreThumbnail(CaptureType::kCopyFromView, result->bitmap, std::nullopt);
 }
 
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(

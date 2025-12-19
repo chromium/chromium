@@ -167,7 +167,7 @@ void OmniboxPageHandler::OnMlScored(AutocompleteController* controller,
 
 void OmniboxPageHandler::OnBitmapFetched(mojom::AutocompleteControllerType type,
                                          const GURL& image_url,
-                                         const SkBitmap& bitmap) {
+                                         const SkBitmap bitmap) {
   auto data = gfx::Image::CreateFrom1xBitmap(bitmap).As1xPNGBytes();
   std::string base_64 = base::Base64Encode(*data);
   const char kDataUrlPrefix[] = "data:image/png;base64,";

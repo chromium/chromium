@@ -9,6 +9,7 @@
 #include "cc/paint/render_surface_filters.h"
 #include "components/lens/lens_features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -138,10 +139,14 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
 }
 
 void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const auto& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  if (!result.has_value()) {
+    return;
+  }
+
+  const SkBitmap& bitmap = result->bitmap;
   auto layer_size = layer()->size();
-  if (bitmap.drawsNothing() || layer_size.width() * layer_size.height() <= 0 ||
+  if (layer_size.width() * layer_size.height() <= 0 ||
       gfx::BitmapsAreEqual(background_screenshot_, bitmap)) {
     return;
   }

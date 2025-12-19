@@ -53,10 +53,11 @@ void HandleCapturedBitmap(
         reply,
     std::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   CHECK(!thumbnail_size.IsEmpty());
 
-  const SkBitmap& bitmap = result.bitmap;
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   std::optional<gfx::ImageSkia> image;
 
   // Only scale and update if the frame appears to be new.

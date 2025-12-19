@@ -172,10 +172,12 @@ void InactiveViewController::CaptureScreenshot(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(
           [](base::WeakPtr<InactiveViewController> weak_ptr,
-             const viz::CopyOutputBitmapWithMetadata& result) {
+             const content::CopyFromSurfaceResult& result) {
             if (weak_ptr) {
-              weak_ptr->OnScreenshotCaptured(
-                  gfx::Image::CreateFrom1xBitmap(result.bitmap));
+              // TODO(crbug.com/466199824): Update callsite to handle error
+              // case.
+              weak_ptr->OnScreenshotCaptured(gfx::Image::CreateFrom1xBitmap(
+                  result.value_or(viz::CopyOutputBitmapWithMetadata()).bitmap));
             }
           },
           GetWeakPtr()));

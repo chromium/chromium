@@ -1074,8 +1074,8 @@ void TabDragController::RequestTabThumbnail() {
 
 void TabDragController::OnTabThumbnailAvailable(
     float window_scale,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& thumbnail = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  const SkBitmap& thumbnail = result.has_value() ? result->bitmap : SkBitmap();
   VLOG(1) << __func__ << " " << thumbnail.width() << "x" << thumbnail.height();
   constexpr size_t kTargetHeightDip = 200;
   constexpr int kRoundedCornerRadius = 4;

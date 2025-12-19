@@ -1082,7 +1082,7 @@ void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
     jint height,
     const jni_zero::JavaRef<jstring>& jpath,
     const jni_zero::JavaRef<jobject>& jcallback) {
-  base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+  base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
       result_callback = base::BindOnce(
           &RenderWidgetHostViewAndroid::OnFinishGetContentBitmap,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1879,8 +1879,7 @@ bool RenderWidgetHostViewAndroid::HasFallbackSurface() const {
 void RenderWidgetHostViewAndroid::CopyFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   TRACE_EVENT0("cc", "RenderWidgetHostViewAndroid::CopyFromSurface");
   if (!IsSurfaceAvailableForCopy()) {
     std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
@@ -1895,9 +1894,9 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
   delegated_frame_host_->CopyFromCompositingSurface(
       src_subrect, output_size,
       base::BindOnce(
-          [](base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
-             const viz::CopyOutputBitmapWithMetadata& result) {
+             const content::CopyFromSurfaceResult& result) {
             TRACE_EVENT0(
                 "cc", "RenderWidgetHostViewAndroid::CopyFromSurface finished");
             std::move(callback).Run(result);
@@ -1915,8 +1914,7 @@ RenderWidgetHostViewAndroid::GetFilteredGestureProviderForTesting() {
 void RenderWidgetHostViewAndroid::CopyFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   CopyFromExactSurfaceWithIpcDelay(src_rect, output_size, std::move(callback),
                                    /*ipc_delay=*/base::TimeDelta());
 }
@@ -1924,7 +1922,7 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurface(
 void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)> callback,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
     base::TimeDelta ipc_delay) {
   CHECK(IsSurfaceAvailableForCopy())
       << "To copy the exact surface, it must be available for copy (embedded "
@@ -2168,8 +2166,7 @@ void RenderWidgetHostViewAndroid::ShowTouchSelectionContextMenu(
 void RenderWidgetHostViewAndroid::SynchronousCopyContents(
     const gfx::Rect& src_subrect_dip,
     const gfx::Size& dst_size_in_pixel,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   // Note: When |src_subrect| is empty, a conversion from the view size must
   // be made instead of using |current_frame_size_|. The latter sometimes also
   // includes extra height for the toolbar UI, which is not intended for
@@ -2308,14 +2305,13 @@ void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
 void RenderWidgetHostViewAndroid::OnFinishGetContentBitmap(
     const base::android::JavaRef<jobject>& callback,
     const std::string& path,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!bitmap.drawsNothing()) {
+  if (result.has_value()) {
     auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     task_runner->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&CompressAndSaveBitmap, path, bitmap),
+        FROM_HERE, base::BindOnce(&CompressAndSaveBitmap, path, result->bitmap),
         base::BindOnce(
             &base::android::RunStringCallbackAndroid,
             base::android::ScopedJavaGlobalRef<jobject>(env, callback)));

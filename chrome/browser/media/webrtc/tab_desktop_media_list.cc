@@ -257,10 +257,8 @@ void TabDesktopMediaList::ScreenshotReceived(
     int remaining_retries,
     const content::DesktopMediaID& id,
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const SkBitmap& bitmap = result.bitmap;
-
   if (id != previewed_source_) {
     // Selection has changed since triggering this screenshot. Quit early to
     // avoid rescaling the image unnecessarily.
@@ -275,7 +273,7 @@ void TabDesktopMediaList::ScreenshotReceived(
   // by calling IncrementCapturerCount before it starts painting actual frames,
   // so do a few retries before giving up and proceeding with an empty image
   // meaning the preview is cleared.
-  if (bitmap.drawsNothing() && remaining_retries > 0) {
+  if (!result.has_value() && remaining_retries > 0) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TabDesktopMediaList::TriggerScreenshot,
@@ -289,8 +287,9 @@ void TabDesktopMediaList::ScreenshotReceived(
                               weak_factory_.GetWeakPtr(), id,
                               std::move(refresh_completer));
   image_resize_task_runner_.get()->PostTask(
-      FROM_HERE, base::BindOnce(&HandleCapturedBitmap, std::move(reply),
-                                last_hash_, bitmap));
+      FROM_HERE,
+      base::BindOnce(&HandleCapturedBitmap, std::move(reply), last_hash_,
+                     result.has_value() ? result->bitmap : SkBitmap()));
 }
 
 void TabDesktopMediaList::OnPreviewCaptureHandled(

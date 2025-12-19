@@ -54,6 +54,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -110,10 +111,6 @@ class FlingSchedulerBase;
 namespace ui {
 enum class DomCode : uint32_t;
 }
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace content {
 class FrameTree;
@@ -1181,7 +1178,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnSnapshotFromSurfaceReceived(
       int snapshot_id,
       int retry_count,
-      const viz::CopyOutputBitmapWithMetadata& result);
+      const content::CopyFromSurfaceResult& result);
 
   void OnSnapshotReceived(int snapshot_id, gfx::Image image);
 

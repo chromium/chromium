@@ -53,7 +53,7 @@ class BitmapFetcherServiceTest : public testing::Test {
   }
   size_t cache_size() const { return service_->cache_.size(); }
 
-  void OnBitmapFetched(const SkBitmap& bitmap) { images_changed_count_++; }
+  void OnBitmapFetched(const SkBitmap bitmap) { images_changed_count_++; }
 
   BitmapFetcherService::RequestId RequestImage(const GURL& url) {
     return service_->RequestImageForTesting(
