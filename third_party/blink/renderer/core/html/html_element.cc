@@ -1437,7 +1437,7 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
   }
   for (auto* invoker_candidate :
        *popover.GetTreeScope().RootNode().CommandInvokers()) {
-    auto* invoker = To<HTMLButtonElement>(invoker_candidate);
+    auto* invoker = To<HTMLElement>(invoker_candidate);
     if (popover == invoker->commandForElement()) {
       cache->MarkElementDirty(invoker);
     }

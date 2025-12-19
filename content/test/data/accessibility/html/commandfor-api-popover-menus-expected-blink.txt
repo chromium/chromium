@@ -28,3 +28,7 @@ rootWebArea
 ++++++++menuItem collapsed name='Submenu1 second item'
 ++++++++++staticText name='Submenu1 second item'
 ++++++++++++inlineTextBox name='Submenu1 second item'
+++++++menuBar horizontal
+++++++++menuItem collapsed name='First item'
+++++++++++staticText name='First item'
+++++++++++++inlineTextBox name='First item'
