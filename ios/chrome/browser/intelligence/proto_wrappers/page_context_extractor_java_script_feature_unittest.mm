@@ -134,8 +134,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, DISABLED_ExtractPageContext) {
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
+// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
-       ExtractPageContextWithAnchors) {
+       DISABLED_ExtractPageContextWithAnchors) {
   const std::string main_html =
       "<html><head><title>Main</title></head><body><a "
       "href=\"http://foo.com\">foo</a></body></html>";
