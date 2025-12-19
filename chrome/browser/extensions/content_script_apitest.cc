@@ -63,6 +63,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -1137,9 +1139,16 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   test_listener.Reply(std::string());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   auto* web_contents = GetActiveWebContents();
-  // ntp_test_utils are not available on Android, so hard-code the expected URL.
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            web_contents->GetLastCommittedURL());
+
+  // There are different possible NTP URLs.
+  std::vector<GURL> possible_ntp_urls = {
+      GURL(chrome::kChromeUINewTabURL),
+#if BUILDFLAG(IS_ANDROID)
+      GURL(chrome::kChromeUINativeNewTabURL),
+#endif
+  };
+  EXPECT_THAT(web_contents->GetLastCommittedURL(),
+              testing::AnyOfArray(possible_ntp_urls));
   EXPECT_FALSE(did_script_inject(web_contents));
 
   // Next, check content script injection.

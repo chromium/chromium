@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -46,6 +48,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -1746,6 +1749,244 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
 
 TabsCreateFunction::TabsCreateFunction() = default;
 TabsCreateFunction::~TabsCreateFunction() = default;
+
+ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
+  std::optional<tabs::Create::Params> params =
+      tabs::Create::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
+  const tabs::Create::Params::CreateProperties& create_properties =
+      params->create_properties;
+
+  // The 'active' property has replaced the 'selected' property.
+  active_ = create_properties.active ? create_properties.active
+                                     : create_properties.selected;
+
+  pinned_ = create_properties.pinned;
+  index_ = create_properties.index;
+  original_url_ = std::move(create_properties.url);
+
+  validated_url_ = GURL(chrome::kChromeUINewTabURL);
+  if (original_url_) {
+    base::expected<GURL, std::string> maybe_url =
+        ExtensionTabUtil::PrepareURLForNavigation(*original_url_, extension(),
+                                                  browser_context());
+    if (!maybe_url.has_value()) {
+      return RespondNow(Error(maybe_url.error()));
+    }
+    validated_url_ = std::move(maybe_url.value());
+  }
+
+  opener_tab_id_ = create_properties.opener_tab_id;
+
+  // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
+  // represents the active tab.
+  content::WebContents* opener = nullptr;
+  if (opener_tab_id_) {
+    if (!ExtensionTabUtil::GetTabById(*opener_tab_id_, browser_context(),
+                                      include_incognito_information(), nullptr,
+                                      &opener, nullptr)) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          ExtensionTabUtil::kTabNotFoundError,
+          base::NumberToString(*opener_tab_id_))));
+    }
+  }
+
+  // Try to find a suitable browser.
+  // TODO(https://crbug.com/468223125): This is a wild set of tangle
+  // conditions, most of which are inconsistent.
+
+  BrowserWindowInterface* browser = nullptr;
+  std::string error;
+
+  // windowId defaults to "current" window.
+  if (WindowController* controller =
+          ExtensionTabUtil::GetControllerFromWindowID(
+              ChromeExtensionFunctionDetails(this),
+              create_properties.window_id.value_or(
+                  extension_misc::kCurrentWindowId),
+              &error)) {
+    browser = controller->GetBrowserWindowInterface();
+  }
+
+  // We didn't find a browser. Bail.
+  // TODO(https://crbug.com/468223125): This isn't consistent, since sometimes
+  // we *will* create a new browser below.
+  if (!browser) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // We can't load extension URLs into incognito windows unless the extension
+  // uses split mode. Special case to fall back to a tabbed window or, if
+  // needed, create one.
+  bool needs_original_profile = false;
+  if (validated_url_.SchemeIs(kExtensionScheme) &&
+      (!extension() || !IncognitoInfo::IsSplitMode(extension()))) {
+    needs_original_profile = true;
+  }
+
+  bool fallback_to_tabbed_browser = false;
+  bool create_if_needed = false;
+
+  // Check if the browser is valid. If it isn't, reset `browser` and possibly
+  // find a replacement.
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/468223125): Why do we check if it's not a normal
+  // browser *and* it's attempting to close? Should that be *or*? This goes
+  // back to the dawn of time, AKA the initial implementation in 2014:
+  // https://codereview.chromium.org/245933002.
+  if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
+      browser->GetBrowserForMigrationOnly()->IsAttemptingToCloseBrowser()) {
+    browser = nullptr;
+    fallback_to_tabbed_browser = true;
+  }
+#endif
+
+  if (browser && needs_original_profile &&
+      browser->GetProfile()->IsOffTheRecord()) {
+    browser = nullptr;
+    fallback_to_tabbed_browser = true;
+    create_if_needed = true;
+  }
+
+  // This check (for the opener) comes last. It will fail (by design) if
+  // we're intending to create a new browser; that's good, because the new
+  // browser would never match the one with the opener.
+  if (opener) {
+    BrowserWindowInterface* opener_browser =
+        browser_window_util::GetBrowserForTabContents(*opener);
+    if (!opener_browser || opener_browser != browser) {
+      return RespondNow(
+          Error("Tab opener must be in the same window as the updated tab."));
+    }
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* profile_to_use =
+      needs_original_profile ? profile->GetOriginalProfile() : profile;
+
+  if (!browser && fallback_to_tabbed_browser) {
+    // Don't include incognito information if we need the original profile,
+    // since the goal is to find a non-incognito browser.
+    bool include_incognito =
+        include_incognito_information() && !needs_original_profile;
+    browser = browser_window_util::GetLastActiveNormalBrowserWithProfile(
+        *profile_to_use, include_incognito);
+  }
+
+  // Found a suitable browser. Use it!
+  if (browser) {
+    OpenTabInBrowser(*browser, opener);
+    // OpenTabInBrowser() will respond.
+    return AlreadyResponded();
+  }
+
+  // No suitable existing browser.
+
+  if (!create_if_needed) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+  }
+
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
+    return RespondNow(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
+  }
+
+  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
+                                          *profile_to_use, user_gesture());
+  CreateBrowserWindow(
+      std::move(create_params),
+      base::BindOnce(&TabsCreateFunction::OnBrowserWindowCreated, this));
+  return RespondLater();
+}
+
+void TabsCreateFunction::OnBrowserWindowCreated(
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    Respond(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
+    return;
+  }
+
+  browser->GetWindow()->Show();
+
+  // Re-fetch the opener, if one was specified. This call might fail if the
+  // opener tab was destroyed while the window was being created. In that case,
+  // we silently ignore it (we're committed at this point, since we've already
+  // created a new window to show the tab).
+  content::WebContents* opener = nullptr;
+  if (opener_tab_id_) {
+    ExtensionTabUtil::GetTabById(*opener_tab_id_, browser_context(),
+                                 include_incognito_information(), nullptr,
+                                 &opener, nullptr);
+  }
+
+  OpenTabInBrowser(*browser, opener);
+}
+
+void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
+                                          content::WebContents* opener_tab) {
+  OpenTabHelper::Params options;
+
+  options.active = active_;
+  options.pinned = pinned_;
+  options.index = index_;
+
+  base::expected<content::WebContents*, std::string> result =
+      OpenTabHelper::OpenTab(validated_url_, browser, this, options);
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
+    return;
+  }
+
+  content::WebContents* new_contents = result.value();
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  tabs_internal::NotifyExtensionTelemetry(
+      Profile::FromBrowserContext(browser_context()), extension(),
+      safe_browsing::TabsApiInfo::CREATE,
+      /*current_url=*/std::string(), original_url_.value_or(std::string()),
+      js_callstack());
+#endif
+
+  // TODO(https://crbug.com/371432155): Support this on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Check if we need to set the opener. The tab may have been created in a
+  // different window, so make sure we look at the right tab strip.
+  if (opener_tab) {
+    BrowserWindowInterface* opener_browser =
+        browser_window_util::GetBrowserForTabContents(*opener_tab);
+    if (opener_browser) {
+      TabStripModel* const tab_strip =
+          opener_browser->GetBrowserForMigrationOnly()->tab_strip_model();
+      const int new_index = tab_strip->GetIndexOfWebContents(new_contents);
+      // Only set the opener if the opener tab is in the same tab strip as the
+      // new tab.
+      if (new_index != TabStripModel::kNoTab) {
+        tab_strip->SetOpenerOfWebContentsAt(new_index, opener_tab);
+      }
+    }
+  }
+#endif
+
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension(), source_context_type(),
+                                            new_contents);
+
+  // Return data about the created tab only if the extension might use it;
+  // otherwise, don't create the object as a (minor) optimization.
+  if (has_callback()) {
+    Respond(WithArguments(ExtensionTabUtil::CreateTabObject(
+                              new_contents, scrub_tab_behavior, extension())
+                              .ToValue()));
+    return;
+  }
+
+  Respond(NoArguments());
+}
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   std::optional<tabs::Duplicate::Params> params =

@@ -336,7 +336,6 @@ class TabsCreateFunction : public ExtensionFunction {
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.create", TABS_CREATE)
 
-#if !BUILDFLAG(IS_ANDROID)
   // Called after a new browser window has been created.
   void OnBrowserWindowCreated(BrowserWindowInterface* browser);
 
@@ -355,7 +354,6 @@ class TabsCreateFunction : public ExtensionFunction {
 
   // The validated URL to open.
   GURL validated_url_;
-#endif
 };
 class TabsDuplicateFunction : public ExtensionFunction {
   ~TabsDuplicateFunction() override = default;
