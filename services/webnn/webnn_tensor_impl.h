@@ -72,6 +72,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // call `ImportTensorImpl()` with that access. Returns true on success.
   bool ImportTensorOnMainThread();
 
+  // Helper that runs a closure synchronously on a different sequence.
+  // The caller blocks but the target sequence never blocks.
+  // It is important the task does not post back to the current sequence, to
+  // prevent deadlocks.
+  static void RunOrPostTaskAndWaitOnSequence(
+      scoped_refptr<base::SequencedTaskRunner> target,
+      base::OnceClosure task);
+
  protected:
   ~WebNNTensorImpl() override;
 
@@ -100,14 +108,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // `access`. Must not post tasks itself; all main thread synchronization is
   // handled by `ImportTensorOnMainThread()`.
   virtual bool ImportTensorImpl(ScopedAccessPtr access) = 0;
-
-  // Helper that runs a closure synchronously on a different sequence.
-  // The caller blocks but the target sequence never blocks.
-  // It is important the task does not post back to the current sequence, to
-  // prevent deadlocks.
-  static void RunOrPostTaskAndWaitOnSequence(
-      scoped_refptr<base::SequencedTaskRunner> target,
-      base::OnceClosure task);
 
   base::WeakPtr<WebNNContextImpl> context_;
 

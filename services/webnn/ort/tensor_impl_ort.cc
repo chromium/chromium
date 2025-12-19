@@ -114,11 +114,6 @@ bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
     if (wait_fence->GetCompletedValue() < d3d_write_fence->GetFenceValue()) {
       // Passing nullptr as the event handle to SetEventOnCompletion means the
       // function will block until the fence is signaled.
-      //
-      // Blocking is acceptable because WebNN interop is behind a feature flag
-      // and will be moved to a separate thread later.
-      // TODO(crbug.com/419598085): Remove comment once WebNN interop is moved
-      // to a separate thread.
       HRESULT hr = wait_fence->SetEventOnCompletion(
           d3d_write_fence->GetFenceValue(), nullptr);
       CHECK_EQ(hr, S_OK) << "[WebNN] Failed to set event on completion";
