@@ -38,9 +38,8 @@ std::string AsKey(proto::OptimizationTarget optimization_target) {
 std::string GetServerModelCacheKeyHash(
     PrefService& local_state,
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& client_model_cache_key) {
-  std::string client_model_cache_key_hash =
-      GetModelCacheKeyHash(client_model_cache_key);
+    const ClientCacheKey& client_model_cache_key) {
+  std::string client_model_cache_key_hash = client_model_cache_key.hexhash;
   auto* server_model_cache_key_hash =
       local_state.GetDict(prefs::localstate::kModelCacheKeyMapping)
           .FindString(AsKey(optimization_target) + client_model_cache_key_hash);
@@ -66,6 +65,12 @@ std::optional<proto::OptimizationTarget> ParseOptimizationTarget(
 }
 
 }  // namespace
+
+ClientCacheKey ClientCacheKey::FromLocale(std::string locale) {
+  proto::ModelCacheKey key;
+  key.set_locale(locale);
+  return ClientCacheKey{.hexhash = GetModelCacheKeyHash(key)};
+}
 
 ModelStoreMetadataEntry::ModelStoreMetadataEntry(
     const base::Value::Dict* metadata_entry)
@@ -136,7 +141,7 @@ ModelStoreLedger::~ModelStoreLedger() = default;
 
 std::optional<ModelStoreMetadataEntry> ModelStoreLedger::GetEntryIfExists(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key) const {
+    const ClientCacheKey& model_cache_key) const {
   auto* metadata_target =
       local_state_->GetDict(prefs::localstate::kModelStoreMetadata)
           .FindDict(AsKey(optimization_target));
@@ -183,7 +188,7 @@ std::set<base::FilePath> ModelStoreLedger::GetValidModelDirs() const {
 
 ModelStoreMetadataEntryUpdater ModelStoreLedger::UpdateEntry(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key) {
+    const ClientCacheKey& model_cache_key) {
   return ModelStoreMetadataEntryUpdater(
       *local_state_, optimization_target,
       GetServerModelCacheKeyHash(*local_state_, optimization_target,
@@ -192,13 +197,13 @@ ModelStoreMetadataEntryUpdater ModelStoreLedger::UpdateEntry(
 
 void ModelStoreLedger::UpdateModelCacheKeyMapping(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& client_model_cache_key,
+    const ClientCacheKey& client_model_cache_key,
     const proto::ModelCacheKey& server_model_cache_key) {
   ScopedDictPrefUpdate pref_updater(*local_state_,
                                     prefs::localstate::kModelCacheKeyMapping);
   pref_updater->Set(
       base::NumberToString(static_cast<int>(optimization_target)) +
-          GetModelCacheKeyHash(client_model_cache_key),
+          client_model_cache_key.hexhash,
       GetModelCacheKeyHash(server_model_cache_key));
 }
 

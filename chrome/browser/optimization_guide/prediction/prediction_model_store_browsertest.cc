@@ -167,7 +167,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetModelCacheKey(Profile* profile,
-                        const proto::ModelCacheKey& model_cache_key) {
+                        const ClientCacheKey& model_cache_key) {
     GetPredictionManager(profile)->SetModelCacheKeyForTesting(model_cache_key);
   }
 
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
     base::HistogramTester histogram_tester_foo;
     ModelFileObserver model_file_observer_foo;
     Profile* profile_foo = CreateProfile();
-    SetModelCacheKey(profile_foo, CreateModelCacheKey(kTestLocaleFoo));
+    SetModelCacheKey(profile_foo, ClientCacheKey::FromLocale(kTestLocaleFoo));
 
     RegisterAndWaitForModelUpdate(&model_file_observer_foo, profile_foo);
     // Same model will be redownloaded.
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   {
     base::HistogramTester histogram_tester_foo;
     Profile* profile_foo = CreateProfile();
-    SetModelCacheKey(profile_foo, CreateModelCacheKey(kTestLocaleFoo));
+    SetModelCacheKey(profile_foo, ClientCacheKey::FromLocale(kTestLocaleFoo));
     RegisterAndWaitForModelUpdate(&model_file_observer_foo, profile_foo);
 
     histogram_tester_foo.ExpectUniqueSample(
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   {
     base::HistogramTester histogram_tester_bar;
     Profile* profile_bar = CreateProfile();
-    SetModelCacheKey(profile_bar, CreateModelCacheKey(kTestLocaleBar));
+    SetModelCacheKey(profile_bar, ClientCacheKey::FromLocale(kTestLocaleBar));
     RegisterAndWaitForModelUpdate(&model_file_observer_bar, profile_bar);
 
     // No more downloads should happen.
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(
     set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
     base::HistogramTester histogram_tester_foo;
     Profile* profile_foo = CreateProfile();
-    SetModelCacheKey(profile_foo, CreateModelCacheKey(kTestLocaleFoo));
+    SetModelCacheKey(profile_foo, ClientCacheKey::FromLocale(kTestLocaleFoo));
     RegisterAndWaitForModelUpdate(&model_file_observer_foo, profile_foo);
 
     histogram_tester_foo.ExpectUniqueSample(
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(
     set_server_model_cache_key(CreateModelCacheKey(kTestLocaleBar));
     base::HistogramTester histogram_tester_bar;
     Profile* profile_bar = CreateProfile();
-    SetModelCacheKey(profile_bar, CreateModelCacheKey(kTestLocaleBar));
+    SetModelCacheKey(profile_bar, ClientCacheKey::FromLocale(kTestLocaleBar));
     RegisterAndWaitForModelUpdate(&model_file_observer_bar, profile_bar);
 
     // Model will be downloaded since the server returned different model cache
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   {
     base::HistogramTester histogram_tester_foo;
     Profile* profile_foo = CreateProfile();
-    SetModelCacheKey(profile_foo, CreateModelCacheKey(kTestLocaleFoo));
+    SetModelCacheKey(profile_foo, ClientCacheKey::FromLocale(kTestLocaleFoo));
     RegisterAndWaitForModelUpdate(&model_file_observer_foo, profile_foo);
 
     histogram_tester_foo.ExpectUniqueSample(
@@ -495,13 +495,13 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
     ModelStoreMetadataEntryUpdater updater =
         ModelStoreLedger(*g_browser_process->local_state())
             .UpdateEntry(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-                         CreateModelCacheKey(kTestLocaleFoo));
+                         ClientCacheKey::FromLocale(kTestLocaleFoo));
     updater.SetVersion(kSuccessfulModelVersion - 1);
   }
   {
     base::HistogramTester histogram_tester_bar;
     Profile* profile_bar = CreateProfile();
-    SetModelCacheKey(profile_bar, CreateModelCacheKey(kTestLocaleBar));
+    SetModelCacheKey(profile_bar, ClientCacheKey::FromLocale(kTestLocaleBar));
     RegisterAndWaitForModelUpdate(&model_file_observer_bar, profile_bar);
 
     // Model will be downloaded since the model version got updated.
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
                        PRE_TestOldModelRemovedOnModelUpdate) {
   auto model_cache_key =
-      CreateModelCacheKey(g_browser_process->GetApplicationLocale());
+      ClientCacheKey::FromLocale(g_browser_process->GetApplicationLocale());
   base::FilePath old_model_dir, new_model_dir;
   ModelFileObserver model_file_observer;
   {

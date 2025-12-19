@@ -31,6 +31,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
+#include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
@@ -55,12 +56,6 @@
 namespace optimization_guide {
 
 namespace {
-
-proto::ModelCacheKey GetModelCacheKey(const std::string& locale) {
-  proto::ModelCacheKey model_cache_key;
-  model_cache_key.set_locale(locale);
-  return model_cache_key;
-}
 
 void RecordModelUpdateVersion(const proto::ModelInfo& model_info) {
   base::UmaHistogramSparse(
@@ -102,7 +97,7 @@ PredictionManager::PredictionManager(
               // `prediction_model_fetch_timer_` is owned by `this`.
               base::Unretained(this))),
       application_locale_(application_locale),
-      model_cache_key_(GetModelCacheKey(application_locale_)) {
+      model_cache_key_(ClientCacheKey::FromLocale(application_locale_)) {
   DCHECK(prediction_model_store_);
   LoadPredictionModels(GetRegisteredOptimizationTargets());
   LOCAL_HISTOGRAM_BOOLEAN(

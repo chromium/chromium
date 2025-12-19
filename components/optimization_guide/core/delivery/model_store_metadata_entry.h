@@ -22,6 +22,11 @@ class PrefService;
 
 namespace optimization_guide {
 
+struct ClientCacheKey {
+  std::string hexhash;
+  static ClientCacheKey FromLocale(std::string);
+};
+
 // A read-only view of the metadata in prefs about a model on disk.
 class ModelStoreMetadataEntry {
  public:
@@ -94,7 +99,7 @@ class ModelStoreLedger {
   // Returns the metadata entry in the store if it exists.
   std::optional<ModelStoreMetadataEntry> GetEntryIfExists(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& model_cache_key) const;
+      const ClientCacheKey& model_cache_key) const;
 
   // Returns the valid model dirs in the model store base dir, that were in sync
   // with the `local_state`.
@@ -104,13 +109,13 @@ class ModelStoreLedger {
   // Creates the entry if it does not exist.
   ModelStoreMetadataEntryUpdater UpdateEntry(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& model_cache_key);
+      const ClientCacheKey& model_cache_key);
 
   // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
   // for |optimization_target| in |local_state|.
   void UpdateModelCacheKeyMapping(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& client_model_cache_key,
+      const ClientCacheKey& client_model_cache_key,
       const proto::ModelCacheKey& server_model_cache_key);
 
   // Removes all the model metadata entries that are considered inactive, such

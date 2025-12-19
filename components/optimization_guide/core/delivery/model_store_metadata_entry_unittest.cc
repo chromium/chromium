@@ -46,38 +46,42 @@ class ModelStoreMetadataEntryTest : public testing::Test {
 };
 
 TEST_F(ModelStoreMetadataEntryTest, PurgeAllMetadata) {
-  auto model_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
-  auto model_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
+  ClientCacheKey client_cache_key_foo =
+      ClientCacheKey::FromLocale(kTestLocaleFoo);
+  ClientCacheKey client_cache_key_bar =
+      ClientCacheKey::FromLocale(kTestLocaleBar);
+  auto server_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
+  auto server_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
 
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_foo, model_cache_key_foo);
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_bar, model_cache_key_bar);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_foo, server_cache_key_foo);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_bar, server_cache_key_bar);
   auto expired_time = base::Time::Now() - base::Hours(1);
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_foo"));
     updater.SetExpiryTime(expired_time);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetBar, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetBar, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_bar")
                                 .AppendASCII("model_cache_key_foo"));
     updater.SetExpiryTime(expired_time);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_bar);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_bar);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_bar"));
     updater.SetExpiryTime(expired_time);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetBar, model_cache_key_bar);
+        ledger_.UpdateEntry(kTestOptimizationTargetBar, client_cache_key_bar);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_bar")
                                 .AppendASCII("model_cache_key_bar"));
     updater.SetExpiryTime(expired_time);
@@ -97,49 +101,53 @@ TEST_F(ModelStoreMetadataEntryTest, PurgeAllMetadata) {
 
   // All entries should be purged.
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                        model_cache_key_foo));
+                                        client_cache_key_foo));
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetBar,
-                                        model_cache_key_foo));
+                                        client_cache_key_foo));
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                        model_cache_key_bar));
+                                        client_cache_key_bar));
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetBar,
-                                        model_cache_key_bar));
+                                        client_cache_key_bar));
   EXPECT_TRUE(ledger_.GetValidModelDirs().empty());
 }
 
 TEST_F(ModelStoreMetadataEntryTest, PurgeExpiredMetadata) {
-  auto model_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
-  auto model_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
+  ClientCacheKey client_cache_key_foo =
+      ClientCacheKey::FromLocale(kTestLocaleFoo);
+  ClientCacheKey client_cache_key_bar =
+      ClientCacheKey::FromLocale(kTestLocaleBar);
+  auto server_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
+  auto server_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
 
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_foo, model_cache_key_foo);
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_bar, model_cache_key_bar);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_foo, server_cache_key_foo);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_bar, server_cache_key_bar);
   auto expired_time = base::Time::Now() - base::Hours(1);
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_foo"));
     updater.SetExpiryTime(base::Time::Now() + base::Hours(1));
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetBar, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetBar, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_bar")
                                 .AppendASCII("model_cache_key_foo"));
     updater.SetExpiryTime(base::Time::Now() + base::Hours(1));
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_bar);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_bar);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_bar"));
     updater.SetExpiryTime(expired_time);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetBar, model_cache_key_bar);
+        ledger_.UpdateEntry(kTestOptimizationTargetBar, client_cache_key_bar);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_bar")
                                 .AppendASCII("model_cache_key_bar"));
     updater.SetExpiryTime(expired_time);
@@ -159,13 +167,13 @@ TEST_F(ModelStoreMetadataEntryTest, PurgeExpiredMetadata) {
 
   // Only expired entries will be purged.
   EXPECT_TRUE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                       model_cache_key_foo));
+                                       client_cache_key_foo));
   EXPECT_TRUE(ledger_.GetEntryIfExists(kTestOptimizationTargetBar,
-                                       model_cache_key_foo));
+                                       client_cache_key_foo));
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                        model_cache_key_bar));
+                                        client_cache_key_bar));
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetBar,
-                                        model_cache_key_bar));
+                                        client_cache_key_bar));
   EXPECT_THAT(
       ledger_.GetValidModelDirs(),
       testing::UnorderedElementsAre(base::FilePath::FromASCII("opt_target_foo")
@@ -175,46 +183,50 @@ TEST_F(ModelStoreMetadataEntryTest, PurgeExpiredMetadata) {
 }
 
 TEST_F(ModelStoreMetadataEntryTest, PurgeMetadataInKillSwitch) {
+  ClientCacheKey client_cache_key_foo =
+      ClientCacheKey::FromLocale(kTestLocaleFoo);
+  ClientCacheKey client_cache_key_bar =
+      ClientCacheKey::FromLocale(kTestLocaleBar);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePredictionModelKillswitch,
       {{"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "5"}});
 
-  auto model_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
-  auto model_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_foo, model_cache_key_foo);
-  ledger_.UpdateModelCacheKeyMapping(kTestOptimizationTargetFoo,
-                                     model_cache_key_bar, model_cache_key_bar);
+  auto server_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
+  auto server_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_foo, server_cache_key_foo);
+  ledger_.UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, client_cache_key_bar, server_cache_key_bar);
 
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_foo"));
     updater.SetVersion(5);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetFoo, model_cache_key_bar);
+        ledger_.UpdateEntry(kTestOptimizationTargetFoo, client_cache_key_bar);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_bar"));
     updater.SetVersion(6);
   }
   {
     ModelStoreMetadataEntryUpdater updater =
-        ledger_.UpdateEntry(kTestOptimizationTargetBar, model_cache_key_foo);
+        ledger_.UpdateEntry(kTestOptimizationTargetBar, client_cache_key_foo);
     updater.SetModelBaseDir(base::FilePath::FromASCII("opt_target_foo")
                                 .AppendASCII("model_cache_key_foo"));
   }
 
   ledger_.PurgeAllInactiveMetadata();
   EXPECT_FALSE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                        model_cache_key_foo));
+                                        client_cache_key_foo));
   EXPECT_TRUE(ledger_.GetEntryIfExists(kTestOptimizationTargetFoo,
-                                       model_cache_key_bar));
+                                       client_cache_key_bar));
   EXPECT_TRUE(ledger_.GetEntryIfExists(kTestOptimizationTargetBar,
-                                       model_cache_key_foo));
+                                       client_cache_key_foo));
 }
 
 }  // namespace optimization_guide

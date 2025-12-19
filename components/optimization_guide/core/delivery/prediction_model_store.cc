@@ -198,7 +198,7 @@ void PredictionModelStore::Initialize(const base::FilePath& base_store_dir) {
 
 bool PredictionModelStore::HasModel(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key) const {
+    const ClientCacheKey& model_cache_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata =
       ledger_.GetEntryIfExists(optimization_target, model_cache_key);
@@ -212,7 +212,7 @@ bool PredictionModelStore::HasModel(
 
 bool PredictionModelStore::HasModelWithVersion(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     int64_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata =
@@ -236,7 +236,7 @@ bool PredictionModelStore::HasModelWithVersion(
 
 void PredictionModelStore::LoadModel(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     scoped_refptr<base::SequencedTaskRunner> model_task_runner,
     PredictionModelLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -318,7 +318,7 @@ PredictionModelStore::LoadAndVerifyModelOffThread(
 
 void PredictionModelStore::OnModelLoaded(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     PredictionModelLoadedCallback callback,
     std::unique_ptr<proto::PredictionModel> model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -338,7 +338,7 @@ void PredictionModelStore::OnModelLoaded(
 
 void PredictionModelStore::UpdateMetadataForExistingModel(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     const proto::ModelInfo& model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_info.has_version());
@@ -362,7 +362,7 @@ void PredictionModelStore::UpdateMetadataForExistingModel(
 
 void PredictionModelStore::UpdateModel(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     const proto::ModelInfo& model_info,
     const base::FilePath& base_model_dir,
     base::OnceClosure callback) {
@@ -402,7 +402,7 @@ void PredictionModelStore::UpdateModel(
 
 void PredictionModelStore::OnModelUpdateVerified(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     base::OnceClosure callback,
     bool model_paths_exist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -416,21 +416,21 @@ void PredictionModelStore::OnModelUpdateVerified(
 
 base::FilePath PredictionModelStore::GetBaseModelDirForModelCacheKey(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key) {
+    const ClientCacheKey& model_cache_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!base_store_dir_.empty());
   auto base_model_dir = base_store_dir_
                             .AppendASCII(base::NumberToString(
                                 static_cast<int>(optimization_target)))
-                            .AppendASCII(GetModelCacheKeyHash(model_cache_key));
+                            .AppendASCII(model_cache_key.hexhash);
   return base_model_dir.AppendASCII(
       base::HexEncode(base::RandBytesAsVector(8)));
 }
 
 void PredictionModelStore::UpdateModelCacheKeyMapping(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& client_model_cache_key,
+    const ClientCacheKey& client_model_cache_key,
     const proto::ModelCacheKey& server_model_cache_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ledger_.UpdateModelCacheKeyMapping(
@@ -439,7 +439,7 @@ void PredictionModelStore::UpdateModelCacheKeyMapping(
 
 void PredictionModelStore::RemoveModel(
     proto::OptimizationTarget optimization_target,
-    const proto::ModelCacheKey& model_cache_key,
+    const ClientCacheKey& model_cache_key,
     PredictionModelStoreModelRemovalReason model_remove_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
