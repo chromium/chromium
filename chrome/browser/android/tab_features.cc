@@ -10,10 +10,15 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/common/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+
+#if BUILDFLAG(ENABLE_GLIC_ANDROID)
+#include "chrome/browser/glic/service/glic_instance_helper.h"
+#endif
 
 namespace tabs {
 
@@ -38,6 +43,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);
+
+#if BUILDFLAG(ENABLE_GLIC_ANDROID)
+  glic_instance_helper_ =
+      GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
+#endif
 }
 
 TabFeatures::~TabFeatures() = default;

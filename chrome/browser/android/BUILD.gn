@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+
 source_set("tabs_public") {
   public = [ "tab_features.h" ]
 
@@ -10,7 +12,10 @@ source_set("tabs_public") {
     "//ui/base/unowned_user_data",
   ]
 
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/common:buildflags",
+    "//content/public/browser",
+  ]
 }
 
 source_set("tabs_impl") {
@@ -29,4 +34,8 @@ source_set("tabs_impl") {
     "//components/tabs:public",
     "//content/public/browser",
   ]
+
+  if (enable_glic_android) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }

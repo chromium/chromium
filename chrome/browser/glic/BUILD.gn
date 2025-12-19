@@ -155,6 +155,7 @@ source_set("impl") {
     "service/glic_ui_embedder.h",
     "service/glic_ui_types.cc",
     "service/glic_ui_types.h",
+    "service/metrics/glic_instance_helper_metrics.cc",
   ]
 
   if (!is_android) {
@@ -231,7 +232,6 @@ source_set("impl") {
       "service/glic_tab_creation_observer.h",
       "service/metrics/glic_instance_coordinator_metrics.cc",
       "service/metrics/glic_instance_coordinator_metrics.h",
-      "service/metrics/glic_instance_helper_metrics.cc",
       "service/metrics/glic_instance_metrics.cc",
       "service/metrics/glic_instance_metrics.h",
       "service/metrics/glic_metrics_session_manager.cc",
