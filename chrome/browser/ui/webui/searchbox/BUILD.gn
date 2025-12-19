@@ -40,6 +40,7 @@ source_set("searchbox") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
     "//chrome/browser/omnibox",
     "//chrome/browser/preloading/search_preload",

@@ -408,4 +408,7 @@ interface Page {
 
   // Called when Lens search eligibility changes.
   UpdateLensSearchEligibility(bool eligible);
+
+  // Notifies the UI to show or hide AI features.
+  UpdateAimEligibility(bool eligible);
 };

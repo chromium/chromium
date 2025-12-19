@@ -56,6 +56,10 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   void OnShow();
 
+  // ContextualSearchboxHandler:
+  void SetPage(
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page) override;
+
   // SearchboxHandler:
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
       const AutocompleteMatch& match,
@@ -78,6 +82,9 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OnContentsChanged() override {}
   void OnKeywordStateChanged(bool is_keyword_selected) override;
 
+  // `AimEligibilityService` callback.
+  void OnAimEligibilityChanged();
+
  private:
   // ContextualSearchboxHandler:
   int GetContextMenuMaxTabSuggestions() override;
@@ -89,6 +96,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   raw_ptr<MetricsReporter> metrics_reporter_;
 
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
+
+  base::CallbackListSubscription aim_eligibility_subscription_;
 
   base::WeakPtrFactory<WebuiOmniboxHandler> weak_ptr_factory_{this};
 };

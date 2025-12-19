@@ -41,6 +41,7 @@ function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
 
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
+
 export function installMock<T extends object>(
     clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
   installer = installer ||
@@ -142,24 +143,17 @@ suite('AppTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: true,
       });
 
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
+      testProxy.page.updateAimEligibility(true);
       await microtasksFinished();
     });
 
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
-      loadTimeData.overrideValues({
-        searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: false,
-      });
-      localApp.remove();
-      localApp = document.createElement('omnibox-popup-app');
-      document.body.appendChild(localApp);
+      testProxy.page.updateAimEligibility(false);
       await microtasksFinished();
-
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertFalse(!!carousel);
@@ -208,10 +202,10 @@ suite('AppTest', function() {
     test('RecentTabChipShown', async () => {
       loadTimeData.overrideValues({
         searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: true,
         composeboxShowRecentTabChip: true,
         addTabUploadDelayOnRecentTabChipClick: true,
       });
+      testProxy.page.updateAimEligibility(true);
       const tabInfo = {
         tabId: 1,
         title: 'Tab 1',
@@ -245,6 +239,37 @@ suite('AppTest', function() {
           carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
       // Assert chip does show when matches are available.
       assertTrue(!!recentTabChip);
+    });
+  });
+
+  suite('AimEligibility', () => {
+    let localApp: OmniboxPopupAppElement;
+
+    setup(() => {
+      // Use setup instead of suiteSetup to ensure a clean state for each test.
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      localApp = document.createElement('omnibox-popup-app');
+      document.body.appendChild(localApp);
+    });
+
+    test('AimEligibility', async () => {
+      testProxy.page.updateAimEligibility(false);
+      await microtasksFinished();
+      let carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(isVisible(carousel));
+
+      testProxy.page.updateAimEligibility(true);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(isVisible(carousel));
+
+      testProxy.page.updateAimEligibility(false);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(isVisible(carousel));
     });
   });
 });

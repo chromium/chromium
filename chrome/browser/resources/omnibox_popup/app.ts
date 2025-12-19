@@ -91,6 +91,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       showContextEntrypoint_: {type: Boolean},
       isLensSearchEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
+      isAimEligible_: {type: Boolean},
       tabSuggestions_: {type: Array},
     };
   }
@@ -108,6 +109,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowLensSearchChip');
   protected accessor isLensSearchEligible_: boolean = false;
+  protected accessor isAimEligible_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
 
   private callbackRouter_: PageCallbackRouter;
@@ -125,6 +127,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
+    // TODO(b:468113419): the handlers and their definitions are not ordered the
+    // same as the
+    //   mojom file.
     this.listenerIds_ = [
       this.callbackRouter_.autocompleteResultChanged.addListener(
           this.onAutocompleteResultChanged_.bind(this)),
@@ -141,6 +146,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           }),
       this.callbackRouter_.onTabStripChanged.addListener(
           this.refreshTabSuggestions_.bind(this)),
+      this.callbackRouter_.updateAimEligibility.addListener(
+          (eligible: boolean) => {
+            this.isAimEligible_ = eligible;
+          }),
     ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
@@ -177,7 +186,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           this.result_?.matches.some(match => !match.isHidden) ?? false;
     }
 
-    if (changedPrivateProperties.has('searchboxLayoutMode_') ||
+    if (changedPrivateProperties.has('isAimEligible_') ||
+        changedPrivateProperties.has('searchboxLayoutMode_') ||
         changedPrivateProperties.has('isInKeywordMode_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
     }
@@ -192,8 +202,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private computeShowContextEntrypoint_(): boolean {
     const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
-    return loadTimeData.getBoolean('showContextMenuEntrypoint') &&
-        isTallSearchbox && !this.isInKeywordMode_;
+    return this.isAimEligible_ && isTallSearchbox && !this.isInKeywordMode_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
