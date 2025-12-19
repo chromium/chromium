@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 27
+version_major: 28
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -736,6 +736,13 @@ trust_anchors {
   constraints: {
     sct_not_after_sec: 1813017599
   }
+}
+
+# Cloudflare MTC experiment log shard3.
+# See https://bootstrap-mtca.cloudflareresearch.com/logs/shard3/metadata
+mtc_anchors {
+  log_id: "\x82\xda\x4b\x30\x08"  # 44363.48.8
+  tls_trust_anchor: true
 }
 
 # BEGIN additional certs:
