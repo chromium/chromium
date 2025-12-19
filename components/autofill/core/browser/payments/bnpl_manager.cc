@@ -486,7 +486,8 @@ bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
           price_range->price_upper_bound) {
     if (!has_logged_ai_amount_extracted_in_issuer_range_) {
       autofill_metrics::LogAiAmountExtractedInIssuerRange(
-          /*is_within_range=*/false, ongoing_flow_state_->issuer->issuer_id());
+          /*is_within_range=*/false, ongoing_flow_state_->issuer->issuer_id(),
+          browser_autofill_manager_->driver().GetPageUkmSourceId());
       has_logged_ai_amount_extracted_in_issuer_range_ = true;
     }
     return false;
@@ -494,7 +495,8 @@ bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
 
   if (!has_logged_ai_amount_extracted_in_issuer_range_) {
     autofill_metrics::LogAiAmountExtractedInIssuerRange(
-        /*is_within_range=*/true, ongoing_flow_state_->issuer->issuer_id());
+        /*is_within_range=*/true, ongoing_flow_state_->issuer->issuer_id(),
+        browser_autofill_manager_->driver().GetPageUkmSourceId());
     has_logged_ai_amount_extracted_in_issuer_range_ = true;
   }
   return true;

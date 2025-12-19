@@ -70,6 +70,9 @@ specific_include_rules = {
   "autofill_metrics_unittest\.cc": [
     "+components/ukm",
   ],
+  "bnpl_manager_unittest\.cc": [
+    "+components/ukm",
+  ],
   "(test_)?credit_card_fido_authenticator\.(cc|h)": [
     "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",

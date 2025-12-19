@@ -48,6 +48,8 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -392,6 +394,7 @@ class BnplManagerTest : public Test,
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
 // BNPL is currently only available for desktop platforms.
@@ -2770,6 +2773,21 @@ TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_WithinRange) {
   histogram_tester_->ExpectUniqueSample(
       "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Affirm",
       /*sample=*/1, /*expected_bucket_count=*/1);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kIssuerName,
+      static_cast<int64_t>(IssuerId::kBnplAffirm));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kIsWithinRangeName,
+      1);
 }
 
 // Test that the `AiAmountExtraction.AmountInIssuerRange` histogram is logged
@@ -2789,6 +2807,21 @@ TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_OutsideRange) {
   histogram_tester_->ExpectUniqueSample(
       "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Zip",
       /*sample=*/0, /*expected_bucket_count=*/1);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kIssuerName,
+      static_cast<int64_t>(IssuerId::kBnplZip));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kIsWithinRangeName,
+      0);  // False
 }
 
 // Test that the `AiAmountExtraction.AmountInIssuerRange` histogram is logged
@@ -2810,6 +2843,11 @@ TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_LogsOnlyOnce) {
   histogram_tester_->ExpectUniqueSample(
       "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Affirm",
       /*sample=*/1, /*expected_bucket_count=*/1);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange::
+          kEntryName);
+  ASSERT_EQ(1u, entries.size());
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

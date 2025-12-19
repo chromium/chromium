@@ -50,9 +50,10 @@ void LogAiAmountExtractionResult(AiAmountExtractionResult result,
                                  ukm::SourceId ukm_source_id);
 
 // Logs if the amount extracted is within or outside the issuer's supported
-// range.
+// range. Logs to both UMA and UKM.
 void LogAiAmountExtractedInIssuerRange(bool is_within_range,
-                                       BnplIssuer::IssuerId issuer_id);
+                                       BnplIssuer::IssuerId issuer_id,
+                                       ukm::SourceId ukm_source_id);
 
 // Logs the result (success/failure) of fetching the Annotated Page Content
 // (APC). Logs to both UMA and UKM.

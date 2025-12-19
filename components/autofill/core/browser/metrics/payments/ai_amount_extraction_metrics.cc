@@ -23,11 +23,18 @@ void LogAiAmountExtractionResult(AiAmountExtractionResult result,
 }
 
 void LogAiAmountExtractedInIssuerRange(bool is_within_range,
-                                       BnplIssuer::IssuerId issuer_id) {
+                                       BnplIssuer::IssuerId issuer_id,
+                                       ukm::SourceId ukm_source_id) {
   std::string histogram_name =
       base::StrCat({"Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.",
                     GetHistogramSuffixFromIssuerId(issuer_id)});
   base::UmaHistogramBoolean(histogram_name, is_within_range);
+
+  ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange(
+      ukm_source_id)
+      .SetIssuer(static_cast<int64_t>(issuer_id))
+      .SetIsWithinRange(is_within_range)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogAiAmountExtractionApcFetchResult(bool success,
