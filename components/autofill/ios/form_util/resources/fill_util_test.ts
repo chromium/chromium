@@ -57,6 +57,7 @@ fillApi.addFunction('registerAllChildFrames', registerAllChildFrames);
 fillApi.addFunction('setInputElementValue', fillUtil.setInputElementValue);
 fillApi.addFunction('setUniqueIDIfNeeded', setUniqueIDIfNeeded);
 fillApi.addFunction('shouldAutocomplete', fillUtil.shouldAutocomplete);
+fillApi.addFunction('stringify', fillUtil.stringify);
 fillApi.addFunction(
     'webFormControlElementToFormField', webFormControlElementToFormField);
 fillApi.addFunction('webFormElementToFormData', webFormElementToFormData);

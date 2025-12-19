@@ -791,3 +791,57 @@ function extractAutofillableElementsFromSet(
   }
   return autofillableElements;
 }
+
+/**
+ * Stores a reference to the original JSON.stringify function.
+ * This is done to prevent websites from overriding JSON.stringify and
+ * potentially breaking autofill functionalities that rely on it.
+ */
+const JSONStringify = JSON.stringify;
+
+/**
+ * Returns a string that is formatted according to the JSON syntax rules.
+ * This is equivalent to the built-in JSON.stringify() function, but is
+ * less likely to be overridden by the website itself.
+ * @param value The value to convert to JSON.
+ * @return The JSON representation of value.
+ */
+export function stringify(value: any): string {
+  if (value === null) {
+    return 'null';
+  }
+  if (value === undefined) {
+    return 'undefined';
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  const objectPrototypeToJSON = prototype ? prototype.toJSON : undefined;
+
+  let valueToJSON: unknown;
+  let JSONStringifyResult: string;
+  if (value && typeof value.toJSON === 'function') {
+    valueToJSON = value.toJSON;
+  }
+
+  try {
+    // Temporarily delete toJSON from Object.prototype to
+    // avoid being affected by site-specific overrides.
+    if (objectPrototypeToJSON) {
+      delete prototype.toJSON;
+    }
+    if (valueToJSON) {
+      value.toJSON = undefined;
+    }
+    JSONStringifyResult = JSONStringify(value);
+  } finally {
+    // Restore toJSON to Object.prototype if it was
+    // originally present.
+    if (objectPrototypeToJSON) {
+      prototype.toJSON = objectPrototypeToJSON;
+    }
+    if (valueToJSON) {
+      value.toJSON = valueToJSON;
+    }
+  }
+  return JSONStringifyResult;
+}
