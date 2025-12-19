@@ -223,7 +223,9 @@ ClientSideDetectionIntelligentScanDelegateAndroid::
           !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) &&
           (base::FeatureList::IsEnabled(
                kClientSideDetectionSendIntelligentScanInfoAndroid) ||
-           kCsdImageEmbeddingMatchWithIntelligentScan.Get())),
+           kCsdImageEmbeddingMatchWithIntelligentScan.Get() ||
+           base::FeatureList::IsEnabled(
+               kClientSideDetectionServerModelForScamDetectionAndroid))),
       is_server_model_enabled_(base::FeatureList::IsEnabled(
           kClientSideDetectionServerModelForScamDetectionAndroid)) {
   if (!is_feature_enabled_) {
@@ -345,7 +347,9 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
   }
 
   if (!base::FeatureList::IsEnabled(
-          kClientSideDetectionShowScamVerdictWarningAndroid)) {
+          kClientSideDetectionShowScamVerdictWarningAndroid) &&
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionServerModelForScamDetectionAndroid)) {
     return false;
   }
 
