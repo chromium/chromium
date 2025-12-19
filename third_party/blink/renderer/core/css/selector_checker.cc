@@ -3637,8 +3637,12 @@ bool SelectorChecker::MatchesOverscrollTarget(const Element& element) {
   }
 
   const AtomicString& id = element.FastGetAttribute(html_names::kIdAttr);
-  return !id.IsNull() &&
-         element.GetDocument().OverscrollCommandTargets().Contains(id);
+  if (id.empty() ||
+      !element.GetDocument().OverscrollCommandTargets().Contains(id)) {
+    return false;
+  }
+
+  return element.GetDocument().getElementById(id) == &element;
 }
 
 bool SelectorChecker::MatchesFocusPseudoClass(

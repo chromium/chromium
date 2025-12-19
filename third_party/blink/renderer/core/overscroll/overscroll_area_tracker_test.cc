@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -338,6 +340,111 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollElementsAreDOMSorted) {
   UpdateAllLifecyclePhasesForTest();
 
   verify_order("button1 and button3 commandfor swapped");
+}
+
+TEST_F(OverscrollAreaTrackerTest, MultipleIdsReferToFirstElement) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="first"></div>
+      <div id="second"></div>
+      <div id="third"></div>
+      <button command="toggle-overscroll" commandfor="menu">
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* first = GetDocument().getElementById(AtomicString("first"));
+  auto* second = GetDocument().getElementById(AtomicString("second"));
+  auto* third = GetDocument().getElementById(AtomicString("third"));
+
+  first->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  third->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), first);
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_TRUE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  second->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), first);
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_TRUE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  first->SetAttributeWithoutValidation(html_names::kIdAttr, "foo");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), second);
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_FALSE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_TRUE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  second->SetAttributeWithoutValidation(html_names::kIdAttr, "foo");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), third);
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_FALSE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_TRUE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  first->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), first);
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_TRUE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  first->SetAttributeWithoutValidation(html_names::kIdAttr, "foo");
+  third->SetAttributeWithoutValidation(html_names::kIdAttr, "foo");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("menu")), nullptr);
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_FALSE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  first->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  second->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  third->SetAttributeWithoutValidation(html_names::kIdAttr, "menu");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_TRUE(first->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_FALSE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+
+  first->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*first));
+  EXPECT_FALSE(first->GetComputedStyle());
+  EXPECT_TRUE(SelectorChecker::MatchesOverscrollTarget(*second));
+  EXPECT_TRUE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+  EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
+  EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
 }
 
 }  // namespace blink

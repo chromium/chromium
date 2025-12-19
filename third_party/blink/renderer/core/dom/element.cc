@@ -3806,16 +3806,30 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
           .GetRenderBlockingResourceManager()
           ->RemovePendingParsingElement(GetIdAttribute(), this);
     }
+
     // If the id changes that may have been a target of overscroll command, we
     // need to notify that an overscroll-target pseudo class may have changed.
     const auto& overscroll_command_targets =
         GetDocument().OverscrollCommandTargets();
-    if ((!params.old_value.empty() &&
-         overscroll_command_targets.Contains(params.old_value)) ||
-        (!params.new_value.empty() &&
-         overscroll_command_targets.Contains(params.new_value))) {
+    auto invalidate_overscroll_target_state = [&](const AtomicString& idref) {
       OverscrollTargetStateChanged();
+      // We also may have a new target with the same id. Note that this
+      // invalidates all elements with this id, which should be a small set
+      // typically.
+      for (auto& element : GetDocument().GetAllElementsById(idref)) {
+        element->OverscrollTargetStateChanged();
+      }
+    };
+
+    if (!params.old_value.empty() &&
+        overscroll_command_targets.Contains(params.old_value)) {
+      invalidate_overscroll_target_state(params.old_value);
     }
+    if (!params.new_value.empty() &&
+        overscroll_command_targets.Contains(params.new_value)) {
+      invalidate_overscroll_target_state(params.new_value);
+    }
+
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
         params.reason != AttributeModificationReason::kByMoveToNewDocument &&
@@ -4313,6 +4327,13 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     SetContainsFullScreenElementOnAncestorsCrossingFrameBoundaries(true);
   }
 
+  if (!id_value.empty() &&
+      GetDocument().OverscrollCommandTargets().Contains(id_value)) {
+    for (auto& element : GetDocument().GetAllElementsById(id_value)) {
+      element->OverscrollTargetStateChanged();
+    }
+  }
+
   return kInsertionDone;
 }
 
@@ -4396,8 +4417,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   SetSavedLayerScrollOffset(ScrollOffset());
 
+  const AtomicString& id_value = GetIdAttribute();
   if (insertion_point.IsInTreeScope() && GetTreeScope() == document) {
-    const AtomicString& id_value = GetIdAttribute();
     if (!id_value.IsNull()) {
       UpdateId(insertion_point.GetTreeScope(), id_value, g_null_atom);
     }
@@ -4489,6 +4510,13 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
     observer->Notify();
+  }
+
+  if (!id_value.empty() &&
+      document.OverscrollCommandTargets().Contains(id_value)) {
+    for (auto& element : document.GetAllElementsById(id_value)) {
+      element->OverscrollTargetStateChanged();
+    }
   }
 }
 
