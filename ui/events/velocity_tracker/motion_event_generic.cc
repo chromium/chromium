@@ -302,8 +302,9 @@ size_t MotionEventGeneric::PushPointer(const PointerProperties& pointer) {
 }
 
 void MotionEventGeneric::RemovePointerAt(size_t index) {
-  DCHECK_LT(index, pointers_.size());
-  pointers_.erase(UNSAFE_TODO(pointers_.begin() + index));
+  CHECK_LT(index, pointers_.size());
+  // SAFETY: Already checked bounds.
+  UNSAFE_BUFFERS(pointers_.erase(pointers_.begin() + index));
 }
 
 void MotionEventGeneric::PushHistoricalEvent(
