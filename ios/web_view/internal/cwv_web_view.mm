@@ -774,12 +774,15 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   CWVWebView* webView = [_UIDelegate webView:self
               createWebViewWithConfiguration:_configuration
                          forNavigationAction:navigationAction];
-  if (!webView) {
-    return nullptr;
+  if (webView) {
+    web::WebState* webViewWebState = webView->_webState.get();
+    if (webViewWebState) {
+      webViewWebState->SetHasOpener(true);
+      return webViewWebState;
+    }
   }
-  web::WebState* webViewWebState = webView->_webState.get();
-  webViewWebState->SetHasOpener(true);
-  return webViewWebState;
+
+  return nullptr;
 }
 
 - (void)closeWebState:(web::WebState*)webState {
