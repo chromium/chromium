@@ -49,7 +49,8 @@ namespace test {
 // web_app_install_test_util.h.
 std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
-    WebAppManagement::Type source_type = WebAppManagement::kSync);
+    WebAppManagement::Type source_type = WebAppManagement::kSync,
+    const GURL& scope = GURL());
 
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.

@@ -120,7 +120,6 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     std::unique_ptr<WebApp> isolated_web_app =
         test::CreateWebApp(url_info_.origin().GetURL());
     isolated_web_app->SetName("installed app");
-    isolated_web_app->SetScope(isolated_web_app->start_url());
 
     auto builder =
         IsolationData::Builder(installed_location_, installed_version_)

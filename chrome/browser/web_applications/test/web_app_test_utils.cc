@@ -734,10 +734,11 @@ std::vector<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                     WebAppManagement::Type source_type) {
+                                     WebAppManagement::Type source_type,
+                                     const GURL& scope) {
   auto web_app = std::make_unique<WebApp>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url,
-      /*scope=*/start_url.GetWithoutFilename());
+      scope.is_valid() ? scope : start_url.GetWithoutFilename());
   web_app->AddSource(source_type);
   web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);

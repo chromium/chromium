@@ -1490,9 +1490,9 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
   // This should not be considered since this app is not set to open in a new
   // window.
   auto browser_mode_app = test::CreateWebApp(
-      GURL("https://abc.com/inner/outer"), WebAppManagement::kSync);
+      GURL("https://abc.com/inner/outer"), WebAppManagement::kSync,
+      GURL("https://abc.com/inner/"));
   browser_mode_app->SetName("App_Browser");
-  browser_mode_app->SetScope(GURL("https://abc.com/inner/"));
   browser_mode_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   const webapps::AppId browser_mode_app_id = browser_mode_app->app_id();
   RegisterAppUnsafe(std::move(browser_mode_app));
@@ -2117,8 +2117,8 @@ TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
   auto web_app1 =
       test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
-                                     WebAppManagement::kDefault);
-  web_app2->SetScope(GURL("https://example.com"));
+                                     WebAppManagement::kDefault,
+                                     GURL("https://example.com"));
   web_app2->SetLinkCapturingUserPreference(
       proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
