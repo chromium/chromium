@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 // This is a copy of url/url_canon_ip.cc circa 2023. It should be used only by
 // components/feedback/redaction_tool/.
 // We need a copy because the components/feedback/redaction_tool source code is
@@ -14,9 +12,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <array>
 #include <limits>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/strings/safe_sprintf.h"
+#include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/url_canon_internal.h"
 
 namespace redaction_internal {
@@ -47,7 +49,7 @@ int BaseForType(SharedCharTypes type) {
 //
 // The input is assumed to be ASCII. The components are assumed to be non-empty.
 template <typename CHAR>
-CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
+CanonHostInfo::Family IPv4ComponentToNumber(std::basic_string_view<CHAR> spec,
                                             const Component& component,
                                             uint32_t* number) {
   // Empty components are considered non-numeric.
@@ -58,12 +60,12 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
   // Figure out the base
   SharedCharTypes base;
   int base_prefix_len = 0;  // Size of the prefix for this base.
-  if (UNSAFE_TODO(spec[component.begin]) == '0') {
+  if (spec[component.begin] == '0') {
     // Either hex or dec, or a standalone zero.
     if (component.len == 1) {
       base = CHAR_DEC;
-    } else if (UNSAFE_TODO(spec[component.begin + 1]) == 'X' ||
-               UNSAFE_TODO(spec[component.begin + 1]) == 'x') {
+    } else if (spec[component.begin + 1] == 'X' ||
+               spec[component.begin + 1] == 'x') {
       base = CHAR_HEX;
       base_prefix_len = 2;
     } else {
@@ -76,7 +78,7 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
 
   // Extend the prefix to consume all leading zeros.
   while (base_prefix_len < component.len &&
-         UNSAFE_TODO(spec[component.begin + base_prefix_len]) == '0') {
+         spec[component.begin + base_prefix_len] == '0') {
     base_prefix_len++;
   }
 
@@ -85,17 +87,17 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
   // discarded, filling the entire buffer is guaranteed to trigger the 32-bit
   // overflow check.
   const int kMaxComponentLen = 16;
-  char buf[kMaxComponentLen + 1];  // digits + '\0'
+  std::array<char, kMaxComponentLen + 1> buf;  // digits + '\0'
   int dest_i = 0;
   bool may_be_broken_octal = false;
   for (int i = component.begin + base_prefix_len; i < component.end(); i++) {
-    if (UNSAFE_TODO(spec[i]) >= 0x80) {
+    if (spec[i] >= 0x80) {
       return CanonHostInfo::NEUTRAL;
     }
 
     // We know the input is 7-bit, so convert to narrow (if this is the wide
     // version of the template) by casting.
-    char input = static_cast<char>(UNSAFE_TODO(spec[i]));
+    char input = static_cast<char>(spec[i]);
 
     // Validate that this character is OK for the given base.
     if (!IsCharOfType(input, base)) {
@@ -111,7 +113,7 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
     // Fill the buffer, if there's space remaining. This check allows us to
     // verify that all characters are numeric, even those that don't fit.
     if (dest_i < kMaxComponentLen) {
-      UNSAFE_TODO(buf[dest_i++]) = input;
+      buf[dest_i++] = input;
     }
   }
 
@@ -119,11 +121,11 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
     return CanonHostInfo::BROKEN;
   }
 
-  UNSAFE_TODO(buf[dest_i]) = '\0';
+  buf[dest_i] = '\0';
 
   // Use the 64-bit strtoi so we get a big number (no hex, decimal, or octal
   // number can overflow a 64-bit number in <= 16 characters).
-  uint64_t num = _strtoui64(buf, nullptr, BaseForType(base));
+  uint64_t num = _strtoui64(buf.data(), nullptr, BaseForType(base));
 
   // Check for 32-bit overflow.
   if (num > std::numeric_limits<uint32_t>::max()) {
@@ -137,12 +139,13 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
 
 // See declaration of IPv4AddressToNumber for documentation.
 template <typename CHAR, typename UCHAR>
-CanonHostInfo::Family DoIPv4AddressToNumber(const CHAR* spec,
-                                            Component host,
-                                            unsigned char address[4],
-                                            int* num_ipv4_components) {
+CanonHostInfo::Family DoIPv4AddressToNumber(
+    std::basic_string_view<CHAR> spec,
+    Component host,
+    base::span<unsigned char, 4> address,
+    int* num_ipv4_components) {
   // Ignore terminal dot, if present.
-  if (host.is_nonempty() && UNSAFE_TODO(spec[host.end() - 1]) == '.') {
+  if (host.is_nonempty() && spec[host.end() - 1] == '.') {
     --host.len;
   }
 
@@ -163,8 +166,7 @@ CanonHostInfo::Family DoIPv4AddressToNumber(const CHAR* spec,
   while (true) {
     // If this is not the first character of a component, go to the next
     // component.
-    if (current_position != host.begin &&
-        UNSAFE_TODO(spec[current_position - 1]) != '.') {
+    if (current_position != host.begin && spec[current_position - 1] != '.') {
       --current_position;
       continue;
     }
@@ -209,13 +211,13 @@ CanonHostInfo::Family DoIPv4AddressToNumber(const CHAR* spec,
     if (component_values[i] > std::numeric_limits<uint8_t>::max()) {
       return CanonHostInfo::BROKEN;
     }
-    UNSAFE_TODO(address[existing_components - i - 1]) =
+    address[existing_components - i - 1] =
         static_cast<unsigned char>(component_values[i]);
   }
 
   uint32_t last_value = component_values[0];
   for (int i = 3; i >= existing_components - 1; i--) {
-    UNSAFE_TODO(address[i]) = static_cast<unsigned char>(last_value);
+    address[i] = static_cast<unsigned char>(last_value);
     last_value >>= 8;
   }
 
@@ -294,7 +296,9 @@ struct IPv6Parsed {
 // |parsed| with the information. If parsing failed (because the input is
 // invalid) returns false.
 template <typename CHAR, typename UCHAR>
-bool DoParseIPv6(const CHAR* spec, const Component& host, IPv6Parsed* parsed) {
+bool DoParseIPv6(std::basic_string_view<CHAR> spec,
+                 const Component& host,
+                 IPv6Parsed* parsed) {
   // Zero-out the info.
   parsed->reset();
 
@@ -311,9 +315,8 @@ bool DoParseIPv6(const CHAR* spec, const Component& host, IPv6Parsed* parsed) {
   // Scan through the input, searching for hex components, "::" contractions,
   // and IPv4 components.
   for (int i = begin; /* i <= end */; i++) {
-    bool is_colon = UNSAFE_TODO(spec[i]) == ':';
-    bool is_contraction =
-        is_colon && i < end - 1 && UNSAFE_TODO(spec[i + 1]) == ':';
+    bool is_colon = spec[i] == ':';
+    bool is_contraction = is_colon && i < end - 1 && spec[i + 1] == ':';
 
     // We reached the end of the current component if we encounter a colon
     // (separator between hex components, or start of a contraction), or end of
@@ -368,14 +371,14 @@ bool DoParseIPv6(const CHAR* spec, const Component& host, IPv6Parsed* parsed) {
       // current component started (after this colon).
       cur_component_begin = i + 1;
     } else {
-      if (static_cast<UCHAR>(UNSAFE_TODO(spec[i])) >= 0x80) {
+      if (static_cast<UCHAR>(spec[i]) >= 0x80) {
         return false;  // Not ASCII.
       }
 
-      if (!IsHexChar(static_cast<unsigned char>(UNSAFE_TODO(spec[i])))) {
+      if (!IsHexChar(static_cast<unsigned char>(spec[i]))) {
         // Regular components are hex numbers. It is also possible for
         // a component to be an IPv4 address in dotted form.
-        if (IsIPv4Char(static_cast<unsigned char>(UNSAFE_TODO(spec[i])))) {
+        if (IsIPv4Char(static_cast<unsigned char>(spec[i]))) {
           // Since IPv4 address can only appear at the end, assume the rest
           // of the string is an IPv4 address. (We will parse this separately
           // later).
@@ -432,36 +435,33 @@ bool CheckIPv6ComponentsSize(const IPv6Parsed& parsed,
 // already verified that each character in the string was a hex digit, and
 // that there were no more than 4 characters.
 template <typename CHAR>
-uint16_t IPv6HexComponentToNumber(const CHAR* spec,
+uint16_t IPv6HexComponentToNumber(std::basic_string_view<CHAR> spec,
                                   const Component& component) {
   DCHECK(component.len <= 4);
 
   // Copy the hex string into a C-string.
-  char buf[5];
+  std::array<char, 5> buf;
   for (int i = 0; i < component.len; ++i) {
-    UNSAFE_TODO(buf[i]) =
-        static_cast<char>(UNSAFE_TODO(spec[component.begin + i]));
+    buf[i] = static_cast<char>(spec[component.begin + i]);
   }
-  UNSAFE_TODO(buf[component.len]) = '\0';
+  buf[component.len] = '\0';
 
   // Convert it to a number (overflow is not possible, since with 4 hex
   // characters we can at most have a 16 bit number).
-  return static_cast<uint16_t>(_strtoui64(buf, nullptr, 16));
+  return static_cast<uint16_t>(_strtoui64(buf.data(), nullptr, 16));
 }
 
 // Converts an IPv6 address to a 128-bit number (network byte order), returning
 // true on success. False means that the input was not a valid IPv6 address.
 template <typename CHAR, typename UCHAR>
-bool DoIPv6AddressToNumber(const CHAR* spec,
+bool DoIPv6AddressToNumber(std::basic_string_view<CHAR> spec,
                            const Component& host,
-                           unsigned char address[16]) {
+                           base::span<unsigned char, 16> address) {
   // Make sure the component is bounded by '[' and ']'.
   int end = host.end();
-  if (host.is_empty() || UNSAFE_TODO(spec[host.begin]) != '[' ||
-      UNSAFE_TODO(spec[end - 1]) != ']') {
+  if (host.is_empty() || spec[host.begin] != '[' || spec[end - 1] != ']') {
     return false;
   }
-
   // Exclude the square brackets.
   Component ipv6_comp(host.begin + 1, host.len - 2);
 
@@ -480,14 +480,14 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
     return false;
   }
 
-  int cur_index_in_address = 0;
+  size_t cur_index_in_address = 0;
 
   // Loop through each hex components, and contraction in order.
   for (int i = 0; i <= ipv6_parsed.num_hex_components; ++i) {
     // Append the contraction if it appears before this component.
     if (i == ipv6_parsed.index_of_contraction) {
       for (int j = 0; j < num_bytes_of_contraction; ++j) {
-        UNSAFE_TODO(address[cur_index_in_address++]) = 0;
+        address[cur_index_in_address++] = 0;
       }
     }
     // Append the hex component's value.
@@ -496,8 +496,8 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
       uint16_t number =
           IPv6HexComponentToNumber<CHAR>(spec, ipv6_parsed.hex_components[i]);
       // Append to |address|, in network byte order.
-      UNSAFE_TODO(address[cur_index_in_address++]) = (number & 0xFF00) >> 8;
-      UNSAFE_TODO(address[cur_index_in_address++]) = (number & 0x00FF);
+      address[cur_index_in_address++] = (number & 0xFF00) >> 8;
+      address[cur_index_in_address++] = (number & 0x00FF);
     }
   }
 
@@ -506,9 +506,10 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
   if (ipv6_parsed.ipv4_component.is_valid()) {
     // Append the 32-bit number to |address|.
     int ignored_num_ipv4_components;
+
     if (CanonHostInfo::IPV4 !=
         IPv4AddressToNumber(spec, ipv6_parsed.ipv4_component,
-                            &UNSAFE_TODO(address[cur_index_in_address]),
+                            address.subspan(cur_index_in_address).first<4>(),
                             &ignored_num_ipv4_components)) {
       return false;
     }
@@ -520,7 +521,7 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
 // Searches for the longest sequence of zeros in |address|, and writes the
 // range into |contraction_range|. The run of zeros must be at least 16 bits,
 // and if there is a tie the first is chosen.
-void ChooseIPv6ContractionRange(const unsigned char address[16],
+void ChooseIPv6ContractionRange(base::span<const unsigned char, 16> address,
                                 Component* contraction_range) {
   // The longest run of zeros in |address| seen so far.
   Component max_range;
@@ -530,8 +531,7 @@ void ChooseIPv6ContractionRange(const unsigned char address[16],
 
   for (int i = 0; i < 16; i += 2) {
     // Test for 16 bits worth of zero.
-    bool is_zero =
-        (UNSAFE_TODO(address[i]) == 0 && UNSAFE_TODO(address[i + 1]) == 0);
+    bool is_zero = (address[i] == 0 && address[i + 1] == 0);
 
     if (is_zero) {
       // Add the zero to the current range (or start a new one).
@@ -555,13 +555,14 @@ void ChooseIPv6ContractionRange(const unsigned char address[16],
 
 }  // namespace
 
-void AppendIPv4Address(const unsigned char address[4], CanonOutput* output) {
+void AppendIPv4Address(base::span<const unsigned char, 4> address,
+                       CanonOutput* output) {
   for (int i = 0; i < 4; i++) {
-    char str[16];
-    _itoa_s(UNSAFE_TODO(address[i]), str, 10);
+    std::array<char, 16> str;
+    int len = base::strings::SafeSPrintf(str, "%d", address[i]);
 
-    for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ch++) {
-      output->push_back(UNSAFE_TODO(str[ch]));
+    for (int ch = 0; ch < len; ++ch) {
+      output->push_back(str[ch]);
     }
 
     if (i != 3) {
@@ -570,12 +571,16 @@ void AppendIPv4Address(const unsigned char address[4], CanonOutput* output) {
   }
 }
 
-void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
+void AppendIPv6Address(base::span<const unsigned char, 16> address,
+                       CanonOutput* output) {
   // We will output the address according to the rules in:
+
   // http://tools.ietf.org/html/draft-kawamura-ipv6-text-representation-01#section-4
 
   // Start by finding where to place the "::" contraction (if any).
+
   Component contraction_range;
+
   ChooseIPv6ContractionRange(address, &contraction_range);
 
   for (int i = 0; i <= 14;) {
@@ -590,15 +595,15 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
       i = contraction_range.end();
     } else {
       // Consume the next 16 bits from |address|.
-      int x = UNSAFE_TODO(address[i]) << 8 | UNSAFE_TODO(address[i + 1]);
+      int x = address[i] << 8 | address[i + 1];
 
       i += 2;
 
       // Stringify the 16 bit number (at most requires 4 hex digits).
-      char str[5];
-      _itoa_s(x, str, 16);
-      for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ++ch) {
-        output->push_back(UNSAFE_TODO(str[ch]));
+      std::array<char, 5> str;
+      int len = base::strings::SafeSPrintf(str, "%x", x);
+      for (int ch = 0; ch < len; ++ch) {
+        output->push_back(str[ch]);
       }
 
       // Put a colon after each number, except the last.
@@ -609,31 +614,31 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
   }
 }
 
-CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
+CanonHostInfo::Family IPv4AddressToNumber(std::string_view spec,
                                           const Component& host,
-                                          unsigned char address[4],
+                                          base::span<unsigned char, 4> address,
                                           int* num_ipv4_components) {
   return DoIPv4AddressToNumber<char, unsigned char>(spec, host, address,
                                                     num_ipv4_components);
 }
 
-CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
+CanonHostInfo::Family IPv4AddressToNumber(std::u16string_view spec,
                                           const Component& host,
-                                          unsigned char address[4],
+                                          base::span<unsigned char, 4> address,
                                           int* num_ipv4_components) {
   return DoIPv4AddressToNumber<char16_t, char16_t>(spec, host, address,
                                                    num_ipv4_components);
 }
 
-bool IPv6AddressToNumber(const char* spec,
+bool IPv6AddressToNumber(std::string_view spec,
                          const Component& host,
-                         unsigned char address[16]) {
+                         base::span<unsigned char, 16> address) {
   return DoIPv6AddressToNumber<char, unsigned char>(spec, host, address);
 }
 
-bool IPv6AddressToNumber(const char16_t* spec,
+bool IPv6AddressToNumber(std::u16string_view spec,
                          const Component& host,
-                         unsigned char address[16]) {
+                         base::span<unsigned char, 16> address) {
   return DoIPv6AddressToNumber<char16_t, char16_t>(spec, host, address);
 }
 

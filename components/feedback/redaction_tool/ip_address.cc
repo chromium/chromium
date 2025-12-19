@@ -71,7 +71,9 @@ bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
 
     // Try parsing the hostname as an IPv6 literal.
     bytes->Resize(16);  // 128 bits.
-    return IPv6AddressToNumber(host_brackets.data(), host_comp, bytes->data());
+    return IPv6AddressToNumber(
+        host_brackets.data(), host_comp,
+        base::span(*bytes).to_fixed_extent<16u>().value());
   }
 
   // Otherwise the string is an IPv4 address.
@@ -79,7 +81,8 @@ bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
   Component host_comp(0, ip_literal.size());
   int num_components;
   CanonHostInfo::Family family = IPv4AddressToNumber(
-      ip_literal.data(), host_comp, bytes->data(), &num_components);
+      ip_literal.data(), host_comp,
+      base::span(*bytes).to_fixed_extent<4u>().value(), &num_components);
   return family == CanonHostInfo::IPV4;
 }
 
@@ -224,9 +227,11 @@ std::string IPAddress::ToString() const {
   StdStringCanonOutput output(&str);
 
   if (IsIPv4()) {
-    AppendIPv4Address(ip_address_.data(), &output);
+    AppendIPv4Address(base::span(ip_address_).to_fixed_extent<4u>().value(),
+                      &output);
   } else if (IsIPv6()) {
-    AppendIPv6Address(ip_address_.data(), &output);
+    AppendIPv6Address(base::span(ip_address_).to_fixed_extent<16u>().value(),
+                      &output);
   }
 
   output.Complete();

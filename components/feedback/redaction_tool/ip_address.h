@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/values.h"
 
 namespace redaction_internal {
@@ -60,8 +59,10 @@ class IPAddressBytes {
   uint8_t* begin() { return data(); }
 
   // Returns a pointer past the last element.
-  const uint8_t* end() const { return UNSAFE_TODO(data() + size_); }
-  uint8_t* end() { return UNSAFE_TODO(data() + size_); }
+  const uint8_t* end() const {
+    return base::span(bytes_).subspan(size_).data();
+  }
+  uint8_t* end() { return base::span(bytes_).subspan(size_).data(); }
 
   // Returns a reference to the last element.
   uint8_t& back() {
@@ -267,7 +268,7 @@ bool IPAddressStartsWith(const IPAddress& address, const uint8_t (&prefix)[N]) {
   if (address.size() < N) {
     return false;
   }
-  return std::equal(prefix, UNSAFE_TODO(prefix + N), address.bytes().begin());
+  return base::span(prefix) == base::span(address.bytes()).first<N>();
 }
 
 // According to RFC6052 Section 2.2 IPv4-Embedded IPv6 Address Format.
