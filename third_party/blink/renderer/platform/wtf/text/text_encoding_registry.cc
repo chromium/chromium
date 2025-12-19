@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
@@ -247,16 +248,18 @@ Vector<String> TextEncodingAliasesForTesting() {
 
 #ifndef NDEBUG
 void DumpTextEncodingNameMap() {
-  unsigned size = g_text_encoding_name_map->size();
-  fprintf(stderr, "Dumping %u entries in blink::TextEncodingNameMap...\n",
-          size);
+  StringBuilder builder;
+  builder << "Dumping " << g_text_encoding_name_map->size()
+          << " entries in blink::TextEncodingNameMap...";
 
-  base::AutoLock lock(EncodingRegistryLock());
+  {
+    base::AutoLock lock(EncodingRegistryLock());
 
-  for (const auto& it : *g_text_encoding_name_map) {
-    UNSAFE_TODO(fprintf(stderr, "'%s' => '%s'\n", it.key.Latin1().c_str(),
-                        it.value.Latin1().c_str()));
+    for (const auto& it : *g_text_encoding_name_map) {
+      builder << "\n\t" << it.key << "\t=> " << it.value;
+    }
   }
+  LOG(INFO) << builder.ReleaseString().Utf8();
 }
 #endif
 
