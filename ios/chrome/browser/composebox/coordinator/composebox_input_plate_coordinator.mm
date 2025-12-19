@@ -156,11 +156,6 @@ const CGFloat kSnackbarBottomMargin = 10;
           std::move(query_controller_config_params),
           contextual_search::ContextualSearchSource::kOmnibox);
 
-  // TODO(crbug.com/470072061): Determine what to do with the return value
-  // of this call, or move this call to a different location.
-  contextualSearchSession->CheckSearchContentSharingSettings(
-      self.profile->GetPrefs());
-
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   TemplateURLService* templateURLService =
@@ -175,7 +170,9 @@ const CGFloat kSnackbarBottomMargin = 10;
                            modeHolder:_modeHolder
                    templateURLService:templateURLService
                 aimEligibilityService:IOSChromeAimEligibilityServiceFactory::
-                                          GetForProfile(self.profile)];
+                                          GetForProfile(self.profile)
+                          prefService:self.profile->GetPrefs()];
+
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
