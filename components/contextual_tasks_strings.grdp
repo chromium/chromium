@@ -4,6 +4,9 @@
   <message name ="IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE" desc="The title of contextual tasks.">
     Contextual tasks
   </message>
+  <message name ="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP" desc="The tooltip text used for contextual task entry points.">
+    Browse with AI
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE" desc="The title shown in the location bar and tab for AI Mode before a thread title is available.">
     AI Mode
   </message>
