@@ -54,7 +54,7 @@ class HTMLOListElement final : public HTMLElement {
   void ItemCountChanged() { should_recalculate_initial_counter_ = true; }
 
  private:
-  void UpdateItemValues();
+  void InvalidateItemValues();
 
   int InitialCounterForReversed() const {
     DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||

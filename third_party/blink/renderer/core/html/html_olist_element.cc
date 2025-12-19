@@ -84,13 +84,13 @@ void HTMLOListElement::ParseAttribute(
     if (old_initial_counter == InitialCounter()) {
       return;
     }
-    UpdateItemValues();
+    InvalidateItemValues();
   } else if (params.name == html_names::kReversedAttr) {
     bool reversed = !params.new_value.IsNull();
     if (reversed == is_reversed_)
       return;
     is_reversed_ = reversed;
-    UpdateItemValues();
+    InvalidateItemValues();
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -100,7 +100,7 @@ void HTMLOListElement::setStart(int start) {
   SetIntegralAttribute(html_names::kStartAttr, start);
 }
 
-void HTMLOListElement::UpdateItemValues() {
+void HTMLOListElement::InvalidateItemValues() {
   if (!GetLayoutObject())
     return;
   ListItemOrdinal::InvalidateAllItemsForOrderedList(this);
