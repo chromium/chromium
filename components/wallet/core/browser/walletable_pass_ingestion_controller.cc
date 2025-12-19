@@ -73,7 +73,11 @@ void WalletablePassIngestionController::RegisterOptimizationTypes() {
   client_->GetOptimizationGuideDecider()->RegisterOptimizationTypes(
       {optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
        optimization_guide::proto::
-           WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST});
+           WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
+       optimization_guide::proto::
+           WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+       optimization_guide::proto::
+           WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST});
 }
 
 void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
@@ -147,7 +151,24 @@ WalletablePassIngestionController::GetPassCategoryForURL(
     return PassCategory::kBoardingPass;
   }
 
-  // TODO(crbug.com/455680372): Check more allowlists.
+  if (client_->GetOptimizationGuideDecider()->CanApplyOptimization(
+          url,
+          optimization_guide::proto::
+              WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return PassCategory::kEventPass;
+  }
+
+  if (client_->GetOptimizationGuideDecider()->CanApplyOptimization(
+          url,
+          optimization_guide::proto::
+              WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return PassCategory::kTransitTicket;
+  }
+
   return std::nullopt;
 }
 
