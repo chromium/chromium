@@ -161,11 +161,14 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * top controls.
      *
      * @param browserControlsSizer {@link BrowserControlsSizer} to request browser controls changes.
+     * @param browserControlsVisibilityDelegate The visibility delegate for the whole app.
      */
-    public TopControlsStacker(BrowserControlsSizer browserControlsSizer) {
+    public TopControlsStacker(
+            BrowserControlsSizer browserControlsSizer,
+            BrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mControls = new HashMap<>();
         mBrowserControlsSizer = browserControlsSizer;
-        mBrowserControlsVisibilityDelegate = mBrowserControlsSizer.getBrowserVisibilityDelegate();
+        mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
 
         mBrowserControlsSizer.addObserver(this);
         mBrowserControlsVisibilityDelegate.addObserver(mBrowserControlsStateCallback);

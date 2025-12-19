@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBeh
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 /** Unit tests for {@link TopControlsStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -220,7 +221,7 @@ public class TopControlsStackerUnitTest {
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    @Mock private BrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Captor private ArgumentCaptor<Callback<Integer>> mVisibilityCallbackCaptor;
 
     private TopControlsStacker mTopControlsStacker;
@@ -228,10 +229,9 @@ public class TopControlsStackerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        doReturn(mVisibilityDelegate).when(mBrowserControlsSizer).getBrowserVisibilityDelegate();
         doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
         doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
-        mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer);
+        mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer, mVisibilityDelegate);
     }
 
     @Test

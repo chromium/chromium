@@ -715,7 +715,9 @@ public class RootUiCoordinator
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
-        mTopControlsStacker = new TopControlsStacker(mBrowserControlsManager);
+        mTopControlsStacker =
+                new TopControlsStacker(
+                        mBrowserControlsManager, getAppBrowserControlsVisibilityDelegate());
 
         if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {
             if (DeviceInfo.isDesktop()
