@@ -3767,4 +3767,25 @@ public class TabCollectionTabModelImplTest {
         assertEquals(1, getCount());
         assertTabsInOrderAre(List.of(tab2));
     }
+
+    @Test
+    @MediumTest
+    public void testContainsTabGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Invalid group id returns false.
+                    Token invalidToken = new Token(-1L, -1L);
+                    assertFalse(mCollectionModel.containsTabGroup(invalidToken));
+
+                    // Valid group id returns true.
+                    assertTrue(mCollectionModel.containsTabGroup(tabGroupId));
+                });
+    }
 }

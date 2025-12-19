@@ -838,6 +838,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    protected boolean containsTabGroup(Token tabGroupId) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return false;
+        return TabCollectionTabModelImplJni.get()
+                .tabGroupExists(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    @Override
     protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
         assertOnUiThread();
         try (ScopedStorageBatch ignored = createBatch(getProfile())) {
