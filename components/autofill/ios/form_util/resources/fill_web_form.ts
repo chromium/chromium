@@ -35,25 +35,17 @@ export const wasEditedByUser: WeakMap<any, any> =
 const autofillFormFeaturesApi =
     gCrWeb.getRegisteredApi('autofill_form_features');
 
-declare global {
-  // Defines an additional property, `__gcrweb`, on the Window object.
-  // This definition is needed in order to call into gCrWeb inside an iframe.
-  interface Window {
-    __gCrWeb: any;
-  }
-}
-
 // Returns the URL for the frame to be set in the FormData.
-export function getFrameUrlOrOrigin(frame: Window): string {
-  if ((frame === frame.top) ||
-      ((frame.location.href !== 'about:blank') &&
-       (frame.location.href !== 'about:srcdoc'))) {
+export function getFrameUrlOrOrigin(): string {
+  if ((window === window.top) ||
+      ((window.location.href !== 'about:blank') &&
+       (window.location.href !== 'about:srcdoc'))) {
     // If the full URL is available, use it.
-    return removeQueryAndReferenceFromURL(frame.location.href);
+    return removeQueryAndReferenceFromURL(window.location.href);
   } else {
     // Iframes might have empty own URLs, and they do not have access to the
     // parent frame URL, only to the origin. Use it as the only available data.
-    return frame.origin;
+    return window.origin;
   }
 }
 
@@ -97,7 +89,7 @@ export function webFormElementToFormData(
   }
 
   form.name = getFormIdentifier(formElement);
-  form.origin = getFrameUrlOrOrigin(frame);
+  form.origin = getFrameUrlOrOrigin();
   form.action = formElement !== null ?
       fillUtil.getCanonicalActionForForm(formElement) :
       '';
@@ -108,7 +100,7 @@ export function webFormElementToFormData(
 
   form.renderer_id = fillUtil.getUniqueID(formElement);
 
-  form.host_frame = frame.__gCrWeb.getFrameId();
+  form.host_frame = gCrWeb.getFrameId();
 
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())
@@ -444,7 +436,7 @@ export function unownedFormElementsAndFieldSetsToFormData(
     return false;
   }
   form.name = '';
-  form.origin = getFrameUrlOrOrigin(frame);
+  form.origin = getFrameUrlOrOrigin();
   form.action = '';
 
   // To avoid performance bottlenecks, do not keep child frames if their
