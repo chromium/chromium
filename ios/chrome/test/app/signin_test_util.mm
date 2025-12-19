@@ -17,16 +17,20 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -139,20 +143,36 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     // - Sign-out & clean browsing data (skipped if the user is already
     // signed-out, but callback is still called)
     // - Forgetting all identities
-    ProceduralBlock signout_completion = ^{
-      ClearIdentities(completion);
-    };
-
+    if (!IsPersonalProfile(profile)) {
+      auto signout_source = signin_metrics::ProfileSignout::kTest;
+      SignoutCompletionCallback switch_callback =
+          base::BindOnce([](ProceduralBlock completion,
+                            SceneState*) { ClearIdentities(completion); },
+                         completion);
+      ChangeProfileContinuation continuation =
+          CreateChangeProfileSignoutContinuation(
+              signout_source, /*force_snackbar_over_toolbar=*/false,
+              /*should_record_metrics=*/false, /*snackbar_message =*/nil,
+              std::move(switch_callback));
+      SceneState* scene_state = chrome_test_util::GetForegroundActiveScene();
+      signin::SwitchToPersonalProfile(
+          scene_state, ChangeProfileReason::kManagedAccountSignOut,
+          std::move(continuation));
+      return;
+    }
     // Sign out current user and clear all browsing data on the device.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile);
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      ProceduralBlock signout_completion = ^{
+        ClearIdentities(completion);
+      };
       authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                       signout_completion);
     } else {
-      signout_completion();
+      ClearIdentities(completion);
     }
   }
 }
