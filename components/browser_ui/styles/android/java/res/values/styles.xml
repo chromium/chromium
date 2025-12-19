@@ -355,4 +355,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_disabled_list</item>
     </style>
 
+    <style name="TextAppearance.TextAccentMediumThick.ColorOnPrimaryContainer">
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+    </style>
 </resources>

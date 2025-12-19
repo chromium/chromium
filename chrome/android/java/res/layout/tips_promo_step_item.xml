@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:background="@drawable/steps_number_circle_background"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"/>
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.ColorOnPrimaryContainer"/>
     <TextView
         android:id="@+id/step_content"
         android:layout_width="match_parent"
