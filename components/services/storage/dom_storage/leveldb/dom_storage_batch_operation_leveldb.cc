@@ -101,10 +101,7 @@ DbStatus DomStorageBatchOperationLevelDB::UpdateMapKeyValues(
     KeyView map_prefix,
     const MapBatchUpdate& map_update) {
   if (map_update.clear_all_first) {
-    DbStatus status = DeletePrefixed(map_prefix);
-    if (!status.ok()) {
-      return status;
-    }
+    DB_RETURN_IF_ERROR(DeletePrefixed(map_prefix));
   }
 
   for (const KeyValuePair& entry : map_update.entries_to_add) {

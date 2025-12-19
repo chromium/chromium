@@ -28,7 +28,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
-#include "components/services/storage/dom_storage/storage_area_test_util.h"
+#include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"

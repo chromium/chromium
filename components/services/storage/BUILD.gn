@@ -255,10 +255,10 @@ source_set("test_support") {
   sources = [
     "dom_storage/leveldb/test_support/test_leveldb_utils.cc",
     "dom_storage/leveldb/test_support/test_leveldb_utils.h",
-    "dom_storage/storage_area_test_util.cc",
-    "dom_storage/storage_area_test_util.h",
     "dom_storage/test_support/dom_storage_database_testing.cc",
     "dom_storage/test_support/dom_storage_database_testing.h",
+    "dom_storage/test_support/storage_area_test_util.cc",
+    "dom_storage/test_support/storage_area_test_util.h",
     "indexed_db/leveldb/fake_leveldb_factory.cc",
     "indexed_db/leveldb/fake_leveldb_factory.h",
     "indexed_db/leveldb/mock_level_db.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/dom_storage/storage_area_test_util.h"
+#include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"

@@ -101,9 +101,7 @@ SessionStorageImpl::SessionStorageImpl(
       partition_directory_(partition_directory),
       memory_dump_id_(base::StringPrintf("SessionStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))),
-      receiver_(this, std::move(receiver)),
-      is_low_end_mode_(
-          base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
+      receiver_(this, std::move(receiver)) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "SessionStorage",
@@ -455,7 +453,7 @@ void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
     purge_reason = SessionStorageCachePurgeReason::kSizeLimitExceeded;
   else if (data_maps_.size() > kMaxSessionStorageAreaCount)
     purge_reason = SessionStorageCachePurgeReason::kAreaCountLimitExceeded;
-  else if (is_low_end_mode_) {
+  else if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     purge_reason = SessionStorageCachePurgeReason::kInactiveOnLowEndDevice;
   }
 

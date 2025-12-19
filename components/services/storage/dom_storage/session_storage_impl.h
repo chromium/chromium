@@ -233,7 +233,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // not delete them. Cleared after ScavengeUnusedNamespaces is called.
   std::set<std::string> protected_namespaces_from_scavenge_;
 
-  bool is_low_end_mode_;
   // Counts consecutive commit errors. If this number reaches a threshold, the
   // whole database is thrown away.
   int commit_error_count_ = 0;

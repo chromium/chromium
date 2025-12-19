@@ -208,10 +208,8 @@ DbStatus SessionStorageLevelDB::DeleteStorageKeysFromSession(
     CHECK(map.session_ids().empty());
     DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
 
-    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.map_id().value()));
-    if (!status.ok()) {
-      return status;
-    }
+    DB_RETURN_IF_ERROR(
+        batch->DeletePrefixed(GetMapPrefix(map.map_id().value())));
   }
   return batch->Commit();
 }
@@ -224,20 +222,15 @@ DbStatus SessionStorageLevelDB::DeleteSessions(
 
   // Delete each session's metadata.
   for (const std::string& session_id : session_ids) {
-    DbStatus status = batch->DeletePrefixed(GetSessionPrefix(session_id));
-    if (!status.ok()) {
-      return status;
-    }
+    DB_RETURN_IF_ERROR(batch->DeletePrefixed(GetSessionPrefix(session_id)));
   }
 
   // Delete the key/value pairs in `maps_to_delete`.
   for (const DomStorageDatabase::MapLocator& map : maps_to_delete) {
     CHECK(map.session_ids().empty());
 
-    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.map_id().value()));
-    if (!status.ok()) {
-      return status;
-    }
+    DB_RETURN_IF_ERROR(
+        batch->DeletePrefixed(GetMapPrefix(map.map_id().value())));
   }
   return batch->Commit();
 }
