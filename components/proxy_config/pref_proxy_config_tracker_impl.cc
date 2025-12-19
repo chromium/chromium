@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -448,6 +449,10 @@ void ProxyConfigServiceImpl::RegisterObserver() {
   }
 }
 
+base::WeakPtr<ProxyConfigServiceImpl> ProxyConfigServiceImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 //========================= PrefProxyConfigTrackerImpl =========================
 
 PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
@@ -482,12 +487,13 @@ std::unique_ptr<net::ProxyConfigService>
 PrefProxyConfigTrackerImpl::CreateTrackingProxyConfigService(
     std::unique_ptr<net::ProxyConfigService> base_service) {
   DCHECK(!proxy_config_service_impl_);
-  proxy_config_service_impl_ = new ProxyConfigServiceImpl(
+  auto* proxy_config_service_impl = new ProxyConfigServiceImpl(
       std::move(base_service), active_config_state_, active_config_);
+  proxy_config_service_impl_ = proxy_config_service_impl->AsWeakPtr();
   VLOG(1) << this << ": set chrome proxy config service to "
-          << proxy_config_service_impl_;
+          << proxy_config_service_impl;
 
-  return std::unique_ptr<net::ProxyConfigService>(proxy_config_service_impl_);
+  return base::WrapUnique<net::ProxyConfigService>(proxy_config_service_impl);
 }
 
 void PrefProxyConfigTrackerImpl::DetachFromPrefService() {
@@ -644,9 +650,9 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
   }
 
   proxy_config_service_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
-                                base::Unretained(proxy_config_service_impl_),
-                                config_state, config));
+      FROM_HERE,
+      base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
+                     proxy_config_service_impl_, config_state, config));
 }
 
 bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
