@@ -48,8 +48,7 @@ namespace {
 
 // This class allows for overriding GenerateFrameSinkId() so that the
 // HTMLCanvasElement's SurfaceLayerBridge will get a syntactically correct
-// FrameSinkId.  It also returns a valid GpuMemoryBufferManager so that low
-// latency mode is enabled.
+// FrameSinkId.
 class LowLatencyTestPlatform : public GpuMemoryBufferTestPlatform {
  public:
   viz::FrameSinkId GenerateFrameSinkId() override {

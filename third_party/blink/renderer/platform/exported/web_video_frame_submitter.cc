@@ -14,10 +14,6 @@ class LayerTreeSettings;
 class VideoFrameProvider;
 }  // namespace cc
 
-namespace gpu {
-class GpuMemoryBufferManager;
-}
-
 namespace viz {
 class ContextProvider;
 }

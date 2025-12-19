@@ -441,8 +441,6 @@ namespace updater {
 class SystemctlLauncherScopedAllowBaseSyncPrimitives;
 }
 namespace viz {
-class HostGpuMemoryBufferManager;
-class ClientGpuMemoryBufferManager;
 class DisplayCompositorMemoryAndTaskController;
 class SkiaOutputSurfaceImpl;
 class SharedImageInterfaceProvider;
@@ -880,8 +878,6 @@ class BASE_EXPORT
   friend class mojo::core::ipcz_driver::MojoTrap;
   friend class net::NetworkConfigWatcherAppleThread;
   friend class ui::DrmThreadProxy;
-  friend class viz::ClientGpuMemoryBufferManager;
-  friend class viz::HostGpuMemoryBufferManager;
   friend class vr::VrShell;
 
   // Usage that should be fixed:

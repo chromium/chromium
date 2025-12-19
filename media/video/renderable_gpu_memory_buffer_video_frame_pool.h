@@ -23,7 +23,6 @@ class Size;
 
 namespace gpu {
 class ClientSharedImage;
-class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
 class SharedImageInterface;
 struct SyncToken;
@@ -42,7 +41,7 @@ class VideoFrame;
 class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
  public:
   // Interface to GPU functionality. This particular interface (as opposed to,
-  // say, exposing a GpuMemoryBufferManager and SharedImageInterface) is
+  // say, exposing a SharedImageInterface) is
   // chosen for testing.
   class Context {
    public:

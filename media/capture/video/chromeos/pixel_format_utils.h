@@ -16,7 +16,7 @@ namespace media {
 
 // A collection of the various pixel formats we need to look up.  We need to
 // resolve the HAL pixel format to VideoPixelFormat for VideoCaptureDevice, and
-// to viz::SharedImageFormat for gpu::GpuMemoryBufferManager.
+// to viz::SharedImageFormat for (previous) gpu::GpuMemoryBufferManager.
 struct ChromiumPixelFormat {
   VideoPixelFormat video_format;
   viz::SharedImageFormat si_format;

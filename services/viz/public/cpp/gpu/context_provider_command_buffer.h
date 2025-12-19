@@ -39,7 +39,6 @@ class CommandBufferProxyImpl;
 class SharedImageInterface;
 class GpuChannelHost;
 struct GpuFeatureInfo;
-class GpuMemoryBufferManager;
 class ImplementationBase;
 class TransferBuffer;
 

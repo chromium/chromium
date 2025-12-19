@@ -22,8 +22,7 @@ namespace gpu {
 // This class is used on Android, and is responsible for tracking native
 // window surfaces exposed to the GPU process. Every surface gets registered to
 // this class, and gets a handle.  The handle can be passed to
-// CommandBufferProxyImpl::Create or to
-// GpuMemoryBufferManager::CreateGpuMemoryBuffer.
+// CommandBufferProxyImpl::Create.
 // On Android, the handle is used in the GPU process to get a reference to the
 // ScopedJavaSurface, using GpuSurfaceLookup (implemented by
 // ChildProcessSurfaceManager).

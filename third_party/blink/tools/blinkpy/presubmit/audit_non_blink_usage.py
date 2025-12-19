@@ -1822,7 +1822,6 @@ _CONFIG = [
         ],
         'allowed': [
             # Required to initialize WebGraphicsContext3DVideoFramePool.
-            'gpu::GpuMemoryBufferManager',
             'media::.+',
         ]
     },

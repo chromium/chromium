@@ -60,7 +60,6 @@ struct SyncToken;
 
 namespace gpu {
 class GpuChannelHost;
-class GpuMemoryBufferManager;
 
 // Client side proxy that forwards messages synchronously to a
 // CommandBufferStub.

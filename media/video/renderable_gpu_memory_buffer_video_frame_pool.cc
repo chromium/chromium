@@ -105,8 +105,8 @@ class InternalRefCountedPool
   // are destroyed).
   void Shutdown();
 
-  // Return the Context for accessing the GpuMemoryBufferManager and
-  // SharedImageInterface. Never returns nullptr.
+  // Return the Context for accessing the SharedImageInterface. Never returns
+  // nullptr.
   RenderableGpuMemoryBufferVideoFramePool::Context* GetContext() const;
 
  private:
