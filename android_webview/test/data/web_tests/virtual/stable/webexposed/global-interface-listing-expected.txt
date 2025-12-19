@@ -5980,6 +5980,7 @@ interface NavigationTransition
     getter finished
     getter from
     getter navigationType
+    getter to
     method constructor
 interface Navigator
     attribute @@toStringTag

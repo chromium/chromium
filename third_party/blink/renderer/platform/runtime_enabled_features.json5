@@ -3531,7 +3531,7 @@
     },
     {
       name: "NavigationTransitionDestination",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigatorContentUtils",
