@@ -14,7 +14,9 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -27,6 +29,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -40,7 +43,6 @@ static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #endif
 
@@ -84,8 +86,16 @@ WebAuthFlow::WebAuthFlow(
 
 WebAuthFlow::~WebAuthFlow() {
   DCHECK(!delegate_);
-
-  if (web_contents()) {
+  BrowserWindowInterface* popup_browser =
+      web_contents()
+          ? extensions::browser_window_util::GetBrowserForTabContents(
+                *web_contents())
+          : nullptr;
+  if (popup_browser) {
+    popup_browser->GetWindow()->Close();
+  } else if (web_contents()) {
+    // Explicitly close `web_contents()` if it's not displayed in any browser
+    // window.
     web_contents()->Close();
   }
 
