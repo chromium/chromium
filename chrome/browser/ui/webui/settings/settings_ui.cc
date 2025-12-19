@@ -191,6 +191,8 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/ui/webui/settings/glic_handler.h"
 #endif
 
@@ -371,9 +373,22 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                              compose::features::kEnableComposeProactiveNudge));
 
 #if BUILDFLAG(ENABLE_GLIC)
+  auto* subscription_service = subscription_eligibility::
+      SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+
+  const bool use_paid_tier =
+      subscription_service && subscription_service->GetAiSubscriptionTier() > 0;
+
   html_source->AddBoolean(
       "showGeminiPersonalContextLink",
-      base::FeatureList::IsEnabled(features::kGlicPersonalContext));
+      base::FeatureList::IsEnabled(features::kGlicPersonalContext) &&
+          use_paid_tier);
+  html_source->AddBoolean(
+      "showInstructionLink",
+      (base::FeatureList::IsEnabled(features::kGlicPersonalContext) &&
+       !use_paid_tier) ||
+          (base::FeatureList::IsEnabled(features::kGlicGeminiInstructions) &&
+           !base::FeatureList::IsEnabled(features::kGlicPersonalContext)));
 #endif  //  BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_CHROMEOS)

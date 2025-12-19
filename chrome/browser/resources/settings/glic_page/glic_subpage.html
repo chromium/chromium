@@ -458,8 +458,14 @@
       <cr-link-row id="geminiPersonalContextLink" class="hr"
           hidden="[[!showGlicPersonalContextLink_]]"
           on-click="onGeminiPersonalContextClick_"
-          label="$i18n{glicPersonalContextSettingLabel}"
+          label="$i18n{glicPersonalContextSettingButton}"
           sub-label="$i18n{glicPersonalContextSettingSublabel}" external>
+      </cr-link-row>
+      <cr-link-row id="InstructionLink" class="hr"
+          hidden="[[!showGlicInstructionLink_]]"
+          on-click="onGeminiPersonalContextClick_"
+          label="$i18n{glicInstructionsSettingButton}"
+          sub-label="$i18n{glicInstructionsSettingSublabel}" external>
       </cr-link-row>
     </template>
   </div>
