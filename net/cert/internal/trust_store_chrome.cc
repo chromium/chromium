@@ -394,11 +394,23 @@ TrustStoreChrome::TrustStoreChrome(
     for (const auto& mtc_anchor : root_store_data.mtc_trust_anchors()) {
       auto it = mtc_metadata->mtc_anchor_data().find(mtc_anchor.log_id);
       if (it != mtc_metadata->mtc_anchor_data().end()) {
-        // Have a trusted MTC anchor which also has trusted subtrees supplied
-        // in the MTC metadata.
+        // `mtc_anchor` is a trusted MTC anchor which also has trusted subtrees
+        // supplied in the MTC metadata.
+        const ChromeRootStoreMtcMetadata::MtcAnchorData& mtc_anchor_data =
+            it->second;
 
-        // TODO(crbug.com/452986180): add this MTC anchor & metadata to the
-        // trust store.
+        if (!mtc_anchor.constraints.empty()) {
+          // TODO(crbug.com/452986180): MTC anchor constraints aren't handled
+          // yet. Ignore any MTC anchors that have constraints until they are
+          // implemented, which ensures that if any old versions of chrome
+          // still happen to be running and receive a component update with an
+          // MTC anchor that has constraints, it will fail-safe.
+          continue;
+        }
+
+        auto bssl_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+            mtc_anchor.log_id, mtc_anchor_data.trusted_subtrees);
+        CHECK(trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor)));
 
         if (!mtc_anchor.constraints.empty()) {
           // TODO(crbug.com/452986180): enforce MTC anchor constraints in the
@@ -519,10 +531,17 @@ bssl::CertificateTrust TrustStoreChrome::GetTrust(
   return trust_store_.GetTrust(cert);
 }
 
+std::shared_ptr<const bssl::MTCAnchor> TrustStoreChrome::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  return trust_store_.GetTrustedMTCIssuerOf(cert);
+}
+
 bool TrustStoreChrome::Contains(const bssl::ParsedCertificate* cert) const {
-  // TODO(crbug.com/452986180): make sure this works for MTC anchors too (certs
-  // from MTC anchors should have is_issued_by_known_root=true).
   return trust_store_.Contains(cert);
+}
+
+bool TrustStoreChrome::ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const {
+  return trust_store_.ContainsMTCAnchor(anchor);
 }
 
 base::span<const ChromeRootCertConstraints>
@@ -612,9 +631,9 @@ std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
         !subtree.has_hash() || subtree.hash().size() != crypto::kSHA256Length) {
       return std::nullopt;
     }
-    ChromeRootStoreMtcMetadata::TrustedSubtree trusted_subtree;
-    trusted_subtree.start = subtree.start_inclusive();
-    trusted_subtree.end = subtree.end_exclusive();
+    bssl::TrustedSubtree trusted_subtree;
+    trusted_subtree.range.start = subtree.start_inclusive();
+    trusted_subtree.range.end = subtree.end_exclusive();
     base::span(trusted_subtree.hash)
         .copy_from(base::as_byte_span(subtree.hash()));
     mtc_anchor_data.trusted_subtrees.push_back(std::move(trusted_subtree));

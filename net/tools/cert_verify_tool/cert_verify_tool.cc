@@ -206,6 +206,10 @@ class DummySystemTrustStore : public net::SystemTrustStore {
     return false;
   }
 
+  bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const override {
+    return false;
+  }
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   net::PlatformTrustStore* GetPlatformTrustStore() override { return nullptr; }
 

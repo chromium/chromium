@@ -230,8 +230,8 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       trust_store_chrome->GetConstraintsForCert(other_parsed.get()).empty());
 }
 
-// TODO(crbug.com/452986179): test verifying MTCs from the root store data, MTC
-// anchor constraints, etc, once implemented.
+// TODO(crbug.com/452986179): test MTC anchor constraints, etc, once
+// implemented.
 
 TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =

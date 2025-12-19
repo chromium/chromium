@@ -39,6 +39,7 @@ class SystemTrustStore {
   // that it is one of default trust anchors for the system, as opposed to a
   // user-installed one. (It may *also* be trusted as a user-installed root.)
   virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
+  virtual bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Returns the PlatformTrustStore that can be used to look for

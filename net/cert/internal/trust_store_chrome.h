@@ -166,14 +166,6 @@ class NET_EXPORT ChromeRootStoreData {
 // Store data which is updated by the MtcMetadata proto.
 class NET_EXPORT ChromeRootStoreMtcMetadata {
  public:
-  // TODO(crbug.com/452986179): remove TrustedSubtree struct and use
-  // bssl::TrustedSubtree directly once it exists.
-  struct TrustedSubtree {
-    uint64_t start;
-    uint64_t end;
-    std::array<uint8_t, crypto::kSHA256Length> hash;
-  };
-
   struct MtcAnchorData {
     MtcAnchorData();
     ~MtcAnchorData();
@@ -190,7 +182,7 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
     uint64_t landmark_min_inclusive;
     uint64_t landmark_max_inclusive;
 
-    std::vector<TrustedSubtree> trusted_subtrees;
+    std::vector<bssl::TrustedSubtree> trusted_subtrees;
 
     // TODO(crbug.com/452986179): include revoked_indices too
   };
@@ -285,10 +277,13 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                         bssl::ParsedCertificateList* issuers) override;
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+  std::shared_ptr<const bssl::MTCAnchor> GetTrustedMTCIssuerOf(
+      const bssl::ParsedCertificate* cert) override;
 
   // Returns true if the trust store contains the given bssl::ParsedCertificate
   // (matches by DER).
   bool Contains(const bssl::ParsedCertificate* cert) const;
+  bool ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const;
 
   // Returns the root store constraints for `cert`, or an empty span if the
   // certificate is not constrained.
