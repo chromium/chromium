@@ -83,10 +83,11 @@ component("jni_zero") {
 if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
 
-  android_library("jni_zero_java") {
+  java_library("jni_zero_java") {
     deps = [ ":generate_jni_java" ]
     public_deps = [ ":gendeps_java" ]
     preferred_dep = true
+    supports_android = true
     sources = [
       "java/src/org/jni_zero/AccessedByNative.java",
       "java/src/org/jni_zero/CalledByNative.java",
@@ -105,7 +106,8 @@ if (enable_java_templates && is_android) {
   }
 
   # Classes referenced by generated code.
-  android_library("gendeps_java") {
+  java_library("gendeps_java") {
+    supports_android = true
     sources = [
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",

@@ -442,7 +442,7 @@ template("generate_jni_impl") {
     if (_from_source) {
       java_library("${_final_target_name}_java") {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-        requires_android = true
+
         srcjars = [
           _srcjar_output,
           _placeholder_srcjar_output,
