@@ -12,6 +12,9 @@ namespace payments::facilitated {
 BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use the Rust implementation of the Pix code validator.
+BASE_FEATURE(kUseRustPixCodeValidator, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the check for matching the main frame domain with the
 // allowlisted domains will be disabled.

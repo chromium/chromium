@@ -545,6 +545,21 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.PaymentCodeValidation.RustResult"
+    enum="FacilitatedPayments.Pix.PaymentCodeValidation.RustResult"
+    expires_after="2026-12-01">
+  <owner>dcheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits the result of validating a Pix payment code using the Rust Pix QR code
+    parser.
+
+    [Trigger] User copies a Pix payment code to their clipboard, either manually
+    or via a merchant's copy button. [Frequency] Logged once per Pix payflow.
+    Pix payflow is triggered at most once per page load.
+  </summary>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
     units="ms" expires_after="2026-06-01">
@@ -566,6 +581,30 @@ reviewer.
     <variant name="InvalidCode" summary="invalid code"/>
     <variant name="StaticCode" summary="valid static code"/>
     <variant name="ValidatorFailed" summary="failed validator"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.ResultVsRust"
+    enum="FacilitatedPayments.PixCodeValidationResult"
+    expires_after="2026-12-01">
+  <owner>dcheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Compares the C++ Pix code validation result against the Rust Pix code
+    validation result. The C++ result is {PaymentCodeValidationResult}. The Rust
+    result is translated into the C++ enumeration space for an apples-to-apples
+    comparison.
+
+    [Trigger] User copies a Pix payment code to their clipboard, either manually
+    or via a merchant's copy button. [Frequency] Logged once per Pix payflow.
+    Pix payflow is triggered at most once per page load.
+  </summary>
+  <token key="PaymentCodeValidationResult">
+    <variant name="DynamicCode" summary="C++: valid dynamic code"/>
+    <variant name="InvalidCode" summary="C++: invalid code"/>
+    <variant name="StaticCode" summary="C++: valid static code"/>
+    <variant name="ValidatorFailed" summary="C++: failed validator"/>
   </token>
 </histogram>
 

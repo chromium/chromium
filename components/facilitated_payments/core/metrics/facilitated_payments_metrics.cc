@@ -180,10 +180,38 @@ void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {
       FopSelectorAction::kFopSelected);
 }
 
-void LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult result,
-                                              base::TimeDelta duration) {
+void LogPaymentCodeRustValidationResult(
+    PixCodeRustValidationResult rust_result) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Pix.PaymentCodeValidation.RustResult", rust_result);
+}
+
+void LogPaymentCodeValidationResultAndLatency(
+    PixCodeValidationResult result,
+    std::optional<PixCodeRustValidationResult> rust_validation_result,
+    base::TimeDelta duration) {
   base::UmaHistogramEnumeration(
       "FacilitatedPayments.Pix.PaymentCodeValidation.Result", result);
+  PixCodeValidationResult translated_rust_result = [&] {
+    if (!rust_validation_result) {
+      return PixCodeValidationResult::kInvalid;
+    }
+    switch (*rust_validation_result) {
+      case PixCodeRustValidationResult::kDynamic:
+        return PixCodeValidationResult::kDynamic;
+      case PixCodeRustValidationResult::kStatic:
+        return PixCodeValidationResult::kStatic;
+      case PixCodeRustValidationResult::kNonPixMerchantPresentedCode:
+      case PixCodeRustValidationResult::kEmptyAdditionalDataFieldTemplate:
+      case PixCodeRustValidationResult::kNonFinalCrc:
+      case PixCodeRustValidationResult::kUnknownPixCodeType:
+        return PixCodeValidationResult::kInvalid;
+    }
+  }();
+  base::UmaHistogramEnumeration(
+      base::StrCat({"FacilitatedPayments.Pix.PaymentCodeValidation.",
+                    PixCodeValidationResultToString(result), ".ResultVsRust"}),
+      translated_rust_result);
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.PaymentCodeValidation.",
                     PixCodeValidationResultToString(result), ".Latency"}),

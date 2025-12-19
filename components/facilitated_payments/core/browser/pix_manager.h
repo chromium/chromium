@@ -7,6 +7,8 @@
 
 #include <cstring>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -51,14 +53,18 @@ class PixManager {
   // Resets `this` to initial state. Cancels any alive async callbacks.
   void Reset();
 
-  // Checks whether the `render_frame_host_url` is allowlisted and validates the
-  // `pix_code` before trigger the Pix payments flow. Note: If the Pix payment
-  // flow has already been triggered by the other code detection methods like
-  // DOM search then this method is a no-op.
+  // Checks whether the `render_frame_host_url` is allowlisted and validates
+  // the `pix_code` before triggering the Pix payments flow. Note: If the Pix
+  // payment flow has already been triggered by the other code detection
+  // methods like DOM search then this method is a no-op.
+  //
+  // If Rust Pix code validation is enabled, `rust_validation_result` will
+  // always have a value.
   virtual void OnPixCodeCopiedToClipboard(
       const GURL& render_frame_host_url,
       const url::Origin& render_frame_host_origin,
-      const std::string& pix_code,
+      std::optional<PixCodeRustValidationResult> rust_validation_result,
+      std::string pix_code,
       ukm::SourceId ukm_source_id);
 
  private:
@@ -222,9 +228,16 @@ class PixManager {
   // PixQrCodeType result. The call to validate the Pix code was made at
   // `start_time`.
   void OnPixCodeValidated(
+      std::optional<PixCodeRustValidationResult> rust_validation_result,
       std::string pix_code,
       base::TimeTicks start_time,
       base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type);
+
+  // Processes a fully-validated Pix code. Exposed separately from
+  // `OnPixCodeValidated()` since the Rust validator does not need to go to the
+  // utility process at all.
+  void OnValidPixCode(std::string pix_code,
+                      mojom::PixQrCodeType pix_qr_code_type);
 
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The

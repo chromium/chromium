@@ -47,6 +47,8 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//url",
   ]
+
+  deps = [ "//components/facilitated_payments/core/validation:pix_validator_rs_ffi_glue" ]
 }
 
 source_set("unit_tests") {
