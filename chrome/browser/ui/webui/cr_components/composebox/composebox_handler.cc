@@ -156,7 +156,7 @@ ComposeboxHandler::ComposeboxHandler(
 
 ComposeboxHandler::~ComposeboxHandler() = default;
 
-omnibox::ChromeAimToolsAndModels ComposeboxHandler::GetAimToolMode() {
+omnibox::ChromeAimToolsAndModels ComposeboxHandler::GetAimToolMode() const {
   return aim_tool_mode_;
 }
 
