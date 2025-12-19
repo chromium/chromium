@@ -658,9 +658,9 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO(crbug.com/446690349): Remove once
-    # https://github.com/rust-lang/rust/pull/146905 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, 'f9c040b7318f86e54fc57119ba5e0664df117600',
+    # TODO(crbug.com/469024927): Remove once
+    # https://github.com/rust-lang/rust/pull/149880 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, '2968372c719a8d875ac88d1505988ed2f704d65c',
                   'https://github.com/rust-lang/rust.git')
 
     print('Finished applying cherry-picks.')
