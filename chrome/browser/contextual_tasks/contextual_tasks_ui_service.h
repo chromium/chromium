@@ -113,13 +113,13 @@ class ContextualTasksUiService : public KeyedService {
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
 
-  // Called when the side panel in a given browser window started showing a new
-  // task. If |task_id| is invalid, the panel is in a zero-state that is waiting
-  // for user to create a new task.
-  virtual void OnTaskChangedInPanel(
-      BrowserWindowInterface* browser_window_interface,
-      content::WebContents* web_contents,
-      const base::Uuid& task_id);
+  // Called when a UI in a given browser window started showing a new task,
+  // either in a full tab or in the side panel. If |task_id| is invalid, the
+  // UI is in a zero-state that is waiting for user to create a new task.
+  virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
+                             content::WebContents* web_contents,
+                             const base::Uuid& task_id,
+                             bool is_shown_in_tab);
 
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.
