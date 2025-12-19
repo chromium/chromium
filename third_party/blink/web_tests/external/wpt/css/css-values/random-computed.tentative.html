@@ -391,6 +391,28 @@ test(() => {
   document.body.appendChild(holder);
 
   try {
+    for (let i = 0; i < iterations; ++i) {
+      const other1 = document.createElement('div');
+      other1.style.animationIterationCount = 'random(element-shared, 0, 100), random(element-shared, 0, 100)';
+      holder.appendChild(other1);
+      let [computed11, computed12] = getComputedStyle(other1)['animation-iteration-count'].split(', ');
+      const other2 = document.createElement('div');
+      other2.style.animationIterationCount = '300, random(element-shared, 0, 100)';
+      holder.appendChild(other2);
+      let [computed21, computed22] = getComputedStyle(other2)['animation-iteration-count'].split(', ');
+      assert_false(computed11 == computed12, "Random values for same property name but different value indexes should differ");
+      test_random_equals(computed11, computed22);
+    }
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Shared by property name and value index: random(element-shared, a, b)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
     const el = document.createElement('div');
     el.className = 'randomMatchElement';
     holder.appendChild(el);

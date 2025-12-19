@@ -225,12 +225,17 @@ CSSValueList::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
     wtf_size_t property_value_index) const {
   CSSValueList* new_list = CSSValueList::CreateWithSeparatorFrom(*this);
+  wtf_size_t random_values_cnt = 0;
   for (wtf_size_t i = 0; i < length(); i++) {
-    new_list->Append(
-        *Item(i).CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index + i));
+    const CSSValue* new_value =
+        Item(i).CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+            property_name, property_value_index + random_values_cnt);
+    new_list->Append(*new_value);
+    if (new_value != &Item(i)) {
+      random_values_cnt++;
+    }
   }
-  return new_list;
+  return random_values_cnt ? new_list : this;
 }
 
 void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) const {
