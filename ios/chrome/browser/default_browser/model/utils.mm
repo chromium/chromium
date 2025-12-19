@@ -558,10 +558,6 @@ void LogDefaultBrowserPromoHistogramForAction(
     DefaultPromoType type,
     IOSDefaultBrowserPromoAction action) {
   switch (type) {
-    case DefaultPromoTypeGeneral:
-      base::UmaHistogramEnumeration("IOS.DefaultBrowserFullscreenPromo",
-                                    action);
-      break;
     case DefaultPromoTypeAllTabs:
       base::UmaHistogramEnumeration(
           "IOS.DefaultBrowserFullscreenTailoredPromoAllTabs", action);
