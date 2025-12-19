@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feedback.OmniboxFeedbackSource;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -2389,6 +2390,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             } else {
                 url = homepageGurl.getSpec();
             }
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.XPLAT_SYNCED_SETUP)
+                && url.equals(urlConstantResolver.getNtpUrl())
+                && FirstRunStatus.getFirstRunFlowComplete()) {
+            url +=
+                    Uri.parse(url)
+                            .buildUpon()
+                            .appendQueryParameter(NewTabPage.AFTER_FIRST_RUN_QUERY_PARAMETER, "");
         }
 
         getTabCreator(incognito).launchUrl(url, TabLaunchType.FROM_STARTUP);

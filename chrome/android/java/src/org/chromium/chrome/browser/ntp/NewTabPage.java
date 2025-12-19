@@ -151,6 +151,7 @@ public class NewTabPage
                 VoiceRecognitionHandler.Observer,
                 ModuleDelegateHost {
     private static final String TAG = "NewTabPage";
+    public static final String AFTER_FIRST_RUN_QUERY_PARAMETER = "afterFirstRun";
 
     // Key for the scroll position data that may be stored in a navigation entry.
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
