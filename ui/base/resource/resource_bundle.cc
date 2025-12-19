@@ -507,6 +507,10 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
 	if (hypen != std::string::npos) {
         locale_file_path = GetLocaleFilePath(app_locale.substr(0, hypen));
         result = data_pack->LoadFromPathWithError(locale_file_path);
+        if (!result.has_value()) {
+            locale_file_path = GetLocaleFilePath("en-GB");
+            result = data_pack->LoadFromPathWithError(locale_file_path);
+        }
     }
     if (!result.has_value() && crash_on_failure) {
         DataPack::ErrorState& error = result.error();
