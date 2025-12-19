@@ -123,6 +123,8 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   NSArray<MostVisitedItem*>* _items;
   /// Data source for favicons of each site.
   id<ContentSuggestionsImageDataSource> _imageDataSource;
+  /// Command handler for each tile.
+  id<MostVisitedTilesCommands> _mostVisitedTilesHandler;
   /// Data source object powering the display of the collection view.
   UICollectionViewDiffableDataSource* _diffableDataSource;
 }
@@ -135,6 +137,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   if (self) {
     _items = config.mostVisitedItems;
     _imageDataSource = config.imageDataSource;
+    _mostVisitedTilesHandler = config.commandHandler;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.backgroundColor = UIColor.clearColor;
     self.showsHorizontalScrollIndicator = NO;
@@ -203,7 +206,10 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
           @"%@%li", kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
           identifier.longValue];
   if (identifier.intValue == kPlusButtonIdentifier) {
-    cell.contentConfiguration = [[MostVisitedTilesPlusButtonItem alloc] init];
+    MostVisitedTilesPlusButtonItem* plusButtonItem =
+        [[MostVisitedTilesPlusButtonItem alloc] init];
+    plusButtonItem.mostVisitedTilesHandler = _mostVisitedTilesHandler;
+    cell.contentConfiguration = plusButtonItem;
   } else {
     [self loadFaviconIfNeeded:identifier];
     cell.contentConfiguration = _items[identifier.unsignedIntValue];

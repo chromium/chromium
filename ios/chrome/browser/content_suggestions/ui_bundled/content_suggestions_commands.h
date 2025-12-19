@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_COMMANDS_H_
 
+@class MostVisitedItem;
+
 // Commands related to Content Suggestions.
 @protocol ContentSuggestionsCommands
 
@@ -12,6 +14,12 @@
 // If `expanded` is YES, the view will use the "large" detent by default,
 // otherwise the "medium" detent will be used.
 - (void)showSetUpListSeeMoreMenuExpanded:(BOOL)expanded;
+
+// Show the "Add site" modal.
+- (void)showPinnedSiteCreator;
+
+// Show the "Edit site" modal for `item`.
+- (void)showPinnedSiteEditorForItem:(MostVisitedItem*)item;
 
 @end
 

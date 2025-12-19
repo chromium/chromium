@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
 
 /// The cell content view of the add pinned site button. It is subclassed from
 /// the most-visited-action button so it shares the same color theme with the
@@ -25,6 +26,9 @@
     self.imageBackgroundView.layer.cornerRadius =
         kMagicStackImageContainerWidth / 2;
     self.imageBackgroundView.clipsToBounds = YES;
+    [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                           action:@selector(handleTap)]];
   }
   return self;
 }
@@ -41,6 +45,13 @@
             configuration);
     [self updateConfiguration:[item copy]];
   }
+}
+
+/// Handles user taps on the plus button.
+- (void)handleTap {
+  MostVisitedTilesPlusButtonItem* configuration =
+      base::apple::ObjCCastStrict<MostVisitedTilesPlusButtonItem>(self.config);
+  [configuration.mostVisitedTilesHandler openModalToAddPinnedSite];
 }
 
 @end
@@ -71,7 +82,10 @@
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone*)zone {
-  return [[MostVisitedTilesPlusButtonItem alloc] init];
+  MostVisitedTilesPlusButtonItem* item =
+      [[MostVisitedTilesPlusButtonItem alloc] init];
+  item.mostVisitedTilesHandler = self.mostVisitedTilesHandler;
+  return item;
 }
 
 @end

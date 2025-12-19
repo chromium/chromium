@@ -7,10 +7,15 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_action_item.h"
 
+@protocol MostVisitedTilesCommands;
+
 /// The item for the "add pinned site" button at the end of the most visited
 /// tile.
 @interface MostVisitedTilesPlusButtonItem
     : ContentSuggestionsActionItem <UIContentConfiguration>
+
+/// Command handler for the plus button.
+@property(nonatomic, weak) id<MostVisitedTilesCommands> mostVisitedTilesHandler;
 
 @end
 

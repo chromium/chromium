@@ -38,6 +38,9 @@
 // Removes the most visited `item`.
 - (void)removeMostVisited:(MostVisitedItem*)item;
 
+// Opens the modal for user to add a new pinned site to the most visited tiles.
+- (void)openModalToAddPinnedSite;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_MOST_VISITED_TILES_UI_MOST_VISITED_TILES_COMMANDS_H_

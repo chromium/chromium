@@ -20,6 +20,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_saver.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
@@ -264,6 +265,10 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   [self showMostVisitedUndoForURL:item.URL];
 }
 
+- (void)openModalToAddPinnedSite {
+  [self.contentSuggestionsHandler showPinnedSiteCreator];
+}
+
 #pragma mark - ContentSuggestionsMenuProvider
 
 - (NSArray<UIMenuElement*>*)defaultContextMenuElementsForItem:
@@ -320,7 +325,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     [menuElements
         addObject:[self.actionFactory
                       actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
-                          // TODO(crbug.com/459873750): Edit.
+                        [weakSelf.contentSuggestionsHandler
+                            showPinnedSiteEditorForItem:item];
                       }]];
     [menuElements addObject:[self.actionFactory
                                 actionToUnpinSiteFromMostVisitedTileWithBlock:^{
@@ -339,6 +345,20 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   }
 
   return menuElements;
+}
+
+#pragma mark - PinnedSiteFormViewControllerDelegate
+
+- (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
+  // TODO(crbug.com/469998604): Implement.
+  return NO;
+}
+
+- (BOOL)editPinnedSiteForURL:(NSString*)oldURL
+                   withTitle:(NSString*)title
+                         URL:(NSString*)newURL {
+  // TODO(crbug.com/469998604): Implement.
+  return NO;
 }
 
 #pragma mark - Private

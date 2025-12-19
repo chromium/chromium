@@ -13,10 +13,13 @@ source_set("ui") {
     "most_visited_tiles_commands.h",
     "most_visited_tiles_config.h",
     "most_visited_tiles_config.mm",
+    "most_visited_tiles_pinned_site_mutator.h",
     "most_visited_tiles_plus_button_item.h",
     "most_visited_tiles_plus_button_item.mm",
     "most_visited_tiles_stack_view.h",
     "most_visited_tiles_stack_view.mm",
+    "pinned_site_form_view_controller.h",
+    "pinned_site_form_view_controller.mm",
   ]
   public_deps = [
     "//components/ntp_tiles",

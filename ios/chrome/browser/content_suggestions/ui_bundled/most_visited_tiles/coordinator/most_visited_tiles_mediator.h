@@ -11,6 +11,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_pinned_site_mutator.h"
 
 namespace favicon {
 class LargeIconService;
@@ -22,6 +23,7 @@ class MostVisitedSites;
 
 @class BrowserActionFactory;
 class ChromeAccountManagerService;
+@protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
 enum class ContentSuggestionsModuleType;
@@ -36,7 +38,9 @@ class UrlLoadingBrowserAgent;
 // Mediator for managing the state of the MostVisitedTiles for the Magic Stack
 // module.
 @interface MostVisitedTilesMediator
-    : NSObject <ContentSuggestionsImageDataSource, MostVisitedTilesCommands>
+    : NSObject <ContentSuggestionsImageDataSource,
+                MostVisitedTilesCommands,
+                MostVisitedTilesPinnedSiteMutator>
 
 // The config object for the latest Most Visited Tiles.
 @property(nonatomic, strong, readonly)
@@ -56,11 +60,15 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<ContentSuggestionsDelegate>
     contentSuggestionsDelegate;
 
+// Handler for content suggestion commands.
+@property(nonatomic, weak) id<ContentSuggestionsCommands>
+    contentSuggestionsHandler;
+
+// Handler for snackbar commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
+
 // Delegate for reporting content suggestions actions to the NTP.
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
-
-// Dispatcher.
-@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 // Get the maximum number of sites shown.
 + (NSUInteger)maxSitesShown;
