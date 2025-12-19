@@ -41,6 +41,7 @@ aom_av1_common_intrin_neon_i8mm = [
   "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/reconintra_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/resize_neon_i8mm.c",
 ]
 
