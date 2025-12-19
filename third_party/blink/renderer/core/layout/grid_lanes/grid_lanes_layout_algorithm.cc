@@ -414,14 +414,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
       }
     }
 
-    // TODO(celestepan): If an item was placed into an earlier track opening as
-    // a result of dense-packing, the auto-placement cursor should not be moved.
-    //
-    // Update auto-placement cursor after we have determined the item's final
-    // placement.
-    running_positions.UpdateAutoPlacementCursor(
-        grid_lanes_item.resolved_position, grid_axis_direction);
-
     // `start_offset_in_stacking_axis` specifies where in the stacking axis the
     // item should be placed, so we need to adjust the `containing_rect` in the
     // stacking axis to accommodate the newly placed item.
@@ -473,6 +465,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
               ? std::make_optional(
                     /*max_running_position=*/start_offset_in_stacking_axis)
               : std::nullopt);
+
+      // Update auto-placement cursor after we have determined the item's final
+      // placement.
+      running_positions.UpdateAutoPlacementCursor(
+          grid_lanes_item.resolved_position, grid_axis_direction);
     }
 
     container_builder_.AddResult(*result, containing_rect.offset, margins);
