@@ -5,6 +5,7 @@
 #include "net/test/cert_builder.h"
 
 #include <algorithm>
+#include <bit>
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,11 +15,14 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -26,6 +30,9 @@
 #include "crypto/evp.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
+#include "crypto/sha2.h"
+#include "crypto/subtle_passkey.h"
+#include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/ct_objects_extractor.h"
 #include "net/cert/ct_serialization.h"
@@ -42,9 +49,11 @@
 #include "third_party/boringssl/src/pki/certificate_policies.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/merkle_tree.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "url/gurl.h"
 
@@ -99,6 +108,14 @@ bool CBBAddBytes(CBB* cbb, std::string_view bytes) {
 template <size_t N>
 bool CBBAddBytes(CBB* cbb, const uint8_t (&data)[N]) {
   return CBB_add_bytes(cbb, data, N);
+}
+
+// Adds tagged element to the given CBB.
+// The argument ordering follows the boringssl CBB_* api style.
+bool CBBAddAsn1Element(CBB* cbb,
+                       CBS_ASN1_TAG tag,
+                       base::span<const uint8_t> bytes) {
+  return CBB_add_asn1_element(cbb, tag, bytes.data(), bytes.size());
 }
 
 // Finalizes the CBB to a std::string.
@@ -1332,10 +1349,51 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   }
 }
 
+void CertBuilder::GetEncodedExtensions(std::vector<uint8_t>* out) {
+  if (extensions_.empty()) {
+    out->clear();
+    return;
+  }
+
+  bssl::ScopedCBB cbb;
+  CBB extensions_context, extensions;
+
+  ASSERT_TRUE(CBB_init(cbb.get(), 64));
+  ASSERT_TRUE(
+      CBB_add_asn1(cbb.get(), &extensions_context,
+                   CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 3));
+  ASSERT_TRUE(
+      CBB_add_asn1(&extensions_context, &extensions, CBS_ASN1_SEQUENCE));
+
+  //   Extension  ::=  SEQUENCE  {
+  //        extnID      OBJECT IDENTIFIER,
+  //        critical    BOOLEAN DEFAULT FALSE,
+  //        extnValue   OCTET STRING
+  //                    -- contains the DER encoding of an ASN.1 value
+  //                    -- corresponding to the extension type identified
+  //                    -- by extnID
+  //        }
+  for (const auto& [extension_id, extension_value] : extensions_) {
+    CBB extension_seq, oid, extn_value;
+    ASSERT_TRUE(CBB_add_asn1(&extensions, &extension_seq, CBS_ASN1_SEQUENCE));
+    ASSERT_TRUE(CBB_add_asn1(&extension_seq, &oid, CBS_ASN1_OBJECT));
+    ASSERT_TRUE(CBBAddBytes(&oid, extension_id));
+    if (extension_value.critical) {
+      ASSERT_TRUE(CBB_add_asn1_bool(&extension_seq, true));
+    }
+
+    ASSERT_TRUE(
+        CBB_add_asn1(&extension_seq, &extn_value, CBS_ASN1_OCTETSTRING));
+    ASSERT_TRUE(CBBAddBytes(&extn_value, extension_value.value));
+    ASSERT_TRUE(CBB_flush(&extensions));
+  }
+  *out = FinishCBBToVector(cbb.get());
+}
+
 void CertBuilder::BuildTBSCertificate(std::string_view signature_algorithm_tlv,
                                       std::string* out) {
   bssl::ScopedCBB cbb;
-  CBB tbs_cert, version, extensions_context, extensions;
+  CBB tbs_cert, version;
 
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
   ASSERT_TRUE(CBB_add_asn1(cbb.get(), &tbs_cert, CBS_ASN1_SEQUENCE));
@@ -1364,37 +1422,11 @@ void CertBuilder::BuildTBSCertificate(std::string_view signature_algorithm_tlv,
   ASSERT_TRUE(GetKey());
   ASSERT_TRUE(EVP_marshal_public_key(&tbs_cert, GetKey()));
 
-  // Serialize all the extensions.
-  if (!extensions_.empty()) {
-    ASSERT_TRUE(
-        CBB_add_asn1(&tbs_cert, &extensions_context,
-                     CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 3));
-    ASSERT_TRUE(
-        CBB_add_asn1(&extensions_context, &extensions, CBS_ASN1_SEQUENCE));
-
-    //   Extension  ::=  SEQUENCE  {
-    //        extnID      OBJECT IDENTIFIER,
-    //        critical    BOOLEAN DEFAULT FALSE,
-    //        extnValue   OCTET STRING
-    //                    -- contains the DER encoding of an ASN.1 value
-    //                    -- corresponding to the extension type identified
-    //                    -- by extnID
-    //        }
-    for (const auto& extension_it : extensions_) {
-      CBB extension_seq, oid, extn_value;
-      ASSERT_TRUE(CBB_add_asn1(&extensions, &extension_seq, CBS_ASN1_SEQUENCE));
-      ASSERT_TRUE(CBB_add_asn1(&extension_seq, &oid, CBS_ASN1_OBJECT));
-      ASSERT_TRUE(CBBAddBytes(&oid, extension_it.first));
-      if (extension_it.second.critical) {
-        ASSERT_TRUE(CBB_add_asn1_bool(&extension_seq, true));
-      }
-
-      ASSERT_TRUE(
-          CBB_add_asn1(&extension_seq, &extn_value, CBS_ASN1_OCTETSTRING));
-      ASSERT_TRUE(CBBAddBytes(&extn_value, extension_it.second.value));
-      ASSERT_TRUE(CBB_flush(&extensions));
-    }
-  }
+  // Serialize all the extensions (encoded_extensions will be empty if there
+  // are no extensions).
+  std::vector<uint8_t> encoded_extensions;
+  GetEncodedExtensions(&encoded_extensions);
+  ASSERT_TRUE(CBBAddBytes(&tbs_cert, encoded_extensions));
 
   *out = FinishCBB(cbb.get());
 }
@@ -1499,6 +1531,353 @@ void CertBuilder::GenerateCertificate() {
 
   auto cert_der = FinishCBB(cbb.get());
   cert_ = x509_util::CreateCryptoBuffer(base::as_byte_span(cert_der));
+}
+
+namespace {
+
+enum MerkleTreeCertEntryType {
+  kNullEntry = 0,
+  kTbsCertEntry = 1,
+};
+
+uint64_t bit_length(uint64_t n) {
+  return std::numeric_limits<uint64_t>::digits - std::countl_zero(n);
+}
+
+// Returns one or two subtrees that cover the interval [start, end).
+//
+// This is based on the "find_subtrees" function from the MTC draft:
+// https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#section-4.5-5
+std::vector<bssl::Subtree> SubtreesForLandmarkRange(
+    MtcLogBuilder::LogIndex start,
+    MtcLogBuilder::LogIndex end) {
+  const uint64_t last = end - 1;
+
+  if (start == last) {
+    return {{start, end}};
+  }
+
+  // Find where start and last's tree paths diverge. The two
+  // subtrees will be on either side of the split.
+  const uint64_t split = bit_length(start ^ last) - 1;
+  const uint64_t mask = (1 << split) - 1;
+  const uint64_t mid = last & ~mask;
+  // Maximize the left endpoint. This is just before start's
+  // path leaves the right edge of its new subtree.
+  const uint64_t left_split = bit_length(~start & mask);
+  const uint64_t left_start = start & ~((1 << left_split) - 1);
+
+  return {{left_start, mid}, {mid, end}};
+}
+
+// For initial experimentation, early implementations of this design will use
+// the OID 1.3.6.1.4.1.44363.47.0 instead of id-alg-mtcProof.
+// This is the DER encoding of an AlgorithmIdentifier with the algorithm OID
+// set and the parameters omitted, eg:
+// SEQUENCE { OBJECT_IDENTIFIER { 1.3.6.1.4.1.44363.47.0 } }
+constexpr uint8_t kMtcSignatureAlgorithmIdentifier[] = {
+    0x30, 0x0c, 0x06, 0x0a, 0x2b, 0x06, 0x01,
+    0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x00};
+
+}  // namespace
+
+class MtcLogBuilder::Data {
+ public:
+  explicit Data(std::vector<uint8_t> log_id)
+      : log_id_(log_id), encoded_log_name_(GetEncodedLogName()) {
+    // Entry 0 is always the null entry.
+    merkle_tree_.Append(base::U16ToBigEndian(kNullEntry));
+    log_entries_.push_back(MtcLogEntry::NullEntry());
+  }
+
+  uint64_t Size() const { return log_entries_.size(); }
+
+  uint64_t AddEntry(MtcLogEntry entry) {
+    merkle_tree_.Append(
+        entry.BuildMerkleTreeCertEntryTbsCertEntry(encoded_log_name_));
+
+    log_entries_.push_back(std::move(entry));
+
+    return log_entries_.size() - 1;
+  }
+
+  std::vector<uint8_t> BuildTBSCertificate(uint64_t index) {
+    return log_entries_[index].BuildTBSCertificate(encoded_log_name_, index);
+  }
+
+  std::optional<bssl::TreeHash> SubtreeHash(const bssl::Subtree& subtree) {
+    return merkle_tree_.SubtreeHash(subtree);
+  }
+
+  std::vector<uint8_t> InclusionProof(uint64_t index,
+                                      const bssl::Subtree& subtree) {
+    return merkle_tree_.SubtreeInclusionProof(index, subtree);
+  }
+
+ private:
+  std::vector<uint8_t> GetEncodedLogName() const {
+    // TODO(crbug.com/469624806): this is duplicates code in MTCAnchor class
+    // for encoding the log id into the synthetic cert subject. Can we
+    // deduplicate this somehow?
+    bssl::ScopedCBB cbb;
+    CBB subject_seq, subject_set, subject_log;
+
+    CHECK(CBB_init(cbb.get(), 32));
+    CHECK(CBB_add_asn1(cbb.get(), &subject_seq, CBS_ASN1_SEQUENCE));
+    CHECK(CBB_add_asn1(&subject_seq, &subject_set, CBS_ASN1_SET));
+    CHECK(CBB_add_asn1(&subject_set, &subject_log, CBS_ASN1_SEQUENCE));
+    // Section 5.2: Use OID 1.3.6.1.4.1.44363.47.1 as the attribute type for the
+    // log ID's name. Note that this is the early experimentation OID in the
+    // draft rather than the real value of `id-rdna-trustAnchorID`.
+    static uint8_t log_attr_oid[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                     0x82, 0xda, 0x4b, 0x2f, 0x01};
+    CHECK(CBB_add_asn1_element(&subject_log, CBS_ASN1_OBJECT, log_attr_oid,
+                               sizeof(log_attr_oid)));
+
+    std::string log_id_text = x509_util::RelativeOidToString(log_id_);
+    CHECK(CBBAddAsn1Element(&subject_log, CBS_ASN1_UTF8STRING,
+                            base::as_byte_span(log_id_text)));
+
+    return FinishCBBToVector(cbb.get());
+  }
+
+  std::vector<uint8_t> log_id_;
+
+  std::vector<uint8_t> encoded_log_name_;
+
+  std::vector<MtcLogEntry> log_entries_;
+
+  bssl::MerkleTreeInMemory merkle_tree_;
+};
+
+MtcLogBuilder::MtcLogEntry::MtcLogEntry() = default;
+MtcLogBuilder::MtcLogEntry::~MtcLogEntry() = default;
+MtcLogBuilder::MtcLogEntry::MtcLogEntry(const MtcLogEntry&) = default;
+MtcLogBuilder::MtcLogEntry& MtcLogBuilder::MtcLogEntry::operator=(
+    const MtcLogEntry& other) = default;
+MtcLogBuilder::MtcLogEntry::MtcLogEntry(MtcLogEntry&&) = default;
+MtcLogBuilder::MtcLogEntry& MtcLogBuilder::MtcLogEntry::operator=(
+    MtcLogEntry&& other) = default;
+
+MtcLogBuilder::MtcLogEntry MtcLogBuilder::MtcLogEntry::NullEntry() {
+  // TODO(crbug.com/469624806): could return a const reference to a singleton
+  // (like GURL::EmptyGURL)
+  MtcLogEntry result;
+  return result;
+}
+
+std::vector<uint8_t>
+MtcLogBuilder::MtcLogEntry::BuildMerkleTreeCertEntryTbsCertEntry(
+    std::vector<uint8_t> issuer_tlv) {
+  bssl::ScopedCBB cbb;
+  CBB tbs_cert, version;
+
+  CHECK(CBB_init(cbb.get(), 64));
+
+  // MerkleTreeCertEntry type:
+  CHECK(CBB_add_u16(cbb.get(), kTbsCertEntry));
+
+  // MerkleTreeCertEntry tbs_cert_entry:
+  CHECK(CBB_add_asn1(cbb.get(), &tbs_cert, CBS_ASN1_SEQUENCE));
+  // TODO(crbug.com/469624806): support CertBuilder::version_?
+  CHECK(CBB_add_asn1(&tbs_cert, &version,
+                     CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0));
+  CHECK(CBB_add_asn1_uint64(&version, 2));
+
+  CHECK(CBBAddBytes(&tbs_cert, issuer_tlv));
+  CHECK(CBBAddBytes(&tbs_cert, validity));
+  CHECK(CBBAddBytes(&tbs_cert, subject));
+  CHECK(CBBAddAsn1Element(&tbs_cert, CBS_ASN1_OCTETSTRING,
+                          crypto::hash::Sha256(subject_public_key_info)));
+  // issuerUniqueID and subjectUniqueID not present.
+  CHECK(CBBAddBytes(&tbs_cert, extensions));
+
+  return FinishCBBToVector(cbb.get());
+}
+
+std::vector<uint8_t> MtcLogBuilder::MtcLogEntry::BuildTBSCertificate(
+    std::vector<uint8_t> issuer_tlv,
+    uint64_t index) {
+  bssl::ScopedCBB cbb;
+  CBB tbs_cert, version;
+
+  CHECK(CBB_init(cbb.get(), 64));
+  CHECK(CBB_add_asn1(cbb.get(), &tbs_cert, CBS_ASN1_SEQUENCE));
+
+  // TODO(crbug.com/469624806): support CertBuilder::version_?
+  CHECK(CBB_add_asn1(&tbs_cert, &version,
+                     CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0));
+  CHECK(CBB_add_asn1_uint64(&version, 2));
+
+  // serialNumber         CertificateSerialNumber
+  CHECK(CBB_add_asn1_uint64(&tbs_cert, index));
+
+  // signature            AlgorithmIdentifier,
+  CHECK(CBBAddBytes(&tbs_cert, kMtcSignatureAlgorithmIdentifier));
+
+  CHECK(CBBAddBytes(&tbs_cert, issuer_tlv));
+  CHECK(CBBAddBytes(&tbs_cert, validity));
+  CHECK(CBBAddBytes(&tbs_cert, subject));
+  CHECK(CBBAddBytes(&tbs_cert, subject_public_key_info));
+  // issuerUniqueID and subjectUniqueID not present.
+  CHECK(CBBAddBytes(&tbs_cert, extensions));
+
+  return FinishCBBToVector(cbb.get());
+}
+
+MtcLogBuilder::MtcLogBuilder(base::span<const uint8_t> log_id)
+    : log_id_(base::ToVector(log_id)), data_(new Data(base::ToVector(log_id))) {
+  // The first landmark, numbered zero, is always a tree size of zero.
+  landmarks_.push_back(0);
+}
+MtcLogBuilder::~MtcLogBuilder() = default;
+
+bool MtcLogBuilder::AdvanceLandmark() {
+  if (landmarks_.back() == data_->Size()) {
+    // No new entries have been added since the landmark.
+    return false;
+  }
+
+  landmarks_.push_back(data_->Size());
+  return true;
+}
+
+std::vector<bssl::Subtree> MtcLogBuilder::GetLandmarkSubtrees() {
+  // TODO(crbug.com/469624806): could cache the subtrees when adding a landmark
+  // so we don't need to be recalculated.
+  std::vector<bssl::Subtree> result;
+
+  LogIndex prev_tree_size = landmarks_.front();
+  for (LogIndex tree_size : base::span(landmarks_).subspan(1u)) {
+    base::Extend(result, SubtreesForLandmarkRange(prev_tree_size, tree_size));
+
+    prev_tree_size = tree_size;
+  }
+
+  return result;
+}
+
+std::vector<bssl::TrustedSubtree> MtcLogBuilder::GetLandmarkSubtreeHashes() {
+  // TODO(crbug.com/469624806): could cache the subtrees when adding a landmark
+  // so they don't need to potentially be recalculated.
+  std::vector<bssl::TrustedSubtree> result;
+
+  for (const auto& subtree : GetLandmarkSubtrees()) {
+    std::optional<bssl::TreeHash> hash = data_->SubtreeHash(subtree);
+    CHECK(hash);
+    result.emplace_back(subtree, *hash);
+  }
+
+  return result;
+}
+
+MtcLogBuilder::LogIndex MtcLogBuilder::AddEntry(CertBuilder& mtc_builder) {
+  MtcLogEntry entry;
+  entry.validity = base::ToVector(mtc_builder.GetEncodedValidity());
+  entry.subject = base::ToVector(base::as_byte_span(mtc_builder.GetSubject()));
+  entry.subject_public_key_info =
+      crypto::keypair::PublicKey(bssl::UpRef(mtc_builder.GetKey()),
+                                 crypto::SubtlePassKey::ForTesting())
+          .ToSubjectPublicKeyInfo();
+  mtc_builder.GetEncodedExtensions(&entry.extensions);
+
+  return data_->AddEntry(std::move(entry));
+}
+
+void MtcLogBuilder::AddUnusedEntries(size_t n,
+                                     base::span<const uint8_t> extra_data) {
+  for (size_t i = 0; i < n; i++) {
+    size_t cur_index = data_->Size();
+    MtcLogEntry entry;
+
+    base::Extend(entry.subject_public_key_info,
+                 base::as_byte_span("unusedspki"));
+    base::Extend(entry.subject_public_key_info, extra_data);
+    base::Extend(entry.subject_public_key_info,
+                 base::U64ToBigEndian(cur_index));
+
+    data_->AddEntry(std::move(entry));
+  }
+}
+
+std::vector<uint8_t> MtcLogBuilder::CreateSignaturelessMtcProof(
+    LogIndex index) {
+  bssl::Subtree landmark_subtree = {1, 0};  // initialize with invalid subtree
+  for (const auto& subtree1 : GetLandmarkSubtrees()) {
+    if (subtree1.Contains(index)) {
+      landmark_subtree = subtree1;
+      break;
+    }
+  }
+  CHECK(landmark_subtree.IsValid());
+
+  std::vector<uint8_t> inclusion_proof =
+      data_->InclusionProof(index, landmark_subtree);
+
+  std::vector<uint8_t> result;
+  result.reserve(2 * sizeof(uint64_t) + 2 * sizeof(uint16_t) +
+                 inclusion_proof.size());
+
+  // struct {
+  //     uint64 start;
+  base::Extend(result, base::U64ToBigEndian(landmark_subtree.start));
+
+  //     uint64 end;
+  base::Extend(result, base::U64ToBigEndian(landmark_subtree.end));
+
+  //    HashValue inclusion_proof<0..2^16-1>;
+  base::Extend(result, base::U16ToBigEndian(inclusion_proof.size()));
+  base::Extend(result, inclusion_proof);
+
+  //     MTCSignature signatures<0..2^16-1>;
+  // `signatures` is empty.
+  base::Extend(result, base::U16ToBigEndian(0));
+  //
+  // } MTCProof;
+
+  return result;
+}
+
+std::optional<std::vector<uint8_t>>
+MtcLogBuilder::CreateSignaturelessCertificate(LogIndex index) {
+  // Given a TBSCertificateLogEntry in the issuance log and a landmark sequence,
+  // a signatureless certificate is constructed as follows:
+  //
+  // Wait for the first landmark to be allocated that contains the entry.
+  // Determine the landmark's subtrees and select the one that contains the
+  // entry.
+  // Construct a certificate (Section 6.1) using the selected subtree and no
+  // signatures.
+
+  if (index >= landmarks_.back()) {
+    // This entry is not included in any landmark yet, can't create a
+    // signatureless certificate.
+    return std::nullopt;
+  }
+
+  std::vector<uint8_t> tbs_cert = data_->BuildTBSCertificate(index);
+
+  bssl::ScopedCBB cbb;
+  CBB cert, signature;
+
+  CHECK(CBB_init(cbb.get(), tbs_cert.size()));
+  CHECK(CBB_add_asn1(cbb.get(), &cert, CBS_ASN1_SEQUENCE));
+  CHECK(CBBAddBytes(&cert, tbs_cert));
+  CHECK(CBBAddBytes(&cert, kMtcSignatureAlgorithmIdentifier));
+  CHECK(CBB_add_asn1(&cert, &signature, CBS_ASN1_BITSTRING));
+  CHECK(CBB_add_u8(&signature, 0 /* no unused bits */));
+  CHECK(CBBAddBytes(&signature, CreateSignaturelessMtcProof(index)));
+
+  return FinishCBBToVector(cbb.get());
+}
+
+bssl::UniquePtr<CRYPTO_BUFFER>
+MtcLogBuilder::CreateSignaturelessCertificateBuffer(LogIndex index) {
+  auto cert = CreateSignaturelessCertificate(index);
+  if (cert) {
+    return x509_util::CreateCryptoBuffer(*cert);
+  }
+  return nullptr;
 }
 
 }  // namespace net
