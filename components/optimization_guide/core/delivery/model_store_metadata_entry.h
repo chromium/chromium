@@ -22,27 +22,15 @@ class PrefService;
 
 namespace optimization_guide {
 
-class ModelStoreMetadataEntryUpdater;
-
-// Encapsulates the lightweight metadata entry that is stored in local state
-// prefs for one model in the model store. The model is represented by the key
-// pair OptimizationTarget and hash of ModelCacheKey.
+// A read-only view of the metadata in prefs about a model on disk.
 class ModelStoreMetadataEntry {
  public:
-  // Returns the metadata entry in the store if it exists.
-  static std::optional<ModelStoreMetadataEntry> GetModelMetadataEntryIfExists(
-      PrefService* local_state,
-      proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& model_cache_key);
-
-  // Returns the valid model dirs in the model store base dir, that were in sync
-  // with the `local_state`.
-  static std::set<base::FilePath> GetValidModelDirs(PrefService* local_state);
-
   // This is the default duration for models that do not specify retention.
   static constexpr base::TimeDelta kDefaultStoredModelValidDuration =
       base::Days(30);
 
+  explicit ModelStoreMetadataEntry(const base::Value::Dict* metadata_entry);
+  ModelStoreMetadataEntry(const ModelStoreMetadataEntry&) = default;
   ModelStoreMetadataEntry& operator=(const ModelStoreMetadataEntry&) = delete;
   ~ModelStoreMetadataEntry();
 
@@ -60,38 +48,17 @@ class ModelStoreMetadataEntry {
   bool GetKeepBeyondValidDuration() const;
 
  private:
-  friend class ModelStoreMetadataEntryUpdater;
-
-  explicit ModelStoreMetadataEntry(const base::Value::Dict* metadata_entry);
-
-  void SetMetadataEntry(const base::Value::Dict* metadata_entry);
-
   // The root metadata entry for this model.
   raw_ptr<const base::Value::Dict> metadata_entry_;
 };
 
 // The pref updater for ModelStoreMetadataEntry.
-class ModelStoreMetadataEntryUpdater : public ModelStoreMetadataEntry {
+class ModelStoreMetadataEntryUpdater {
  public:
-  // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
-  // for |optimization_target| in |local_state|.
-  static void UpdateModelCacheKeyMapping(
-      PrefService* local_state,
-      proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& client_model_cache_key,
-      const proto::ModelCacheKey& server_model_cache_key);
-
-  // Removes all the model metadata entries that are considered inactive, such
-  // as expired models, models unused for a long time, and returns the model
-  // dirs of the removed entries.
-  // TODO(b/244649670): Remove models that are unused for a long time.
-  static std::vector<base::FilePath> PurgeAllInactiveMetadata(
-      PrefService* local_state);
-
   // Returns the metadata entry in the store, creating it if it does not exist.
-  ModelStoreMetadataEntryUpdater(PrefService* local_state,
+  ModelStoreMetadataEntryUpdater(PrefService& local_state,
                                  proto::OptimizationTarget optimization_target,
-                                 const proto::ModelCacheKey& model_cache_key);
+                                 const std::string& server_key_hash);
 
   ModelStoreMetadataEntryUpdater(const ModelStoreMetadataEntryUpdater&) =
       delete;
@@ -107,11 +74,62 @@ class ModelStoreMetadataEntryUpdater : public ModelStoreMetadataEntry {
   // Clear metadata for the model entry.
   void ClearMetadata();
 
- private:
-  // The root metadata entry that is linked with the |pref_updater_|.
-  raw_ptr<base::Value::Dict> metadata_entry_updater_;
+  const ModelStoreMetadataEntry entry() const {
+    return ModelStoreMetadataEntry(entry_);
+  }
 
+ private:
   ScopedDictPrefUpdate pref_updater_;
+  // The part of the Value owned by |pref_updater_| which backs the entry
+  // to be updated.
+  raw_ptr<base::Value::Dict> entry_;
+};
+
+// A ledger that tracks what models should be stored on disk.
+class ModelStoreLedger {
+ public:
+  explicit ModelStoreLedger(PrefService& local_state);
+  ~ModelStoreLedger();
+
+  // Returns the metadata entry in the store if it exists.
+  std::optional<ModelStoreMetadataEntry> GetEntryIfExists(
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& model_cache_key) const;
+
+  // Returns the valid model dirs in the model store base dir, that were in sync
+  // with the `local_state`.
+  std::set<base::FilePath> GetValidModelDirs() const;
+
+  // Creates a scoped updater to update one model's entry.
+  // Creates the entry if it does not exist.
+  ModelStoreMetadataEntryUpdater UpdateEntry(
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& model_cache_key);
+
+  // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
+  // for |optimization_target| in |local_state|.
+  void UpdateModelCacheKeyMapping(
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& client_model_cache_key,
+      const proto::ModelCacheKey& server_model_cache_key);
+
+  // Removes all the model metadata entries that are considered inactive, such
+  // as expired models, models unused for a long time, and returns the model
+  // dirs of the removed entries.
+  // TODO(crbug.com/244649670): Remove models that are unused for a long time.
+  std::vector<base::FilePath> PurgeAllInactiveMetadata();
+
+  // Record that a model should be deleted on next restart.
+  void AddPathToDelete(base::FilePath path);
+
+  // Get all the deferred deletions, keys are paths, values don't matter.
+  const base::Value::Dict& GetPathsToDelete() const;
+
+  // Remove a deferred deletion.
+  void RemovePathToDelete(base::FilePath path);
+
+ private:
+  raw_ref<PrefService> local_state_;
 };
 
 }  // namespace optimization_guide

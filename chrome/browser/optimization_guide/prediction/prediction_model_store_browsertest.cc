@@ -492,10 +492,10 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   {
     // Mark the downloaded model as old version, to simulate model version
     // update.
-    ModelStoreMetadataEntryUpdater updater(
-        g_browser_process->local_state(),
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-        CreateModelCacheKey(kTestLocaleFoo));
+    ModelStoreMetadataEntryUpdater updater =
+        ModelStoreLedger(*g_browser_process->local_state())
+            .UpdateEntry(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                         CreateModelCacheKey(kTestLocaleFoo));
     updater.SetVersion(kSuccessfulModelVersion - 1);
   }
   {
@@ -544,11 +544,13 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   {
     // Mark the downloaded model as old version, to simulate model version
     // update.
-    ModelStoreMetadataEntryUpdater updater(
-        g_browser_process->local_state(),
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_cache_key);
+    ModelStoreMetadataEntryUpdater updater =
+        ModelStoreLedger(*g_browser_process->local_state())
+            .UpdateEntry(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                         model_cache_key);
     updater.SetVersion(kSuccessfulModelVersion - 1);
-    old_model_dir = GetModelStoreBaseDir().Append(*updater.GetModelBaseDir());
+    old_model_dir =
+        GetModelStoreBaseDir().Append(*updater.entry().GetModelBaseDir());
   }
   {
     // Trigger the periodic fetch timer.
@@ -582,9 +584,10 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto entry = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-        g_browser_process->local_state(),
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_cache_key);
+    auto entry =
+        ModelStoreLedger(*g_browser_process->local_state())
+            .GetEntryIfExists(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                              model_cache_key);
     new_model_dir = GetModelStoreBaseDir().Append(*entry->GetModelBaseDir());
     EXPECT_TRUE(base::DirectoryExists(old_model_dir));
     EXPECT_TRUE(base::DirectoryExists(new_model_dir));

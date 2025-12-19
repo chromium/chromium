@@ -53,8 +53,7 @@ class PredictionModelStoreTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
-    local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
+    prefs::RegisterLocalStatePrefs(local_state_.registry());
     CreateAndInitializePredictionModelStore();
     RunUntilIdle();
   }
@@ -101,7 +100,7 @@ class PredictionModelStoreTest : public testing::Test {
 
   void CreateAndInitializePredictionModelStore() {
     prediction_model_store_ =
-        std::make_unique<PredictionModelStore>(*local_state_prefs_);
+        std::make_unique<PredictionModelStore>(local_state_);
     prediction_model_store_->Initialize(temp_models_dir_.GetPath());
   }
 
@@ -122,7 +121,8 @@ class PredictionModelStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_models_dir_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
+  TestingPrefServiceSimple local_state_;
+  ModelStoreLedger ledger_{local_state_};
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
   std::unique_ptr<PredictionModelStore> prediction_model_store_;
 };
@@ -166,8 +166,8 @@ TEST_F(PredictionModelStoreTest, ModelUpdateAndLoad) {
             model_detail.base_model_dir.Append(GetBaseFileNameForModels()));
   EXPECT_EQ(0, loaded_model->model_info().additional_files_size());
 
-  auto metadata_entry = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-      local_state_prefs_.get(), kTestOptimizationTargetFoo, model_cache_key);
+  auto metadata_entry =
+      ledger_.GetEntryIfExists(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_EQ(
       model_detail.base_model_dir,
       temp_models_dir_.GetPath().Append(*metadata_entry->GetModelBaseDir()));
@@ -287,8 +287,8 @@ TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
   prediction_model_store_->UpdateMetadataForExistingModel(
       kTestOptimizationTargetFoo, model_cache_key, model_info);
   RunUntilIdle();
-  auto metadata_entry = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-      local_state_prefs_.get(), kTestOptimizationTargetFoo, model_cache_key);
+  auto metadata_entry =
+      ledger_.GetEntryIfExists(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_LE(base::Minutes(99),
             metadata_entry->GetExpiryTime() - base::Time::Now());
   EXPECT_EQ(
@@ -375,9 +375,7 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemoved) {
   EXPECT_FALSE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_FALSE(base::PathExists(
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
-  EXPECT_TRUE(
-      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-          .empty());
+  EXPECT_TRUE(ledger_.GetPathsToDelete().empty());
 }
 
 TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
@@ -408,13 +406,10 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_TRUE(base::PathExists(
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
-  EXPECT_EQ(1U, local_state_prefs_
-                    ->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-                    .size());
-  EXPECT_TRUE(
-      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-          .FindBool(FilePathToString(ConvertToRelativePath(
-              temp_models_dir_.GetPath(), model_detail.base_model_dir))));
+  EXPECT_EQ(1U, ledger_.GetPathsToDelete().size());
+  EXPECT_TRUE(ledger_.GetPathsToDelete().FindBool(
+      FilePathToString(ConvertToRelativePath(temp_models_dir_.GetPath(),
+                                             model_detail.base_model_dir))));
 
   // Recreate the store and it will remove the model slated for deletion
   // earlier.
@@ -423,9 +418,7 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   EXPECT_FALSE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_FALSE(base::PathExists(
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
-  EXPECT_TRUE(
-      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-          .empty());
+  EXPECT_TRUE(ledger_.GetPathsToDelete().empty());
 }
 
 TEST_F(PredictionModelStoreTest, OldModelRemovedOnNewModelUpdate) {
@@ -458,22 +451,17 @@ TEST_F(PredictionModelStoreTest, OldModelRemovedOnNewModelUpdate) {
       PredictionModelStoreModelRemovalReason::kNewModelUpdate, 1);
   EXPECT_TRUE(base::PathExists(
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
-  EXPECT_EQ(1U, local_state_prefs_
-                    ->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-                    .size());
-  EXPECT_TRUE(
-      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-          .FindBool(FilePathToString(ConvertToRelativePath(
-              temp_models_dir_.GetPath(), model_detail.base_model_dir))));
+  EXPECT_EQ(1U, ledger_.GetPathsToDelete().size());
+  EXPECT_TRUE(ledger_.GetPathsToDelete().FindBool(
+      FilePathToString(ConvertToRelativePath(temp_models_dir_.GetPath(),
+                                             model_detail.base_model_dir))));
 
   // Recreate the store and it will remove the old model slated for deletion.
   CreateAndInitializePredictionModelStore();
   RunUntilIdle();
   EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
                                                 model_cache_key));
-  EXPECT_TRUE(
-      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
-          .empty());
+  EXPECT_TRUE(ledger_.GetPathsToDelete().empty());
 }
 
 TEST_F(PredictionModelStoreTest, InvalidModelDirModelRemoved) {

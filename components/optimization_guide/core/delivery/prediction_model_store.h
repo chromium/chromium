@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/model_enums.h"
+#include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 class PrefService;
@@ -144,13 +145,12 @@ class PredictionModelStore {
   void CleanUpOldModelFiles();
 
   // Invoked when model files gets deleted.
-  void OnFilePathDeleted(const std::string& path_to_delete, bool success);
+  void OnFilePathDeleted(const base::FilePath& path_to_delete, bool success);
 
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const raw_ref<PrefService, DanglingUntriaged> local_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ModelStoreLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
