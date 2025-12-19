@@ -13063,24 +13063,6 @@
             ]
         }
     ],
-    "IOSBestFeaturesScreenInFirstRun": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_GeneralScreenAfterDBP",
-                    "params": {
-                        "BestFeaturesScreenInFirstRunParam": "1"
-                    },
-                    "enable_features": [
-                        "BestFeaturesScreenInFirstRunExperience"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBottomMultilineOmnibox": [
         {
             "platforms": [
@@ -28576,6 +28558,27 @@
                     ],
                     "disable_features": [
                         "BreakoutBoxConversionWithoutSinkSignal"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WelcomeBack": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "WelcomeBackParam": "1"
+                    },
+                    "enable_features": [
+                        "WelcomeBack"
+                    ],
+                    "disable_features": [
+                        "BestFeaturesScreenInFirstRunExperience"
                     ]
                 }
             ]
