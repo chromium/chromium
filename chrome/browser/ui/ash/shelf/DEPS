@@ -66,6 +66,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_(browser|unit)test\\.cc": [
+    "+chrome/browser/ash/login/test/guest_session_mixin.h",
     "+chrome/browser/ash/system_web_apps/test_support",
     "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/extensions/extension_browsertest.h",
