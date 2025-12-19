@@ -33,6 +33,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
@@ -55,7 +56,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     actions::ActionItem* root_action_item,
     BrowserWindowInterface* browser)
     : tab_strip_model_(browser->GetTabStripModel()),
-      state_controller_(state_controller) {
+      state_controller_(state_controller),
+      resize_animation_(this) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
@@ -85,6 +87,17 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   resize_area_ = AddChildView(std::make_unique<views::ResizeArea>(this));
   resize_area_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
+  resize_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(450)));
+  resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
+  resize_animation_.Reset(!state_controller_->IsCollapsed());
+
+  target_collapse_state_ = state_controller_->GetState();
+  SetPreferredSize(gfx::Size(target_collapse_state_.collapsed
+                                 ? kCollapsedWidth
+                                 : target_collapse_state_.uncollapsed_width,
+                             0));
+  OnCollapsedStateChanged(state_controller_);
   collapsed_state_changed_subscription_ =
       state_controller_->RegisterOnStateChanged(base::BindRepeating(
           &VerticalTabStripRegionView::OnCollapsedStateChanged,
@@ -125,53 +138,8 @@ void VerticalTabStripRegionView::Layout(PassKey) {
                                         kResizeAreaWidth, bounds().height()));
 }
 
-gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  // TODO(https://crbug.com/439961053): Preferred size when not collapsed should
-  // be based on user preference, but hard-code for now.
-  constexpr int kNonCollapsedSize = 240;
-
-  gfx::Size preferred_size =
-      AccessiblePaneView::CalculatePreferredSize(available_size);
-  if (!state_controller_->IsCollapsed()) {
-    preferred_size.set_width(
-        std::max(preferred_size.width(), kNonCollapsedSize));
-  }
-  return preferred_size;
-}
-
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
   return top_button_container_;
-}
-
-void VerticalTabStripRegionView::OnResize(int resize_amount,
-                                          bool done_resizing) {
-  if (!starting_width_on_resize_.has_value()) {
-    starting_width_on_resize_ = width();
-  }
-  int proposed_width = starting_width_on_resize_.value() + resize_amount;
-  if (done_resizing) {
-    starting_width_on_resize_ = std::nullopt;
-  }
-
-  // Clamp the proposed width to the min/max expanded widths.
-  proposed_width =
-      std::clamp(proposed_width, kExpandedMinWidth, kExpandedMaxWidth);
-
-  if (width() != proposed_width) {
-    SetPreferredSize(gfx::Size(proposed_width, 0));
-  }
-}
-
-bool VerticalTabStripRegionView::IsPositionInWindowCaption(
-    const gfx::Point& point) {
-  gfx::Point point_in_target = point;
-  views::View::ConvertPointToTarget(this, top_button_container_,
-                                    &point_in_target);
-  if (top_button_container_->HitTestPoint(point_in_target)) {
-    return top_button_container_->IsPositionInWindowCaption(point_in_target);
-  }
-  return false;
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
@@ -271,6 +239,58 @@ void VerticalTabStripRegionView::SetTabStripObserver(
   // Do nothing.
 }
 
+void VerticalTabStripRegionView::OnResize(int resize_amount,
+                                          bool done_resizing) {
+  if (!starting_width_on_resize_.has_value()) {
+    starting_width_on_resize_ = width();
+  }
+  const int proposed_width = starting_width_on_resize_.value() + resize_amount;
+  if (done_resizing) {
+    starting_width_on_resize_ = std::nullopt;
+  }
+
+  tabs::VerticalTabStripState new_state;
+  if (proposed_width > kCollapseSnapWidth) {
+    new_state.collapsed = false;
+    new_state.uncollapsed_width =
+        std::clamp(proposed_width, kUncollapsedMinWidth, kUncollapsedMaxWidth);
+    if (done_resizing) {
+      // We only want to save the uncollapsed width to the state controller if
+      // the user has lifted their mouse, otherwise dragging the resize area to
+      // collapse will cause a subsequent collapse button click to only expand
+      // to the minimum expanded width, and not to the starting width of the
+      // drag-to-collapse operation.
+      state_controller_->SetUncollapsedWidth(new_state.uncollapsed_width);
+    }
+  } else {
+    new_state.collapsed = true;
+    new_state.uncollapsed_width = target_collapse_state_.uncollapsed_width;
+  }
+
+  UpdateCollapseState(new_state);
+}
+
+void VerticalTabStripRegionView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(animation, &resize_animation_);
+  double width = kCollapsedWidth +
+                 (target_collapse_state_.uncollapsed_width - kCollapsedWidth) *
+                     resize_animation_.GetCurrentValue();
+  ResizeToWidth((resize_animation_.IsShowing() ? std::floor<double>
+                                               : std::ceil<double>)(width));
+}
+
+bool VerticalTabStripRegionView::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  gfx::Point point_in_target = point;
+  views::View::ConvertPointToTarget(this, top_button_container_,
+                                    &point_in_target);
+  if (top_button_container_->HitTestPoint(point_in_target)) {
+    return top_button_container_->IsPositionInWindowCaption(point_in_target);
+  }
+  return false;
+}
+
 void VerticalTabStripRegionView::CreateTabStripController(
     BrowserView* browser_view) {
   std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
@@ -301,6 +321,7 @@ void VerticalTabStripRegionView::SetToolbarHeightForLayout(
 
 void VerticalTabStripRegionView::SetExclusionWidthForLayout(
     const int exclusion_width) {
+  exclusion_width_ = exclusion_width;
   top_button_container_->SetExclusionWidthForLayout(exclusion_width);
 }
 
@@ -327,8 +348,50 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 
 void VerticalTabStripRegionView::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* state_controller) {
-  tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
+  if (target_collapse_state_.collapsed != state_controller->IsCollapsed()) {
+    // UpdateCollapseState is responsible for setting the collapsed state of the
+    // state controller due to a resizing operation. To avoid reentrancy in that
+    // case, only update the collapse state if the state controller's collapse
+    // state is different than the current target collapse state, which can
+    // happen due to the collapse button being pressed.
+    UpdateCollapseState(state_controller_->GetState());
+  }
+  if (tab_strip_view_) {
+    tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
+  }
   bottom_button_container_->OnCollapsedStateChanged(state_controller);
+}
+
+void VerticalTabStripRegionView::UpdateCollapseState(
+    tabs::VerticalTabStripState new_state) {
+  bool previously_collapsed = target_collapse_state_.collapsed;
+  target_collapse_state_ = new_state;
+  if (previously_collapsed != target_collapse_state_.collapsed) {
+    if (target_collapse_state_.collapsed) {
+      resize_animation_.Hide();
+    } else {
+      resize_animation_.Show();
+    }
+  } else if (!target_collapse_state_.collapsed &&
+             !resize_animation_.is_animating()) {
+    // If we are still in the expanding animation, resizing to the updated
+    // uncollapsed width will happen in AnimationProgressed, instead of here.
+    ResizeToWidth(target_collapse_state_.uncollapsed_width);
+  }
+}
+
+void VerticalTabStripRegionView::ResizeToWidth(int width) {
+  // The collapsed state of the state controller is used to determine whether
+  // the tab strip includes the exclusion zone or is drawn underneath it. So
+  // instead of setting it immediately upon starting the resize animation, only
+  // do so once it crosses the exclusion width threshold.
+  if (!exclusion_width_.has_value() ||
+      target_collapse_state_.collapsed == width < exclusion_width_.value()) {
+    state_controller_->SetCollapsed(target_collapse_state_.collapsed);
+  }
+
+  // BrowserViewLayout uses the preferred size's width. The height is not used.
+  SetPreferredSize(gfx::Size(width, 0));
 }
 
 void VerticalTabStripRegionView::UpdateBackgroundColors() {
