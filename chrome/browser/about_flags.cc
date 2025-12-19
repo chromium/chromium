@@ -5048,6 +5048,16 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
      std::size(kMobilePromoOnDesktopAutofillNotification), nullptr},
 };
 
+const FeatureEntry::FeatureVariation
+    kMobilePromoOnDesktopWithQRCodeVariations[] = {
+        {" - Lens Promo", kMobilePromoOnDesktopLens,
+         std::size(kMobilePromoOnDesktopLens), nullptr},
+        {" - ESB", kMobilePromoOnDesktopESB,
+         std::size(kMobilePromoOnDesktopESB), nullptr},
+        {" - PW Autofill", kMobilePromoOnDesktopAutofill,
+         std::size(kMobilePromoOnDesktopAutofill), nullptr},
+};
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnEveryNTP[] = {
@@ -12869,11 +12879,18 @@ const FeatureEntry kFeatureEntries[] = {
          kMobilePromoOnDesktopForcePromoType,
          kMobilePromoOnDesktopForcePromoTypeVariations,
          "MobilePromoOnDesktopForcePromo")},
-    {"mobile-promo-on-desktop", flag_descriptions::kMobilePromoOnDesktopName,
-     flag_descriptions::kMobilePromoOnDesktopDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktop,
+    {"mobile-promo-on-desktop-with-qr-code",
+     flag_descriptions::kMobilePromoOnDesktopWithQRCodeName,
+     flag_descriptions::kMobilePromoOnDesktopWithQRCodeDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithQRCode,
+                                    kMobilePromoOnDesktopWithQRCodeVariations,
+                                    "MobilePromoOnDesktopWithQRCode")},
+    {"mobile-promo-on-desktop-with-reminder",
+     flag_descriptions::kMobilePromoOnDesktopWithReminderName,
+     flag_descriptions::kMobilePromoOnDesktopWithReminderDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminder,
                                     kMobilePromoOnDesktopVariations,
-                                    "MobilePromoOnDesktop")},
+                                    "MobilePromoOnDesktopWithReminder")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"reintroduce-hybrid-passkey-entry-point",

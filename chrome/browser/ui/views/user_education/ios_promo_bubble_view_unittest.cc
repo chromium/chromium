@@ -96,7 +96,8 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "1"}}},
+        {{kMobilePromoOnDesktopWithReminder,
+          {{kMobilePromoOnDesktopPromoTypeParam, "1"}}},
          {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         {});
     profile_ = std::make_unique<TestingProfile>();
@@ -200,7 +201,7 @@ TEST_F(IOSPromoBubbleViewTest, CancelCallsNotifyUserAction_QRCode) {
 // confirmation state.
 // 2. Second "Accept" ("Got it") closes the bubble.
 TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(kMobilePromoOnDesktop));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kMobilePromoOnDesktopWithReminder));
   ASSERT_TRUE(base::FeatureList::IsEnabled(
       sync_preferences::features::kEnableCrossDevicePrefTracker));
 

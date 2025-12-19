@@ -49,7 +49,8 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
   CrossPlatformPromosServiceTest() {
     feature_list_.InitWithFeatures(
         {sync_preferences::features::kEnableCrossDevicePrefTracker,
-         kMobilePromoOnDesktopRecordActiveDays, kMobilePromoOnDesktop},
+         kMobilePromoOnDesktopRecordActiveDays,
+         kMobilePromoOnDesktopWithReminder},
         {});
 
     TestProfileIOS::Builder builder;

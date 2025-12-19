@@ -38,6 +38,8 @@ class IOSPromoController {
  private:
   void OnPromoTriggered(desktop_to_mobile_promos::PromoType promo_type);
 
+  bool ShouldShowPromo(desktop_to_mobile_promos::PromoType promo_type);
+
   const raw_ptr<Browser> browser_;
 
   base::CallbackListSubscription promo_trigger_subscription_;

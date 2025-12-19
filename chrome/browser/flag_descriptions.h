@@ -2732,9 +2732,17 @@ inline constexpr char kMobilePromoOnDesktopForcePromoTypeDescription[] =
     "Force the iOS promo to be a specific type (QRCode or Reminder) for "
     "testing purposes.";
 
-inline constexpr char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
-inline constexpr char kMobilePromoOnDesktopDescription[] =
-    "When enabled, shows a mobile promo on the desktop new tab page.";
+inline constexpr char kMobilePromoOnDesktopWithReminderName[] =
+    "Mobile Promo On Desktop - Reminder";
+inline constexpr char kMobilePromoOnDesktopWithReminderDescription[] =
+    "When enabled, shows a mobile promo with a reminder flow on desktop for "
+    "eligible users.";
+
+inline constexpr char kMobilePromoOnDesktopWithQRCodeName[] =
+    "Mobile Promo On Desktop - QRCode";
+inline constexpr char kMobilePromoOnDesktopWithQRCodeDescription[] =
+    "When enabled, shows a mobile promo with a QR code on desktop for eligible "
+    "users.";
 
 inline constexpr char kMojoUseEventFdName[] =
     "Notify about new Mojo Channel messages using eventfd";

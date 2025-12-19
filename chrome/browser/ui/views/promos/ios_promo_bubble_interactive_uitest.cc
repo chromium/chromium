@@ -42,7 +42,8 @@ class IOSPromoBubbleBrowserTest
   void SetUp() override {
     // Enable the non-IPH features.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+        {{kMobilePromoOnDesktopWithReminder,
+          {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
          {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         {});
 

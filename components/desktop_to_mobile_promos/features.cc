@@ -7,9 +7,13 @@
 #include "build/build_config.h"
 #include "components/sync_preferences/features.h"
 
-BASE_FEATURE(kMobilePromoOnDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMobilePromoOnDesktopWithReminder,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMobilePromoOnDesktopRecordActiveDays,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMobilePromoOnDesktopWithQRCode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMobilePromoOnDesktopForcePromoType,
@@ -26,7 +30,8 @@ const char kMobilePromoOnDesktopForcePromoTypeParam[] =
 bool MobilePromoOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(
              sync_preferences::features::kEnableCrossDevicePrefTracker) &&
-         base::FeatureList::IsEnabled(kMobilePromoOnDesktop);
+         (base::FeatureList::IsEnabled(kMobilePromoOnDesktopWithReminder) ||
+          base::FeatureList::IsEnabled(kMobilePromoOnDesktopWithQRCode));
 }
 
 bool IsMobilePromoOnDesktopRecordActiveDaysEnabled() {
@@ -41,10 +46,35 @@ bool MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType type) {
   if (!MobilePromoOnDesktopEnabled()) {
     return false;
   }
+  return MobilePromoOnDesktopTypeEnabled(
+             type, desktop_to_mobile_promos::BubbleType::kQRCode) ||
+         MobilePromoOnDesktopTypeEnabled(
+             type, desktop_to_mobile_promos::BubbleType::kReminder);
+}
+
+bool MobilePromoOnDesktopTypeEnabled(
+    MobilePromoOnDesktopPromoType type,
+    desktop_to_mobile_promos::BubbleType bubble_type) {
+  const base::Feature* feature = nullptr;
+  switch (bubble_type) {
+    case desktop_to_mobile_promos::BubbleType::kQRCode:
+      feature = &kMobilePromoOnDesktopWithQRCode;
+      break;
+    case desktop_to_mobile_promos::BubbleType::kReminder:
+    case desktop_to_mobile_promos::BubbleType::kReminderConfirmation:
+      feature = &kMobilePromoOnDesktopWithReminder;
+      break;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          sync_preferences::features::kEnableCrossDevicePrefTracker) ||
+      !base::FeatureList::IsEnabled(*feature)) {
+    return false;
+  }
 
   auto enabled_promo_type = static_cast<MobilePromoOnDesktopPromoType>(
       base::GetFieldTrialParamByFeatureAsInt(
-          kMobilePromoOnDesktop, kMobilePromoOnDesktopPromoTypeParam,
+          *feature, kMobilePromoOnDesktopPromoTypeParam,
           static_cast<int>(MobilePromoOnDesktopPromoType::kAllPromos)));
 
   if (enabled_promo_type == MobilePromoOnDesktopPromoType::kAllPromos) {
@@ -56,7 +86,8 @@ bool MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType type) {
 
 bool IsMobilePromoOnDesktopNotificationsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kMobilePromoOnDesktop, kMobilePromoOnDesktopNotificationParam, false);
+      kMobilePromoOnDesktopWithReminder, kMobilePromoOnDesktopNotificationParam,
+      false);
 }
 
 IOSPromoBubbleForceType GetMobilePromoOnDesktopForcePromoType() {

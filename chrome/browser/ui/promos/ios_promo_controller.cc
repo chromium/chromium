@@ -77,25 +77,9 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
   }
 
   if (GetMobilePromoOnDesktopForcePromoType() ==
-      IOSPromoBubbleForceType::kNoOverride) {
-    // Don't show the promo if the user has a recent active Android device.
-    if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
-      return;
-    }
-
-    // Do not show the promo if the user does not meet one of the two
-    // conditions:
-    // 1. Does not have Chrome installed on any iOS device
-    // 2. Is active for no more than 16 days in the last 28
-    IOSPromoTriggerService* service =
-        IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
-    if (!service) {
-      return;
-    }
-    const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
-    if (device && ios_promos_utils::IsUserActiveOnIOS(browser_->profile())) {
-      return;
-    }
+          IOSPromoBubbleForceType::kNoOverride &&
+      !ShouldShowPromo(promo_type)) {
+    return;
   }
 
   auto* user_education_interface =
@@ -104,4 +88,58 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
     user_education_interface->MaybeShowFeaturePromo(
         FeatureForIOSPromoType(promo_type));
   }
+}
+
+// Returns true if the promo should be shown based on user eligibility criteria.
+// Only show the promo if the user meets one of the two conditions:
+// 1. kMobilePromoOnDesktop is enabled AND has a "not very active" iOS device
+// 2. kMobilePromoOnDesktopWithQRCode is enabled AND does not have Chrome
+// installed on any iOS device
+bool IOSPromoController::ShouldShowPromo(PromoType promo_type) {
+  // Don't show the promo if the user has a recent active Android device.
+  if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
+    return false;
+  }
+
+  MobilePromoOnDesktopPromoType feature_type;
+  switch (promo_type) {
+    case PromoType::kPassword:
+      feature_type = MobilePromoOnDesktopPromoType::kAutofillPromo;
+      break;
+    case PromoType::kEnhancedBrowsing:
+      feature_type = MobilePromoOnDesktopPromoType::kESBPromo;
+      break;
+    case PromoType::kLens:
+      feature_type = MobilePromoOnDesktopPromoType::kLensPromo;
+      break;
+    case PromoType::kAddress:
+    case PromoType::kPayment:
+      // These promos are not yet supported in this flow.
+      return false;
+  }
+
+  IOSPromoTriggerService* service =
+      IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
+  if (!service) {
+    return false;
+  }
+  const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
+
+  // Check if user is eligible for Reminder type promo.
+  // TODO(crbug.com/470198750): Check for the feature's status on the iOS
+  // device once we add the feature flag value to the DeviceInfo.
+  if (device && !ios_promos_utils::IsUserActiveOnIOS(browser_->profile()) &&
+      MobilePromoOnDesktopTypeEnabled(
+          feature_type, desktop_to_mobile_promos::BubbleType::kReminder)) {
+    return true;
+  }
+
+  // Check if user is eligible for QRCode type promo.
+  if (!device &&
+      MobilePromoOnDesktopTypeEnabled(
+          feature_type, desktop_to_mobile_promos::BubbleType::kQRCode)) {
+    return true;
+  }
+
+  return false;
 }

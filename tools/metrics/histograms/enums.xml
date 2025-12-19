@@ -12244,6 +12244,7 @@ from previous Chrome versions.
   <int value="-744159181" label="disable-spdy-proxy-dev-auth-origin"/>
   <int value="-744037223" label="BluetoothQualityReport:enabled"/>
   <int value="-743590125" label="TabEngagementReportingAndroid:enabled"/>
+  <int value="-743504893" label="MobilePromoOnDesktopWithQRCode:enabled"/>
   <int value="-743103250" label="enable-linkable-ephemeral-apps"/>
   <int value="-742730757" label="VulkanFromANGLE:disabled"/>
   <int value="-742469530" label="DriveFS:disabled"/>
@@ -14382,6 +14383,7 @@ from previous Chrome versions.
   <int value="3001424" label="FeatureNotificationGuide:enabled"/>
   <int value="3058782" label="EnableGamepadMultitouch:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
+  <int value="3807825" label="MobilePromoOnDesktopWithQRCode:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>
@@ -15728,7 +15730,6 @@ from previous Chrome versions.
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
   <int value="470307075" label="MessagesForAndroidChromeSurvey:enabled"/>
-  <int value="470645069" label="MobilePromoOnDesktop:enabled"/>
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>
@@ -17491,7 +17492,6 @@ from previous Chrome versions.
   <int value="1093305266"
       label="AutofillRemovePaymentsButterDropdown:disabled"/>
   <int value="1093479250" label="AccessibilitySelectToSpeakShortcut:disabled"/>
-  <int value="1093750833" label="MobilePromoOnDesktop:disabled"/>
   <int value="1093763764" label="SafeSitesFilterBehaviorPolicyAndroid:enabled"/>
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>
@@ -18953,6 +18953,7 @@ from previous Chrome versions.
   <int value="1591653786" label="SpeculativePreconnect:enabled"/>
   <int value="1591780364" label="EcheCustomWidget:disabled"/>
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
+  <int value="1592404531" label="MobilePromoOnDesktopWithReminder:enabled"/>
   <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
   <int value="1592642621" label="TabletToolbarReordering:disabled"/>
   <int value="1592843279" label="WebXrSharedBuffers:enabled"/>
@@ -20482,6 +20483,7 @@ from previous Chrome versions.
   <int value="2108402242"
       label="FillingAcrossAffiliatedWebsitesAndroid:disabled"/>
   <int value="2108461166" label="LanguagePacksInSettings:disabled"/>
+  <int value="2109456245" label="MobilePromoOnDesktopWithReminder:disabled"/>
   <int value="2109483186" label="OmniboxSteadyStateTextColor:disabled"/>
   <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>

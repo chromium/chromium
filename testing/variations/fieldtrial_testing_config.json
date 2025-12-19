@@ -16097,7 +16097,39 @@
             ]
         }
     ],
-    "MobilePromoOnDesktop": [
+    "MobilePromoOnDesktopDataCollection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MobilePromoOnDesktopRecordActiveDays"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MobilePromoOnDesktopWithQRCode": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MobilePromoOnDesktopWithQRCode"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MobilePromoOnDesktopWithReminder": [
         {
             "platforms": [
                 "ios",
@@ -16109,22 +16141,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MobilePromoOnDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MobilePromoOnDesktopDataCollection": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MobilePromoOnDesktopRecordActiveDays"
+                        "MobilePromoOnDesktopWithReminder"
                     ]
                 }
             ]

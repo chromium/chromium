@@ -130,7 +130,8 @@ class SafetyHubHandlerTest : public testing::Test {
           {}},
          {features::kSafetyHubExtensionsUwSTrigger, {}},
          {features::kSafetyHubExtensionsOffStoreTrigger, {}},
-         {kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+         {kMobilePromoOnDesktopWithReminder,
+          {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
          {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         /*disabled_features=*/{});
   }
