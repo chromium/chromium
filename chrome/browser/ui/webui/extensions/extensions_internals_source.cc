@@ -158,7 +158,7 @@ base::Value::List CreationFlagsToList(int creation_flags) {
 
 base::Value::List DisableReasonsToList(
     const extensions::DisableReasonSet& disable_reasons) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 26,
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 27,
                 "Please add your new disable reason here.");
 
   base::Value::List disable_reasons_value;
@@ -239,6 +239,10 @@ base::Value::List DisableReasonsToList(
   if (disable_reasons.contains(extensions::disable_reason::
                                    DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION)) {
     disable_reasons_value.Append("DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION");
+  }
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK)) {
+    disable_reasons_value.Append("DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK");
   }
   if (disable_reasons.contains(extensions::disable_reason::DISABLE_UNKNOWN)) {
     disable_reasons_value.Append("DISABLE_UNKNOWN");
