@@ -127,6 +127,10 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // Returns true if the child should be moved.
   bool ShouldMoveChild(views::Widget* child);
 
+  // Returns true if there is a bubble anchored to the top container in the
+  // overlay widget.
+  bool HasVisibleBubbleInOverlay() const;
+
   gfx::Insets GetTabStripRegionViewInsets();
 
   // Invoked when the associated browser is closed.

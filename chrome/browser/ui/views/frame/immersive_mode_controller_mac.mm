@@ -305,7 +305,7 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
 }
 
 int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
-  if (find_bar_visible_ &&
+  if ((find_bar_visible_ || HasVisibleBubbleInOverlay()) &&
       !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser()) &&
       !fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
     return overlay_height_;
@@ -405,6 +405,20 @@ void ImmersiveModeControllerMac::MoveChildren(views::Widget* from_widget,
                                         to_widget->GetNativeView());
     }
   }
+}
+
+bool ImmersiveModeControllerMac::HasVisibleBubbleInOverlay() const {
+  if (!browser_view_->overlay_widget()) {
+    return false;
+  }
+  for (views::Widget* widget : views::Widget::GetAllChildWidgets(
+           browser_view_->overlay_widget()->GetNativeView())) {
+    if (widget->IsVisible() && widget->widget_delegate() &&
+        widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
@@ -598,8 +612,21 @@ void ImmersiveModeOverlayWidgetObserver::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   // Update web dialog position when the overlay widget moves by invalidating
-  // the browse view layout.
+  // the browser view layout.
   controller_->browser_view()->InvalidateLayout();
+
+  // The overlay widget moving can affect the position of its child widgets
+  // (e.g. bubbles) relative to their anchors (which might be in the browser
+  // widget). We need to re-anchor them.
+  for (views::Widget* child :
+       views::Widget::GetAllChildWidgets(widget->GetNativeView())) {
+    if (views::WidgetDelegate* widget_delegate = child->widget_delegate()) {
+      if (views::BubbleDialogDelegate* bubble =
+              widget_delegate->AsBubbleDialogDelegate()) {
+        bubble->OnAnchorBoundsChanged();
+      }
+    }
+  }
 }
 
 void ImmersiveModeOverlayWidgetObserver::OnWidgetDestroying(

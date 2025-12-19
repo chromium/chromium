@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -438,4 +441,49 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   // Transition out of fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+}
+
+// Tests that bubbles anchored to the app menu button are correctly re-anchored
+// when entering immersive fullscreen, and that the content offset is updated.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       BubbleAnchoring) {
+  // Disable "Always Show Toolbar in Full Screen"
+  ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* anchor_view = browser_view->toolbar()->app_menu_button();
+
+  // Create and show a bubble anchored to the app menu button.
+  auto delegate = std::make_unique<views::BubbleDialogDelegate>(
+      anchor_view, views::BubbleBorder::TOP_RIGHT);
+  delegate->SetContentsView(std::make_unique<views::View>())
+      ->SetPreferredSize(gfx::Size(100, 100));
+  views::Widget* bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(delegate));
+  bubble_widget->Show();
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  ImmersiveModeControllerMac* controller =
+      static_cast<ImmersiveModeControllerMac*>(
+          ImmersiveModeController::From(browser()));
+
+  // Verify that the bubble caused the toolbar to be revealed.
+  EXPECT_TRUE(controller->IsRevealed());
+
+  // Verify that the content is offset to make room for the toolbar.
+  EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+
+  // Verify the bubble is anchored correctly.
+  gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
+  gfx::Rect bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
+
+  EXPECT_GE(bubble_bounds.y(), anchor_bounds.bottom());
+  EXPECT_GT(bubble_bounds.y(), 0);
+  EXPECT_GT(bubble_bounds.x(), 0);
+
+  bubble_widget->CloseNow();
+
+  // Verify MinimumContentOffset resets to 0.
+  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
 }
