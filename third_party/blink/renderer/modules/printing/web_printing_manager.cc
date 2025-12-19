@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/printing/web_printing_manager.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"

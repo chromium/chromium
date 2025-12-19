@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_manager.h"
 
 #include "base/check_op.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

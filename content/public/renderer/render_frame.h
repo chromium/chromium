@@ -13,7 +13,6 @@
 
 #include "base/byte_count.h"
 #include "base/supports_user_data.h"
-#include "base/task/single_thread_task_runner.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/bindings_policy.h"
@@ -31,6 +30,10 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 class GURL;
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace blink {
 namespace scheduler {

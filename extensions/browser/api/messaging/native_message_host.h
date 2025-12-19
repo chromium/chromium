@@ -8,8 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_ui_types.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace content {
 class BrowserContext;

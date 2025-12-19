@@ -6,11 +6,14 @@
 #define COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 class RefcountedKeyedService;
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace impl {
 

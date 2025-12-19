@@ -19,7 +19,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
@@ -31,6 +30,7 @@
 
 namespace base {
 class FilePath;
+class SequencedTaskRunner;
 
 namespace android {
 class ApplicationStatusListener;

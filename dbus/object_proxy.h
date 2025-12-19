@@ -17,12 +17,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "dbus/dbus_export.h"
 #include "dbus/error.h"
 #include "dbus/object_path.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace dbus {
 
