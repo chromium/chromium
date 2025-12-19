@@ -64,11 +64,11 @@ sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
 
 // Builds PasskeyRequestParams using the default rp id.
 PasskeyRequestParams BuildPasskeyRequestParams() {
-  std::string frame_id = web::kMainFakeFrameId;
-  std::string request_id = kFakeRequestId;
+  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                             kFakeRequestId);
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
-  return PasskeyRequestParams(frame_id, request_id, std::move(rp_entity),
+  return PasskeyRequestParams(std::move(request_info), std::move(rp_entity),
                               std::move(challenge),
                               device::UserVerificationRequirement::kPreferred);
 }

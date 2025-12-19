@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "device/fido/public/public_key_credential_descriptor.h"
 #import "device/fido/public/public_key_credential_rp_entity.h"
 #import "device/fido/public/public_key_credential_user_entity.h"
@@ -20,13 +21,15 @@ namespace webauthn {
 class PasskeyRequestParams {
  public:
   PasskeyRequestParams();
-  PasskeyRequestParams(const std::string& frame_id,
-                       const std::string& request_id,
+  PasskeyRequestParams(IOSPasskeyClient::RequestInfo request_info,
                        device::PublicKeyCredentialRpEntity rp_entity,
                        std::vector<uint8_t> challenge,
                        device::UserVerificationRequirement user_verification);
   PasskeyRequestParams(PasskeyRequestParams&& other);
   ~PasskeyRequestParams();
+
+  // Returns the request information.
+  const IOSPasskeyClient::RequestInfo& RequestInfo() const;
 
   // Returns the web::WebFrame's identifier.
   const std::string& FrameId() const;
@@ -45,10 +48,8 @@ class PasskeyRequestParams {
       bool is_biometric_authentication_enabled) const;
 
  private:
-  // ID associated with the web::WebFrame the request originally came from.
-  const std::string frame_id_;
-  // The request ID associated with a PublicKeyCredential promise.
-  const std::string request_id_;
+  // The request information (frame id, request id).
+  const IOSPasskeyClient::RequestInfo request_info_;
   // The relying party entity, including name and ID.
   const device::PublicKeyCredentialRpEntity rp_entity_;
   // The passkey request's cryptographic challenge.

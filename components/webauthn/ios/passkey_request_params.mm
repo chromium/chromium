@@ -25,16 +25,15 @@ std::set<std::string> GetIdsFromDescriptors(
 }  // namespace
 
 PasskeyRequestParams::PasskeyRequestParams()
-    : user_verification_(device::UserVerificationRequirement::kPreferred) {}
+    : request_info_("", ""),
+      user_verification_(device::UserVerificationRequirement::kPreferred) {}
 
 PasskeyRequestParams::PasskeyRequestParams(
-    const std::string& frame_id,
-    const std::string& request_id,
+    IOSPasskeyClient::RequestInfo request_info,
     device::PublicKeyCredentialRpEntity rp_entity,
     std::vector<uint8_t> challenge,
     device::UserVerificationRequirement user_verification)
-    : frame_id_(frame_id),
-      request_id_(request_id),
+    : request_info_(std::move(request_info)),
       rp_entity_(std::move(rp_entity)),
       challenge_(std::move(challenge)),
       user_verification_(user_verification) {}
@@ -44,12 +43,16 @@ PasskeyRequestParams::PasskeyRequestParams(PasskeyRequestParams&& other) =
 
 PasskeyRequestParams::~PasskeyRequestParams() = default;
 
+const IOSPasskeyClient::RequestInfo& PasskeyRequestParams::RequestInfo() const {
+  return request_info_;
+}
+
 const std::string& PasskeyRequestParams::FrameId() const {
-  return frame_id_;
+  return request_info_.frame_id;
 }
 
 const std::string& PasskeyRequestParams::RequestId() const {
-  return request_id_;
+  return request_info_.request_id;
 }
 
 const std::vector<uint8_t> PasskeyRequestParams::Challenge() const {

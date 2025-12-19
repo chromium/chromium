@@ -202,7 +202,7 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   // Open the suggestion bottom sheet. The delegate's suggestions will be
   // presented in it and will be selectable by the user.
   assertion_requests_.emplace(passkey_request_id, std::move(params));
-  client_->ShowSuggestionBottomSheet({params.FrameId(), passkey_request_id});
+  client_->ShowSuggestionBottomSheet(params.RequestInfo());
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
@@ -229,7 +229,7 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   // the user.
   std::string request_id = params.RequestId();
   registration_requests_.emplace(request_id, std::move(params));
-  client_->ShowCreationBottomSheet({params.FrameId(), std::move(request_id)});
+  client_->ShowCreationBottomSheet(params.RequestInfo());
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,

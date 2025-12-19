@@ -166,18 +166,29 @@ std::vector<device::PublicKeyCredentialDescriptor> ReadCredentials(
   return credential_descriptors;
 }
 
+// Builds a IOSPasskeyClient::RequestInfo object from the parameters contained
+// in the provided dictionary.
+IOSPasskeyClient::RequestInfo BuildRequestInfo(const base::Value::Dict& dict) {
+  const std::string* frame_id = dict.FindString(kFrameId);
+  const std::string* request_id = dict.FindString(kRequestId);
+  if (!frame_id || !request_id) {
+    // Return an invalid request info.
+    return IOSPasskeyClient::RequestInfo("", "");
+  }
+
+  return IOSPasskeyClient::RequestInfo(*frame_id, *request_id);
+}
+
 // Builds a PasskeyRequestParams object from the parameters contained in the
 // provided dictionary.
 PasskeyRequestParams BuildRequestParams(const base::Value::Dict& dict) {
-  const std::string* frame_id = dict.FindString(kFrameId);
-  const std::string* request_id = dict.FindString(kRequestId);
   const base::Value::Dict* request_dict = dict.FindDict(kRequest);
-  if (!frame_id || !request_id || !request_dict) {
+  if (!request_dict) {
     return PasskeyRequestParams();
   }
 
   return PasskeyRequestParams(
-      *frame_id, *request_id, BuildRpEntity(dict.FindDict(kRpEntity)),
+      BuildRequestInfo(dict), BuildRpEntity(dict.FindDict(kRpEntity)),
       Base64Decode(request_dict->FindString(kChallenge)),
       ToUserVerificationRequirement(
           request_dict->FindString(kUserVerification)));

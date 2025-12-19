@@ -25,10 +25,13 @@ class IOSPasskeyClient {
   // Provides information used by bottom sheets to fulfill passkey requests.
   struct RequestInfo {
     RequestInfo(std::string frame_id, std::string request_id);
+    RequestInfo(const RequestInfo& other);
     RequestInfo(RequestInfo&& other);
     ~RequestInfo();
 
+    // The web::WebFrame's identifier.
     std::string frame_id;
+    // The request id associated with a PublicKeyCredential promise.
     std::string request_id;
   };
 
