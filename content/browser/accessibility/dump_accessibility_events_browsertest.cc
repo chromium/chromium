@@ -400,8 +400,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-button-expand.html"));
 }
 
+// TODO(crbug.com/40844027): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxCollapse) {
+                       DISABLED_AccessibilityEventsAriaComboBoxCollapse) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-collapse.html"));
 }
 
