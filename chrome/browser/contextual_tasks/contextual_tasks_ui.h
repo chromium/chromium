@@ -80,6 +80,8 @@ class ContextualTasksUI : public TaskInfoDelegate,
         TaskInfoDelegate* task_info_delegate);
     ~FrameNavObserver() override = default;
 
+    void DidStartNavigation(
+        content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
 
@@ -120,6 +122,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   bool IsShownInTab() override;
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
+  void OnZeroStateChange(bool is_zero_state) override;
 
   // Get the URL of the page currently embedded in this WebUI.
   const GURL& GetInnerFrameUrl() const;

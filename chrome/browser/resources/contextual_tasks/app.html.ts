@@ -12,16 +12,30 @@ import type {ContextualTasksAppElement} from './app.js';
 export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
   ${this.isShownInTab_ ? '' : html`
-      <top-toolbar .title="${this.threadTitle_}"
+      <top-toolbar id="toolbar"
+          .title="${this.threadTitle_}"
           .attachedTabs="${this.contextTabs_}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
   `}
   <error-page id="errorPage"></error-page>
   <webview id="threadFrame"></webview>
-  <contextual-tasks-composebox id="composebox"
-    ?hidden="${!this.showComposebox_}">
-  </contextual-tasks-composebox>
+  <zero-state-overlay
+      id="zeroStateOverlay"
+      .isFirstLoad="${this.isZeroState_}"
+      .isSidePanel="${!this.isShownInTab_}">
+  </zero-state-overlay>
+  <div class="flex-center">
+    <contextual-tasks-composebox id="composebox"
+          ?hidden="${!this.showComposebox_}"
+          .isZeroState="${this.isZeroState_}"
+          .isSidePanel="${!this.isShownInTab_}">
+    </contextual-tasks-composebox>
+  </div>
   <!--_html_template_end_-->`;
 }
 // clang-format on
+
+/* TODO(crbug.com/470105276): Put composebox into composebox
+ * slot for flexbox center formatting instead of temp formatting.
+ */

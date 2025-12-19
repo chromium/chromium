@@ -73,6 +73,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   restoreInput() {
     this.methodCalled('restoreInput');
   }
+
+  onZeroStateChange() {
+    this.methodCalled('onZeroStateChange');
+  }
 }
 
 /**

@@ -66,6 +66,8 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   content::WebContents* GetWebUIWebContents() override { return nullptr; }
 
+  void OnZeroStateChange(bool is_zero_state) override {}
+
  private:
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;

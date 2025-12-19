@@ -9,10 +9,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--cr-fallback-color-surface);
   --color-composebox-cancel-button: rgba(10,10,10, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
   --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
@@ -35,6 +31,7 @@
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
+  --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
@@ -51,12 +48,17 @@
   --remove-button-height: var(--remove-button-width);
   --remove-button-inset-inline-end: calc((var(--thumbnail-chip-width) - var(--thumbnail-chip-icon-size)) / 2);
   --remove-button-width: calc(var(--thumbnail-chip-icon-size) + var(--thumbnail-chip-padding) * 2);
-  --search-background-color: transparent;
+  --search-background-color: rgba(255, 255, 255, 1);
   --search-background-color-rgb: 255, 255, 255;
   --thumbnail-chip-icon-size: 16px;
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--search-background-color);
 }
 
 :host([dark-mode_]) {
@@ -78,6 +80,7 @@
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
+  --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
   --cr-composebox-background-color: rgba(29, 30, 38, 1);
@@ -92,8 +95,8 @@
   --paper-tooltip-text-color: rgba(255, 255, 255, 1);
   --protected-icon-background-color: #E8EAED;
   --remove-button-fill-color: rgba(255, 255, 255, 1);
-  --search-background-color: rgba(12, 20, 23, 1);
-  --search-background-color-rgb: 12, 20, 23;
+  --search-background-color: rgba(16, 18, 23, 1);
+  --search-background-color-rgb: 16, 18, 23;
 }
 
 [hidden] {
@@ -103,7 +106,22 @@
 #threadFrame {
   border: none;
   flex-grow: 1;
-  height: 100%;
+  overflow: hidden;
+}
+
+/* Set height for webview so its layout is
+ * predictable for zero-state overlay.
+ * !important is used, just in case
+ * inner iframe height is not overridden within the webview.
+ */
+:host([is-zero-state_]) #threadFrame {
+  flex-shrink: 0;
+  max-height: 900px !important;
+  min-height: 900px !important;
+}
+
+/* Disable scroll for zero state. */
+:host([is-zero-state_]) {
   overflow: hidden;
 }
 
@@ -118,6 +136,81 @@ error-page {
 }
 
 :host([is-error-page-visible_]) #threadFrame,
-:host([is-error-page-visible_]) contextual-tasks-composebox {
+:host([is-error-page-visible_]) #composebox,
+:host([is-error-page-visible_]) .flex-center {
   visibility: hidden;
+}
+
+:host([is-zero-state_]) #composebox {
+  inset-inline-start: 20px;
+  max-width: 692px;
+  min-width: 200px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+  /* Left/right padding of parent is 20px. */
+  width: calc(100% - 20px);
+}
+
+@media (max-width: 900px) {
+  :host([is-zero-state_]) #composebox {
+    inset-inline-start: 5%;
+    width: calc(90% - 20px);
+  }
+}
+@media (max-width: 650px) {
+  :host([is-zero-state_]) #composebox {
+    inset-inline-start: 7.5%;
+    width: calc(85% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  :host([is-zero-state_]) #composebox {
+    inset-inline-start: 0;
+  }
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
+  /* Since whole window is cut off by around 20px on right in side panel. */
+  margin-right: 40px;
+}
+
+@media (min-width: 750px) {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
+    inset-inline-start: 40px;
+  }
+}
+
+:host([is-zero-state_]) .flex-center {
+  align-items: center;
+  display: flex;
+  /* Height is so aligns with 900px height webview.
+   * TODO(crbug.com/470121831): change this when webview height
+   * changes + 100% overlay incorporated.
+   */
+  height: 780px;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+}
+
+@media (max-width: 512px) {
+  :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+    padding-top: 25px;
+  }
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  padding-top: 40px;
+}
+
+@media (max-width: 367px) {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+    padding-top: 60px;
+  }
+}
+
+#toolbar {
+  z-index: 2;
 }

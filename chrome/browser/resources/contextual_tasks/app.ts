@@ -5,6 +5,7 @@
 import './composebox.js';
 import './error_page.js';
 import './top_toolbar.js';
+import './zero_state_overlay.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -44,26 +45,42 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      isShownInTab_: {type: Boolean},
+      isShownInTab_: {
+        type: Boolean,
+        reflect: true,
+      },
       threadTitle_: {type: String},
       contextTabs_: {type: Array},
       darkMode_: {
         type: Boolean,
         reflect: true,
       },
-      showComposebox_: {type: Boolean, reflect: true},
-      isErrorPageVisible_: {type: Boolean, reflect: true},
+      isErrorPageVisible_: {
+        type: Boolean,
+        reflect: true,
+      },
+      showComposebox_: {
+        type: Boolean,
+        reflect: true,
+      },
+      // Means no queries have been submitted in current AIM thread.
+      isZeroState_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  accessor isShownInTab_: boolean = true;  // Most start in a tab.
+  // Indicates if in tab mode. Most start in a tab.
+  accessor isShownInTab_: boolean = true;
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
   protected accessor showComposebox_: boolean = true;
   protected accessor isErrorPageVisible_: boolean = false;
+  protected accessor isZeroState_: boolean = true;
   private listenerIds_: number[] = [];
   // The OAuth token to use for embedded page requests. Null if not yet set.
   // Can be empty if the user is not signed in or the token couldn't be fetched.
@@ -99,7 +116,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     this.listenerIds_.push(
         this.browserProxy_.callbackRouter.onSidePanelStateChanged.addListener(
-            () => this.updateToolbarVisibility()),
+            () => this.updateSidePanelState()),
         this.browserProxy_.callbackRouter.setThreadTitle.addListener(
             (title: string) => {
               this.threadTitle_ = title;
@@ -123,9 +140,14 @@ export class ContextualTasksAppElement extends CrLitElement {
         }),
         this.browserProxy_.callbackRouter.restoreInput.addListener(() => {
           this.showComposebox_ = true;
-        }));
+        }),
+        this.browserProxy_.callbackRouter.onZeroStateChange.addListener(
+            (isZeroState: boolean) => {
+              this.isZeroState_ = isZeroState;
+            }),
+    );
 
-    this.updateToolbarVisibility();
+    this.updateSidePanelState();
 
     // Fetch the initial common search params.
     this.updateCommonSearchParams();
@@ -201,7 +223,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.postMessageHandler_.completeHandshake();
   }
 
-  private async updateToolbarVisibility() {
+  private async updateSidePanelState() {
     const {isInTab} = await this.browserProxy_.handler.isShownInTab();
     this.isShownInTab_ = isInTab;
   }
