@@ -88,6 +88,13 @@ export function getPathRelativeToRoot(): string {
 }
 
 /**
+ * Returns whether the camera app saves files on cloud.
+ */
+export function isCloudDestination(): boolean {
+  return loadTimeData.getBoolean('cloud_destination');
+}
+
+/**
  * Returns the OS version string.
  */
 export function getOsVersion(): string {

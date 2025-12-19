@@ -190,6 +190,33 @@ enum AspectRatio {
   k16To9 = 2,
 };
 
+// Type of captured file.
+enum FileType {
+  kPhoto,   // Still photo (jpeg).
+  kVideo,   // Mp4 video.
+  kGif,     // Gif animation.
+};
+
+// File to be uploaded to the cloud.
+struct CloudUpload {
+  string file_name;
+
+  // Thumbnail data in PNG bytes to be used for upload notifications.
+  array<uint8> thumbnail;
+};
+
+// Local file saved in My Files Camera folder.
+struct LocalFile {
+  string file_name;
+};
+
+// Destination of the captured file.
+union CaptureDestination {
+  CloudUpload cloud_upload;
+  LocalFile local_file;
+};
+
+
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -248,10 +275,13 @@ interface CameraAppHelper {
   GetWindowStateController()
       => (pending_remote<WindowStateController> controller);
 
-  // Sends broadcast when a picture/video is captured. |is_video| is true if a
-  // video is captured and false for a picture. |name| is the file name which
-  // will be used to generate the URI for the broadcast.
-  SendNewCaptureBroadcast(bool is_video, string name);
+  // Post-processes the file in the browser, i.e. uploads the file in case of
+  // cloud upload and sends an android broadcast. `file_type` is the type of
+  // captured file and `destination` indicates where the file should be stored,
+  // including a thumbnail in the case of cloud upload. Returns true if the
+  // post-processing is successful on the browser/handler side.
+  ProcessCapturedFile(FileType file_type, CaptureDestination destination)
+      => (bool succeeded);
 
   // Monitors the deletion for given file |name| in the camera folder. The
   // function will return when the deletion happens, or when another monitor

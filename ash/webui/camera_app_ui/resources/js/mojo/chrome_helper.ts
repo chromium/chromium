@@ -20,11 +20,15 @@ import {
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraIntentAction,
+  CaptureDestination,
+  CloudUpload,
   EventsSenderRemote,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  FileType,
   LidState,
   LidStateMonitorCallbackRouter,
+  LocalFile,
   OcrResult,
   PdfBuilderRemote,
   Rotation,
@@ -234,10 +238,14 @@ export abstract class ChromeHelper {
   abstract isMetricsAndCrashReportingEnabled(): Promise<boolean>;
 
   /**
-   * Sends the broadcast to ARC to notify the new photo/video is captured.
+   * Notifies completion of capture.
+   * Also sends the broadcast to ARC to notify the new photo/video is captured.
    */
-  abstract sendNewCaptureBroadcast(args: {isVideo: boolean, name: string}):
-      void;
+  abstract processCapturedLocalFile(fileName: string, fileType: FileType):
+      Promise<boolean>;
+
+  abstract processCapturedFileForCloudUpload(
+      fileName: string, fileType: FileType, thumbnail: Blob): Promise<boolean>;
 
   /**
    * Monitors for the file deletion of the file given by its `name` and
@@ -432,10 +440,37 @@ class ChromeHelperImpl extends ChromeHelper {
     return isEnabled;
   }
 
-  override sendNewCaptureBroadcast({isVideo, name}:
-                                       {isVideo: boolean, name: string}): void {
-    this.remote.sendNewCaptureBroadcast(isVideo, name);
+  override async processCapturedLocalFile(fileName: string, fileType: FileType):
+      Promise<boolean> {
+    const localFile: LocalFile = {
+      fileName,
+    };
+    const captureDestination: CaptureDestination = {
+      localFile,
+    };
+    const {succeeded} =
+        await this.remote.processCapturedFile(fileType, captureDestination);
+    return succeeded;
   }
+
+  override async processCapturedFileForCloudUpload(
+      fileName: string,
+      fileType: FileType,
+      thumbnail: Blob,
+      ): Promise<boolean> {
+    const numArray = await createNumArrayFromBlob(thumbnail);
+    const cloudUpload: CloudUpload = {
+      fileName,
+      thumbnail: numArray,
+    };
+    const captureDestination: CaptureDestination = {
+      cloudUpload,
+    };
+    const {succeeded} =
+        await this.remote.processCapturedFile(fileType, captureDestination);
+    return succeeded;
+  }
+
 
   override async monitorFileDeletion(name: string, callback: () => void):
       Promise<void> {

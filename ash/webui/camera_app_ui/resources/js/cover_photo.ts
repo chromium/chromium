@@ -9,6 +9,7 @@ import {extractImageFromBlob} from './thumbnailer.js';
 import {
   ErrorLevel,
   ErrorType,
+  ImageFormat,
   MimeType,
 } from './type.js';
 
@@ -16,17 +17,21 @@ import {
  * Cover photo of gallery button.
  */
 export class CoverPhoto {
+  readonly url: string|null;
+
   /**
    * @param name File name of cover photo.
-   * @param url Url to its cover photo. Might be null if the cover is failed to
-   *     load.
+   * @param blob Blob to its cover photo. Might be null if the cover is failed
+   *     to load.
    * @param draggable If the file type support share by drag/drop cover photo.
    */
   private constructor(
       readonly name: string,
-      readonly url: string|null,
+      readonly blob: Blob|null,
       readonly draggable: boolean,
-  ) {}
+  ) {
+    this.url = blob !== null ? URL.createObjectURL(blob) : null;
+  }
 
   /**
    * Releases resources used by this cover photo.
@@ -40,7 +45,8 @@ export class CoverPhoto {
   /**
    * Creates CoverPhoto objects from photo file.
    */
-  static async create(file: FileAccessEntry): Promise<CoverPhoto|null> {
+  static async create(file: FileAccessEntry, format: ImageFormat):
+      Promise<CoverPhoto|null> {
     const blob = await file.file();
     if (blob.size === 0) {
       reportError(
@@ -52,9 +58,9 @@ export class CoverPhoto {
     }
 
     try {
-      const cover = await extractImageFromBlob(blob);
+      const cover = await extractImageFromBlob(blob, format);
       const draggable = blob.type !== MimeType.MP4;
-      return new CoverPhoto(file.name, URL.createObjectURL(cover), draggable);
+      return new CoverPhoto(file.name, cover, draggable);
     } catch (e) {
       reportError(
           ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,

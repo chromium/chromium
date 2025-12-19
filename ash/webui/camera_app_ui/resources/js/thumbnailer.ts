@@ -6,25 +6,28 @@ import {assertInstanceof} from './assert.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {
   EmptyThumbnailError,
+  ImageFormat,
   LoadError,
   MimeType,
   PlayError,
   PlayMalformedError,
 } from './type.js';
-import {canvasToJpegBlob, newDrawingCanvas} from './util.js';
+import {canvasToImageBlob, newDrawingCanvas} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
- * Converts the element to a jpeg blob by drawing it on a canvas.
+ * Converts the element to an image blob by drawing it on a canvas.
  *
  * @param element Source element.
  * @param width Canvas width.
  * @param height Canvas height.
+ * @param format Image format.
  * @throws {EmptyThumbnailError} Thrown when the data to generate thumbnail is
  *     empty.
  */
-async function elementToJpegBlob(
-    element: CanvasImageSource, width: number, height: number): Promise<Blob> {
+async function elementToImageBlob(
+    element: CanvasImageSource, width: number, height: number,
+    format: ImageFormat): Promise<Blob> {
   const {canvas, ctx} = newDrawingCanvas({width, height});
   ctx.drawImage(element, 0, 0, width, height);
 
@@ -34,7 +37,7 @@ async function elementToJpegBlob(
     throw new EmptyThumbnailError();
   }
 
-  return canvasToJpegBlob(canvas);
+  return canvasToImageBlob(canvas, format);
 }
 
 /**
@@ -119,15 +122,17 @@ async function loadImageBlob(blob: Blob): Promise<HTMLImageElement> {
  * @param blob Blob of video to be scaled.
  * @param width Target width.
  * @param height Target height. Preserve the aspect ratio if not set.
+ * @param format Image format.
  * @return Promise of the thumbnail as a jpeg blob.
  */
 async function scaleVideo(
-    blob: Blob, width: number, height?: number): Promise<Blob> {
+    blob: Blob, width: number, height?: number,
+    format: ImageFormat = ImageFormat.JPEG): Promise<Blob> {
   const el = await loadVideoBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.videoHeight / el.videoWidth);
   }
-  return elementToJpegBlob(el, width, height);
+  return elementToImageBlob(el, width, height, format);
 }
 
 /**
@@ -136,15 +141,17 @@ async function scaleVideo(
  * @param blob Blob of image to be scaled.
  * @param width Target width.
  * @param height Target height. Preserve the aspect ratio if not set.
+ * @param format Image format.
  * @return Promise of the thumbnail as a jpeg blob.
  */
 export async function scaleImage(
-    blob: Blob, width: number, height?: number): Promise<Blob> {
+    blob: Blob, width: number, height?: number,
+    format: ImageFormat = ImageFormat.JPEG): Promise<Blob> {
   const el = await loadImageBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.naturalHeight / el.naturalWidth);
   }
-  return elementToJpegBlob(el, width, height);
+  return elementToImageBlob(el, width, height, format);
 }
 
 /**
@@ -158,23 +165,38 @@ class InvalidBlobTypeError extends Error {
 }
 
 /**
- * For non-video type cover, keeps the original size as possible to support drag
- * drop share. Scales video type which don't support drag drop share.
+ * For non-video type cover when not converting to png, keeps the original size
+ * as possible to support drag drop share. Scales video type which don't support
+ * drag drop share and also non-video png conversions used in camera upload
+ * notifications.
  */
-const VIDEO_COVER_WIDTH = 240;
+const COVER_WIDTH = 360;
+const COVER_HEIGHT = 240;
 
 /**
  * Extracts image blob from an arbitrary type of blob.
+ *
+ * @param blob Blob to be extracted.
+ * @param format Image format.
  */
-export async function extractImageFromBlob(blob: Blob): Promise<Blob> {
+export async function extractImageFromBlob(
+    blob: Blob, format: ImageFormat): Promise<Blob> {
   switch (blob.type) {
     case MimeType.GIF:
     case MimeType.JPEG:
-      return blob;
+    case MimeType.PNG:
+      return format === ImageFormat.PNG ?
+          scaleImage(blob, COVER_WIDTH, COVER_HEIGHT, ImageFormat.PNG) :
+          blob;
     case MimeType.MP4:
-      return scaleVideo(blob, VIDEO_COVER_WIDTH);
-    case MimeType.PDF:
-      return ChromeHelper.getInstance().renderPdfAsImage(blob);
+      return scaleVideo(blob, COVER_WIDTH, COVER_HEIGHT, format);
+    case MimeType.PDF: {
+      const pdfImageBlob = ChromeHelper.getInstance().renderPdfAsImage(blob);
+      return format === ImageFormat.PNG ?
+          scaleImage(
+              await pdfImageBlob, COVER_WIDTH, COVER_HEIGHT, ImageFormat.PNG) :
+          pdfImageBlob;
+    }
     default:
       throw new InvalidBlobTypeError(blob.type);
   }

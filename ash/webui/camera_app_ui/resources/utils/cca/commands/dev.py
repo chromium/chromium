@@ -91,6 +91,7 @@ class RequestHandler:
             "os_version": "local-dev",
             "textdirection": "ltr",
             "cca_disallowed": False,
+            "cloud_destination": False,
             "super_res": True,
         }
         load_time_data.update(self._load_grd_strings())

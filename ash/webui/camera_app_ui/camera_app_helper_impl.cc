@@ -25,6 +25,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
@@ -361,8 +362,22 @@ void CameraAppHelperImpl::GetWindowStateController(
   std::move(callback).Run(std::move(controller_remote));
 }
 
-void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
-                                                  const std::string& name) {
+void CameraAppHelperImpl::ProcessCapturedFile(
+    camera_app::mojom::FileType file_type,
+    camera_app::mojom::CaptureDestinationPtr destination,
+    ProcessCapturedFileCallback callback) {
+  const std::string& name = destination->is_local_file()
+                                ? destination->get_local_file()->file_name
+                                : destination->get_cloud_upload()->file_name;
+  if (destination->is_cloud_upload()) {
+    const auto thumbnail = gfx::Image::CreateFrom1xPNGBytes(
+        destination->get_cloud_upload()->thumbnail);
+    camera_app_ui_->delegate()->UploadFile(name, thumbnail,
+                                           std::move(callback));
+  } else {
+    // Return success immediately for local files.
+    std::move(callback).Run(true);
+  }
   auto file_path = camera_app_ui_->delegate()->GetFilePathInArcByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Drop the broadcast request due to invalid file path in ARC "
@@ -370,7 +385,8 @@ void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
                << name;
     return;
   }
-  send_broadcast_callback_.Run(is_video, file_path);
+  send_broadcast_callback_.Run(file_type == camera_app::mojom::FileType::kVideo,
+                               file_path);
 }
 
 void CameraAppHelperImpl::MonitorFileDeletion(

@@ -24,6 +24,10 @@ class WebContents;
 class WebUIDataSource;
 }  // namespace content
 
+namespace gfx {
+class Image;
+}
+
 namespace media_device_salt {
 class MediaDeviceSaltService;
 }  // namespace media_device_salt
@@ -120,6 +124,12 @@ class CameraAppUIDelegate {
   virtual void MonitorFileDeletion(
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) = 0;
+
+  // Uploads the file to cloud. The `callback` is called with true if the upload
+  // is successful.
+  virtual void UploadFile(const std::string& name,
+                          const gfx::Image& thumbnail,
+                          base::OnceCallback<void(bool)> callback) = 0;
 
   // Maybe triggers HaTS survey for the camera app if all the conditions match.
   virtual void MaybeTriggerSurvey() = 0;

@@ -91,7 +91,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void OpenUrlInBrowser(const GURL& url) override;
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
-  void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
+  void ProcessCapturedFile(camera_app::mojom::FileType file_type,
+                           camera_app::mojom::CaptureDestinationPtr destination,
+                           ProcessCapturedFileCallback callback) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
   void IsDocumentScannerSupported(

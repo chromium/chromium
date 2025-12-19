@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 
@@ -79,4 +80,12 @@ base::FilePath CameraSaveHandler::GetWritablePath() const {
 
 base::FilePath CameraSaveHandler::GetFinalPath() const {
   return GetWritablePath();
+}
+
+void CameraSaveHandler::UploadFile(const std::string& name,
+                                   const gfx::Image& thumbnail,
+                                   base::OnceCallback<void(bool)> callback) {
+  CHECK_NE(delegate_->GetDestination(), FileSaveDestination::kLocal);
+  // TODO(crbug.com/454152412) Implement this.
+  std::move(callback).Run(false);
 }

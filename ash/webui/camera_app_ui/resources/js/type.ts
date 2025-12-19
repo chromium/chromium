@@ -102,6 +102,15 @@ export enum MimeType {
   JSON = 'application/json',
   MP4 = 'video/mp4',
   PDF = 'application/pdf',
+  PNG = 'image/png',
+}
+
+/**
+ * Image file formats.
+ */
+export enum ImageFormat {
+  JPEG = 'jpeg',
+  PNG = 'png',
 }
 
 /**

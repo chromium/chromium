@@ -9,7 +9,13 @@ import {I18nString} from './i18n_string.js';
 import * as localDev from './local_dev.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
-import {AspectRatioSet, Facing, FpsRange, Resolution} from './type.js';
+import {
+  AspectRatioSet,
+  Facing,
+  FpsRange,
+  ImageFormat,
+  Resolution,
+} from './type.js';
 
 /**
  * Creates a canvas element for 2D drawing.
@@ -32,16 +38,24 @@ export function newDrawingCanvas(
 /**
  * Converts canvas content to a JPEG Blob.
  */
-export function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+export function canvasToImageBlob(
+    canvas: HTMLCanvasElement, format: ImageFormat): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob !== null) {
         resolve(blob);
       } else {
-        reject(new Error('Failed to convert canvas to jpeg blob.'));
+        reject(new Error(`Failed to convert canvas to ${format} blob.`));
       }
-    }, 'image/jpeg');
+    }, `image/${format}`);
   });
+}
+
+/**
+ * Converts canvas content to a JPEG Blob.
+ */
+export function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return canvasToImageBlob(canvas, ImageFormat.JPEG);
 }
 
 /**

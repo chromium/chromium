@@ -14,6 +14,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 // Browser-side handler for camera save operations.
 class CameraSaveHandler : public base::SupportsUserData::Data {
  public:
@@ -59,6 +63,11 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
   // Returns the final folder where the camera app files will be saved.
   base::FilePath GetFinalPath() const;
+
+  // Upload the file to the cloud.
+  void UploadFile(const std::string& name,
+                  const gfx::Image& thumbnail,
+                  base::OnceCallback<void(bool)> callback);
 
  private:
   explicit CameraSaveHandler(std::unique_ptr<Delegate> delegate);

@@ -13,15 +13,13 @@ export type {
   PointF,
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 export {
-  CameraIntentAction,
-} from '../../mojom/chromeos/ash/experiences/arc/mojom/camera_intent.mojom-webui.js';
-export {
   AspectRatio,
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  FileType,
   LidState,
   LidStateMonitorCallbackRouter,
   ScreenLockedMonitorCallbackRouter,
@@ -36,6 +34,9 @@ export {
   WindowStateType,
 } from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
 export type {
+  CaptureDestination,
+  CloudUpload,
+  LocalFile,
   WifiConfig,
 } from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
 export {
@@ -76,6 +77,10 @@ export {
   WifiEapPhase2Method,
   WifiSecurityType,
 } from '../../mojom/ash/webui/camera_app_ui/types.mojom-webui.js';
+export {
+  CameraIntentAction,
+} from
+    '../../mojom/chromeos/ash/experiences/arc/mojom/camera_intent.mojom-webui.js';
 export {
   Rotation,
 } from

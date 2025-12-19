@@ -5,4 +5,7 @@ specific_include_rules = {
   "chrome_camera_save_delegate\\.(cc|h)": [
     "+chrome/browser/ash/policy/skyvault",
   ],
+  "chrome_camera_app_ui_delegate\\.(cc|h)": [
+    "+chrome/browser/ash/policy/skyvault",
+  ],
 }

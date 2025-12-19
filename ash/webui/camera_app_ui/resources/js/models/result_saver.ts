@@ -8,10 +8,12 @@ import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
+import {FileType} from '../mojo/type.js';
 import {
   Awaitable,
   ErrorLevel,
   ErrorType,
+  ImageFormat,
   Metadata,
   MimeType,
   VideoType,
@@ -24,6 +26,7 @@ import {
   DirectoryAccessEntry,
   FileAccessEntry,
 } from './file_system_access_entry.js';
+import {isCloudDestination} from './load_time_data.js';
 
 /**
  * Handles captured result photos and video.
@@ -87,31 +90,65 @@ export class DefaultResultSaver implements ResultSaver {
     });
   }
 
+  private applyCover(cover: CoverPhoto|null) {
+    this.cover = cover;
+    this.galleryButton.cover = cover;
+  }
+
+  private monitorFileDeletion(fileName: string) {
+    void ChromeHelper.getInstance().monitorFileDeletion(fileName, async () => {
+      try {
+        await this.checkCover();
+      } catch (e) {
+        reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
+      }
+    });
+  }
+
   /**
    * @param file File to be set as cover photo.
    */
   private async updateCover(file: FileAccessEntry|null): Promise<void> {
-    const cover = file === null ? null : await CoverPhoto.create(file);
+    const cover =
+        file === null ? null : await CoverPhoto.create(file, ImageFormat.JPEG);
     if (this.cover === cover) {
       return;
     }
     if (this.cover !== null) {
       this.cover.release();
     }
-    this.cover = cover;
-    this.galleryButton.cover = cover;
-
+    this.applyCover(cover);
     if (file !== null) {
-      // The promise is only resolved after the file is deleted.
-      void ChromeHelper.getInstance().monitorFileDeletion(
-          file.name, async () => {
-            try {
-              await this.checkCover();
-            } catch (e) {
-              reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
-            }
-          });
+      this.monitorFileDeletion(file.name);
     }
+  }
+
+  private async processCapturedData(file: FileAccessEntry, fileType: FileType) {
+    const fileName = file.name;
+    if (!isCloudDestination()) {
+      void ChromeHelper.getInstance().processCapturedLocalFile(
+          fileName, fileType);
+      void this.updateCover(file);
+      return;
+    }
+    const cover = await CoverPhoto.create(file, ImageFormat.PNG);
+    // Wait for the capture to be processed in the browser process.
+    // The returned promise is intentionally not awaited to avoid blocking UI
+    // during upload after which this promise is resolved and cover photo
+    // updated.
+    void ChromeHelper.getInstance()
+        .processCapturedFileForCloudUpload(
+            fileName,
+            fileType,
+            cover?.blob ?? new Blob(),
+            )
+        .then((success) => {
+          if (success) {
+            this.applyCover(cover);
+            this.monitorFileDeletion(fileName);
+          }
+        });
+    return;
   }
 
   /**
@@ -186,23 +223,18 @@ export class DefaultResultSaver implements ResultSaver {
           new Blob([JSON.stringify(metadata, null, 2)], {type: MimeType.JSON});
       await filesystem.saveBlob(metadataBlob, Filenamer.getMetadataName(name));
     }
-
-    ChromeHelper.getInstance().sendNewCaptureBroadcast(
-        {isVideo: false, name: file.name});
-    await this.updateCover(file);
+    await this.processCapturedData(file, FileType.kPhoto);
   }
 
   async saveGif(blob: Blob, name: string): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
-    await this.updateCover(file);
+    await this.processCapturedData(file, FileType.kGif);
   }
 
   async saveVideo(file: FileAccessEntry): Promise<void> {
     const videoName = (new Filenamer()).newVideoName(VideoType.MP4);
     assert(this.directory !== null);
     await file.moveTo(this.directory, videoName);
-    ChromeHelper.getInstance().sendNewCaptureBroadcast(
-        {isVideo: true, name: file.name});
-    await this.updateCover(file);
+    await this.processCapturedData(file, FileType.kVideo);
   }
 }

@@ -17,6 +17,7 @@ import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
   AspectRatio,
   EventsSenderRemote,
+  FileType,
   LidState,
   OcrResult,
   PdfBuilderRemote,
@@ -106,9 +107,17 @@ export class ChromeHelperFake extends ChromeHelper {
     return false;
   }
 
-  override sendNewCaptureBroadcast(_args: {isVideo: boolean, name: string}):
-      void {
-    /* Do nothing. */
+  override async processCapturedLocalFile(
+      _fileName: string, _fileType: FileType): Promise<boolean> {
+    return false;
+  }
+
+  override async processCapturedFileForCloudUpload(
+      _fileName: string,
+      _fileType: FileType,
+      _thumbnail: Blob,
+      ): Promise<boolean> {
+    return false;
   }
 
   override async monitorFileDeletion(_name: string, _callback: () => void):
