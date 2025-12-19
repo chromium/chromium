@@ -9,16 +9,50 @@
 #include "base/check_op.h"
 #include "base/check_version_internal.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "base/debug/crash_logging.h"
 
 namespace logging {
 
 namespace {
+
+// End check failure messages with a period, e.g.:
+//
+//   CHECK(false);
+//
+// Yields:
+//
+//   Check failed: false.
+//
+// Or, with additional data streamed in:
+//
+//   CHECK(false) << "foo";
+//
+// The output is:
+//
+//   Check failed: false. foo
+//
+// In fuzzing mode, however, in a bid to help machines understand where to draw
+// the line between the compile-time static part ("false") and the
+// runtime-variable part ("foo"), we use a semicolon instead. It seems quite
+// difficult to manage to embed a semilicon in the compile-time static part.
+// Thus the examples above become:
+//
+//   Check failed: false;
+//   Check failed: false; foo
+//
+// See crbug.com/443588668 for more details.
+constexpr char kCheckFailureMessageSeparator[] =
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+    "; "
+#else
+    ". "
+#endif
+    ;
 
 LogSeverity GetDumpSeverity() {
 #if defined(OFFICIAL_BUILD)
@@ -217,7 +251,8 @@ CheckError CheckError::Check(const char* condition,
   auto* const log_message = new CheckLogMessage(
       location, GetCheckSeverity(fatal_milestone), fatal_milestone);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << condition << ". ";
+  log_message->stream() << "Check failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckError(log_message);
 }
 
@@ -227,7 +262,8 @@ LogMessage* CheckError::CheckOp(char* log_message_str,
   auto* const log_message = new CheckLogMessage(
       location, GetCheckSeverity(fatal_milestone), fatal_milestone);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << log_message_str;
+  log_message->stream() << "Check failed: " << log_message_str
+                        << kCheckFailureMessageSeparator;
   free(log_message_str);
   return log_message;
 }
@@ -235,14 +271,16 @@ LogMessage* CheckError::CheckOp(char* log_message_str,
 CheckError CheckError::DCheck(const char* condition,
                               const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(location);
-  log_message->stream() << "DCHECK failed: " << condition << ". ";
+  log_message->stream() << "DCHECK failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckError(log_message);
 }
 
 LogMessage* CheckError::DCheckOp(char* log_message_str,
                                  const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(location);
-  log_message->stream() << "DCHECK failed: " << log_message_str;
+  log_message->stream() << "DCHECK failed: " << log_message_str
+                        << kCheckFailureMessageSeparator;
   free(log_message_str);
   return log_message;
 }
@@ -253,7 +291,8 @@ CheckError CheckError::DumpWillBeCheck(const char* condition,
       new CheckLogMessage(location, GetDumpSeverity(),
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << condition << ". ";
+  log_message->stream() << "Check failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckError(log_message);
 }
 
@@ -263,7 +302,8 @@ LogMessage* CheckError::DumpWillBeCheckOp(char* log_message_str,
       new CheckLogMessage(location, GetDumpSeverity(),
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << log_message_str;
+  log_message->stream() << "Check failed: " << log_message_str
+                        << kCheckFailureMessageSeparator;
   free(log_message_str);
   return log_message;
 }
@@ -276,7 +316,8 @@ CheckError CheckError::DPCheck(const char* condition,
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   auto* const log_message = new DCheckErrnoLogMessage(location, err_code);
 #endif
-  log_message->stream() << "DCHECK failed: " << condition << ". ";
+  log_message->stream() << "DCHECK failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckError(log_message);
 }
 
@@ -285,7 +326,8 @@ CheckError CheckError::NotImplemented(const char* function,
   auto* const log_message = new LogMessage(
       location.file_name(), location.line_number(), LOGGING_ERROR);
   // TODO(pbos): Make this output NOTIMPLEMENTED instead of Not implemented.
-  log_message->stream() << "Not implemented reached in " << function;
+  log_message->stream() << "Not implemented reached in " << function
+                        << kCheckFailureMessageSeparator;
   return CheckError(log_message);
 }
 
@@ -332,7 +374,8 @@ CheckNoreturnError CheckNoreturnError::Check(const char* condition,
       new CheckLogMessage(location, LOGGING_FATAL,
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << condition << ". ";
+  log_message->stream() << "Check failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckNoreturnError(log_message);
 }
 
@@ -342,7 +385,8 @@ LogMessage* CheckNoreturnError::CheckOp(char* log_message_str,
       new CheckLogMessage(location, LOGGING_FATAL,
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << log_message_str;
+  log_message->stream() << "Check failed: " << log_message_str
+                        << kCheckFailureMessageSeparator;
   free(log_message_str);
   return log_message;
 }
@@ -358,7 +402,8 @@ CheckNoreturnError CheckNoreturnError::PCheck(const char* condition,
       location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
 #endif
   // TODO(pbos): Make this output CHECK instead of Check.
-  log_message->stream() << "Check failed: " << condition << ". ";
+  log_message->stream() << "Check failed: " << condition
+                        << kCheckFailureMessageSeparator;
   return CheckNoreturnError(log_message);
 }
 

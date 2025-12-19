@@ -177,9 +177,9 @@ TEST(CheckDeathTest, Basics) {
   EXPECT_CHECK("Check failed: false. foo", CHECK(false) << "foo");
 
   double a = 2, b = 1;
-  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000)", CHECK_LT(a, b));
+  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000). ", CHECK_LT(a, b));
 
-  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000)custom message",
+  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000). custom message",
                CHECK_LT(a, b) << "custom message");
 }
 
@@ -189,60 +189,48 @@ TEST(CheckDeathTest, PCheck) {
   std::string err =
       logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode());
 
-  EXPECT_CHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
-      " : " +
-          err,
-      PCHECK(fopen(file, "r") != nullptr));
+  EXPECT_CHECK("Check failed: fopen(file, \"r\") != nullptr. : " + err,
+               PCHECK(fopen(file, "r") != nullptr));
 
-  EXPECT_CHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
-      " foo: " +
-          err,
-      PCHECK(fopen(file, "r") != nullptr) << "foo");
+  EXPECT_CHECK("Check failed: fopen(file, \"r\") != nullptr. foo: " + err,
+               PCHECK(fopen(file, "r") != nullptr) << "foo");
 
-  EXPECT_DCHECK(
-      "DCHECK failed: fopen(file, \"r\") != nullptr."
-      " : " +
-          err,
-      DPCHECK(fopen(file, "r") != nullptr));
+  EXPECT_DCHECK("DCHECK failed: fopen(file, \"r\") != nullptr. : " + err,
+                DPCHECK(fopen(file, "r") != nullptr));
 
-  EXPECT_DCHECK(
-      "DCHECK failed: fopen(file, \"r\") != nullptr."
-      " foo: " +
-          err,
-      DPCHECK(fopen(file, "r") != nullptr) << "foo");
+  EXPECT_DCHECK("DCHECK failed: fopen(file, \"r\") != nullptr. foo: " + err,
+                DPCHECK(fopen(file, "r") != nullptr) << "foo");
 }
 
 TEST(CheckDeathTest, CheckOp) {
   const int a = 1, b = 2;
   // clang-format off
-  EXPECT_CHECK("Check failed: a == b (1 vs. 2)", CHECK_EQ(a, b));
-  EXPECT_CHECK("Check failed: a != a (1 vs. 1)", CHECK_NE(a, a));
-  EXPECT_CHECK("Check failed: b <= a (2 vs. 1)", CHECK_LE(b, a));
-  EXPECT_CHECK("Check failed: b < a (2 vs. 1)",  CHECK_LT(b, a));
-  EXPECT_CHECK("Check failed: a >= b (1 vs. 2)", CHECK_GE(a, b));
-  EXPECT_CHECK("Check failed: a > b (1 vs. 2)",  CHECK_GT(a, b));
+  EXPECT_CHECK("Check failed: a == b (1 vs. 2). " , CHECK_EQ(a, b));
+  EXPECT_CHECK("Check failed: a != a (1 vs. 1). ", CHECK_NE(a, a));
+  EXPECT_CHECK("Check failed: b <= a (2 vs. 1). ", CHECK_LE(b, a));
+  EXPECT_CHECK("Check failed: b < a (2 vs. 1). ",  CHECK_LT(b, a));
+  EXPECT_CHECK("Check failed: a >= b (1 vs. 2). ", CHECK_GE(a, b));
+  EXPECT_CHECK("Check failed: a > b (1 vs. 2). ",  CHECK_GT(a, b));
 
-  EXPECT_DCHECK("DCHECK failed: a == b (1 vs. 2)", DCHECK_EQ(a, b));
-  EXPECT_DCHECK("DCHECK failed: a != a (1 vs. 1)", DCHECK_NE(a, a));
-  EXPECT_DCHECK("DCHECK failed: b <= a (2 vs. 1)", DCHECK_LE(b, a));
-  EXPECT_DCHECK("DCHECK failed: b < a (2 vs. 1)",  DCHECK_LT(b, a));
-  EXPECT_DCHECK("DCHECK failed: a >= b (1 vs. 2)", DCHECK_GE(a, b));
-  EXPECT_DCHECK("DCHECK failed: a > b (1 vs. 2)",  DCHECK_GT(a, b));
+  EXPECT_DCHECK("DCHECK failed: a == b (1 vs. 2). ", DCHECK_EQ(a, b));
+  EXPECT_DCHECK("DCHECK failed: a != a (1 vs. 1). ", DCHECK_NE(a, a));
+  EXPECT_DCHECK("DCHECK failed: b <= a (2 vs. 1). ", DCHECK_LE(b, a));
+  EXPECT_DCHECK("DCHECK failed: b < a (2 vs. 1). ",  DCHECK_LT(b, a));
+  EXPECT_DCHECK("DCHECK failed: a >= b (1 vs. 2). ", DCHECK_GE(a, b));
+  EXPECT_DCHECK("DCHECK failed: a > b (1 vs. 2). ",  DCHECK_GT(a, b));
   // clang-format on
 
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2). ",
                             DUMP_WILL_BE_CHECK_EQ(a, b));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1). ",
                             DUMP_WILL_BE_CHECK_NE(a, a));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1). ",
                             DUMP_WILL_BE_CHECK_LE(b, a));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1). ",
                             DUMP_WILL_BE_CHECK_LT(b, a));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2). ",
                             DUMP_WILL_BE_CHECK_GE(a, b));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2). ",
                             DUMP_WILL_BE_CHECK_GT(a, b));
 }
 
@@ -251,13 +239,13 @@ TEST(CheckDeathTest, CheckOpStrings) {
   base::cstring_view csv = "2";
   std::string s = "3";
 
-  EXPECT_CHECK("Check failed: sv == csv (1 vs. 2)", CHECK_EQ(sv, csv));
-  EXPECT_CHECK("Check failed: csv == s (2 vs. 3)", CHECK_EQ(csv, s));
-  EXPECT_CHECK("Check failed: sv == s (1 vs. 3)", CHECK_EQ(sv, s));
+  EXPECT_CHECK("Check failed: sv == csv (1 vs. 2). ", CHECK_EQ(sv, csv));
+  EXPECT_CHECK("Check failed: csv == s (2 vs. 3). ", CHECK_EQ(csv, s));
+  EXPECT_CHECK("Check failed: sv == s (1 vs. 3). ", CHECK_EQ(sv, s));
 
-  EXPECT_DCHECK("DCHECK failed: sv == csv (1 vs. 2)", DCHECK_EQ(sv, csv));
-  EXPECT_DCHECK("DCHECK failed: csv == s (2 vs. 3)", DCHECK_EQ(csv, s));
-  EXPECT_DCHECK("DCHECK failed: sv == s (1 vs. 3)", DCHECK_EQ(sv, s));
+  EXPECT_DCHECK("DCHECK failed: sv == csv (1 vs. 2). ", DCHECK_EQ(sv, csv));
+  EXPECT_DCHECK("DCHECK failed: csv == s (2 vs. 3). ", DCHECK_EQ(csv, s));
+  EXPECT_DCHECK("DCHECK failed: sv == s (1 vs. 3). ", DCHECK_EQ(sv, s));
 }
 
 TEST(CheckDeathTest, CheckOpPointers) {
@@ -619,7 +607,7 @@ TEST(CheckTest, NotImplemented) {
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
                                  base::Location::Current().line_number(),
                                  NOTIMPLEMENTED() << "foo",
-                                 expected_msg + "foo\n");
+                                 expected_msg + ". foo\n");
 #else
   // Expect nothing.
   EXPECT_NO_LOG(NOTIMPLEMENTED() << "foo");
@@ -632,7 +620,7 @@ void NiLogOnce() {
 
 TEST(CheckTest, NotImplementedLogOnce) {
   static const std::string expected_msg =
-      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce()\n";
+      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce(). \n";
 
 #if DCHECK_IS_ON()
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
@@ -654,16 +642,17 @@ void NiLogTenTimesWithStream() {
 TEST(CheckTest, NotImplementedLogOnceWithStreamedParams) {
   static const std::string expected_msg1 =
       kNotImplementedMessage +
-      "void (anonymous namespace)::NiLogTenTimesWithStream() iteration: 0\n";
+      "void (anonymous namespace)::NiLogTenTimesWithStream(). "
+      " iteration: 0\n";
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact, exactly once.
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
-                                 base::Location::Current().line_number() - 13,
+                                 base::Location::Current().line_number() - 14,
                                  NiLogTenTimesWithStream(), expected_msg1);
   // A different NOTIMPLEMENTED_LOG_ONCE() call is still logged.
   static const std::string expected_msg2 =
-      kNotImplementedMessage + __PRETTY_FUNCTION__ + "tree fish\n";
+      kNotImplementedMessage + __PRETTY_FUNCTION__ + ". tree fish\n";
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
                                  base::Location::Current().line_number(),
                                  NOTIMPLEMENTED_LOG_ONCE() << "tree fish",
@@ -739,31 +728,31 @@ TEST(CheckDeathTest, CheckOpNotFatalUntil) {
   const int a = 1, b = 2;
 
   // Next milestone not yet fatal.
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2). ",
                             CHECK_EQ(a, b, kNextMilestone));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1). ",
                             CHECK_NE(a, a, kNextMilestone));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1). ",
                             CHECK_LE(b, a, kNextMilestone));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1). ",
                             CHECK_LT(b, a, kNextMilestone));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2). ",
                             CHECK_GE(a, b, kNextMilestone));
-  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2)",
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2). ",
                             CHECK_GT(a, b, kNextMilestone));
 
   // Fatal in current major version.
-  EXPECT_CHECK("Check failed: a == b (1 vs. 2)",
+  EXPECT_CHECK("Check failed: a == b (1 vs. 2). ",
                CHECK_EQ(a, b, kCurrentMilestone));
-  EXPECT_CHECK("Check failed: a != a (1 vs. 1)",
+  EXPECT_CHECK("Check failed: a != a (1 vs. 1). ",
                CHECK_NE(a, a, kCurrentMilestone));
-  EXPECT_CHECK("Check failed: b <= a (2 vs. 1)",
+  EXPECT_CHECK("Check failed: b <= a (2 vs. 1). ",
                CHECK_LE(b, a, kCurrentMilestone));
-  EXPECT_CHECK("Check failed: b < a (2 vs. 1)",
+  EXPECT_CHECK("Check failed: b < a (2 vs. 1). ",
                CHECK_LT(b, a, kCurrentMilestone));
-  EXPECT_CHECK("Check failed: a >= b (1 vs. 2)",
+  EXPECT_CHECK("Check failed: a >= b (1 vs. 2). ",
                CHECK_GE(a, b, kCurrentMilestone));
-  EXPECT_CHECK("Check failed: a > b (1 vs. 2)",
+  EXPECT_CHECK("Check failed: a > b (1 vs. 2). ",
                CHECK_GT(a, b, kCurrentMilestone));
 }
 
