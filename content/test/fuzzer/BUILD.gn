@@ -230,6 +230,7 @@ content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
   proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
 
   seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_blob.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_index_operations.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",

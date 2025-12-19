@@ -20,7 +20,7 @@ actions {
           }
         }
       }
-      m_version: 1
+      m_version: 42
       m_version_change_transaction_receiver: 0
       m_transaction_id: 1
       m_priority: 0
@@ -50,20 +50,14 @@ actions {
           m_data {
             new {
               id: 0
-              m_string {
-                new {
-                  id: 0
-                  m_data {
-                    values { value: 105 }  # 'i'
-                    values { value: 100 }  # 'd'
-                  }
-                }
+              m_string_array {
+                values: [ { value {} }, { value {} } ]
               }
             }
           }
         }
       }
-      m_auto_increment: true
+      m_auto_increment: false
     }
   }
 }
@@ -89,8 +83,8 @@ actions {
       m_object_store_ids {
         values { value: 1 }
       }
-      m_mode: 1
-      m_durability: 2
+      m_mode: MojoLPM_IDBTransactionMode_ReadWrite
+      m_durability: MojoLPM_IDBTransactionDurability_Relaxed
     }
   }
 }
@@ -120,7 +114,7 @@ actions {
           m_number: 1.0
         }
       }
-      m_mode: 0
+      m_mode: MojoLPM_IDBPutMode_AddOnly
       m_index_keys {
       }
     }
@@ -168,11 +162,13 @@ sequences {
   action_indexes: 1
   action_indexes: 4
   action_indexes: 2
+  action_indexes: 4
   action_indexes: 3
   action_indexes: 4
   action_indexes: 5
   action_indexes: 4
   action_indexes: 6
+  action_indexes: 4
   action_indexes: 7
   action_indexes: 4
   action_indexes: 3

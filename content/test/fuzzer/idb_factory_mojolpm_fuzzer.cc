@@ -5,7 +5,10 @@
 #include <stdint.h>
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
@@ -15,6 +18,8 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/public/browser/blob_handle.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -22,6 +27,7 @@
 #include "content/test/fuzzer/idb_factory_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -112,6 +118,10 @@ class IdbFactoryTestcase
 
   // Helpers called from the fuzzer thread.
   void CreateAndAddIdbFactory(uint32_t id, base::OnceClosure done_closure)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void CreateAndAddBlob(uint32_t id,
+                        const std::string& content,
+                        base::OnceClosure done_closure)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   const bool in_memory_;
@@ -242,6 +252,11 @@ void IdbFactoryTestcase::RunAction(const ProtoAction& action,
                              std::move(done_closure));
       return;
 
+    case ProtoAction::kNewBlob:
+      CreateAndAddBlob(action.new_blob().id(), action.new_blob().content(),
+                       std::move(done_closure));
+      return;
+
     case ProtoAction::kIdbFactoryRemoteAction:
       mojolpm::HandleRemoteAction(action.idb_factory_remote_action());
       break;
@@ -259,6 +274,10 @@ void IdbFactoryTestcase::RunAction(const ProtoAction& action,
     case ProtoAction::kIdbCursorAssociatedRemoteAction:
       mojolpm::HandleAssociatedRemoteAction(
           action.idb_cursor_associated_remote_action());
+      break;
+
+    case ProtoAction::kBlobRemoteAction:
+      mojolpm::HandleRemoteAction(action.blob_remote_action());
       break;
 
     case ProtoAction::ACTION_NOT_SET:
@@ -319,6 +338,33 @@ void IdbFactoryTestcase::CreateAndAddIdbFactory(
       ->GetInstance<mojo::Remote<blink::mojom::IDBFactory>>(lookup_id)
       ->FlushAsyncForTesting(
           base::BindPostTask(GetFuzzerTaskRunner(), std::move(done_closure)));
+}
+
+void IdbFactoryTestcase::CreateAndAddBlob(uint32_t id,
+                                          const std::string& content,
+                                          base::OnceClosure done_closure) {
+  std::vector<uint8_t> owned_bytes(content.begin(), content.end());
+  base::span<const uint8_t> data = base::as_byte_span(owned_bytes);
+  base::OnceClosure release_bytes =
+      base::DoNothingWithBoundArgs(std::move(owned_bytes));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &content::BrowserContext::CreateMemoryBackedBlob,
+          base::Unretained(browser_context_.get()), data, "text/plain",
+          base::BindPostTask(
+              GetFuzzerTaskRunner(),
+              base::BindOnce(
+                  [](uint32_t id, std::unique_ptr<content::BlobHandle> handle) {
+                    if (handle) {
+                      mojolpm::GetContext()->AddInstance(
+                          id,
+                          mojo::Remote<blink::mojom::Blob>(handle->PassBlob()));
+                    }
+                  },
+                  id)
+                  .Then(std::move(release_bytes))
+                  .Then(std::move(done_closure)))));
 }
 
 DEFINE_BINARY_PROTO_FUZZER(

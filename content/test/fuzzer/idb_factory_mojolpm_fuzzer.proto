@@ -9,10 +9,17 @@ syntax = "proto2";
 package content.fuzzing.idb_factory.proto;
 
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.mojolpm.proto";
+import "third_party/blink/public/mojom/blob/blob.mojom.mojolpm.proto";
 
 // Bind a new IDBFactory remote.
 message NewIDBFactoryAction {
   required uint32 id = 1;
+}
+
+// Create a new Blob.
+message NewBlobAction {
+  required uint32 id = 1;
+  required string content = 2;
 }
 
 // Post a task on the specified thread's task runner, continuing when complete.
@@ -31,6 +38,7 @@ message RunThreadAction {
 message Action {
   oneof action {
     NewIDBFactoryAction new_idb_factory = 1;
+    NewBlobAction new_blob = 7;
     RunThreadAction run_thread = 2;
     mojolpm.blink.mojom.IDBFactory.RemoteAction idb_factory_remote_action = 3;
     mojolpm.blink.mojom.IDBDatabase.AssociatedRemoteAction
@@ -39,6 +47,7 @@ message Action {
         idb_transaction_associated_remote_action = 5;
     mojolpm.blink.mojom.IDBCursor.AssociatedRemoteAction
         idb_cursor_associated_remote_action = 6;
+    mojolpm.blink.mojom.Blob.RemoteAction blob_remote_action = 8;
   }
 }
 
