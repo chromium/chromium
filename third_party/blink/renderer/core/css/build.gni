@@ -752,6 +752,8 @@ blink_core_sources_css = [
   "selector_statistics_flag.cc",
   "selector_statistics_flag.h",
   "shape_functions.h",
+  "scroll_target_group_scope.cc",
+  "scroll_target_group_scope.h",
   "snapped_query_scroll_snapshot.cc",
   "snapped_query_scroll_snapshot.h",
   "style_attribute_mutation_scope.cc",

@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
+#include "third_party/blink/renderer/core/css/scroll_target_group_scope.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
@@ -3824,9 +3825,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
   } else if (HasTagName(html_names::kATag) && name == html_names::kHrefAttr) {
-    // <a> element is a potential scroll marker, set flag to check and update if
-    // needed.
-    GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
+    // <a> element's href changed - update its scroll target group membership.
+    To<HTMLAnchorElement>(this)->UpdateScrollTargetGroupMembership();
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
@@ -5477,16 +5477,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
     GetDocument().GetStyleEngine().MarkCountersDirty();
   }
 
-  if ((!old_style || old_style->ScrollTargetGroupNone()) && new_style &&
-      !new_style->ScrollTargetGroupNone()) {
-    GetDocument().AddScrollTargetGroup(&EnsureScrollTargetGroupData());
-  }
-
-  if (old_style && !old_style->ScrollTargetGroupNone() && new_style &&
-      new_style->ScrollTargetGroupNone()) {
-    RemoveScrollTargetGroupData();
-  }
-
   bool old_style_has_scroll_marker_group =
       old_style && !old_style->ScrollMarkerGroupNone();
   bool new_style_has_scroll_marker_group =
@@ -5514,6 +5504,23 @@ StyleRecalcChange Element::RecalcOwnStyle(
       tree.DestroyScopeForElement(*this);
     }
     if (new_style && new_style->ContainsStyle()) {
+      tree.CreateScopeForElement(*this);
+    }
+  }
+
+  // Update scroll-target-group tree if the scroll-target-group property
+  // of the element has changed.
+  bool old_has_scroll_target_group =
+      old_style && !old_style->ScrollTargetGroupNone();
+  bool new_has_scroll_target_group =
+      new_style && !new_style->ScrollTargetGroupNone();
+  if (old_has_scroll_target_group != new_has_scroll_target_group) {
+    ScrollTargetGroupScopeTree& tree =
+        GetDocument().GetStyleEngine().EnsureScrollTargetGroupScopeTree();
+    if (old_has_scroll_target_group) {
+      tree.DestroyScopeForElement(*this);
+    }
+    if (new_has_scroll_target_group) {
       tree.CreateScopeForElement(*this);
     }
   }
@@ -13029,7 +13036,7 @@ void Element::RemoveScrollTargetGroupData() {
     if (ScrollMarkerGroupData* scroll_marker_group_data =
             data->GetScrollMarkerGroupData()) {
       scroll_marker_group_data->ClearFocusGroup();
-      GetDocument().RemoveScrollTargetGroup(scroll_marker_group_data);
+      scroll_marker_group_data->ClearScrollableAreaSubscriptions();
       data->RemoveScrollMarkerGroupData();
     }
   }
