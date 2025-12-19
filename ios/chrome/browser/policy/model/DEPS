@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+components/collaboration/public/pref_names.h",
   "+components/contextual_search/pref_names.h",
+  "+components/contextual_search/search_content_sharing_policy_handler.h",
   "+components/lens",
   "+components/themes",
 ]

@@ -79,6 +79,7 @@ source_set("model") {
     "//components/collaboration/public:prefs",
     "//components/commerce/core:pref_names",
     "//components/component_updater",
+    "//components/contextual_search:policy_handler",
     "//components/contextual_search:prefs",
     "//components/enterprise",
     "//components/enterprise/browser/data_region",
