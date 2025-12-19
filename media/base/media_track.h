@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
@@ -119,6 +120,36 @@ class MEDIA_EXPORT MediaTrack {
   Kind kind_;
   Label label_;
   Language language_;
+};
+
+// Interface for requiring track manager methods on different implementations
+// that either forward them or handle them directly, like WebMediaPlayerImpl
+// and HTMLMediaElement.
+class MEDIA_EXPORT TrackManager {
+ public:
+  virtual ~TrackManager() = default;
+  virtual void AddTrack(const MediaTrack&) = 0;
+  virtual void RemoveTrack(const MediaTrack&) = 0;
+  virtual void SetTrackState(const MediaTrack&, MediaTrack::State) = 0;
+};
+
+class MEDIA_EXPORT ForwardingTrackManager : public TrackManager {
+ public:
+  ~ForwardingTrackManager() override;
+  ForwardingTrackManager(
+      base::RepeatingCallback<void(const MediaTrack&)> add,
+      base::RepeatingCallback<void(const MediaTrack&)> remove,
+      base::RepeatingCallback<void(const MediaTrack&, MediaTrack::State)>
+          update);
+
+  void AddTrack(const MediaTrack&) override;
+  void RemoveTrack(const MediaTrack&) override;
+  void SetTrackState(const MediaTrack&, MediaTrack::State) override;
+
+ private:
+  base::RepeatingCallback<void(const MediaTrack&)> add_;
+  base::RepeatingCallback<void(const MediaTrack&)> remove_;
+  base::RepeatingCallback<void(const MediaTrack&, MediaTrack::State)> update_;
 };
 
 // Helper for logging.

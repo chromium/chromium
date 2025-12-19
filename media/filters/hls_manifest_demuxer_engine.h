@@ -38,14 +38,15 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                               public HlsRenditionHost,
                                               public DataSourceInfo {
  public:
-  HlsManifestDemuxerEngine(
-      base::SequenceBound<HlsDataSourceProvider> dsp,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::RepeatingCallback<void(const MediaTrack&)> add_track,
-      base::RepeatingCallback<void(const MediaTrack&)> remove_track,
-      bool was_already_tainted,
-      GURL root_playlist_uri,
-      MediaLog* media_log);
+  using TrackStateCB =
+      base::RepeatingCallback<void(const MediaTrack&, MediaTrack::State)>;
+
+  HlsManifestDemuxerEngine(base::SequenceBound<HlsDataSourceProvider> dsp,
+                           scoped_refptr<base::SequencedTaskRunner> task_runner,
+                           std::unique_ptr<TrackManager> track_manager,
+                           bool was_already_tainted,
+                           GURL root_playlist_uri,
+                           MediaLog* media_log);
   ~HlsManifestDemuxerEngine() override;
 
   // DataSourceInfo implementation
@@ -281,10 +282,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                      hls::types::DecimalInteger version);
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-
-  // Track helper functions
-  base::RepeatingCallback<void(const MediaTrack&)> add_track_;
-  base::RepeatingCallback<void(const MediaTrack&)> remove_track_;
+  std::unique_ptr<TrackManager> track_manager_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // root playlist, either multivariant or media.
   GURL root_playlist_uri_;
