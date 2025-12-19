@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -12,10 +13,39 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 
-// List of log levels in priority order.
-const logLevels: LogLevel[] = ['Debug', 'Event', 'User', 'Error'];
+// LogLevel values must match the strings provided by the backend.
+// LINT.IfChange
+export enum LogLevel {
+  DEBUG = 'Debug',
+  EVENT = 'Event',
+  USER = 'User',
+  ERROR = 'Error',
+}
+// LINT.ThenChange(/components/device_event_log/device_event_log_impl.cc)
 
-type LogLevel = 'Debug'|'Event'|'User'|'Error';
+// List of log levels in priority order.
+const logLevels: LogLevel[] =
+    [LogLevel.DEBUG, LogLevel.EVENT, LogLevel.USER, LogLevel.ERROR];
+
+// Values must match the strings provided by the backend, case insensitive.
+// LINT.IfChange
+const logTypes: string[] = [
+  'Bluetooth',
+  'Camera',
+  'Display',
+  'Extensions',
+  'Fido',
+  'Firmware',
+  'Geolocation',
+  'Hid',
+  'Login',
+  'Network',
+  'Power',
+  'Printer',
+  'Serial',
+  'Usb',
+];
+// LINT.ThenChange(/components/device_event_log/device_event_log_impl.cc)
 
 interface LogEntry {
   event: string;
@@ -24,6 +54,12 @@ interface LogEntry {
   timestampshort: string;
   timestamp: string;
   type: string;
+}
+
+interface EventType {
+  type: string;
+  label: string;
+  enabled: boolean;
 }
 
 export interface DeviceLogAppElement {
@@ -51,190 +87,126 @@ export class DeviceLogAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  /**
-   * Creates a tag for the log level.
-   */
-  createLevelTag(level: LogLevel): HTMLElement {
-    const levelClassName = 'log-level-' + level.toLowerCase();
-    const tag = document.createElement('span');
-    tag.textContent = level;
-    tag.classList.add('level-tag');
-    tag.classList.add(levelClassName);
-    return tag;
+  static override get properties() {
+    return {
+      eventTypes_: {type: Array},
+      filteredLogs_: {type: Array},
+      logFileInfo_: {type: Boolean},
+      logTimeDetail_: {type: Boolean},
+      logs_: {type: Array},
+      selectedLogLevel_: {type: String},
+    };
   }
 
-  /**
-   * Creates a tag for the log type.
-   */
-  createTypeTag(type: string): HTMLElement {
-    const typeClassName = 'log-type-' + type.toLowerCase();
-    const tag = document.createElement('span');
-    tag.textContent = type;
-    tag.classList.add('type-tag');
-    tag.classList.add(typeClassName);
-    return tag;
+  protected accessor eventTypes_: EventType[];
+  protected accessor filteredLogs_: LogEntry[] = [];
+  protected accessor logFileInfo_: boolean = false;
+  protected accessor logTimeDetail_: boolean = false;
+  protected accessor logs_: LogEntry[] = [];
+  protected accessor selectedLogLevel_: LogLevel = LogLevel.DEBUG;
+
+  constructor() {
+    super();
+    const checkedTypesInput = new URL(window.location.href)
+                                  .searchParams.get('types')
+                                  ?.toLowerCase()
+                                  ?.split(',');
+    this.eventTypes_ = logTypes.map(type => {
+      return {
+        type,
+        label: loadTimeData.getString(`logType${type}Text`),
+        enabled: !checkedTypesInput ||
+            checkedTypesInput.includes(type.toLowerCase()),
+      };
+    });
   }
 
-  /**
-   * Creates an element that contains the time, the event, the level and
-   * the description of the given log entry.
-   *
-   * @param logEntry An object that represents a single line of log.
-   * @return The created p element that represents the log entry, or null if the
-   *     entry should be skipped.
-   */
-  createLogEntryText(logEntry: LogEntry): HTMLElement|null {
-    const level = logEntry.level;
-    const levelIndex = logLevels.indexOf(level);
-    const levelSelectIndex =
-        logLevels.indexOf(this.$.logLevelSelect.value as LogLevel);
-    if (levelIndex < levelSelectIndex) {
-      return null;
-    }
-
-    const type = logEntry.type;
-    const typeCheckbox = this.shadowRoot.querySelector<HTMLInputElement>(
-        `#logType${type.toLowerCase()}`);
-    if (typeCheckbox && !typeCheckbox.checked) {
-      return null;
-    }
-
-    const res = document.createElement('p');
-    const textWrapper = document.createElement('span');
-    let fileinfo = '';
-    if (this.$.logFileinfo.checked) {
-      fileinfo = logEntry.file;
-    }
-    let timestamp = '';
-    if (this.$.logTimedetail.checked) {
-      timestamp = logEntry.timestamp;
-    } else {
-      timestamp = logEntry.timestampshort;
-    }
-    textWrapper.textContent = loadTimeData.getStringF(
-        'logEntryFormat', timestamp, fileinfo, logEntry.event);
-    res.appendChild(this.createTypeTag(type));
-    res.appendChild(this.createLevelTag(level));
-    res.appendChild(textWrapper);
-    return res;
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setRefresh_();
+    this.onLogRefreshClick_();
   }
 
-  /**
-   * Creates event log entries.
-   *
-   * @param logEntries An array of strings that represent log log events in JSON
-   *     format.
-   */
-  createEventLog(logEntries: string[]) {
-    this.$.logContainer.textContent = '';
-    for (const logEntry of logEntries) {
-      const entry = this.createLogEntryText(JSON.parse(logEntry));
-      if (entry) {
-        this.$.logContainer.appendChild(entry);
-      }
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('selectedLogLevel_') ||
+        changedPrivateProperties.has('eventTypes_') ||
+        changedPrivateProperties.has('logs_')) {
+      const enabledEvents =
+          new Set(this.eventTypes_.filter(type => type.enabled)
+                      .map(type => type.type.toLowerCase()));
+      const selectedLogLevelIndex = logLevels.indexOf(this.selectedLogLevel_);
+      this.filteredLogs_ = this.logs_.filter(log => {
+        return enabledEvents.has(log.type.toLowerCase()) &&
+            logLevels.indexOf(log.level) >= selectedLogLevelIndex;
+      });
     }
   }
 
-  /**
-   * Callback function, triggered when the log is received.
-   */
-  getLogCallback(data: string) {
-    const container = this.$.logContainer;
-    try {
-      this.createEventLog(JSON.parse(data));
-      if (container.textContent === '') {
-        container.textContent = loadTimeData.getString('logNoEntriesText');
-      }
-    } catch (e) {
-      container.textContent = loadTimeData.getString('logNoEntriesText');
-    }
+  protected getTextForLogEntry_(log: LogEntry): string {
+    const timestamp = this.logTimeDetail_ ? log.timestamp : log.timestampshort;
+    const fileInfo = this.logFileInfo_ ? log.file : '';
+    return loadTimeData.getStringF(
+        'logEntryFormat', timestamp, fileInfo, log.event);
+  }
+
+  protected onLogTypeChange_(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.eventTypes_ = this.eventTypes_.map(type => {
+      return type.type === target.value ? {...type, enabled: target.checked} :
+                                          type;
+    });
+  }
+
+  protected onLogLevelSelectChange_(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.selectedLogLevel_ = target.value as LogLevel;
+  }
+
+  protected onLogFileinfoClick_(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.logFileInfo_ = target.checked;
+  }
+
+  protected onLogTimedetailClick_(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.logTimeDetail_ = target.checked;
+  }
+
+  protected onLogClearTypesClick_() {
+    this.eventTypes_ =
+        this.eventTypes_.map(type => ({...type, enabled: false}));
   }
 
   /**
    * Requests a log update.
    */
-  requestLog() {
-    sendWithPromise('getLog').then(this.getLogCallback.bind(this));
-  }
-
-  clearLog() {
-    chrome.send('clearLog');
-    this.requestLog();
-  }
-
-  getCheckboxes(): NodeListOf<HTMLInputElement> {
-    return this.shadowRoot.querySelectorAll(
-        '#logCheckboxContainer input[type="checkbox"]');
-  }
-
-  clearLogTypes() {
-    for (const checkbox of this.getCheckboxes()) {
-      checkbox.checked = false;
-    }
+  protected onLogRefreshClick_() {
+    sendWithPromise('getLog').then((logs: string) => {
+      const logStrings = JSON.parse(logs);
+      this.logs_ = logStrings.map(JSON.parse);
+    });
   }
 
   /**
-   * Sets the checked logging types from the URL parameters.
+   * Clears the log and queues an update.
    */
-  setCheckedTypes() {
-    const checkedTypesInput =
-        new URL(window.location.href).searchParams.get('types');
-    if (!checkedTypesInput) {
-      return;
-    }
-    this.clearLogTypes();
-    const checkedTypes = checkedTypesInput.toLowerCase().split(',');
-    for (let i = 0; i < checkedTypes.length; ++i) {
-      const checkbox = this.shadowRoot.querySelector<HTMLInputElement>(
-          `#logType${checkedTypes[i]}`);
-      if (checkbox) {
-        checkbox.checked = true;
-      }
-    }
+  protected onLogClearClick_() {
+    chrome.send('clearLog');
+    this.logs_ = [];
   }
 
   /**
    * Sets refresh rate if the interval is found in the url.
    */
-  setRefresh() {
+  private setRefresh_() {
     const interval = new URL(window.location.href).searchParams.get('refresh');
     if (interval) {
-      setInterval(this.requestLog.bind(this), parseInt(interval, 10) * 1000);
+      setInterval(
+          this.onLogRefreshClick_.bind(this), parseInt(interval, 10) * 1000);
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    // Debug is the default level to show.
-    this.$.logLevelSelect.value = 'Debug';
-    this.$.logLevelSelect.onchange = this.requestLog.bind(this);
-
-    // Show all types by default.
-    let checkboxes = this.shadowRoot.querySelectorAll<HTMLInputElement>(
-        '#logCheckboxContainer input[type="checkbox"]');
-    for (const checkbox of checkboxes) {
-      checkbox.checked = true;
-    }
-
-    this.$.logFileinfo.checked = false;
-    this.$.logFileinfo.onclick = this.requestLog.bind(this);
-    this.$.logTimedetail.checked = false;
-    this.$.logTimedetail.onclick = this.requestLog.bind(this);
-
-    this.$.logRefresh.onclick = this.requestLog.bind(this);
-    this.$.logClear.onclick = this.clearLog.bind(this);
-    this.$.logClearTypes.onclick = this.clearLogTypes.bind(this);
-
-    checkboxes = this.shadowRoot.querySelectorAll<HTMLInputElement>(
-        '#logCheckboxContainer input[type="checkbox"]');
-    for (const checkbox of checkboxes) {
-      checkbox.onclick = this.requestLog.bind(this);
-    }
-
-    this.setRefresh();
-    this.setCheckedTypes();
-    this.requestLog();
   }
 }
 

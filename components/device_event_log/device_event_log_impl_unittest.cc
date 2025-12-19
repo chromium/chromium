@@ -362,4 +362,10 @@ TEST_F(DeviceEventLogTest, TestClearRange) {
             GetLogString(OLDEST_FIRST, "", LOG_LEVEL_EVENT, 0));
 }
 
+TEST_F(DeviceEventLogTest, TestEmpty) {
+  EXPECT_EQ(GetLogString(OLDEST_FIRST, "", LOG_LEVEL_ERROR, 0),
+            "No Log Entries.");
+  EXPECT_EQ(GetLogString(OLDEST_FIRST, "json", LOG_LEVEL_ERROR, 0), "[]");
+}
+
 }  // namespace device_event_log

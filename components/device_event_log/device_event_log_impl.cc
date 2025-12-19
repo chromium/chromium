@@ -32,9 +32,12 @@ namespace device_event_log {
 
 namespace {
 
+// LINT.IfChange
 const auto kLogLevelName =
     std::to_array<const char*>({"Error", "User", "Event", "Debug"});
+// LINT.ThenChange(/chrome/browser/resources/device_log/app.ts)
 
+// LINT.IfChange
 const char kLogTypeNetworkDesc[] = "Network";
 const char kLogTypePowerDesc[] = "Power";
 const char kLogTypeLoginDesc[] = "Login";
@@ -50,6 +53,7 @@ const char kLogTypeGeolocationDesc[] = "Geolocation";
 const char kLogTypeExtensionsDesc[] = "Extensions";
 const char kLogTypeDisplayDesc[] = "Display";
 const char kLogTypeFirmwareDesc[] = "Firmware";
+// LINT.ThenChange(/chrome/browser/resources/device_log/app.ts)
 
 enum class ShowTime {
   kNone,
@@ -371,13 +375,19 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
                                             LogLevel max_level,
                                             size_t max_events) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (entries_.empty())
-    return "No Log Entries.";
 
   ShowTime show_time;
   bool show_file, show_type, show_level, format_json;
   GetFormat(format, &show_time, &show_file, &show_type, &show_level,
             &format_json);
+
+  if (entries_.empty()) {
+    if (format_json) {
+      return "[]";
+    } else {
+      return "No Log Entries.";
+    }
+  }
 
   std::set<LogType> include_types, exclude_types;
   GetLogTypes(types, &include_types, &exclude_types);

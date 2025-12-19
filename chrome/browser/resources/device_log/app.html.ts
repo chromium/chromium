@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {DeviceLogAppElement} from './app.js';
+import {LogLevel} from './app.js';
 
 export function getHtml(this: DeviceLogAppElement) {
   return html`<!--_html_template_start_-->
@@ -12,87 +13,68 @@ export function getHtml(this: DeviceLogAppElement) {
     <span>$i18n{autoRefreshText}</span>
   </div>
   <div id="logOptionsContainer">
-    <button id="logRefresh">$i18n{logRefreshText}</button>
-    <button id="logClear">$i18n{logClearText}</button>
+    <button id="logRefresh" @click="${this.onLogRefreshClick_}">
+      $i18n{logRefreshText}
+    </button>
+    <button id="logClear" @click="${this.onLogClearClick_}">
+      $i18n{logClearText}
+    </button>
     <span>$i18n{logLevelLabel}</span>
-    <select id="logLevelSelect">
-      <option value="Error">$i18n{logLevelErrorText}</option>
-      <option value="User">$i18n{logLevelUserText}</option>
-      <option value="Event">$i18n{logLevelEventText}</option>
-      <option value="Debug">$i18n{logLevelDebugText}</option>
+    <select id="logLevelSelect" @change="${this.onLogLevelSelectChange_}">
+      <option value="${LogLevel.ERROR}">$i18n{logLevelErrorText}</option>
+      <option value="${LogLevel.USER}">$i18n{logLevelUserText}</option>
+      <option value="${LogLevel.EVENT}">$i18n{logLevelEventText}</option>
+      <option value="${LogLevel.DEBUG}" selected>
+        $i18n{logLevelDebugText}
+      </option>
     </select>
     <label>
-      <input id="logFileinfo" type="checkbox">
+      <input id="logFileinfo" type="checkbox"
+          @click="${this.onLogFileinfoClick_}"
+          .checked="${this.logFileInfo_}">
       <span>$i18n{logLevelFileinfoText}</span>
     </label>
     <label>
-      <input id="logTimedetail" type="checkbox">
+      <input id="logTimedetail" type="checkbox"
+          @click="${this.onLogTimedetailClick_}"
+          .checked="${this.logTimeDetail_}">
       <span>$i18n{logLevelTimeDetailText}</span>
     </label>
   </div>
 
   <div id="logCheckboxContainer">
-    <button id="logClearTypes">$i18n{logClearTypesText}</button>
-    <label>
-      <input id="logTypebluetooth" type="checkbox">
-      <span>$i18n{logTypeBluetoothText}</span>
-    </label>
-    <label>
-      <input id="logTypecamera" type="checkbox">
-      <span>$i18n{logTypeCameraText}</span>
-    </label>
-    <label>
-      <input id="logTypedisplay" type="checkbox">
-      <span>$i18n{logTypeDisplayText}</span>
-    </label>
-    <label>
-      <input id="logTypeextensions" type="checkbox">
-      <span>$i18n{logTypeExtensionsText}</span>
-    </label>
-    <label>
-      <input id="logTypefido" type="checkbox">
-      <span>$i18n{logTypeFidoText}</span>
-    </label>
-    <label>
-      <input id="logTypefirmware" type="checkbox">
-      <span>$i18n{logTypeFirmwareText}</span>
-    </label>
-    <label>
-      <input id="logTypegeolocation" type="checkbox">
-      <span>$i18n{logTypeGeolocationText}</span>
-    </label>
-    <label>
-      <input id="logTypeHid" type="checkbox">
-      <span>$i18n{logTypeHidText}</span>
-    </label>
-    <label>
-      <input id="logTypelogin" type="checkbox">
-      <span>$i18n{logTypeLoginText}</span>
-    </label>
-    <label>
-      <input id="logTypenetwork" type="checkbox">
-      <span>$i18n{logTypeNetworkText}</span>
-    </label>
-    <label>
-      <input id="logTypepower" type="checkbox">
-      <span>$i18n{logTypePowerText}</span>
-    </label>
-    <label>
-      <input id="logTypeprinter" type="checkbox">
-      <span>$i18n{logTypePrinterText}</span>
-    </label>
-    <label>
-      <input id="logTypeserial" type="checkbox">
-      <span>$i18n{logTypeSerialText}</span>
-    </label>
-    <label>
-      <input id="logTypeusb" type="checkbox">
-      <span>$i18n{logTypeUsbText}</span>
-    </label>
+    <button id="logClearTypes" @click="${this.onLogClearTypesClick_}">
+      $i18n{logClearTypesText}
+    </button>
+    ${this.eventTypes_.map(item => html`
+      <label>
+        <input id="logType${item.type}" type="checkbox"
+              .checked="${item.enabled}" .value="${item.type}"
+              @change="${this.onLogTypeChange_}">
+        <span>${item.label}</span>
+      </label>
+    `)}
   </div>
-  <div id="typeHint">
-    <span>$i18n{autoSelectTypes}</span>
+  <div id="typeHint">$i18n{autoSelectTypes}</div>
+  <div id="logContainer">
+    ${
+      this.filteredLogs_.length === 0 ?
+          html`<span>$i18n{logNoEntriesText}</span>` :
+          ``}
+    ${
+      this.filteredLogs_.map(
+          item => html`
+      <p>
+        <span class="type-tag log-type-${item.type.toLowerCase()}">
+          ${item.type}
+        </span>
+        <span class="level-tag log-level-${
+              item.level.toString().toLowerCase()}">
+          ${item.level}
+        </span>
+        <span>${this.getTextForLogEntry_(item)}</span>
+      </p>
+    `)}
   </div>
-  <div id="logContainer"></div>
   <!--_html_template_end_-->`;
 }
