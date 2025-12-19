@@ -22742,6 +22742,7 @@ Called by update_net_error_codes.py.-->
   <int value="43" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
   <int value="44" label="PERMISSION_LOCAL_NETWORK"/>
   <int value="45" label="PERMISSION_LOOPBACK_NETWORK"/>
+  <int value="46" label="PERMISSION_GEOLOCATION_APPROXIMATE"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/common/permissions/permission_utils.h:PermissionType) -->

@@ -118,6 +118,7 @@ enum class RequestTypeForUma {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Any new values should be inserted
 // immediately prior to kMaxValue.
+// LINT.IfChange(PermissionSourceUI)
 enum class PermissionSourceUI {
   // Permission prompt.
   PROMPT = 0,
@@ -164,6 +165,7 @@ enum class PermissionSourceUI {
   // Always keep this at the end.
   kMaxValue = DISRUPTIVE_NOTIFICATION_REVOCATION,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionSourceUI)
 
 // Any new values should be inserted immediately prior to NUM.
 enum class PermissionEmbargoStatus {

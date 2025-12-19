@@ -265,6 +265,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/permissions/permission_request_enums.h:PermissionRequestRelevance) -->
 
+<!-- LINT.IfChange(PermissionSourceUI) -->
+
 <enum name="PermissionSourceUI">
   <int value="0" label="Prompt"/>
   <int value="1" label="Page info bubble"/>
@@ -276,7 +278,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Automatic revocation from Safe Browsing"/>
   <int value="7" label="Automatic revocation from Safety Hub"/>
   <int value="8" label="Unidentified source"/>
+  <int value="9" label="Disruptive notification revocation"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionSourceUI) -->
 
 <enum name="PermissionsPolicyConfiguration">
   <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
