@@ -160,18 +160,100 @@ class DomStorageDatabase {
     std::optional<int64_t> next_map_id;
   };
 
+  // A collection of key/value pair updates for a single map. Optionally
+  // contains map metadata to update like last modified time.
+  struct MapBatchUpdate {
+    explicit MapBatchUpdate(MapLocator map_to_update);
+    ~MapBatchUpdate();
+
+    MapBatchUpdate(MapBatchUpdate&&);
+    MapBatchUpdate& operator=(MapBatchUpdate&&);
+
+    // Support move-only.
+    MapBatchUpdate(const MapBatchUpdate&) = delete;
+    MapBatchUpdate& operator=(const MapBatchUpdate&) = delete;
+
+    // The map to update.
+    MapLocator map_locator;
+
+    // Applications use the following JavaScript APIs to manipulate persisted
+    // map key/value pairs.
+    //
+    // `Storage::clear()` deletes all key/value pairs.
+    bool clear_all_first = false;
+
+    // `Storage::setItem()` adds or updates a key/value pair.
+    std::vector<KeyValuePair> entries_to_add;
+
+    // `Storage::removeItem()` deletes a key/value pair.
+    std::vector<Key> keys_to_delete;
+
+    // The map's optional usage metadata to persist along with this update. Use
+    // `should_delete_all_usage_` to remove the map's usage metadata instead of
+    // persisting new metadata.
+    //
+    // Session storage does not record usage metadata, leaving `map_usage` below
+    // null.
+    //
+    // Local storage records last accessed time once per map load either during
+    // the first update of a key/value pair or during the unloading of the map.
+    // Every local storage key/value pair update must record a new last modified
+    // time and a new total map size.  When a map becomes empty with no
+    // key/value pairs remaining, the empty map deletes its usage metadata from
+    // the database.
+    class Usage {
+     public:
+      std::optional<base::Time> last_accessed() const { return last_accessed_; }
+      std::optional<base::Time> last_modified() const { return last_modified_; }
+      std::optional<base::ByteSize> total_size() const { return total_size_; }
+
+      bool should_delete_all_usage() const { return should_delete_all_usage_; }
+
+      void SetLastAccessed(base::Time last_accessed) {
+        CHECK(!should_delete_all_usage_);
+        last_accessed_ = last_accessed;
+      }
+
+      void SetLastModifiedAndTotalSize(base::Time last_modified,
+                                       base::ByteSize total_size) {
+        CHECK(!should_delete_all_usage_);
+        last_modified_ = last_modified;
+        total_size_ = total_size;
+      }
+
+      void DeleteAllUsage() {
+        CHECK(!last_accessed_);
+        CHECK(!last_modified_);
+        should_delete_all_usage_ = true;
+      }
+
+     private:
+      std::optional<base::Time> last_accessed_;
+      std::optional<base::Time> last_modified_;
+      std::optional<base::ByteSize> total_size_;
+
+      // Set to true to delete the map's last accessed time, last modified time
+      // and total size from the database. When true, all other members must be
+      // `std::nullopt`.
+      bool should_delete_all_usage_ = false;
+    };
+    std::optional<Usage> map_usage;
+  };
+
   virtual ~DomStorageDatabase() = default;
 
   // TODO(crbug.com/377242771): Remove LevelDB accessor after fully migrating to
   // this interface.
   virtual DomStorageDatabaseLevelDB& GetLevelDB() = 0;
 
-  // TODO(crbug.com/377242771): Support both SQLite and LevelDB by adding more
-  // shared functions to this interface.
-  //
   // Gets an entire map's key/value pairs.
   virtual StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) = 0;
+
+  // Persist all `map_updates`.  Each update adds, modifies and/or deletes
+  // key/value pairs in a map.  Updates optionally includes map usage metadata
+  // to persist like last modified time.
+  virtual DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) = 0;
 
   // Deep copies a map's key/value pairs from one session to another.
   virtual DbStatus CloneMap(MapLocator source_map, MapLocator target_map) = 0;

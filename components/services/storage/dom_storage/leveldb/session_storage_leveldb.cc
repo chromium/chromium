@@ -17,6 +17,7 @@
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 
@@ -123,18 +124,34 @@ SessionStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.map_id().value()));
 }
 
+DbStatus SessionStorageLevelDB::UpdateMaps(
+    std::vector<MapBatchUpdate> map_updates) {
+  std::unique_ptr<DomStorageBatchOperationLevelDB> leveldb_batch =
+      leveldb_->CreateBatchOperation();
+
+  for (const MapBatchUpdate& map_update : map_updates) {
+    // Session storage must not record map usage metadata.
+    CHECK(!map_update.map_usage.has_value());
+
+    const MapLocator& map_locator = map_update.map_locator;
+    DomStorageDatabase::Key map_prefix =
+        GetMapPrefix(map_locator.map_id().value());
+
+    DB_RETURN_IF_ERROR(
+        leveldb_batch->UpdateMapKeyValues(map_prefix, map_update));
+  }
+  return leveldb_batch->Commit();
+}
+
 DbStatus SessionStorageLevelDB::CloneMap(MapLocator source_map,
                                          MapLocator target_map) {
   std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
       leveldb_->CreateBatchOperation();
 
   // Copy the key/value pairs from `source_map` to `target_map`.
-  DbStatus status =
+  DB_RETURN_IF_ERROR(
       batch->CopyPrefixed(GetMapPrefix(source_map.map_id().value()),
-                          GetMapPrefix(target_map.map_id().value()));
-  if (!status.ok()) {
-    return status;
-  }
+                          GetMapPrefix(target_map.map_id().value())));
   return batch->Commit();
 }
 

@@ -160,35 +160,27 @@ class LocalStorageImpl::StorageAreaHolder final
     storage_area()->ScheduleImmediateCommit();
   }
 
-  void PrepareToCommit(
-      std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
-      std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) override {
-    DomStorageDatabase::Key access_metadata_key =
-        LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key_);
-    DomStorageDatabase::Key write_metadata_key =
-        LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key_);
+  std::optional<DomStorageDatabase::MapBatchUpdate::Usage>
+  GetMapUsageMetadataToCommit() override {
+    DomStorageDatabase::MapBatchUpdate::Usage map_usage;
+
     if (storage_area()->empty()) {
-      extra_keys_to_delete->push_back(std::move(access_metadata_key));
-      extra_keys_to_delete->push_back(std::move(write_metadata_key));
-    } else {
-      base::Time now = base::Time::Now();
-      base::ByteSize total_size{storage_area()->storage_used()};
-      extra_entries_to_add->emplace_back(
-          std::move(write_metadata_key),
-          LocalStorageLevelDB::CreateWriteMetaDataValue(/*last_modified=*/now,
-                                                        total_size));
-      // We only need to write this once per construction.
-      if (!has_written_access_meta_data_) {
-        storage::LocalStorageAreaAccessMetaData access_data;
-        access_data.set_last_accessed(now.ToInternalValue());
-        std::string serialized_access_data = access_data.SerializeAsString();
-        extra_entries_to_add->emplace_back(
-            std::move(access_metadata_key),
-            DomStorageDatabase::Value(serialized_access_data.begin(),
-                                      serialized_access_data.end()));
-        has_written_access_meta_data_ = true;
-      }
+      // Delete this empty map's usage metadata from the database.
+      map_usage.DeleteAllUsage();
+      return map_usage;
     }
+
+    // Update the last modified time and total size in the database.
+    base::Time now = base::Time::Now();
+    map_usage.SetLastModifiedAndTotalSize(
+        now, base::ByteSize(storage_area()->storage_used()));
+
+    if (!has_written_access_meta_data_) {
+      // Update the last accessed time in the database.
+      map_usage.SetLastAccessed(now);
+      has_written_access_meta_data_ = true;
+    }
+    return map_usage;
   }
 
   void DidCommit(DbStatus status) override { context_->OnCommitResult(status); }

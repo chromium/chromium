@@ -92,16 +92,16 @@ using StatusOr = base::expected<T, DbStatus>;
 // us to make use of the `base::expected` macros such as RETURN_IF_ERROR.
 // However, that would require updating tons of code, so we simply define
 // similar macros.
-#define IDB_RETURN_IF_ERROR_AND_DO(expr, on_error) \
-  {                                                \
-    DbStatus _status = expr;                       \
-    if (!_status.ok()) [[unlikely]] {              \
-      on_error;                                    \
-      return _status;                              \
-    }                                              \
+#define DB_RETURN_IF_ERROR_AND_DO(expr, on_error) \
+  {                                               \
+    DbStatus _status = expr;                      \
+    if (!_status.ok()) [[unlikely]] {             \
+      on_error;                                   \
+      return _status;                             \
+    }                                             \
   }
 
-#define IDB_RETURN_IF_ERROR(expr) IDB_RETURN_IF_ERROR_AND_DO(expr, {})
+#define DB_RETURN_IF_ERROR(expr) DB_RETURN_IF_ERROR_AND_DO(expr, {})
 
 }  // namespace storage
 

@@ -16,6 +16,7 @@ source_set("storage") {
     "dom_storage/leveldb/dom_storage_batch_operation_leveldb.h",
     "dom_storage/leveldb/dom_storage_database_leveldb.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb.h",
+    "dom_storage/leveldb/dom_storage_database_leveldb_utils.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb_utils.h",
     "dom_storage/leveldb/local_storage_leveldb.cc",
     "dom_storage/leveldb/local_storage_leveldb.h",

@@ -219,14 +219,14 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
 }
 
 void AsyncDomStorageDatabase::InitiateCommit() {
-  std::vector<Commit> commits;
+  std::vector<DomStorageDatabase::MapBatchUpdate> commits;
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
-  commits.reserve(committers_.size());
   commit_dones.reserve(committers_.size());
   for (Committer* committer : committers_) {
-    std::optional<Commit> commit = committer->CollectCommit();
+    std::optional<DomStorageDatabase::MapBatchUpdate> commit =
+        committer->CollectCommit();
     if (commit) {
-      commits.emplace_back(std::move(*commit));
+      commits.push_back(*std::move(commit));
       commit_dones.emplace_back(committer->GetCommitCompleteCallback());
     }
   }
@@ -242,30 +242,9 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 
   RunDatabaseTask(
       base::BindOnce(
-          [](std::vector<Commit> commits, DomStorageDatabaseLevelDB& db) {
-            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-                db.CreateBatchOperation();
-            for (const Commit& commit : commits) {
-              const auto now = base::TimeTicks::Now();
-              for (const base::TimeTicks& put_time : commit.timestamps) {
-                UMA_HISTOGRAM_LONG_TIMES_100("DOMStorage.CommitMeasuredDelay",
-                                             now - put_time);
-              }
-
-              if (commit.clear_all_first) {
-                DbStatus status = batch->DeletePrefixed(commit.prefix);
-                if (!status.ok()) {
-                  return status;
-                }
-              }
-              for (const auto& entry : commit.entries_to_add) {
-                batch->Put(entry.key, entry.value);
-              }
-              for (const auto& key : commit.keys_to_delete) {
-                batch->Delete(key);
-              }
-            }
-            return batch->Commit();
+          [](std::vector<DomStorageDatabase::MapBatchUpdate> commits,
+             DomStorageDatabase& db) {
+            return db.UpdateMaps(std::move(commits));
           },
           std::move(commits)),
       std::move(run_all));
@@ -289,10 +268,5 @@ void AsyncDomStorageDatabase::OnDatabaseOpened(
   }
   std::move(callback).Run(DbStatus::OK());
 }
-
-AsyncDomStorageDatabase::Commit::Commit() = default;
-AsyncDomStorageDatabase::Commit::~Commit() = default;
-AsyncDomStorageDatabase::Commit::Commit(AsyncDomStorageDatabase::Commit&&) =
-    default;
 
 }  // namespace storage

@@ -20,9 +20,10 @@ namespace storage {
 
 StorageAreaImpl::Delegate::~Delegate() = default;
 
-void StorageAreaImpl::Delegate::PrepareToCommit(
-    std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
-    std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) {}
+std::optional<DomStorageDatabase::MapBatchUpdate::Usage>
+StorageAreaImpl::Delegate::GetMapUsageMetadataToCommit() {
+  return std::nullopt;
+}
 
 void StorageAreaImpl::Delegate::OnMapLoaded() {}
 
@@ -339,8 +340,6 @@ void StorageAreaImpl::Put(
       commit_batch_->changed_values[key] = value;
     else
       commit_batch_->changed_keys.insert(key);
-
-    commit_batch_->put_timestamps.push_back(base::TimeTicks::Now());
   }
 
   if (map_state_ == MapState::LOADED_KEYS_ONLY)
@@ -728,7 +727,7 @@ void StorageAreaImpl::CommitChanges() {
   database_->InitiateCommit();
 }
 
-std::optional<AsyncDomStorageDatabase::Commit>
+std::optional<DomStorageDatabase::MapBatchUpdate>
 StorageAreaImpl::CollectCommit() {
   if (!commit_batch_) {
     return std::nullopt;
@@ -740,11 +739,9 @@ StorageAreaImpl::CollectCommit() {
   commit_rate_limiter_.add_samples(1);
 
   // Commit all our changes in a single batch.
-  AsyncDomStorageDatabase::Commit commit;
-  commit.timestamps = std::move(commit_batch_->put_timestamps);
-  commit.prefix = prefix_;
+  DomStorageDatabase::MapBatchUpdate commit(map_locator_->Clone());
   commit.clear_all_first = commit_batch_->clear_all_first;
-  delegate_->PrepareToCommit(&commit.entries_to_add, &commit.keys_to_delete);
+  commit.map_usage = delegate_->GetMapUsageMetadataToCommit();
 
   size_t data_size = 0;
   if (map_state_ == MapState::LOADED_KEYS_AND_VALUES) {
@@ -752,16 +749,13 @@ StorageAreaImpl::CollectCommit() {
         << "Map state and commit state out of sync.";
     for (const auto& key : commit_batch_->changed_keys) {
       data_size += key.size();
-      DomStorageDatabase::Key prefixed_key;
-      prefixed_key.reserve(prefix_.size() + key.size());
-      prefixed_key.insert(prefixed_key.end(), prefix_.begin(), prefix_.end());
-      prefixed_key.insert(prefixed_key.end(), key.begin(), key.end());
+
       auto it = keys_values_map_.find(key);
       if (it != keys_values_map_.end()) {
         data_size += it->second.size();
-        commit.entries_to_add.emplace_back(std::move(prefixed_key), it->second);
+        commit.entries_to_add.emplace_back(std::move(key), it->second);
       } else {
-        commit.keys_to_delete.push_back(std::move(prefixed_key));
+        commit.keys_to_delete.push_back(std::move(key));
       }
     }
   } else {
@@ -771,17 +765,14 @@ StorageAreaImpl::CollectCommit() {
     for (auto& entry : commit_batch_->changed_values) {
       const auto& key = entry.first;
       data_size += key.size();
-      DomStorageDatabase::Key prefixed_key;
-      prefixed_key.reserve(prefix_.size() + key.size());
-      prefixed_key.insert(prefixed_key.end(), prefix_.begin(), prefix_.end());
-      prefixed_key.insert(prefixed_key.end(), key.begin(), key.end());
+
       auto it = keys_only_map_.find(key);
       if (it != keys_only_map_.end()) {
         data_size += entry.second.size();
-        commit.entries_to_add.emplace_back(std::move(prefixed_key),
+        commit.entries_to_add.emplace_back(std::move(key),
                                            std::move(entry.second));
       } else {
-        commit.keys_to_delete.push_back(std::move(prefixed_key));
+        commit.keys_to_delete.push_back(std::move(key));
       }
     }
   }

@@ -88,26 +88,6 @@ TEST_F(AsyncDomStorageDatabaseTest,
   ASSERT_NO_FATAL_FAILURE(OpenAsyncDomStorageDatabaseInMemorySync(
       StorageType::kLocalStorage, &database));
 
-  // Writing empty metadata must not update the local storage LevelDB.
-  ASSERT_NO_FATAL_FAILURE(PutMetadataSync(*database, /*metadata=*/{}));
-
-  DomStorageDatabase::Metadata read_metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
-  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
-  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
-
-  // Writing metadata without usage must not update the local storage LevelDB.
-  DomStorageDatabase::Metadata metadata_without_usage;
-  metadata_without_usage.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kSecondStorageKey},
-  });
-  ASSERT_NO_FATAL_FAILURE(
-      PutMetadataSync(*database, std::move(metadata_without_usage)));
-
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
-  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
-  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
-
   // Write each map's metadata to the database.
   for (size_t i = 0; i < kExpectedMapMetadata.size(); ++i) {
     // Write the metadata for a single map.
@@ -119,6 +99,7 @@ TEST_F(AsyncDomStorageDatabaseTest,
         PutMetadataSync(*database, std::move(cloned_metadata)));
 
     // Read the metadata from the database.
+    DomStorageDatabase::Metadata read_metadata;
     ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
 
     // Read back the metadata written so far.
@@ -139,6 +120,7 @@ TEST_F(AsyncDomStorageDatabaseTest,
                                    {kFirstStorageKey, kThirdStorageKey},
                                    std::move(maps_to_delete));
 
+  DomStorageDatabase::Metadata read_metadata;
   ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
   EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
 

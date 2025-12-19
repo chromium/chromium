@@ -76,28 +76,12 @@ class AsyncDomStorageDatabase {
           memory_dump_id,
       StatusCallback callback);
 
-  // Represents a batch of changes from a single commit source. There will be
-  // zero to one of these per registered Committer when a commit is initiated.
-  struct Commit {
-    Commit();
-    ~Commit();
-    Commit(Commit&&);
-    Commit(const Commit&) = delete;
-    Commit operator=(Commit&) = delete;
-
-    DomStorageDatabase::Key prefix;
-    bool clear_all_first;
-
-    std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
-    std::vector<DomStorageDatabase::Key> keys_to_delete;
-    std::vector<base::TimeTicks> timestamps;
-  };
-
   // An interface that represents a source of commits. Practically speaking,
   // this is a `StorageAreaImpl`.
   class Committer {
    public:
-    virtual std::optional<Commit> CollectCommit() = 0;
+    virtual std::optional<DomStorageDatabase::MapBatchUpdate>
+    CollectCommit() = 0;
     virtual base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() = 0;
   };
 

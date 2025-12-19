@@ -25,6 +25,8 @@ class DomStorageBatchOperationLevelDB {
   using KeyView = DomStorageDatabase::KeyView;
   using Value = DomStorageDatabase::Value;
   using ValueView = DomStorageDatabase::ValueView;
+  using MapBatchUpdate = DomStorageDatabase::MapBatchUpdate;
+  using KeyValuePair = DomStorageDatabase::KeyValuePair;
 
   explicit DomStorageBatchOperationLevelDB(
       base::WeakPtr<DomStorageDatabaseLevelDB> database);
@@ -36,6 +38,11 @@ class DomStorageBatchOperationLevelDB {
   [[nodiscard]] DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix);
   [[nodiscard]] DbStatus Commit();
   size_t ApproximateSizeForMetrics() const;
+
+  // Batch updates a map's key/value pairs by putting and deleting the entries
+  // in `map_update`.
+  [[nodiscard]] DbStatus UpdateMapKeyValues(KeyView map_prefix,
+                                            const MapBatchUpdate& map_update);
 
  private:
   base::WeakPtr<DomStorageDatabaseLevelDB> database_;

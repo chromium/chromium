@@ -1328,4 +1328,18 @@ TEST_F(SessionStorageLevelDBTest, CloneMapWithMultipleMaps) {
       }));
 }
 
+TEST_F(SessionStorageLevelDBTest, UpdateMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  DomStorageDatabase::MapLocator map1_locator{kFakeSessionId,
+                                              kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator map2_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      TestUpdateMaps(*session_storage_leveldb, map1_locator, map2_locator));
+}
+
 }  // namespace storage

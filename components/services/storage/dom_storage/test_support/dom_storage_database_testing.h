@@ -34,6 +34,15 @@ DomStorageDatabase::MapMetadata CloneMapMetadata(
 std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(
     base::span<const DomStorageDatabase::MapMetadata> source_span);
 
+// All `DomStorageDatabase` implementations can share this test, which calls
+// `DomStorageDatabase::UpdateMaps()` three times to:
+// (1) Add key/value pairs to two maps.
+// (2) Remove one key/value pair from the first map and two from the second map.
+// (3) Clear all key/value pairs from the first map.
+void TestUpdateMaps(DomStorageDatabase& database,
+                    const DomStorageDatabase::MapLocator& map1_locator,
+                    const DomStorageDatabase::MapLocator& map2_locator);
+
 // A synchronous wrapper for
 // `AsyncDomStorageDatabase::OpenInMemory()`.  Asserts success.
 void OpenAsyncDomStorageDatabaseInMemorySync(

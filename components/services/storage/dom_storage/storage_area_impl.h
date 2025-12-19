@@ -57,9 +57,12 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
    public:
     virtual ~Delegate();
     virtual void OnNoBindings() = 0;
-    virtual void PrepareToCommit(
-        std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
-        std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
+
+    // Called before committing to optionally add or remove usage metadata as
+    // part of the commit.
+    virtual std::optional<DomStorageDatabase::MapBatchUpdate::Usage>
+    GetMapUsageMetadataToCommit();
+
     virtual void DidCommit(DbStatus error) = 0;
     virtual void OnMapLoaded();
   };
@@ -209,7 +212,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
       GetAllCallback callback) override;
 
   // Committer:
-  std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;
+  std::optional<DomStorageDatabase::MapBatchUpdate> CollectCommit() override;
   base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 
   void OnCommitComplete(DbStatus status);
@@ -261,9 +264,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.
     std::set<std::vector<uint8_t>> changed_keys;
-    // Timestamp of each discrete `Put()` call that was coalesced into this
-    // batch.
-    std::vector<base::TimeTicks> put_timestamps;
   };
 
   enum class MapState {

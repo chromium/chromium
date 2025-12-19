@@ -120,6 +120,16 @@ DomStorageDatabase::Metadata::Metadata(Metadata&&) = default;
 DomStorageDatabase::Metadata& DomStorageDatabase::Metadata::operator=(
     Metadata&&) = default;
 
+DomStorageDatabase::MapBatchUpdate::MapBatchUpdate(MapLocator map_to_update)
+    : map_locator{std::move(map_to_update)} {}
+
+DomStorageDatabase::MapBatchUpdate::~MapBatchUpdate() = default;
+
+DomStorageDatabase::MapBatchUpdate::MapBatchUpdate(MapBatchUpdate&&) = default;
+
+DomStorageDatabase::MapBatchUpdate&
+DomStorageDatabase::MapBatchUpdate::operator=(MapBatchUpdate&&) = default;
+
 // static
 void DomStorageDatabaseFactory::Open(
     StorageType storage_type,

@@ -12,6 +12,7 @@
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -28,20 +29,7 @@ DomStorageDatabase::Key CreatePrefixedStorageKey(
     const blink::StorageKey& storage_key) {
   const std::string serialized_storage_key =
       storage_key.SerializeForLocalStorage();
-
-  base::span<const uint8_t> serialized_storage_key_bytes =
-      base::as_byte_span(serialized_storage_key);
-
-  DomStorageDatabase::Key result;
-  result.reserve(prefix.size() + serialized_storage_key.size());
-
-  // Append `prefix`.
-  result.insert(result.end(), prefix.begin(), prefix.end());
-
-  // Append `storage_key`.
-  result.insert(result.end(), serialized_storage_key_bytes.begin(),
-                serialized_storage_key_bytes.end());
-  return result;
+  return CreatePrefixedKey(prefix, base::as_byte_span(serialized_storage_key));
 }
 
 // Removes a prefix like "META:" or "METAACCESS:" from `key` and then attempts
@@ -194,6 +182,39 @@ LocalStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.storage_key()));
 }
 
+DbStatus LocalStorageLevelDB::UpdateMaps(
+    std::vector<MapBatchUpdate> map_updates) {
+  std::unique_ptr<DomStorageBatchOperationLevelDB> leveldb_batch =
+      leveldb_->CreateBatchOperation();
+
+  for (const MapBatchUpdate& map_update : map_updates) {
+    const MapLocator& map_locator = map_update.map_locator;
+    CHECK_EQ(map_locator.session_ids().size(), 1u);
+    CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+
+    DomStorageDatabase::Key map_prefix =
+        GetMapPrefix(map_locator.storage_key());
+
+    DB_RETURN_IF_ERROR(
+        leveldb_batch->UpdateMapKeyValues(map_prefix, map_update));
+
+    // Optionally update the map's usage metadata.
+    if (!map_update.map_usage) {
+      continue;
+    }
+
+    if (map_update.map_usage->should_delete_all_usage()) {
+      DeleteMapUsageMetadata(*leveldb_batch, map_locator.storage_key());
+    } else {
+      PutMapUsageMetadata(*leveldb_batch, map_locator.storage_key(),
+                          map_update.map_usage->last_accessed(),
+                          map_update.map_usage->last_modified(),
+                          map_update.map_usage->total_size());
+    }
+  }
+  return leveldb_batch->Commit();
+}
+
 DbStatus LocalStorageLevelDB::CloneMap(MapLocator source_map,
                                        MapLocator target_map) {
   // Local storage does not support cloning.
@@ -278,20 +299,9 @@ DbStatus LocalStorageLevelDB::PutMetadata(Metadata metadata) {
   // Record usage for each map in `metadata`.
   for (const DomStorageDatabase::MapMetadata& map_usage :
        metadata.map_metadata) {
-    const blink::StorageKey& storage_key = map_usage.map_locator.storage_key();
-
-    if (map_usage.last_accessed) {
-      // Add "METAACCESS:" entry.
-      batch->Put(CreateAccessMetaDataKey(storage_key),
-                 CreateAccessMetaDataValue(*map_usage.last_accessed));
-    }
-
-    if (map_usage.last_modified && map_usage.total_size) {
-      // Add "META:" entry.
-      batch->Put(CreateWriteMetaDataKey(storage_key),
-                 CreateWriteMetaDataValue(*map_usage.last_modified,
-                                          *map_usage.total_size));
-    }
+    PutMapUsageMetadata(*batch, map_usage.map_locator.storage_key(),
+                        map_usage.last_accessed, map_usage.last_modified,
+                        map_usage.total_size);
   }
   return batch->Commit();
 }
@@ -309,11 +319,7 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
       leveldb_->CreateBatchOperation();
 
   for (const blink::StorageKey& storage_key : metadata_to_delete) {
-    // Erase the "METAACCESS:" entry.
-    batch->Delete(CreateAccessMetaDataKey(storage_key));
-
-    // Erase the "META:" entry.
-    batch->Delete(CreateWriteMetaDataKey(storage_key));
+    DeleteMapUsageMetadata(*batch, storage_key);
   }
 
   // Erase all map key/value pairs.
@@ -323,10 +329,7 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
     CHECK_EQ(map.session_ids()[0], kLocalStorageSessionId);
     DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
 
-    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.storage_key()));
-    if (!status.ok()) {
-      return status;
-    }
+    DB_RETURN_IF_ERROR(batch->DeletePrefixed(GetMapPrefix(map.storage_key())));
   }
   return batch->Commit();
 }
@@ -389,6 +392,41 @@ void LocalStorageLevelDB::MakeAllCommitsFailForTesting() {
 void LocalStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
+}
+
+void LocalStorageLevelDB::PutMapUsageMetadata(
+    DomStorageBatchOperationLevelDB& batch,
+    const blink::StorageKey& map_storage_key,
+    std::optional<base::Time> last_accessed,
+    std::optional<base::Time> last_modified,
+    std::optional<base::ByteSize> total_size) {
+  // `PutMapUsageMetadata()` must have at least one value to write.
+  CHECK(last_accessed || last_modified);
+
+  // The "META:" entry requires both `last_modified` and `total_size`.
+  CHECK_EQ(last_modified.has_value(), total_size.has_value());
+
+  if (last_accessed) {
+    // Add "METAACCESS:" entry.
+    batch.Put(CreateAccessMetaDataKey(map_storage_key),
+              CreateAccessMetaDataValue(*last_accessed));
+  }
+
+  if (last_modified) {
+    // Add "META:" entry.
+    batch.Put(CreateWriteMetaDataKey(map_storage_key),
+              CreateWriteMetaDataValue(*last_modified, *total_size));
+  }
+}
+
+void LocalStorageLevelDB::DeleteMapUsageMetadata(
+    DomStorageBatchOperationLevelDB& batch,
+    const blink::StorageKey& map_storage_key) {
+  // Erase the "METAACCESS:" entry.
+  batch.Delete(CreateAccessMetaDataKey(map_storage_key));
+
+  // Erase the "META:" entry.
+  batch.Delete(CreateWriteMetaDataKey(map_storage_key));
 }
 
 }  // namespace storage
