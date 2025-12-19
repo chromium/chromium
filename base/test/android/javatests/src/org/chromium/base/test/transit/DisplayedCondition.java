@@ -122,9 +122,10 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
                 return notFulfilled("No matching Views").withoutResult();
             } else {
                 return notFulfilled(
-                                "Matched only non-displayed Views: "
-                                        + ViewConditions.writeDisplayedViewsStatusMessage(
-                                                displayedEvaluations))
+                                "Matched only Views displayed < %d%%: %s",
+                                mOptions.mDisplayedPercentageRequired,
+                                ViewConditions.writeDisplayedViewsStatusMessage(
+                                        displayedEvaluations))
                         .withoutResult();
             }
         } else if (displayedMatches.size() > 1) {
