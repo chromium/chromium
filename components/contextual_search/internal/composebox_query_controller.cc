@@ -245,6 +245,12 @@ lens::LensOverlayVisualInputType MediaTypeToVisualInputType(
   }
 }
 
+int64_t RandInt64() {
+  int64_t number;
+  base::RandBytes(base::byte_span_from_ref(number));
+  return number;
+}
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -541,9 +547,9 @@ void ComposeboxQueryController::StartFileUploadFlow(
       (!enable_multi_context_input_flow_ ||
        !use_separate_request_ids_for_multi_context_viewport_images_);
   if (enable_context_id_migration_) {
-    uint64_t context_id = contextual_input_data->context_id.has_value()
-                              ? contextual_input_data->context_id.value()
-                              : base::RandUint64();
+    int64_t context_id = contextual_input_data->context_id.has_value()
+                             ? contextual_input_data->context_id.value()
+                             : RandInt64();
     current_file_info.request_id =
         *request_id_generator_
              .GetRequestIdWithMultiContextId(

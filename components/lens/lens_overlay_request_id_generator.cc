@@ -92,7 +92,7 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
 std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayRequestIdGenerator::GetRequestIdWithMultiContextId(
     lens::LensOverlayRequestId::MediaType media_type,
-    uint64_t context_id) {
+    int64_t context_id) {
   // The request ID flow for the multi-context upload flow using context_id
   // is intended have separate request ids for viewport vs content upload
   // requests, so the media type should never combine the two with _AND_IMAGE.

@@ -55,5 +55,5 @@ message LensOverlayRequestId {
 
   // Identifier for the contextualized document in this request. Stable across
   // follow-up requests for the same document.
-  uint64 context_id = 12;
+  int64 context_id = 12;
 }

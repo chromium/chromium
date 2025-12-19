@@ -210,7 +210,7 @@ class ComposeboxQueryControllerTest
   void StartPdfFileUploadFlow(
       const base::UnguessableToken& file_token,
       const std::vector<uint8_t>& file_data,
-      std::optional<uint64_t> context_id = std::nullopt) {
+      std::optional<int64_t> context_id = std::nullopt) {
     std::unique_ptr<lens::ContextualInputData> input_data =
         std::make_unique<lens::ContextualInputData>();
     input_data->primary_content_type = lens::MimeType::kPdf;
@@ -227,7 +227,7 @@ class ComposeboxQueryControllerTest
       const base::UnguessableToken& file_token,
       const std::vector<uint8_t>& file_data,
       std::optional<lens::ImageEncodingOptions> image_options = std::nullopt,
-      std::optional<uint64_t> context_id = std::nullopt) {
+      std::optional<int64_t> context_id = std::nullopt) {
     std::unique_ptr<lens::ContextualInputData> input_data =
         std::make_unique<lens::ContextualInputData>();
     input_data->primary_content_type = lens::MimeType::kImage;
@@ -718,7 +718,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
-  uint64_t context_id = 12345;
+  int64_t context_id = 12345;
   StartPdfFileUploadFlow(file_token,
                          /*file_data=*/std::vector<uint8_t>(), context_id);
 
@@ -838,7 +838,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
-  uint64_t context_id = 12345;
+  int64_t context_id = 12345;
   StartPdfFileUploadFlow(file_token,
                          /*file_data=*/std::vector<uint8_t>(), context_id);
 
