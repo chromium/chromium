@@ -184,7 +184,8 @@ void AmountExtractionManager::OnAiPageContentReceived(
     std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
   if (!has_logged_apc_fetch_result_) {
     autofill_metrics::LogAiAmountExtractionApcFetchResult(
-        /*success=*/result.has_value());
+        /*success=*/result.has_value(),
+        GetMainFrameDriver()->GetPageUkmSourceId());
     has_logged_apc_fetch_result_ = true;
   }
 

@@ -2388,7 +2388,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.AiAmountExtractionComplete" singular="true">
+<event name="Autofill.AiAmountExtraction.ApcFetchResult" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the Annotated Page Content (APC) fetch was successful. APC
+    fetching is triggered at the start of the AI-based amount extraction process
+    to generate the structured page data that will subsequently be analyzed by
+    the model to retrieve the checkout amount. Recorded once per page load when
+    the APC fetch attempt completes.
+  </summary>
+  <metric name="ApcFetchResult" enum="BooleanSuccess">
+    <summary>
+      The result of the APC fetch.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.AiAmountExtraction.Result" singular="true">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

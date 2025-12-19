@@ -17,7 +17,7 @@ void LogAiAmountExtractionResult(AiAmountExtractionResult result,
                                  ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Autofill.AiAmountExtraction.Result", result);
 
-  ukm::builders::Autofill_AiAmountExtractionComplete(ukm_source_id)
+  ukm::builders::Autofill_AiAmountExtraction_Result(ukm_source_id)
       .SetResult(static_cast<int64_t>(result))
       .Record(ukm::UkmRecorder::Get());
 }
@@ -30,9 +30,14 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
   base::UmaHistogramBoolean(histogram_name, is_within_range);
 }
 
-void LogAiAmountExtractionApcFetchResult(bool success) {
+void LogAiAmountExtractionApcFetchResult(bool success,
+                                         ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("Autofill.AiAmountExtraction.ApcFetchResult",
                             success);
+
+  ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult(ukm_source_id)
+      .SetApcFetchResult(success)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogAiAmountExtractionInvalidResponseReason(

@@ -45,7 +45,7 @@ enum class AiAmountExtractionInvalidResponseReason {
 };
 
 // Logs the result of the AI-based amount extraction process. Logs to both UMA
-// and UKM
+// and UKM.
 void LogAiAmountExtractionResult(AiAmountExtractionResult result,
                                  ukm::SourceId ukm_source_id);
 
@@ -55,8 +55,9 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
                                        BnplIssuer::IssuerId issuer_id);
 
 // Logs the result (success/failure) of fetching the Annotated Page Content
-// (APC).
-void LogAiAmountExtractionApcFetchResult(bool success);
+// (APC). Logs to both UMA and UKM.
+void LogAiAmountExtractionApcFetchResult(bool success,
+                                         ukm::SourceId ukm_source_id);
 
 // Logs the reason why the AI-based amount extraction response was invalid,
 // specifically when a response is present and it is an error.

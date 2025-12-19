@@ -1178,8 +1178,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Success) {
       autofill_metrics::AiAmountExtractionResult::kSuccess, kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
-      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
@@ -1194,8 +1194,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Failed) {
       autofill_metrics::AiAmountExtractionResult::kFailed, kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
-      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
@@ -1212,8 +1212,8 @@ TEST_F(AmountExtractionManagerTest,
       kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
-      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
@@ -1228,8 +1228,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Timeout) {
       autofill_metrics::AiAmountExtractionResult::kTimeout, kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
-      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
@@ -1561,6 +1561,15 @@ TEST_F(AmountExtractionManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+           kApcFetchResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("ApcFetchResult"), 1);
+  EXPECT_EQ(ukm_entries[0].source_id, autofill_driver().GetPageUkmSourceId());
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -1583,6 +1592,15 @@ TEST_F(AmountExtractionManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AiAmountExtraction.ApcFetchResult", false, 1);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+           kApcFetchResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("ApcFetchResult"), 0);
+  EXPECT_EQ(ukm_entries[0].source_id, autofill_driver().GetPageUkmSourceId());
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -1609,10 +1627,28 @@ TEST_F(AmountExtractionManagerTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
 
+  ASSERT_EQ(ukm_recorder_
+                .GetEntries(
+                    ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+                        kEntryName,
+                    {ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+                         kApcFetchResultName})
+                .size(),
+            1UL);
+
   amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
+
+  ASSERT_EQ(ukm_recorder_
+                .GetEntries(
+                    ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+                        kEntryName,
+                    {ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult::
+                         kApcFetchResultName})
+                .size(),
+            1UL);
 }
 
 TEST_F(AmountExtractionManagerTest,
