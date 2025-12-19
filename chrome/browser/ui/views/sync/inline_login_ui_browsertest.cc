@@ -622,9 +622,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
-// https://crbug.com/1271819
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       DISABLED_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
