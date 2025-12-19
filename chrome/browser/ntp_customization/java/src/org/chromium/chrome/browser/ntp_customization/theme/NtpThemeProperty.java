@@ -9,8 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 
-import androidx.core.view.OnApplyWindowInsetsListener;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -45,21 +43,25 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             PREVIEW_CANCEL_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
-    // The listener for setting the margin bottom of the "Cancel" and "Save" buttons in the preview
-    // dialog.
-    public static final PropertyModel.WritableObjectPropertyKey<OnApplyWindowInsetsListener>
-            PREVIEW_SET_WINDOW_INSETS_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-
     // The bitmap for the logo in the preview dialog. If null, the default Google logo is used.
-    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> SET_LOGO_BITMAP =
+    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> LOGO_BITMAP =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     // The callback to adjust the logo's layout parameters.
-    public static final PropertyModel.WritableObjectPropertyKey<int[]> SET_LOGO_PARAMS =
+    public static final PropertyModel.WritableObjectPropertyKey<int[]> LOGO_PARAMS =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     // The visibility of the logo view.
-    public static final PropertyModel.WritableIntPropertyKey SET_LOGO_VISIBILITY =
+    public static final PropertyModel.WritableIntPropertyKey LOGO_VISIBILITY =
+            new PropertyModel.WritableIntPropertyKey();
+
+    // The top margin in pixels applied to the layout to avoid overlapping with the status bar and
+    // the tool bar.
+    public static final PropertyModel.WritableIntPropertyKey TOP_INSETS =
+            new PropertyModel.WritableIntPropertyKey();
+
+    // The bottom margin in pixels applied to the layout to avoid overlapping with navigation bars.
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] THEME_KEYS =
@@ -75,9 +77,10 @@ public class NtpThemeProperty {
                 BITMAP_FOR_PREVIEW,
                 PREVIEW_SAVE_CLICK_LISTENER,
                 PREVIEW_CANCEL_CLICK_LISTENER,
-                PREVIEW_SET_WINDOW_INSETS_LISTENER,
-                SET_LOGO_BITMAP,
-                SET_LOGO_VISIBILITY,
-                SET_LOGO_PARAMS
+                BOTTOM_MARGIN,
+                LOGO_BITMAP,
+                LOGO_VISIBILITY,
+                LOGO_PARAMS,
+                TOP_INSETS
             };
 }

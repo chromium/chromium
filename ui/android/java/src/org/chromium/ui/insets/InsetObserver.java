@@ -126,6 +126,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.TOP_INSET_COORDINATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
+            InsetConsumerSource.UPLOAD_IMAGE_PREVIEW_DIALOG,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
             InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
             InsetConsumerSource.COUNT
@@ -152,11 +153,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             // inset consumer if it creates the EdgeToEdgeControllerImpl.
             int EDGE_TO_EDGE_CONTROLLER_CREATOR = 4;
             int EDGE_TO_EDGE_CONTROLLER_IMPL = 5;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 6;
-            int APP_HEADER_COORDINATOR_BOTTOM = 7;
+            int UPLOAD_IMAGE_PREVIEW_DIALOG = 6;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 7;
+            int APP_HEADER_COORDINATOR_BOTTOM = 8;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 8;
+            int COUNT = 9;
         }
     }
 

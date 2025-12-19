@@ -250,6 +250,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/CropImageUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/CropImageViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutViewBinderUnitTest.java",
   ]
   deps = [

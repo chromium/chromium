@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_BITMAP;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_PARAMS;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_VISIBILITY;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_KEYS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_BITMAP;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_PARAMS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_VISIBILITY;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -16,10 +16,10 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -41,9 +42,11 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Coordinator for managing the Upload Image Preview dialog. */
 @NullMarked
-public class UploadImagePreviewCoordinator {
+public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsetsConsumer {
 
     private final PropertyModel mPreviewPropertyModel;
+    private final ChromeDialog mDialog;
+    private final int mToolBarHeight;
     private CropImageView mCropImageView;
 
     /**
@@ -86,13 +89,16 @@ public class UploadImagePreviewCoordinator {
                                         R.layout.ntp_customization_theme_preview_dialog_layout,
                                         null);
         mCropImageView = previewLayout.findViewById(R.id.preview_image);
+        mToolBarHeight =
+                activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
-        final ChromeDialog dialog =
+        mDialog =
                 new ChromeDialog(
                         activity,
-                        R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                        /* themeResId= */ R.style.ThemeOverlay_BrowserUI_Fullscreen,
                         /* shouldPadForWindowInsets= */ false);
-        dialog.setContentView(previewLayout);
+        mDialog.addInsetsConsumer(this, InsetConsumerSource.UPLOAD_IMAGE_PREVIEW_DIALOG);
+        mDialog.setContentView(previewLayout);
 
         PropertyModelChangeProcessor.create(
                 mPreviewPropertyModel, previewLayout, UploadImagePreviewLayoutViewBinder::bind);
@@ -102,7 +108,7 @@ public class UploadImagePreviewCoordinator {
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
-                    onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, dialog);
+                    onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, mDialog);
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.SAVE);
                     recordPreviewInteractionsMetric();
@@ -112,33 +118,36 @@ public class UploadImagePreviewCoordinator {
                 NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER,
                 v -> {
                     onBottomSheetClickedCallback.onResult(false);
-                    dialog.dismiss();
+                    mDialog.dismiss();
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.CANCEL);
                     recordPreviewInteractionsMetric();
-                });
-
-        int saveButtonMarginBottom =
-                activity.getResources()
-                        .getDimensionPixelSize(R.dimen.ntp_customization_back_button_margin_start);
-        mPreviewPropertyModel.set(
-                NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER,
-                (view, insets) -> {
-                    int navigationBarHeight =
-                            insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-                    ViewGroup.MarginLayoutParams params =
-                            (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-                    params.bottomMargin = saveButtonMarginBottom + navigationBarHeight;
-                    view.setLayoutParams(params);
-                    return insets;
                 });
 
         if (ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.getValue()) {
             setUpLogo(activity, profile, mPreviewPropertyModel);
         }
 
-        dialog.show();
+        mDialog.show();
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
+    }
+
+    @Override
+    public WindowInsetsCompat onApplyWindowInsets(
+            View view, WindowInsetsCompat windowInsetsCompat) {
+        int statusBarHeight =
+                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+        int navigationBarHeight =
+                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+
+        mPreviewPropertyModel.set(NtpThemeProperty.TOP_INSETS, mToolBarHeight + statusBarHeight);
+        mPreviewPropertyModel.set(NtpThemeProperty.BOTTOM_MARGIN, navigationBarHeight);
+
+        // Consumes the insets since the root view already adjusted their paddings.
+        return new WindowInsetsCompat.Builder(windowInsetsCompat)
+                .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
+                .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
+                .build();
     }
 
     /**
@@ -199,14 +208,14 @@ public class UploadImagePreviewCoordinator {
                 NtpCustomizationConfigManager.getInstance().getDefaultSearchEngineLogoBitmap();
 
         if (!shouldShowLogo || (!isGoogleDSE && logoBitmap == null)) {
-            model.set(SET_LOGO_VISIBILITY, View.GONE);
+            model.set(LOGO_VISIBILITY, View.GONE);
             return;
         }
 
-        model.set(SET_LOGO_VISIBILITY, View.VISIBLE);
-        model.set(SET_LOGO_BITMAP, logoBitmap);
+        model.set(LOGO_VISIBILITY, View.VISIBLE);
+        model.set(LOGO_BITMAP, logoBitmap);
         model.set(
-                SET_LOGO_PARAMS,
+                LOGO_PARAMS,
                 LogoUtils.getLogoViewLayoutParams(
                         activity.getResources(),
                         /* isLogoDoodle= */ logoBitmap != null,
@@ -220,8 +229,8 @@ public class UploadImagePreviewCoordinator {
     public void destroy() {
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER, null);
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER, null);
-        mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER, null);
         NtpCustomizationConfigManager.getInstance().setDefaultSearchEngineLogoBitmap(null);
+        mDialog.destroy();
     }
 
     /**

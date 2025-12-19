@@ -9,10 +9,15 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/upload_image_preview_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="UnusedResources">
 
+    <!--
+       CropImageView holds a background image. This is constrained to the parent
+       so it ignores the guidelines and fills the whole screen.
+    -->
     <org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageView
         android:id="@+id/preview_image"
         android:layout_width="0dp"
@@ -23,6 +28,24 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--
+       We use Guidelines instead of a nested container for performance.
+       We will apply the system bar insets to these Guidelines.
+    -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="0dp" />
+
     <ImageView
         android:id="@+id/default_search_engine_logo"
         android:visibility="gone"
@@ -30,10 +53,9 @@ found in the LICENSE file.
         android:layout_height="@dimen/ntp_logo_height"
         android:importantForAccessibility="no"
         android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
-        android:layout_marginTop="@dimen/ntp_logo_margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/guideline_top"/>
 
     <View
         android:id="@+id/bottom_gradient_overlay"
@@ -79,7 +101,7 @@ found in the LICENSE file.
         android:contentDescription="@android:string/cancel"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/save_button" />
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/save_button"
@@ -89,7 +111,7 @@ found in the LICENSE file.
         android:text="@string/mtrl_picker_save"
         android:contentDescription="@string/mtrl_picker_save"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewLayout>

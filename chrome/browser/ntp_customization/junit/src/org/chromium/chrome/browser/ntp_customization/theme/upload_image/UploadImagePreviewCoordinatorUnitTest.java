@@ -335,7 +335,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
     }
 
     @Test
-    public void destroy_clearsListeners() {
+    public void testDestroy() {
         PropertyModel propertyModel = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
 
         // Verify that the listeners are initially set and not null.
@@ -345,22 +345,19 @@ public class UploadImagePreviewCoordinatorUnitTest {
         assertTrue(
                 "Cancel button should have a click listener before destroy.",
                 mCancelButton.hasOnClickListeners());
-        // Use the propertyModel to check if the insets listener is set to null.
-        assertNotNull(
-                "Insets listener should be set before destroy.",
-                propertyModel.get(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER));
 
         mUploadImagePreviewCoordinator.destroy();
 
+        // Verifies that listeners are cleared from the model.
         assertFalse(
                 "Save button's click listener should be null after destroy.",
                 mSaveButton.hasOnClickListeners());
         assertFalse(
                 "Cancel button's click listener should be null after destroy.",
                 mCancelButton.hasOnClickListeners());
-        assertNull(
-                "Insets listener should be null in the model after destroy.",
-                propertyModel.get(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER));
+
+        // Verifies that the logo bitmap is set to null in the NtpCustomizationConfigManager.
+        assertNull(NtpCustomizationConfigManager.getInstance().getDefaultSearchEngineLogoBitmap());
     }
 
     @Test
@@ -419,13 +416,11 @@ public class UploadImagePreviewCoordinatorUnitTest {
         PropertyModel model = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
 
         assertEquals(
-                "Logo visibility mismatch",
-                View.GONE,
-                model.get(NtpThemeProperty.SET_LOGO_VISIBILITY));
+                "Logo visibility mismatch", View.GONE, model.get(NtpThemeProperty.LOGO_VISIBILITY));
 
         assertNull(
                 "Params should not be set when logo is GONE",
-                model.get(NtpThemeProperty.SET_LOGO_PARAMS));
+                model.get(NtpThemeProperty.LOGO_PARAMS));
     }
 
     /** Helper to verify logo is visible with correct bitmap and calculated params. */
@@ -445,9 +440,9 @@ public class UploadImagePreviewCoordinatorUnitTest {
         assertEquals(
                 "Logo visibility mismatch",
                 View.VISIBLE,
-                model.get(NtpThemeProperty.SET_LOGO_VISIBILITY));
+                model.get(NtpThemeProperty.LOGO_VISIBILITY));
 
-        assertEquals("Logo bitmap mismatch", logo, model.get(NtpThemeProperty.SET_LOGO_BITMAP));
+        assertEquals("Logo bitmap mismatch", logo, model.get(NtpThemeProperty.LOGO_BITMAP));
 
         // Verifies layout parameters
         boolean isLogoDoodle = (logo != null);
@@ -457,8 +452,6 @@ public class UploadImagePreviewCoordinatorUnitTest {
                         mActivity.getResources(), isLogoDoodle, doodleSize);
 
         assertArrayEquals(
-                "Logo params mismatch",
-                expectedParams,
-                model.get(NtpThemeProperty.SET_LOGO_PARAMS));
+                "Logo params mismatch", expectedParams, model.get(NtpThemeProperty.LOGO_PARAMS));
     }
 }
