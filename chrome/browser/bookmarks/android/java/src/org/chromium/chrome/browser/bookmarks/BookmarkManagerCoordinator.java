@@ -632,25 +632,32 @@ public class BookmarkManagerCoordinator
         if (!ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) return;
 
         int position = viewHolder.getBindingAdapterPosition();
-        if (position != RecyclerView.NO_POSITION) {
-            // Get the model for this specific row.
-            PropertyModel model = mModelList.get(position).model;
+        if (position == RecyclerView.NO_POSITION) return;
 
-            /* We set empty lambdas just to ensure the plumbing works.
-            The upcoming chained CLs will create a separate class for all of the runnables and touch & hover listeners:
-            BookmarkDragHelper helper = new BookmarkDragHelper(
-                viewHolder, itemTouchHelper, mSelectionDelegate, mBookmarkModel);
-            model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER, helper::onHandleTouch);
-            model.set(ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER, helper::onRowTouch);
-            model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER, helper::onHandleHover);
-            model.set(ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER, helper::onRowHover);
-            */
-            model.set(
-                    ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER, (v, event) -> false);
-            model.set(ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER, (v, event) -> false);
-            model.set(
-                    ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER, (v, event) -> false);
-            model.set(ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER, (v, event) -> false);
-        }
+        // Get the model for this specific row.
+        PropertyModel model = mModelList.get(position).model;
+        BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        BookmarkItem bookmarkItem = entry.getBookmarkItem();
+        if (bookmarkItem == null) return;
+        BookmarkId bookmarkId = bookmarkItem.getId();
+
+        // This was set in the mediator.
+        boolean isDragEnabled = model.get(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED);
+
+        BookmarkManagerDragHelper dragHelper =
+                new BookmarkManagerDragHelper(
+                        mContext,
+                        bookmarkId,
+                        mSelectionDelegate,
+                        itemTouchHelper,
+                        mRecyclerView,
+                        viewHolder,
+                        isDragEnabled);
+
+        model.set(
+                ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER, dragHelper::onRowBodyTouch);
+        model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER, (v, event) -> false);
+        model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER, (v, event) -> false);
+        model.set(ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER, (v, event) -> false);
     }
 }
