@@ -153,9 +153,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   virtual bool TreeHasExtraAnnouncementNodes() const;
   virtual size_t TreeExtraAnnouncementNodesCount() const;
 
-  virtual void FireBlinkEvent(ax::mojom::Event event_type,
-                              BrowserAccessibility* node,
-                              int action_request_id) {}
+  virtual void FireSourceEvent(ax::mojom::Event event_type,
+                               BrowserAccessibility* node,
+                               int action_request_id) {}
 
   // AXPlatformTreeManager overrides.
   void FireGeneratedEvent(AXEventGenerator::Event event_type,

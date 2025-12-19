@@ -213,12 +213,12 @@ void BrowserAccessibilityManagerAndroid::FireLocationChanged(
   wcax->HandleContentChanged(android_node->GetUniqueId());
 }
 
-void BrowserAccessibilityManagerAndroid::FireBlinkEvent(
+void BrowserAccessibilityManagerAndroid::FireSourceEvent(
     ax::mojom::Event event_type,
     ui::BrowserAccessibility* node,
     int action_request_id) {
-  ui::BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                                  action_request_id);
+  ui::BrowserAccessibilityManager::FireSourceEvent(event_type, node,
+                                                   action_request_id);
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
     return;

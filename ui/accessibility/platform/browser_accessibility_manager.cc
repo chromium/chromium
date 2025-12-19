@@ -559,8 +559,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   if (defer_load_complete_event_) {
     received_load_complete_event = true;
     defer_load_complete_event_ = false;
-    FireBlinkEvent(ax::mojom::Event::kLoadComplete,
-                   GetBrowserAccessibilityRoot(), -1);
+    FireSourceEvent(ax::mojom::Event::kLoadComplete,
+                    GetBrowserAccessibilityRoot(), -1);
   }
 
   // Fire any events related to changes to the tree that come from ancestors of
@@ -623,7 +623,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   }
   event_generator().ClearEvents();
 
-  // Fire events from Blink.
+  // Fire source events provided by the accessibility content source.
   for (const AXEvent& event : details.events) {
     // Fire the native event.
     BrowserAccessibility* event_target = GetFromID(event.id);
@@ -672,7 +672,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         continue;  // Skip firing load start event.
     }
 
-    FireBlinkEvent(event.event_type, retargeted, event.action_request_id);
+    FireSourceEvent(event.event_type, retargeted, event.action_request_id);
   }
 
   if (received_load_complete_event) {
@@ -826,8 +826,8 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
 
   // The "scrolled to anchor" notification is a great way to get a
   // screen reader to jump directly to a specific location in a document.
-  FireBlinkEvent(ax::mojom::Event::kScrolledToAnchor, node,
-                 /*action_request_id=*/-1);
+  FireSourceEvent(ax::mojom::Event::kScrolledToAnchor, node,
+                  /*action_request_id=*/-1);
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(

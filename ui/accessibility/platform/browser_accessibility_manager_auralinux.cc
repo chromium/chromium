@@ -168,12 +168,12 @@ void BrowserAccessibilityManagerAuraLinux::FireEvent(BrowserAccessibility* node,
       event);
 }
 
-void BrowserAccessibilityManagerAuraLinux::FireBlinkEvent(
+void BrowserAccessibilityManagerAuraLinux::FireSourceEvent(
     ax::mojom::Event event_type,
     BrowserAccessibility* node,
     int action_request_id) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                              action_request_id);
+  BrowserAccessibilityManager::FireSourceEvent(event_type, node,
+                                               action_request_id);
 
   switch (event_type) {
     case ax::mojom::Event::kScrolledToAnchor:

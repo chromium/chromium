@@ -42,9 +42,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   void FireFocusEvent(AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
-  void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node,
-                      int action_request_id) override;
+  void FireSourceEvent(ax::mojom::Event event_type,
+                       BrowserAccessibility* node,
+                       int action_request_id) override;
   void FireGeneratedEvent(AXEventGenerator::Event event_type,
                           const AXNode* node) override;
   void UpdateDeviceScaleFactor() override;

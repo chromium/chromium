@@ -134,12 +134,12 @@ AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
   return update;
 }
 
-void BrowserAccessibilityManagerFuchsia::FireBlinkEvent(
+void BrowserAccessibilityManagerFuchsia::FireSourceEvent(
     ax::mojom::Event event_type,
     BrowserAccessibility* node,
     int action_request_id) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                              action_request_id);
+  BrowserAccessibilityManager::FireSourceEvent(event_type, node,
+                                               action_request_id);
 
   // Blink fires a hover event on the result of a hit test, so we should process
   // it here.

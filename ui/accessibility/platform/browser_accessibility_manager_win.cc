@@ -254,13 +254,14 @@ void BrowserAccessibilityManagerWin::FireFocusEvent(AXNode* node) {
   FireUiaAccessibilityEvent(UIA_AutomationFocusChangedEventId, wrapper);
 }
 
-void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,
-                                                    BrowserAccessibility* node,
-                                                    int action_request_id) {
+void BrowserAccessibilityManagerWin::FireSourceEvent(
+    ax::mojom::Event event_type,
+    BrowserAccessibility* node,
+    int action_request_id) {
   DCHECK(CanFireEvents());
 
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                              action_request_id);
+  BrowserAccessibilityManager::FireSourceEvent(event_type, node,
+                                               action_request_id);
 
   switch (event_type) {
     case ax::mojom::Event::kClicked:
