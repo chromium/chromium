@@ -182,6 +182,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     this.styleUpdater_.setMaxLineWidth();
     if (chrome.readingMode.isLineFocusEnabled) {
+      window.addEventListener('resize', this.onWindowResize_.bind(this));
       this.$.containerParent.addEventListener('mousemove', mouseEvent => {
         this.lineFocusController_.onMouseMove(mouseEvent.clientY);
       });
@@ -306,6 +307,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
           // which content to display based on the presentation state.
           this.presentationState = presentationState;
         };
+  }
+
+  private onWindowResize_() {
+    requestAnimationFrame(() => {
+      this.onTextLocationsChange_();
+    });
   }
 
   protected onContainerScroll_() {
