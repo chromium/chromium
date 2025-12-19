@@ -4160,17 +4160,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PauseResumeCancel) {
 // Contents/Info.plist file in cocoa apps. browser_tests cannot test
 // quarantining files on Mac because it is not a cocoa app.
 // TODO(benjhayden) test the equivalents on other platforms.
-
-#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM_FAMILY)
-// Timing out on ARM linux: http://crbug.com/238459
-#define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
-#elif BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-// Stack overflow on Win/ASan: http://crbug.com/367746304
-#define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
-#else
-#define MAYBE_DownloadTest_PercentComplete DownloadTest_PercentComplete
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_PercentComplete) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PercentComplete) {
   // Write a huge file. Make sure the test harness can supply "Content-Length"
   // header to indicate the file size, or the download will not have valid
   // percentage progression.
