@@ -364,12 +364,6 @@ if (use_dsp_neon) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
     }
-
-    # TODO(thakis): gcc-4.9 was long ago, try removing this.
-    if (current_cpu == "arm64" && !is_clang) {
-      # avoid an ICE with gcc-4.9: b/15574841
-      cflags = [ "-frename-registers" ]
-    }
   }
 }  # use_dsp_neon
 
@@ -529,9 +523,6 @@ if (use_dsp_neon) {
       # behavior similar to *.c.neon in an Android.mk
       configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
       cflags = [ "-mfpu=neon" ]
-    } else if (current_cpu == "arm64" && !is_clang) {
-      # avoid an ICE with gcc-4.9: b/15574841
-      cflags = [ "-frename-registers" ]
     }
   }
 }  # use_dsp_neon
