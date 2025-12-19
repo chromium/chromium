@@ -78,7 +78,7 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   content::WebContents* GetWebUIWebContents() override { return nullptr; }
 
-  void OnZeroStateChange(bool is_zero_state) override {}
+  MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
 
  private:
   std::optional<base::Uuid> task_id_;
@@ -526,6 +526,37 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   EXPECT_EQ(delegate.GetThreadTurnId(), turn_id2);
 
   observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
+  struct TestCase {
+    GURL url;
+    bool expected_is_zero_state;
+  } test_cases[] = {
+      {GURL("https://google.com"), false},
+      {GURL("https://google.com?q=test"), false},
+      {GURL("https://www.google.com/search?udm=50"), true},
+      {GURL("https://www.google.com/search?udm=50&q="), true},
+      {GURL("https://www.google.com/search?udm=50&q=test"), false},
+      {GURL("https://google.com/search"), false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    testing::NiceMock<MockTaskInfoDelegate> delegate;
+    SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+    auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+        embedded_web_contents_.get(), service_for_nav_.get(),
+        context_controller_.get(), &delegate);
+
+    EXPECT_CALL(delegate, OnZeroStateChange(test_case.expected_is_zero_state))
+        .Times(1);
+
+    std::unique_ptr<content::MockNavigationHandle> nav_handle =
+        CreateMockNavigationHandle(test_case.url);
+
+    observer->DidStartNavigation(nav_handle.get());
+  }
 }
 
 }  // namespace contextual_tasks
