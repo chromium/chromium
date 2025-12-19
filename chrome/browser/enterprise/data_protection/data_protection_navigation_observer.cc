@@ -17,11 +17,8 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
-#include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,6 +29,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
+#include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #endif
 
@@ -63,6 +63,7 @@ DataProtectionPageUserData* GetUserData(content::WebContents* web_contents) {
       GetPageFromWebContents(web_contents));
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Returns whether a URL filtering event should be reported for safe verdicts.
 // For warn/block+watermark verdicts, a security event is reported as part
 // of the interstitial page appearing, so we only need to report in this class
@@ -78,6 +79,7 @@ bool ShouldReportSafeUrlFilteringEvents(DataProtectionPageUserData* user_data) {
              ->threat_info(0)
              .has_matched_url_navigation_rule();
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void RunPendingNavigationCallback(
     content::WebContents* web_contents,
@@ -133,6 +135,7 @@ bool SkipUrl(const GURL& url) {
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Some tests return a non-null pointer for the enterprise lookup service,
   // so we need to defensively check if enterprise lookup is enabled.
   auto* connectors_service =
@@ -144,6 +147,9 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
       profile->IsGuestSession());
+#else
+  return false;
+#endif
 }
 
 bool IsEnterpriseLookupEnabled(content::BrowserContext* context) {
