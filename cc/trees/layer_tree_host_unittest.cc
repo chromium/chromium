@@ -7633,7 +7633,7 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
         host_impl->active_tree()->current_page_scale_factor();
 
     switch (frame_) {
-      case 4:
+      case 5:
         // Drew at page scale 1 with the 1.5 tiling after pinching out completed
         // while waiting for texture uploads to complete.
         EXPECT_EQ(1.f, host_impl->active_tree()->current_page_scale_factor());
@@ -7653,8 +7653,8 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
       const viz::CompositorFrame& frame) override {
     float quad_scale_delta = FrameQuadScaleDeltaFromIdeal(frame);
 
-    // Frame 4 should have no damage to be displayed.
-    EXPECT_NE(4, frame_);
+    // Frame 5 should have no damage to be displayed.
+    EXPECT_NE(5, frame_);
 
     switch (frame_) {
       case 1:
@@ -7672,6 +7672,9 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
         PostNextAfterDraw(host_impl_);
         break;
       case 3:
+        PostNextAfterDraw(host_impl_);
+        break;
+      case 4:
         // Drew at page scale 1 with the 1.5 tiling while pinching out.
         EXPECT_EQ(1.f, current_page_scale_factor_);
         EXPECT_EQ(1.5f, quad_scale_delta);
@@ -7679,7 +7682,7 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
         // to finish rastering so we don't get any noise in further steps.
         break;
 
-      case 5:
+      case 6:
         if (quad_scale_delta != 1.f)
           break;
         // Drew at scale 1 after texture uploads are done.
@@ -7719,18 +7722,23 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
         host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
         break;
       case 3:
+        // Wait one extra frame to make sure tiling with scale 1.0 is deleted
+        // in TreesInViz mode.
+        host_impl->SetNeedsFullViewportRedraw();
+        break;
+      case 4:
         // Pinch zoom back to 1.f but don't end it.
         host_impl->GetInputHandler().PinchGestureBegin(
             gfx::Point(100, 100), ui::ScrollInputType::kWheel);
         host_impl->GetInputHandler().PinchGestureUpdate(1.f / 1.5f,
                                                         gfx::Point(100, 100));
         break;
-      case 4:
+      case 5:
         // End the pinch, but delay tile production.
         playback_allowed_event_.Reset();
         host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
         break;
-      case 5:
+      case 6:
         // Let tiles complete.
         playback_allowed_event_.Signal();
         break;
@@ -7747,19 +7755,19 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
     if (!update_damage) {
       return;
     }
-    if (frame_ == 3) {
-      // On frame 3, we will have a lower res tile complete for the pinch-out
+    if (frame_ == 4) {
+      // On frame 4, we will have a lower res tile complete for the pinch-out
       // gesture even though it's not displayed. We wait for it here to prevent
       // flakiness.
       EXPECT_EQ(gfx::AxisTransform2d(0.75f, gfx::Vector2dF()),
                 tile->raster_transform());
       PostNextAfterDraw(host_impl);
     }
-    // On frame_ == 4, we are preventing texture uploads from completing,
+    // On frame_ == 5, we are preventing texture uploads from completing,
     // so this verifies they are not completing before frame_ == 5.
     // Flaky failures here indicate we're failing to prevent uploads from
     // completing.
-    EXPECT_NE(4, frame_) << tile->contents_scale_key();
+    EXPECT_NE(5, frame_) << tile->contents_scale_key();
   }
 
   FakeContentLayerClient client_;

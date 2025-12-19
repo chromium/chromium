@@ -69,6 +69,7 @@ class CC_EXPORT PictureLayerImpl
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
   DamageReasonSet GetDamageReasons() const override;
+  void DidDraw(viz::ClientResourceProvider* resource_provider) override;
 
   // PictureLayerTilingClient overrides.
   std::unique_ptr<Tile> CreateTile(const Tile::CreateInfo& info) override;

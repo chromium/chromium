@@ -856,6 +856,17 @@ gfx::Rect PictureLayerImpl::GetDamageRect() const {
   return damage_rect_;
 }
 
+void PictureLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
+  LayerImpl::DidDraw(resource_provider);
+
+  // Aggressively remove any tilings that are not seen to save memory. Note
+  // that this is at the expense of doing cause more frequent re-painting. A
+  // better scheme would be to maintain a tighter visible_layer_rect for the
+  // finer tilings.
+  CleanUpTilingsOnActiveLayer();
+  SanityCheckTilingState();
+}
+
 void PictureLayerImpl::ResetChangeTracking() {
   LayerImpl::ResetChangeTracking();
   damage_rect_.SetRect(0, 0, 0, 0);
@@ -1600,6 +1611,7 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
   //      last_append_quads_scales_.empty());
 
   std::vector<PictureLayerTiling*> to_remove;
+  bool needs_push = false;
   for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
     PictureLayerTiling* tiling = tilings_->tiling_at(i);
     // Keep all tilings within the min/max scales.
@@ -1618,12 +1630,16 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
     // sent to Viz to check if those are safe to delete.
     if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
       proposed_tiling_scales_for_deletion_.insert(tiling->contents_scale_key());
+      needs_push = true;
     } else {
       to_remove.push_back(tiling);
     }
   }
 
   if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+    if (needs_push) {
+      SetNeedsPushProperties(kChangedGeneralProperty);
+    }
     return;
   }
 
