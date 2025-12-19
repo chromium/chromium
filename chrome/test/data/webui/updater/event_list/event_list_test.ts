@@ -15,11 +15,11 @@ suite('EventListElement', () => {
   let element: EventListElement;
 
   function clearFilters() {
-    element.filterSettings.activeAppFilters.clear();
-    element.filterSettings.activeEventTypeFilters.clear();
-    element.filterSettings.activeUpdateOutcomeFilters.clear();
-    element.filterSettings.startDateFilter = null;
-    element.filterSettings.endDateFilter = null;
+    element.filterSettings.apps.clear();
+    element.filterSettings.eventTypes.clear();
+    element.filterSettings.updateOutcomes.clear();
+    element.filterSettings.startDate = null;
+    element.filterSettings.endDate = null;
     element.updateEventEntries();
     element.requestUpdate();
   }
@@ -192,7 +192,7 @@ suite('EventListElement', () => {
     assertEquals(
         3, element.shadowRoot.querySelectorAll('event-list-item').length);
 
-    element.filterSettings.activeAppFilters.add('{app1}');
+    element.filterSettings.apps.add('{app1}');
     element.updateEventEntries();
     element.requestUpdate();
     await microtasksFinished();

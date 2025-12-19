@@ -116,17 +116,16 @@ export class FilterBarElement extends CrLitElement {
     });
     if (this.filterOrder.length === 0) {
       const initialFilterOrder: FilterCategory[] = [];
-      if (this.filterSettings.activeAppFilters.size > 0) {
+      if (this.filterSettings.apps.size > 0) {
         initialFilterOrder.push(FilterCategory.APP);
       }
-      if (this.filterSettings.activeEventTypeFilters.size > 0) {
+      if (this.filterSettings.eventTypes.size > 0) {
         initialFilterOrder.push(FilterCategory.DATE);
       }
-      if (this.filterSettings.activeUpdateOutcomeFilters.size > 0) {
+      if (this.filterSettings.updateOutcomes.size > 0) {
         initialFilterOrder.push(FilterCategory.EVENT);
       }
-      if (this.filterSettings.startDateFilter ||
-          this.filterSettings.endDateFilter) {
+      if (this.filterSettings.startDate || this.filterSettings.endDate) {
         initialFilterOrder.push(FilterCategory.DATE);
       }
       this.filterOrder = initialFilterOrder;
@@ -142,17 +141,14 @@ export class FilterBarElement extends CrLitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has('filterSettings')) {
       this.updateFilterOrder(
-          FilterCategory.APP, this.filterSettings.activeAppFilters.size > 0);
+          FilterCategory.APP, this.filterSettings.apps.size > 0);
       this.updateFilterOrder(
-          FilterCategory.EVENT,
-          this.filterSettings.activeEventTypeFilters.size > 0);
+          FilterCategory.EVENT, this.filterSettings.eventTypes.size > 0);
       this.updateFilterOrder(
-          FilterCategory.OUTCOME,
-          this.filterSettings.activeUpdateOutcomeFilters.size > 0);
+          FilterCategory.OUTCOME, this.filterSettings.updateOutcomes.size > 0);
       this.updateFilterOrder(
           FilterCategory.DATE,
-          !!(this.filterSettings.startDateFilter ||
-             this.filterSettings.endDateFilter));
+          !!(this.filterSettings.startDate || this.filterSettings.endDate));
     }
   }
 
@@ -162,17 +158,17 @@ export class FilterBarElement extends CrLitElement {
     this.updateFilterOrder(category, false);
     switch (category) {
       case FilterCategory.APP:
-        this.filterSettings.activeAppFilters.clear();
+        this.filterSettings.apps.clear();
         break;
       case FilterCategory.EVENT:
-        this.filterSettings.activeEventTypeFilters.clear();
+        this.filterSettings.eventTypes.clear();
         break;
       case FilterCategory.OUTCOME:
-        this.filterSettings.activeUpdateOutcomeFilters.clear();
+        this.filterSettings.updateOutcomes.clear();
         break;
       case FilterCategory.DATE:
-        this.filterSettings.startDateFilter = null;
-        this.filterSettings.endDateFilter = null;
+        this.filterSettings.startDate = null;
+        this.filterSettings.endDate = null;
         break;
       default:
         assertNotReachedCase(category);
@@ -200,18 +196,17 @@ export class FilterBarElement extends CrLitElement {
     switch (category) {
       case FilterCategory.APP:
         return loadTimeData.getStringF(
-            'filterChipApp',
-            Array.from(this.filterSettings.activeAppFilters).join(', '));
+            'filterChipApp', Array.from(this.filterSettings.apps).join(', '));
       case FilterCategory.EVENT:
         return loadTimeData.getStringF(
             'filterChipEventType',
-            Array.from(this.filterSettings.activeEventTypeFilters)
+            Array.from(this.filterSettings.eventTypes)
                 .map(localizeEventType)
                 .join(', '));
       case FilterCategory.OUTCOME:
         return loadTimeData.getStringF(
             'filterChipUpdateOutcome',
-            Array.from(this.filterSettings.activeUpdateOutcomeFilters)
+            Array.from(this.filterSettings.updateOutcomes)
                 .map(localizeUpdateOutcome)
                 .join(', '));
       case FilterCategory.DATE:
@@ -249,14 +244,14 @@ export class FilterBarElement extends CrLitElement {
 
   protected async onAppFilterChange(e: CustomEvent<Set<string>>) {
     this.updateFilterOrder(FilterCategory.APP, e.detail.size > 0);
-    this.filterSettings.activeAppFilters = new Set(e.detail);
+    this.filterSettings.apps = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
   protected async onEventTypeFilterChange(e: CustomEvent<Set<EventType>>) {
     this.updateFilterOrder(FilterCategory.EVENT, e.detail.size > 0);
-    this.filterSettings.activeEventTypeFilters = new Set(e.detail);
+    this.filterSettings.eventTypes = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
@@ -264,7 +259,7 @@ export class FilterBarElement extends CrLitElement {
   protected async onUpdateOutcomeFilterChange(
       e: CustomEvent<Set<CommonUpdateOutcome>>) {
     this.updateFilterOrder(FilterCategory.OUTCOME, e.detail.size > 0);
-    this.filterSettings.activeUpdateOutcomeFilters = new Set(e.detail);
+    this.filterSettings.updateOutcomes = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
@@ -273,19 +268,19 @@ export class FilterBarElement extends CrLitElement {
       e: CustomEvent<{start: Date | null, end: Date|null}>) {
     this.updateFilterOrder(
         FilterCategory.DATE, !!(e.detail.start || e.detail.end));
-    this.filterSettings.startDateFilter = e.detail.start;
-    this.filterSettings.endDateFilter = e.detail.end;
+    this.filterSettings.startDate = e.detail.start;
+    this.filterSettings.endDate = e.detail.end;
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
   protected getDateFilterString(): string {
     const format = (d: Date) => DATE_FORMATTER.format(d);
-    const start = this.filterSettings.startDateFilter ?
-        format(this.filterSettings.startDateFilter) :
+    const start = this.filterSettings.startDate ?
+        format(this.filterSettings.startDate) :
         undefined;
-    const end = this.filterSettings.endDateFilter ?
-        format(this.filterSettings.endDateFilter) :
+    const end = this.filterSettings.endDate ?
+        format(this.filterSettings.endDate) :
         undefined;
     if (start && end) {
       return loadTimeData.getStringF('dateFilterRange', start, end);
@@ -306,11 +301,11 @@ export class FilterBarElement extends CrLitElement {
   }
 
   protected async onClearFiltersClick() {
-    this.filterSettings.activeAppFilters.clear();
-    this.filterSettings.activeEventTypeFilters.clear();
-    this.filterSettings.activeUpdateOutcomeFilters.clear();
-    this.filterSettings.startDateFilter = null;
-    this.filterSettings.endDateFilter = null;
+    this.filterSettings.apps.clear();
+    this.filterSettings.eventTypes.clear();
+    this.filterSettings.updateOutcomes.clear();
+    this.filterSettings.startDate = null;
+    this.filterSettings.endDate = null;
     this.filterOrder = [];
     await this.onFiltersChanged();
   }

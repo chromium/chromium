@@ -138,7 +138,7 @@ suite('FilterBarElement', () => {
     });
 
     expect(capturedEvent).to.not.be.null;
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(1);
+    expect(filterBar.filterSettings.apps.size).to.equal(1);
     expect(capturedEvent!.bubbles).to.be.true;
     expect(capturedEvent!.composed).to.be.true;
 
@@ -146,7 +146,7 @@ suite('FilterBarElement', () => {
     const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    expect(filterBar.filterSettings.apps.size).to.equal(0);
   });
 
   test('can add and remove event type filter', async () => {
@@ -158,9 +158,9 @@ suite('FilterBarElement', () => {
       checkbox!.click();
       await microtasksFinished();
     });
-    expect(filterBar.filterSettings.activeEventTypeFilters.size).to.equal(1);
+    expect(filterBar.filterSettings.eventTypes.size).to.equal(1);
     expect(
-        filterBar.filterSettings.activeEventTypeFilters.has('UPDATE'),
+        filterBar.filterSettings.eventTypes.has('UPDATE'),
         )
         .to.be.true;
   });
@@ -174,10 +174,8 @@ suite('FilterBarElement', () => {
       checkbox!.click();
       await microtasksFinished();
     });
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.size)
-        .to.equal(1);
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.has('UPDATED'))
-        .to.be.true;
+    expect(filterBar.filterSettings.updateOutcomes.size).to.equal(1);
+    expect(filterBar.filterSettings.updateOutcomes.has('UPDATED')).to.be.true;
   });
 
   test('can add and remove date filter', async () => {
@@ -190,7 +188,7 @@ suite('FilterBarElement', () => {
       startDateInput!.dispatchEvent(new Event('input'));
       await microtasksFinished();
     });
-    expect(filterBar.filterSettings.startDateFilter)
+    expect(filterBar.filterSettings.startDate)
         .to.deep.equal(
             new Date('2025-01-01T00:00'),
         );
@@ -198,31 +196,30 @@ suite('FilterBarElement', () => {
 
   test('clears all filters when clear button is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(['Google Chrome']),
-      activeEventTypeFilters: new Set(['INSTALL']),
-      activeUpdateOutcomeFilters: new Set(['UPDATED']),
-      startDateFilter: new Date(),
-      endDateFilter: new Date(),
+      apps: new Set(['Google Chrome']),
+      eventTypes: new Set(['INSTALL']),
+      updateOutcomes: new Set(['UPDATED']),
+      startDate: new Date(),
+      endDate: new Date(),
     };
     await microtasksFinished();
     await clearFilters();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
-    expect(filterBar.filterSettings.activeEventTypeFilters.size).to.equal(0);
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.size)
-        .to.equal(0);
-    expect(filterBar.filterSettings.startDateFilter).to.be.null;
-    expect(filterBar.filterSettings.endDateFilter).to.be.null;
+    expect(filterBar.filterSettings.apps.size).to.equal(0);
+    expect(filterBar.filterSettings.eventTypes.size).to.equal(0);
+    expect(filterBar.filterSettings.updateOutcomes.size).to.equal(0);
+    expect(filterBar.filterSettings.startDate).to.be.null;
+    expect(filterBar.filterSettings.endDate).to.be.null;
     expect(filterBar.shadowRoot.getElementById('clear-filters-button'))
         .to.be.null;
   });
 
   test('renders filter chips correctly', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(['App1', 'App2']),
-      activeEventTypeFilters: new Set(['INSTALL', 'UPDATE']),
-      activeUpdateOutcomeFilters: new Set(['UPDATED']),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: new Date('2025-01-02T00:00'),
+      apps: new Set(['App1', 'App2']),
+      eventTypes: new Set(['INSTALL', 'UPDATE']),
+      updateOutcomes: new Set(['UPDATED']),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: new Date('2025-01-02T00:00'),
     };
     await microtasksFinished();
     const chips = filterBar.shadowRoot.querySelectorAll('.chip');
@@ -235,11 +232,11 @@ suite('FilterBarElement', () => {
 
   test('edits date filter when date chip is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(),
-      activeEventTypeFilters: new Set(),
-      activeUpdateOutcomeFilters: new Set(),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: null,
+      apps: new Set(),
+      eventTypes: new Set(),
+      updateOutcomes: new Set(),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: null,
     };
     await microtasksFinished();
     const chip = filterBar.shadowRoot.querySelector<HTMLElement>('.chip')!;
@@ -255,23 +252,23 @@ suite('FilterBarElement', () => {
 
   test('removes date filter when remove button is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(),
-      activeEventTypeFilters: new Set(),
-      activeUpdateOutcomeFilters: new Set(),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: null,
+      apps: new Set(),
+      eventTypes: new Set(),
+      updateOutcomes: new Set(),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: null,
     };
     await microtasksFinished();
     const chip = filterBar.shadowRoot.querySelector('.chip')!;
     const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
-    expect(filterBar.filterSettings.startDateFilter).to.be.null;
+    expect(filterBar.filterSettings.startDate).to.be.null;
   });
 
   test('cancel button closes dialog and does not apply changes', async () => {
     await clearFilters();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    expect(filterBar.filterSettings.apps.size).to.equal(0);
 
     const addFilterButton =
         filterBar.shadowRoot.getElementById('add-filter-button')!;
@@ -301,6 +298,6 @@ suite('FilterBarElement', () => {
 
     // Expect dialog to be closed and no changes applied to filterSettings
     expect(filterBar.shadowRoot.querySelector('app-dialog')).to.be.null;
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    expect(filterBar.filterSettings.apps.size).to.equal(0);
   });
 });

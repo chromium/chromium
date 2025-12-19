@@ -50,7 +50,7 @@ export function getHtml(this: FilterBarElement) {
     ` : ''}
     ${this.filterMenuState === FilterCategory.APP ? html`
       <app-dialog .anchorElement="${this.getDialogAnchor()}"
-          .initialSelections="${this.filterSettings.activeAppFilters}"
+          .initialSelections="${this.filterSettings.apps}"
           @filter-change="${this.onAppFilterChange}"
           @close="${this.onFilterDialogClose}">
       </filter-dialog-app>
@@ -58,7 +58,7 @@ export function getHtml(this: FilterBarElement) {
     ${this.filterMenuState === FilterCategory.EVENT ? html`
       <event-dialog .anchorElement="${this.getDialogAnchor()}"
           .initialSelections="${
-              this.filterSettings.activeEventTypeFilters}"
+              this.filterSettings.eventTypes}"
           @filter-change="${this.onEventTypeFilterChange}"
           @close="${this.onFilterDialogClose}">
       </filter-dialog-event>
@@ -66,15 +66,15 @@ export function getHtml(this: FilterBarElement) {
     ${this.filterMenuState === FilterCategory.OUTCOME ? html`
       <outcome-dialog .anchorElement="${this.getDialogAnchor()}"
           .initialSelections="${
-              this.filterSettings.activeUpdateOutcomeFilters}"
+              this.filterSettings.updateOutcomes}"
           @filter-change="${this.onUpdateOutcomeFilterChange}"
           @close="${this.onFilterDialogClose}">
       </filter-dialog-outcome>
     ` : ''}
     ${this.filterMenuState === FilterCategory.DATE ? html`
       <date-dialog .anchorElement="${this.getDialogAnchor()}"
-          .initialStartDate="${this.filterSettings.startDateFilter}"
-          .initialEndDate="${this.filterSettings.endDateFilter}"
+          .initialStartDate="${this.filterSettings.startDate}"
+          .initialEndDate="${this.filterSettings.endDate}"
           @filter-change="${this.onDateFilterChange}"
           @close="${this.onFilterDialogClose}">
       </filter-dialog-date>

@@ -90,15 +90,13 @@ suite('FilterSettings', () => {
   suite('createDefaultFilterSettings', () => {
     test('produces defaults', () => {
       const settings = createDefaultFilterSettings();
-      assertEquals(0, settings.activeAppFilters.size);
+      assertEquals(0, settings.apps.size);
       assertDeepEquals(
-          new Set(['INSTALL', 'UPDATE', 'UNINSTALL']),
-          settings.activeEventTypeFilters);
+          new Set(['INSTALL', 'UPDATE', 'UNINSTALL']), settings.eventTypes);
       assertDeepEquals(
-          new Set(['UPDATED', 'UPDATE_ERROR']),
-          settings.activeUpdateOutcomeFilters);
-      assertNull(settings.startDateFilter);
-      assertNull(settings.endDateFilter);
+          new Set(['UPDATED', 'UPDATE_ERROR']), settings.updateOutcomes);
+      assertNull(settings.startDate);
+      assertNull(settings.endDate);
     });
 
     test('sets app filters from loadTimeData', () => {
@@ -106,18 +104,18 @@ suite('FilterSettings', () => {
         defaultAppFilters: 'app1,app2',
       });
       const settings = createDefaultFilterSettings();
-      assertDeepEquals(new Set(['app1', 'app2']), settings.activeAppFilters);
+      assertDeepEquals(new Set(['app1', 'app2']), settings.apps);
     });
   });
 
   suite('createEmptyFilterSettings', () => {
     test('produces empty settings', () => {
       const settings = createEmptyFilterSettings();
-      assertEquals(0, settings.activeAppFilters.size);
-      assertEquals(0, settings.activeEventTypeFilters.size);
-      assertEquals(0, settings.activeUpdateOutcomeFilters.size);
-      assertNull(settings.startDateFilter);
-      assertNull(settings.endDateFilter);
+      assertEquals(0, settings.apps.size);
+      assertEquals(0, settings.eventTypes.size);
+      assertEquals(0, settings.updateOutcomes.size);
+      assertNull(settings.startDate);
+      assertNull(settings.endDate);
     });
   });
 
@@ -174,7 +172,7 @@ suite('FilterSettings', () => {
       const settings = createEmptyFilterSettings();
 
       // Default includes INSTALL, UPDATE, UNINSTALL
-      settings.activeEventTypeFilters = new Set(['INSTALL', 'APP_COMMAND']);
+      settings.eventTypes = new Set(['INSTALL', 'APP_COMMAND']);
       const result = applyFilterSettings(processMap, events, settings);
       assertArrayEquals([event1, event4], result);
     });
@@ -201,7 +199,7 @@ suite('FilterSettings', () => {
       const events = [update1, update2, update3];
 
       const settings = createEmptyFilterSettings();
-      settings.activeUpdateOutcomeFilters = new Set(['UPDATED', 'NO_UPDATE']);
+      settings.updateOutcomes = new Set(['UPDATED', 'NO_UPDATE']);
       const result = applyFilterSettings(processMap, events, settings);
 
       assertArrayEquals([update1, update3], result);
@@ -220,8 +218,8 @@ suite('FilterSettings', () => {
       test('between', () => {
         const settings = createEmptyFilterSettings();
 
-        settings.startDateFilter = new Date(1001500);
-        settings.endDateFilter = new Date(1002500);
+        settings.startDate = new Date(1001500);
+        settings.endDate = new Date(1002500);
 
         const result = applyFilterSettings(processMap, events, settings);
 
@@ -230,8 +228,8 @@ suite('FilterSettings', () => {
 
       test('after', () => {
         const settings = createEmptyFilterSettings();
-        settings.startDateFilter = new Date(1001500);
-        settings.endDateFilter = null;
+        settings.startDate = new Date(1001500);
+        settings.endDate = null;
 
         const result = applyFilterSettings(processMap, events, settings);
 
@@ -240,8 +238,8 @@ suite('FilterSettings', () => {
 
       test('before', () => {
         const settings = createEmptyFilterSettings();
-        settings.startDateFilter = null;
-        settings.endDateFilter = new Date(1002500);
+        settings.startDate = null;
+        settings.endDate = new Date(1002500);
 
         const result = applyFilterSettings(processMap, events, settings);
 
@@ -260,7 +258,7 @@ suite('FilterSettings', () => {
 
         const events = [event1, event2, event3, event4];
         const settings = createEmptyFilterSettings();
-        settings.activeAppFilters = new Set(['app1', 'app3']);
+        settings.apps = new Set(['app1', 'app3']);
 
         const result = applyFilterSettings(processMap, events, settings);
 
@@ -275,7 +273,7 @@ suite('FilterSettings', () => {
 
         const events = [event1, event2, event3, event4];
         const settings = createEmptyFilterSettings();
-        settings.activeAppFilters = new Set(['APP1', 'APP3']);
+        settings.apps = new Set(['APP1', 'APP3']);
 
         const result = applyFilterSettings(processMap, events, settings);
 
@@ -296,7 +294,7 @@ suite('FilterSettings', () => {
 
         const events = [event1, event2, event3, event4];
         const settings = createEmptyFilterSettings();
-        settings.activeAppFilters = new Set(['Test App']);
+        settings.apps = new Set(['Test App']);
 
         const result = applyFilterSettings(processMap, events, settings);
 

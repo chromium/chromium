@@ -11,11 +11,11 @@ import {getKnownApps} from '../known_apps.js';
  * The filter settings for the event list.
  */
 export interface FilterSettings {
-  activeAppFilters: Set<string>;
-  activeEventTypeFilters: Set<EventType>;
-  activeUpdateOutcomeFilters: Set<CommonUpdateOutcome>;
-  startDateFilter: Date|null;
-  endDateFilter: Date|null;
+  apps: Set<string>;
+  eventTypes: Set<EventType>;
+  updateOutcomes: Set<CommonUpdateOutcome>;
+  startDate: Date|null;
+  endDate: Date|null;
 }
 
 /**
@@ -25,16 +25,15 @@ export interface FilterSettings {
 export function createDefaultFilterSettings(): FilterSettings {
   const defaultApps = loadTimeData.getString('defaultAppFilters');
   return {
-    activeAppFilters: new Set(defaultApps === '' ? [] : defaultApps.split(',')),
-    activeEventTypeFilters: new Set<EventType>([
+    apps: new Set(defaultApps === '' ? [] : defaultApps.split(',')),
+    eventTypes: new Set<EventType>([
       'INSTALL',
       'UPDATE',
       'UNINSTALL',
     ]),
-    activeUpdateOutcomeFilters:
-        new Set<CommonUpdateOutcome>(['UPDATED', 'UPDATE_ERROR']),
-    startDateFilter: null,
-    endDateFilter: null,
+    updateOutcomes: new Set<CommonUpdateOutcome>(['UPDATED', 'UPDATE_ERROR']),
+    startDate: null,
+    endDate: null,
   };
 }
 
@@ -43,11 +42,11 @@ export function createDefaultFilterSettings(): FilterSettings {
  */
 export function createEmptyFilterSettings(): FilterSettings {
   return {
-    activeAppFilters: new Set(),
-    activeEventTypeFilters: new Set(),
-    activeUpdateOutcomeFilters: new Set(),
-    startDateFilter: null,
-    endDateFilter: null,
+    apps: new Set(),
+    eventTypes: new Set(),
+    updateOutcomes: new Set(),
+    startDate: null,
+    endDate: null,
   };
 }
 
@@ -64,37 +63,35 @@ export function applyFilterSettings(
   return events.filter(event => {
     const eventType = isMergedHistoryEvent(event) ? event.startEvent.eventType :
                                                     event.eventType;
-    if (filterSettings.activeEventTypeFilters.size > 0 &&
-        !filterSettings.activeEventTypeFilters.has(eventType)) {
+    if (filterSettings.eventTypes.size > 0 &&
+        !filterSettings.eventTypes.has(eventType)) {
       return false;
     }
     if (eventType === 'UPDATE' && isMergedHistoryEvent(event)) {
       const updateEvent = event as MergedUpdateEvent;
       const outcome = updateEvent.endEvent.outcome;
-      if (outcome !== undefined &&
-          filterSettings.activeUpdateOutcomeFilters.size > 0 &&
-          !(filterSettings.activeUpdateOutcomeFilters as ReadonlySet<string>)
+      if (outcome !== undefined && filterSettings.updateOutcomes.size > 0 &&
+          !(filterSettings.updateOutcomes as ReadonlySet<string>)
                .has(outcome)) {
         return false;
       }
     }
     const date = processMap.eventDate(event);
-    if (filterSettings.startDateFilter &&
-        (!date || date < filterSettings.startDateFilter)) {
+    if (filterSettings.startDate &&
+        (!date || date < filterSettings.startDate)) {
       return false;
     }
-    if (filterSettings.endDateFilter &&
-        (!date || date > filterSettings.endDateFilter)) {
+    if (filterSettings.endDate && (!date || date > filterSettings.endDate)) {
       return false;
     }
-    if (filterSettings.activeAppFilters.size > 0) {
+    if (filterSettings.apps.size > 0) {
       const appId = getAppId(event);
       if (!appId) {
         return false;
       }
       const knownAppIdsByName = getKnownApps();
       const matchesFilter =
-          Array.from(filterSettings.activeAppFilters)
+          Array.from(filterSettings.apps)
               .some(
                   filter => (knownAppIdsByName.has(filter) &&
                              knownAppIdsByName.get(filter)!.includes(appId)) ||
