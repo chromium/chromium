@@ -117,6 +117,7 @@ struct PermissionActionUkmParams {
   std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection;
 };
 
+// LINT.IfChange(GetPermissionRequestString)
 std::string GetPermissionRequestString(RequestTypeForUma type) {
   switch (type) {
     case RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE:
@@ -195,6 +196,7 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       NOTREACHED();
   }
 }
+// LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma)
 
 // Helper to check if the current render frame host is cross-origin with top
 // level frame. Note: in case of nested frames like A(B(A)), the bottom frame A

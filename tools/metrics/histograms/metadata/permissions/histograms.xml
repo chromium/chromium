@@ -121,17 +121,25 @@ chromium-metrics-reviews@google.com.
   <variant name=".NoGesture" summary="Without user gesture"/>
 </variants>
 
+<!-- LINT.IfChange(PermissionRequestTypes) -->
+
 <variants name="PermissionRequestTypes">
   <variant name=".AR" summary="AR permission"/>
   <variant name=".AudioAndVideoCapture" summary="Mic+Camera permission"/>
   <variant name=".AudioCapture" summary="Microphone permission"/>
+  <variant name=".CameraPanTiltZoom" summary="Camera movements permission"/>
   <variant name=".CapturedSurfaceControl"
       summary="Captured Surface Control permission"/>
+  <variant name=".ClipboardReadWrite" summary="Clipboard permission"/>
+  <variant name=".FileSystemAccess" summary="File System Access permission"/>
   <variant name=".Geolocation" summary="Geolocation permission"/>
   <variant name=".HandTracking" summary="Hand tracking permission"/>
+  <variant name=".IdentityProvider" summary="Identity Provider permission"/>
+  <variant name=".IdleDetection" summary="Idle detection permission"/>
   <variant name=".KeyboardAndPointerLock"
       summary="Keyboard and pointer lock permission"/>
   <variant name=".KeyboardLock" summary="Keyboard lock permission"/>
+  <variant name=".LocalFonts" summary="Local fonts permission"/>
   <variant name=".LocalNetwork" summary="Local network permission"/>
   <variant name=".LocalNetworkAccess"
       summary="Local network access permission"/>
@@ -140,15 +148,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".MultipleDownload" summary="Multiple downloads permission"/>
   <variant name=".Nfc" summary="NFC permission"/>
   <variant name=".Notifications" summary="Notification permission"/>
+  <variant name=".PaymentHandler" summary="Payment Handler permission"/>
   <variant name=".PointerLock" summary="Pointer lock permission"/>
   <variant name=".ProtectedMedia" summary="Protected media permission"/>
-  <variant name=".PushMessaging" summary="Push messaging permission"/>
   <variant name=".Quota" summary="Quota permission"/>
   <variant name=".RegisterProtocolHandler"
       summary="registerProtocolHandler permission"/>
-  <variant name=".SecurityKeyAttestation" summary="Security Key attestation"/>
   <variant name=".SmartCard" summary="Smart card connection permission"/>
-  <variant name=".SpeakerSelection" summary="Speaker Selection permission"/>
   <variant name=".StorageAccess" summary="Storage Access API permission"/>
   <variant name=".TopLevelStorageAccess"
       summary="Top-level Storage Access API permission"/>
@@ -157,8 +163,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".WebAppInstallation"
       summary="Web app installation permission"/>
   <variant name=".WebPrinting" summary="Web Printing permission"/>
-  <variant name=".WindowPlacement" summary="Window Management permission"/>
+  <variant name=".WindowManagement" summary="Window Management permission"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma) -->
 
 <variants name="PermissionTypeForElementAnchoredBubble">
   <variant name="AR"/>

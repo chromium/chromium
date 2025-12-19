@@ -22641,6 +22641,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="On-Device prediction model"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionRequestType) -->
+
 <enum name="PermissionRequestType">
   <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
   <int value="1" label="PERMISSION_BUBBLE_MULTIPLE_AUDIO_AND_VIDEO_CAPTURE"/>
@@ -22654,8 +22656,8 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="PERMISSION_BUBBLE_PERMISSION_NOTIFICATIONS"/>
   <int value="10"
       label="PERMISSION_BUBBLE_PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
-  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING"/>
-  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH"/>
+  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING__REMOVED"/>
+  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH__REMOVED"/>
   <int value="13" label="PERMISSION_MEDIASTREAM_MIC"/>
   <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
   <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
@@ -22666,6 +22668,10 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="PERMISSION_VR"/>
   <int value="22" label="PERMISSION_AR"/>
   <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
+  <int value="24" label="PERMISSION_CAMERA_PAN_TILT_ZOOM"/>
+  <int value="25" label="PERMISSION_WINDOW_MANAGEMENT"/>
+  <int value="26" label="PERMISSION_LOCAL_FONTS"/>
+  <int value="27" label="PERMISSION_IDLE_DETECTION"/>
   <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
   <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="31" label="PERMISSION_MIDI"/>
@@ -22683,6 +22689,8 @@ Called by update_net_error_codes.py.-->
   <int value="43" label="PERMISSION_LOCAL_NETWORK"/>
   <int value="44" label="PERMISSION_LOOPBACK_NETWORK"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma) -->
 
 <!-- LINT.IfChange(PermissionType) -->
 

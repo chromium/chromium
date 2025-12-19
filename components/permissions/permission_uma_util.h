@@ -60,6 +60,7 @@ enum class ActivityIndicatorState {
 // The usual rules of updating UMA values applies to this enum:
 // - don't remove values
 // - only ever add values at the end
+// LINT.IfChange(RequestTypeForUma)
 enum class RequestTypeForUma {
   UNKNOWN = 0,
   MULTIPLE_AUDIO_AND_VIDEO_CAPTURE = 1,
@@ -110,6 +111,9 @@ enum class RequestTypeForUma {
   // NUM must be the last value in the enum.
   NUM,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionRequestType,
+// //components/permissions/permission_uma_util.cc:GetPermissionRequestString,
+// //tools/metrics/histograms/metadata/permissions/histograms.xml:PermissionRequestTypes)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Any new values should be inserted
