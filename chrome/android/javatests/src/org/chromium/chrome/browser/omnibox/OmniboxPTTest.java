@@ -34,10 +34,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.R,
-        sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
-        message = "Flaky in S, crbug.com/372709072")
 public class OmniboxPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
@@ -57,6 +53,12 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+            message =
+                    "Text not cleared in S upon Omnibox focus, crbug.com/470413188,"
+                            + " crbug.com/372709072")
     public void testOpenTypeDelete_fromWebPage() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         WebPageStation blankPage = mCtaTestRule.start();
