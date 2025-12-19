@@ -18,6 +18,7 @@ source_set("glic") {
   sources = [
     "glic_pref_names.h",
     "host/auth_controller.h",
+    "host/context/glic_focused_browser_manager_interface.h",
     "host/glic_cookie_synchronizer.h",
     "public/context/glic_sharing_manager.h",
     "public/glic_instance.h",
@@ -44,7 +45,6 @@ source_set("glic") {
       "glic_user_status_code.h",
       "glic_user_status_request.h",
       "glic_zero_state_suggestions_manager.h",
-      "host/context/glic_focused_browser_manager_interface.h",
       "host/context/glic_focused_tab_manager.h",
       "host/context/glic_focused_tab_manager_interface.h",
       "host/context/glic_page_context_fetcher.h",
@@ -102,11 +102,17 @@ source_set("glic") {
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//ui/views",
       "//ui/views/controls/webview",
     ]
+  }
+
+  if (!is_android || is_desktop_android) {
+    public_deps += [ "//chrome/browser/ui/browser_window" ]
+  } else {
+    public_deps +=
+        [ "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar" ]
   }
 
   deps = [
@@ -146,6 +152,9 @@ source_set("impl") {
     "host/glic_synthetic_trial_manager.cc",
     "host/glic_synthetic_trial_manager.h",
     "public/context/glic_sharing_manager.cc",
+    "service/glic_ui_embedder.h",
+    "service/glic_ui_types.cc",
+    "service/glic_ui_types.h",
   ]
 
   if (!is_android) {
@@ -220,9 +229,6 @@ source_set("impl") {
       "service/glic_state_tracker.h",
       "service/glic_tab_creation_observer.cc",
       "service/glic_tab_creation_observer.h",
-      "service/glic_ui_embedder.h",
-      "service/glic_ui_types.cc",
-      "service/glic_ui_types.h",
       "service/metrics/glic_instance_coordinator_metrics.cc",
       "service/metrics/glic_instance_coordinator_metrics.h",
       "service/metrics/glic_instance_helper_metrics.cc",

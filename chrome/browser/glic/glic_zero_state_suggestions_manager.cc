@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/page.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/page_transition_types.h"
 
