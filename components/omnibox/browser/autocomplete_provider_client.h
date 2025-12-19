@@ -258,10 +258,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   virtual void set_in_background_state(bool in_background_state) {}
 
-  // Whether the "Omnibox Next" feature param with the given `param_name` is
-  // enabled.
-  virtual bool IsOmniboxNextFeatureParamEnabled(
-      const std::string& param_name) const;
+  // Whether the "Omnibox Next" Lens search chip feature is enabled.
+  virtual bool IsOmniboxNextLensSearchChipEnabled() const;
 
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.
