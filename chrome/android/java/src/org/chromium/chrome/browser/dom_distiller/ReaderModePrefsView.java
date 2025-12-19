@@ -37,6 +37,7 @@ import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.text.NumberFormat;
@@ -57,8 +58,16 @@ public class ReaderModePrefsView extends LinearLayout
 
     // Constants for font scaling slider.
     private static final float FONT_SCALE_LOWER_BOUND = 1.0f;
-    private static final float FONT_SCALE_UPPER_BOUND = 2.5f;
-    private static final float FONT_SCALE_STEP_SIZE = 0.25f;
+    // Steps size determined by scaling the base text size (16px) by 2px per step.
+    private static final float FONT_SCALE_STEP_SIZE = 0.125f;
+    // Number of zoom steps in the slider.
+    private static final int FONT_SCALE_STEPS_PHONE = 6;
+    // Tablet allows for a higher text size because of the larger screen size.
+    private static final int FONT_SCALE_STEPS_TABLET = 8;
+    private static final float FONT_SCALE_UPPER_BOUND_PHONE =
+            FONT_SCALE_LOWER_BOUND + FONT_SCALE_STEPS_PHONE * FONT_SCALE_STEP_SIZE;
+    private static final float FONT_SCALE_UPPER_BOUND_TABLET =
+            FONT_SCALE_LOWER_BOUND + FONT_SCALE_STEPS_TABLET * FONT_SCALE_STEP_SIZE;
 
     // Constants for setting the font style button typefaces.
     private static final String SANS_SERIF_TYPEFACE_NAME = "sans-serif";
@@ -146,7 +155,7 @@ public class ReaderModePrefsView extends LinearLayout
 
         mFontScalingSlider = findViewById(R.id.font_size_slider);
         mFontScalingSlider.setValueFrom(FONT_SCALE_LOWER_BOUND);
-        mFontScalingSlider.setValueTo(FONT_SCALE_UPPER_BOUND);
+        mFontScalingSlider.setValueTo(getFontScaleUpperBound());
         mFontScalingSlider.setStepSize(FONT_SCALE_STEP_SIZE);
         mFontScalingSlider.setTickActiveRadius(0);
         mFontScalingSlider.setTickInactiveRadius(0);
@@ -332,15 +341,12 @@ public class ReaderModePrefsView extends LinearLayout
 
     @Override
     public void onChangeFontScaling(float scaling) {
-        // Due to changing font scale step size from 0.05 to 0.25, slider will crash if provided a
-        // non-multiple of step size.
-        // If user has previous preference saved at a non-step size interval, need to adjust to
-        // closest increment.
+        // Align the scaling value to a known step value before proceeding.
         scaling =
                 MathUtils.clamp(
                         (Math.round(scaling / FONT_SCALE_STEP_SIZE) * FONT_SCALE_STEP_SIZE),
                         FONT_SCALE_LOWER_BOUND,
-                        FONT_SCALE_UPPER_BOUND);
+                        getFontScaleUpperBound());
 
         mFontScalingSlider.setValue(scaling);
 
@@ -458,5 +464,10 @@ public class ReaderModePrefsView extends LinearLayout
                                         /* selected= */ ((MaterialButton) host).isChecked()));
                     }
                 });
+    }
+
+    private float getFontScaleUpperBound() {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+        return isTablet ? FONT_SCALE_UPPER_BOUND_TABLET : FONT_SCALE_UPPER_BOUND_PHONE;
     }
 }

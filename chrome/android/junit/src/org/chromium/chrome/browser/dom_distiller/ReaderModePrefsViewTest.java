@@ -34,17 +34,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the {@link ReaderModePrefsView} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -212,10 +215,24 @@ public class ReaderModePrefsViewTest {
 
     @Test
     @SmallTest
-    public void testFontScalingSlider() {
+    @Config(qualifiers = "sw320dp")
+    public void testFontScalingSliderPhone() {
+        verifyFontScalingSlider(1.75f, 175);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Config(qualifiers = "sw600dp")
+    public void testFontScalingSliderTablet() {
+        verifyFontScalingSlider(2.0f, 200);
+    }
+
+    private void verifyFontScalingSlider(float expectedMaxScaling, int expectedMaxPercent) {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("DomDistiller.Android.FontScalingSelected", 250)
+                        .expectIntRecord(
+                                "DomDistiller.Android.FontScalingSelected", expectedMaxPercent)
                         .build();
         Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
 
@@ -249,7 +266,7 @@ public class ReaderModePrefsViewTest {
         slider.dispatchTouchEvent(upEvent);
 
         // Verify that the listener was triggered with the new value.
-        verify(mDistilledPagePrefs).setFontScaling(2.5f);
+        verify(mDistilledPagePrefs).setFontScaling(expectedMaxScaling);
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontScalingChanged"));
         histograms.assertExpected();
