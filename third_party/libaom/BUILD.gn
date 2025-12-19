@@ -203,7 +203,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
 }
 
 if (current_cpu == "arm64" || current_cpu == "arm64e" ||
-    cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
+    cpu_arch_full == "arm-neon") {
   source_set("libaom_intrinsics_neon") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -340,7 +340,7 @@ static_library("libaom") {
     ]
   }
   if (current_cpu == "arm64" || current_cpu == "arm64e" ||
-      cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
+      cpu_arch_full == "arm-neon") {
     deps += [ ":libaom_intrinsics_neon" ]
   }
   if (current_cpu == "arm64" || current_cpu == "arm64e") {
