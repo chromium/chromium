@@ -138,6 +138,11 @@ NSString* const kDomain1 = @"domain1.com";
 NSString* const kDomain2 = @"domain2.com";
 constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
+// Path to the pony page.
+const char kTestPagePath[] = "/pony.html";
+// The text on the pony page.
+const char kTestPageText[] = "pony";
+
 }  // namespace
 
 // Test case to verify that enterprise policies are set and respected.
@@ -296,8 +301,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 // Tests for the SavingBrowserHistoryDisabled policy.
 - (void)testSavingBrowserHistoryDisabled {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL testURL = self.testServer->GetURL("/pony.html");
-  const std::string pageText = "pony";
+  const GURL testURL = self.testServer->GetURL(kTestPagePath);
 
   // Set history to a clean state and verify it is clean.
   if (![ChromeTestCase forceRestartAndWipe]) {
@@ -325,7 +329,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
   // Perform a navigation and make sure the history isn't changed.
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:pageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly non-empty");
 
@@ -337,7 +341,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
   // Perform a navigation and make sure history is being saved.
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey waitForWebStateContainingText:pageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History had an unexpected entry count");
 }
@@ -352,8 +356,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 // button is disabled when the pref kOfferTranslateEnabled is set to false.
 - (void)testTranslateEnabled {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL testURL = self.testServer->GetURL("/pony.html");
-  const std::string pageText = "pony";
+  const GURL testURL = self.testServer->GetURL(kTestPagePath);
 
   // Set up a fake language detection observer.
   [TranslateAppInterface
@@ -893,6 +896,51 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kEnterpriseInfoBubbleViewId)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests print option is visible in share menu if PrintingEnabled is set to true
+// (default) and not visible when PrintingEnabled policy is set to false
+// (disabled).
+- (void)testPrintingDisabledInShare {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL testURL = self.testServer->GetURL(kTestPagePath);
+
+  // Set and verify that PrintingEnabled pref is set to false correctly.
+  SetPolicy(true, policy::key::kPrintingEnabled);
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kPrintingEnabled],
+                 @"PrintingEnabled preference was unexpectedly false");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open the share menu and tap the "more" button to check for the "print"
+  // option if we are on iOS 26. Other iOS version does not require tapping the
+  // "more" button to see the "print" option.
+  [ChromeEarlGreyUI openShareMenu];
+  [ChromeEarlGrey verifyActivitySheetVisible];
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  [ChromeEarlGrey tapMoreOptionButtonInActivitySheet];
+
+  // Check that "print" option exist.
+  XCUIElementQuery* print = [[app staticTexts] matchingIdentifier:@"Print"];
+  GREYAssertTrue(print.count == 1,
+                 @"'Print' option should have been on the share menu");
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
+
+  // Set and verify that PrintingEnabled pref is set to false correctly.
+  SetPolicy(false, policy::key::kPrintingEnabled);
+  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kPrintingEnabled],
+                  @"PrintingEnabled preference was unexpectedly true");
+
+  [ChromeEarlGreyUI openShareMenu];
+  [ChromeEarlGrey verifyActivitySheetVisible];
+
+  [ChromeEarlGrey tapMoreOptionButtonInActivitySheet];
+
+  // Check that "print" option does not exist.
+  print = [[app staticTexts] matchingIdentifier:@"Print"];
+  GREYAssertTrue(print.count == 0,
+                 @"'Print' option should not have been on the share menu");
 }
 
 @end
