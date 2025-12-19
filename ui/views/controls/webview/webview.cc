@@ -45,17 +45,6 @@ WebView::WebContentsCreator* GetCreatorForTesting() {
   return creator.get();
 }
 
-// Updates the parent accessible object on the NativeView. As WebView overrides
-// GetNativeViewAccessible() to return the accessible from the WebContents, it
-// needs to ensure the accessible from the parent is set on the NativeView.
-void UpdateNativeViewHostAccessibleParent(NativeViewHost* holder,
-                                          View* parent) {
-  if (!parent) {
-    return;
-  }
-  holder->SetParentAccessible(parent->GetNativeViewAccessible());
-}
-
 }  // namespace
 
 WebView::ScopedWebContentsCreatorForTesting::ScopedWebContentsCreatorForTesting(
@@ -334,7 +323,7 @@ void WebView::AddedToWidget() {
   // attached, update the accessible parent here to support reparenting the
   // WebView.
   if (holder_->native_view()) {
-    UpdateNativeViewHostAccessibleParent(holder_, parent());
+    UpdateNativeViewHostAccessibleParent();
   }
 
   HandleWidgetAXManagerEnablement();
@@ -351,6 +340,20 @@ void WebView::RemovedFromWidget() {
 }
 
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
+  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+    // When ViewsAX is enabled, WebView must be exposed as a normal View node in
+    // the Views accessibility tree. The legacy behavior below is a platform
+    // hack: it replaces the WebView's native accessible with the WebContents'
+    // native accessible (AXFragmentRootPlatformNodeWin /
+    // RenderWidgetHostViewCocoa) so the web AXTree shows up in the platform
+    // tree even though WebView itself is skipped. This was needed because Views
+    // lacked support of the kChildTreeId behavior implemented in
+    // BrowserAccessibilityManager. With ViewsAX, the Webview is now treated as
+    // any other view and the web content is exposed as a child tree through the
+    // kChildTreeId attribute.
+    return View::GetNativeViewAccessible();
+  }
+
   if (web_contents() && !web_contents()->IsCrashed()) {
     content::RenderWidgetHostView* host_view =
         web_contents()->GetRenderWidgetHostView();
@@ -383,7 +386,7 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
   // TODO(crbug.com/40672441): Remove when we enable ViewsAX by default.
   // `OnWidgetAXManagerEnabled` will take care of this instead.
   if (!::features::IsAccessibilityTreeForViewsEnabled()) {
-    UpdateNativeViewHostAccessibleParent(holder(), parent());
+    UpdateNativeViewHostAccessibleParent();
   }
 }
 
@@ -489,7 +492,7 @@ void WebView::AttachWebContentsNativeView() {
   holder_->Attach(view_to_attach);
 
   // We set the parent accessible of the native view to be our parent.
-  UpdateNativeViewHostAccessibleParent(holder(), parent());
+  UpdateNativeViewHostAccessibleParent();
 
   HandleWidgetAXManagerEnablement();
 
@@ -526,6 +529,19 @@ void WebView::UpdateCrashedOverlayView() {
   }
 }
 
+void WebView::UpdateNativeViewHostAccessibleParent() {
+  // Updates the parent accessible object on the NativeView. As WebView
+  // overrides GetNativeViewAccessible() to return the accessible from the
+  // WebContents, it needs to ensure the accessible from the parent is set on
+  // the NativeView.
+  View* parent =
+      ::features::IsAccessibilityTreeForViewsEnabled() ? this : this->parent();
+  if (!parent) {
+    return;
+  }
+  holder_->SetParentAccessible(parent->GetNativeViewAccessible());
+}
+
 void WebView::NotifyAccessibilityWebContentsChanged() {
   if (!lock_child_ax_tree_id_override_) {
     content::RenderFrameHost* rfh =
@@ -538,7 +554,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
 
 void WebView::OnWidgetAXManagerEnabled() {
   if (holder_->native_view()) {
-    UpdateNativeViewHostAccessibleParent(holder_, parent());
+    UpdateNativeViewHostAccessibleParent();
   }
 
   widget_ax_manager_observation_.Reset();
@@ -561,7 +577,7 @@ void WebView::HandleWidgetAXManagerEnablement() {
 
   if (manager->is_enabled()) {
     if (holder_->native_view()) {
-      UpdateNativeViewHostAccessibleParent(holder_, parent());
+      UpdateNativeViewHostAccessibleParent();
     }
     widget_ax_manager_observation_.Reset();
     return;

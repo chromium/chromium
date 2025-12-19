@@ -1550,7 +1550,10 @@ gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
 std::vector<raw_ptr<ViewAccessibility>> ViewAccessibility::GetChildren() const {
   std::vector<raw_ptr<ViewAccessibility>> out;
 
-  if (IsLeaf()) {
+  // The kChildTreeID attributes should always be set on leaf nodes only. Thus,
+  // ignore all children views and virtual views if this node has a child tree
+  // ID.
+  if (IsLeaf() || data_.HasChildTreeID()) {
     return out;
   }
 

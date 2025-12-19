@@ -233,6 +233,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void AttachWebContentsNativeView();
   void DetachWebContentsNativeView();
   void UpdateCrashedOverlayView();
+  void UpdateNativeViewHostAccessibleParent();
   void NotifyAccessibilityWebContentsChanged();
   void HandleWidgetAXManagerEnablement();
 
