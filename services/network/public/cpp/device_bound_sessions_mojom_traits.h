@@ -376,6 +376,9 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
             kInvalidFederatedSessionProviderFailedToRestoreKey;
       case kFailedToUnwrapKey:
         return network::mojom::DeviceBoundSessionError::kFailedToUnwrapKey;
+      case kSessionDeletedDuringRefresh:
+        return network::mojom::DeviceBoundSessionError::
+            kSessionDeletedDuringRefresh;
     }
   }
 
@@ -616,6 +619,10 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
         return true;
       case network::mojom::DeviceBoundSessionError::kFailedToUnwrapKey:
         *output = kFailedToUnwrapKey;
+        return true;
+      case network::mojom::DeviceBoundSessionError::
+          kSessionDeletedDuringRefresh:
+        *output = kSessionDeletedDuringRefresh;
         return true;
     }
   }

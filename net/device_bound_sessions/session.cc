@@ -521,6 +521,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kInvalidFederatedSessionProviderSessionMissing:
     case kInvalidFederatedSessionWrongProviderOrigin:
     case kInvalidFederatedKey:
+    case kSessionDeletedDuringRefresh:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

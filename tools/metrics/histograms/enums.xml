@@ -3642,6 +3642,7 @@ shown properly on the user-facing crash UI.
       label="Federated session invalid due to failure to restore session
              provider key"/>
   <int value="80" label="Failed to unwrap key"/>
+  <int value="81" label="Session deleted during refresh"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

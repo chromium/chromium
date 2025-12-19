@@ -189,6 +189,7 @@ enum DeviceBoundSessionError {
   kInvalidConfigJson = 78,
   kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
   kFailedToUnwrapKey = 80,
+  kSessionDeletedDuringRefresh = 81,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)

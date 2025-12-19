@@ -1101,14 +1101,16 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 CHECK_EQ(new_session->id(), session_key.id);
 
                 Session* existing_session = GetSession(session_key);
-                CHECK(existing_session);
+                if (!existing_session) {
+                  return SessionError::kSessionDeletedDuringRefresh;
+                }
+
                 bool is_proactive_refresh_candidate =
                     IsProactiveRefreshCandidate(*existing_session, *new_session,
                                                 stored_cookies);
                 std::optional<base::TimeDelta> minimum_cookie_lifetime =
                     existing_session
                         ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
-
                 SchemefulSite new_site(new_session->origin());
                 AddSession(new_site, std::move(new_session));
                 // The session has been refreshed, restart the request.
@@ -1119,7 +1121,9 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
               },
               [&](RegistrationResult::NoSessionConfigChange) {
                 Session* existing_session = GetSession(session_key);
-                CHECK(existing_session);
+                if (!existing_session) {
+                  return SessionError::kSessionDeletedDuringRefresh;
+                }
                 bool is_proactive_refresh_candidate =
                     IsProactiveRefreshCandidate(
                         *existing_session, *existing_session, stored_cookies);
