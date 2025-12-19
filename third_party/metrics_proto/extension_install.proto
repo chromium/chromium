@@ -185,6 +185,10 @@ message ExtensionInstallProto {
     // version. We never actually write this to prefs. This is used to indicate
     // (at runtime) that unknown reasons are present in the prefs.
     UNKNOWN = 22;
+
+    // The extension is disabled because it is blocked by the
+    // ExtensionInstallCloudPolicyChecksEnabled policy.
+    BLOCKED_BY_CLOUD_POLICY_CHECK = 23;
   }
 
   // Any DisableReasons in effect for the extension. An empty list means the
