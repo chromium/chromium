@@ -27,16 +27,36 @@ public class ViewFinder {
      * Waits for a View of a specific subclass of View that matches |matcher| in one of the
      * |activity|'s subwindows.
      *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+            Class<ViewT> viewClass,
+            Activity activity,
+            Matcher<View> matcher,
+            ViewElement.Options options) {
+        return noopTo().pickUpCarryOn(
+                        ViewCarryOn.create(
+                                viewClass,
+                                matcher,
+                                ViewElement.newOptions()
+                                        .initFrom(options)
+                                        .rootSpec(RootSpec.activityRoot(activity))
+                                        .build()));
+    }
+
+    /**
+     * Waits for a View of a specific subclass of View that matches |matcher| in one of the
+     * |activity|'s subwindows.
+     *
      * @param <ViewT> the type of View to find.
      * @return A {@link ViewCarryOn} to get/interact with the ViewT.
      */
     public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
             Class<ViewT> viewClass, Activity activity, Matcher<View> matcher) {
-        return noopTo().pickUpCarryOn(
-                        ViewCarryOn.create(
-                                viewClass,
-                                matcher,
-                                ViewElement.rootSpecOption(RootSpec.activityRoot(activity))));
+        return waitForView(viewClass, activity, matcher, ViewElement.Options.DEFAULT);
     }
 
     /**
@@ -51,16 +71,50 @@ public class ViewFinder {
     /**
      * Waits for a View of a specific subclass of View that matches |matcher| in any root.
      *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+            Class<ViewT> viewClass, Matcher<View> matcher, ViewElement.Options options) {
+        RootSpec rootSpec = options.mRootSpec;
+        // If not specified, default to anyRoot().
+        if (rootSpec == null) {
+            rootSpec = RootSpec.anyRoot();
+        }
+
+        return noopTo().pickUpCarryOn(
+                        ViewCarryOn.create(
+                                viewClass,
+                                matcher,
+                                ViewElement.newOptions()
+                                        .initFrom(options)
+                                        .rootSpec(rootSpec)
+                                        .build()));
+    }
+
+    /**
+     * Waits for a View of a specific subclass of View that matches |matcher| in any root.
+     *
      * @param <ViewT> the type of View to find.
      * @return A {@link ViewCarryOn} to get/interact with the ViewT.
      */
     public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
             Class<ViewT> viewClass, Matcher<View> matcher) {
-        return noopTo().pickUpCarryOn(
-                        ViewCarryOn.create(
-                                viewClass,
-                                matcher,
-                                ViewElement.rootSpecOption(RootSpec.anyRoot())));
+        return waitForView(viewClass, matcher, ViewElement.Options.DEFAULT);
+    }
+
+    /**
+     * Waits for a View that matches |matcher| in any root.
+     *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @return A {@link ViewCarryOn} to get/interact with the View.
+     */
+    public static ViewCarryOn<View> waitForView(
+            Matcher<View> matcher, ViewElement.Options options) {
+        return waitForView(View.class, matcher, options);
     }
 
     /**

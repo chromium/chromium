@@ -794,9 +794,9 @@ public final class PrivacySandboxDialogTest {
 
         // Accept the consent and verify the spinner it's shown.
         tryClickOn(withId(R.id.ack_button));
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true)
+        onView(withId(R.id.privacy_sandbox_m1_consent_title))
+                .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
-
         onView(withId(R.id.progress_bar_container))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -815,7 +815,8 @@ public final class PrivacySandboxDialogTest {
 
         // Decline the consent and verify the spinner it's shown.
         tryClickOn(withId(R.id.no_button));
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true)
+        onView(withId(R.id.privacy_sandbox_m1_consent_title))
+                .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
 
         onView(withId(R.id.progress_bar_container))

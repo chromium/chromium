@@ -2399,7 +2399,10 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
         onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
 
-        assertNotEquals("The window should not be max width", maxWidth, attrs.width);
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        Criteria.checkThat(
+                                "The window should not be max width", attrs.width, not(maxWidth)));
     }
 
     @Test

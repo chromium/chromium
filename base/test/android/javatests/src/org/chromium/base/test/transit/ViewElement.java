@@ -20,6 +20,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -281,6 +282,19 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     DisplayedCondition<ViewT> getDisplayedCondition() {
         assert mEnterCondition != null;
         return (DisplayedCondition<ViewT>) mEnterCondition;
+    }
+
+    /**
+     * @deprecated Use the trigger methods instead, such as {@link #performViewActionTo(ViewAction)}
+     *     and {@link #clickTo()}.
+     */
+    @Deprecated
+    public ViewInteraction onView() {
+        Root rootMatched = getDisplayedCondition().getRootMatched();
+        assert rootMatched != null;
+
+        return Espresso.onView(mViewSpec.getViewMatcher())
+                .inRoot(withDecorView(is(rootMatched.getDecorView())));
     }
 
     /** Extra options for declaring ViewElements. */

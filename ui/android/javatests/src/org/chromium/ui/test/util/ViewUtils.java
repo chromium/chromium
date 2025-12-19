@@ -39,6 +39,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
+import org.chromium.base.test.transit.ViewCarryOn;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 
@@ -251,37 +254,14 @@ public class ViewUtils {
      */
     public static ViewInteraction onViewWaiting(
             Matcher<View> viewMatcher, boolean checkRootDialog) {
-        Runnable r =
-                () -> {
-                    onView(isRoot())
-                            .check(
-                                    (View view, NoMatchingViewException noMatchException) -> {
-                                        if (noMatchException != null) throw noMatchException;
-                                        new ExpectedViewCriteria(
-                                                        viewMatcher, VIEW_VISIBLE, (ViewGroup) view)
-                                                .run();
-                                    });
-                };
-        // Needed to prevent flakiness with espresso 3.2 after API 29.
+        ViewElement.Options.Builder optionsBuilder =
+                ViewElement.newOptions().allowDisabled().displayingAtLeast(1);
         if (checkRootDialog) {
-            r =
-                    () -> {
-                        onView(isRoot())
-                                .inRoot(isDialog())
-                                .check(
-                                        (View view, NoMatchingViewException noMatchException) -> {
-                                            if (noMatchException != null) throw noMatchException;
-                                            new ExpectedViewCriteria(
-                                                            viewMatcher,
-                                                            VIEW_VISIBLE,
-                                                            (ViewGroup) view)
-                                                    .run();
-                                        });
-                    };
+            optionsBuilder = optionsBuilder.inDialog();
         }
-
-        CriteriaHelper.pollInstrumentationThread(r);
-        return onView(viewMatcher);
+        ViewCarryOn<View> viewCarryOn =
+                ViewFinder.waitForView(View.class, viewMatcher, optionsBuilder.build());
+        return viewCarryOn.viewElement.onView();
     }
 
     /**
