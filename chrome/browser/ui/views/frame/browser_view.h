@@ -802,9 +802,6 @@ class BrowserView : public BrowserWindow,
 
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
-  views::View* GetSidePanelRoundedCornerForTesting() {
-    return side_panel_rounded_corner_;
-  }
   BrowserViewLayout* GetBrowserViewLayoutForTesting() {
     return GetBrowserViewLayout();
   }
@@ -1311,12 +1308,6 @@ class BrowserView : public BrowserWindow,
   // Conceptually this member should exist if and only if the
   // side_panel_coordinator is created.
   raw_ptr<SidePanel> contents_height_side_panel_ = nullptr;
-
-  // These are only non-null when the `SideBySide` feature is disabled.
-  // Otherwise, `multi_contents_view_` will create its own separators.
-  raw_ptr<views::View> right_aligned_side_panel_separator_ = nullptr;
-  raw_ptr<views::View> left_aligned_side_panel_separator_ = nullptr;
-  raw_ptr<views::View> side_panel_rounded_corner_ = nullptr;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

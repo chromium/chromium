@@ -146,6 +146,9 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
           std::move(delegate), browser, std::move(views));
     }
   }
+
+  // This is required for PiP still; will be broken out into a new layout in the
+  // future.
   return std::make_unique<BrowserViewLayoutImplOld>(std::move(delegate),
                                                     browser, std::move(views));
 }

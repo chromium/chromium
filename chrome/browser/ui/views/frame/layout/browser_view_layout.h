@@ -66,12 +66,6 @@ struct BrowserViewLayoutViews {
   raw_ptr<SidePanel> contents_height_side_panel = nullptr;
   raw_ptr<views::View> side_panel_animation_content = nullptr;
 
-  // TODO(crbug.com/424236535): These can be removed once `SideBySide` is
-  // launched.
-  raw_ptr<views::View> left_aligned_side_panel_separator = nullptr;
-  raw_ptr<views::View> right_aligned_side_panel_separator = nullptr;
-  raw_ptr<views::View> side_panel_rounded_corner = nullptr;
-
   // The contents separator used for when the top container is overlaid.
   // Note: when `SideBySide` feature is disabled, this separator is also
   // used when not overlaid. Once the feature is fully rolled out, we can

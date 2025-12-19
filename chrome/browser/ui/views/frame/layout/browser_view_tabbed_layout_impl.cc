@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -77,12 +78,6 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   }
 #endif
   if (top_container_is_visually_separate) {
-    return TopSeparatorType::kTopContainer;
-  }
-
-  // If there is no multi-contents view, there's nowhere else to put the
-  // separator, so it goes in the top container.
-  if (!views().multi_contents_view) {
     return TopSeparatorType::kTopContainer;
   }
 
@@ -506,8 +501,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   }
 
   // Lay out contents-height side panel.
-  bool show_left_separator = false;
-  bool show_right_separator = false;
+  bool show_leading_separator = false;
+  bool show_trailing_separator = false;
   bool contents_height_side_panel_leading = false;
   int min_contents_width = kContentsContainerMinimumWidth;
 
@@ -532,8 +527,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // Side panel implies a separator, which means we have to give a little
       // more room for the contents.
       min_contents_width += views::Separator::kThickness;
-      show_left_separator = !is_right_aligned;
-      show_right_separator = is_right_aligned;
+      show_leading_separator = contents_height_side_panel_leading;
+      show_trailing_separator = !contents_height_side_panel_leading;
 
       // Maximum width is the lesser of preferred width and the largest width
       // that doesn't shrink the contents pane past its own minimum size.
@@ -572,94 +567,19 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                            contents_height_side_panel_leading);
   }
 
-  // This will be used to position the separator corner.
-  const int separator_edge = contents_height_side_panel_leading
-                                 ? params.visual_client_area.x()
-                                 : params.visual_client_area.right();
-
-  // Maybe show separators in multi-contents view. If this happens, the
-  // separators aren't shown in the main container. Note that the multi-contents
+  // Show separators in multi-contents view. Note that the multi-contents
   // view is inside the main container so doesn't need to be laid out.
-  if (views().multi_contents_view) {
-    bool show_leading_separator = false;
-    bool show_trailing_separator = false;
-    if (show_left_separator || show_right_separator) {
-      show_leading_separator = contents_height_side_panel_leading;
-      show_trailing_separator = !contents_height_side_panel_leading;
-    }
-    views().multi_contents_view->SetShouldShowLeadingSeparator(
-        show_leading_separator);
-    views().multi_contents_view->SetShouldShowTrailingSeparator(
-        show_trailing_separator);
-    show_left_separator = false;
-    show_right_separator = false;
-  }
-
-  // Lay out the left side panel separator.
-  if (IsParentedTo(views().left_aligned_side_panel_separator,
-                   views().browser_view)) {
-    gfx::Rect separator_bounds;
-    if (show_left_separator) {
-      const int separator_width =
-          views().left_aligned_side_panel_separator->GetPreferredSize().width();
-      separator_bounds =
-          gfx::Rect(contents_height_side_panel_leading
-                        ? params.visual_client_area.x()
-                        : params.visual_client_area.right() - separator_width,
-                    params.visual_client_area.y(), separator_width,
-                    params.visual_client_area.height());
-      params.InsetHorizontal(separator_width,
-                             contents_height_side_panel_leading);
-    }
-    layout.AddChild(views().left_aligned_side_panel_separator, separator_bounds,
-                    show_left_separator);
-  }
-
-  // Lay out the right side panel separator.
-  if (IsParentedTo(views().right_aligned_side_panel_separator,
-                   views().browser_view)) {
-    gfx::Rect separator_bounds;
-    if (show_right_separator) {
-      const int separator_width =
-          views()
-              .right_aligned_side_panel_separator->GetPreferredSize()
-              .width();
-      separator_bounds =
-          gfx::Rect(contents_height_side_panel_leading
-                        ? params.visual_client_area.x()
-                        : params.visual_client_area.right() - separator_width,
-                    params.visual_client_area.y(), separator_width,
-                    params.visual_client_area.height());
-      params.InsetHorizontal(separator_width,
-                             contents_height_side_panel_leading);
-    }
-    layout.AddChild(views().right_aligned_side_panel_separator,
-                    separator_bounds, show_right_separator);
-  }
-
-  // Lay out the corner separator.
-  if (IsParentedTo(views().side_panel_rounded_corner, views().browser_view)) {
-    const bool visible = show_left_separator || show_right_separator;
-    gfx::Rect corner_bounds;
-    if (visible) {
-      const gfx::Size corner_size =
-          views().side_panel_rounded_corner->GetPreferredSize();
-      const gfx::Point corner_pos(contents_height_side_panel_leading
-                                      ? separator_edge
-                                      : separator_edge - corner_size.width(),
-                                  contents_height_side_panel_top);
-      corner_bounds = gfx::Rect(corner_pos, corner_size);
-    }
-    layout.AddChild(views().side_panel_rounded_corner, corner_bounds, visible);
-  }
+  views().multi_contents_view->SetShouldShowLeadingSeparator(
+      show_leading_separator);
+  views().multi_contents_view->SetShouldShowTrailingSeparator(
+      show_trailing_separator);
 
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
   // force the logic to be updated when multi-contents is fully rolled-out.
   CHECK(
       IsParentedToAndVisible(views().contents_container, views().browser_view));
-  CHECK(views().multi_contents_view == nullptr ||
-        views().contents_container->Contains(views().multi_contents_view));
+  CHECK(views().contents_container->Contains(views().multi_contents_view));
 
   // Because side panels have minimum width, in a small browser, it is possible
   // for the combination of minimum-sized contents pane and minimum-sized side
@@ -811,10 +731,8 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
   }
 
   // Maybe show the separator in the multi-contents view.
-  if (views().multi_contents_view) {
-    views().multi_contents_view->SetShouldShowTopSeparator(
-        top_separator_type == TopSeparatorType::kMultiContents);
-  }
+  views().multi_contents_view->SetShouldShowTopSeparator(
+      top_separator_type == TopSeparatorType::kMultiContents);
 
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {

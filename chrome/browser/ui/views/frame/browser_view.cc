@@ -136,7 +136,6 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
-#include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
@@ -929,29 +928,6 @@ BrowserView::BrowserView(Browser* browser)
   contents_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
       this, SidePanelEntry::PanelType::kContent, /*has_border=*/true));
 
-  // `MultiContentsView` owns separators when `SideBySide` is enabled.
-  if (!multi_contents_view_) {
-    right_aligned_side_panel_separator_ =
-        AddChildView(ContentsSeparator::CreateContentsSeparator());
-    right_aligned_side_panel_separator_->SetProperty(
-        views::kElementIdentifierKey,
-        kRightAlignedSidePanelSeparatorViewElementId);
-
-    left_aligned_side_panel_separator_ =
-        AddChildView(ContentsSeparator::CreateContentsSeparator());
-    left_aligned_side_panel_separator_->SetProperty(
-        views::kElementIdentifierKey,
-        kLeftAlignedSidePanelSeparatorViewElementId);
-    side_panel_rounded_corner_ =
-        AddChildView(std::make_unique<ContentsRoundedCorner>(
-            this, views::ShapeContextTokens::kContentSeparatorRadius,
-            base::BindRepeating(
-                &SidePanel::IsRightAligned,
-                base::Unretained(contents_height_side_panel_))));
-    side_panel_rounded_corner_->SetProperty(
-        views::kElementIdentifierKey, kSidePanelRoundedCornerViewElementId);
-  }
-
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
   infobar_container_ =
@@ -1108,9 +1084,6 @@ BrowserView::~BrowserView() {
   projects_panel_container_ = nullptr;
   toolbar_height_side_panel_ = nullptr;
   contents_height_side_panel_ = nullptr;
-  right_aligned_side_panel_separator_ = nullptr;
-  left_aligned_side_panel_separator_ = nullptr;
-  side_panel_rounded_corner_ = nullptr;
   toolbar_button_provider_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
@@ -5298,11 +5271,6 @@ void BrowserView::AddedToWidget() {
   layout_views.multi_contents_view = multi_contents_view_;
   layout_views.toolbar_height_side_panel = toolbar_height_side_panel_;
   layout_views.contents_height_side_panel = contents_height_side_panel_;
-  layout_views.left_aligned_side_panel_separator =
-      left_aligned_side_panel_separator_;
-  layout_views.right_aligned_side_panel_separator =
-      right_aligned_side_panel_separator_;
-  layout_views.side_panel_rounded_corner = side_panel_rounded_corner_;
   layout_views.top_container_separator = top_container_separator_;
   // LINT.ThenChange(//chrome/browser/ui/views/frame/layout/browser_view_layout.h:BrowserViewLayoutViews)
 
