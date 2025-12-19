@@ -454,11 +454,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
                          missing_tile_count);
   }
 
-  // Aggressively remove any tilings that are not seen to save memory. Note
-  // that this is at the expense of doing cause more frequent re-painting. A
-  // better scheme would be to maintain a tighter visible_layer_rect for the
-  // finer tilings.
-  CleanUpTilingsOnActiveLayer();
   SanityCheckTilingState();
 }
 

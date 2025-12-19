@@ -649,20 +649,13 @@ class LayerTreeHostPictureTestForceRecalculateScales
         EXPECT_EQ(
             gfx::AxisTransform2d(),
             will_change_layer->tilings()->tiling_at(0)->raster_transform());
-        if (TreesInViz()) {
-          // In TreesInViz mode, we query viz before deleting a tiling, so its
-          // removal is delayed comparing with non TreesInViz mode and there is
-          // no need to add it again in the next frame.
-          ASSERT_EQ(2u, normal_layer->tilings()->num_tilings());
-          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
-                    normal_layer->tilings()->tiling_at(0)->raster_transform());
-          EXPECT_EQ(gfx::AxisTransform2d(),
-                    normal_layer->tilings()->tiling_at(1)->raster_transform());
-        } else {
-          ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
-          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
-                    normal_layer->tilings()->tiling_at(0)->raster_transform());
-        }
+        // Now we delay tiling removal (or proposal to remove) to DidDraw(),
+        // so in DrawLayers, in both modes, tiling removal hasn't happened.
+        ASSERT_EQ(2u, normal_layer->tilings()->num_tilings());
+        EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
+                  normal_layer->tilings()->tiling_at(0)->raster_transform());
+        EXPECT_EQ(gfx::AxisTransform2d(),
+                  normal_layer->tilings()->tiling_at(1)->raster_transform());
 
         MainThreadTaskRunner()->PostTask(
             FROM_HERE,
@@ -673,18 +666,17 @@ class LayerTreeHostPictureTestForceRecalculateScales
       case 2:
         // On 3rd commit, both layers should adjust scales due to forced
         // recalculating.
+        ASSERT_EQ(2u, will_change_layer->tilings()->num_tilings());
+        EXPECT_EQ(
+            gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
+            will_change_layer->tilings()->tiling_at(0)->raster_transform());
+        EXPECT_EQ(
+            gfx::AxisTransform2d(),
+            will_change_layer->tilings()->tiling_at(1)->raster_transform());
+
         if (TreesInViz()) {
           // In TreesInViz mode, we query viz before deleting a tiling, so its
-          // removal is delayed comparing with non TreesInViz mode and there is
-          // no need to add it again in the next frame.
-          ASSERT_EQ(2u, will_change_layer->tilings()->num_tilings());
-          EXPECT_EQ(
-              gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
-              will_change_layer->tilings()->tiling_at(0)->raster_transform());
-          EXPECT_EQ(
-              gfx::AxisTransform2d(),
-              will_change_layer->tilings()->tiling_at(1)->raster_transform());
-
+          // removal is delayed comparing with non TreesInViz mode.
           ASSERT_EQ(3u, normal_layer->tilings()->num_tilings());
           EXPECT_EQ(gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
                     normal_layer->tilings()->tiling_at(0)->raster_transform());
@@ -693,14 +685,11 @@ class LayerTreeHostPictureTestForceRecalculateScales
           EXPECT_EQ(gfx::AxisTransform2d(),
                     normal_layer->tilings()->tiling_at(2)->raster_transform());
         } else {
-          ASSERT_EQ(1u, will_change_layer->tilings()->num_tilings());
-          EXPECT_EQ(
-              gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
-              will_change_layer->tilings()->tiling_at(0)->raster_transform());
-
-          ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
+          ASSERT_EQ(2u, normal_layer->tilings()->num_tilings());
           EXPECT_EQ(gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
                     normal_layer->tilings()->tiling_at(0)->raster_transform());
+          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(1)->raster_transform());
         }
 
         EndTest();
