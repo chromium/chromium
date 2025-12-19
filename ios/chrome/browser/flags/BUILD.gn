@@ -74,6 +74,7 @@ source_set("flags") {
     "//components/webui/flags:switches",
     "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ai_prototyping:features",
     "//ios/chrome/browser/app_store_rating/model:features",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/badges/model:features",
