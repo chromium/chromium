@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -25,6 +26,7 @@
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "net/base/url_util.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 
 namespace {
 std::vector<lens::ContextualInput> ConvertPageContentToContextualInput(
@@ -240,8 +242,16 @@ LensQueryFlowRouter::CreateContextualSearchSessionHandle() {
 }
 
 const SkBitmap& LensQueryFlowRouter::GetViewportScreenshot() const {
-  return lens_search_controller_->lens_overlay_controller()
-      ->initial_screenshot();
+  return lens_overlay_controller()->initial_screenshot();
+}
+
+void LensQueryFlowRouter::OnFileUploadStatusChangedForTesting(
+    const base::UnguessableToken& file_token,
+    lens::MimeType mime_type,
+    contextual_search::FileUploadStatus file_upload_status,
+    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+  OnFileUploadStatusChanged(file_token, mime_type, file_upload_status,
+                            error_type);
 }
 
 void LensQueryFlowRouter::OnFileUploadStatusChanged(
@@ -250,18 +260,39 @@ void LensQueryFlowRouter::OnFileUploadStatusChanged(
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
   const auto& suggest_inputs = GetSuggestInputs();
-  if (!suggest_inputs.has_value()) {
-    return;
-  }
-  if (AreLensSuggestInputsReady(*suggest_inputs)) {
+  if (suggest_inputs.has_value() &&
+      AreLensSuggestInputsReady(*suggest_inputs)) {
     if (suggest_inputs_ready_callback_) {
       suggest_inputs_ready_callback_.Run();
     }
+  }
 
-    auto* session_handle = GetContextualSearchSessionHandle();
-    if (session_handle && session_handle->GetController()) {
-      session_handle->GetController()->RemoveObserver(this);
+  auto* session_handle = GetContextualSearchSessionHandle();
+  if (session_handle && overlay_tab_context_file_token_.has_value() &&
+      file_token == overlay_tab_context_file_token_.value() &&
+      file_upload_status ==
+          contextual_search::FileUploadStatus::kUploadSuccessful) {
+    // Pass any text that was returned as part of the file upload response to
+    // to the overlay.
+    auto* file_info = session_handle->GetController()->GetFileInfo(file_token);
+    std::vector<lens::mojom::OverlayObjectPtr> objects;
+    lens::mojom::TextPtr text = nullptr;
+    if (file_info) {
+      for (const auto& response_body : file_info->response_bodies) {
+        lens::LensOverlayServerResponse server_response;
+        if (server_response.ParseFromString(response_body) &&
+            server_response.has_objects_response()) {
+          text = lens::CreateTextMojomFromServerResponse(
+              server_response, gfx::Size(GetViewportScreenshot().width(),
+                                         GetViewportScreenshot().height()));
+          objects =
+              lens::CreateObjectsMojomArrayFromServerResponse(server_response);
+        }
+      }
     }
+    lens_overlay_controller()->HandleStartQueryResponse(
+        std::move(objects), std::move(text), /*is_error=*/false);
+    overlay_tab_context_file_token_.reset();
   }
 }
 
@@ -297,8 +328,7 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
                                std::move(pending_session_handle_));
   // Notify the overlay controller that the side panel was opened so it can
   // update its UI state.
-  lens_search_controller_->lens_overlay_controller()
-      ->NotifyResultsPanelOpened();
+  lens_overlay_controller()->NotifyResultsPanelOpened();
 }
 
 void LensQueryFlowRouter::UploadContextualInputData(
@@ -315,6 +345,7 @@ void LensQueryFlowRouter::OnFinishedAddingTabContext(
     contextual_search::ContextualSearchSessionHandle* session_handle,
     std::unique_ptr<lens::ContextualInputData> contextual_input_data,
     const base::UnguessableToken& token) {
+  overlay_tab_context_file_token_ = token;
   // TODO(crbug.com/463400248): Use contextual tasks image upload config params
   // for Lens requests.
   auto image_upload_config =

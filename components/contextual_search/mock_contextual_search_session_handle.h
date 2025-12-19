@@ -27,6 +27,10 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
               (),
               (const, override));
   MOCK_METHOD(void,
+              AddTabContext,
+              (int32_t tab_id, AddTabContextCallback callback),
+              (override));
+  MOCK_METHOD(void,
               StartTabContextUploadFlow,
               (const base::UnguessableToken& file_token,
                std::unique_ptr<lens::ContextualInputData> contextual_input_data,

@@ -106,6 +106,9 @@ struct FileInfo {
   // The request ID for this request. Updated by the context
   // controller when the file upload is started.
   lens::LensOverlayRequestId request_id;
+
+  // The raw response bodies from the upload requests.
+  std::vector<std::string> response_bodies;
 };
 
 // LINT.IfChange(SubmissionType)
