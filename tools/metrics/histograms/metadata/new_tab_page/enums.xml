@@ -478,6 +478,8 @@ chromium-metrics-reviews@google.com.
       label="All enterprise shortcuts were restored (via menu or message
              pop-up)."/>
   <int value="14" label="An enterprise shortcut was updated."/>
+  <int value="15" label="Shortcuts were auto-removed due to inactivity."/>
+  <int value="16" label="Shortcuts auto-removal was undone."/>
 </enum>
 
 <enum name="NTPElement">
