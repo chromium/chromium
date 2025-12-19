@@ -99,7 +99,8 @@ public class NtpChromeColorsLayoutViewBinder {
         } else if (propertyKey == IS_DAILY_REFRESH_SWITCH_CHECKED) {
             MaterialSwitchWithText dailyRefreshSwitch =
                     view.findViewById(R.id.chrome_colors_switch_button);
-            dailyRefreshSwitch.setChecked(model.get(IS_DAILY_REFRESH_SWITCH_CHECKED));
+            dailyRefreshSwitch.setCheckedWithoutAnimation(
+                    model.get(IS_DAILY_REFRESH_SWITCH_CHECKED));
         } else if (propertyKey == DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER) {
             MaterialSwitchWithText dailyRefreshSwitch =
                     view.findViewById(R.id.chrome_colors_switch_button);

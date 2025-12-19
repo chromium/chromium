@@ -190,10 +190,10 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
     @Test
     public void testSetDailyRefreshSwitchChecked() {
         mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
-        verify(mDailyRefreshSwitch).setChecked(eq(true));
+        verify(mDailyRefreshSwitch).setCheckedWithoutAnimation(eq(true));
 
         mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, false);
-        verify(mDailyRefreshSwitch).setChecked(eq(false));
+        verify(mDailyRefreshSwitch).setCheckedWithoutAnimation(eq(false));
     }
 
     @Test

@@ -326,7 +326,7 @@ public class NtpSingleThemeCollectionCoordinator {
         // Temporarily detach the listener to prevent onCheckedChanged from being triggered
         // unnecessarily.
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(null);
-        mDailyRefreshSwitchButton.setChecked(isChecked);
+        mDailyRefreshSwitchButton.setCheckedWithoutAnimation(isChecked);
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(this::handleDailyRefreshClick);
     }
 

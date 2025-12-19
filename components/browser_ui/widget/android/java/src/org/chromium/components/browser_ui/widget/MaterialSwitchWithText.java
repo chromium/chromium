@@ -86,6 +86,16 @@ public class MaterialSwitchWithText extends LinearLayout implements Checkable, O
         mSwitch.setChecked(checked);
     }
 
+    /**
+     * Sets whether the switch is checked without showing animation.
+     *
+     * @param checked Whether the switch is checked.
+     */
+    public void setCheckedWithoutAnimation(boolean checked) {
+        mSwitch.setChecked(checked);
+        mSwitch.jumpDrawablesToCurrentState();
+    }
+
     @Override
     public boolean isChecked() {
         return mSwitch.isChecked();
