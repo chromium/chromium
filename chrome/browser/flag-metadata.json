@@ -7379,11 +7379,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-compose-entrypoint",
-    "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "ntp-composebox",
     "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 150

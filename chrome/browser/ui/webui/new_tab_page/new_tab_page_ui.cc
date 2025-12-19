@@ -66,7 +66,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
@@ -582,10 +581,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kNewTabPage));
 
+  auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
+  bool aim_eligible = service && service->IsAimEligible();
+
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",
-      (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(profile) ||
-       ntp_composebox::IsNtpComposeboxEnabled(profile)));
+      (aim_eligible || ntp_composebox::IsNtpComposeboxEnabled(profile)));
 
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile)) {
     switch (ntp_realbox::kSteadyPlaceholder.Get()) {

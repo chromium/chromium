@@ -4,8 +4,6 @@
 
 source_set("variations") {
   sources = [
-    "aim_entrypoint_fieldtrial.cc",
-    "aim_entrypoint_fieldtrial.h",
     "composebox_fieldtrial.cc",
     "composebox_fieldtrial.h",
   ]
@@ -40,10 +38,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "aim_entrypoint_fieldtrial_browsertest.cc",
-    "composebox_fieldtrial_browsertest.cc",
-  ]
+  sources = [ "composebox_fieldtrial_browsertest.cc" ]
   deps = [
     ":variations",
     "//chrome/browser:browser_process",
