@@ -2814,25 +2814,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.Timeline.InteractionToNavigationFinished{ExcludingBeforeUnload}.MainFrameOnly.Duration"
-    units="ms" expires_after="2026-12-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Measures the duration from a) the OS-level timestamp of the user input event
-    that started a navigation to b) when the navigation finishes committing
-    {ExcludingBeforeUnload}. This is recorded only for main frame cross-document
-    navigations where the user interaction timestamp is available.
-  </summary>
-  <token key="ExcludingBeforeUnload">
-    <variant name="" summary=""/>
-    <variant name=".ExcludingBeforeUnload"
-        summary=", excluding the time spent running beforeunload handlers"/>
-  </token>
-</histogram>
-
-<histogram
     name="Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration"
     units="ms" expires_after="2026-05-24">
   <owner>creis@chromium.org</owner>
@@ -2852,7 +2833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Timeline.{DurationFromTo}.Duration" units="ms"
-    expires_after="2026-12-01">
+    expires_after="2026-05-24">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2898,11 +2879,6 @@ chromium-metrics-reviews@google.com.
         summary="when fetch of the document via an HTTP(S) request starts, to
                  when the final response headers are received in the network
                  service. This can include redirects"/>
-    <variant name="InteractionToActualNavigationStart"
-        summary="a) the OS-level timestamp of the user input event that
-                 started a navigation to b) when the navigation starts. This
-                 is only logged for navigations that a user interaction
-                 timestamp is available."/>
     <variant name="LoaderStartToFetchStart"
         summary="when the NavigationURLLoader starts, to when the browser is
                  ready to fetch the document using an HTTP(S) request"/>
