@@ -60,7 +60,7 @@ struct UrlResource {
   std::optional<std::string> title;
 
   // The unique context ID for this resource.
-  std::optional<uint64_t> context_id;
+  std::optional<int64_t> context_id;
 };
 
 // A task is a representation of a user's journey to accomplish a goal. It

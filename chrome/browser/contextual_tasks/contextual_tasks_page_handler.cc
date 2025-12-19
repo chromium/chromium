@@ -9,6 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -175,6 +177,9 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->page()->HideInput();
   } else if (aim_to_client_message.has_exit_basic_mode()) {
     web_ui_controller_->page()->RestoreInput();
+  } else if (aim_to_client_message.has_update_thread_context_library()) {
+    OnReceivedUpdatedThreadContextLibrary(
+        aim_to_client_message.update_thread_context_library());
   }
 }
 
@@ -247,4 +252,35 @@ void ContextualTasksPageHandler::UpdateContextForTask(
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
+    const lens::UpdateThreadContextLibrary& message) {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksContextLibrary)) {
+    return;
+  }
+  const auto& task_id = web_ui_controller_->GetTaskId();
+  if (!task_id.has_value()) {
+    return;
+  }
+
+  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+      web_ui_controller_->GetWebUIWebContents());
+  contextual_search::ContextualSearchSessionHandle* handle =
+      helper ? helper->session_handle() : nullptr;
+
+  std::vector<contextual_search::FileInfo> submitted_context;
+  if (handle) {
+    submitted_context = handle->GetSubmittedContextFileInfos();
+    // Now that we have extracted the submitted contexts and are ready to update
+    // the context in the ContextualTask, we can clear out the submitted context
+    // from the ContextualSearchSessionHandle.
+    handle->ClearSubmittedContextTokens();
+  }
+
+  std::vector<contextual_tasks::UrlResource> committed_context =
+      contextual_tasks::ConvertAiModeContextToUrlResources(message,
+                                                           submitted_context);
+  context_controller_->SetUrlResourcesFromServer(*task_id, committed_context);
 }

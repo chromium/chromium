@@ -66,6 +66,8 @@ class ContextualTasksPageHandler
 
  private:
   void UpdateContextForTask(const base::Uuid& task_id);
+  void OnReceivedUpdatedThreadContextLibrary(
+      const lens::UpdateThreadContextLibrary& message);
 
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;

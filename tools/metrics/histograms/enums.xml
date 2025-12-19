@@ -13411,6 +13411,7 @@ from previous Chrome versions.
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
   <int value="-334654963" label="JupiterScreensaver:enabled"/>
+  <int value="-332018524" label="ContextualTasksContextLibrary:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
   <int value="-331137136"
@@ -19638,6 +19639,7 @@ from previous Chrome versions.
   <int value="1825812252" label="EnableNeuralPalmAdaptiveHold:disabled"/>
   <int value="1825854118" label="AutofillGranularFillingAvailable:enabled"/>
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
+  <int value="1825993495" label="ContextualTasksContextLibrary:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
   <int value="1828502021" label="EnableStaticQrCodeForPix:enabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>

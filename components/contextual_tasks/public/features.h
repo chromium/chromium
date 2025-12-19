@@ -15,6 +15,7 @@ namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
+BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
 
 // Enables context menu settings for contextual tasks.
@@ -106,7 +107,8 @@ namespace flag_descriptions {
 
 extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
-
+extern const char kContextualTasksContextLibraryName[];
+extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];

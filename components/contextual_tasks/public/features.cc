@@ -19,6 +19,9 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables integration with the server side context library.
+BASE_FEATURE(kContextualTasksContextLibrary, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables quality logging for relevant context determination for contextual
 // tasks.
 BASE_FEATURE(kContextualTasksContextLogging, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -171,6 +174,11 @@ const char kContextualTasksDescription[] =
 const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =
     "Enables relevant context determination for contextual tasks.";
+
+const char kContextualTasksContextLibraryName[] =
+    "Contextual Tasks Context Library";
+const char kContextualTasksContextLibraryDescription[] =
+    "Enables integration with the server side context library.";
 
 const char kContextualTasksSuggestionsEnabledName[] =
     "Contextual Tasks Suggestions Enabled";
