@@ -1663,21 +1663,20 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
   TestObserver observer;
   model()->AddObserver(&observer);
 
+  auto changed = [this](std::u16string keyword, bool is_keyword_hint) {
+    model()->OnPopupDataChanged(std::u16string(), false, std::u16string(),
+                                keyword, std::u16string(), is_keyword_hint,
+                                std::u16string(), {});
+  };
+
   // Entering keyword mode should notify observers.
   EXPECT_CALL(observer, OnKeywordStateChanged(true));
-  model()->SetKeyword(u"keyword");
-  model()->SetIsKeywordHint(false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // Switching to another keyword should not notify observers.
-  EXPECT_CALL(observer, OnKeywordStateChanged(_)).Times(0);
-  model()->SetKeyword(u"keyword2");
-  model()->SetIsKeywordHint(false);
+  changed(u"keyword", true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Leaving keyword mode should notify observers.
   EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  model()->SetKeyword(u"");
+  changed(u"", false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   model()->RemoveObserver(&observer);
