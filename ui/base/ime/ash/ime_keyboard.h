@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
   // be ran immediately with no delay.
   virtual void SetCurrentKeyboardLayoutByName(
       const std::string& layout_name,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Gets the current keyboard layout name.
   const std::string& GetCurrentKeyboardLayoutName() const {
