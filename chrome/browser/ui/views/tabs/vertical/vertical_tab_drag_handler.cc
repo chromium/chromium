@@ -81,6 +81,7 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
   const gfx::Point offset_from_source = event.location();
   ui::ListSelectionModel selection_model;
   TabSlotView& dragged_view = GetOrCreateShimViewForNode(node);
+  dragged_view.SetBoundsRect(node.view()->GetLocalBounds());
 
   if (drag_controller_->Init(this, &dragged_view, {&dragged_view},
                              offset_from_first_dragged_view, offset_from_source,
@@ -241,6 +242,7 @@ TabSlotView& VerticalTabDragHandlerImpl::GetOrCreateShimViewForNode(
   node_destroyed_callbacks_.push_back(node.RegisterWillDestroyCallback(
       base::BindOnce(&VerticalTabDragHandlerImpl::OnNodeWillDestroy,
                      base::Unretained(this), std::ref(node))));
+  tab_shim_view_ref.SetVisible(false);
   return tab_shim_view_ref;
 }
 
