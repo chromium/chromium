@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "best_features_screen_egtest.mm" ]
+  deps = [
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/first_run/best_features/ui:constants",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

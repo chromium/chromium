@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Navigate back to main screen"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h:BestFeaturesDetailScreenActionType) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/first_run/best_features/ui/metrics_util.h:BestFeaturesDetailScreenActionType) -->
 
 <!-- LINT.IfChange(IOSBestFeaturesItemType) -->
 
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Share Passwords Item Tapped"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h:BestFeaturesMainScreenActionType) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/first_run/best_features/ui/metrics_util.h:BestFeaturesMainScreenActionType) -->
 
 <enum name="IOSBringAndroidTabsPromptActionType">
   <int value="0" label="Review tabs"/>

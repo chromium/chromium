@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/first_run/best_features/ui/best_features_cell.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

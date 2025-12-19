@@ -78,7 +78,7 @@ source_set("eg_app_support+eg2") {
     "//components/metrics",
     "//components/prefs",
     "//ios/chrome/browser/first_run/coordinator",
-    "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:omnibox_position_ui",
+    "//ios/chrome/browser/first_run/omnibox_position/ui",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/app:test_support",

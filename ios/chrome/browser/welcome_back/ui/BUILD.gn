@@ -12,8 +12,8 @@ source_set("ui") {
   public_deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/best_features/ui",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",

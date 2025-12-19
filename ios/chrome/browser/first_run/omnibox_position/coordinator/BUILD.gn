@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "omnibox_position_choice_coordinator.h",
+    "omnibox_position_choice_coordinator.mm",
+    "omnibox_position_choice_mediator.h",
+    "omnibox_position_choice_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser:pref_names",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//ios/chrome/browser/first_run/omnibox_position/ui",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
+  ]
+}

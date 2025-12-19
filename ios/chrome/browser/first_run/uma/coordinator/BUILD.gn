@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("coordinator") {
+  sources = [
+    "uma_coordinator.h",
+    "uma_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/first_run/uma/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common",
+    "//ui/base",
+  ]
+}
