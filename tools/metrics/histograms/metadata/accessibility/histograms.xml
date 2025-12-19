@@ -4083,6 +4083,16 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="DomDistiller.Android.FontFamilySelected"
+    enum="ReaderModePrefsFontFamily" expires_after="2026-06-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the font family set by the user in the distilled page prefs UI.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Android.FontScalingSelected" units="%"
     expires_after="2026-06-01">
   <owner>wylieb@google.com</owner>
@@ -4091,16 +4101,6 @@ even if they fit the naming pattern. -->
   <summary>
     Records the font scaling set by the user in the distilled page prefs UI.
     Value can range from 100% to 250% in 25% increments.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Android.FontStyleSelected"
-    enum="ReaderModePrefsFontStyle" expires_after="2026-06-01">
-  <owner>wylieb@google.com</owner>
-  <owner>evanluo@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records the font style set by the user in the distilled page prefs UI.
   </summary>
 </histogram>
 
