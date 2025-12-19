@@ -164,8 +164,7 @@ void RootFrameViewport::RestoreToAnchor(const ScrollOffset& target_offset) {
 }
 
 void RootFrameViewport::DidUpdateVisualViewport() {
-  if (ScrollAnchor* anchor = LayoutViewport().GetScrollAnchor())
-    anchor->Clear();
+  LayoutViewport().DidUpdateVisualViewport();
 }
 
 LayoutBox* RootFrameViewport::GetLayoutBox() const {

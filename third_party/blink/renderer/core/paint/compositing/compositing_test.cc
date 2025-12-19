@@ -2658,6 +2658,8 @@ TEST_P(CompositingSimTest, ImplSideScrollUnpaintedSkipsCommit) {
 }
 
 TEST_P(CompositingSimTest, ImplSideScaleSkipsCommit) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+
   InitializeWithHTML(R"HTML(
     <div>Empty Page</div>
   )HTML");
@@ -2691,6 +2693,45 @@ TEST_P(CompositingSimTest, ImplSideScaleSkipsCommit) {
 
   // A full commit is not needed.
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+}
+
+TEST_P(CompositingSimTest, ImplSideScaleShowsOverlayScrollbars) {
+  ScopedMockOverlayScrollbars scoped_mock_overlay_scrollbars;
+
+  InitializeWithHTML(R"HTML(
+    <div>Empty Page</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // No scrollbars before pinch-zoom.
+  EXPECT_EQ(0, CcLayersByName(RootCcLayer(), "VerticalScrollbar").size());
+  EXPECT_EQ(0, CcLayersByName(RootCcLayer(), "HorizontalScrollbar").size());
+
+  // Simulate a page scale delta (i.e. user pinch-zoomed) on the compositor.
+  cc::CompositorCommitData commit_data;
+  commit_data.page_scale_delta = 2.f;
+
+  {
+    auto sync = Compositor().LayerTreeHost()->SimulateSyncingDeltasForTesting();
+    Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
+  }
+
+  // The transform tree's page scale factor isn't computed until we perform a
+  // lifecycle update.
+  ASSERT_EQ(1.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Update just the blink lifecycle because a full frame would clear the bit
+  // for whether a commit was requested.
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(2.f, GetPropertyTrees()->transform_tree().page_scale_factor());
+
+  // Overlay scrollbars shown after pinch-zoom.
+  EXPECT_EQ(1, CcLayersByName(RootCcLayer(), "VerticalScrollbar").size());
+  EXPECT_EQ(1, CcLayersByName(RootCcLayer(), "HorizontalScrollbar").size());
 }
 
 // Ensure that updates to page scale coming from the main thread update the

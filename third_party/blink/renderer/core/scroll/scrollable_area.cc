@@ -690,7 +690,8 @@ void ScrollableArea::MouseExitedScrollbar(Scrollbar& scrollbar) {
 
   if (GetMacScrollbarAnimator())
     GetMacScrollbarAnimator()->MouseExitedScrollbar(scrollbar);
-  if (HasOverlayScrollbars() && !scrollbars_hidden_if_overlay_) {
+  if (HasOverlayScrollbars() && (!scrollbars_hidden_if_overlay_ ||
+                                 ShouldAvoidHidingOverlayScrollbars())) {
     // This will kick off the fade out timer.
     ShowNonMacOverlayScrollbars();
   }
@@ -882,7 +883,8 @@ void ScrollableArea::CancelProgrammaticScrollAnimation() {
 }
 
 bool ScrollableArea::ScrollbarsHiddenIfOverlay() const {
-  return HasOverlayScrollbars() && scrollbars_hidden_if_overlay_;
+  return HasOverlayScrollbars() && !ShouldAvoidHidingOverlayScrollbars() &&
+         scrollbars_hidden_if_overlay_;
 }
 
 void ScrollableArea::SetScrollbarsHiddenForTesting(bool hidden) {
@@ -922,7 +924,10 @@ void ScrollableArea::SetScrollbarsHiddenIfOverlayInternal(bool hidden) {
     return;
 
   scrollbars_hidden_if_overlay_ = hidden;
-  ScrollbarVisibilityChanged();
+
+  if (!ShouldAvoidHidingOverlayScrollbars()) {
+    ScrollbarVisibilityChanged();
+  }
 }
 
 void ScrollableArea::FadeOverlayScrollbarsTimerFired(TimerBase*) {
