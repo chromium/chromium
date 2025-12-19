@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <optional>
 #include <utility>
-// #include <cstring>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -15,8 +14,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -26,6 +25,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_model.h"
+#endif
 
 namespace glic {
 
@@ -263,9 +266,6 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
     }
   }
 
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-
   // TODO(b/426644734): investigate triggering updates due to changes to
   // observability for focused tab data.
   bool is_audible = web_contents->IsCurrentlyAudible();
@@ -274,6 +274,9 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   bool is_observable = is_audible || is_foreground;
   bool is_active_in_window = false;
   bool is_window_active = false;
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
     is_active_in_window = tab && tab->IsActivated();
     // This code may be reached during the dragging of the tab out into a new
@@ -285,6 +288,8 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
                        static_cast<tabs::TabModel*>(tab)->owning_model() &&
                        tab->GetBrowserWindowInterface()->IsActive();
   }
+#else  // TODO(b/470059315): Implement for android
+#endif
   return glic::mojom::TabData::New(
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
