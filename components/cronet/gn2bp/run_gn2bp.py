@@ -236,7 +236,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       Chromium version: {version}
 
       """)
-  if not os.environ.get('SWARMING_BOT_ID', '').startswith('luci-chrome-ci-'):
+  if not os.environ.get('SWARMING_BOT_ID', '').startswith('luci-chrome-trusted-'):
     # This is not ideal, but we don't have a better signal to tell if gn2bp is
     # running in CI or somewhere else.
     #
