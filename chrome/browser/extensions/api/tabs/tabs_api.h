@@ -310,10 +310,6 @@ class TabsQueryFunction : public ExtensionFunction {
                                  int window_id,
                                  int tab_index);
 
-  // Returns true if the given `candidate_profile` matches the calling
-  // extension's profile (taking into account incognito access).
-  bool MatchesProfile(Profile* candidate_profile);
-
   bool MatchesWindow(BrowserWindowInterface* candidate_browser,
                      BrowserWindowInterface* current_browser,
                      BrowserWindowInterface* last_active_browser,

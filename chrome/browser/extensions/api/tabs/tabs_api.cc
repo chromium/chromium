@@ -1559,7 +1559,14 @@ base::Value::List TabsQueryFunction::BuildTabList(
   return result;
 }
 
-bool TabsQueryFunction::MatchesProfile(Profile* candidate_profile) {
+bool TabsQueryFunction::MatchesWindow(
+    BrowserWindowInterface* candidate_browser,
+    BrowserWindowInterface* current_browser,
+    BrowserWindowInterface* last_active_browser,
+    const std::string& target_window_type,
+    int target_window_id) {
+  // First, check if the profile matches.
+  Profile* candidate_profile = candidate_browser->GetProfile();
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!profile->IsSameOrParent(candidate_profile)) {
     return false;
@@ -1567,22 +1574,6 @@ bool TabsQueryFunction::MatchesProfile(Profile* candidate_profile) {
   if (!include_incognito_information() && profile != candidate_profile) {
     return false;
   }
-  return true;
-}
-
-bool TabsQueryFunction::MatchesWindow(
-    BrowserWindowInterface* candidate_browser,
-    BrowserWindowInterface* current_browser,
-    BrowserWindowInterface* last_active_browser,
-    const std::string& target_window_type,
-    int target_window_id) {
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/429037015): Android browser windows don't yet
-  // return a proper profile, so we look at the individual tabs instead.
-  if (!MatchesProfile(candidate_browser->GetProfile())) {
-    return false;
-  }
-#endif
 
   if (!candidate_browser->GetWindow()) {
     return false;
@@ -1633,14 +1624,6 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   if (!web_contents) {
     return false;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  Profile* tab_profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!MatchesProfile(tab_profile)) {
-    return false;
-  }
-#endif
 
   if (!MatchesBool(query_info_.highlighted, candidate_tab->IsSelected())) {
     return false;
