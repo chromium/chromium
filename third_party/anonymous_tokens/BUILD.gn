@@ -5,6 +5,9 @@ config("anonymous_tokens_config") {
     "overrides",
     "src",
   ]
+
+  # TODO(b/469686658): remove this flag.
+  cflags = [ "-Wno-sign-compare" ]
 }
 
 source_set("anonymous_tokens_public_key_client") {
@@ -24,6 +27,7 @@ source_set("anonymous_tokens_public_key_client") {
     "//third_party/abseil-cpp:absl",
   ]
 }
+
 source_set("anonymous_tokens_rsa_bssa_client") {
   sources = [
     "src/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client.cc",
@@ -41,9 +45,11 @@ source_set("anonymous_tokens_rsa_bssa_client") {
   public_deps = [
     ":anonymous_tokens_cc_proto",
     ":proto_utils",
+    ":rsa_ssa_pss_verifier",
     "//third_party/abseil-cpp:absl",
   ]
 }
+
 source_set("anonymous_tokens_redemption_client") {
   sources = [
     "src/anonymous_tokens/cpp/client/anonymous_tokens_redemption_client.cc",

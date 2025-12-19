@@ -2,7 +2,7 @@ Name: Anonymous Tokens
 Short Name: anonymous_tokens
 URL: https://github.com/google/anonymous-tokens
 Version: N/A
-Revision: 50e04fb27eacd49a5e2bfde5977ac689e13ebeeb
+Revision: 6405dbca306b91eaab6ddbdaa4b675b45d1cf4b4
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
