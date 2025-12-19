@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/mahi/mahi_test_util.h"

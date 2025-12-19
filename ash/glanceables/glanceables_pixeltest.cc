@@ -20,6 +20,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/views/controls/scroll_view.h"
 

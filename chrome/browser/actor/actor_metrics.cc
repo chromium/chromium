@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_task.h"
 
 namespace actor {

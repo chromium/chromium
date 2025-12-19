@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "content/common/features.h"
 #include "content/common/frame.mojom.h"

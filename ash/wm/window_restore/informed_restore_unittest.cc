@@ -43,6 +43,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"

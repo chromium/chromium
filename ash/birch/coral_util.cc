@@ -9,6 +9,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ash::coral_util {
 
