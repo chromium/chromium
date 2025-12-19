@@ -1366,6 +1366,38 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.Viewport.EncodedResolution" units="encoded"
+    expires_after="2026-12-19">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The width x height of the viewport encoded as an integer. The upper 16 bits
+    is the width and the lower 16 bits is the height. Decode using bitwise
+    operations in queries. It is recorded whenever CSD checks if visual features
+    can be extracted.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.Viewport.Height" units="pixels"
+    expires_after="2026-12-19">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The height of the viewport. It is recorded whenever CSD checks if visual
+    features can be extracted.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.Viewport.Width" units="pixels"
+    expires_after="2026-12-19">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The width of the viewport. It is recorded whenever CSD checks if visual
+    features can be extracted.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VisualFeaturesClearReason"
     enum="CanExtractVisualFeaturesResult" expires_after="2026-05-17">
   <owner>andysjlim@chromium.org</owner>

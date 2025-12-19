@@ -1360,7 +1360,8 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
                                base::BindOnce(&WriteFeaturesToDisk, *verdict,
                                               GetDebugFeatureDirectory()));
   }
-
+  int viewport_width = -1;
+  int viewport_height = -1;
 #if BUILDFLAG(IS_ANDROID)
   gfx::Size size;
   content::RenderWidgetHostView* view =
@@ -1368,8 +1369,9 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   // native view can be null in tests.
   if (view && view->GetNativeView()) {
     gfx::SizeF viewport = view->GetNativeView()->viewport_size();
-    size = gfx::Size(static_cast<int>(viewport.width()),
-                     static_cast<int>(viewport.height()));
+    viewport_width = static_cast<int>(viewport.width());
+    viewport_height = static_cast<int>(viewport.height());
+    size = gfx::Size(viewport_width, viewport_height);
   }
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
@@ -1382,6 +1384,8 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       web_contents()->GetRenderWidgetHostView();
   if (view) {
     size = view->GetVisibleViewportSize();
+    viewport_width = size.width();
+    viewport_height = size.height();
   }
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
@@ -1390,6 +1394,15 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
               web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
               zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
 #endif
+  base::UmaHistogramSparse("SBClientPhishing.Viewport.Width", viewport_width);
+  base::UmaHistogramSparse("SBClientPhishing.Viewport.Height", viewport_height);
+  if (viewport_width <= 0xFFFF && viewport_width >= 0 &&
+      viewport_height <= 0xFFFF && viewport_height >= 0) {
+    int32_t encoded_resolution = (viewport_width << 16) | viewport_height;
+    base::UmaHistogramSparse("SBClientPhishing.Viewport.EncodedResolution",
+                             encoded_resolution);
+  }
+
   base::UmaHistogramEnumeration("SBClientPhishing.VisualFeaturesClearReason",
                                 can_extract_visual_features_result);
   if (can_extract_visual_features_result !=
