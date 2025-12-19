@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "6b58037bab22440b868fd1e62eeb9324319a1b9d",
+    libcxx_revision == "486c1c4c4b49b3561455d96c9dc0657186bf2977",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -324,6 +324,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__concepts/class_or_enum.h",
   "//third_party/libc++/src/include/__concepts/common_reference_with.h",
   "//third_party/libc++/src/include/__concepts/common_with.h",
+  "//third_party/libc++/src/include/__concepts/comparison_common_type.h",
   "//third_party/libc++/src/include/__concepts/constructible.h",
   "//third_party/libc++/src/include/__concepts/convertible_to.h",
   "//third_party/libc++/src/include/__concepts/copyable.h",
