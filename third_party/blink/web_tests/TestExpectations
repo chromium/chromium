@@ -9970,7 +9970,6 @@ crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ F
 crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 
 # Gardener 2025-12-17
-crbug.com/468856556 [ Linux ] fast/replaced/border-radius-clip.html [ Failure Pass ]
 # Started to timeout on Linux, previously was flaky on all platforms (crbug.com/468856556)
 crbug.com/415946389 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Crash Failure Pass Timeout ]
 crbug.com/452729239 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Crash Failure Pass Timeout ]
