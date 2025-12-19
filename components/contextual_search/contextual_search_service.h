@@ -86,10 +86,13 @@ class ContextualSearchService : public KeyedService {
   // Called by SessionHandle to manage ref counts.
   void ReleaseSession(const SessionId& session_id);
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Map of active sessions, keyed by the session ID.
   std::map<SessionId, ContextualSearchSessionEntry> sessions_;
 
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<TemplateURLService> template_url_service_;
   const raw_ptr<variations::VariationsClient> variations_client_;
