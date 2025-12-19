@@ -183,8 +183,11 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
     results_->set_traffic_annotation(traffic_annotation_);
 
   // If proxy is set without error, ensure that an annotation is provided.
-  if (result_code != ERR_ABORTED && !rv)
-    CHECK(results_->traffic_annotation().is_valid());
+  if (result_code != ERR_ABORTED && !rv) {
+    // TODO(crbug.com/469006851): Turn this back into a CHECK once crashes were
+    // fully fixed.
+    DCHECK(results_->traffic_annotation().is_valid());
+  }
 
   // Reset the state associated with in-progress-resolve.
   traffic_annotation_.reset();
