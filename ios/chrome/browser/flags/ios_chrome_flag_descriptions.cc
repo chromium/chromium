@@ -377,6 +377,12 @@ const char kConfirmationButtonSwapOrderDescription[] =
     "Swaps the positions of the primary and secondary buttons in the "
     "confirmation alerts, so that the primary button is placed at the bottom.";
 
+const char kConsistentLogoDoodleHeightName[] =
+    "Consistent NTP Logo and Doodle Height";
+const char kConsistentLogoDoodleHeightDescription[] =
+    "Ensures the NTP Logo and Doodle have a consistent height to prevent "
+    "content jumping.";
+
 const char kContentNotificationProvisionalIgnoreConditionsName[] =
     "Content Notification Provisional Ignore Conditions";
 const char kContentNotificationProvisionalIgnoreConditionsDescription[] =

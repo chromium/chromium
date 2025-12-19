@@ -1665,6 +1665,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kWaitThresholdMillisecondsForCapabilitiesApiDescription,
      flags_ui::kOsIos,
      MULTI_VALUE_TYPE(kWaitThresholdMillisecondsForCapabilitiesApiChoices)},
+    {"consistent-logo-doodle-height",
+     flag_descriptions::kConsistentLogoDoodleHeightName,
+     flag_descriptions::kConsistentLogoDoodleHeightDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kConsistentLogoDoodleHeight)},
     {"content-notification-provisional-ignore-conditions",
      flag_descriptions::kContentNotificationProvisionalIgnoreConditionsName,
      flag_descriptions::

@@ -66,6 +66,9 @@ BASE_DECLARE_FEATURE(kUseFeedEligibilityService);
 // enables customizable most visited tiles when enabled.
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomizationIOS);
 
+// Feature flag to make the height of the NTP Logo and Doodle consistent.
+BASE_DECLARE_FEATURE(kConsistentLogoDoodleHeight);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -134,5 +137,8 @@ bool ShouldEnlargeNTPFakeboxForMIA();
 
 // Whether customized most visited tiles is enabled on Chrome on iOS.
 bool IsContentSuggestionsCustomizable();
+
+// Whether the NTP Logo and Doodle should have a consistent height.
+bool IsConsistentLogoDoodleHeightEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

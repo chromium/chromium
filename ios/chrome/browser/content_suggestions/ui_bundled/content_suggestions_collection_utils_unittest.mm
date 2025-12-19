@@ -174,7 +174,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPad) {
   CGFloat resultWidth = SearchFieldWidth(width, IPadTraitCollection());
   CGFloat resultWidthLargeIPad =
       SearchFieldWidth(largeIPadWidth, IPadTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin();
+  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
 
   // Test.
   EXPECT_EQ(22, topMargin);
@@ -192,7 +192,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhonePortrait) {
   // Action.
   CGFloat resultWidth =
       SearchFieldWidth(width, IPhonePortraitTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin();
+  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
 
   // Test.
   EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 29 : 22, topMargin);
@@ -209,7 +209,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
   // Action.
   CGFloat resultWidth =
       SearchFieldWidth(width, IPhoneLandscapeTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin();
+  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
 
   // Test.
   EXPECT_EQ(ShouldEnlargeNTPFakeboxForMIA() ? 29 : 22, topMargin);
@@ -303,6 +303,19 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeighta) {
       /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(62, FakeToolbarHeight());
+}
+
+// Tests that the header height is the same for Logo and Doodle, when the
+// kConsistentLogoDoodleHeight feature is enabled.
+TEST_F(ContentSuggestionsCollectionUtilsTest, SameLogoAndDoodleHeight) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kConsistentLogoDoodleHeight);
+
+  CGFloat height_with_logo = HeightForLogoHeader(
+      SearchEngineLogoState::kLogo, IPhonePortraitTraitCollection());
+  CGFloat height_with_doodle = HeightForLogoHeader(
+      SearchEngineLogoState::kDoodle, IPhonePortraitTraitCollection());
+  EXPECT_EQ(height_with_logo, height_with_doodle);
 }
 
 }  // namespace content_suggestions

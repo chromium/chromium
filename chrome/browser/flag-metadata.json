@@ -1945,6 +1945,11 @@
     "expiry_milestone": 154
   },
   {
+    "name": "consistent-logo-doodle-height",
+    "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "content-notification-provisional-ignore-conditions",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 135

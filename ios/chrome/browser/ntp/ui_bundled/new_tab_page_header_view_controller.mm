@@ -767,7 +767,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
-                     constant:-content_suggestions::SearchFieldTopMargin()];
+                     constant:-content_suggestions::SearchFieldTopMargin(
+                                  _searchEngineLogoState)];
   self.headerViewHeightConstraint =
       [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
   self.headerViewHeightConstraint.active = YES;
@@ -854,6 +855,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
   _searchEngineLogoState = logoState;
+  self.headerView.logoState = logoState;
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
                                                     self.traitCollection)];
@@ -863,6 +865,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
                                                self.traitCollection);
+  self.fakeOmniboxTopMarginConstraint.constant =
+      -content_suggestions::SearchFieldTopMargin(_searchEngineLogoState);
   // Trigger relayout so that it immediately returns the updated content height
   // for the NTP to update content inset.
   [self.view setNeedsLayout];

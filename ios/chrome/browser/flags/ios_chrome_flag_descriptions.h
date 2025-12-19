@@ -228,6 +228,9 @@ extern const char kComposeboxTabPickerVariationDescription[];
 extern const char kConfirmationButtonSwapOrderName[];
 extern const char kConfirmationButtonSwapOrderDescription[];
 
+extern const char kConsistentLogoDoodleHeightName[];
+extern const char kConsistentLogoDoodleHeightDescription[];
+
 extern const char kContentNotificationProvisionalIgnoreConditionsName[];
 extern const char kContentNotificationProvisionalIgnoreConditionsDescription[];
 

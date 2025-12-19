@@ -63,11 +63,22 @@ const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
 const CGFloat kGoogleSearchDoodleHeight = 120;
 
 // Height for the shrunk doodle frame.
-const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
+constexpr CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 
 // Height for the shrunk logo frame.
-const CGFloat kGoogleSearchLogoHeight = 36;
+constexpr CGFloat kGoogleSearchLogoHeight = 36;
 const CGFloat kLargeFakeboxGoogleSearchLogoHeight = 50;
+
+// Logo and Doodle margin adjustments to make the Logo and the Doodle occupy
+// the same amount of vertical space on the NTP. The Doodle's margins are
+// decreased and the Logo's top margin is increased.
+constexpr CGFloat kDoodleLogoDelta =
+    kGoogleSearchDoodleShrunkHeight - kGoogleSearchLogoHeight;
+constexpr CGFloat kDoodleTopMarginAdjustment = 10;
+constexpr CGFloat kDoodleBottomMarginAdjustment = 10;
+constexpr CGFloat kLogoTopMarginAdjustment = kDoodleLogoDelta -
+                                             kDoodleTopMarginAdjustment -
+                                             kDoodleBottomMarginAdjustment;
 
 // The size of the symbol image.
 const CGFloat kSymbolContentSuggestionsPointSize = 18;
@@ -183,6 +194,15 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
     // positioning as the regular logo.
     top_inset = kGoogleSearchLogoHeight - kLargeFakeboxGoogleSearchLogoHeight;
   }
+
+  if (IsConsistentLogoDoodleHeightEnabled() &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (logo_state == SearchEngineLogoState::kDoodle) {
+      top_inset -= kDoodleTopMarginAdjustment;
+    } else if (logo_state == SearchEngineLogoState::kLogo) {
+      top_inset += kLogoTopMarginAdjustment;
+    }
+  }
   CGFloat top_margin =
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
@@ -195,9 +215,16 @@ CGFloat HeaderSeparatorHeight() {
   return ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
 }
 
-CGFloat SearchFieldTopMargin() {
-  return ShouldEnlargeNTPFakeboxForMIA() ? kMIASearchFieldTopMargin
-                                         : kSearchFieldTopMargin;
+CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state) {
+  CGFloat margin = ShouldEnlargeNTPFakeboxForMIA() ? kMIASearchFieldTopMargin
+                                                   : kSearchFieldTopMargin;
+  if (IsConsistentLogoDoodleHeightEnabled() &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (logo_state == SearchEngineLogoState::kDoodle) {
+      margin -= kDoodleBottomMarginAdjustment;
+    }
+  }
+  return margin;
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
@@ -248,7 +275,8 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
                             UITraitCollection* trait_collection) {
   CGFloat header_height = DoodleTopMargin(logo_state, trait_collection) +
                           DoodleHeight(logo_state, trait_collection) +
-                          SearchFieldTopMargin() + FakeOmniboxHeight() +
+                          SearchFieldTopMargin(logo_state) +
+                          FakeOmniboxHeight() +
                           ntp_header::kScrolledToTopOmniboxBottomMargin +
                           ceil(HeaderSeparatorHeight());
   if (!IsRegularXRegularSizeClass(trait_collection)) {

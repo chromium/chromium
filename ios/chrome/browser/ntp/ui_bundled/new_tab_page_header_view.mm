@@ -691,7 +691,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
                              kAdaptiveLocationBarVerticalMargin;
   topMarginConstraint.constant =
-      -content_suggestions::SearchFieldTopMargin() - maxTopMarginDiff * percent;
+      -content_suggestions::SearchFieldTopMargin(self.logoState) -
+      maxTopMarginDiff * percent;
   heightConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint -
       content_suggestions::HeaderSeparatorHeight() +
@@ -1173,7 +1174,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     // iPads pin slightly earlier than landscape iPhones.
     if (CanShowTabStrip(self)) {
-      offset -= content_suggestions::SearchFieldTopMargin();
+      offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
     }
   }
   return offset;

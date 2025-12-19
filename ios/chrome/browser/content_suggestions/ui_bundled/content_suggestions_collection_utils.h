@@ -27,7 +27,7 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
 // Returns the height of the separator line below the omnibox.
 CGFloat HeaderSeparatorHeight();
 // Returns the proper margin to the bottom of the doodle for the search field.
-CGFloat SearchFieldTopMargin();
+CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state);
 // Returns the height of the Fake Omnibox on Home when it is not scrolled.
 CGFloat FakeOmniboxHeight();
 // Returns the height of the Fake Omnibox on Home when it is pinned / scrolled.

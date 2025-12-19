@@ -31,6 +31,8 @@ BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMostVisitedTilesCustomizationIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -142,4 +144,8 @@ bool ShouldEnlargeNTPFakeboxForMIA() {
 
 bool IsContentSuggestionsCustomizable() {
   return base::FeatureList::IsEnabled(kMostVisitedTilesCustomizationIOS);
+}
+
+bool IsConsistentLogoDoodleHeightEnabled() {
+  return base::FeatureList::IsEnabled(kConsistentLogoDoodleHeight);
 }

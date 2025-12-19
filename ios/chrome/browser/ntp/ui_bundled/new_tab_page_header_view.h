@@ -12,6 +12,7 @@
 @protocol NewTabPageShortcutsHandler;
 @class OmniboxContainerView;
 @class NewTabPageColorPalette;
+enum class SearchEngineLogoState;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
@@ -70,6 +71,9 @@
 
 // Handles the actions for the NTP shortcuts, like Lens or voice search.
 @property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
+
+// The logo state.
+@property(nonatomic, assign) SearchEngineLogoState logoState;
 
 // Adds the separator to the searchField. Must be called after the searchField
 // is added as a subview.
