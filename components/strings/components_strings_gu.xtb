@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">પછીથી, તમે મુલાકાત લીધેલી કોઈ સાઇટ આ માહિતી માગી શકે છે — પછી તે જાહેરાતના તમારા વિષયો હોય અથવા તો તમે મુલાકાત લીધેલી સાઇટ દ્વારા સૂચવેલી જાહેરાતો હોય.</translation>
 <translation id="334438173029876234">સ્કેટબોર્ડિંગનું સાધન</translation>
 <translation id="3347146863028219517">સ્કીઇંગ અને સ્નોબોર્ડિંગ</translation>
+<translation id="3349610303043713601">AI વડે બ્રાઉઝ કરો</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 સેકન્ડ ફરીથી ચલાવો</translation>
 <translation id="3352881017886802007">રમતગમતની ગેમ</translation>
@@ -2980,6 +2981,7 @@
 <translation id="5826507051599432481">કોમન નેમ (CN)</translation>
 <translation id="5830698870816298009">કૅમેરાનો ઉપયોગ અને હિલચાલ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">આ ખરીદી પૂર્ણ કરવા માટે અન્ય ચુકવણી પદ્ધતિ પસંદ કરો.</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5832976493438355584">લૉક કરેલ</translation>
 <translation id="5837220895135257862">ફરી પ્રયાસ કરતા પહેલાં <ph name="CLOUD_PROVIDER" />માં સ્પેસ ખાલી કરો</translation>
@@ -4262,6 +4264,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{કોઈ નહીં}=1{1 ઍપ (<ph name="EXAMPLE_APP_1" />)}=2{2 ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
 <translation id="784623644169604270">તાજેતરની કોઈ ઍક્ટિવિટી નથી</translation>
+<translation id="7853222852810008596">પછીથી ચુકવણી કરવાની સુવિધા આ ચલણમાં ઉપલબ્ધ નથી</translation>
 <translation id="785476343534277563">કૉલેજની રમતો</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> પર તમારી નવી સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>

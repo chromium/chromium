@@ -1447,6 +1447,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3342018947887487892">Më vonë, një sajt që ti viziton mund të kërkojë këto informacione - temat e tua të reklamave ose reklamat e sugjeruara nga sajtet që ke vizituar.</translation>
 <translation id="334438173029876234">Pajisje për ecje me patina</translation>
 <translation id="3347146863028219517">Ski dhe rrëshqitje në borë</translation>
+<translation id="3349610303043713601">Shfleto me IA-në</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Riluaj 10 sekonda</translation>
 <translation id="3352881017886802007">Lojëra sportive</translation>
@@ -2936,6 +2937,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="5732392974455271431">Prindërit e tu mund ta zhbllokojnë atë për ty</translation>
 <translation id="573555826359077410">Butoni "Krijo formular". Aktivizoje për të krijuar me shpejtësi një formular të ri te "Formularët e Google"</translation>
+<translation id="5737022235680044108">Organizata jote e ka bllokuar <ph name="HOST_NAME" /> në modalitetin "i fshehtë".</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
 <translation id="5739619009927381786">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Ndryshe, mund të <ph name="BEGIN_LINK" />verifikohesh në një mënyrë tjetër<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, sinkronizo historikun dhe skedat e tua</translation>
@@ -3616,6 +3618,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6844998850832008753">Gjurmimi i duarve lejohet këtë herë</translation>
 <translation id="6849023911358004088">Butoni "Menaxho cilësimet e sigurisë". Aktivizoje për të menaxhuar "Shfletimin e sigurt" dhe më shumë te cilësimet e Chrome</translation>
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
+<translation id="685163597635765693">Organizata jote ka bllokuar lidhjet e "<ph name="HOST_NAME" />" në modalitetin "i fshehtë".</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
 <translation id="6854691830678097752">Për përfundim më të shpejtë të blerjes, ruaje këtë kod CVC në llogarinë tënde, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Menaxho fjalëkalimet...</translation>
@@ -3885,6 +3888,7 @@ Detaje shtesë:
 <translation id="7273111226200291353">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshëm për administratorin tënd.</translation>
 <translation id="7275334191706090484">Faqeshënuesit e menaxhuar</translation>
 <translation id="7275808129217605899">Të ushqyerit në mënyrë të shëndetshme</translation>
+<translation id="7282894295403887199">Nuk mund ta vizitosh këtë faqe në modalitetin "i fshehtë"</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të ndryshuar fjalëkalimin e "Llogarisë sate të Google"</translation>
 <translation id="7286908876112207905">Ngjitja e kësaj përmbajtjeje në këtë sajt nuk lejohet</translation>
 <translation id="7291578327729322058">Shto lejen e drejtimit</translation>

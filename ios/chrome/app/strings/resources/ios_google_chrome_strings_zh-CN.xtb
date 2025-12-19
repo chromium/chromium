@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1076643793026027628">Chrome 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
+<translation id="1081114897601629648">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1088490543924960890">开始使用 Google 密码管理工具保存通行密钥</translation>
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
@@ -270,6 +271,7 @@
 <translation id="7284245284340063465">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="7296102444587051536">iOS 版 Chrome</translation>
 <translation id="7299681342915173313">现在，每当点按电子邮件、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
+<translation id="7334364820047587268">您的 Google 密码管理工具中已有这些账号的密码。如果选择导入以下某个密码，则导入的密码会替换现有密码。</translation>
 <translation id="7344094882820374540">利用 Chrome 的超强安全防护来保护自己免受危险网站的侵害</translation>
 <translation id="7349129508108954623">允许 Chrome 使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
 <translation id="7371674917547846460">及时了解实用的 Chrome 提示等内容。</translation>

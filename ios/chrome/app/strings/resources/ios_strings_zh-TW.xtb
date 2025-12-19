@@ -25,7 +25,6 @@
 <translation id="1072679792409426431">已由管理員停用</translation>
 <translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
-<translation id="1081114897601629648">以下密碼不符合規定，因此未匯入 Google 密碼管理工具。</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1082554859195167538">為你推薦的產品評論</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
@@ -404,6 +403,7 @@
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何啟用這項功能？</translation>
+<translation id="2485534095078940149">附加檔案「{title}」</translation>
 <translation id="2493269659028026145">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 立即鎖定</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
@@ -1034,6 +1034,7 @@
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4970724460420203313">使用代管帳戶登入 Chrome 後，就能將貴機構相關瀏覽資料 (包括分頁、歷史記錄和密碼) 與其他瀏覽資料分開</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
+<translation id="4977176874984951085">開啟頁面動作選單</translation>
 <translation id="4979397965658815378">只要登入 Google 帳戶，即可在你的所有裝置上使用自己的書籤、密碼、歷史記錄和其他設定。</translation>
 <translation id="4985921635659180565">檔案排定刪除後就無法取消。</translation>
 <translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
@@ -1119,6 +1120,7 @@
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
+<translation id="5275953427913009986">附加分頁「{title}」</translation>
 <translation id="5282340693022193851">如要接收價格追蹤通知，請在 iOS 設定中開啟通知。</translation>
 <translation id="528857768909044842">分頁群組會儲存在這裡</translation>
 <translation id="5294624619177114121">行動裝置通知</translation>
@@ -1192,6 +1194,7 @@
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
 <translation id="5581786858144165447">「詢問 AI」模式</translation>
 <translation id="5585019845078534178">資訊卡</translation>
+<translation id="5589976607021609750">附加圖片</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">下載內容會在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -1227,7 +1230,6 @@
 <translation id="5680012489335339762">要切換帳戶嗎？未儲存的帳戶資料將遭到刪除。</translation>
 <translation id="5683499062697987550">如要將密碼儲存到 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
 <translation id="5684761169742812828">這組密碼因網際網路資料侵害事件遭到外洩。如果無法立即變更密碼，Google 建議你保留這則警告，做為日後提醒。</translation>
-<translation id="5688739340234490129">{count,plural, =1{{count} 張卡片}other{{count} 張卡片}}</translation>
 <translation id="5694848685995373177">已儲存到 <ph name="USER_EMAIL" /> 的雲端硬碟。</translation>
 <translation id="570209299585559496">如要將預設網站檢視畫面變更為電腦版，請依序前往「設定」&gt;「內容設定」</translation>
 <translation id="5702108177581350218">當你分享使用者名稱和密碼副本後，家庭成員就能使用 Google 密碼管理工具填寫這類資訊。</translation>
@@ -1675,7 +1677,6 @@
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313347584264171202">這裡會顯示你的無痕分頁</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Google 密碼管理工具中已有這些帳戶的密碼。如果選擇匯入以下任一密碼，將會取代現有密碼。</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">不允許匯入</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
@@ -1875,6 +1876,7 @@
 <translation id="8005666035647241369">儲存至這部裝置的 Google 密碼管理員</translation>
 <translation id="8010488806779226127">探索各項功能，提升瀏覽體驗</translation>
 <translation id="8011489434346330032">網頁檢閱器</translation>
+<translation id="8015826420689927262">刪除附件</translation>
 <translation id="8017015647846870183">Google 密碼管理工具中的資料，包括密碼和密碼金鑰</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023170444051056234">你將立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
@@ -2041,7 +2043,6 @@
 <translation id="8609743333007776886">將 ${url} 加入書籤</translation>
 <translation id="8611922158252451755">知道連結的使用者可以編輯所有分頁，請慎選共用對象。連結將在 48 小時後失效。</translation>
 <translation id="8614671330774943747">前往分頁切換工具</translation>
-<translation id="8620640915598389714">編輯</translation>
 <translation id="862367213447108001">一律顯示這個網站的彈出式視窗</translation>
 <translation id="8625706492572042370">編輯主畫面</translation>
 <translation id="8631370184731241854">已鎖定無痕分頁</translation>
@@ -2230,6 +2231,7 @@
 <translation id="956218893102219091">使用精確位置資訊，取得最準確的 Gemini 結果，而不是根據 IP 位址推估大概位置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963102227019621224">網路和應用程式活動</translation>
+<translation id="965879457362663186">新增附件</translation>
 <translation id="966593914872420832">語音搜尋</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{加入<ph name="OWNER_NAME" />的分頁群組}=1{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人的分頁群組}other{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人的分頁群組}}</translation>
 <translation id="973493300226275298">追蹤產品在多個網路商店中的價格。如果產品降價，系統會透過快訊通知你。</translation>

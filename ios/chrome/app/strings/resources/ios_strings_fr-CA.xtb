@@ -25,7 +25,6 @@
 <translation id="1072679792409426431">Désactivé par votre administrateur</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
-<translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le gestionnaire de mots de passe Google parce qu'ils ne répondent pas aux exigences.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
@@ -404,6 +403,7 @@
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">Comment activer cette fonctionnalité?</translation>
+<translation id="2485534095078940149">Fichier joint : {title}</translation>
 <translation id="2493269659028026145">Verrouiller immédiatement avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2496626742194544812">Aller au premier onglet</translation>
@@ -1034,6 +1034,7 @@
 <translation id="496392417432935267">Ouvert ailleurs</translation>
 <translation id="4970724460420203313">L'utilisation de Chrome avec votre compte géré vous permet de séparer la navigation liée à votre organisation (y compris les onglets, l'historique et les mots de passe) de vos autres navigations</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
+<translation id="4977176874984951085">Ouvrir le menu des actions de la page</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier est programmée, elle ne peut plus être annulée.</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
@@ -1119,6 +1120,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) souhaite que vous vous joigniez à un groupe d'onglets. Toute personne disposant du lien peut modifier l'ensemble des onglets, alors joignez-vous au groupe avec prudence. Le lien expire dans 48 heures.</translation>
+<translation id="5275953427913009986">Onglet joint : {title}</translation>
 <translation id="5282340693022193851">Pour recevoir des notifications de suivi de prix, activez les notifications dans vos paramètres iOS.</translation>
 <translation id="528857768909044842">Les groupes d'onglets sont enregistrés ici</translation>
 <translation id="5294624619177114121">Notifications sur appareil mobile</translation>
@@ -1192,6 +1194,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5579012242779565775">Masquer la Liste de lecture</translation>
 <translation id="5581786858144165447">Mode Demander à l'IA</translation>
 <translation id="5585019845078534178">Cartes</translation>
+<translation id="5589976607021609750">Image jointe</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="559567008082979829">Faites en sorte que vos téléchargements soient supprimés après un mois.</translation>
 <translation id="5596627076506792578">Autres options</translation>
@@ -1227,7 +1230,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5680012489335339762">Changer de compte? Les données du compte non enregistrées seront supprimées.</translation>
 <translation id="5683499062697987550">Pour utiliser et enregistrer des mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous.</translation>
 <translation id="5684761169742812828">Ce mot de passe a été exposé lors d'une violation de données sur Internet. Si vous n'avez pas le temps de le modifier maintenant, Google vous recommande de conserver cet avertissement pour vous en souvenir plus tard.</translation>
-<translation id="5688739340234490129">{count,plural, =1{{count} carte}one{{count} carte}other{{count} cartes}}</translation>
 <translation id="5694848685995373177">Enregistré dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Vous pouvez changer l'affichage du site par défaut pour le mode Bureau dans Paramètres, puis Paramètres de contenu</translation>
 <translation id="5702108177581350218">Lorsque vous partagez une copie de votre nom d'utilisateur et de votre mot de passe, le membre de votre famille peut les saisir en utilisant le gestionnaire de mots de passe Google.</translation>
@@ -1675,7 +1677,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Vous avez déjà des mots de passe pour ces comptes dans votre gestionnaire de mots de passe Google. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera l'ancien.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7345061034321640811">Importation non autorisée</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
@@ -1875,6 +1876,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8005666035647241369">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="8010488806779226127">Découvrez des fonctionnalités qui peuvent vous aider à en faire plus lorsque vous naviguez</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
+<translation id="8015826420689927262">Supprimer la pièce jointe</translation>
 <translation id="8017015647846870183">À partir du gestionnaire de mots de passe Google, y compris les mots de passe et les clés d'accès</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8023170444051056234">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
@@ -2041,7 +2043,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8609743333007776886">Ajouter ${url} aux favoris</translation>
 <translation id="8611922158252451755">Toute personne disposant du lien peut modifier l'ensemble des onglets, alors partagez le groupe judicieusement. Le lien expire dans 48 heures.</translation>
 <translation id="8614671330774943747">Accéder au Gestionnaire d'onglets</translation>
-<translation id="8620640915598389714">Modifier</translation>
 <translation id="862367213447108001">Toujours afficher les fenêtres contextuelles sur ce site</translation>
 <translation id="8625706492572042370">Modifier l'écran d'accueil</translation>
 <translation id="8631370184731241854">Onglets de navigation privée verrouillés</translation>
@@ -2230,6 +2231,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="956218893102219091">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963102227019621224">Activité sur le Web et dans les applis</translation>
+<translation id="965879457362663186">Ajouter une pièce jointe</translation>
 <translation id="966593914872420832">Recherche vocale</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" />}=1{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autre}one{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autre}other{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autres}}</translation>
 <translation id="973493300226275298">Suivez le prix d'un produit dans les magasins en ligne. Vous recevrez des alertes lorsque le prix baisse.</translation>

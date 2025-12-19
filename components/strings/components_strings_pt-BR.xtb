@@ -1447,6 +1447,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3342018947887487892">Depois, um site que você visitar poderá pedir os temas ou anúncios sugeridos em sites acessados.</translation>
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
+<translation id="3349610303043713601">Navegar com a IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Voltar 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de esporte</translation>
@@ -2936,6 +2937,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
 <translation id="573555826359077410">Botão "Criar formulário". Ative para criar um novo arquivo no Google Formulários em instantes</translation>
+<translation id="5737022235680044108">Sua organização bloqueou o URL <ph name="HOST_NAME" /> no modo de navegação anônima.</translation>
 <translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
 <translation id="5739619009927381786">Use a impressão digital para desbloquear a tela na próxima etapa. Ou <ph name="BEGIN_LINK" />verifique de outra maneira<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
@@ -3617,6 +3619,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6844998850832008753">Rastreamento de mãos permitido apenas desta vez</translation>
 <translation id="6849023911358004088">Botão "Gerenciar configurações de segurança". Ative para gerenciar o Navegação segura e muito mais nas configurações do Chrome</translation>
 <translation id="6850286078059909152">Cor do texto</translation>
+<translation id="685163597635765693">Sua organização bloqueou links "<ph name="HOST_NAME" />" no modo de navegação anônima.</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
 <translation id="6854691830678097752">Para agilizar a finalização de compras, salve este CVC na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Gerenciar senhas…</translation>
@@ -3887,6 +3890,7 @@ Mais detalhes:
 <translation id="7273111226200291353">Os arquivos baixados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7275808129217605899">Alimentação saudável</translation>
+<translation id="7282894295403887199">Não é possível acessar esta página no modo de navegação anônima</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para mudar a senha da sua Conta do Google</translation>
 <translation id="7286908876112207905">Não é permitido colar o conteúdo nesse site</translation>
 <translation id="7291578327729322058">Adicionar carteira de habilitação</translation>

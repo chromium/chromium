@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页 - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> 个标签页 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="504456571576643789">注意事项</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{已选择 <ph name="WINDOW_COUNT_ONE" /> 个窗口}other{已选择 <ph name="WINDOW_COUNT_NORMAL" /> 个窗口}}</translation>
 <translation id="5056587122125565772">创建图片</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
@@ -1724,6 +1725,7 @@
 <translation id="8190358571722158785">还剩 1 天</translation>
 <translation id="8192765420340770300">已打开用于选择登录账号的底部动作条，并以最大高度显示</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">清空搜索查询</translation>
 <translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人所在的标签页分组}}</translation>
 <translation id="8209050860603202033">打开图片</translation>

@@ -1447,6 +1447,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3342018947887487892">Vēlāk kādā apmeklētajā vietnē var tikt lūgta šī informācija — vai nu jūsu reklāmu tēmas, vai arī jūsu apmeklētajās vietnēs ieteiktās reklāmas.</translation>
 <translation id="334438173029876234">Skeitborda aprīkojums</translation>
 <translation id="3347146863028219517">Slēpošana un snovbords</translation>
+<translation id="3349610303043713601">Pārlūkot, izmantojot MI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Atskaņot 10 sekundes vēlreiz</translation>
 <translation id="3352881017886802007">Sporta spēles</translation>
@@ -2934,6 +2935,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5730040223043577876">Chrome iesaka atiestatīt jūsu paroli, ja izmantojāt to citās vietnēs.</translation>
 <translation id="5732392974455271431">Lai atbloķētu, vērsieties pie vecākiem</translation>
 <translation id="573555826359077410">Poga “Izveidot veidlapu”. Aktivizējiet, lai pakalpojumā Google veidlapas ātri izveidotu jaunu veidlapu.</translation>
+<translation id="5737022235680044108">Jūsu organizācija ir bloķējusi <ph name="HOST_NAME" /> inkognito režīmā.</translation>
 <translation id="5738385766833540397">Pārvaldiet, kā saņemt paziņojumus par izsekoto produktu cenu kritumu</translation>
 <translation id="5739619009927381786">Nākamajā darbībā atbloķējiet ekrānu (parasti izmantojot pirksta nospiedumu). Varat arī <ph name="BEGIN_LINK" />veikt verifikāciju citā veidā<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Lai kopīgotu ciļņu grupas, pievienotos tām un sadarbotos tajās, sinhronizējiet savu vēsturi un cilnes.</translation>
@@ -3615,6 +3617,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6844998850832008753">Roku kustību izsekošana ir atļauta šajā reizē</translation>
 <translation id="6849023911358004088">Poga “Pārvaldīt drošības iestatījumus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu funkciju “Droša pārlūkošana” un citas iespējas.</translation>
 <translation id="6850286078059909152">Teksta krāsa</translation>
+<translation id="685163597635765693">Jūsu organizācija ir bloķējusi “<ph name="HOST_NAME" />” saites inkognito režīmā.</translation>
 <translation id="6852204201400771460">Vai atkārtoti ielādēt lietotni?</translation>
 <translation id="6854691830678097752">Ātrākiem norēķiniem saglabājiet šo CVC kodu savā kontā (<ph name="ACCOUNT_EMAIL" />).</translation>
 <translation id="6857776781123259569">Pārvaldīt paroles…</translation>
@@ -3885,6 +3888,7 @@ Papildu informācija:
 <translation id="7273111226200291353">Jūsu lejupielādētie faili tiek nosūtīti uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie faili var tikt pārmeklēti, lai konstatētu, vai tajos ir sensitīvi dati vai ļaunprātīga programmatūra, un uzglabāti saskaņā ar uzņēmuma politikām, turklāt tie var būt redzami jūsu administratoram.</translation>
 <translation id="7275334191706090484">Pārvaldītās grāmatzīmes</translation>
 <translation id="7275808129217605899">Veselīgs uzturs</translation>
+<translation id="7282894295403887199">Jūs nevarat apmeklēt šo lapu inkognito režīmā</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai nomainītu Google konta paroli, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="7286908876112207905">Šī satura ielīmēšana šajā vietnē nav atļauta</translation>
 <translation id="7291578327729322058">Autovadītāja apliecības pievienošana</translation>

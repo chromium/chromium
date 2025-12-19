@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1076643793026027628">Chrome автоматски ги отвора линковите на YouTube „Инкогнито“ во режим „Инкогнито“.</translation>
+<translation id="1081114897601629648">Следниве лозинки не се увезени во Google Password Manager бидејќи не ги исполнуваат барањата.</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
 <translation id="1088490543924960890">Започнете да зачувувате криптографски клучеви со Google Password Manager</translation>
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome за iOS</translation>
 <translation id="7299681342915173313">Отсега може да го користите Chrome секогаш кога ќе допрете линкови во е-пораки, документи и други апликации.</translation>
+<translation id="7334364820047587268">Веќе имате лозинки за сметкиве во вашата Google Password Manager. Ако изберете да увезете некоја од лозинките подолу, таа ќе ја замени постојната.</translation>
 <translation id="7344094882820374540">Добијте ја најсилната заштита од опасни сајтови на Chrome</translation>
 <translation id="7349129508108954623">Дозволете Chrome да користи „Карти на Google“ за да ви обезбедува насоки и локални информации за откриените адреси.</translation>
 <translation id="7371674917547846460">Бидете во тек со корисните совети за Chrome и друго.</translation>

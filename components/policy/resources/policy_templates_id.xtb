@@ -1852,9 +1852,6 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
       Kebijakan ini menggantikan <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.
 
       Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui Web Serial API. Untuk memberikan akses ke perangkat USB melalui WebUSB API, lihat kebijakan <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="2246450159673309951">Menyetel kebijakan <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" /> akan menghentikan pemuatan halaman web yang berisi URL terlarang di mode Samaran. Administrator dapat menentukan daftar pola URL yang akan diblokir. Jika kebijakan ini tidak disetel, tidak ada URL yang akan diblokir dalam mode Samaran. Hingga 1.000 pengecualian dapat ditentukan di <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME" />. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Kebijakan ini hanya memengaruhi mode Samaran. Untuk memblokir URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="2246565294817797392">Blokir cookie yang terpotong</translation>
 <translation id="2246621891161157804">Mengizinkan Chrome memblokir navigasi ke protokol eksternal di iframe sandbox</translation>
 <translation id="2246709168653295240">Mengizinkan deteksi tidak ada aktivitas di situs ini</translation>
@@ -8748,11 +8745,6 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 
       - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="6605778633186421420">Mengaktifkan dukungan transpor kamus kompresi</translation>
-<translation id="6605903339716787410">Jika kebijakan disetel, akses ke URL yang tercantum di mode Samaran akan diberikan sebagai pengecualian untuk <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />. Misalnya, menyetel <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan dalam mode Samaran, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Kebijakan <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME" /> lebih diprioritaskan daripada <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
-
-Jika kebijakan tidak disetel, tidak akan ada pengecualian untuk <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />.
-
-Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6607983779935460461">Dukungan URL data untuk SVGUseElement.</translation>
 <translation id="660893824005096050">Izinkan pengajar mengirim transkripsi kepada siswa.</translation>
 <translation id="6609867253856597039">Menyetel pengalaman pengguna fitur yang dinonaktifkan</translation>
@@ -9602,6 +9594,23 @@ API aksesibilitas.</translation>
 
       Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
 <translation id="7115684775550072082">Hanya pertahankan spasi kosong untuk jenis MIME teks dan XML</translation>
+<translation id="7116098886490965998">Nonaktifkan single sign-on menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas yang tercantum.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_ALL" />, semua penyedia identitas yang didukung untuk SSO akan dinonaktifkan.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_MICROSOFT" />, dukungan untuk single sign-on bagi penyedia identitas cloud Microsoft® di Chrome akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, semua penyedia identitas yang didukung oleh <ph name="PRODUCT_NAME" /> akan diaktifkan.
+
+Pengguna yang login ke akunnya di aplikasi apa pun yang mendukung <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, menggunakan penyedia identitas yang diaktifkan di <ph name="PRODUCT_NAME" /> dan dikonfigurasi di perangkat oleh administrator, dapat login ke properti web menggunakan penyedia identitas tersebut secara otomatis. Informasi yang berkaitan dengan informasi autentikasi pengguna akan dikirimkan ke penyedia identitas cloud pengguna untuk setiap peristiwa autentikasi.
+
+Catatan:
+
+<ph name="PRODUCT_NAME" /> tidak mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> dalam mode Samaran atau Tamu.
+
+<ph name="PRODUCT_NAME" /> hanya mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas berikut: Microsoft, Okta.
+
+Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Penyimpanan data pengguna lokal</translation>
 <translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -12716,6 +12725,7 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="9206472508136116830">Jangan izinkan deteksi berbagi file NetBIOS</translation>
 <translation id="9207596996305971030">Jangan laporkan peristiwa login/logout</translation>
 <translation id="9210647066889383361">Izinkan pengguna login ke perangkat dengan Smart Lock</translation>
+<translation id="9212598607138782107">Penyedia identitas cloud Okta®</translation>
 <translation id="9213751049772256263">Nonaktifkan semua variasi</translation>
 <translation id="9217154963008402249">Frekuensi paket jaringan pemantauan</translation>
 <translation id="9220314833408124365">Gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>

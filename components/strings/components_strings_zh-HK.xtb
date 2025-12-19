@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">你日後瀏覽的網站可要求取得這些資料，包括廣告主題或曾瀏覽網站的廣告建議。</translation>
 <translation id="334438173029876234">滑板裝備</translation>
 <translation id="3347146863028219517">滑雪和單板滑雪</translation>
+<translation id="3349610303043713601">使用 AI 瀏覽</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3352881017886802007">體育遊戲</translation>
@@ -2979,6 +2980,7 @@
 <translation id="5826507051599432481">真實姓名 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="5831217499016131155">Google 電子錢包</translation>
+<translation id="5831259154333754661">請選擇其他付款方法以完成此購買交易。</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5832976493438355584">已上鎖</translation>
 <translation id="5837220895135257862">騰出 <ph name="CLOUD_PROVIDER" /> 的空間，然後再試一次</translation>
@@ -4261,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="784623644169604270">沒有近期活動</translation>
+<translation id="7853222852810008596">此貨幣不支援稍後付款</translation>
 <translation id="785476343534277563">大專院校運動</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">輸入<ph name="SIDE_OF_CARD" />的新到期日和 CVC</translation>

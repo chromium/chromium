@@ -527,7 +527,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
 <translation id="1344141078024003905">You are casting your screen. You can pause or stop casting your screen at any time.</translation>
-<translation id="13449088910457661">Gemini works in your tabs to complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If the additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Learn more about metrics<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Confirm and restart</translation>
 <translation id="1346748346194534595">Right</translation>
@@ -1746,6 +1745,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2157457598652721267">Use '/' and '-' to select left or right mouse buttons. Use '*' to select both.</translation>
 <translation id="2157474325782140681">To get additional features, use a Dell docking station designed to work with this Chromebook.</translation>
 <translation id="215753907730220065">Exit Full Screen</translation>
+<translation id="2157632422749995237">Later, Wallet can send you notifications about your events</translation>
 <translation id="2157779167749714207">Your <ph name="DEVICE_TYPE" /> comes with Gemini</translation>
 <translation id="2158103060812356265">Easily compare similar products</translation>
 <translation id="2158249272743343757">Delete personalisation data...</translation>
@@ -1922,6 +1922,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2283599456633275070">Travel</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Open all in &amp;new tab group}=1{Open in &amp;new tab group}other{Open all ({COUNT}) in &amp;new tab group}}</translation>
 <translation id="2285942871162473373">Your fingerprint couldn't be recognised. Try again.</translation>
+<translation id="2286840900796601828">Rewind 10 seconds</translation>
 <translation id="2287617382468007324">Printing IPP Address</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{To protect your data, permissions were removed from a site that you haven't visited recently}other{To protect your data, permissions were removed from sites that you haven't visited recently}}</translation>
 <translation id="2287944065963043964">Login screen</translation>
@@ -2138,7 +2139,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
 <translation id="243179355394256322">Your organisation limits device enrolment to authorised users only. This user is not authorised to enrol devices. Please make sure that the user has the 'Enrol Google Meet hardware' administrator privilege in the Users section of the Admin console.</translation>
-<translation id="2431896368788252518">View and manage your personal context</translation>
 <translation id="243275146591958220">Cancel download</translation>
 <translation id="2433237965825924228">Isolated web apps control authentication devices and smart cards accessible to them. Smart cards usually contain identifiers used to authenticate you.</translation>
 <translation id="2433452467737464329">Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -2444,6 +2444,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2633212996805280240">Remove '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> couldn't complete installation, but will continue to run from its disk image.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Access your passes, like event tickets and loyalty cards, from your device</translation>
 <translation id="2634199532920451708">Print history</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Doesn't warn you for private sites, such as your company's intranet</translation>
@@ -3601,6 +3602,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
+<translation id="3440478087746699229">Internal</translation>
 <translation id="3440663250074896476">More actions for <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3441824746233675597">Make it harder for people with access to your Internet traffic to see which sites you visit. <ph name="PRODUCT_NAME" /> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
@@ -4720,6 +4722,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4178220097446335546">To forget this subscription and its associated networks, go to the Passpoint subscription page to remove the subscription.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Languages</translation>
+<translation id="4182182457914031017">To offer suggestions and improve this feature, the URL and full page content of the site that you visit are shared with Google</translation>
 <translation id="4182339886482390129">Enhanced Safe Browsing does more to protect you against dangerous websites, downloads and extensions</translation>
 <translation id="4184803915913850597">HID device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> will learn the make and model of your security key</translation>
@@ -5189,6 +5192,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="450602096898954067">Data may be seen by trained reviewers to improve this feature</translation>
 <translation id="4507373251891673233">You blocked all extensions from <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Click 'Add Shortcut'</translation>
+<translation id="4508265954913339219">Activation failed</translation>
 <translation id="450867954911715010">Accessibility settings</translation>
 <translation id="4508765956121923607">View S&amp;ource</translation>
 <translation id="4509277363725254222">When you share a copy of your <ph name="BEGIN_BOLD_USERNAME" />username<ph name="END_BOLD_USERNAME" /> and <ph name="BEGIN_BOLD_PASSWORD" />password<ph name="END_BOLD_PASSWORD" />, your family member can fill them using Google Password Manager</translation>
@@ -6191,7 +6195,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5205484256512407285">Never use mobile data to transfer</translation>
 <translation id="520568280985468584">Network has been added successfully. It may take several minutes for your mobile network to become active.</translation>
-<translation id="520576054436518354">Let Gemini browse for you</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> wants to check if you are using an eligible Chrome OS device.</translation>
 <translation id="5208926629108082192">Device mobile network info</translation>
@@ -8993,6 +8996,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7175037578838465313">Configure <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Loaded from:</translation>
 <translation id="7177659256878428843">Convert tab group into bookmark folder</translation>
+<translation id="7180569503618416775">Wallet can offer to save info from pages that you're viewing, like tickets that you purchase</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7181117767881540376">Hide bookmarks bar</translation>
@@ -9907,7 +9911,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7787308148023287649">Display on another screen</translation>
 <translation id="7789895198197042595">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address in your <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Input method</translation>
-<translation id="7791429245559955092">This application will be installed on your currently-used Chrome profile</translation>
 <translation id="7791436592012979144">Reverse scrolling enabled</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7792012425874949788">Something went wrong with signing in</translation>
@@ -10354,6 +10357,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8084429490152575036">Cellular APN settings</translation>
 <translation id="8084510406207562688">Restore all tabs</translation>
 <translation id="8084628902026812045">This site isn't using a secure connection and the file may have been tampered with</translation>
+<translation id="808488435221187916">Your info is available in Google Wallet on any signed-in device</translation>
 <translation id="8086015605808120405">Configuring <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">This tab is sharing your screen</translation>
 <translation id="8086610718778464681">Can't back up Linux apps and files</translation>
@@ -11425,7 +11429,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8811862054141704416">Crostini microphone access</translation>
 <translation id="8811923271770626905">This extension may run in the background</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}other{{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
-<translation id="8812858346663083102">Qualify</translation>
 <translation id="8813199641941291474">Control and reprogramming of MIDI devices blocked</translation>
 <translation id="8813698869395535039">Can't sign in to <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Go and get a parent to approve '<ph name="EXTENSION_NAME" />'</translation>

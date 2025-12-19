@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">По-късно посетен от вас сайт може да поиска тази информация – рекламните ви теми или рекламите, предложени от сайтовете, които сте посетили.</translation>
 <translation id="334438173029876234">Оборудване за скейтборд</translation>
 <translation id="3347146863028219517">Ски и сноуборд</translation>
+<translation id="3349610303043713601">Сърфиране с AI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Повтаряне на 10 секунди</translation>
 <translation id="3352881017886802007">Спортни игри</translation>
@@ -2980,6 +2981,7 @@
 <translation id="5826507051599432481">Общо име (CN)</translation>
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Изберете друг начин на плащане, за да завършите тази покупка.</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5832976493438355584">Заключено</translation>
 <translation id="5837220895135257862">Освободете място в(ъв) <ph name="CLOUD_PROVIDER" />, преди да опитате отново</translation>
@@ -4262,6 +4264,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="784623644169604270">Няма скорошна активност</translation>
+<translation id="7853222852810008596">Плащането по-късно не е налице за тази валута</translation>
 <translation id="785476343534277563">Колежански спортове</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Въведете новата дата на валидност и кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>

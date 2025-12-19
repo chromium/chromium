@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1076643793026027628">Chrome åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
+<translation id="1081114897601629648">Følgende adgangskoder blev ikke importeret til Google Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1088490543924960890">Begynd at gemme adgangsnøgler med Google Adgangskodeadministrator</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7284245284340063465">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome til iOS</translation>
 <translation id="7299681342915173313">Du kan nu bruge Chrome, hver gang du trykker på links i mails, dokumenter og andre apps.</translation>
+<translation id="7334364820047587268">Du har allerede adgangskoder til disse konti i Google Adgangskodeadministrator. Hvis du vælger at importere én af adgangskoderne nedenfor, vil den erstatte den eksisterende adgangskode.</translation>
 <translation id="7344094882820374540">Få Chromes stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="7349129508108954623">Tillad, at Chrome bruger Google Maps til at vise dig rutevejledning og lokale oplysninger om registrerede adresser.</translation>
 <translation id="7371674917547846460">Få nyttige Chrome-tips og meget mere.</translation>

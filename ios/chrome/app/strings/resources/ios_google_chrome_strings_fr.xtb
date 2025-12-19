@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1076643793026027628">Chrome ouvre automatiquement les liens YouTube en navigation privée en mode navigation privée.</translation>
+<translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le Gestionnaire de mots de passe de Google, car ils ne répondent pas aux exigences.</translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1088490543924960890">Commencez à enregistrer des clés d'accès avec le Gestionnaire de mots de passe de Google</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
@@ -272,6 +273,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7284245284340063465">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome pour iOS</translation>
 <translation id="7299681342915173313">Vous pouvez désormais utiliser Chrome chaque fois que vous appuyez sur des liens dans des e-mails, des documents et d'autres applis.</translation>
+<translation id="7334364820047587268">Vous disposez déjà de mots de passe pour ces comptes dans le Gestionnaire de mots de passe de Google. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera le mot de passe existant.</translation>
 <translation id="7344094882820374540">Profitez de la protection renforcée de Chrome contre les sites dangereux</translation>
 <translation id="7349129508108954623">Autorisez Chrome à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="7371674917547846460">Découvrez des conseils utiles sur Chrome et plus.</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1076643793026027628">Chrome avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
+<translation id="1081114897601629648">Järgmiseid paroole ei imporditud Google’i paroolihaldurisse, kuna need ei vasta nõuetele.</translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1088490543924960890">Hakake pääsuvõtmeid salvestama Google’i paroolihalduri abil.</translation>
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
@@ -272,6 +273,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7284245284340063465">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome iOS-ile</translation>
 <translation id="7299681342915173313">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke meilides, dokumentides ja muudes rakendustes.</translation>
+<translation id="7334364820047587268">Teil on nende kontode jaoks paroolid Google'i paroolihalduris juba olemas. Kui otsustate importida ühe allolevatest paroolidest, asendab see olemasoleva parooli.</translation>
 <translation id="7344094882820374540">Hankige Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="7349129508108954623">Lubage Chrome'il kasutada Google Mapsi teile tuvastatud aadresside kohta juhiste ja kohaliku teabe esitamiseks.</translation>
 <translation id="7371674917547846460">Püsige kursis kasulike Chrome'i nõuannete ja muuga.</translation>

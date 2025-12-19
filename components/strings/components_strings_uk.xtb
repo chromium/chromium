@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">Пізніше сайт, який ви відвідаєте, може запитати ваші теми оголошень або рекламу, пропоновану сайтами, які ви відкривали.</translation>
 <translation id="334438173029876234">Обладнання для катання на скейтборді</translation>
 <translation id="3347146863028219517">Лижний спорт і сноубординг</translation>
+<translation id="3349610303043713601">Переглянути за допомогою ШІ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Повторно відтворити останні 10 секунд</translation>
 <translation id="3352881017886802007">Спортивні ігри</translation>
@@ -2936,6 +2937,7 @@
 <translation id="5730040223043577876">Chrome радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="5732392974455271431">Батьки можуть розблокувати його</translation>
 <translation id="573555826359077410">Кнопка "Створити форму"; активуйте, щоб швидко створити нову форму в Google Формах</translation>
+<translation id="5737022235680044108">Ваша організація заблокувала доступ до сторінки <ph name="HOST_NAME" /> в анонімному режимі.</translation>
 <translation id="5738385766833540397">Укажіть, як ви хочете отримувати сповіщення про зниження цін на товари, які відстежуєте</translation>
 <translation id="5739619009927381786">На наступному кроці розблокуйте екран. Зазвичай це можна зробити за допомогою відбитка пальця. Ви також можете <ph name="BEGIN_LINK" />підтвердити особу іншим способом<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Щоб ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами, синхронізуйте історію і вкладки</translation>
@@ -2979,6 +2981,7 @@
 <translation id="5826507051599432481">Загальне ім'я (CN)</translation>
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Щоб завершити покупку, виберіть інший спосіб оплати.</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5832976493438355584">Заблоковано</translation>
 <translation id="5837220895135257862">Перш ніж повторити спробу, звільніть місце в сховищі <ph name="CLOUD_PROVIDER" /></translation>
@@ -3617,6 +3620,7 @@
 <translation id="6844998850832008753">Надано разовий дозвіл на відстеження рук</translation>
 <translation id="6849023911358004088">Кнопка "Керувати налаштуваннями безпеки"; активуйте, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
 <translation id="6850286078059909152">Колір тексту</translation>
+<translation id="685163597635765693">Ваша організація заблокувала доступ до домену <ph name="HOST_NAME" /> в анонімному режимі.</translation>
 <translation id="6852204201400771460">Перезапустити додаток?</translation>
 <translation id="6854691830678097752">Щоб розраховуватися швидше, збережіть цей код CVC у своєму обліковому записі <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Керувати паролями…</translation>
@@ -3887,6 +3891,7 @@
 <translation id="7273111226200291353">Файли, які ви завантажуєте, надсилаються на аналіз у Google Cloud або стороннім сервісам. Наприклад, їх можуть сканувати на наявність конфіденційних даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії. Крім того, їх може переглядати адміністратор.</translation>
 <translation id="7275334191706090484">Закладки, якими керує адміністратор</translation>
 <translation id="7275808129217605899">Здорове харчування</translation>
+<translation id="7282894295403887199">Цю сторінку не можна відвідувати в анонімному режимі</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб змінити пароль облікового запису Google</translation>
 <translation id="7286908876112207905">Заборонено вставляти цей контент на цей сайт</translation>
 <translation id="7291578327729322058">Додати посвідчення водія</translation>
@@ -4259,6 +4264,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
 <translation id="784623644169604270">Немає останніх дій</translation>
+<translation id="7853222852810008596">Оплата пізніше недоступна в цій валюті</translation>
 <translation id="785476343534277563">Спорт у коледжі</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Введіть нову дату закінчення строку дії і код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>

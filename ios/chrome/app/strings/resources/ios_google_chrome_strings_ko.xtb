@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1076643793026027628">Chrome에서 시크릿 모드로 YouTube 시크릿 모드 링크를 자동으로 엽니다</translation>
+<translation id="1081114897601629648">다음 비밀번호는 요건을 충족하지 않아 Google 비밀번호 관리자로 가져오지 않았습니다.</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1088490543924960890">Google 비밀번호 관리자로 패스키를 저장하세요</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
@@ -272,6 +273,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7284245284340063465">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="7296102444587051536">iOS용 Chrome</translation>
 <translation id="7299681342915173313">이제 언제든 이메일, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다</translation>
+<translation id="7334364820047587268">Google 비밀번호 관리자에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="7344094882820374540">위험한 사이트로부터 보호하는 Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7349129508108954623">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공하도록 허용합니다</translation>
 <translation id="7371674917547846460">유용한 Chrome 도움말 등을 확인하세요.</translation>

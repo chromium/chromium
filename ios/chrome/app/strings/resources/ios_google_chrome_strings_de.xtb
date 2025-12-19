@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1076643793026027628">In Chrome werden YouTube-Inkognitolinks automatisch im Inkognitomodus geöffnet.</translation>
+<translation id="1081114897601629648">Die folgenden Passwörter wurden nicht in den Google Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1088490543924960890">Passkeys mit dem Google Passwortmanager speichern</translation>
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
@@ -272,6 +273,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7284245284340063465">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome für iOS</translation>
 <translation id="7299681342915173313">Du kannst jetzt Chrome jederzeit nutzen, wenn du in E‑Mails, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="7334364820047587268">Du hast bereits Passwörter für diese Konten im Google Passwortmanager. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
 <translation id="7344094882820374540">Nutze den stärksten Chrome-Schutz vor gefährlichen Websites</translation>
 <translation id="7349129508108954623">Erlaube Chrome, über Google Maps Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
 <translation id="7371674917547846460">Über Chrome-Tipps und mehr informiert bleiben.</translation>

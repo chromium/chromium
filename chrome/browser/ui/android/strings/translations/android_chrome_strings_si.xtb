@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> පටිත්තක් - <ph name="URL_LIST" />}one{පටිති <ph name="TAB_COUNT_MANY" />ක් - <ph name="URL_LIST" />}other{පටිති <ph name="TAB_COUNT_MANY" />ක් - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">රහස්‍යතාවය</translation>
 <translation id="504456571576643789">සලකා බැලිය යුතු කරුණු</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> කවුළුවක් තෝරා ගන්නා ලදි}one{කවුළු <ph name="WINDOW_COUNT_NORMAL" />ක් තෝරා ඇත}other{කවුළු <ph name="WINDOW_COUNT_NORMAL" />ක් තෝරා ඇත}}</translation>
 <translation id="5056587122125565772">රූපයක් සාදන්න</translation>
 <translation id="506254248375231072">ටැබ නැත</translation>
 <translation id="5075939510584558547">කේතනයෙන් තොරව සුරකින්න</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">දින 1ක් ඉතිරියි</translation>
 <translation id="8192765420340770300">පිරීමේ පහළ පත්‍රය සම්පූර්ණ උසින් විවෘත විය</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">සෙවීම් විමසුම හිස් කරන්න</translation>
 <translation id="820568752112382238">වැඩියෙන් පැමිණි වෙබ් අඩවි</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> අයෙකු සමග පටිති සමූහයට එකතු වන්න}one{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> දෙනෙකු සමග පටිති සමූහයට එකතු වන්න}other{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> දෙනෙකු සමග පටිති සමූහයට එකතු වන්න}}</translation>
 <translation id="8209050860603202033">රූපය විවෘත කරන්න</translation>

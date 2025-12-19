@@ -947,6 +947,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> välilehti – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> välilehteä – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
 <translation id="504456571576643789">Huomioitavaa</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ikkuna valittu}other{<ph name="WINDOW_COUNT_NORMAL" /> ikkunaa valittu}}</translation>
 <translation id="5056587122125565772">Luo kuva</translation>
 <translation id="506254248375231072">Ei välilehtiä</translation>
 <translation id="5075939510584558547">Tallenna ilman salausta</translation>
@@ -1726,6 +1727,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8190358571722158785">1 päivä jäljellä</translation>
 <translation id="8192765420340770300">Kirjautumisen alapaneeli avattu kokonaan</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">Tyhjennä hakulauseke</translation>
 <translation id="820568752112382238">Useimmin vieraillut sivustot</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUMBER_OF_OTHER_MEMBERS" /> muu}other{Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUMBER_OF_OTHER_MEMBERS" /> muuta}}</translation>
 <translation id="8209050860603202033">Avaa kuva</translation>

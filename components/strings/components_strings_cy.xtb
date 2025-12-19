@@ -1447,6 +1447,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3342018947887487892">Yn ddiweddarach, gall gwefan rydych yn ymweld â hi ofyn am y wybodaeth hon - naill ai eich pynciau hysbysebion neu hysbysebion a awgrymir gan wefannau rydych wedi ymweld â nhw.</translation>
 <translation id="334438173029876234">Offer Sgrialfwrdd</translation>
 <translation id="3347146863028219517">Sgïo ac Eirafyrddio</translation>
+<translation id="3349610303043713601">Pori gydag AI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Ailchwarae 10 eiliad</translation>
 <translation id="3352881017886802007">Gemau Chwaraeon</translation>
@@ -2936,6 +2937,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5730040223043577876">Mae Chrome yn argymell ailosod eich cyfrinair os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
 <translation id="5732392974455271431">Gall eich rhieni ei ddadrwystro ar eich rhan</translation>
 <translation id="573555826359077410">Botwm creu ffurflen, gweithredwch i greu ffurflen newydd yn Google Forms yn gyflym</translation>
+<translation id="5737022235680044108">Mae eich sefydliad wedi rhwystro <ph name="HOST_NAME" /> yn y modd Anhysbys.</translation>
 <translation id="5738385766833540397">Rheoli sut rydych yn derbyn rhybuddion gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain</translation>
 <translation id="5739619009927381786">Datgloi'ch sgrîn yn y cam nesaf, gan ddefnyddio'ch olion bysedd fel arfer. Neu, gallwch <ph name="BEGIN_LINK" />ddilysu mewn ffordd arall<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">I rannu, ymuno a chydweithio mewn grwpiau tabiau, cysonwch eich hanes a'ch tabiau</translation>
@@ -3617,6 +3619,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6844998850832008753">Caniateir olrhain dwylo y tro hwn</translation>
 <translation id="6849023911358004088">Botwm rheoli gosodiadau diogelwch, gweithredwch i reoli eich Pori'n Ddiogel a mwy yng ngosodiadau Chrome</translation>
 <translation id="6850286078059909152">Lliw'r testun</translation>
+<translation id="685163597635765693">Mae eich sefydliad wedi rhwystro dolenni “<ph name="HOST_NAME" />” yn y modd Anhysbys.</translation>
 <translation id="6852204201400771460">Ail-lwytho'r ap?</translation>
 <translation id="6854691830678097752">I dalu'n gyflymach, cadwch y CVC hwn yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Rheoli Cyfrineiriau...</translation>
@@ -3886,6 +3889,7 @@ Manylion ychwanegol:
 <translation id="7273111226200291353">Anfonir ffeiliau rydych wedi'u lawrlwytho i Google Cloud neu drydydd partïon i'w dadansoddi. Er enghraifft, mae'n bosib y byddant yn cael eu sganio am ddata sensitif neu faleiswedd a gallent gael eu storio yn seiliedig ar bolisïau cwmni ac yn weladwy i'ch gweinyddwr.</translation>
 <translation id="7275334191706090484">Nodau tudalen a Reolir</translation>
 <translation id="7275808129217605899">Bwyta'n Iach</translation>
+<translation id="7282894295403887199">Ni allwch ymweld â'r dudalen hon yn y modd Anhysbys</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i newid eich cyfrinair Cyfrif Google</translation>
 <translation id="7286908876112207905">Ni chaniateir gludo'r cynnwys hwn i'r wefan hon</translation>
 <translation id="7291578327729322058">Ychwanegu trwydded yrru</translation>

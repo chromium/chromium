@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">পাছত, আপুনি চোৱা কোনো ছাইটে এই তথ্য বিচাৰিব পাৰে — হয় বিজ্ঞাপনৰ বিষয়বস্তু নহয় আপুনি চোৱা ছাইটসমূহে দিয়া বিজ্ঞাপনৰ পৰামৰ্শ।</translation>
 <translation id="334438173029876234">স্কে’টব’ৰ্ডিঙৰ সা-সৰঞ্জাম</translation>
 <translation id="3347146863028219517">স্কিইং আৰু শ্ন’ব’ৰ্ডিং</translation>
+<translation id="3349610303043713601">AIৰ জৰিয়তে ব্ৰাউজ কৰক</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">১০ ছেকেণ্ড পুনৰ প্লে’ কৰক</translation>
 <translation id="3352881017886802007">ক্ৰীড়া গে’ম</translation>
@@ -2976,6 +2977,7 @@
 <translation id="5826507051599432481">কামাণ্ডৰ নাম (CN)</translation>
 <translation id="5830698870816298009">কেমেৰাৰ ব্যৱহাৰ আৰু গতিবিধি</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">এই ক্ৰয়টো সম্পূৰ্ণ কৰিবলৈ অন্য এটা পৰিশোধ পদ্ধতি বাছনি কৰক।</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5832976493438355584">লক অৱস্থাত আছে</translation>
 <translation id="5837220895135257862">পুনৰ চেষ্টা কৰাৰ আগতে <ph name="CLOUD_PROVIDER" />ত ঠাই খালী কৰক</translation>
@@ -4256,6 +4258,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{এটাও নহয়}=1{১টা এপ্ (<ph name="EXAMPLE_APP_1" />)}=2{২টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কিবা আসোঁৱাহ হৈছে। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="784623644169604270">কোনো শেহতীয়া কাৰ্যকলাপ নাই</translation>
+<translation id="7853222852810008596">এই মুদ্ৰাত পাছত পৰিশোধ কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
 <translation id="785476343534277563">কলেজৰ ক্ৰীড়া</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />ত আপোনাৰ নতুন ম্যাদ উকলাৰ তাৰিখটো আৰু CVC দিয়ক</translation>

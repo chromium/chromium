@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">ಆನಂತರ, ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್ ಈ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು — ನಿಮ್ಮ ಜಾಹೀರಾತು ವಿಷಯಗಳು ಅಥವಾ ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಂದ ಸೂಚಿಸಲಾದ ಜಾಹೀರಾತುಗಳು.</translation>
 <translation id="334438173029876234">ಸ್ಕೇಟ್‌ಬೋರ್ಡಿಂಗ್ ಉಪಕರಣ</translation>
 <translation id="3347146863028219517">ಸ್ಕೀಯಿಂಗ್ ಮತ್ತು ಸ್ನೋಬೋರ್ಡಿಂಗ್</translation>
+<translation id="3349610303043713601">AI ಮೂಲಕ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 ಸೆಕೆಂಡ್‌ಗಳು ಮರುಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="3352881017886802007">ಕ್ರೀಡಾ ಆಟಗಳು</translation>
@@ -2977,6 +2978,7 @@
 <translation id="5826507051599432481">ಸಾಮಾನ್ಯ ಹೆಸರು (CN)</translation>
 <translation id="5830698870816298009">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">ಈ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಮತ್ತೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5832976493438355584">ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5837220895135257862">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
@@ -4258,6 +4260,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ಒಂದೂ ಇಲ್ಲ}=1{1 ಆ್ಯಪ್ (<ph name="EXAMPLE_APP_1" />)}=2{2 ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ದೋಷ ಎದುರಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="784623644169604270">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ ಇಲ್ಲ</translation>
+<translation id="7853222852810008596">ಈ ಕರೆನ್ಸಿಯಲ್ಲಿ ನಂತರ ಪಾವತಿಸಿ ಎಂಬ ಫೀಚರ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="785476343534277563">ಕಾಲೇಜು ಕ್ರೀಡೆ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> ನಲ್ಲಿನ ನಿಮ್ಮ ಹೊಸ ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ ಮತ್ತು CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>

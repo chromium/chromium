@@ -1447,6 +1447,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3342018947887487892">Más tarde, un sitio que visites puede solicitar esta información, ya sea sobre tus temas de anuncios o sobre los anuncios sugeridos por los sitios que has visitado.</translation>
 <translation id="334438173029876234">Equipamiento de monopatín</translation>
 <translation id="3347146863028219517">Esquí y snowboard</translation>
+<translation id="3349610303043713601">Navegar con IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Retroceder 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
@@ -2936,6 +2937,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5730040223043577876">Chrome te recomienda que cambies tu contraseña si la has vuelto a utilizar en otros sitios.</translation>
 <translation id="5732392974455271431">Tu padre o tu madre pueden desbloquearlo</translation>
 <translation id="573555826359077410">Botón Crear formulario: actívalo para crear un nuevo formulario en Formularios de Google rápidamente</translation>
+<translation id="5737022235680044108">Tu organización ha bloqueado <ph name="HOST_NAME" /> en el modo Incógnito.</translation>
 <translation id="5738385766833540397">Gestiona cómo recibes las alertas de bajadas de precio de los productos que sigues</translation>
 <translation id="5739619009927381786">Desbloquea la pantalla en el siguiente paso, normalmente con tu huella digital. También puedes hacer la <ph name="BEGIN_LINK" />verificación usando otro método<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartir, unirte y colaborar en grupos de pestañas, sincroniza tu historial y tus pestañas</translation>
@@ -3617,6 +3619,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6844998850832008753">Seguimiento de manos permitido esta vez</translation>
 <translation id="6849023911358004088">Botón Gestionar ajustes de seguridad: actívalo para gestionar Navegación segura y otras opciones en la configuración de Chrome</translation>
 <translation id="6850286078059909152">Color del texto</translation>
+<translation id="685163597635765693">Tu organización ha bloqueado los enlaces de <ph name="HOST_NAME" /> en el modo Incógnito.</translation>
 <translation id="6852204201400771460">¿Quieres volver a cargar la aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar las compras más rápido, guarda este CVC en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6857776781123259569">Gestionar contraseñas...</translation>
@@ -3887,6 +3890,7 @@ Más información:
 <translation id="7273111226200291353">Los archivos que descargas se envían a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
 <translation id="7275808129217605899">Nutrición saludable</translation>
+<translation id="7282894295403887199">No puedes visitar esta página en modo Incógnito</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para cambiar la contraseña de tu cuenta de Google</translation>
 <translation id="7286908876112207905">No se permite pegar este contenido en este sitio</translation>
 <translation id="7291578327729322058">Añadir carné de conducir</translation>

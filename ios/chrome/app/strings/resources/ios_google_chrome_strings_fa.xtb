@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1076643793026027628">‏‫Chrome پیوندهای «ناشناس» YouTube را به‌طور خودکار در حالت «ناشناس» باز می‌کند.</translation>
+<translation id="1081114897601629648">‏گذرواژه‌های زیر در «مدیر گذرواژه Google» وارد نشدند زیرا با الزامات مطابقت ندارند.</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
 <translation id="1088490543924960890">‏گذرکلیدها را با «مدیر گذرواژه Google» ذخیره کنید</translation>
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">‏‫Chrome ویژه iOS</translation>
 <translation id="7299681342915173313">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در ایمیل‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
+<translation id="7334364820047587268">‏ازقبل گذرواژه‌هایی برای این حساب‌ها در «مدیر گذرواژه Google» خود دارید. اگر بخواهید یکی از گذرواژه‌های زیر را وارد کنید، آن گذرواژه جایگزین گذرواژه موجود می‌شود.</translation>
 <translation id="7344094882820374540">‏قدرتمندترین امنیت Chrome را دربرابر سایت‌های خطرناک دریافت کنید</translation>
 <translation id="7349129508108954623">‏به Chrome اجازه می‌دهد برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده کند.</translation>
 <translation id="7371674917547846460">‏از نکات مفید Chrome و موارد بیشتر مطلع شوید.</translation>

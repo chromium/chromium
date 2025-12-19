@@ -527,7 +527,6 @@
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
 <translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
-<translation id="13449088910457661">Gemini는 탭에서 작동하여 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -1923,6 +1922,7 @@
 <translation id="2283599456633275070">여행</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="2285942871162473373">지문을 인식할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="2286840900796601828">10초 뒤로 이동</translation>
 <translation id="2287617382468007324">인쇄 IPP 주소</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}other{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}}</translation>
 <translation id="2287944065963043964">로그인 화면</translation>
@@ -2140,7 +2140,6 @@
 <translation id="2428939361789119025">Wi-Fi 사용 중지</translation>
 <translation id="2431027948063157455">Google 어시스턴트를 로드할 수 없습니다. 네트워크 연결 상태를 확인하고 다시 시도해 보세요.</translation>
 <translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
-<translation id="2431896368788252518">개인별 맞춤 AI 보기 및 관리</translation>
 <translation id="243275146591958220">다운로드 취소</translation>
 <translation id="2433237965825924228">분리형 웹 앱은 인증 기기 및 해당 기기에 액세스할 수 있는 스마트 카드를 제어합니다. 보통 스마트 카드에는 사용자를 인증하는 데 사용되는 식별자가 포함됩니다.</translation>
 <translation id="2433452467737464329">URL에 다음 검색어 매개변수를 추가하여 페이지를 자동으로 새로고침: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -3603,6 +3602,7 @@
 <translation id="3438633801274389918">닌자</translation>
 <translation id="3439153939049640737"><ph name="HOST" />에서 마이크에 액세스하도록 항상 허용</translation>
 <translation id="3439970425423980614">미리보기에서 PDF 여는 중</translation>
+<translation id="3440478087746699229">내부</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="3441653493275994384">화면</translation>
 <translation id="3441824746233675597">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. <ph name="PRODUCT_NAME" />에서는 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
@@ -5190,6 +5190,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="450602096898954067">이 기능의 개선을 위해 인적 검토자가 데이터를 확인할 수도 있습니다.</translation>
 <translation id="4507373251891673233"><ph name="HOST" />의 모든 확장 프로그램을 차단했습니다.</translation>
 <translation id="4507401683427517298">'바로가기 추가'를 클릭합니다</translation>
+<translation id="4508265954913339219">활성화 실패</translation>
 <translation id="450867954911715010">접근성 설정</translation>
 <translation id="4508765956121923607">소스 보기(&amp;O)</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />사용자 이름<ph name="END_BOLD_USERNAME" />과 <ph name="BEGIN_BOLD_PASSWORD" />비밀번호<ph name="END_BOLD_PASSWORD" /> 사본을 공유하면 가족 구성원이 Google 비밀번호 관리자를 사용하여 입력할 수 있습니다.</translation>
@@ -6192,7 +6193,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
-<translation id="520576054436518354">Gemini가 대신 탐색하도록 허용</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208926629108082192">기기 모바일 네트워크 정보</translation>
@@ -9907,7 +9907,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7787308148023287649">다른 화면에 표시</translation>
 <translation id="7789895198197042595">집 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정 <ph name="USERNAME" /><ph name="END_LINK" />에서 주소를 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="7791269138074599214">입력 방법</translation>
-<translation id="7791429245559955092">이 애플리케이션이 현재 사용하는 Chrome 프로필에 설치됩니다</translation>
 <translation id="7791436592012979144">역방향 스크롤 사용 설정됨</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7792012425874949788">로그인 중에 문제가 발생했습니다.</translation>
@@ -11426,7 +11425,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8811862054141704416">Crostini 마이크 액세스</translation>
 <translation id="8811923271770626905">이 확장 프로그램은 백그라운드에서 실행될 수 있습니다.</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
-<translation id="8812858346663083102">자격 확인</translation>
 <translation id="8813199641941291474">MIDI 기기의 제어 및 재프로그래밍 차단됨</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>
 <translation id="8813872945700551674">부모님에게 ‘<ph name="EXTENSION_NAME" />’ 승인을 요청하세요</translation>

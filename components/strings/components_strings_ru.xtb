@@ -1446,6 +1446,7 @@
 <translation id="3342018947887487892">Сайты, на которые вы зайдете в дальнейшем, смогут запрашивать эту информацию – либо темы рекламы, либо объявления, предложенные сайтами, которые вы посетили.</translation>
 <translation id="334438173029876234">Инвентарь для скейтбординга</translation>
 <translation id="3347146863028219517">Лыжи и сноуборд</translation>
+<translation id="3349610303043713601">Поиск с помощью ИИ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Перемотать на 10 секунд назад</translation>
 <translation id="3352881017886802007">Спортивные игры</translation>
@@ -2935,6 +2936,7 @@
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="5732392974455271431">Для разблокировки обратитесь к родителям.</translation>
 <translation id="573555826359077410">Кнопка "Создать форму". Нажмите ее, чтобы быстро создать форму Google.</translation>
+<translation id="5737022235680044108">Ваша организация заблокировала <ph name="HOST_NAME" /> в режиме инкогнито.</translation>
 <translation id="5738385766833540397">Выберите, куда будут приходить оповещения о скидках на отслеживаемые товары.</translation>
 <translation id="5739619009927381786">На следующем шаге разблокируйте экран, например с помощью отпечатка пальца. Также можно <ph name="BEGIN_LINK" />подтвердить платеж другим способом<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Вы сможете делиться группами вкладок, присоединяться к ним и работать вместе с другими пользователями.</translation>
@@ -2978,6 +2980,7 @@
 <translation id="5826507051599432481">Общее имя (CN)</translation>
 <translation id="5830698870816298009">использование и перемещение камеры</translation>
 <translation id="5831217499016131155">Google Кошелек</translation>
+<translation id="5831259154333754661">Чтобы оформить покупку, выберите другой способ оплаты.</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5832976493438355584">Заблокировано</translation>
 <translation id="5837220895135257862">Освободите место в хранилище сервиса "<ph name="CLOUD_PROVIDER" />" и повторите попытку.</translation>
@@ -3616,6 +3619,7 @@
 <translation id="6844998850832008753">Отслеживание рук разрешено только в этот раз</translation>
 <translation id="6849023911358004088">Кнопка "Открыть настройки безопасности". Нажмите ее, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="6850286078059909152">Цвет текста</translation>
+<translation id="685163597635765693">Ваша организация заблокировала ссылки <ph name="HOST_NAME" /> в режиме инкогнито.</translation>
 <translation id="6852204201400771460">Перезапустить приложение?</translation>
 <translation id="6854691830678097752">Чтобы сократить время оплаты, сохраните этот CVC-код в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="6857776781123259569">Настроить пароли</translation>
@@ -3886,6 +3890,7 @@
 <translation id="7273111226200291353">Скачанные вами файлы отправляются в Google Cloud или сторонние сервисы для анализа. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО. Также они могут быть доступны вашему администратору и храниться на основании правил компании.</translation>
 <translation id="7275334191706090484">Управляемые закладки</translation>
 <translation id="7275808129217605899">Здоровое питание</translation>
+<translation id="7282894295403887199">Вы не можете открыть эту страницу в режиме инкогнито</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы изменить пароль аккаунта Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="7286908876112207905">Вставлять контент на этот сайт запрещено</translation>
 <translation id="7291578327729322058">Добавить данные водительского удостоверения</translation>
@@ -4258,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="784623644169604270">Нет недавних действий.</translation>
+<translation id="7853222852810008596">Оплата в рассрочку недоступна в этой валюте</translation>
 <translation id="785476343534277563">Студенческий спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Введите новый срок действия карты, а также CVC-код (<ph name="SIDE_OF_CARD" />).</translation>

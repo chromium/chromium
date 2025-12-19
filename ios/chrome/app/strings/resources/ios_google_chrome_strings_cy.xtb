@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1076643793026027628">Mae Chrome yn agor dolenni Anhysbys YouTube yn y modd Anhysbys yn awtomatig.</translation>
+<translation id="1081114897601629648">Ni chafodd y cyfrineiriau canlynol eu mewnforio i Reolwr Cyfrineiriau Google, oherwydd nad ydynt yn cyfateb i'r gofynion.</translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1088490543924960890">Dechrau cadw cyfrineiriau gyda Rheolwr Cyfrineiriau Google</translation>
 <translation id="1143896152279775643">Bydd eich cyfrinair yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7284245284340063465">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome ar gyfer iOS</translation>
 <translation id="7299681342915173313">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn e-byst, dogfennau ac apiau eraill.</translation>
+<translation id="7334364820047587268">Mae eisoes gennych gyfrineiriau ar gyfer y cyfrifon hyn yn eich Rheolwr Cyfrineiriau Google. Os dewiswch fewnforio un o'r cyfrineiriau isod, bydd yn disodli'r un presennol.</translation>
 <translation id="7344094882820374540">Cael diogelwch cryfaf Chrome o wefannau peryglus</translation>
 <translation id="7349129508108954623">Caniatáu i Chrome ddefnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi ar gyfeiriadau a ganfuwyd.</translation>
 <translation id="7371674917547846460">Cael y diweddaraf gydag awgrymiadau Chrome defnyddiol a mwy.</translation>

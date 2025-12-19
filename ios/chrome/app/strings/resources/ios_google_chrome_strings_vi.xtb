@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1076643793026027628">Chrome tự động mở các đường liên kết ẩn danh của YouTube ở chế độ ẩn danh.</translation>
+<translation id="1081114897601629648">Những mật khẩu sau đây không được nhập vào Trình quản lý mật khẩu của Google vì không đáp ứng được các yêu cầu.</translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1088490543924960890">Bắt đầu lưu khoá truy cập bằng Trình quản lý mật khẩu của Google</translation>
 <translation id="1143896152279775643">Mật khẩu của bạn sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7284245284340063465">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome cho iOS</translation>
 <translation id="7299681342915173313">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong email, tài liệu và các ứng dụng khác.</translation>
+<translation id="7334364820047587268">Bạn đã có mật khẩu cho các tài khoản này trong Trình quản lý mật khẩu của Google. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="7344094882820374540">Bảo vệ bạn khỏi các trang web nguy hiểm với chế độ bảo mật mạnh nhất của Chrome</translation>
 <translation id="7349129508108954623">Cho phép Chrome sử dụng Google Maps để chỉ đường và cung cấp thông tin ở địa phương về các địa chỉ phát hiện được.</translation>
 <translation id="7371674917547846460">Luôn cập nhật các mẹo hữu ích về Chrome và nhiều thông tin khác.</translation>

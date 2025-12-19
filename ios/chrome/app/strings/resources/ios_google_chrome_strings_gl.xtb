@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1076643793026027628">Chrome abre automaticamente as ligazóns de incógnito de YouTube no modo de incógnito.</translation>
+<translation id="1081114897601629648">Non se importaron os seguintes contrasinais ao xestor de contrasinais de Google porque non cumpren os requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1088490543924960890">Empeza a gardar claves de acceso co xestor de contrasinais de Google</translation>
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7284245284340063465">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Xa podes utilizar Chrome sempre que toques ligazóns en correos electrónicos, en documentos e noutras aplicacións.</translation>
+<translation id="7334364820047587268">Xa tes contrasinais para estas contas no teu xestor de contrasinais de Google. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
 <translation id="7344094882820374540">Goza da máxima seguranza de Chrome contra sitios perigosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="7371674917547846460">Recibe consellos útiles relacionados con Chrome e moito máis.</translation>

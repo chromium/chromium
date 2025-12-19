@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> укладка - <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> укладак - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="504456571576643789">Інфармацыя для разгляду</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Выбрана <ph name="WINDOW_COUNT_ONE" /> акно}one{Выбрана <ph name="WINDOW_COUNT_NORMAL" /> акно}few{Выбраны <ph name="WINDOW_COUNT_NORMAL" /> акны}many{Выбраны <ph name="WINDOW_COUNT_NORMAL" /> вокнаў}other{Выбраны <ph name="WINDOW_COUNT_NORMAL" /> акна}}</translation>
 <translation id="5056587122125565772">Стварыць відарыс</translation>
 <translation id="506254248375231072">Няма ўкладак</translation>
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
 <translation id="8192765420340770300">Ніжні аркуш са спісам даступных для выбару ўліковых запісаў разгорнуты на ўвесь экран</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">Выдаліць пошукавы запыт</translation>
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнік}one{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнік}few{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнікі}many{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнікаў}other{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальніка}}</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>

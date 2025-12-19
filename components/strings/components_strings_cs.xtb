@@ -1444,6 +1444,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3342018947887487892">Když později navštívíte nějaký web, může o tyto informace požádat – buď o témata vašich reklam, nebo o reklamy navržené weby, které jste navštívili.</translation>
 <translation id="334438173029876234">Vybavení pro skateboarding</translation>
 <translation id="3347146863028219517">Lyže a snowboarding</translation>
+<translation id="3349610303043713601">Procházet s AI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Znovu přehrát 10 sekund</translation>
 <translation id="3352881017886802007">Sportovní hry</translation>
@@ -2932,6 +2933,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5730040223043577876">Pokud jste heslo použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="5732392974455271431">Rodiče ti jej mohou odblokovat.</translation>
 <translation id="573555826359077410">Tlačítko Vytvořit formulář, aktivací rychle vytvoříte nový formulář ve Formulářích Google</translation>
+<translation id="5737022235680044108">Vaše organizace v anonymním režimu adresu <ph name="HOST_NAME" /> zablokovala.</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
 <translation id="5739619009927381786">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="BEGIN_LINK" />ověření provést jiným způsobem<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, synchronizujte historii a karty</translation>
@@ -3612,6 +3614,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6844998850832008753">Sledování rukou je tentokrát povoleno</translation>
 <translation id="6849023911358004088">Tlačítko Spravovat nastavení zabezpečení, aktivací můžete spravovat Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="6850286078059909152">Barva textu</translation>
+<translation id="685163597635765693">Vaše organizace v anonymním režimu odkazy „<ph name="HOST_NAME" />“ zablokovala.</translation>
 <translation id="6852204201400771460">Načíst aplikaci znovu?</translation>
 <translation id="6854691830678097752">Pokud chcete platit rychleji, uložte si tento kód CVC do svého účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Spravovat hesla…</translation>
@@ -3881,6 +3884,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7273111226200291353">Stahované soubory se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7275808129217605899">Zdravá výživa</translation>
+<translation id="7282894295403887199">Tuto stránku v anonymním režimu navštívit nemůžete</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter změníte heslo účtu Google</translation>
 <translation id="7286908876112207905">Vložení tohoto obsahu na tento web není povoleno</translation>
 <translation id="7291578327729322058">Přidání řidičského průkazu</translation>

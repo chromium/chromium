@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု - <ph name="URL_LIST" />}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
 <translation id="504456571576643789">စဉ်းစားရန် အချက်များ</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{ဝင်းဒိုး <ph name="WINDOW_COUNT_ONE" /> ခုကို ရွေးထားသည်}other{ဝင်းဒိုး <ph name="WINDOW_COUNT_NORMAL" /> ခုကို ရွေးထားသည်}}</translation>
 <translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="506254248375231072">တဘ် မရှိပါ</translation>
 <translation id="5075939510584558547">အသွင်မဝှက်ဘဲ သိမ်းခြင်း</translation>
@@ -1725,6 +1726,7 @@
 <translation id="8190358571722158785">၁ ရက် ကျန်သည်</translation>
 <translation id="8192765420340770300">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">ရှာဖွေစာလုံးကို ဖယ်ရှားရန်</translation>
 <translation id="820568752112382238">အများဆုံး ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}other{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}}</translation>
 <translation id="8209050860603202033">ပုံဖွင့်</translation>

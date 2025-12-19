@@ -947,6 +947,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> karet – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Ochrana soukromí</translation>
 <translation id="504456571576643789">Co je třeba zvážit</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Je vybráno <ph name="WINDOW_COUNT_ONE" /> okno}few{Jsou vybrána <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> okna}other{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> oken}}</translation>
 <translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="506254248375231072">Žádné karty</translation>
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
@@ -1726,6 +1727,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8190358571722158785">Zbývá: 1 d</translation>
 <translation id="8192765420340770300">Spodní panel pro přihlášení je otevřený přes celou výšku obrazovky</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">Vymazat vyhledávací dotaz</translation>
 <translation id="820568752112382238">Nejnavštěvovanější weby</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> dalším}few{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> dalšími}many{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> dalšího}other{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> dalšími}}</translation>
 <translation id="8209050860603202033">Otevřít obrázek</translation>

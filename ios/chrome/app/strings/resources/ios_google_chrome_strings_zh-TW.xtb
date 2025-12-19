@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕模式連結。</translation>
+<translation id="1081114897601629648">以下密碼不符合規定，因此未匯入 Google 密碼管理工具。</translation>
 <translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
 <translation id="1088490543924960890">使用 Google 密碼管理工具儲存密碼金鑰</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具中。</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="7296102444587051536">Chrome iOS 版</translation>
 <translation id="7299681342915173313">現在隨時可以使用 Chrome 開啟電子郵件、文件和其他應用程式中的連結。</translation>
+<translation id="7334364820047587268">Google 密碼管理工具中已有這些帳戶的密碼。如果選擇匯入以下任一密碼，將會取代現有密碼。</translation>
 <translation id="7344094882820374540">取得 Chrome 最強大的安全防護機制，防範危險網站</translation>
 <translation id="7349129508108954623">允許 Chrome 使用 Google 地圖，為偵測到的地址提供路線和當地資訊。</translation>
 <translation id="7371674917547846460">隨時掌握 Chrome 實用提示和其他資訊。</translation>

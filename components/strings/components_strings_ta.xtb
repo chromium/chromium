@@ -1444,6 +1444,7 @@
 <translation id="3342018947887487892">அதன்பிறகு நீங்கள் பார்வையிடும் தளம் இந்தத் தகவலைக் கேட்கலாம் — உங்கள் விளம்பரத் தலைப்புகள் அல்லது நீங்கள் பார்வையிடும் தளங்கள் பரிந்துரைக்கும் விளம்பரங்கள்.</translation>
 <translation id="334438173029876234">ஸ்கேட்போர்டிங் உபகரணங்கள்</translation>
 <translation id="3347146863028219517">பனிச்சறுக்கு மற்றும் ஸ்னோபோர்டிங்</translation>
+<translation id="3349610303043713601">AI மூலம் பிரவுசிங் செய்யுங்கள்</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 வினாடிகளை மீண்டும் பிளே செய்</translation>
 <translation id="3352881017886802007">ஸ்போர்ட்ஸ் கேம்கள்</translation>
@@ -2976,6 +2977,7 @@
 <translation id="5826507051599432481">பொதுவான பெயர் (CN)</translation>
 <translation id="5830698870816298009">கேமரா உபயோகம் &amp; நகர்வு</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">இந்தப் பர்ச்சேஸை நிறைவுசெய்ய வேறொரு பேமெண்ட் முறையைத் தேர்வுசெய்யவும்.</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5832976493438355584">பூட்டப்பட்டது</translation>
 <translation id="5837220895135257862">மீண்டும் முயலும் முன்பு <ph name="CLOUD_PROVIDER" /> இல் இடத்தைக் காலியாக்கவும்</translation>
@@ -4257,6 +4259,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="784623644169604270">சமீபத்திய செயல்கள் இல்லை</translation>
+<translation id="7853222852810008596">‘பிறகு பணம் செலுத்துங்கள்’ சேவை இந்த நாணயத்திற்குக் கிடையாது</translation>
 <translation id="785476343534277563">கல்லூரி விளையாட்டுகள்</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> உள்ள உங்கள் புதிய காலாவதித் தேதியையும் CVCயையும் டைப் செய்யுங்கள்</translation>

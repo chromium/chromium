@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">Daha sonra ziyarət etdiyiniz sayt bu məlumatı istəyə bilər – ya reklam mövzularınız, ya da ziyarət etdiyiniz saytlar tərəfindən təklif olunan reklamlar.</translation>
 <translation id="334438173029876234">Skeytbordinq avadanlıqları</translation>
 <translation id="3347146863028219517">Xizək və Snoubord</translation>
+<translation id="3349610303043713601">Sİ ilə axtarın</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 saniyə təkrar oxudun</translation>
 <translation id="3352881017886802007">İdman Oyunları</translation>
@@ -2932,6 +2933,7 @@
 <translation id="5730040223043577876">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="5732392974455271431">Valideynləriniz kilidi aça bilər</translation>
 <translation id="573555826359077410">"Forma yaradın" düyməsi, aktivləşdirərək Google Formada cəld yeni forma yaradın</translation>
+<translation id="5737022235680044108">Təşkilatınız <ph name="HOST_NAME" /> saytını Anonim rejimdə bloklayıb.</translation>
 <translation id="5738385766833540397">İzlədiyiniz məhsullar üçün qiymət endirimi xəbərdarlıqlarını necə alacağınızı idarə edin</translation>
 <translation id="5739619009927381786">Növbəti addımda tipik olaraq barmaq izinizdən istifadə etməklə ekran kilidini açın. Yaxud <ph name="BEGIN_LINK" />digər yolla doğrulaya<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="573974402615125334">Tab qruplarında paylaşmaq, qoşulmaq və əməkdaşlıq etmək üçün tarixçənizi və tabları sinxronlaşdırın</translation>
@@ -3613,6 +3615,7 @@
 <translation id="6844998850832008753">Əl izləməyə bu dəfə icazə verildi</translation>
 <translation id="6849023911358004088">"Təhlükəsizlik ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında Təhlükəsiz axtarışı və s. idarə edin</translation>
 <translation id="6850286078059909152">Mətn rəngi</translation>
+<translation id="685163597635765693">Təşkilatınız Anonim rejimdə "<ph name="HOST_NAME" />" keçidlərini bloklayıb.</translation>
 <translation id="6852204201400771460">Tətbiq yenidən yüklənilsin?</translation>
 <translation id="6854691830678097752">Daha sürətli ödəmə üçün bu CVC-ni hesabınızda yadda saxlayın, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Parolları idarə edin...</translation>
@@ -3882,6 +3885,7 @@
 <translation id="7273111226200291353">Endirdiyiniz fayllar təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Onlar həssas data və ya zərərli proqram ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
 <translation id="7275334191706090484">İdarə olunan əlfəcinlər</translation>
 <translation id="7275808129217605899">Sağlam Qida</translation>
+<translation id="7282894295403887199">Bu səhifəyə Anonim rejimdə daxil ola bilməzsiniz</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabı parolunuzu dəyişin</translation>
 <translation id="7286908876112207905">Bu kontenti bu sayta əlavə etməyə icazə verilmir</translation>
 <translation id="7291578327729322058">Sürücülük vəsiqəsi əlavə edin</translation>

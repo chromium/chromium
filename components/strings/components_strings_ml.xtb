@@ -1446,6 +1446,7 @@
 <translation id="3342018947887487892">പിന്നീട്, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് ഈ വിവരങ്ങൾ ആവശ്യപ്പെടാം — പരസ്യ വിഷയങ്ങൾ അല്ലെങ്കിൽ നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകൾ നിർദ്ദേശിച്ച പരസ്യങ്ങൾ.</translation>
 <translation id="334438173029876234">സ്‌കേറ്റ്ബോർഡിംഗ് ഉപകരണം</translation>
 <translation id="3347146863028219517">സ്‌കീയിംഗ്, സ്നോബോർഡിംഗ്</translation>
+<translation id="3349610303043713601">AI ഉപയോഗിച്ച് ബ്രൗസ് ചെയ്യൂ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 സെക്കൻഡ് വീണ്ടും പ്ലേ ചെയ്യുക</translation>
 <translation id="3352881017886802007">സ്പോർട്‌സ് ഗെയിമുകൾ</translation>
@@ -2979,6 +2980,7 @@
 <translation id="5826507051599432481">പൊതുവായ പേര് (CN)</translation>
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">ഈ വാങ്ങൽ പൂർത്തിയാക്കാൻ മറ്റൊരു പേയ്‌മെന്റ് രീതി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5832976493438355584">ലോക്കുചെയ്‌തു</translation>
 <translation id="5837220895135257862">വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് <ph name="CLOUD_PROVIDER" /> എന്നതിൽ ഇടം സൃഷ്ടിക്കുക</translation>
@@ -4259,6 +4261,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="784623644169604270">സമീപകാല ആക്റ്റിവിറ്റിയില്ല</translation>
+<translation id="7853222852810008596">ഈ കറൻസിയിൽ പിന്നീട് പേ ചെയ്യൽ ലഭ്യമല്ല</translation>
 <translation id="785476343534277563">കോളേജ് സ്പോർട്‌സ്</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> കാലഹരണപ്പെടുന്ന പുതിയ തീയതിയും CVC-യും നൽകുക</translation>

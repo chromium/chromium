@@ -25,7 +25,6 @@
 <translation id="1072679792409426431">Disabled by your administrator</translation>
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="1076421457278169141">Code scanned</translation>
-<translation id="1081114897601629648">The following passwords were not imported to Google Password Manager, because they don't match with the requirements.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="1082554859195167538">Product reviews for you</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
@@ -404,6 +403,7 @@
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">How do I enable this feature?</translation>
+<translation id="2485534095078940149">Attached file {title}</translation>
 <translation id="2493269659028026145">Lock immediately with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2496626742194544812">Go to first tab</translation>
@@ -1034,6 +1034,7 @@
 <translation id="496392417432935267">Opened elsewhere</translation>
 <translation id="4970724460420203313">Using Chrome with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
+<translation id="4977176874984951085">Open page action menu</translation>
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="4985921635659180565">Once a file is scheduled to be deleted, it can't be cancelled.</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
@@ -1119,6 +1120,7 @@
 <translation id="5271265092610673171">{count,plural, =1{A required field is empty. Fill it before saving.}other{Some required fields are empty. Fill them before saving.}}</translation>
 <translation id="5271549068863921519">Save password</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hours.</translation>
+<translation id="5275953427913009986">Attached tab {title}</translation>
 <translation id="5282340693022193851">To get price tracking notifications, turn on notifications in your iOS Settings.</translation>
 <translation id="528857768909044842">Tab groups are saved here</translation>
 <translation id="5294624619177114121">Mobile notifications</translation>
@@ -1192,6 +1194,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5579012242779565775">Hide reading list</translation>
 <translation id="5581786858144165447">Ask AI Mode</translation>
 <translation id="5585019845078534178">Cards</translation>
+<translation id="5589976607021609750">Attached image</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="559567008082979829">Set your downloads to be deleted after one month.</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -1227,7 +1230,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5680012489335339762">Switch accounts? Unsaved account data will be deleted.</translation>
 <translation id="5683499062697987550">To use and save passwords in your Google Account, verify that it's you.</translation>
 <translation id="5684761169742812828">This password was exposed in a data breach on the Internet. If you don't have time to change it right now, Google recommends keeping this warning to remind yourself later.</translation>
-<translation id="5688739340234490129">{count,plural, =1{{count} card}other{{count} cards}}</translation>
 <translation id="5694848685995373177">Saved in Drive for <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">You can change the default site view to desktop in Settings, then Content settings</translation>
 <translation id="5702108177581350218">When you share a copy of your username and password, your family member can fill them in using Google Password Manager.</translation>
@@ -1675,7 +1677,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7345061034321640811">Import not allowed</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
@@ -1875,6 +1876,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8010488806779226127">Explore features that can help you do more as you browse</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8015826420689927262">Delete attachment</translation>
 <translation id="8017015647846870183">From Google Password Manager, including passwords and passkeys</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023170444051056234">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
@@ -2041,7 +2043,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8609743333007776886">Add ${url} to bookmarks</translation>
 <translation id="8611922158252451755">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</translation>
 <translation id="8614671330774943747">Go to Tab Switcher</translation>
-<translation id="8620640915598389714">Edit</translation>
 <translation id="862367213447108001">Always show pop-ups on this site</translation>
 <translation id="8625706492572042370">Edit home screen</translation>
 <translation id="8631370184731241854">Locked Incognito tabs</translation>
@@ -2230,6 +2231,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="956218893102219091">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963102227019621224">Web &amp; App Activity</translation>
+<translation id="965879457362663186">Add attachment</translation>
 <translation id="966593914872420832">Voice search</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Join tab group with <ph name="OWNER_NAME" />}=1{Join tab group with <ph name="OWNER_NAME" /> and {COUNT} other}other{Join tab group with <ph name="OWNER_NAME" /> and {COUNT} others}}</translation>
 <translation id="973493300226275298">Track the price of a product across online shops. You’ll get alerts when the price drops.</translation>

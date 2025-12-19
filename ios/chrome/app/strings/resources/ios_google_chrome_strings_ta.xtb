@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1076643793026027628">YouTube மறைநிலை இணைப்புகளை மறைநிலைப் பயன்முறையில் Chrome தானாகவே திறக்கும்.</translation>
+<translation id="1081114897601629648">தேவைகளுடன் பொருந்தாததால் இந்தக் கடவுச்சொற்கள் Google Password Managerரில் பதிவேற்றப்படவில்லை.</translation>
 <translation id="1086486568852410168">Google Lens மூலம் தேடு</translation>
 <translation id="1088490543924960890">Google Password Manager மூலம் கடவுச்சாவிகளைச் சேமிக்கத் தொடங்குங்கள்</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> கணக்கின் Google கடவுச்சொல் நிர்வாகியில் உங்கள் கடவுச்சொல் சேமிக்கப்படும்.</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, <ph name="BEGIN_LINK" />உங்கள் கணக்கில் உள்ள Chrome தரவை நீக்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">iOSஸுக்கான Chrome</translation>
 <translation id="7299681342915173313">இனி எப்போது வேண்டுமானாலும் மின்னஞ்சல்கள், ஆவணங்கள் மற்றும் பிற ஆப்ஸில் உள்ள இணைப்புகளை Chromeமில் திறக்கலாம்.</translation>
+<translation id="7334364820047587268">உங்கள் Google Password Managerரில் இந்தக் கணக்குகளுக்கான கடவுச்சொற்கள் ஏற்கெனவே உள்ளன. கீழே உள்ள கடவுச்சொற்களில் ஒன்றை ஏற்றுவதற்குத் தேர்வுசெய்தால் ஏற்கெனவே இருப்பது மாற்றியமைக்கப்படும்.</translation>
 <translation id="7344094882820374540">ஆபத்தான தளங்களில் இருந்து பாதுகாக்க Chromeமின் வலிமையான பாதுகாப்பைப் பெறுங்கள்</translation>
 <translation id="7349129508108954623">கண்டறியப்பட்ட முகவரிகளுக்கான வழிகளையும் உள்ளூர் தகவல்களையும் வழங்க Google Mapsஸைப் பயன்படுத்த Chrome உலாவியை அனுமதியுங்கள்.</translation>
 <translation id="7371674917547846460">பயனுள்ள Chrome உதவிக்குறிப்புகள் மற்றும் பலவற்றை உடனுக்குடன் தெரிந்துகொள்ளுங்கள்.</translation>

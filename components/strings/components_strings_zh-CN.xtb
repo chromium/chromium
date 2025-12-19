@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">之后，您访问的网站便可请求获取以下信息：您的广告主题，或者您访问过的网站建议的广告。</translation>
 <translation id="334438173029876234">滑板装备</translation>
 <translation id="3347146863028219517">滑雪与单板滑雪</translation>
+<translation id="3349610303043713601">使用 AI 浏览</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">回放 10 秒</translation>
 <translation id="3352881017886802007">体育游戏</translation>
@@ -2932,6 +2933,7 @@
 <translation id="5730040223043577876">如果您在其他网站上重复使用了您的密码，Chrome 建议您重置该密码。</translation>
 <translation id="5732392974455271431">您的父母可为您取消屏蔽此网站</translation>
 <translation id="573555826359077410">“创建表单”按钮，激活它即可在 Google 表单中快速创建新表单</translation>
+<translation id="5737022235680044108">您所在的组织已禁止在无痕模式下访问 <ph name="HOST_NAME" />。</translation>
 <translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5739619009927381786">在下一步中解锁屏幕，通常使用指纹解锁，也可<ph name="BEGIN_LINK" />使用其他验证方式<ph name="END_LINK" />。</translation>
 <translation id="573974402615125334">如需分享、加入标签页分组并在其中协作，请同步历史记录和标签页</translation>
@@ -3612,6 +3614,7 @@
 <translation id="6844998850832008753">这次允许使用手部跟踪</translation>
 <translation id="6849023911358004088">“管理安全设置”按钮，激活它即可在 Chrome 设置中管理您的安全浏览设置和其他设置</translation>
 <translation id="6850286078059909152">文字颜色</translation>
+<translation id="685163597635765693">您所在的组织已禁止在无痕模式下访问“<ph name="HOST_NAME" />”链接。</translation>
 <translation id="6852204201400771460">要重新加载应用吗？</translation>
 <translation id="6854691830678097752">为了加快结账速度，请将此银行卡验证码 (CVC) 保存到账号 <ph name="ACCOUNT_EMAIL" /> 中</translation>
 <translation id="6857776781123259569">管理密码…</translation>
@@ -3882,6 +3885,7 @@
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7275808129217605899">健康饮食</translation>
+<translation id="7282894295403887199">您无法在无痕模式下访问此页面</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可更改您的 Google 账号密码</translation>
 <translation id="7286908876112207905">不允许将此内容粘贴到该网站</translation>
 <translation id="7291578327729322058">添加驾照</translation>

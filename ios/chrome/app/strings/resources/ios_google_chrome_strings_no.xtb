@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1076643793026027628">Chrome åpner automatisk YouTube-inkognitolinker i inkognitomodus.</translation>
+<translation id="1081114897601629648">Følgende passord ble ikke importert til Google Passordlagring fordi de ikke oppfyller kravene.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1088490543924960890">Begynn å lagre passnøkler med Google Passordlagring</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7284245284340063465">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome for iOS</translation>
 <translation id="7299681342915173313">Nå kan du bruke Chrome hver gang du trykker på linker i e-poster, dokumenter og andre apper.</translation>
+<translation id="7334364820047587268">Du har allerede passord for disse kontoene i Google Passordlagring. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
 <translation id="7344094882820374540">Få den sterkeste beskyttelsen mot farlige nettsteder i Chrome</translation>
 <translation id="7349129508108954623">La Chrome bruke Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
 <translation id="7371674917547846460">Få med deg nyttige Chrome-tips med mer.</translation>

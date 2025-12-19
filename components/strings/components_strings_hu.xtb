@@ -1445,6 +1445,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3342018947887487892">A későbbiekben az Ön által felkeresett webhelyek lekérhetik ezeket az információkat – akár az Önre vonatkozó hirdetéstémákat, akár a felkeresett webhelyek által javasolt hirdetéseket.</translation>
 <translation id="334438173029876234">Gördeszka-felszerelés</translation>
 <translation id="3347146863028219517">Síelés és snowboard</translation>
+<translation id="3349610303043713601">Böngészés AI segítségével</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 másodperc megismétlése</translation>
 <translation id="3352881017886802007">Sportjátékok</translation>
@@ -2933,6 +2934,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5730040223043577876">A Chrome azt javasolja, hogy adjon meg új jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
 <translation id="5732392974455271431">A letiltást a szüleid oldhatják fel</translation>
 <translation id="573555826359077410">Űrlap létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új űrlapot a Google Űrlapok szolgáltatással.</translation>
+<translation id="5737022235680044108">Szervezete letiltotta a(z) <ph name="HOST_NAME" /> elérését inkognitó módban.</translation>
 <translation id="5738385766833540397">Kezelheti a nyomon követett termékekkel kapcsolatos árcsökkenési értesítések fogadásának módját</translation>
 <translation id="5739619009927381786">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. Vagy próbálja <ph name="BEGIN_LINK" />másképp végrehajtani az igazolást<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Ha meg szeretne osztani lapcsoportokat, csatlakozni szeretne hozzájuk, illetve együtt szeretne dolgozni másokkal bennük, szinkronizálja az előzményeket és a lapokat</translation>
@@ -3614,6 +3616,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6844998850832008753">A kézmozgás követése erre az alkalomra engedélyezve van</translation>
 <translation id="6849023911358004088">Biztonsági beállítások kezelése gomb. A gombot megnyomva kezelheti a Biztonságos Böngészést és más funkciókat a Chrome-beállítások között.</translation>
 <translation id="6850286078059909152">Szöveg színe</translation>
+<translation id="685163597635765693">Szervezete letiltotta a(z) „<ph name="HOST_NAME" />” linkeket inkognitó módban.</translation>
 <translation id="6852204201400771460">Újratölti az alkalmazást?</translation>
 <translation id="6854691830678097752">A gyorsabb fizetés érdekében mentheti ezt a CVC-kódot a fiókjába (<ph name="ACCOUNT_EMAIL" />).</translation>
 <translation id="6857776781123259569">Jelszavak kezelése…</translation>
@@ -3884,6 +3887,7 @@ További részletek:
 <translation id="7273111226200291353">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a letöltött fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni fogják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
 <translation id="7275334191706090484">Kezelt könyvjelzők</translation>
 <translation id="7275808129217605899">Egészséges táplálkozás</translation>
+<translation id="7282894295403887199">Ezt az oldalt nem lehet felkeresni inkognitó módban</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt a Google-fiók jelszavának módosításához</translation>
 <translation id="7286908876112207905">Nem lehet beilleszteni ezt a tartalmat erre a webhelyre</translation>
 <translation id="7291578327729322058">Vezetői engedély hozzáadása</translation>

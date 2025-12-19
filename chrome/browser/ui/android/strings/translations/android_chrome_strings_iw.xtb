@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) - <ph name="URL_LIST" />}one{‫<ph name="TAB_COUNT_MANY" /> כרטיסיות - <ph name="URL_LIST" />}two{‫<ph name="TAB_COUNT_MANY" />, <ph name="URL_LIST" /> כרטיסיות}other{‫<ph name="TAB_COUNT_MANY" />, <ph name="URL_LIST" /> כרטיסיות}}</translation>
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="504456571576643789">מה כדאי לקחת בחשבון?</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{נבחר חלון <ph name="WINDOW_COUNT_ONE" />}one{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}two{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}other{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}}</translation>
 <translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="506254248375231072">אין כרטיסיות</translation>
 <translation id="5075939510584558547">שמירה ללא הצפנה</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">נותר יום אחד</translation>
 <translation id="8192765420340770300">הגיליון התחתון של הכניסה נפתח בגובה מלא</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">ניקוי שאילתת החיפוש</translation>
 <translation id="820568752112382238">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}one{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}two{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}other{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}}</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>

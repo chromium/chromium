@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1076643793026027628">Chrome ઑટોમૅટિક રીતે YouTube છૂપા મોડની લિંકને છૂપા મોડમાં ખોલે છે.</translation>
+<translation id="1081114897601629648">નીચેના પાસવર્ડ Google Password Manager પર આયાત કરવામાં આવ્યા ન હતા, કારણ કે તે જરૂરી શરતો સાથે મેળ ખાતા નથી.</translation>
 <translation id="1086486568852410168">Google Lens વડે શોધો</translation>
 <translation id="1088490543924960890">Google Password Manager વડે પાસકી સાચવવાનું શરૂ કરો</translation>
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">iOS માટે Chrome</translation>
 <translation id="7299681342915173313">હવે તમે જ્યારે પણ ઇમેઇલ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="7334364820047587268">તમારી પાસે પહેલાથી જ તમારા Google Password Managerમાં આ એકાઉન્ટ માટે પાસવર્ડ છે. જો તમે નીચેનામાંથી એક પાસવર્ડ આયાત કરવાનું પસંદ કરશો, તો તે વર્તમાન પાસવર્ડનું સ્થાન લેશે.</translation>
 <translation id="7344094882820374540">જોખમી સાઇટથી Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7349129508108954623">ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે Chromeને Google Mapsનો ઉપયોગ કરવાની મંજૂરી આપો.</translation>
 <translation id="7371674917547846460">સહાયરૂપ Chrome ટિપ અને વધુ બાબતો સાથે ચાલુ રાખો.</translation>

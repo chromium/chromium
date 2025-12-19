@@ -1447,6 +1447,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3342018947887487892">Máis tarde, un sitio que visites pode solicitar esta información; ben os teus temas de anuncios, ou ben anuncios suxeridos polos sitios que visitases anteriormente.</translation>
 <translation id="334438173029876234">Equipamento de monopatín</translation>
 <translation id="3347146863028219517">Esquí e snowboard</translation>
+<translation id="3349610303043713601">Explorar coa IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Volver reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Xogos de deportes</translation>
@@ -2936,6 +2937,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5730040223043577876">Chrome recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="5732392974455271431">Os teus pais poden desbloquealo por ti</translation>
 <translation id="573555826359077410">Botón para crear un formulario. Actívao para crear rapidamente un formulario de Google</translation>
+<translation id="5737022235680044108">A túa organización bloqueou o acceso a <ph name="HOST_NAME" /> no modo de incógnito.</translation>
 <translation id="5738385766833540397">Xestiona como recibes as alertas de baixada de prezos para os produtos dos que fas un seguimento</translation>
 <translation id="5739619009927381786">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="BEGIN_LINK" />usar outro método para realizar a verificación<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartir grupos de pestanas, unirte a eles e colaborar, sincroniza o teu historial e as pestanas</translation>
@@ -3617,6 +3619,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6844998850832008753">O seguimento das mans está permitido neste momento</translation>
 <translation id="6849023911358004088">Botón para xestionar a configuración de seguranza. Actívao para xestionar Navegación segura e outras opcións na configuración de Chrome</translation>
 <translation id="6850286078059909152">Cor do texto</translation>
+<translation id="685163597635765693">A túa organización bloqueou as ligazóns de <ph name="HOST_NAME" /> no modo de incógnito.</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar as compras máis rápido, garda este CVC na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6857776781123259569">Xestiona os contrasinais…</translation>
@@ -3886,6 +3889,7 @@ Detalles adicionais:
 <translation id="7273111226200291353">Os ficheiros que descargues enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais ou software malicioso, e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
 <translation id="7275334191706090484">Marcadores xestionados</translation>
 <translation id="7275808129217605899">Alimentación saudable</translation>
+<translation id="7282894295403887199">Non podes visitar esta páxina no modo de incógnito</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para cambiar o contrasinal da túa Conta de Google</translation>
 <translation id="7286908876112207905">Non se permite pegar este contido neste sitio</translation>
 <translation id="7291578327729322058">Engadir un permiso de conducir</translation>

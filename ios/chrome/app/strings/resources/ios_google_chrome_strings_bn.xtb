@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1076643793026027628">Chrome ছদ্মবেশী মোডে, অটোমেটিক YouTube ছদ্মবেশী লিঙ্ক খোলে।</translation>
+<translation id="1081114897601629648">এইসব পাসওয়ার্ড Google Password Manager-এ ইমপোর্ট করা হয়নি কারণ তা প্রয়োজনীয়তার সাথে মেলেনি।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1088490543924960890">Google Password Manager-এর সাহায্যে পাসকী সেভ করা শুরু করুন</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />-এর জন্য Google পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="7296102444587051536">iOS-এর জন্য Chrome</translation>
 <translation id="7299681342915173313">ইমেল, ডকুমেন্ট ও অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করে এখন থেকে আপনি যেকোনও সময় Chrome ব্যবহার করতে পারেন।</translation>
+<translation id="7334364820047587268">আপনার Google Password Manager-এ আগে থেকেই এইসব অ্যাকাউন্টের পাসওয়ার্ড আছে। ইমপোর্ট করার জন্য আপনি নিচের যেকোনও একটি পাসওয়ার্ড বেছে নিলে, সেটি আগে থাকা পাসওয়ার্ড পরিবর্তন করে দেবে।</translation>
 <translation id="7344094882820374540">বিপজ্জনক সাইট থেকে বাঁচতে Chrome সবচেয়ে শক্তিশালী সুরক্ষা প্রদান করে</translation>
 <translation id="7349129508108954623">Chrome-কে Google Maps ব্যবহার করার অনুমতি দিন যাতে শনাক্ত করা ঠিকানা সম্পর্কে আপনাকে দিকনির্দেশ ও স্থানীয় তথ্য দিতে পারে।</translation>
 <translation id="7371674917547846460">Chrome সম্পর্কিত সহায়ক টিপস ও আরও অনেক কিছু সম্পর্কে আপডেট থাকুন।</translation>

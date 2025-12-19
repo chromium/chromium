@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">მოგვიანებით, თქვენ მიერ მონახულებულ საიტს შეუძლია მოითხოვოს ეს ინფორმაცია — თქვენი სარეკლამო თემები ან თქვენ მიერ მონახულებული საიტების მიერ შემოთავაზებული რეკლამები.</translation>
 <translation id="334438173029876234">სკეიტბორდერების აღჭურვილობა</translation>
 <translation id="3347146863028219517">თხილამურებით სრიალი და სნოუბორდი</translation>
+<translation id="3349610303043713601">დათვალიერება ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 წამის ხელახლა დაკვრა</translation>
 <translation id="3352881017886802007">სპორტული თამაშები</translation>
@@ -2980,6 +2981,7 @@
 <translation id="5826507051599432481">საერთო სახელი (CN)</translation>
 <translation id="5830698870816298009">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5831217499016131155">Google საფულე</translation>
+<translation id="5831259154333754661">ამ შენაძენის დასასრულებლად აირჩიეთ გადახდის სხვა მეთოდი.</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5832976493438355584">ჩაკეტილი</translation>
 <translation id="5837220895135257862">ხელახლა ცდამდე გაათავისუფლეთ <ph name="CLOUD_PROVIDER" />-ის მეხსიერება</translation>
@@ -4261,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="784623644169604270">უახლესი აქტივობები არ არის</translation>
+<translation id="7853222852810008596">ამ ვალუტაში მოგვიანებით გადახდა არ არის ხელმისაწვდომი</translation>
 <translation id="785476343534277563">სპორტული ცხოვრება კოლეჯებში</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">თავიდან შეიყვანეთ მოქმედების ვადის გასვლის თარიღი და CVC, რომლებიც მოცემულია <ph name="SIDE_OF_CARD" /></translation>

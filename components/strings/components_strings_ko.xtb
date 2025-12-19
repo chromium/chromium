@@ -1447,6 +1447,7 @@
 <translation id="3342018947887487892">나중에 방문한 사이트에서 광고 주제 또는 이전에 방문한 사이트에서 추천한 광고에 관한 정보를 요청할 수 있습니다.</translation>
 <translation id="334438173029876234">스케이트보드 장비</translation>
 <translation id="3347146863028219517">스키 및 스노우보드</translation>
+<translation id="3349610303043713601">AI로 둘러보기</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10초 뒤로 이동</translation>
 <translation id="3352881017886802007">스포츠 게임</translation>
@@ -2936,6 +2937,7 @@
 <translation id="5730040223043577876">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="573555826359077410">양식 만들기 버튼, Google Forms에서 새 양식을 빠르게 만들려면 활성화하세요.</translation>
+<translation id="5737022235680044108">조직에서 시크릿 모드의 <ph name="HOST_NAME" />을 차단했습니다.</translation>
 <translation id="5738385766833540397">추적 중인 제품의 가격 인하 알림을 받을 방법 관리</translation>
 <translation id="5739619009927381786">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. 또는 <ph name="BEGIN_LINK" />다른 방법으로 인증<ph name="END_LINK" />할 수도 있습니다.</translation>
 <translation id="573974402615125334">탭 그룹을 공유하고, 탭 그룹에 참여하고, 탭 그룹에서 공동작업하려면 방문 기록과 탭을 동기화하세요.</translation>
@@ -3617,6 +3619,7 @@
 <translation id="6844998850832008753">이번에는 손 추적이 허용됨</translation>
 <translation id="6849023911358004088">보안 설정 관리 버튼, Chrome 설정에서 세이프 브라우징 등을 관리하려면 활성화하세요.</translation>
 <translation id="6850286078059909152">텍스트 색상</translation>
+<translation id="685163597635765693">조직에서 시크릿 모드의 “<ph name="HOST_NAME" />” 링크를 차단했습니다.</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
 <translation id="6854691830678097752">더 빠르게 결제하려면 계정(<ph name="ACCOUNT_EMAIL" />)에 이 CVC를 저장하세요.</translation>
 <translation id="6857776781123259569">비밀번호 관리...</translation>
@@ -3887,6 +3890,7 @@
 <translation id="7273111226200291353">다운로드한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="7275334191706090484">관리 북마크</translation>
 <translation id="7275808129217605899">건강한 식생활</translation>
+<translation id="7282894295403887199">시크릿 모드에서는 이 페이지를 방문할 수 없습니다</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정 비밀번호 변경</translation>
 <translation id="7286908876112207905">이 사이트에는 이 콘텐츠를 붙여넣을 수 없습니다</translation>
 <translation id="7291578327729322058">운전면허증 추가</translation>

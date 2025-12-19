@@ -947,6 +947,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> kart – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="504456571576643789">Istotne kwestie</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Wybrane <ph name="WINDOW_COUNT_ONE" /> okno}few{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Wybranych <ph name="WINDOW_COUNT_NORMAL" /> okien}other{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}}</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="506254248375231072">Brak kart</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
@@ -1726,6 +1727,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8190358571722158785">Pozostał dzień</translation>
 <translation id="8192765420340770300">Plansza dolna logowania jest otwarta na całą wysokość</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">Wyczyść wyszukiwane hasło</translation>
 <translation id="820568752112382238">Najczęściej odwiedzane strony</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> inna osoba}few{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> inne osoby}many{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> innych osób}other{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> innej osoby}}</translation>
 <translation id="8209050860603202033">Otwórz grafikę</translation>

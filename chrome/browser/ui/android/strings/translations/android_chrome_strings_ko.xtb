@@ -947,6 +947,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개 - <ph name="URL_LIST" />}other{탭 <ph name="TAB_COUNT_MANY" />개 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />개 창 선택됨}other{<ph name="WINDOW_COUNT_NORMAL" />개 창 선택됨}}</translation>
 <translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
@@ -1726,6 +1727,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8190358571722158785">1일 남음</translation>
 <translation id="8192765420340770300">로그인 하단 시트가 전체 높이로 열렸습니다</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">검색어 삭제</translation>
 <translation id="820568752112382238">자주 방문한 사이트</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUMBER_OF_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUMBER_OF_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여}}</translation>
 <translation id="8209050860603202033">이미지 열기</translation>

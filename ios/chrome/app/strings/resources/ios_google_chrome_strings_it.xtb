@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1076643793026027628">Chrome apre automaticamente i link di YouTube in incognito in modalità di navigazione in incognito.</translation>
+<translation id="1081114897601629648">Le seguenti password non sono state importate in Gestore delle password di Google perché non soddisfano i requisiti.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1088490543924960890">Inizia a salvare le passkey con Gestore delle password di Google</translation>
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7284245284340063465">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome per iOS</translation>
 <translation id="7299681342915173313">Ora puoi usare Chrome ogni volta che tocchi i link in email, documenti e altre app.</translation>
+<translation id="7334364820047587268">Hai già le password per questi account nel Gestore delle password di Google. Se scegli di importare una delle password seguenti, quella esistente sostituirà quella esistente.</translation>
 <translation id="7344094882820374540">Usa la funzionalità di sicurezza più efficace di Chrome contro siti pericolosi</translation>
 <translation id="7349129508108954623">Consenti a Chrome di usare Google Maps per darti indicazioni stradali e informazioni locali relative agli indirizzi rilevati.</translation>
 <translation id="7371674917547846460">Ricevi aggiornamenti su suggerimenti utili per Chrome e altro ancora.</translation>

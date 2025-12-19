@@ -1450,6 +1450,7 @@
 <translation id="3342018947887487892">ក្រោយមក គេហទំព័រ​ដែល​អ្នក​ចូលមើល​អាច​ស្នើសុំ​ព័ត៌មាននេះ — ប្រធានបទ​នៃការផ្សាយពាណិជ្ជកម្ម​របស់​អ្នក ឬ​ការផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ​ដែល​អ្នក​បាន​ចូលមើល។</translation>
 <translation id="334438173029876234">បរិក្ខារ​ជិះក្ដាររំអិល</translation>
 <translation id="3347146863028219517">ការជិះ​ស្គី និងការជិះក្តារលើទឹកកក</translation>
+<translation id="3349610303043713601">រុករក​ដោយប្រើ AI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">ចាក់​ឡើងវិញ 10 វិនាទី</translation>
 <translation id="3352881017886802007">ហ្គេមកីឡា</translation>
@@ -2984,6 +2985,7 @@
 <translation id="5826507051599432481">ឈ្មោះទូទៅ (CN)</translation>
 <translation id="5830698870816298009">ការផ្លាស់ទី និង​ការប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="5831217499016131155">Google កាបូប</translation>
+<translation id="5831259154333754661">ជ្រើសរើស​វិធីបង់ប្រាក់​ផ្សេងទៀត ដើម្បី​បញ្ចប់​ការទិញនេះ។</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5832976493438355584">បានចាក់សោ</translation>
 <translation id="5837220895135257862">សម្អាត​ទំហំផ្ទុក​នៅក្នុង <ph name="CLOUD_PROVIDER" /> មុនពេល​ព្យាយាម​ម្ដងទៀត</translation>
@@ -4266,6 +4268,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{គ្មាន}=1{កម្មវិធី 1 (<ph name="EXAMPLE_APP_1" />)}=2{កម្មវិធី 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{កម្មវិធី # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">មាន​បញ្ហា​បានកើតឡើង។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="784623644169604270">គ្មាន​សកម្មភាព​ថ្មីៗ</translation>
+<translation id="7853222852810008596">មិនអាចប្រើ "ទូទាត់​ពេលក្រោយ" ជារូបិយប័ណ្ណ​នេះបានទេ</translation>
 <translation id="785476343534277563">កីឡា​មហាវិទ្យាល័យ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">បញ្ចូលកាលបរិច្ឆេទ​ផុត​កំណត់​ថ្មី​ និង​ CVC របស់​អ្នកដែលស្ថិត​នៅ<ph name="SIDE_OF_CARD" /></translation>

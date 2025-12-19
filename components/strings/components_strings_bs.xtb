@@ -1447,6 +1447,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3342018947887487892">Kasnije, web lokacija koju posjetite može zatražiti ove informacije – bilo teme oglasa ili oglase koje su predložile web lokacije koje ste posjetili.</translation>
 <translation id="334438173029876234">Oprema za voženje skejtborda</translation>
 <translation id="3347146863028219517">Skijanje i snowboarding</translation>
+<translation id="3349610303043713601">Pregledajte putem AI-ja</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Ponovo reproduciraj 10 s</translation>
 <translation id="3352881017886802007">Sportske igre</translation>
@@ -2936,6 +2937,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5730040223043577876">Chrome preporučuje da ponovo postavite lozinku ako ste je koristili više puta na drugim web lokacijama.</translation>
 <translation id="5732392974455271431">Roditelji je mogu deblokirati za tebe</translation>
 <translation id="573555826359077410">Dugme Kreiraj obrazac, aktivirajte da brzo kreirate novi obrazac na usluzi Google Forms</translation>
+<translation id="5737022235680044108">Vaša organizacija je blokirala host računar <ph name="HOST_NAME" /> u anonimnom načinu rada.</translation>
 <translation id="5738385766833540397">Upravljajte načinom na koji primate obavještenja o padu cijene za proizvode koje pratite</translation>
 <translation id="5739619009927381786">U sljedećem koraku otključajte ekran, obično pomoću otiska prsta. Ili možete <ph name="BEGIN_LINK" />potvrditi na drugi način<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Da dijelite grupe kartica, pridružujete im se i sarađujete u njima, sinhronizirajte historiju i kartice</translation>
@@ -3617,6 +3619,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6844998850832008753">Praćenje ruku je dozvoljeno ovaj put</translation>
 <translation id="6849023911358004088">Dugme Upravljaj sigurnosnim postavkama, aktivirajte da upravljate Sigurnim pregledanjem i drugim funkcijama u postavkama Chromea</translation>
 <translation id="6850286078059909152">Boja teksta</translation>
+<translation id="685163597635765693">Vaša organizacija je blokirala linkove host računara "<ph name="HOST_NAME" />" u anonimnom načinu rada.</translation>
 <translation id="6852204201400771460">Ponovo učitati aplikaciju?</translation>
 <translation id="6854691830678097752">Radi bržeg plaćanja sačuvajte ovaj CVC na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Upravljajte lozinkama…</translation>
@@ -3887,6 +3890,7 @@ Dodatni detalji:
 <translation id="7273111226200291353">Fajlovi koje preuzmete se šalju na Google Cloud ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohraniti na osnovu pravila kompanije i biti vidljivi vašem administratoru.</translation>
 <translation id="7275334191706090484">Upravljane oznake</translation>
 <translation id="7275808129217605899">Zdrava ishrana</translation>
+<translation id="7282894295403887199">Ne možete posjetiti ovu stranicu u anonimnom načinu rada</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da promijenite lozinku za Google račun</translation>
 <translation id="7286908876112207905">Lijepljenje sadržaja na ovu web lokaciju nije dozvoljeno</translation>
 <translation id="7291578327729322058">Dodajte vozačku dozvolu</translation>

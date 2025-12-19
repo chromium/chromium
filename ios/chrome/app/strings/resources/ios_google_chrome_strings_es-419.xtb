@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1076643793026027628">Chrome abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
+<translation id="1081114897601629648">No se importaron las siguientes contraseñas al Administrador de contraseñas de Google porque no cumplen con los requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1088490543924960890">Comienza a guardar llaves de acceso con el Administrador de contraseñas de Google</translation>
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
@@ -272,6 +273,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7284245284340063465">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en correos electrónicos, documentos y otras apps.</translation>
+<translation id="7334364820047587268">Ya tienes contraseñas para estas cuentas en el Administrador de contraseñas de Google. Si decides importar una de las contraseñas a continuación, se reemplazará la contraseña existente.</translation>
 <translation id="7344094882820374540">Obtener la seguridad más potente de Chrome contra sitios peligrosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para brindarte instrucciones sobre cómo llegar y datos locales sobre las direcciones detectadas.</translation>
 <translation id="7371674917547846460">Mantente al tanto de las sugerencias útiles de Chrome y mucho más.</translation>

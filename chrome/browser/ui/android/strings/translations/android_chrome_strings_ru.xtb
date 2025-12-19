@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка: <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> вкладка: <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> вкладок: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="504456571576643789">Важная информация</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Выбрано <ph name="WINDOW_COUNT_ONE" /> окно}one{Выбрано <ph name="WINDOW_COUNT_NORMAL" /> окно}few{Выбрано <ph name="WINDOW_COUNT_NORMAL" /> окна}many{Выбрано <ph name="WINDOW_COUNT_NORMAL" /> окон}other{Выбрано <ph name="WINDOW_COUNT_NORMAL" /> окна}}</translation>
 <translation id="5056587122125565772">Создать изображение</translation>
 <translation id="506254248375231072">Нет вкладок</translation>
 <translation id="5075939510584558547">Сохранение без шифрования</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">Остался 1 день</translation>
 <translation id="8192765420340770300">Нижний экран входа в аккаунт открыт полностью</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">Очистить строку поиска</translation>
 <translation id="820568752112382238">Часто посещаемые сайты</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}one{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}}</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>

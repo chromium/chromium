@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1076643793026027628">Chrome हे गुप्त मोडमध्ये YouTube गुप्त मोड लिंक आपोआप उघडते.</translation>
+<translation id="1081114897601629648">पुढील पासवर्ड Google Password Manager मध्ये इंपोर्ट केले नव्हते, कारण ते आवश्यकतांशी जुळत नाहीत.</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
 <translation id="1088490543924960890">Google Password Manager वापरून पासकी सेव्ह करणे सुरू करा</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> साठी तुमचा पासवर्ड हा Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल.</translation>
@@ -272,6 +273,7 @@
 <translation id="7284245284340063465">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome हटवणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="7296102444587051536">iOS साठी Chrome</translation>
 <translation id="7299681342915173313">तुम्ही कधीही ईमेल, दस्तऐवज आणि इतर अ‍ॅप्स यांमधील लिंकवर टॅप करता, तेव्हा आता Chrome वापरू शकता.</translation>
+<translation id="7334364820047587268">तुमच्याकडे तुमच्या Google Password Manager मध्ये आधीपासून या खात्यांसाठीचे पासवर्ड आहेत. तुम्ही खालीलपैकी एखादा पासवर्ड इंपोर्ट करण्याचे ठरवल्यास, तो सद्य पासवर्डची जागा घेईल.</translation>
 <translation id="7344094882820374540">धोकादायक साइटपासून Chrome ची सर्वात मजबूत सुरक्षा मिळवा</translation>
 <translation id="7349129508108954623">डिटेक्ट केलेल्या पत्त्यांनुसार तुम्हाला दिशा आणि स्थानिक माहिती देण्यासाठी Chrome ला Google Maps वापरण्याची अनुमती द्या.</translation>
 <translation id="7371674917547846460">उपयुक्त Chrome टिपा आणि आणखी बऱ्याच गोष्टी मिळवत रहा.</translation>
