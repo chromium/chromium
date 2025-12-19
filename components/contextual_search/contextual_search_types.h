@@ -62,6 +62,8 @@ enum class FileUploadErrorType {
 struct FileInfo {
  public:
   FileInfo();
+  FileInfo(const FileInfo& other);
+  FileInfo& operator=(const FileInfo& other);
   virtual ~FileInfo();
 
   // Gets the context id for this request.

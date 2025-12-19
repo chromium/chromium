@@ -116,6 +116,10 @@ class ContextualSearchSessionHandle {
   // particular instance of the session.
   std::vector<base::UnguessableToken> GetUploadedContextTokens() const;
 
+  // Returns the list of uploaded but not yet committed FileInfo for this
+  // particular instance of the session.
+  std::vector<FileInfo> GetUploadedContextFileInfos() const;
+
   // Returns the list of uploaded but not yet committed context tokens for this
   // particular instance of the session, editable for testing.
   std::vector<base::UnguessableToken>& GetUploadedContextTokensForTesting() {
@@ -131,6 +135,11 @@ class ContextualSearchSessionHandle {
   // the session. This is intended to be invoked when the server has responded
   // that it has received the submitted context.
   void ClearSubmittedContextTokens();
+
+  // Returns the list of submitted FileInfo for this particular instance
+  // of the session. These are uploaded and submitted, but we have not received
+  // confirmation that they are available on the server.
+  std::vector<FileInfo> GetSubmittedContextFileInfos() const;
 
  private:
   friend class ContextualSearchService;

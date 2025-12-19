@@ -7,6 +7,8 @@
 namespace contextual_search {
 
 FileInfo::FileInfo() = default;
+FileInfo::FileInfo(const FileInfo& other) = default;
+FileInfo& FileInfo::operator=(const FileInfo& other) = default;
 FileInfo::~FileInfo() = default;
 
 }  // namespace contextual_search
