@@ -47,7 +47,7 @@ class ActorOverlayWebView : public views::WebView {
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
-  actor::ui::ActorOverlayUI* GetWebUi();
+  virtual actor::ui::ActorOverlayUI* GetWebUi();
   // Manages the lifetime of the WebContents input event ignoring state.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;

@@ -220,6 +220,7 @@ source_set("unit_tests") {
   sources = [
     "actor_border_view_controller_unittest.cc",
     "actor_overlay_handler_unittest.cc",
+    "actor_overlay_web_view_unittest.cc",
     "actor_ui_metrics_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
