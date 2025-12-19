@@ -1514,7 +1514,7 @@ void RecordNavigationTraceEventsAndMetrics(
   auto log_trace_event_and_uma =
       [&](perfetto::StaticString name, const perfetto::NamedTrack track,
           const base::TimeTicks& begin_time, const base::TimeTicks& end_time,
-          std::optional<UkmBuilderMethod> ukm_builder_method = std::nullopt,
+          UkmBuilderMethod ukm_builder_method = nullptr,
           const std::string& histogram_name = std::string(),
           const std::string& url = std::string()) {
         if (begin_time.is_null() || end_time.is_null()) {
@@ -1568,11 +1568,9 @@ void RecordNavigationTraceEventsAndMetrics(
                 ".Duration",
             end_time - begin_time);
 
-        if (ukm_builder.has_value() && ukm_builder_method.has_value()) {
-          base::BindRepeating(*ukm_builder_method,
-                              // Safe: `ukm_builder` outlives this method call.
-                              base::Unretained(&*ukm_builder))
-              .Run((end_time - begin_time).InMilliseconds());
+        if (ukm_builder.has_value() && ukm_builder_method) {
+          (*ukm_builder.*
+           ukm_builder_method)((end_time - begin_time).InMilliseconds());
         }
       };
 
