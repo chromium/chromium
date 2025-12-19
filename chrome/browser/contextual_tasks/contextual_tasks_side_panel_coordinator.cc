@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
@@ -201,13 +202,13 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
   pref_service_->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
                             impression_count + 1);
 
+  tabs::TabInterface* active_tab_interface =
+      browser_window_->GetActiveTabInterface();
+  CHECK(active_tab_interface);
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
     // tab.
     ContextualTask task = context_controller_->CreateTask();
-    tabs::TabInterface* active_tab_interface =
-        browser_window_->GetActiveTabInterface();
-    CHECK(active_tab_interface);
     ui_service_->AssociateWebContentsToTask(active_tab_interface->GetContents(),
                                             task.GetTaskId());
   }
@@ -232,6 +233,15 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
   UpdateContextualTaskUI();
   ObserveWebContentsOnActiveTab();
   NotifyActiveTaskContextProvider();
+
+  // Hide the GLIC nudge when the side panel is opened.
+  if (auto* glic_nudge_controller =
+          browser_window_->GetFeatures().glic_nudge_controller()) {
+    glic_nudge_controller->UpdateNudgeLabel(
+        active_tab_interface->GetContents(), "", std::nullopt,
+        tabs::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
+        base::DoNothing());
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {

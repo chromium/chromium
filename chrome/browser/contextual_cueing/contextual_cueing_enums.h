@@ -77,8 +77,10 @@ enum class NudgeInteraction {
   // The server sent data, but another call to action was present in the
   // browser.
   kNudgeNotShownWindowCallToActionUI = 7,
+  // The nudge was dismissed by the contextual tasks side panel being opened.
+  kIgnoredOpenedContextualTasksSidePanel = 8,
   // New values above this line.
-  kMaxValue = kNudgeNotShownWindowCallToActionUI,
+  kMaxValue = kIgnoredOpenedContextualTasksSidePanel,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeInteraction)
 

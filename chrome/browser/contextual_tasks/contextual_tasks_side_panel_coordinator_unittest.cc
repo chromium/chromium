@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -28,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Const;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -152,6 +154,10 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     browser_window_ = std::make_unique<NiceMock<MockBrowserWindowInterface>>();
     ON_CALL(*browser_window_, GetProfile())
         .WillByDefault(Return(profile_.get()));
+    ON_CALL(*browser_window_, GetFeatures())
+        .WillByDefault(ReturnRef(browser_window_features_));
+    ON_CALL(Const(*browser_window_), GetFeatures())
+        .WillByDefault(ReturnRef(browser_window_features_));
 
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -193,6 +199,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   std::unique_ptr<TestingProfile> profile_;
+  BrowserWindowFeatures browser_window_features_;
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
