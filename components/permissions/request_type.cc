@@ -51,11 +51,12 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_IDENTITY_PROVIDER;
     case RequestType::kIdleDetection:
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
-    // TODO(crbug.com/465491626): fix icon for Loopback Network
     case RequestType::kLocalNetwork:
+      return IDR_ANDROID_INFOBAR_LOCAL_NETWORK;
     case RequestType::kLocalNetworkAccess:
-    case RequestType::kLoopbackNetwork:
       return IDR_ANDROID_INFOBAR_LOCAL_NETWORK_ACCESS;
+    case RequestType::kLoopbackNetwork:
+      return IDR_ANDROID_INFOBAR_LOOPBACK_NETWORK;
     case RequestType::kMicStream:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
     case RequestType::kMidiSysex:
