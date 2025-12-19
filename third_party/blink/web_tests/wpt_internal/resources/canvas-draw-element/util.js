@@ -185,12 +185,17 @@ void main(){
   }
 }
 
-function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY) {
+function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY,
+                                        sx, sy, swidth, sheight) {
   if (scaleX !== undefined && scaleY !== undefined) {
     const [destWidth, destHeight] =
           computeScaledDestinationSize(ctx.canvas, target, scaleX, scaleY);
     queue.copyElementImageToTexture(
       target, destWidth, destHeight, { texture: ctx.getCurrentTexture() });
+  } else if (sx !== undefined && sy !== undefined &&
+             swidth !== undefined && sheight !== undefined) {
+    queue.copyElementImageToTexture(
+      target, sx, sy, swidth, sheight, { texture: ctx.getCurrentTexture() });
   } else {
     queue.copyElementImageToTexture(
       target, { texture: ctx.getCurrentTexture() });

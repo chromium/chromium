@@ -795,8 +795,12 @@ bool GPUQueue::IsValidDestinationTexture(
 void GPUQueue::copyElementImageToTexture(Element* element,
                                          GPUImageCopyTextureTagged* destination,
                                          ExceptionState& exception_state) {
-  CopyElementImageToTextureInternal(element, std::nullopt, std::nullopt,
-                                    destination, exception_state);
+  CopyElementImageToTextureInternal(
+      element,
+      /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+      /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
+      /*width*/ std::nullopt, /*height*/ std::nullopt, destination,
+      exception_state);
 }
 
 void GPUQueue::copyElementImageToTexture(Element* element,
@@ -804,17 +808,39 @@ void GPUQueue::copyElementImageToTexture(Element* element,
                                          uint32_t height,
                                          GPUImageCopyTextureTagged* destination,
                                          ExceptionState& exception_state) {
-  CopyElementImageToTextureInternal(element, width, height, destination,
+  CopyElementImageToTextureInternal(element,
+                                    /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+                                    /*swidth*/ std::nullopt,
+                                    /*sheight*/ std::nullopt, width, height,
+                                    destination, exception_state);
+}
+
+void GPUQueue::copyElementImageToTexture(Element* element,
+                                         float sx,
+                                         float sy,
+                                         float swidth,
+                                         float sheight,
+                                         GPUImageCopyTextureTagged* destination,
+                                         ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(element, sx, sy, swidth, sheight,
+                                    /*width*/ std::nullopt,
+                                    /*height*/ std::nullopt, destination,
                                     exception_state);
 }
 
 void GPUQueue::CopyElementImageToTextureInternal(
     Element* element,
+    std::optional<float> sx,
+    std::optional<float> sy,
+    std::optional<float> swidth,
+    std::optional<float> sheight,
     std::optional<uint32_t> width,
     std::optional<uint32_t> height,
     GPUImageCopyTextureTagged* destination,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  CHECK(!swidth.has_value() || !width.has_value());
+  CHECK(!sheight.has_value() || !height.has_value());
 
   CanvasRenderingContext* context =
       CanvasRenderingContext::GetEnclosingContextForDrawElement(
@@ -835,10 +861,9 @@ void GPUQueue::CopyElementImageToTextureInternal(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image = context->GetElementImage(
-      element, /*sx*/ std::nullopt, /*sy*/ std::nullopt,
-      /*swidth*/ std::nullopt, /*sheight*/ std::nullopt, width, height,
-      "copyElementImageToTexture()", exception_state);
+  scoped_refptr<StaticBitmapImage> image =
+      context->GetElementImage(element, sx, sy, swidth, sheight, width, height,
+                               "copyElementImageToTexture()", exception_state);
   if (!image) {
     return;
   }

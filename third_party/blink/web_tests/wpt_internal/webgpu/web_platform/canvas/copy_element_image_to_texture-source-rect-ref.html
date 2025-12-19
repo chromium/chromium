@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+<style>
+ body {
+   display: grid;
+   grid: 256px / 1fr 1fr 1fr;
+   align-items: start;
+ }
+ color-grid {
+   transform-origin: 0 0;
+   width:100px;
+   height:100px;
+ }
+ .box-shadow {
+   box-shadow: 10px 20px 0px 30px hotpink;
+ }
+ .outline {
+   outline: 5px solid salmon;
+ }
+</style>
+
+<div class="draw-element-wrapper" outset="50">
+  <color-grid class="box-shadow"></color-grid>
+</div>
+
+<div class="draw-element-wrapper" outset="50">
+  <color-grid class="outline"></color-grid>
+</div>
+
+<div class="draw-element-wrapper" outset="-20">
+  <color-grid class="box-shadow"></color-grid>
+</div>
+
+<div class="draw-element-wrapper" outset="-20">
+  <color-grid class="outline"></color-grid>
+</div>
+
+<script type="text/javascript">
+// Theoretical client rect dimensions of the canvas.
+var canvasCssWidth, canvasCssHeight;
+</script>
+
+<script type="module">
+const canvasCssWidth = 256;
+const canvasCssHeight = 256;
+
+Array.from(document.querySelectorAll(".draw-element-wrapper")).forEach(wrapper => {
+  // Imitate the behavior of (sx|sy) arguments to copyElementImageToTexture
+  const outset = Number.parseFloat(wrapper.getAttribute("outset") || "0");
+  wrapper.style.transform = `translate(${outset}px, ${outset}px)`;
+
+  // Imitate clipping behavior of canvas
+  wrapper.style.clipPath =
+    `rect(${-outset}px ${canvasCssWidth-outset}px ${canvasCssHeight-outset}px ${-outset}px)`;
+
+  // Imitate clipping behavior of (swidth|sheight) arguments to copyElementImageToTexture
+  const colorGrid = wrapper.firstElementChild;
+  const colorGridStyle = getComputedStyle(colorGrid);
+  const colorGridWidth = Number.parseFloat(colorGridStyle.width);
+  const colorGridHeight = Number.parseFloat(colorGridStyle.height);
+  const outsetRight = colorGridWidth + outset;
+  const outsetBottom = colorGridHeight + outset;
+  colorGrid.style.clipPath = `rect(${-outset}px ${outsetRight}px ${outsetBottom}px ${-outset}px)`;
+});
+</script>
