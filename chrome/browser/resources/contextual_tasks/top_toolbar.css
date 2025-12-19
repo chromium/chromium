@@ -47,14 +47,12 @@
   display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  .chrome-logo-light {
-    display: none;
-  }
+:host([dark-mode]) .chrome-logo-light {
+  display: none;
+}
 
-  .chrome-logo-dark {
-    display: inline-block;
-  }
+:host([dark-mode]) .chrome-logo-dark {
+  display: inline-block;
 }
 
 .top-toolbar-action-buttons {

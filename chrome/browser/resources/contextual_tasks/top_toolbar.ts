@@ -42,6 +42,11 @@ export class TopToolbarElement extends CrLitElement {
   static override get properties() {
     return {
       attachedTabs: {type: Array},
+      darkMode: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'dark-mode',
+      },
       logoImageUrl_: {type: String},
       title: {type: String},
     };
@@ -49,6 +54,7 @@ export class TopToolbarElement extends CrLitElement {
 
   override accessor title: string = '';
   accessor attachedTabs: Tab[] = [];
+  accessor darkMode: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override render() {

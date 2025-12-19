@@ -51,6 +51,10 @@ cr-tooltip::part(tooltip)::after {
   font-weight: 500;
 }
 
+a {
+  color: var(--cr-link-color);
+}
+
 cr-icon-button {
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-fill-color: var(--color-composebox-font);
