@@ -28,6 +28,14 @@ enum class AcceptMouseEvents {
   kAlways = 2,
 };
 
+// The options that define the context under which tooltips are shown.
+enum class AcceptTooltipEvents {
+  // Default behavior. Shows tooltips only when the window is key.
+  kWhenInKeyWindow = 0,
+  // Shows tooltips when any window of the application is active.
+  kWhenInActiveApp = 1,
+};
+
 // This protocol is used as a delegate for the NSView class used in the
 // hierarchy. There are two ways to extend the view:
 // - Implement the methods listed in the protocol below.
@@ -75,6 +83,10 @@ enum class AcceptMouseEvents {
 // By default, only active window accepts mouse events. The content embedder may
 // override this method to override the default behavior.
 - (AcceptMouseEvents)acceptsMouseEventsOption;
+
+// By default, only the key window accepts tooltips events. The content embedder
+// may override this method to override the default behavior.
+- (AcceptTooltipEvents)acceptsTooltipEvents;
 @end
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_MAC_DELEGATE_H_
