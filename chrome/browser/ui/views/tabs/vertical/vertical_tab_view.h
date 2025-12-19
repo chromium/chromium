@@ -68,6 +68,7 @@ class VerticalTabView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
 
   // views::LayoutDelegate
@@ -114,8 +115,6 @@ class VerticalTabView : public views::View,
 
   const tabs::TabInterface* GetTabInterface() const;
 
-  int GetTabInset() const;
-
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
   const raw_ptr<const TabStyle> tab_style_;
@@ -132,6 +131,8 @@ class VerticalTabView : public views::View,
   bool active_ = false;
   bool selected_ = false;
   bool hovered_ = false;
+  bool split_ = false;
+  bool pinned_ = false;
   bool shift_pressed_on_mouse_down_ = false;
 
   std::unique_ptr<GlowHoverController> hover_controller_;

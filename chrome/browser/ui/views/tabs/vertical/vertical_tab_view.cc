@@ -33,8 +33,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
@@ -153,14 +156,6 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   UpdateCloseButtonVisibility();
 }
 
-void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
-  UpdateHovered(true);
-}
-
-void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateHovered(false);
-}
-
 bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_RETURN && selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),
@@ -237,6 +232,14 @@ bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
   return controller->GetDragHandler().ContinueDrag(*this, event);
 }
 
+void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateHovered(true);
+}
+
+void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateHovered(false);
+}
+
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
   // TODO(crbug.com/465540287): Handle the theme's custom images for the toolbar
   // area/frame background. Also consider using views::Background to draw the
@@ -245,15 +248,12 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
   if (active_ || IsHoverAnimationActive() ||
       GetThemeProvider()->GetDisplayProperty(
           ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR)) {
-    canvas->ClipPath(GetPath(), true);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
         GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
         IsFrameActive(), GetColorProvider()));
-    gfx::Rect local_bounds = GetLocalBounds();
-    local_bounds.Inset(GetTabInset());
-    canvas->DrawRect(local_bounds, flags);
+    canvas->DrawRect(GetContentsBounds(), flags);
   }
 
   views::View::OnPaint(canvas);
@@ -267,6 +267,10 @@ void VerticalTabView::AddedToWidget() {
 
 void VerticalTabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
+}
+
+void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  SetClipPath(GetPath());
 }
 
 void VerticalTabView::OnThemeChanged() {
@@ -401,8 +405,11 @@ void VerticalTabView::OnDataChanged() {
   const tabs::TabInterface* tab = GetTabInterface();
   CHECK(tab);
 
-  active_ = tab->IsActivated();
+  // TODO(crbug.com/470155950): Ensure proper observations for updates.
+  active_ = tab->IsVisible();
   selected_ = tab->IsSelected();
+  split_ = tab->IsSplit();
+  pinned_ = tab->IsPinned();
 
   int index =
       tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
@@ -410,12 +417,12 @@ void VerticalTabView::OnDataChanged() {
       tab->GetBrowserWindowInterface()->GetTabStripModel(), index);
 
   icon_->SetData(tab_data);
-  icon_->SetActiveState(active_);
+  icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
-                      active_ && tab_data.blocked);
+                      tab->IsActivated() && tab_data.blocked);
 
   title_->SetText(tab_data.title);
-  title_->SetVisible(!tab->IsPinned());
+  title_->SetVisible(!pinned_);
 
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
@@ -427,14 +434,19 @@ void VerticalTabView::OnDataChanged() {
 }
 
 void VerticalTabView::UpdateBorder() {
-  const tabs::TabInterface* tab = GetTabInterface();
-  if (tab && tab->IsPinned() && !tab->IsSplit()) {
-    SetBorder(views::CreateRoundedRectBorder(
-        GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS),
-        GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS),
-        IsFrameActive() ? kColorTabDividerFrameActive
-                        : kColorTabDividerFrameInactive));
-  } else {
+  if (pinned_) {
+    if (split_) {
+      // Insets for border handled by the `VerticalSplitTabView`.
+      SetBorder(views::CreateEmptyBorder(gfx::Insets(
+          GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS))));
+    } else {
+      SetBorder(views::CreateRoundedRectBorder(
+          GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS),
+          GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS),
+          IsFrameActive() ? kColorTabDividerFrameActive
+                          : kColorTabDividerFrameInactive));
+    }
+  } else if (GetBorder()) {
     SetBorder(nullptr);
   }
 }
@@ -446,8 +458,7 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
 }
 
 void VerticalTabView::UpdateCloseButtonVisibility() {
-  close_button_->SetVisible((active_ || hovered_) &&
-                            !GetTabInterface()->IsPinned());
+  close_button_->SetVisible((active_ || hovered_) && !pinned_);
 }
 
 void VerticalTabView::UpdateColors() {
@@ -471,8 +482,6 @@ void VerticalTabView::UpdateContrastRatioValues() {
   hover_opacity_min_ = hover_opacity_min;
   hover_opacity_max_ = hover_opacity_max;
   radial_highlight_opacity_ = radial_highlight_opacity;
-
-  SchedulePaint();
 }
 
 void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
@@ -508,17 +517,11 @@ float VerticalTabView::GetHoverOpacity() const {
 }
 
 SkPath VerticalTabView::GetPath() const {
-  const int tab_inset = GetTabInset();
-  const float corner_radius =
-      GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS) - 2 * tab_inset;
-  SkVector radius = {corner_radius, corner_radius};
-  const SkVector radii[4] = {radius, radius, radius, radius};
-  SkPathBuilder path;
-  path.addRRect(SkRRect::MakeRectRadii(SkRect::MakeWH(width() - 2 * tab_inset,
-                                                      height() - 2 * tab_inset),
-                                       radii)
-                    .makeOffset(tab_inset, tab_inset));
-  return path.detach();
+  const SkScalar corner_radius =
+      SkIntToScalar(GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS) +
+                    (split_ ? GetInsets().height() : 0));
+  return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
+                                           corner_radius, corner_radius));
 }
 
 bool VerticalTabView::IsFrameActive() const {
@@ -533,14 +536,6 @@ TabStyle::TabSelectionState VerticalTabView::GetSelectionState() const {
 
 const tabs::TabInterface* VerticalTabView::GetTabInterface() const {
   return std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
-}
-
-int VerticalTabView::GetTabInset() const {
-  const tabs::TabInterface* tab = GetTabInterface();
-  if (tab->IsPinned() && tab->IsSplit()) {
-    return GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS);
-  }
-  return 0;
 }
 
 BEGIN_METADATA(VerticalTabView)
