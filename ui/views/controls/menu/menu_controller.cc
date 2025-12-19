@@ -2181,16 +2181,15 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
     return false;
   }
 
-  // https://issues.chromium.org/issues/447718577
-  const gfx::Point screen_point = ConvertToScreen(*source, mouse_location);
-  if (!owner_ || owner_->GetNativeWindow() !=
-                     display::Screen::Get()->GetLocalProcessWindowAtPoint(
-                         screen_point, std::set<gfx::NativeWindow>())) {
+  // TODO(oshima): Replace with views only API.
+  if (!owner_ ||
+      !display::Screen::Get()->IsWindowUnderCursor(owner_->GetNativeWindow())) {
     return false;
   }
 
   // The user moved the mouse outside the menu and over the owning window. See
   // if there is a sibling menu we should show.
+  const gfx::Point screen_point = ConvertToScreen(*source, mouse_location);
   MenuAnchorPosition anchor;
   bool has_mnemonics;
   MenuButton* button = nullptr;

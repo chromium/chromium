@@ -307,14 +307,15 @@ class ScreenMac : public Screen {
     return gfx::ScreenPointFromNSPoint([NSEvent mouseLocation]);
   }
 
-  // TODO(crbug.com/469120978): Replace IsWindowUnderCursor() with
-  // GetLocalProcessWindowAtPoint(). On macOS, when a Chrome window enters
-  // fullscreen mode, the IsWindowUnderCursor() function returns an incorrect
-  // value, preventing the bookmarks bar menu from opening via mouse hover.
+  // Previously this function uses -[NSWindow windowNumberAtPoint] which is
+  // problematic in fullscreen. It returns the AppKit-owned
+  // NSToolbarFullScreenWindow while the actual window under the cursor is the
+  // NativeWidgetMacOverlayNSWindow created by Chrome.
+  // See crbug.com/447718577 for details.
   bool IsWindowUnderCursor(gfx::NativeWindow native_window) override {
-    NSWindow* window = native_window.GetNativeNSWindow();
-    return [NSWindow windowNumberAtPoint:NSEvent.mouseLocation
-               belowWindowWithWindowNumber:0] == window.windowNumber;
+    return native_window ==
+           GetLocalProcessWindowAtPoint(GetCursorScreenPoint(),
+                                        std::set<gfx::NativeWindow>());
   }
 
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
