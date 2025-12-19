@@ -151,6 +151,9 @@ export class PostMessageHandler {
     if (!this.webview_.contentWindow) {
       return;
     }
+    if (this.targetOrigin_ === 'null' || !this.targetOrigin_) {
+      return;
+    }
     try {
       this.webview_.contentWindow.postMessage(
           message.buffer, this.targetOrigin_);
