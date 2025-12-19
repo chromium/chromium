@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,8 +18,6 @@
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
-#include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/ash/components/network/vpn_providers_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,12 +27,7 @@
 
 namespace ash {
 class NetworkConfigurationHandler;
-class NetworkStateHandler;
 }  // namespace ash
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace chromeos {
 
@@ -160,9 +153,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   base::WeakPtrFactory<VpnServiceForExtensionAsh> weak_factory_{this};
 };
 
-class VpnServiceAsh : public crosapi::mojom::VpnService,
-                      public ash::NetworkStateHandlerObserver,
-                      public ash::VpnProvidersObserver::Delegate {
+class VpnServiceAsh : public crosapi::mojom::VpnService {
  public:
   VpnServiceAsh();
   ~VpnServiceAsh() override;
@@ -183,13 +174,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
       const std::string& extension_id,
       bool destroy_configurations) override;
 
-  // ash::NetworkStateHandlerObserver:
-  void NetworkListChanged() override;
-
-  // ash::VpnProvidersObserver::Delegate:
-  void OnVpnExtensionsChanged(
-      base::flat_set<std::string> vpn_extensions) override;
-
   // Always returns a valid pointer.
   VpnServiceForExtensionAsh* GetVpnServiceForExtension(
       const std::string& extension_id);
@@ -204,22 +188,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   friend class chromeos::VpnProviderApiTest;
   friend class VpnServiceForExtensionAsh;
 
-  // Callback for
-  // ash::NetworkConfigurationHandler::GetShillProperties(...); parses
-  // the |configuration_properties| dictionary and tries to add a new
-  // configuration provided that it belongs to some enabled extension.
-  void OnGetShillProperties(
-      const std::string& service_path,
-      std::optional<base::Value::Dict> configuration_properties);
-
-
-  // Ids of enabled vpn extensions.
-  base::flat_set<std::string> vpn_extensions_;
-
-  base::ScopedObservation<ash::NetworkStateHandler,
-                          ash::NetworkStateHandlerObserver>
-      network_state_handler_observer_{this};
-
   // Supports any number of receivers.
   mojo::ReceiverSet<crosapi::mojom::VpnService> receivers_;
 
@@ -228,8 +196,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   // cases.
   base::flat_map<std::string, std::unique_ptr<VpnServiceForExtensionAsh>>
       extension_id_to_service_;
-
-  std::unique_ptr<ash::VpnProvidersObserver> vpn_providers_observer_;
 
   raw_ptr<chromeos::VpnService> controller_ = nullptr;
   base::WeakPtrFactory<VpnServiceAsh> weak_factory_{this};

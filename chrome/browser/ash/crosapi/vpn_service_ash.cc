@@ -262,17 +262,7 @@ void VpnServiceForExtensionAsh::SetActiveConfiguration(
   active_configuration_ = configuration;
 }
 
-VpnServiceAsh::VpnServiceAsh() {
-  // Can be false in unit tests.
-  if (!ash::NetworkHandler::IsInitialized()) {
-    return;
-  }
-
-  network_state_handler_observer_.Observe(
-      ash::NetworkHandler::Get()->network_state_handler());
-
-  vpn_providers_observer_ = std::make_unique<ash::VpnProvidersObserver>(this);
-}
+VpnServiceAsh::VpnServiceAsh() = default;
 
 VpnServiceAsh::~VpnServiceAsh() = default;
 
@@ -308,64 +298,6 @@ void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
   if (destroy_configurations) {
     service->DestroyAllConfigurations();
   }
-}
-
-void VpnServiceAsh::NetworkListChanged() {
-  ash::NetworkStateHandler::NetworkStateList network_list;
-
-  auto* network_handler = ash::NetworkHandler::Get();
-  network_handler->network_state_handler()->GetVisibleNetworkListByType(
-      ash::NetworkTypePattern::VPN(), &network_list);
-
-  for (auto* network_state : network_list) {
-    network_handler->network_configuration_handler()->GetShillProperties(
-        network_state->path(),
-        base::BindOnce(&VpnServiceAsh::OnGetShillProperties,
-                       weak_factory_.GetWeakPtr()));
-  }
-}
-
-void VpnServiceAsh::OnVpnExtensionsChanged(
-    base::flat_set<std::string> vpn_extensions) {
-  // No changes to the existing set?
-  if (vpn_extensions_ == vpn_extensions) {
-    return;
-  }
-  vpn_extensions_ = std::move(vpn_extensions);
-  NetworkListChanged();
-}
-
-void VpnServiceAsh::OnGetShillProperties(
-    const std::string& service_path,
-    std::optional<base::Value::Dict> configuration_properties) {
-  if (!configuration_properties) {
-    return;
-  }
-  const std::string* vpn_type =
-      configuration_properties->FindStringByDottedPath(
-          shill::kProviderTypeProperty);
-  const std::string* extension_id =
-      configuration_properties->FindStringByDottedPath(
-          shill::kProviderHostProperty);
-  const std::string* type =
-      configuration_properties->FindStringByDottedPath(shill::kTypeProperty);
-  const std::string* configuration_name =
-      configuration_properties->FindStringByDottedPath(shill::kNameProperty);
-  if (!vpn_type || !extension_id || !type || !configuration_name ||
-      *vpn_type != shill::kProviderThirdPartyVpn || *type != shill::kTypeVPN) {
-    return;
-  }
-
-  if (!base::Contains(vpn_extensions_, *extension_id)) {
-    return;
-  }
-
-  auto* service = GetVpnServiceForExtension(*extension_id);
-  if (service->HasConfigurationForServicePath(service_path)) {
-    return;
-  }
-  service->CreateConfigurationWithServicePath(*configuration_name,
-                                              service_path);
 }
 
 VpnServiceForExtensionAsh* VpnServiceAsh::GetVpnServiceForExtension(

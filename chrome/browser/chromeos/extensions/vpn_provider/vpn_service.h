@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +18,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/vpn_providers_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -28,21 +31,21 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace ash {
+class NetworkStateHandler;
+}  // namespace ash
+
 namespace content {
-
 class BrowserContext;
-
 }  // namespace content
 
 namespace extensions {
-
 class ExtensionRegistry;
-
 }  // namespace extensions
 
 namespace crosapi {
 class VpnServiceAsh;
-}
+}  // namespace crosapi
 
 namespace chromeos {
 
@@ -78,6 +81,8 @@ class VpnServiceForExtension
 
 // The class manages the VPN configurations.
 class VpnService : public extensions::api::VpnServiceInterface,
+                   public ash::NetworkStateHandlerObserver,
+                   public ash::VpnProvidersObserver::Delegate,
                    public extensions::ExtensionRegistryObserver,
                    public extensions::EventRouter::Observer {
  public:
@@ -114,7 +119,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     FailureCallback) override;
   void Shutdown() override;
 
-  // ExtensionRegistryObserver:
+  // ash::NetworkStateHandlerObserver:
+  void NetworkListChanged() override;
+
+  // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext*,
                               const extensions::Extension*,
                               extensions::UninstallReason) override;
@@ -174,6 +182,18 @@ class VpnService : public extensions::api::VpnServiceInterface,
       crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
       const std::string& error_name);
 
+  // ash::VpnProvidersObserver::Delegate:
+  void OnVpnExtensionsChanged(
+      base::flat_set<std::string> vpn_extensions) override;
+
+  // Callback for
+  // ash::NetworkConfigurationHandler::GetShillProperties(...); parses
+  // the |configuration_properties| dictionary and tries to add a new
+  // configuration provided that it belongs to some enabled extension.
+  void OnGetShillProperties(
+      const std::string& service_path,
+      std::optional<base::Value::Dict> configuration_properties);
+
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
   using StringToOwnedConfigurationMap = std::map<
@@ -189,6 +209,15 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   base::flat_map<std::string, std::unique_ptr<VpnServiceForExtension>>
       extension_id_to_service_;
+
+  ash::VpnProvidersObserver vpn_providers_observer_;
+
+  // Ids of enabled vpn extensions.
+  base::flat_set<std::string> vpn_extensions_;
+
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<VpnService> weak_factory_{this};
 };
