@@ -72,10 +72,10 @@ ${this.shown_ ? html`
       <!-- Button -->
       ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING) &&
         this.isHistorySyncTurnedOn_() ? html`
-          <cr-button id="verify-its-you-button" class="action-button"
+          <cr-button id="verify-its-you-button"
               @click="${this.onTurnOnHistorySyncClick_}">$i18n{verifyItsYou}
           </cr-button>` : html`
-          <cr-button id="sync-history-button" class="action-button"
+          <cr-button id="sync-history-button"
               @click="${this.onTurnOnHistorySyncClick_}">
             $i18n{turnOnSyncHistoryButton}
           </cr-button>`}

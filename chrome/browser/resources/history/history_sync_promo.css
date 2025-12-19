@@ -74,15 +74,10 @@
   max-width: 726px;
 }
 
-.action-button {
-  margin-top: 8px;
-}
-
 .profile-row {
   text-align: left;
   align-items: center;
   display: flex;
-  margin-top: 16px;
 }
 
 .avatar {
@@ -101,8 +96,10 @@
 }
 
 .flex-row {
+  margin-top: 8px;
   display: flex;
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
 }
