@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace gpu {
 namespace {
@@ -176,10 +177,9 @@ void Scheduler::Sequence::UpdateRunningPriority() {
 
 void Scheduler::Sequence::ContinueTask(base::OnceClosure task_closure) {
   DCHECK_EQ(running_state_, RUNNING);
-  TRACE_EVENT_WITH_FLOW0(
-      "gpu,toplevel.flow", "Scheduler::ContinueTask",
-      GetTaskFlowId(sequence_id_.value(), order_data_->current_order_num()),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("gpu,toplevel.flow", "Scheduler::ContinueTask",
+              perfetto::Flow::Global(GetTaskFlowId(
+                  sequence_id_.value(), order_data_->current_order_num())));
   TaskGraph::Sequence::ContinueTask(std::move(task_closure));
 }
 
@@ -196,9 +196,9 @@ void Scheduler::Sequence::FinishTask() {
 }
 
 void Scheduler::Sequence::OnFrontTaskUnblocked(uint32_t order_num) {
-  TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::SequenceUnblocked",
-                         GetTaskFlowId(sequence_id_.value(), order_num),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT(
+      "gpu,toplevel.flow", "Scheduler::SequenceUnblocked",
+      perfetto::Flow::Global(GetTaskFlowId(sequence_id_.value(), order_num)));
   scheduler_->TryScheduleSequence(this);
 }
 
@@ -329,10 +329,9 @@ void Scheduler::ScheduleTaskHelper(Task task) {
         task.release, std::move(task.report_callback));
   }
 
-  TRACE_EVENT_WITH_FLOW0(
-      "gpu,toplevel.flow", "Scheduler::ScheduleTask",
-      GetTaskFlowId(sequence->sequence_id().value(), order_num),
-      TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("gpu,toplevel.flow", "Scheduler::ScheduleTask",
+              perfetto::Flow::Global(
+                  GetTaskFlowId(sequence->sequence_id().value(), order_num)));
 
   TryScheduleSequence(sequence);
 }
@@ -663,9 +662,8 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   {
     base::AutoUnlock auto_unlock(lock());
 
-    TRACE_EVENT_WITH_FLOW0(
-        "gpu,toplevel.flow", "Scheduler::RunTask", task_flow_id,
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("gpu,toplevel.flow", "Scheduler::RunTask",
+                perfetto::Flow::Global(task_flow_id));
 
     order_data->BeginProcessingOrderNumber(order_num);
 
@@ -679,8 +677,8 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
 
       order_data->FinishProcessingOrderNumber(order_num);
 
-      TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::FinishTask",
-                             task_flow_id, TRACE_EVENT_FLAG_FLOW_IN);
+      TRACE_EVENT("gpu,toplevel.flow", "Scheduler::FinishTask",
+                  perfetto::TerminatingFlow::Global(task_flow_id));
     }
   }
 

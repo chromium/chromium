@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/client/dawn_client_serializer.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 #define GPU_CLIENT_SINGLE_THREAD_CHECK()
 
@@ -70,9 +71,9 @@ void DawnWireServices::Disconnect() {
 
 void DawnWireServices::HandleCommands(const cmds::DawnReturnCommandsInfo& info,
                                       size_t size) {
-  TRACE_EVENT_WITH_FLOW0(
-      TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
-      info.header.return_data_header.trace_id, TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
+              perfetto::TerminatingFlow::Global(
+                  info.header.return_data_header.trace_id));
 
   base::AutoLockMaybe lock(OptionalToPtr(lock_));
   if (disconnected_) {

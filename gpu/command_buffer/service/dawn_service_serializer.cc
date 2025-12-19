@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "ipc/constants.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace gpu::webgpu {
 
@@ -168,9 +169,8 @@ void DawnServiceSerializer::Flush(CommandBuffer& cmd_buffer) {
                                      &is_tracing);
   if (is_tracing) {
     uint64_t trace_id = base::RandUint64();
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                           "DawnReturnCommands", trace_id,
-                           TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
+                perfetto::Flow::Global(trace_id));
     cmds::DawnReturnCommandsInfoHeader* header =
         reinterpret_cast<cmds::DawnReturnCommandsInfoHeader*>(
             &cmd_buffer.buffer[0]);

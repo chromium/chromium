@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/webgpu_cmd_helper.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace gpu {
 namespace webgpu {
@@ -99,9 +100,8 @@ void DawnClientSerializer::Commit() {
     uint64_t trace_id;
     if (is_tracing) {
       trace_id = base::RandUint64();
-      TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                             "DawnCommands", trace_id,
-                             TRACE_EVENT_FLAG_FLOW_OUT);
+      TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
+                  perfetto::Flow::Global(trace_id));
     } else {
       trace_id = 0;
     }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "gpu/command_buffer/service/sync_point_manager.h"
 
 #include <limits.h>
@@ -17,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace gpu {
 namespace {
@@ -248,10 +248,8 @@ bool SyncPointClientState::WaitForRelease(uint64_t release,
       order_data_->ValidateReleaseOrderNumber(this, wait_order_num, release);
   if (callback_id) {
     // Add the callback which will be called upon release.
-    TRACE_EVENT_WITH_FLOW0(
-        "gpu,toplevel.flow", "SyncToken::Wait",
-        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback_id)),
-        TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("gpu,toplevel.flow", "SyncToken::Wait",
+                perfetto::Flow::ProcessScoped(callback_id, "SyncToken"));
     release_callback_queue_.emplace(release, std::move(callback), callback_id);
     return true;
   }
@@ -315,10 +313,9 @@ void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
   }
 
   for (ReleaseCallback& callback : callback_list) {
-    TRACE_EVENT_WITH_FLOW0(
-        "gpu,toplevel.flow", "SyncToken::Release",
-        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback.callback_id)),
-        TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT("gpu,toplevel.flow", "SyncToken::Release",
+                perfetto::TerminatingFlow::ProcessScoped(callback.callback_id,
+                                                         "SyncToken"));
     std::move(callback.callback_closure).Run();
   }
 }
@@ -363,10 +360,9 @@ void SyncPointClientState::EnsureWaitReleased(uint64_t release,
   if (callback) {
     // This effectively releases the wait without releasing the fence.
     DLOG(ERROR) << "Client did not release sync token as expected";
-    TRACE_EVENT_WITH_FLOW0(
+    TRACE_EVENT(
         "gpu,toplevel.flow", "SyncToken::ForceEndWait",
-        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback_id)),
-        TRACE_EVENT_FLAG_FLOW_IN);
+        perfetto::TerminatingFlow::ProcessScoped(callback_id, "SyncToken"));
     std::move(callback).Run();
   }
 }
