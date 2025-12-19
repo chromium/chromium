@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -247,7 +247,7 @@ class BASE_EXPORT TraceConfig {
   size_t GetTraceBufferSizeInEvents() const {
     return trace_buffer_size_in_events_;
   }
-  ByteCount GetTraceBufferSizeInBytes() const {
+  ByteSize GetTraceBufferSizeInBytes() const {
     return trace_buffer_size_in_bytes_;
   }
   bool IsSystraceEnabled() const { return enable_systrace_; }
@@ -257,7 +257,7 @@ class BASE_EXPORT TraceConfig {
   void SetTraceBufferSizeInEvents(size_t size) {
     trace_buffer_size_in_events_ = size;
   }
-  void SetTraceBufferSizeInBytes(ByteCount bytes) {
+  void SetTraceBufferSizeInBytes(ByteSize bytes) {
     trace_buffer_size_in_bytes_ = bytes;
   }
   void EnableSystrace() { enable_systrace_ = true; }
@@ -366,7 +366,7 @@ class BASE_EXPORT TraceConfig {
 
   TraceRecordMode record_mode_;
   size_t trace_buffer_size_in_events_ = 0;  // 0 specifies default size
-  ByteCount trace_buffer_size_in_bytes_;
+  ByteSize trace_buffer_size_in_bytes_;
   bool enable_systrace_ : 1;
   bool enable_argument_filter_ : 1;
 

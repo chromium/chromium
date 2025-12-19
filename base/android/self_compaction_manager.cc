@@ -537,7 +537,7 @@ void SelfCompactionManager::CompactionMetric::MaybeRecordCompactionMetrics() {
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetric(
-    ByteCount value_bytes,
+    ByteSize value_bytes,
     std::string_view metric_name,
     std::string_view suffix) {
   UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
@@ -555,13 +555,12 @@ void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionDiffMetric(
-    ByteCount before_value_bytes,
-    ByteCount after_value_bytes,
+    ByteSize before_value_bytes,
+    ByteSize after_value_bytes,
     std::string_view name,
     std::string_view suffix) {
-  ByteCount diff_non_negative =
-      std::max(before_value_bytes, after_value_bytes) -
-      std::min(before_value_bytes, after_value_bytes);
+  ByteSize diff_non_negative =
+      (after_value_bytes - before_value_bytes).Magnitude();
   const std::string full_suffix = StrCat(
       {"Diff.", suffix, ".",
        before_value_bytes < after_value_bytes ? "Increase" : "Decrease"});

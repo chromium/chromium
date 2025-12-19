@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -279,10 +280,11 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
     const std::string& json_agent_label_filter) {
   perfetto::TraceConfig perfetto_config;
 
-  base::ByteCount size_limit = chrome_config.GetTraceBufferSizeInBytes();
+  base::ByteSize size_limit = chrome_config.GetTraceBufferSizeInBytes();
   if (size_limit.is_zero()) {
     // If trace config did not provide trace buffer size, we will use default
-    size_limit = GetDefaultTraceBufferSize();
+    size_limit =
+        base::ByteSize::FromDeprecatedByteCount(GetDefaultTraceBufferSize());
   }
   auto* buffer_config = perfetto_config.add_buffers();
   buffer_config->set_size_kb(size_limit.InKiB());
@@ -320,7 +322,7 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
   base::trace_event::TraceConfig stripped_config(chrome_config);
   stripped_config.SetProcessFilterConfig(
       base::trace_event::TraceConfig::ProcessFilterConfig());
-  stripped_config.SetTraceBufferSizeInBytes(base::ByteCount(0));
+  stripped_config.SetTraceBufferSizeInBytes(base::ByteSize(0));
   stripped_config.SetTraceBufferSizeInEvents(0);
 
   AddDataSourceConfigs(&perfetto_config, chrome_config.process_filter_config(),

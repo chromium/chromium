@@ -71,7 +71,7 @@ class PrivateMemoryFootprintMetric
   PrivateMemoryFootprintMetric()
       : PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric(
             "PrivateMemoryFootprint") {}
-  std::optional<ByteCount> Measure() const override {
+  std::optional<ByteSize> Measure() const override {
     return PmfUtils::GetPrivateMemoryFootprintForCurrentProcess();
   }
 
@@ -86,7 +86,7 @@ class PrivateMemoryFootprintMetric
 
 bool PrivateMemoryFootprintMetric::did_register_ = false;
 
-void MaybeRecordPreFreezeMetric(std::optional<ByteCount> value,
+void MaybeRecordPreFreezeMetric(std::optional<ByteSize> value,
                                 std::string_view metric_name,
                                 std::string_view suffix) {
   // Skip recording the metric if we failed to get the PMF.
@@ -98,16 +98,14 @@ void MaybeRecordPreFreezeMetric(std::optional<ByteCount> value,
                        value.value());
 }
 
-std::optional<ByteCount> Diff(std::optional<ByteCount> before,
-                              std::optional<ByteCount> after) {
+std::optional<ByteSize> Diff(std::optional<ByteSize> before,
+                             std::optional<ByteSize> after) {
   if (!before.has_value() || !before.has_value()) {
     return std::nullopt;
   }
 
-  const ByteCount before_value = before.value();
-  const ByteCount after_value = after.value();
-
-  return after_value < before_value ? before_value - after_value : ByteCount(0);
+  const ByteSizeDelta diff = before.value() - after.value();
+  return diff.is_positive() ? diff.AsByteSize() : ByteSize(0);
 }
 
 }  // namespace
@@ -137,9 +135,9 @@ void PreFreezeBackgroundMemoryTrimmer::RecordMetrics() {
 
   for (size_t i = 0; i < metrics_.size(); i++) {
     const auto metric = metrics_[i];
-    const std::optional<ByteCount> value_before = values_before_[i];
+    const std::optional<ByteSize> value_before = values_before_[i];
 
-    std::optional<ByteCount> value_after = metric->Measure();
+    std::optional<ByteSize> value_after = metric->Measure();
 
     if (!value_after) {
       UmaHistogramEnumeration("Memory.PreFreeze2.RecordMetricsFailureType",

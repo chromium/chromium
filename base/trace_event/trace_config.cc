@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -407,7 +408,7 @@ void TraceConfig::Merge(const TraceConfig& config) {
 void TraceConfig::Clear() {
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_bytes_ = ByteCount(0);
+  trace_buffer_size_in_bytes_ = ByteSize(0);
   enable_systrace_ = false;
   enable_argument_filter_ = false;
   enable_event_package_name_filter_ = false;
@@ -422,7 +423,7 @@ void TraceConfig::Clear() {
 void TraceConfig::InitializeDefault() {
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_bytes_ = ByteCount(0);
+  trace_buffer_size_in_bytes_ = ByteSize(0);
   enable_systrace_ = false;
   enable_argument_filter_ = false;
   enable_event_package_name_filter_ = false;
@@ -444,8 +445,12 @@ void TraceConfig::InitializeFromConfigDict(const Value::Dict& dict) {
   }
   trace_buffer_size_in_events_ = base::saturated_cast<size_t>(
       dict.FindInt(kTraceBufferSizeInEvents).value_or(0));
+
+  int trace_buffer_size_in_kb = dict.FindInt(kTraceBufferSizeInKb).value_or(0);
   trace_buffer_size_in_bytes_ =
-      KiB(dict.FindInt(kTraceBufferSizeInKb).value_or(0));
+      trace_buffer_size_in_kb > 0
+          ? KiBU(checked_cast<unsigned>(trace_buffer_size_in_kb))
+          : ByteSize(0);
 
   enable_systrace_ = dict.FindBool(kEnableSystraceParam).value_or(false);
   enable_argument_filter_ =
@@ -506,7 +511,7 @@ void TraceConfig::InitializeFromStrings(std::string_view category_filter_string,
 
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_bytes_ = ByteCount(0);
+  trace_buffer_size_in_bytes_ = ByteSize(0);
   enable_systrace_ = false;
   systrace_events_.clear();
   enable_argument_filter_ = false;

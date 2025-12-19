@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
@@ -31,7 +31,7 @@ namespace {
 
 // Ridiculously large size for a /usr/share/mime/mime.cache file.
 // Default file is about 100KB, allow up to 10MB.
-constexpr ByteCount kMaxMimeTypesFileSize = MiB(10);
+constexpr ByteSize kMaxMimeTypesFileSize = MiBU(10);
 // Maximum number of nodes to allow in reverse suffix tree.
 // Default file has ~3K nodes, allow up to 30K.
 constexpr size_t kMaxNodes = 30000;
