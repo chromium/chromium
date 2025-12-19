@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "popup_menu_consumer.h",
+    "popup_menu_footer_item.h",
+    "popup_menu_footer_item.mm",
+    "popup_menu_item.h",
+    "popup_menu_presenter.h",
+    "popup_menu_presenter.mm",
+    "popup_menu_table_view_controller.h",
+    "popup_menu_table_view_controller.mm",
+    "popup_menu_text_item.h",
+    "popup_menu_text_item.mm",
+    "popup_menu_tools_item.h",
+    "popup_menu_tools_item.mm",
+    "popup_menu_view_controller.h",
+    "popup_menu_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/popup_menu/public:metrics_protocols",
+    "//ios/chrome/browser/presenters/ui_bundled",
+    "//ios/chrome/browser/reading_list/ui_bundled:ui",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

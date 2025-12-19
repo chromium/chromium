@@ -8,8 +8,8 @@
 // Bridging header between Swift and Obj-C. These types/imports need to be pure
 // Obj-C and have no C++ in them.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_metrics_handler.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/grit/ios_strings.h"

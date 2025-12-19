@@ -153,7 +153,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/enterprise/data_controls/test:eg_test_support+eg2",
     "//ios/chrome/browser/fullscreen/ui_bundled/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
-    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/test:eg_test_support+eg2",
     "//ios/chrome/browser/reader_mode/ui:constants",

@@ -37,7 +37,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/fullscreen/internal",
   "+ios/chrome/browser/lens/ui_bundled",
-  "+ios/chrome/browser/popup_menu/ui_bundled/public",
+  "+ios/chrome/browser/popup_menu/public",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
   "+ios/chrome/browser/composebox/public/composebox_animation_base.h"

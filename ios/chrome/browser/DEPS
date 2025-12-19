@@ -215,7 +215,7 @@ include_rules = [
   "+ios/chrome/grit",
 
   # Temporary, remove when upstream updated
-  "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h",
+  "+ios/chrome/browser/popup_menu/public",
 ]
 
 specific_include_rules = {

@@ -38,8 +38,8 @@ swift_source_set("ui_swift") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
-    "//ios/chrome/browser/popup_menu/ui_bundled:metrics_protocols",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/popup_menu/public:metrics_protocols",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util:util_swiftui",
     "//ios/chrome/common:timing",

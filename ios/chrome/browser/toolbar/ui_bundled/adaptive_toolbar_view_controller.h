@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/public/popup_menu_ui_updating.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_consumer.h"
 

@@ -12,7 +12,7 @@ source_set("utils") {
   ]
   deps = [
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
