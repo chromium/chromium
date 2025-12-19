@@ -11,6 +11,7 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -34,6 +35,23 @@ export interface ContextualTasksAppElement {
   };
 }
 
+// Updates the params for task ID, thread ID, and turn ID in the URL without
+// reloading the page or adding to history.
+function updateTaskDetailsInUrl(
+    taskId: Uuid, threadId: string, turnId: string) {
+  const url = new URL(window.location.href);
+
+  url.searchParams.set('task', taskId.value);
+
+  threadId ? url.searchParams.set('thread', threadId) :
+             url.searchParams.delete('thread');
+
+  turnId ? url.searchParams.set('turn', turnId) :
+           url.searchParams.delete('turn');
+
+  window.history.replaceState({}, '', url.href);
+}
+
 export class ContextualTasksAppElement extends CrLitElement {
   static get is() {
     return 'contextual-tasks-app';
@@ -41,6 +59,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
@@ -73,9 +95,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  // Indicates if in tab mode. Most start in a tab.
   protected accessor isAiPage_: boolean = false;
-  accessor isShownInTab_: boolean = true;
+  // Indicates if in tab mode. Most start in a tab.
+  protected accessor isShownInTab_: boolean = true;
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
@@ -93,10 +115,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('forcedEmbeddedPageHost');
   private signInDomains_: string[] =
       loadTimeData.getString('contextualTasksSignInDomains').split(',');
-
-  constructor() {
-    super();
-  }
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -116,42 +134,36 @@ export class ContextualTasksAppElement extends CrLitElement {
   override async connectedCallback() {
     super.connectedCallback();
 
-    this.listenerIds_.push(
-        this.browserProxy_.callbackRouter.onSidePanelStateChanged.addListener(
-            () => this.updateSidePanelState()),
-        this.browserProxy_.callbackRouter.setThreadTitle.addListener(
-            (title: string) => {
-              this.threadTitle_ = title;
-              document.title = title || loadTimeData.getString('title');
-            }),
-        this.browserProxy_.callbackRouter.postMessageToWebview.addListener(
-            this.postMessageToWebview.bind(this)),
-        this.browserProxy_.callbackRouter.onHandshakeComplete.addListener(
-            this.onHandshakeComplete.bind(this)),
-        this.browserProxy_.callbackRouter.onContextUpdated.addListener(
-            (tabs: Tab[]) => {
-              this.contextTabs_ = tabs;
-            }),
-        this.browserProxy_.callbackRouter.setOAuthToken.addListener(
-            (oauthToken: string) => {
-              this.oauthToken_ = oauthToken;
-              this.maybeLoadPendingUrl_();
-            }),
-        this.browserProxy_.callbackRouter.hideInput.addListener(() => {
-          this.showComposebox_ = false;
-        }),
-        this.browserProxy_.callbackRouter.restoreInput.addListener(() => {
-          this.showComposebox_ = true;
-        }),
-        this.browserProxy_.callbackRouter.onAiPageStatusChanged.addListener(
-            (isAiPage: boolean) => {
-              this.isAiPage_ = isAiPage;
-            }),
-        this.browserProxy_.callbackRouter.onZeroStateChange.addListener(
-            (isZeroState: boolean) => {
-              this.isZeroState_ = isZeroState;
-            }),
-    );
+    const callbackRouter = this.browserProxy_.callbackRouter;
+    this.listenerIds_ = [
+      callbackRouter.onSidePanelStateChanged.addListener(
+          () => this.updateSidePanelState()),
+      callbackRouter.setThreadTitle.addListener((title: string) => {
+        this.threadTitle_ = title;
+        document.title = title || loadTimeData.getString('title');
+      }),
+      callbackRouter.postMessageToWebview.addListener(
+          this.postMessageToWebview.bind(this)),
+      callbackRouter.onHandshakeComplete.addListener(
+          this.onHandshakeComplete.bind(this)),
+      callbackRouter.onContextUpdated.addListener((tabs: Tab[]) => {
+        this.contextTabs_ = tabs;
+      }),
+      callbackRouter.setOAuthToken.addListener((oauthToken: string) => {
+        this.oauthToken_ = oauthToken;
+        this.maybeLoadPendingUrl_();
+      }),
+      callbackRouter.hideInput.addListener(() => {
+        this.showComposebox_ = false;
+      }),
+      callbackRouter.restoreInput.addListener(() => {
+        this.showComposebox_ = true;
+      }),
+      callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
+      callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
+        this.isZeroState_ = isZeroState;
+      }),
+    ];
 
     this.updateSidePanelState();
 
@@ -198,15 +210,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
     // Fetch the common search params before setting up the request overrides.
     // TODO(crbug.com/463729504): Add checking to see if dark mode changed.
-    if (changedProperties.has('isShownInTab_')) {
+    if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
     }
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   private postMessageToWebview(message: number[]) {

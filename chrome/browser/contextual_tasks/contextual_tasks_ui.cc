@@ -423,6 +423,7 @@ const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
 
 void ContextualTasksUI::SetTaskId(std::optional<base::Uuid> id) {
   task_id_ = id;
+  PushTaskDetailsToPage();
 }
 
 const std::optional<std::string>& ContextualTasksUI::GetThreadId() {
@@ -431,6 +432,12 @@ const std::optional<std::string>& ContextualTasksUI::GetThreadId() {
 
 void ContextualTasksUI::SetThreadId(std::optional<std::string> id) {
   thread_id_ = id;
+  PushTaskDetailsToPage();
+}
+
+void ContextualTasksUI::SetThreadTurnId(std::optional<std::string> id) {
+  thread_turn_id_ = id;
+  PushTaskDetailsToPage();
 }
 
 const std::optional<std::string>& ContextualTasksUI::GetThreadTitle() {
@@ -695,6 +702,11 @@ void ContextualTasksUI::TransferNavigationToEmbeddedPage(
   embedded_web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
+void ContextualTasksUI::PushTaskDetailsToPage() {
+  page_->SetTaskDetails(task_id_.value_or(base::Uuid()),
+                        thread_id_.value_or(""), thread_turn_id_.value_or(""));
+}
+
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,
@@ -804,6 +816,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       task_info_delegate_->GetTaskId().value(),
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
+  task_info_delegate_->SetThreadTurnId(mstk);
 
   if (task_changed && !task_info_delegate_->IsShownInTab() &&
       task_info_delegate_->GetBrowser()) {
