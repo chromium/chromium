@@ -186,6 +186,10 @@ void TabListBridge::UnpinTab(tabs::TabHandle tab) {
 }
 
 bool TabListBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return false;
+  }
   return tab_strip_->group_model()->ContainsTabGroup(group_id);
 }
 

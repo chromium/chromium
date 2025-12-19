@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -497,6 +498,26 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
   EXPECT_TRUE(tab_strip_model->IsTabSelected(3));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       ContainsTabGroupWhenTabGroupsNotSupported) {
+  // App windows don't allow tab groups.
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "some app", /*trusted_source=*/false, gfx::Rect(), browser()->profile(),
+      /*user_gesture=*/true);
+  // params.window = window2.release();
+  Browser* browser2 = Browser::Create(params);
+  BrowserList::SetLastActive(browser2);
+
+  ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser2);
+  ASSERT_TRUE(tab_list_interface);
+
+  // No crash when querying a tab strip that doesn't support groups.
+  EXPECT_FALSE(tab_list_interface->ContainsTabGroup(
+      tab_groups::TabGroupId::CreateEmpty()));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, AddTabsToGroup) {
