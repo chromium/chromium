@@ -63,14 +63,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
     purge_disabled_for_testing_ = disabled;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Sets a callback that is run when the state of all pages being frozen
-  // changes. It's called with `true` when transitioning to "all pages frozen"
-  // and `false` otherwise.
-  void SetOnAllPagesFrozenCallback(
-      base::RepeatingCallback<void(bool)> callback);
-#endif
-
   // Purge on renderer backgrounding is disabled on Android. On mobile Android,
   // it's redundant with the purge that occurs on page freezing (unlike on
   // desktop, freezing is applied to most background pages on mobile Android). A
@@ -114,11 +106,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // backgrounded.
   bool CanPurge() const;
 
-  // If the "all pages frozen" state has changed since the last call, runs
-  // `all_pages_frozen_callback_`. `were_all_frozen` is the state before the
-  // potential change.
-  void MaybeRunAllPagesFrozenCallback(bool were_all_frozen);
-
   // Returns true if all pages are frozen, or if there are no pages.
   bool AreAllPagesFrozen() const;
 
@@ -143,10 +130,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   bool did_purge_with_page_frozen_since_backgrounded_ = false;
 
   base::OneShotTimer purge_timer_;
-
-#if BUILDFLAG(IS_ANDROID)
-  base::RepeatingCallback<void(bool)> all_pages_frozen_callback_;
-#endif
 };
 
 }  // namespace blink
