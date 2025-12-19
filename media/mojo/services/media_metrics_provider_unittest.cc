@@ -270,6 +270,22 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioWithEme) {
   histogram_tester.ExpectBucketCount("Media.EME.IsIncognito", false, 1);
 }
 
+TEST_F(MediaMetricsProviderTest, TestPipelineUMAAudioDecoderType) {
+  base::HistogramTester histogram_tester;
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
+  provider_->SetAudioPipelineInfo(
+      {false, false, AudioDecoderType::kFFmpeg, EncryptionType::kClear});
+  provider_->SetHasAudio(AudioCodec::kOpus);
+  provider_->SetHasPlayed();
+  provider_->SetHaveEnough();
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount("Media.PipelineStatus.AudioOnly",
+                                     PIPELINE_OK, 1);
+  histogram_tester.ExpectBucketCount("Media.Audio.DecoderType",
+                                     AudioDecoderType::kFFmpeg, 1);
+}
+
 TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);

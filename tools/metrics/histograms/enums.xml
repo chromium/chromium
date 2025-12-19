@@ -718,6 +718,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="7" label="kAudioToolbox"/>
   <int value="8" label="kMediaFoundation"/>
   <int value="9" label="kPassthroughDTS"/>
+  <int value="10" label="kSymphonia"/>
 </enum>
 
 <enum name="AudioEffectType">

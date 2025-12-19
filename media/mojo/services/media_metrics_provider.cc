@@ -184,6 +184,15 @@ void MediaMetricsProvider::ReportPipelineUMA() {
                                   PIPELINE_STATUS_MAX + 1);
   }
 
+  // Report the audio decoder type used for playback.
+  if (uma_info_.audio_pipeline_info.decoder_type !=
+          AudioDecoderType::kUnknown &&
+      uma_info_.audio_pipeline_info.decoder_type !=
+          AudioDecoderType::kTesting) {
+    base::UmaHistogramEnumeration("Media.Audio.DecoderType",
+                                  uma_info_.audio_pipeline_info.decoder_type);
+  }
+
   // Report whether video decoder fallback happened for each video codec, but
   // only if a video decoder was reported.
   if (uma_info_.video_pipeline_info.decoder_type !=

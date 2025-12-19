@@ -1205,6 +1205,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.DecoderType" enum="AudioDecoderType"
+    expires_after="2026-06-30">
+  <owner>jophba@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the audio decoder type used for a playback session. Recorded when
+    the metrics provider is destructed.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.InputController.Delay.{AECType}" units="ms"
     expires_after="2026-07-23">
   <owner>henrika@chromium.org</owner>
