@@ -4507,6 +4507,18 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       element->OverscrollTargetStateChanged();
     }
   }
+
+  // Removing an element means that we should remove this overscroll area,
+  // since we won't visit this node during style when we typically would do
+  // this. There may be another element with the same ID that we discover
+  // during the style walk, but that's OK since we will just add it back to
+  // the overscroll area.
+  // We do this outside of the OverscrollCommandTargets check since we could,
+  // for instance, remove the element's id first and then remove it from the
+  // DOM.
+  if (auto* container = OverscrollContainer()) {
+    container->OverscrollAreaTracker()->RemoveOverscroll(this);
+  }
 }
 
 void Element::AttachColumnPseudoElements(AttachContext& context) {

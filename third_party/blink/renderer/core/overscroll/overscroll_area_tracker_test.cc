@@ -64,9 +64,14 @@ TEST_F(OverscrollAreaTrackerTest, AddOverscrollAreaPopulatedManually) {
                            ->EnsureOverscrollAreaTracker();
   Element* menu = GetDocument().getElementById(AtomicString("menu"));
 
+  EXPECT_FALSE(area_tracker.NeedsLayoutTreeRebuild());
   area_tracker.AddOverscroll(menu);
+  EXPECT_TRUE(area_tracker.NeedsLayoutTreeRebuild());
   EXPECT_EQ(area_tracker.DOMSortedElements().size(), 1u);
   EXPECT_EQ(area_tracker.DOMSortedElements()[0], menu);
+
+  area_tracker.ClearNeedsLayoutTreeRebuild();
+  EXPECT_FALSE(area_tracker.NeedsLayoutTreeRebuild());
 }
 
 TEST_F(OverscrollAreaTrackerTest, AddOverscrollAreaOneChild) {
@@ -340,6 +345,31 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollElementsAreDOMSorted) {
   UpdateAllLifecyclePhasesForTest();
 
   verify_order("button1 and button3 commandfor swapped");
+
+  // Our dom order after this should be "menu2 menu3 menu1"
+  container->AppendChild(menu1);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(tracker.DOMSortedElements().size(), 3);
+  EXPECT_EQ(tracker.DOMSortedElements()[0], menu2);
+  EXPECT_EQ(tracker.DOMSortedElements()[1], menu3);
+  EXPECT_EQ(tracker.DOMSortedElements()[2], menu1);
+
+  // Our dom order after this should be "menu2 menu1"
+  menu3->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(tracker.DOMSortedElements().size(), 2);
+  EXPECT_EQ(tracker.DOMSortedElements()[0], menu2);
+  EXPECT_EQ(tracker.DOMSortedElements()[1], menu1);
+
+  // Our dom order after this should be "menu1"
+  menu2->SetAttributeWithoutValidation(html_names::kIdAttr, "");
+  menu2->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(tracker.DOMSortedElements().size(), 1);
+  EXPECT_EQ(tracker.DOMSortedElements()[0], menu1);
 }
 
 TEST_F(OverscrollAreaTrackerTest, MultipleIdsReferToFirstElement) {
