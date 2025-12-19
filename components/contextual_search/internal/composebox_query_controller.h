@@ -501,6 +501,10 @@ class ComposeboxQueryController
   // The number of files that are sent in the AIM request.
   int num_files_in_request_ = 0;
 
+  // The latest pending search URL request that was not sent due to waiting on
+  // cluster info.
+  base::OnceClosure pending_search_url_request_;
+
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };
 
