@@ -61,7 +61,6 @@ std::vector<ComponentName> DefaultEnUsImageRanking() {
        "ImplicitShareIntentHandlerDefaultAlias"},
       {"com.google.android.apps.photos",
        "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
-      // TODO(crbug.com/40777590): Files
       {
           "com.snapchat.android",
           "com.snap.mushroom.MainActivity",
@@ -126,7 +125,6 @@ std::vector<ComponentName> DefaultEnUsImageRanking() {
           "com.linkedin.android",
           "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
       },
-      // TODO(crbug.com/40777590): Samsung email
       {
           "com.reddit.frontpage",
           "com.reddit.sharing.ShareActivity",
@@ -143,7 +141,6 @@ std::vector<ComponentName> DefaultEnUsImageRanking() {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareToTimeLineUI",
       },
-      // TODO(crbug.com/40777590): Groupme
   };
 }
 
@@ -224,7 +221,6 @@ std::vector<ComponentName> DefaultEnUsTextRanking() {
           "com.linkedin.android",
           "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
       },
-      // TODO(crbug.com/40777590): Samsung email
       {
           "com.reddit.frontpage",
           "com.reddit.sharing.ShareActivity",
@@ -241,7 +237,6 @@ std::vector<ComponentName> DefaultEnUsTextRanking() {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareToTimeLineUI",
       },
-      // TODO(crbug.com/40777590): Groupme
   };
 }
 
@@ -280,7 +275,6 @@ std::vector<ComponentName> DefaultWorldImageRanking() {
       },
       {"com.google.android.apps.photos",
        "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
-      // TODO(crbug.com/40777590): Files
       {
           "com.google.android.apps.docs.editors.docs",
           "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
@@ -342,7 +336,6 @@ std::vector<ComponentName> DefaultWorldImageRanking() {
           "com.imo.android.imoim",
           "com.imo.android.imoim.globalshare.SharingActivity2",
       },
-      // TODO(crbug.com/40777590): Samsung email
       {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareImgUI",
@@ -383,7 +376,6 @@ std::vector<ComponentName> DefaultWorldTextRanking() {
           "com.google.android.talk",
           "com.google.android.apps.hangouts.phone.ShareIntentActivity",
       },
-      // TODO(crbug.com/40777590): Instagram Chat
       {
           "jp.naver.line.android",
           "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
@@ -454,7 +446,6 @@ std::vector<ComponentName> DefaultWorldTextRanking() {
           "com.reddit.frontpage",
           "com.reddit.sharing.ShareActivity",
       },
-      // TODO(crbug.com/40777590): Samsung email
       {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareImgUI",
