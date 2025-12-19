@@ -263,7 +263,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.QUICK_DELETE_PROMO,
                         ModuleType.HISTORY_SYNC_PROMO,
                         ModuleType.TIPS_NOTIFICATIONS_PROMO,
-                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -301,6 +302,13 @@ public class HomeModulesCoordinatorUnitTest {
         mHomeModulesStateListener
                 .getValue()
                 .onModuleConfigChanged(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, true);
+        assertEquals(
+                expectedModuleListBeforeHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
+
+        mHomeModulesStateListener
+                .getValue()
+                .onModuleConfigChanged(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, true);
         assertEquals(
                 expectedModuleListBeforeHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());

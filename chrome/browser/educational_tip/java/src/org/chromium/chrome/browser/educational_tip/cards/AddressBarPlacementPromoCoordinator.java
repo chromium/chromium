@@ -10,12 +10,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 
-/** Coordinator for the enhanced safe browsing promo card. */
+/** Coordinator for the address bar placement promo card. */
 @NullMarked
-public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardProvider {
+public class AddressBarPlacementPromoCoordinator implements EducationalTipCardProvider {
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
 
@@ -23,7 +23,7 @@ public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardP
      * @param onModuleClickedCallback The callback to be called when the module is clicked.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public EnhancedSafeBrowsingPromoCoordinator(
+    public AddressBarPlacementPromoCoordinator(
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
@@ -34,14 +34,14 @@ public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardP
     public String getCardTitle() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_title);
+                .getString(R.string.educational_tip_address_bar_placement_title);
     }
 
     @Override
     public String getCardDescription() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_description);
+                .getString(R.string.educational_tip_address_bar_placement_description);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardP
     @Override
     public void onCardClicked() {
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
+                .startSettings(mActionDelegate.getContext(), AddressBarSettingsFragment.class);
         mOnModuleClickedCallback.run();
     }
 

@@ -72,7 +72,9 @@ public class EducationalTipCardProviderSignalHandler {
             // TODO(crbug.com/469425754): Remove once segmentation platform based ranking is
             // skipped for setup list.
             case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
+            case ModuleType.ADDRESS_BAR_PLACEMENT_PROMO:
                 return inputContext;
+
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(
                         "is_eligible_to_history_opt_in",

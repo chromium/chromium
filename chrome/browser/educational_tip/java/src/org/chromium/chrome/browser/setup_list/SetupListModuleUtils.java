@@ -33,8 +33,9 @@ public class SetupListModuleUtils {
         // 2. Sign In/ Sync
         // 3. Enhanced Safe Browsing
         // 4. PW Management
-        // 5. Omnibox Placement
+        // 5. Address bar Placement
         modules.add(ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
+        modules.add(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
         return modules;
     }
 

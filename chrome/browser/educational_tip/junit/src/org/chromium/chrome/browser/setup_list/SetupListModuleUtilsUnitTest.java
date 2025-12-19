@@ -92,5 +92,6 @@ public class SetupListModuleUtilsUnitTest {
     public void testGetRankedModuleTypes_ReturnsCorrectOrder() {
         List<Integer> rankedModules = SetupListModuleUtils.getRankedModuleTypes();
         assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) rankedModules.get(0));
+        assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) rankedModules.get(1));
     }
 }

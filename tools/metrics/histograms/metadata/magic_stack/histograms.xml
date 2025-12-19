@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ModuleType">
+  <variant name="AddressBarPlacementPromo"/>
   <variant name="AuxiliarySearch"/>
   <variant name="DefaultBrowserPromo"/>
   <variant name="EnhancedSafeBrowsingPromo"/>

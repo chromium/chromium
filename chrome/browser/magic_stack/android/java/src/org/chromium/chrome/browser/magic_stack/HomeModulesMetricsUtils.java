@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ADDRESS_BAR_PLACEMENT_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
@@ -136,6 +137,8 @@ public class HomeModulesMetricsUtils {
                 return "TipsNotificationsPromo";
             case ENHANCED_SAFE_BROWSING_PROMO:
                 return "EnhancedSafeBrowsingPromo";
+            case ADDRESS_BAR_PLACEMENT_PROMO:
+                return "AddressBarPlacementPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -166,6 +169,8 @@ public class HomeModulesMetricsUtils {
                 return TIPS_NOTIFICATIONS_PROMO;
             case "EnhancedSafeBrowsingPromo":
                 return ENHANCED_SAFE_BROWSING_PROMO;
+            case "AddressBarPlacementPromo":
+                return ADDRESS_BAR_PLACEMENT_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

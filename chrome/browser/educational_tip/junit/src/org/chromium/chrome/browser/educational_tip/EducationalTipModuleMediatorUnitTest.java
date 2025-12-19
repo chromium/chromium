@@ -164,6 +164,21 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.ANDROID_SETUP_LIST
+    })
+    public void testShowSetupList_AddressBarPlacementPromo() {
+        // Test showing address bar placement promo card.
+        testShowModuleImpl(
+                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
+                R.string.educational_tip_address_bar_placement_title,
+                R.string.educational_tip_address_bar_placement_description,
+                R.drawable.default_browser_promo_logo);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerInitialized_ShouldDisplay() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
