@@ -5739,7 +5739,20 @@ StyleRecalcChange Element::RecalcOwnStyle(
       // was available.
       apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
+
+    const bool needs_reinsert =
+        RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
+        ComputedStyle::NeedsReinsertLayoutTree(*old_style, *layout_style);
+    if (needs_reinsert) {
+      layout_object->Remove();
+    }
     layout_object->SetStyle(layout_style, apply_changes);
+    if (needs_reinsert) {
+      LayoutTreeBuilderTraversal::ParentLayoutObject(*this)->AddChild(
+          layout_object,
+          LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*this));
+      layout_object->UpdateAfterReinsert(*old_style);
+    }
   }
 
   return child_change;
