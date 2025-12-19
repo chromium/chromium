@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/debug_commands.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
@@ -854,7 +856,6 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
 
   // Without releasing the first finger, start a fling on the divider and close
   // the menu (this can happen when it loses focus from the second touch).
-  GetMultitaskMenu()->Reset();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   auto* split_view_divider = split_view_controller->split_view_divider();
@@ -863,13 +864,42 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
           .CenterPoint();
   event_generator->PressTouchId(/*touch_id=*/1, divider_center);
   event_generator->MoveTouchIdBy(/*touch_id=*/1, -10, 0);
-  event_generator->ReleaseTouchId(/*touch_id=*/1);
 
-  // Test that, even though the target window is the divider, we don't try to
-  // create the menu on the split view divider.
-  CHECK_EQ(GetMultitaskMenuController()->target_window_for_test(),
-           split_view_divider->GetDividerWindow());
+  // Wait for close animation.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !GetMultitaskMenu(); }));
+  EXPECT_TRUE(split_view_divider->is_resizing_with_divider());
+  event_generator->ReleaseTouchId(/*touch_id=*/1);
   EXPECT_FALSE(GetMultitaskMenu());
+}
+
+TEST_F(TabletModeMultitaskMenuTest, ReleaseCapture) {
+  auto window = CreateAppWindow();
+
+  ASSERT_FALSE(views::Widget::GetTopLevelWidgetForNativeView(window.get())
+                   ->IsFullscreen());
+
+  const gfx::Point center_point(window->bounds().CenterPoint().x(), 0);
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouchId(/*touch_id=*/0, center_point);
+
+  // Emulates the situation that browser captured evetns upon touch event.
+  window->SetCapture();
+
+  event_generator->MoveTouchIdBy(/*touch_id=*/0, 0, 100);
+  event_generator->ReleaseTouchId(/*touch_id=*/0);
+  ASSERT_TRUE(GetMultitaskMenu());
+  EXPECT_FALSE(window->HasCapture());
+  auto* multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+  auto* full_button = multitask_menu_view->full_button();
+  event_generator->PressTouch(full_button->GetBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !GetMultitaskMenu(); }));
+
+  EXPECT_TRUE(views::Widget::GetTopLevelWidgetForNativeView(window.get())
+                  ->IsFullscreen());
+  EXPECT_FALSE(window->HasCapture());
 }
 
 TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {

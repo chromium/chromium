@@ -4,7 +4,6 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 
-#include "ash/accelerators/debug_commands.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -15,8 +14,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "ui/aura/client/capture_client.h"
+#include "ui/aura/env.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
+#include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/types/event_type.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -137,13 +139,10 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
       reserved_for_gesture_sent_ = false;
       if (details.scroll_y_hint() > 0 && HitTestRect(window, screen_location)) {
         // We may need to recreate `multitask_menu_` on the new target window.
-        target_window_for_test_ = window;
         multitask_menu_ =
             std::make_unique<TabletModeMultitaskMenu>(this, window);
         multitask_cue_controller_->OnMenuOpened(window);
-        multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
-        event->SetHandled();
-        is_drag_active_ = true;
+        BeginDrag(event, window_location.y(), /*down=*/true);
       } else if (details.scroll_y_hint() < 0 && multitask_menu_ &&
                  gfx::RectF(
                      multitask_menu_->widget()->GetWindowBoundsInScreen())
@@ -152,9 +151,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
         // the menu to avoid consuming scroll events outside the menu.
         // TODO(b/279816982): Fix the cue reappearing when the menu is dismissed
         // by swiping up or not dragging far enough.
-        multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
-        event->SetHandled();
-        is_drag_active_ = true;
+        BeginDrag(event, window_location.y(), /*down=*/false);
       }
       break;
     case ui::EventType::kGestureScrollUpdate:
@@ -182,7 +179,6 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
       // Normally EventType::kGestureScrollBegin will fire first and have
       // already created the multitask menu, however occasionally
       // EventType::kScrollFlingStart may fire first (https://crbug.com/821237).
-      target_window_for_test_ = window;
       MaybeCreateMultitaskMenu(window);
       if (multitask_menu_) {
         multitask_menu_->Animate(details.velocity_y() > 0);
@@ -203,6 +199,32 @@ void TabletModeMultitaskMenuController::MaybeCreateMultitaskMenu(
   if (!multitask_menu_ && CanShowMenu(window)) {
     multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(this, window);
     multitask_cue_controller_->OnMenuOpened(window);
+  }
+}
+
+void TabletModeMultitaskMenuController::BeginDrag(ui::GestureEvent* event,
+                                                  int y,
+                                                  bool down) {
+  multitask_menu_->BeginDrag(y, down);
+
+  event->SetHandled();
+  is_drag_active_ = true;
+
+  // If the gesture started on consumer other than the multitask menu, transfer
+  // to the multi task menu so that the gesture sequence can contunue even after
+  // capture is released.
+  auto* window = multitask_menu_->widget()->GetNativeWindow();
+  auto* target = static_cast<aura::Window*>(event->target());
+  if (window != target) {
+    aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+        target, window, ui::TransferTouchesBehavior::kDontCancel);
+  }
+
+  // A client window might have captured events. Release it so that the menu can
+  // process the events.
+  auto* capture_window = aura::client::GetCaptureWindow(window);
+  if (capture_window && capture_window != window) {
+    capture_window->ReleaseCapture();
   }
 }
 
