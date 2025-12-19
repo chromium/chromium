@@ -70,7 +70,6 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         clearInvocations(mMediatorDelegateMock);
     }
 
-    // TODO(crbug.com/388788969): Mock reused passwords.
     private void mockPasswordCounts(int compromised, int weak, int reused) {
         doReturn(compromised).when(mDataSource).getCompromisedPasswordCount();
         doReturn(weak).when(mDataSource).getWeakPasswordCount();
