@@ -18,7 +18,9 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
@@ -124,14 +126,21 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
     return;
   }
 
-  // Non-autofill types are already saved to pending account storage in sign in
-  // pending state and will automatically be uploaded after the user completes
-  // the sign in, so there is no need to wait for a sign in event with the
-  // correct access point.
-  if (access_point_ != signin_metrics::AccessPoint::kPasswordBubble &&
-      access_point_ != signin_metrics::AccessPoint::kAddressBubble &&
-      signed_in_state == signin_util::SignedInState::kSignInPending) {
-    return;
+  syncer::SyncUserSettings* sync_user_settings =
+      SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+  const std::optional<syncer::UserSelectableType> user_selectable_type =
+      GetUserSelectableTypeFromDataType(
+          GetDataTypeFromAccessPoint(access_point_));
+  CHECK(user_selectable_type.has_value());
+
+  // If the data type was not enabled before, do so directly when the promo
+  // is clicked in sign in pending state, rather than waiting for a reauth
+  // event for it to be enabled.
+  if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+      signed_in_state == signin_util::SignedInState::kSignInPending &&
+      !sync_user_settings->GetSelectedTypes().Has(
+          user_selectable_type.value())) {
+    sync_user_settings->SetSelectedType(user_selectable_type.value(), true);
   }
 
   SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)

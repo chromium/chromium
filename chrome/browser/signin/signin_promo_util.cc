@@ -584,7 +584,9 @@ bool ShouldShowBookmarkSignInPromo(Profile& profile) {
 
   // If the user is in sign in pending state, the promo should only be shown if
   // they already have account storage for bookmarks enabled.
-  return !signin_util::IsSigninPending(identity_manager) ||
+  // Uno Phase 2 Follow up: Always display the promotion.
+  return base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) ||
+         !signin_util::IsSigninPending(identity_manager) ||
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kBookmarks);
 #else
