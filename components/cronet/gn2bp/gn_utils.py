@@ -103,26 +103,6 @@ def _remove_out_prefix(label):
   return re.sub('^//out/.+?/(gen|obj)/', '', label)
 
 
-def _filter_cflags(cflags):
-  cflags_processed = []
-  # This is set to true when we have combined two consecutive indices into a single
-  # string and want to skip the next iteration.
-  skip_next = False
-  for i in range(len(cflags)):
-    if skip_next:
-      skip_next = False
-      continue
-
-    if cflags[i].startswith("-Xclang"):
-      # We don't care about -Xclang values as they're solely for the front-end to
-      # enable some static analysis on the code. It's important to disable this as
-      # there exists code that is implemented in Chromium, but built only in AOSP.
-      # We don't want those to stop building due to some statical analysis error.
-      skip_next = True
-    else:
-      cflags_processed.append(cflags[i])
-  return cflags_processed
-
 def _filter_defines(defines):
   # These C++ defines are not actually used in code; Chromium only uses them to
   # force rebuilds on rolls of certain dependencies. They don't hurt, per se,
@@ -703,7 +683,7 @@ class GnParser:
     target.public_headers.update(public_headers)
     target.build_file_path = _get_build_path_from_label(target_name)
     target.arch[arch].cflags.extend(
-        _filter_cflags(desc.get('cflags', []) + desc.get('cflags_cc', [])))
+        desc.get('cflags', []) + desc.get('cflags_cc', []))
     target.arch[arch].libs.update(desc.get('libs', []))
     target.arch[arch].ldflags.extend(desc.get('ldflags', []))
     target.arch[arch].defines.update(_filter_defines(desc.get('defines', [])))
