@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -472,6 +473,15 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setEnabled(enabled);
         mSearchBoxTextView.setEnabled(enabled);
         mSearchLoupeView.setEnabled(enabled);
+
+        // Manually apply disabled alpha since the color is applied programmatically and not through
+        // a color state list.
+        TypedValue disabledAlpha = new TypedValue();
+        getResources().getValue(R.dimen.default_disabled_alpha, disabledAlpha, true);
+        float alpha = enabled ? 1.0f : disabledAlpha.getFloat();
+        mSearchBoxLayout.setAlpha(alpha);
+        mSearchBoxTextView.setAlpha(alpha);
+        mSearchLoupeView.setAlpha(alpha);
     }
 
     void setHairlineVisibility(boolean visible) {
