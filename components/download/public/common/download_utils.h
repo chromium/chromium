@@ -145,10 +145,6 @@ constexpr char kDownloadContentValidationLengthFinchKey[] =
 int64_t GetDownloadValidationLengthConfig();
 
 // Finch parameter key value for the time to delete expired downloads in days.
-constexpr char kExpiredDownloadDeleteTimeFinchKey[] =
-    "expired_download_delete_days";
-
-// Finch parameter key value for the time to delete expired downloads in days.
 constexpr char kOverwrittenDownloadDeleteTimeFinchKey[] =
     "overwritten_download_delete_days";
 

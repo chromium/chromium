@@ -1598,11 +1598,6 @@ bool DownloadManagerImpl::ShouldClearDownloadFromDB(
     download::DownloadItem::DownloadState state,
     download::DownloadInterruptReason reason,
     const base::Time& start_time) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kDeleteExpiredDownloads)) {
-    return false;
-  }
-
   // Use system time to determine if the download is expired. Manually setting
   // the system time can affect this.
   bool expired = base::Time::Now() - start_time >=

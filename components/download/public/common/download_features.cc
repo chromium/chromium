@@ -63,8 +63,6 @@ BASE_FEATURE(kUseParallelRequestsForHTTP2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseParallelRequestsForQUIC, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeleteExpiredDownloads, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeleteOverwrittenDownloads, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowFileBufferSizeControl, base::FEATURE_ENABLED_BY_DEFAULT);

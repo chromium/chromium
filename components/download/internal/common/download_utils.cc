@@ -761,10 +761,7 @@ int64_t GetDownloadValidationLengthConfig() {
 }
 
 base::TimeDelta GetExpiredDownloadDeleteTime() {
-  int expired_days = base::GetFieldTrialParamByFeatureAsInt(
-      features::kDeleteExpiredDownloads, kExpiredDownloadDeleteTimeFinchKey,
-      kDefaultDownloadExpiredTimeInDays);
-  return base::Days(expired_days);
+  return base::Days(kDefaultDownloadExpiredTimeInDays);
 }
 
 base::TimeDelta GetOverwrittenDownloadDeleteTime() {

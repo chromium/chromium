@@ -54,9 +54,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kUseParallelRequestsForHTTP2);
 // Whether parallel download is used for QUIC connections.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kUseParallelRequestsForQUIC);
 
-// Whether to delete expired download.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteExpiredDownloads);
-
 // Whether to delete downloads that are overwritten by others.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
