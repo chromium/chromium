@@ -204,11 +204,13 @@ apiBridge.registerCustomHook(function(api) {
 
   function safeFunctionApply(func, args) {
     try {
-      if (func)
+      if (func) {
         return $Function.apply(func, undefined, args);
+      }
     } catch (e) {
-      if (e === kFailureException)
+      if (e === kFailureException) {
         throw e;
+      }
       handleException(e.message, e);
     }
   }
@@ -230,8 +232,9 @@ apiBridge.registerCustomHook(function(api) {
     try {
       chromeTest.log(`( RUN      ) ${testName(currentTest)}`);
       bindingUtil.setExceptionHandler(function(message, e) {
-        if (e !== kFailureException)
+        if (e !== kFailureException) {
           chromeTest.fail(`uncaught exception: ${message}`);
+        }
       });
       const result = $Function.call(currentTest);
       if (result instanceof Promise) {
@@ -264,10 +267,11 @@ apiBridge.registerCustomHook(function(api) {
   function assertBool(test, expected, message) {
     if (test !== expected) {
       if (typeof test == 'string') {
-        if (message)
+        if (message) {
           message = `${test}\n${message}`;
-        else
+        } else {
           message = test;
+        }
       }
       chromeTest.fail(message);
     }
@@ -309,8 +313,9 @@ apiBridge.registerCustomHook(function(api) {
     // really fancy, there may be more sophisticated ways of doing this.
     Error.captureStackTrace(stack, failHandler);
 
-    if (!message)
+    if (!message) {
       message = 'FAIL (no message)';
+    }
 
     message += '\n' + stack.stack;
     console.log(`[FAIL] ${testName(currentTest)}: ${message}`);
