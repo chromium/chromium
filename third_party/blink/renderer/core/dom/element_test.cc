@@ -1500,10 +1500,10 @@ TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* scroller = GetElementById("scroller");
-  PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
-  PseudoElement* overscroll_parent_bar = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
+  const OverscrollAreaParentPseudoElementsVector* overscroll_elements =
+      scroller->GetOverscrollAreaParentPseudoElements();
+  PseudoElement* overscroll_parent_foo = overscroll_elements->at(0);
+  PseudoElement* overscroll_parent_bar = overscroll_elements->at(1);
 
   ASSERT_TRUE(overscroll_parent_foo);
   ASSERT_TRUE(overscroll_parent_bar);
@@ -1545,10 +1545,10 @@ TEST_F(ElementTest, OverscrollPropertyTrees) {
 
   UpdateAllLifecyclePhasesForTest();
   Element* container = GetElementById("container");
-  PseudoElement* foo = container->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
-  PseudoElement* bar = container->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
+  const OverscrollAreaParentPseudoElementsVector* overscroll_elements =
+      container->GetOverscrollAreaParentPseudoElements();
+  PseudoElement* foo = overscroll_elements->at(0);
+  PseudoElement* bar = overscroll_elements->at(1);
 
   // ::-internal-overscroll-area-parent skips the scrollers scroll translation.
   for (auto* pseudo_element : {foo, bar}) {
@@ -1580,59 +1580,6 @@ TEST_F(ElementTest, OverscrollPropertyTrees) {
   }
 }
 
-TEST_F(ElementTest, ReorderOverscrollPseudoElements) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      #scroller {
-        overscroll-area: --foo, --bar;
-      }
-    </style>
-    <div id="scroller"></div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* scroller = GetElementById("scroller");
-  PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
-  PseudoElement* overscroll_parent_bar = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
-  ASSERT_TRUE(overscroll_parent_foo);
-  ASSERT_TRUE(overscroll_parent_bar);
-
-  // Overscroll area parents:
-  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
-            scroller->GetLayoutObject());
-  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->Parent(),
-            scroller->GetLayoutObject());
-
-  // Overscroll area order:
-  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->PreviousSibling(),
-            overscroll_parent_foo->GetLayoutObject());
-  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->PreviousSibling(),
-            nullptr);
-
-  // Change the order of --foo and --bar and ensure the pseudo-element
-  // structure is updated appropriately.
-  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollArea,
-                                   AtomicString("--bar, --foo"));
-  UpdateAllLifecyclePhasesForTest();
-
-  overscroll_parent_foo = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
-  overscroll_parent_bar = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
-  ASSERT_TRUE(overscroll_parent_foo);
-  ASSERT_TRUE(overscroll_parent_bar);
-
-  // Overscroll area order:
-  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->PreviousSibling(),
-            nullptr);
-  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->PreviousSibling(),
-            overscroll_parent_bar->GetLayoutObject());
-}
-
 TEST_F(ElementTest, OverscrollPseudoElementStyles) {
   ScopedCSSOverscrollGesturesForTest enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
@@ -1656,8 +1603,8 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* scroller = GetElementById("scroller");
-  PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
-      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
+  PseudoElement* overscroll_parent_foo =
+      scroller->GetOverscrollAreaParentPseudoElements()->at(0);
 
   ASSERT_TRUE(overscroll_parent_foo);
 

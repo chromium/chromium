@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -161,34 +162,34 @@ void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
-void ElementRareDataVector::AddOverscrollPseudoElement(PseudoElement& element) {
+void ElementRareDataVector::AddOverscrollAreaParentPseudoElement(
+    IndexedPseudoElement& element) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     data = MakeGarbageCollected<PseudoElementData>();
     SetField(FieldId::kPseudoElementData, data);
   }
-  data->SetPseudoElement(element.GetPseudoId(), &element,
-                         element.GetPseudoArgument());
+  data->AddOverscrollAreaParentPseudoElement(element);
 }
 
-const OverscrollPseudoElementData*
-ElementRareDataVector::GetOverscrollPseudoElementData() const {
+const OverscrollAreaParentPseudoElementsVector*
+ElementRareDataVector::GetOverscrollAreaParentPseudoElements() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     return nullptr;
   }
-  return data->GetOverscrollAreaData();
+  return data->GetOverscrollAreaParentPseudoElements();
 }
 
-void ElementRareDataVector::ClearOverscrollPseudoElements() {
+void ElementRareDataVector::ClearOverscrollPseudoElements(wtf_size_t to_keep) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     return;
   }
-  data->ClearOverscrollAreas();
+  data->ClearOverscrollAreas(to_keep);
 }
 
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(

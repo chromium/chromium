@@ -114,6 +114,7 @@ class GetAnimationsOptions;
 class HTMLElement;
 class HTMLTemplateElement;
 class Image;
+class IndexedPseudoElement;
 class InputDeviceCapabilities;
 class InterestInvokerTargetData;
 class InvokerData;
@@ -176,6 +177,8 @@ using AttributeNamesView =
     bindings::TransformedView<AttributeCollection, AttributeToNameTransform>;
 
 using ColumnPseudoElementsVector = GCedHeapVector<Member<ColumnPseudoElement>>;
+using OverscrollAreaParentPseudoElementsVector =
+    HeapVector<Member<IndexedPseudoElement>>;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -1771,6 +1774,8 @@ class CORE_EXPORT Element : public ContainerNode {
       wtf_size_t index,
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
+  const OverscrollAreaParentPseudoElementsVector*
+  GetOverscrollAreaParentPseudoElements() const;
 
   // Clear all ::column pseudo-elements, except for the leading `to_keep` ones.
   void ClearColumnPseudoElements(wtf_size_t to_keep = 0);
@@ -2270,6 +2275,9 @@ class CORE_EXPORT Element : public ContainerNode {
       PseudoId,
       const StyleRecalcContext&,
       const AtomicString& pseudo_argument = g_null_atom);
+
+  ALWAYS_INLINE bool SetAssociatedPseudoElement(PseudoElement* pseudo_element,
+                                                const StyleRecalcContext&);
 
   // For document element scroll control pseudo-elements become not layout
   // siblings, but layout children.

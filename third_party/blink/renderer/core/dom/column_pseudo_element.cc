@@ -45,7 +45,7 @@ const PhysicalBoxFragment* GetColumnFragment(const ColumnPseudoElement& column,
 
 ColumnPseudoElement::ColumnPseudoElement(Element* originating_element,
                                          wtf_size_t index)
-    : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {
+    : IndexedPseudoElement(originating_element, kPseudoIdColumn, index) {
   UseCounter::Count(GetDocument(), WebFeature::kColumnPseudoElement);
 }
 
@@ -106,7 +106,8 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
     Element* earliest_element_ = nullptr;
   };
 
-  const PhysicalBoxFragment* column_fragment = GetColumnFragment(*this, index_);
+  const PhysicalBoxFragment* column_fragment =
+      GetColumnFragment(*this, Index());
   if (!column_fragment) {
     return nullptr;
   }
@@ -159,7 +160,8 @@ void ColumnPseudoElement::SetIsInsideInactiveColumnTabForDescendants(
     bool is_inactive_;
   };
 
-  const PhysicalBoxFragment* column_fragment = GetColumnFragment(*this, index_);
+  const PhysicalBoxFragment* column_fragment =
+      GetColumnFragment(*this, Index());
   if (!column_fragment) {
     return;
   }

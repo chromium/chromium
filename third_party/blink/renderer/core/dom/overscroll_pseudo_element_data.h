@@ -8,11 +8,13 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -38,71 +40,47 @@ class OverscrollPseudoElementData final
   OverscrollPseudoElementData& operator=(const OverscrollPseudoElementData&) =
       delete;
 
-  void AddPseudoElement(PseudoId,
-                        PseudoElement*,
-                        const AtomicString& overscroll_area_name = g_null_atom);
-  PseudoElement* GetPseudoElement(
-      PseudoId,
-      const AtomicString& overscroll_area_name = g_null_atom) const;
-  const HeapVector<Member<PseudoElement>>& GetOverscrollParents() const {
+  void AddPseudoElement(IndexedPseudoElement*);
+  PseudoElement* GetPseudoElement(wtf_size_t idx) const;
+  const OverscrollAreaParentPseudoElementsVector& GetOverscrollParents() const {
     return overscroll_parents_;
   }
 
   bool HasPseudoElements() const;
-  void ClearPseudoElements();
+  // Remove all but the first |to_keep| overscroll parent pseudos.
+  void ClearPseudoElements(wtf_size_t to_keep = 0);
   void Trace(Visitor* visitor) const { visitor->Trace(overscroll_parents_); }
 
   size_t size() const { return overscroll_parents_.size(); }
 
  private:
-  HeapVector<Member<PseudoElement>> overscroll_parents_;
-  HashMap<AtomicString, size_t> overscroll_parent_id_map_;
+  OverscrollAreaParentPseudoElementsVector overscroll_parents_;
 };
 
 inline bool OverscrollPseudoElementData::HasPseudoElements() const {
   return !overscroll_parents_.empty();
 }
 
-inline void OverscrollPseudoElementData::ClearPseudoElements() {
-  for (PseudoElement* pseudo : overscroll_parents_) {
-    pseudo->Dispose();
+inline void OverscrollPseudoElementData::ClearPseudoElements(
+    wtf_size_t to_keep) {
+  for (wtf_size_t i = to_keep; i < overscroll_parents_.size(); ++i) {
+    overscroll_parents_[i]->Dispose();
   }
-  overscroll_parents_.clear();
-  overscroll_parent_id_map_.clear();
+  if (to_keep) {
+    overscroll_parents_.Shrink(to_keep);
+  } else {
+    overscroll_parents_.clear();
+  }
 }
 
 inline void OverscrollPseudoElementData::AddPseudoElement(
-    PseudoId pseudo_id,
-    PseudoElement* element,
-    const AtomicString& overscroll_area_name) {
-  switch (pseudo_id) {
-    case kPseudoIdOverscrollAreaParent: {
-      DCHECK(overscroll_area_name);
-      overscroll_parents_.push_back(element);
-      auto result = overscroll_parent_id_map_.insert(
-          overscroll_area_name, overscroll_parents_.size() - 1);
-      CHECK(result.is_new_entry);
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
+    IndexedPseudoElement* element) {
+  overscroll_parents_.push_back(element);
 }
 
 inline PseudoElement* OverscrollPseudoElementData::GetPseudoElement(
-    PseudoId pseudo_id,
-    const AtomicString& overscroll_area_name) const {
-  switch (pseudo_id) {
-    case kPseudoIdOverscrollAreaParent: {
-      auto it = overscroll_parent_id_map_.find(overscroll_area_name);
-      if (it == overscroll_parent_id_map_.end()) {
-        return nullptr;
-      }
-      return overscroll_parents_[it->value];
-    }
-    default:
-      NOTREACHED();
-  }
+    wtf_size_t idx) const {
+  return overscroll_parents_[idx];
 }
 
 }  // namespace blink

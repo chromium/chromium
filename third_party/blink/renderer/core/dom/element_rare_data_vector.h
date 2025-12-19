@@ -189,9 +189,11 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
   void ClearColumnPseudoElements(wtf_size_t to_keep);
 
-  void AddOverscrollPseudoElement(PseudoElement&);
-  const OverscrollPseudoElementData* GetOverscrollPseudoElementData() const;
-  void ClearOverscrollPseudoElements();
+  void AddOverscrollAreaParentPseudoElement(IndexedPseudoElement&);
+  const OverscrollAreaParentPseudoElementsVector*
+  GetOverscrollAreaParentPseudoElements() const;
+  IndexedPseudoElement* GetOverscrollPseudoElement(wtf_size_t idx) const;
+  void ClearOverscrollPseudoElements(wtf_size_t to_keep);
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 

@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invalidate_node_list_caches_scope.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
@@ -289,6 +290,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -5907,18 +5909,13 @@ void Element::RebuildTransitionLayoutTree(
 }
 
 void Element::AttachOverscrollPseudoElements(AttachContext& context) {
-  const ComputedStyle* computed_style = GetComputedStyle();
-  if (!computed_style) {
+  const OverscrollAreaParentPseudoElementsVector* overscroll_area_parents =
+      GetOverscrollAreaParentPseudoElements();
+  if (!overscroll_area_parents) {
     return;
   }
-  const ScopedCSSNameList* overscroll_areas = computed_style->OverscrollArea();
-  if (!overscroll_areas || overscroll_areas->GetNames().empty()) {
-    return;
-  }
-  for (const auto& name : overscroll_areas->GetNames()) {
-    PseudoElement* pseudo_element =
-        GetPseudoElement(kPseudoIdOverscrollAreaParent, name->GetName());
-    CHECK(pseudo_element);
+
+  for (IndexedPseudoElement* pseudo_element : *overscroll_area_parents) {
     pseudo_element->AttachLayoutTree(context);
     CHECK(pseudo_element->GetLayoutObject());
   }
@@ -8736,6 +8733,15 @@ void Element::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
+const OverscrollAreaParentPseudoElementsVector*
+Element::GetOverscrollAreaParentPseudoElements() const {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetOverscrollAreaParentPseudoElements();
+}
+
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
   EnsureElementRareData().SetScrollbarPseudoElementStylesDependOnFontMetrics(
       value);
@@ -10130,7 +10136,20 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   PseudoElement* pseudo_element =
       PseudoElement::Create(this, pseudo_id, pseudo_argument);
+  if (!SetAssociatedPseudoElement(pseudo_element, style_recalc_context)) {
+    return nullptr;
+  }
+
+  probe::PseudoElementCreated(pseudo_element);
+  return pseudo_element;
+}
+
+bool Element::SetAssociatedPseudoElement(
+    PseudoElement* pseudo_element,
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(pseudo_element);
+  PseudoId pseudo_id = pseudo_element->GetPseudoId();
+  const AtomicString& pseudo_argument = pseudo_element->GetPseudoArgument();
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
                                            pseudo_argument);
   pseudo_element->InsertedInto(*this);
@@ -10148,7 +10167,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
       GetComputedStyle()->AddCachedPseudoElementStyle(pseudo_style, pseudo_id,
                                                       g_null_atom);
     }
-    return nullptr;
+    return false;
   }
 
   if (pseudo_id == kPseudoIdBackdrop && IsInTopLayer()) {
@@ -10172,9 +10191,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     display_lock_context->DidStyleSelf();
   }
 
-  probe::PseudoElementCreated(pseudo_element);
-
-  return pseudo_element;
+  return true;
 }
 
 void Element::AttachPseudoElement(PseudoId pseudo_id, AttachContext& context) {
@@ -12272,32 +12289,20 @@ void Element::UpdateOverscrollPseudoElements(
   }
 
   ElementRareDataVector* data = GetElementRareData();
-  const OverscrollPseudoElementData* pseudo_data =
-      data ? data->GetOverscrollPseudoElementData() : nullptr;
+  const OverscrollAreaParentPseudoElementsVector* overscroll_elements =
+      data ? data->GetOverscrollAreaParentPseudoElements() : nullptr;
 
   // Detect if the declared overscroll areas have changed.
-  size_t current_overscroll_area_count = pseudo_data ? pseudo_data->size() : 0;
+  wtf_size_t current_overscroll_area_count =
+      overscroll_elements ? overscroll_elements->size() : 0;
   bool overscroll_areas_changed =
       overscroll_area_count != current_overscroll_area_count;
-  if (!overscroll_areas_changed && overscroll_area_count > 0) {
-    const HeapVector<Member<const ScopedCSSName>>& overscroll_area_css =
-        GetComputedStyle()->OverscrollArea()->GetNames();
-    const HeapVector<Member<PseudoElement>>& current_overscroll_parent =
-        pseudo_data->GetOverscrollParents();
-    for (size_t i = 0; i < overscroll_area_count; ++i) {
-      if (overscroll_area_css.at(i)->GetName() !=
-          current_overscroll_parent.at(i)->GetPseudoArgument()) {
-        overscroll_areas_changed = true;
-        break;
-      }
-    }
-  }
   if (!overscroll_areas_changed) {
     return;
   }
 
   if (data) {
-    data->ClearOverscrollPseudoElements();
+    data->ClearOverscrollPseudoElements(/* to_keep */ 0);
   }
   if (overscroll_area_count == 0) {
     return;
@@ -12305,10 +12310,14 @@ void Element::UpdateOverscrollPseudoElements(
 
   const ScopedCSSNameList* overscroll_area =
       GetComputedStyle()->OverscrollArea();
-  data = &EnsureElementRareData();
+  wtf_size_t index = 0;
   for (const ScopedCSSName* name : overscroll_area->GetNames()) {
-    UpdatePseudoElement(kPseudoIdOverscrollAreaParent, style_recalc_change,
-                        style_recalc_context, name->GetName());
+    IndexedPseudoElement* pseudo_element =
+        MakeGarbageCollected<IndexedPseudoElement>(
+            this, kPseudoIdOverscrollAreaParent, index, name->GetName());
+    CHECK(SetAssociatedPseudoElement(pseudo_element, style_recalc_context));
+    pseudo_element->SetNeedsReattachLayoutTree();
+    ++index;
   }
 }
 

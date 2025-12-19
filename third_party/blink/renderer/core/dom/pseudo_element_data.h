@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
@@ -65,15 +66,27 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
       column_pseudo_elements_->clear();
     }
   }
-  const OverscrollPseudoElementData* GetOverscrollAreaData() const {
-    return overscroll_data_;
+  void AddOverscrollAreaParentPseudoElement(IndexedPseudoElement& element) {
+    if (!overscroll_data_) {
+      overscroll_data_ = MakeGarbageCollected<OverscrollPseudoElementData>();
+    }
+    overscroll_data_->AddPseudoElement(&element);
   }
-  void ClearOverscrollAreas() {
+  const OverscrollAreaParentPseudoElementsVector*
+  GetOverscrollAreaParentPseudoElements() const {
+    if (!overscroll_data_) {
+      return nullptr;
+    }
+    return &overscroll_data_->GetOverscrollParents();
+  }
+  void ClearOverscrollAreas(wtf_size_t to_keep) {
     if (!overscroll_data_) {
       return;
     }
-    overscroll_data_->ClearPseudoElements();
-    overscroll_data_ = nullptr;
+    overscroll_data_->ClearPseudoElements(to_keep);
+    if (overscroll_data_->size() == 0) {
+      overscroll_data_ = nullptr;
+    }
   }
 
   bool HasPseudoElements() const;
@@ -238,13 +251,15 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
-    case kPseudoIdOverscrollAreaParent:
-      CHECK(element);
+    case kPseudoIdOverscrollAreaParent: {
+      IndexedPseudoElement* overscroll_area = To<IndexedPseudoElement>(element);
       if (!overscroll_data_) {
         overscroll_data_ = MakeGarbageCollected<OverscrollPseudoElementData>();
       }
-      overscroll_data_->AddPseudoElement(pseudo_id, element, pseudo_argument);
+      CHECK_EQ(overscroll_area->Index(), overscroll_data_->size());
+      overscroll_data_->AddPseudoElement(overscroll_area);
       break;
+    }
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionGroupChildren:
@@ -319,9 +334,6 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return transition_data_
                ? transition_data_->GetPseudoElement(pseudo_id, pseudo_argument)
                : nullptr;
-  }
-  if (overscroll_data_ && pseudo_id == kPseudoIdOverscrollAreaParent) {
-    return overscroll_data_->GetPseudoElement(pseudo_id, pseudo_argument);
   }
   return nullptr;
 }
