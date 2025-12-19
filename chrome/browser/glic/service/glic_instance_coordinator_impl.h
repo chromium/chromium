@@ -49,6 +49,8 @@ namespace glic {
 BASE_FEATURE(kGlicHibernateAllOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
+
 // An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
 // access to GlicInstanceCoordinatorImpl to allow for test fakes.
 class GlicInstanceCoordinator : public GlicWindowController {};
@@ -172,6 +174,7 @@ class GlicInstanceCoordinatorImpl
   void CloseFloaty();
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  void CheckMemoryUsage();
 
   void RemoveInstance(GlicInstanceImpl* instance) override;
 
@@ -200,6 +203,7 @@ class GlicInstanceCoordinatorImpl
 
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
+  base::RepeatingTimer memory_monitor_timer_;
 
   bool warming_enabled_ = true;
 

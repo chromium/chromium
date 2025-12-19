@@ -787,6 +787,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.MemoryUsageAtThreshold" units="MB"
+    expires_after="2026-12-16">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the private memory footprint of the Glic instance (sum of WebUI +
+    WebClient) when the hibernation memory threshold is exceeded.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Metrics.Error{Cause}"
     enum="GlicInstanceMetricsError" expires_after="2026-11-12">
   <owner>birnie@google.com</owner>

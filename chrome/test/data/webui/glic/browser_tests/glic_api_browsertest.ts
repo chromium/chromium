@@ -37,6 +37,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
+  async testHibernateOnMemoryUsage() {}
+
   async testDoNothing() {}
 
   // This test should fail even if the ApiTestError is captured in a try-catch

@@ -281,6 +281,9 @@ class Host : public GlicSharingManagerProvider {
   // Informs the web client that additional context is available.
   void NotifyAdditionalContext(mojom::AdditionalContextPtr context);
 
+  // Returns the RenderProcessHost for the WebClient, or nullptr if none.
+  content::RenderProcessHost* GetWebClientRenderProcessHost() const;
+
   // Returns the current view (conversation or actuation) in the floaty.
   mojom::CurrentView GetPrimaryCurrentView();
 

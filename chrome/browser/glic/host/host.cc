@@ -459,6 +459,15 @@ void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
   }
 }
 
+content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
+  if (content::WebContents* contents = web_client_contents()) {
+    if (content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame()) {
+      return rfh->GetProcess();
+    }
+  }
+  return nullptr;
+}
+
 void Host::OnViewChanged(GlicWebClientAccess* client,
                          mojom::CurrentView new_view) {
   if (client != GetPrimaryWebClient()) {

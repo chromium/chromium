@@ -53,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
@@ -87,6 +88,13 @@ base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
 }
 }  // namespace
 
+BASE_FEATURE(kGlicHibernateOnMemoryUsage, base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kGlicHibernateMemoryThresholdMb{
+    &kGlicHibernateOnMemoryUsage, "threshold_mb", 800};
+constexpr base::FeatureParam<base::TimeDelta>
+    kGlicHibernateMemoryPollingInterval{&kGlicHibernateOnMemoryUsage,
+                                        "polling_interval", base::Minutes(10)};
+
 // TODO(refactor): Remove after launching kGlicMultiInstance.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   return *host_manager_;
@@ -111,6 +119,12 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
         profile_,
         base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabCreated,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (base::FeatureList::IsEnabled(kGlicHibernateOnMemoryUsage)) {
+    memory_monitor_timer_.Start(
+        FROM_HERE, kGlicHibernateMemoryPollingInterval.Get(),
+        base::BindRepeating(&GlicInstanceCoordinatorImpl::CheckMemoryUsage,
+                            base::Unretained(this)));
   }
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
 }
@@ -689,6 +703,61 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
 
   if (least_recently_active_instance) {
     least_recently_active_instance->Hibernate();
+  }
+}
+
+void GlicInstanceCoordinatorImpl::CheckMemoryUsage() {
+  struct ProcessInfo {
+    uint64_t total_private_footprint_bytes = 0;
+    std::vector<GlicInstanceImpl*> instances;
+  };
+
+  std::map<content::RenderProcessHost*, ProcessInfo> process_info_map;
+
+  // Group instances by RenderProcessHost and sum up memory.
+  for (auto const& [_, instance] : instances_) {
+    content::RenderProcessHost* process =
+        instance->host().GetWebClientRenderProcessHost();
+    if (!process) {
+      continue;
+    }
+    auto& info = process_info_map[process];
+    info.instances.push_back(instance.get());
+    // Only fetch memory once per process.
+    if (info.total_private_footprint_bytes == 0) {
+      info.total_private_footprint_bytes = process->GetPrivateMemoryFootprint();
+    }
+  }
+
+  uint64_t threshold_bytes =
+      static_cast<uint64_t>(kGlicHibernateMemoryThresholdMb.Get()) * 1024 *
+      1024;
+
+  for (const auto& [process, info] : process_info_map) {
+    if (info.instances.empty()) {
+      continue;
+    }
+    uint64_t average_memory_bytes =
+        info.total_private_footprint_bytes / info.instances.size();
+
+    if (average_memory_bytes < threshold_bytes) {
+      continue;
+    }
+    for (GlicInstanceImpl* instance : info.instances) {
+      if (instance->IsHibernated() || instance->IsActuating()) {
+        continue;
+      }
+      metrics_.OnHighMemoryUsage(average_memory_bytes / 1024 / 1024);
+      if (instance->IsShowing()) {
+        // Only reload if the page has finished loading to avoid reload loops
+        // during high load or slow startup.
+        if (instance->host().IsPrimaryClientOpen()) {
+          instance->host().Reload();
+        }
+      } else {
+        instance->Hibernate();
+      }
+    }
   }
 }
 

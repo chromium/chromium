@@ -55,6 +55,8 @@ class GlicInstanceCoordinatorMetrics {
 
   void OnMemoryPressure(base::MemoryPressureLevel level);
 
+  void OnHighMemoryUsage(int memory_mb);
+
  private:
   // Helper to calculate currently visible instances using
   // data_provider_->GetInstances()
