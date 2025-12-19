@@ -20,6 +20,12 @@ function sendLoadTime(time: number) {
       'chrome://new-tab-page');
 }
 
+function onImageLoad() {
+  document.body.toggleAttribute('shown', true);
+  loadTime = Date.now();
+  sendLoadTime(loadTime);
+}
+
 function main() {
   // The NTP requests the load time as soon as it has installed the message
   // listener. In case we have already sent the load time we re-send the load
@@ -30,11 +36,14 @@ function main() {
     }
   });
 
-  document.body.querySelector('img')!.addEventListener('load', () => {
-    document.body.toggleAttribute('shown', true);
-    loadTime = Date.now();
-    sendLoadTime(loadTime);
-  });
+  const img = document.body.querySelector('img')!;
+  if (img.complete) {
+    // Handle case where the image has already loaded.
+    onImageLoad();
+    return;
+  }
+
+  img.addEventListener('load', onImageLoad);
 }
 
 document.addEventListener('DOMContentLoaded', main);
