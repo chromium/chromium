@@ -166,7 +166,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   // this is called, and it must not have already been emitted.
   void EmitSoftNavigationEntry(SoftNavigationContext*);
 
-  void UpdateSoftLcpMetricsForContext(SoftNavigationContext* context);
+  void UpdateSoftLcpCandidateForContext(SoftNavigationContext*);
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type);
   uint64_t CalculateRequiredPaintArea() const;

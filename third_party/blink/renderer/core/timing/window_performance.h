@@ -60,7 +60,6 @@ class FrameTimingDetails;
 namespace blink {
 
 class AnimationFrameTimingInfo;
-class InteractionContentfulPaint;
 class InteractiveDetector;
 class PerformanceTimingForReporting;
 
@@ -190,8 +189,14 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       const AtomicString& id,
       const String& url,
       Element*);
-
-  void OnInteractionContentfulPaintUpdated(InteractionContentfulPaint*);
+  void OnInteractionContentfulPaintUpdated(
+      const DOMPaintTimingInfo& paint_timing_info,
+      uint64_t paint_size,
+      base::TimeTicks load_time,
+      const AtomicString& id,
+      const String& url,
+      Element*,
+      uint32_t navigation_id);
 
   void Trace(Visitor*) const override;
 

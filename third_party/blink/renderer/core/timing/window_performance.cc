@@ -1463,8 +1463,10 @@ void WindowPerformance::AddSoftNavigationEntry(
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
     uint32_t navigation_id) {
-  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
-      GetExecutionContext()));
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
+          GetExecutionContext())) {
+    return;
+  }
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
       name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
       DomWindow(), navigation_id);
@@ -1552,9 +1554,24 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 }
 
 void WindowPerformance::OnInteractionContentfulPaintUpdated(
-    InteractionContentfulPaint* entry) {
-  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
-      GetExecutionContext()));
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t paint_size,
+    base::TimeTicks load_time,
+    const AtomicString& id,
+    const String& url,
+    Element* element,
+    uint32_t navigation_id) {
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
+          GetExecutionContext())) {
+    return;
+  }
+  auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
+      /*start_time=*/paint_timing_info.presentation_time,
+      /*render_time=*/paint_timing_info.presentation_time, paint_size,
+      MonotonicTimeToDOMHighResTimeStamp(load_time), id, url, element,
+      DomWindow(), navigation_id);
+  entry->SetPaintTimingInfo(paint_timing_info);
+
   if (HasObserverFor(PerformanceEntry::kInteractionContentfulPaint)) {
     NotifyObserversOfEntry(*entry);
   }

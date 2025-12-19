@@ -112,6 +112,7 @@ class CORE_EXPORT SoftNavigationContext
   bool OnPaintFinished();
   void OnInputOrScroll();
   bool TryUpdateLcpCandidate();
+  void UpdateWebExposedLargestContentfulPaintIfNeeded();
   const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;
@@ -121,29 +122,8 @@ class CORE_EXPORT SoftNavigationContext
     return first_input_or_scroll_time_.is_null();
   }
 
-  // Emits the soft navigation performance entry and latest buffered ICP entry,
-  // if there is one. The context must not have been previously emitted.
-  // `WasEmitted()` returns true after this is called.
-  //
-  // Note: There are several reasons why we might have an FCP but not a pending
-  // ICP, all of which should be fixed:
-  //   1. crbug.com/383568320: For <video>, we set the paint timestamp for the
-  //      first video frame outside of paint, but require BeginMainFrame +
-  //      presentation feedback to emit the ICP entry. The soft nav entry can be
-  //      emitted in this gap.
-  //  2. crbug.com/454082773: If the FCP element is detached from the DOM before
-  //     its presentation feedback is processed, we won't emit an ICP entry for
-  //     this.
-  //  3. crbug.com/454082771, crbug.com/434160944: We overwrite image and text
-  //     candidates during paint, which affects which candidates we emit when
-  //     processing presentation feedback. For example, if we paint a text node
-  //     (FCP) in frame 1 and a larger image in frame 2, and the feedback for
-  //     frame 1 arrives after frame 2, the image blocks emitting the ICP entry
-  //     for the text. Moving more logic into presentation time, like we do for
-  //     hard LCP, in conjunction with emitting largest presented image/text
-  //     (vs. pending image) would fix this.
-  void EmitSoftNavigation();
   bool WasEmitted() const { return was_emitted_; }
+  void MarkEmitted() { was_emitted_ = true; }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -169,7 +149,6 @@ class CORE_EXPORT SoftNavigationContext
   Member<TextRecord> largest_text_;
   Member<ImageRecord> largest_image_;
   Member<PaintTimingRecord> first_image_or_text_;
-  Member<InteractionContentfulPaint> latest_unemitted_icp_entry_;
 
   size_t num_modified_dom_nodes_ = 0;
   uint64_t painted_area_ = 0;
