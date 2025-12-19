@@ -767,7 +767,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected onCancelClick_() {
     if (this.hasContent_()) {
       this.resetModes();
-      this.clearAllInputs();
+      this.clearAllInputs(/* querySubmitted= */ false);
       this.focusInput();
       this.queryAutocomplete(/* clearMatches= */ true);
     } else {
@@ -778,7 +778,7 @@ export class ComposeboxElement extends I18nMixinLit
   handleEscapeKeyLogic(): void {
     if (!this.composeboxCloseByEscape_ && this.hasContent_()) {
       this.resetModes();
-      this.clearAllInputs();
+      this.clearAllInputs(/* querySubmitted= */ false);
       this.focusInput();
       this.queryAutocomplete(/* clearMatches= */ true);
     } else {
@@ -1084,7 +1084,7 @@ export class ComposeboxElement extends I18nMixinLit
     // If the composebox is expandable, collapse it and clear the input after
     // submitting.
     if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {
-      this.clearAllInputs();
+      this.clearAllInputs(/* querySubmitted= */ true);
     }
 
     if (this.isCollapsible) {
@@ -1272,12 +1272,16 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 
-  clearAllInputs() {
+  clearAllInputs(querySubmitted: boolean) {
     this.clearInput();
     this.$.context.resetContextFiles();
     this.contextFilesSize_ = 0;
     this.smartComposeInlineHint_ = '';
-    this.searchboxHandler_.clearFiles();
+    if (!querySubmitted) {
+      // If the query was submitted, the searchbox handler will clear its own
+      // uploaded file state when the query submission is handled.
+      this.searchboxHandler_.clearFiles();
+    }
     this.submitEnabled_ = false;
   }
 
