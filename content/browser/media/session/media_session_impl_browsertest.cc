@@ -23,6 +23,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
@@ -47,6 +48,7 @@
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 using media_session::mojom::AudioFocusType;
@@ -69,6 +71,9 @@ const std::u16string kExpectedSourceTitlePrefix = u"http://example.com:";
 constexpr gfx::Size kDefaultFaviconSize = gfx::Size(16, 16);
 
 const std::string kExampleSinkId = "example_device_id";
+
+using BrowserInitiatedAutoPipUkmEntry = ukm::builders::
+    Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_BrowserInitiated;
 
 class MockAudioFocusDelegate : public content::AudioFocusDelegate {
  public:
@@ -419,6 +424,40 @@ class MediaSessionImplSyncBrowserTest : public MediaSessionImplBrowserTest {
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaSessionImplParamBrowserTest,
                          testing::Bool());
+
+class MediaSessionImplUkmBrowserTest
+    : public MediaSessionImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  MediaSessionImplUkmBrowserTest() {
+    if (ShouldEnterPip()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::
+                                    kBrowserInitiatedAutomaticPictureInPicture},
+          /*disabled_features=*/{
+              media::kBrowserInitiatedAutomaticPictureInPictureDryRun});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {media::kBrowserInitiatedAutomaticPictureInPictureDryRun},
+          /*disabled_features=*/{
+              blink::features::kBrowserInitiatedAutomaticPictureInPicture});
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    MediaSessionImplBrowserTest::SetUpOnMainThread();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  bool ShouldEnterPip() const { return GetParam(); }
+
+ protected:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, MediaSessionImplUkmBrowserTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
                        PlayersFromSameObserverDoNotStopEachOtherInSameSession) {
@@ -3533,6 +3572,33 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   // The page being removed from the back-forward cache should not affect the
   // play state of the current page.
   EXPECT_TRUE(player_observer->IsPlaying(1));
+}
+
+IN_PROC_BROWSER_TEST_P(MediaSessionImplUkmBrowserTest,
+                       RecordsUkm_BrowserInitiated_AutoPip_IsDryRun) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("example.com",
+                                              "/media/session/position.html")));
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
+
+    // Start playing the video.
+    ASSERT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       "document.getElementById('video').play()"));
+
+    observer.WaitForState(MediaSessionInfo::SessionState::kActive);
+    observer.WaitForControllable(true);
+  }
+
+  media_session_->EnterAutoPictureInPicture();
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      BrowserInitiatedAutoPipUkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder_->ExpectEntryMetric(
+      entries[0], BrowserInitiatedAutoPipUkmEntry::kIsDryRunName,
+      !ShouldEnterPip());
 }
 
 }  // namespace content

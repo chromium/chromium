@@ -29,6 +29,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_client.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -39,6 +40,8 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -1844,7 +1847,7 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
         media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
 
-  // If the website could enter browser initiated automatic picture in picture,
+  // If the website could enter browser-initiated automatic picture in picture,
   // then we should expose EnterAutoPictureInPicture as an available action.
   if (CanEnterBrowserInitiatedAutomaticPictureInPicture()) {
     actions.insert(
@@ -2170,7 +2173,7 @@ bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
   }
 
   // If the website has specified an action handler for 'enterpictureinpicture',
-  // then we should not enter browser initiated automatic picture-in-picture.
+  // then we should not enter browser-initiated automatic picture-in-picture.
   if (routed_service_ &&
       base::Contains(
           routed_service_->actions(),
@@ -2195,7 +2198,7 @@ bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
     return false;
   }
 
-  // Ensure that browser initiated automatic picture-in-picture is only allowed
+  // Ensure that browser-initiated automatic picture-in-picture is only allowed
   // for the primary main frame.
   RenderFrameHost* frame = first.observer->render_frame_host();
   if (!frame || !frame->IsInPrimaryMainFrame()) {
@@ -2203,6 +2206,25 @@ bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
   }
 
   return true;
+}
+
+void MediaSessionImpl::RecordBrowserInitiatedAutomaticPictureInPictureUkm(
+    bool is_dry_run) {
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  if (!ukm_recorder) {
+    return;
+  }
+
+  ukm::SourceId source_id = GetRoutedFrame()->GetPageUkmSourceId();
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::
+      Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_BrowserInitiated(
+          source_id)
+          .SetIsDryRun(is_dry_run)
+          .Record(ukm_recorder);
 }
 
 void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture() {
@@ -2224,9 +2246,9 @@ void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture() {
           blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
     auto& first = normal_players_.begin()->first;
     first.observer->OnEnterPictureInPicture(first.player_id);
+    RecordBrowserInitiatedAutomaticPictureInPictureUkm(false);
   } else {
-    // We are in dry run mode.
-    // TODO(crbug.com/408502322): Add UKM to analyze the impact of the feature.
+    RecordBrowserInitiatedAutomaticPictureInPictureUkm(true);
   }
 
   uma_helper_.RecordEnterPictureInPicture(

@@ -13843,6 +13843,25 @@ be describing additional metrics about the same event.
 </event>
 
 <event
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.BrowserInitiated">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when browser-initiated automatic picture-in-picture is triggered.
+    This can be a dry run (the feature is enabled, but the action is not taken),
+    or it can result in entering picture-in-picture. This event allows analysis
+    of the feature impact.
+  </summary>
+  <metric name="IsDryRun" enum="Boolean">
+    <summary>
+      True if the event was a dry run, meaning the feature was enabled but the
+      action was not taken. False if the browser actually entered
+      picture-in-picture.
+    </summary>
+  </metric>
+</event>
+
+<event
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.PromptResultV2">
   <owner>bkeen@google.com</owner>
   <owner>media-dev@chromium.org</owner>
