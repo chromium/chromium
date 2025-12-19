@@ -4519,6 +4519,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   if (auto* container = OverscrollContainer()) {
     container->OverscrollAreaTracker()->RemoveOverscroll(this);
   }
+
+  // Remove all of the overscroll areas from this tracker.
+  if (auto* tracker = OverscrollAreaTracker()) {
+    tracker->RemoveAllOverscroll();
+  }
 }
 
 void Element::AttachColumnPseudoElements(AttachContext& context) {

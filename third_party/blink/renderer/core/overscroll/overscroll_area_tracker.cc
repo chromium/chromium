@@ -34,6 +34,15 @@ const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
   return overscroll_members_;
 }
 
+void OverscrollAreaTracker::RemoveAllOverscroll() {
+  for (auto& member : overscroll_members_) {
+    member->ClearOverscrollContainer();
+  }
+  overscroll_members_.clear();
+  needs_dom_sort_ = false;
+  needs_layout_tree_rebuild_ = true;
+}
+
 void OverscrollAreaTracker::RemoveOverscroll(Element* element) {
   CHECK_EQ(element->OverscrollContainer(), container_);
   element->ClearOverscrollContainer();

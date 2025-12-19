@@ -25,6 +25,7 @@ class CORE_EXPORT OverscrollAreaTracker
 
   void AddOverscroll(Element*);
   void RemoveOverscroll(Element*);
+  void RemoveAllOverscroll();
 
   const VectorOf<Element>& DOMSortedElements();
 
