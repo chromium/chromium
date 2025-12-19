@@ -1,6 +1,11 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// TODO(469041917): this is only required due to crbug.com/469041917 and
+// should be removed when the issue is fixed.
+//
+// META: --disable-features=BoundaryEventDispatchTracksNodeRemoval
 
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(

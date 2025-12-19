@@ -720,22 +720,7 @@ HEADLESS_PROTOCOL_TEST(WindowWithNewContext,
 HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
                        "shared/set-zoomed-window-bounds.js")
 
-// TODO(469041917): this is only required due to crbug.com/469041917 and
-// should be removed when the issue is fixed.
-class DisableBoundaryEventDispatchTracksNodeRemovalTest
-    : public HeadlessProtocolBrowserTest {
- protected:
-  DisableBoundaryEventDispatchTracksNodeRemovalTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kBoundaryEventDispatchTracksNodeRemoval);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-HEADLESS_PROTOCOL_TEST_F(DisableBoundaryEventDispatchTracksNodeRemovalTest,
-                         RangeMouseEventAfterNodeRemoval,
-                         "shared/range-mouse-event-after-node-removal.js")
+HEADLESS_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
+                       "shared/range-mouse-event-after-node-removal.js")
 
 }  // namespace headless
