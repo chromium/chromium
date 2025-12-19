@@ -5242,7 +5242,7 @@ shown properly on the user-facing crash UI.
 <enum name="GoogleServiceAuthError">
   <int value="0" label="NONE"/>
   <int value="1" label="INVALID_GAIA_CREDENTIALS"/>
-  <int value="2" label="USER_NOT_SIGNED_UP"/>
+  <int value="2" label="ACCOUNT_NOT_FOUND"/>
   <int value="3" label="CONNECTION_FAILED"/>
   <int value="4" label="CAPTCHA_REQUIRED (deprecated)"/>
   <int value="5" label="ACCOUNT_DELETED (deprecated)"/>

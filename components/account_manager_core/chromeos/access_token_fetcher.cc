@@ -52,7 +52,7 @@ void AccessTokenFetcher::Start(const std::vector<std::string>& scopes,
     // `access_token_fetcher_` can be null only if `account_key` is invalid /
     // unknown.
     OnGetTokenFailure(GoogleServiceAuthError(
-        GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+        GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
     return;
   }
 

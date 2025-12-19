@@ -83,8 +83,8 @@ GoogleServiceAuthError::GoogleServiceAuthError(State s) {
     case INVALID_GAIA_CREDENTIALS:
       details_.emplace<InvalidGaiaCredentials>();
       break;
-    case USER_NOT_SIGNED_UP:
-      details_.emplace<UserNotSignedUp>();
+    case ACCOUNT_NOT_FOUND:
+      details_.emplace<AccountNotFound>();
       break;
     case CONNECTION_FAILED:
       details_.emplace<ConnectionFailed>();
@@ -179,7 +179,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
   switch (state) {
     case NONE:
     case INVALID_GAIA_CREDENTIALS:
-    case USER_NOT_SIGNED_UP:
+    case ACCOUNT_NOT_FOUND:
     case CONNECTION_FAILED:
     case SERVICE_UNAVAILABLE:
     case REQUEST_CANCELED:
@@ -202,7 +202,7 @@ GoogleServiceAuthError::State GoogleServiceAuthError::state() const {
           [](const InvalidGaiaCredentials&) {
             return INVALID_GAIA_CREDENTIALS;
           },
-          [](const UserNotSignedUp&) { return USER_NOT_SIGNED_UP; },
+          [](const AccountNotFound&) { return ACCOUNT_NOT_FOUND; },
           [](const ConnectionFailed&) { return CONNECTION_FAILED; },
           [](const ServiceUnavailable&) { return SERVICE_UNAVAILABLE; },
           [](const RequestCanceled&) { return REQUEST_CANCELED; },
@@ -274,7 +274,7 @@ std::string GoogleServiceAuthError::ToString() const {
                                       InvalidCredentialsReasonToString(
                                           invalid_gaia_credentials.reason));
           },
-          [](const UserNotSignedUp&) { return std::string("Not authorized."); },
+          [](const AccountNotFound&) { return std::string("Not authorized."); },
           [](const ConnectionFailed& connection_failed) {
             return base::StringPrintf("Connection failed (%d).",
                                       connection_failed.network_error);

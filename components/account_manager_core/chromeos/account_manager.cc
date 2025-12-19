@@ -228,7 +228,7 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
 
     if (account_key_.account_type() != ::account_manager::AccountType::kGaia) {
       FireOnGetTokenFailure(GoogleServiceAuthError(
-          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
       return;
     }
 
@@ -236,7 +236,7 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
         account_manager_->GetRefreshToken(account_key_);
     if (!maybe_token.has_value()) {
       FireOnGetTokenFailure(GoogleServiceAuthError(
-          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
       return;
     }
 

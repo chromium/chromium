@@ -235,10 +235,10 @@ TEST_P(AccessTokenFetcherTest, EmptyAccountFailsButDoesNotCrash) {
                                AccessTokenFetcher::Mode::kImmediate);
 
   // Fetching access tokens for an empty account id should respond with
-  // USER_NOT_SIGNED_UP error.
+  // ACCOUNT_NOT_FOUND error.
   EXPECT_CALL(callback,
               Run(GoogleServiceAuthError(
-                      GoogleServiceAuthError::State::USER_NOT_SIGNED_UP),
+                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
                   AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
@@ -422,7 +422,7 @@ TEST_P(AccessTokenFetcherTest, ReturnsErrorWhenAccountHasNoRefreshToken) {
 
   EXPECT_CALL(callback,
               Run(GoogleServiceAuthError(
-                      GoogleServiceAuthError::State::USER_NOT_SIGNED_UP),
+                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND),
                   AccessTokenInfo()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
@@ -480,7 +480,7 @@ TEST_P(AccessTokenFetcherTest, RefreshTokenRevoked) {
   // fetcher should *not* retry.
   EXPECT_CALL(
       callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
           AccessTokenInfo()));
   token_service()->RevokeCredentials(account_id);
 }

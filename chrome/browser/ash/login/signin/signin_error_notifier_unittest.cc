@@ -221,7 +221,7 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
   GoogleServiceAuthError::State table[] = {
       GoogleServiceAuthError::NONE,
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
-      GoogleServiceAuthError::USER_NOT_SIGNED_UP,
+      GoogleServiceAuthError::ACCOUNT_NOT_FOUND,
       GoogleServiceAuthError::CONNECTION_FAILED,
       GoogleServiceAuthError::SERVICE_UNAVAILABLE,
       GoogleServiceAuthError::REQUEST_CANCELED,

@@ -59,7 +59,7 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
     case kAuthenticationErrorCategoryUserCancellationErrors:
       return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
     case kAuthenticationErrorCategoryUnknownIdentityErrors:
-      return GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
+      return GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
   }
   NOTREACHED() << "unsupported error: " << static_cast<int>(error);
 }

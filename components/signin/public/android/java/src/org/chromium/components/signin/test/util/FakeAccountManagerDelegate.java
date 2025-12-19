@@ -131,7 +131,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                     "Error while getting token for scope '" + scope + "'",
                     new IllegalStateException(
                             "Cannot get auth token for unknown account '" + account + "'"),
-                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.ACCOUNT_NOT_FOUND));
         }
         return accountHolder.getAccessTokenOrGenerateNew(scope);
     }

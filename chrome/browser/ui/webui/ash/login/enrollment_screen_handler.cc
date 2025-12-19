@@ -262,7 +262,7 @@ void EnrollmentScreenHandler::ShowAuthError(
     case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_AUTH_FATAL_ERROR, /*retry=*/false);
       return;
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+    case GoogleServiceAuthError::ACCOUNT_NOT_FOUND:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_AUTH_ACCOUNT_ERROR, /*retry=*/true);
       return;
     case GoogleServiceAuthError::CONNECTION_FAILED:

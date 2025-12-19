@@ -802,8 +802,8 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Registration/fetch: invalid response">
     Registration / policy fetch failed: can't decode DM server response.
   </int>
-  <int value="41" label="OAuth fetch: account not signed up">
-    OAuth token fetch failed: account not signed up.
+  <int value="41" label="OAuth fetch: account not found">
+    OAuth token fetch failed: account not found.
   </int>
   <int value="42" label="OAuth fetch: account deleted (unused)">
     UNUSED: OAuth token fetch failed: account deleted.

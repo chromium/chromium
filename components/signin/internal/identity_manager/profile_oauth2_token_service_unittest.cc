@@ -468,11 +468,10 @@ TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenRevoked) {
     EXPECT_CALL(*observer, OnRefreshTokenRevoked(account_id_));
   }
   // Then, all ongoing requests get cancelled.
-  EXPECT_CALL(
-      consumer,
-      OnGetTokenFailure(
-          ::testing::_,
-          GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP)))
+  EXPECT_CALL(consumer,
+              OnGetTokenFailure(::testing::_,
+                                GoogleServiceAuthError(
+                                    GoogleServiceAuthError::ACCOUNT_NOT_FOUND)))
       .Times(1);
   // Finally, `OnEndBatchChanges()` is called.
   for (auto& observer : observers) {
@@ -585,7 +584,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     ASSERT_FALSE(future.Get<1>().has_value());
     EXPECT_EQ(
         future.Get<1>().error(),
-        GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
+        GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND));
   }
 }
 

@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     INVALID_GAIA_CREDENTIALS = 1,
 
     // Chrome does not have credentials (tokens) for this account.
-    USER_NOT_SIGNED_UP = 2,
+    ACCOUNT_NOT_FOUND = 2,
 
     // Could not connect to server to verify credentials. This could be in
     // response to either failure to connect to GAIA or failure to connect to
@@ -241,9 +241,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     friend bool operator==(const InvalidGaiaCredentials&,
                            const InvalidGaiaCredentials&) = default;
   };
-  struct UserNotSignedUp {
-    friend bool operator==(const UserNotSignedUp&,
-                           const UserNotSignedUp&) = default;
+  struct AccountNotFound {
+    friend bool operator==(const AccountNotFound&,
+                           const AccountNotFound&) = default;
   };
   struct ConnectionFailed {
     net::Error network_error = net::ERR_FAILED;
@@ -281,7 +281,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
 
   using Details = std::variant<None,
                                InvalidGaiaCredentials,
-                               UserNotSignedUp,
+                               AccountNotFound,
                                ConnectionFailed,
                                ServiceUnavailable,
                                RequestCanceled,

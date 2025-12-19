@@ -472,9 +472,9 @@ void EnrollmentLauncherImpl::ReportAuthStatus(
       UMA(policy::kMetricEnrollmentLoginFailed);
       LOG(ERROR) << "Auth error " << error.state();
       break;
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-      UMA(policy::kMetricEnrollmentAccountNotSignedUp);
-      LOG(ERROR) << "Account not signed up " << error.state();
+    case GoogleServiceAuthError::ACCOUNT_NOT_FOUND:
+      UMA(policy::kMetricEnrollmentAccountNotFound);
+      LOG(ERROR) << "Account not found " << error.state();
       break;
     case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:

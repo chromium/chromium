@@ -202,7 +202,7 @@ void DeviceOAuth2TokenService::OnPrepareTrustedAccountIdFinished(
     bool check_passed) {
   if (!check_passed) {
     state_ = STATE_NO_TOKEN;
-    ReportServiceError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
+    ReportServiceError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
     return;
   }
 
@@ -288,7 +288,7 @@ bool DeviceOAuth2TokenService::HandleAccessTokenFetch(
     case STATE_VALIDATION_STARTED:
       return true;
     case STATE_NO_TOKEN:
-      FailRequest(request, GoogleServiceAuthError::USER_NOT_SIGNED_UP);
+      FailRequest(request, GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
       return true;
     case STATE_TOKEN_INVALID:
       FailRequest(request, GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);

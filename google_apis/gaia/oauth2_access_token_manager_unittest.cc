@@ -518,7 +518,7 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenInvalidated) {
 TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCanceled) {
   GoogleServiceAuthError::State error_states[] = {
       GoogleServiceAuthError::REQUEST_CANCELED,
-      GoogleServiceAuthError::USER_NOT_SIGNED_UP};
+      GoogleServiceAuthError::ACCOUNT_NOT_FOUND};
   for (const auto& state : error_states) {
     GoogleServiceAuthError error(state);
     SCOPED_TRACE(error.ToString());
@@ -634,8 +634,8 @@ TEST_F(OAuth2AccessTokenManagerTest,
   scopeset.insert("scope");
   base::RunLoop run_loop;
   // |account_id| doesn't have a refresh token, OnFetchAccessTokenComplete
-  // should report GoogleServiceAuthError::USER_NOT_SIGNED_UP.
-  GoogleServiceAuthError error(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
+  // should report GoogleServiceAuthError::ACCOUNT_NOT_FOUND.
+  GoogleServiceAuthError error(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("new_account_id"));
   observer.SetOnFetchAccessTokenComplete(account_id, consumer_.id(), scopeset,

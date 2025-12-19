@@ -66,7 +66,7 @@ struct GoogleServiceAuthError {
   enum State {
     kNone = 0,
     kInvalidGaiaCredentials = 1,
-    kUserNotSignedUp = 2,
+    kAccountNotFound = 2,
     kConnectionFailed = 3,
     // DEPRECATED kCaptchaRequired = 4,
     // DEPRECATED kAccountDeleted = 5,
@@ -266,7 +266,7 @@ interface AccountManager {
   // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.
   // `account_key` must be a Gaia account. If `account_key` is invalid or not
   // known to ChromeOS Account Manager, fetching an access token via
-  // `AccessTokenFetcher` will result in an error (`kUserNotSignedUp`). If the
+  // `AccessTokenFetcher` will result in an error (`kAccountNotFound`). If the
   // account's refresh token is no longer valid, it will result in
   // `kInvalidGaiaCredentials` error. See `GoogleServiceAuthError` for all error
   // types.

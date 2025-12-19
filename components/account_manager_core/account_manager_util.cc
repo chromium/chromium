@@ -140,8 +140,8 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
       return cm::GoogleServiceAuthError::State::kNone;
     case GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS:
       return cm::GoogleServiceAuthError::State::kInvalidGaiaCredentials;
-    case GoogleServiceAuthError::State::USER_NOT_SIGNED_UP:
-      return cm::GoogleServiceAuthError::State::kUserNotSignedUp;
+    case GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND:
+      return cm::GoogleServiceAuthError::State::kAccountNotFound;
     case GoogleServiceAuthError::State::CONNECTION_FAILED:
       return cm::GoogleServiceAuthError::State::kConnectionFailed;
     case GoogleServiceAuthError::State::SERVICE_UNAVAILABLE:
@@ -314,9 +314,9 @@ std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     case cm::GoogleServiceAuthError::State::kUnexpectedServiceResponse:
       return GoogleServiceAuthError::FromUnexpectedServiceResponse(
           mojo_error->error_message);
-    case cm::GoogleServiceAuthError::State::kUserNotSignedUp:
+    case cm::GoogleServiceAuthError::State::kAccountNotFound:
       return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP);
+          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
     case cm::GoogleServiceAuthError::State::kServiceUnavailable:
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);

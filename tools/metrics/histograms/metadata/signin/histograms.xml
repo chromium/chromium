@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(AccessTokenFetchFailureError) -->
 
 <variants name="AccessTokenFetchFailureError">
+  <variant name="AccountNotFound" summary="account not found"/>
   <variant name="ChallengeResponseRequired"
       summary="challenge response required"/>
   <variant name="ConnectionFailed" summary="connection failed"/>
@@ -36,7 +37,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ServiceUnavailable" summary="service unavailable"/>
   <variant name="UnexpectedServiceResponse"
       summary="unexpected service response"/>
-  <variant name="UserNotSignedUp" summary="user not signed up"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/access_token_fetcher.cc:ErrorToString) -->

@@ -606,7 +606,7 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
   }
 
   if (!delegate_->HasRefreshToken(account_id)) {
-    GoogleServiceAuthError error(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
+    GoogleServiceAuthError error(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
 
     for (auto& observer : diagnostics_observer_list_) {
       observer.OnFetchAccessTokenComplete(account_id, consumer->id(), scopes,

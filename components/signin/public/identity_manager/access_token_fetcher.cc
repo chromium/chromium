@@ -24,8 +24,8 @@ std::string ErrorToString(GoogleServiceAuthError::State error_state) {
   switch (error_state) {
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
       return "InvalidGaiaCredentials";
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-      return "UserNotSignedUp";
+    case GoogleServiceAuthError::ACCOUNT_NOT_FOUND:
+      return "AccountNotFound";
     case GoogleServiceAuthError::CONNECTION_FAILED:
       return "ConnectionFailed";
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
