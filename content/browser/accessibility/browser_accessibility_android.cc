@@ -1073,12 +1073,17 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
 std::u16string BrowserAccessibilityAndroid::GetHint() const {
   std::vector<std::u16string> strings;
 
-  // If we're returning the value as the main text, the name needs to be
-  // part of the hint.
-  if (ShouldExposeValueAsName(GetValueForControl()) &&
-      ComputeAndroidNameTo() == AndroidNameTo::kText) {
-    if (std::u16string name = GetNameAsString16(); !name.empty()) {
-      strings.push_back(name);
+  // TODO(accessibility): Remove this path once we roll out supplemental
+  // descriptions.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
+    // If we're returning the value as the main text, the name needs to be
+    // part of the hint.
+    if (ShouldExposeValueAsName(GetValueForControl()) &&
+        ComputeAndroidNameTo() == AndroidNameTo::kText) {
+      if (std::u16string name = GetNameAsString16(); !name.empty()) {
+        strings.push_back(name);
+      }
     }
   }
 
@@ -1167,6 +1172,17 @@ std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
   if (ComputeAndroidNameTo() == AndroidNameTo::kSupplementalDescription) {
     return GetNameAsString16();
   }
+
+  // The control's value has been promoted to the primary `text` field.
+  // In this situation, the accessible name (which was originally destined
+  // for `text`) should be demoted to `supplementalDescription`.
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityPopulateSupplementalDescriptionApi) &&
+      ShouldExposeValueAsName(GetValueForControl()) &&
+      ComputeAndroidNameTo() == AndroidNameTo::kText) {
+    return GetNameAsString16();
+  }
+
   return u"";
 }
 
