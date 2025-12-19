@@ -2317,6 +2317,23 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "option-mutation-observer-improvement-disabled",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "fast/forms/select",
+      "external/wpt/html/semantics/forms/the-select-element"
+    ],
+    "args": [
+      "--disable-features=OptionMutationObserverImprovement"
+    ],
+    "owners": [
+      "jarhar@chromium.org"
+    ],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "orb-errors-for-all-fetches",
     "owners": [
       "vogelheim@chromium.org"

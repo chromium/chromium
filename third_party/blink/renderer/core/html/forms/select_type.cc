@@ -80,6 +80,12 @@ class PopupUpdater;
 
 namespace {
 
+enum class AppearanceState {
+  kNoStyle = 0,
+  kAppearanceBase = 1,
+  kAppearanceAuto = 2,
+};
+
 HTMLOptionElement* EventTargetOption(const Event& event) {
   Node* target = event.RawTarget()->ToNode();
   if (auto* option = DynamicTo<HTMLOptionElement>(target)) {
@@ -190,7 +196,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       AppearanceState new_appearance_state =
           SupportsBaseAppearance(style->EffectiveAppearance())
               ? AppearanceState::kAppearanceBase
-              : AppearanceState::kAppearanceNotBase;
+              : AppearanceState::kAppearanceAuto;
       auto* select = ParentSelect();
       if (appearance_state_ != AppearanceState::kNoStyle &&
           appearance_state_ != new_appearance_state && select &&
@@ -238,11 +244,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
     return nullptr;
   }
-  enum AppearanceState {
-    kNoStyle = 0,
-    kAppearanceBase = 1,
-    kAppearanceNotBase = 2,
-  };
   AppearanceState appearance_state_{AppearanceState::kNoStyle};
 };
 
@@ -637,6 +638,14 @@ void MenuListSelectType::ManuallyAssignSlots() {
   }
 
   CHECK(button_slot_);
+  if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
+    bool had_slotted_button = !button_slot_->ManuallyAssignedNodes().empty();
+    if (select_->last_on_change_option_ &&
+        had_slotted_button != !!first_button) {
+      select_->last_on_change_option_->UpdateMutationObserver(
+          /*in_style_recalc=*/true);
+    }
+  }
   button_slot_->Assign(first_button);
   popover_options_slot_->Assign(all_children_except_first_button);
 }
@@ -963,6 +972,12 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
       // appearance:auto mode. We also call SetNeedsReattachLayoutTree every
       // time that the size and multiple attributes are changed.
       select_->SetNeedsReattachLayoutTree();
+
+      if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled() &&
+          select_->last_on_change_option_) {
+        select_->last_on_change_option_->UpdateMutationObserver(
+            /*in_style_recalc=*/true);
+      }
     }
     if (is_appearance_base_select) {
       UseCounter::Count(select_->GetDocument(),
@@ -1184,7 +1199,7 @@ void MenuListSelectType::DidMutateSubtree() {
 // TODO(crbug.com/1511354): Rename this class to InPageSelectType
 class ListBoxSelectType final : public SelectType {
  public:
-  explicit ListBoxSelectType(HTMLSelectElement& select) : SelectType(select) {}
+  explicit ListBoxSelectType(HTMLSelectElement& select);
   void Trace(Visitor* visitor) const override;
 
   bool DefaultEventHandler(const Event& event) override;
@@ -1214,6 +1229,7 @@ class ListBoxSelectType final : public SelectType {
   void SetIsAppearanceBasePickerForDisplayNone(bool) override;
   HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
       const override;
+  void DidRecalcStyle(const StyleRecalcChange) override;
 
  private:
   HTMLOptionElement* NextSelectableOptionPageAway(HTMLOptionElement*,
@@ -1232,6 +1248,7 @@ class ListBoxSelectType final : public SelectType {
   void SetActiveSelectionAnchor(HTMLOptionElement*);
   void SetActiveSelectionEnd(HTMLOptionElement*);
   void ScrollToOptionTask();
+  void UpdateOptionMutationObservers(bool in_style_recalc);
 
   Vector<bool> cached_state_for_active_selection_;
   Vector<bool> last_on_change_selection_;
@@ -1241,7 +1258,13 @@ class ListBoxSelectType final : public SelectType {
   Member<HTMLSlotElement> option_slot_;
   bool is_in_non_contiguous_selection_ = false;
   bool active_selection_state_ = false;
+  AppearanceState appearance_state_ = AppearanceState::kNoStyle;
 };
+
+ListBoxSelectType::ListBoxSelectType(HTMLSelectElement& select)
+    : SelectType(select) {
+  UpdateOptionMutationObservers(/*in_style_recalc=*/false);
+}
 
 void ListBoxSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(option_to_scroll_to_);
@@ -1899,6 +1922,42 @@ HTMLSelectElement::SelectAutofillPreviewElement*
 ListBoxSelectType::GetAutofillPreviewElement() const {
   // TODO(crbug.com/357649033): Implement this
   return nullptr;
+}
+
+void ListBoxSelectType::DidRecalcStyle(const StyleRecalcChange) {
+  UpdateOptionMutationObservers(/*in_style_recalc=*/true);
+}
+
+void ListBoxSelectType::UpdateOptionMutationObservers(bool in_style_recalc) {
+  if (!RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
+    return;
+  }
+  bool needs_update = false;
+  if (auto* style = select_->GetComputedStyle()) {
+    AppearanceState new_state =
+        select_->SupportsBaseAppearance(style->EffectiveAppearance())
+            ? AppearanceState::kAppearanceBase
+            : AppearanceState::kAppearanceAuto;
+    needs_update = appearance_state_ != new_state;
+    if (appearance_state_ == AppearanceState::kNoStyle &&
+        new_state == AppearanceState::kAppearanceBase) {
+      // When going from no style to base appearance, then we shouldn't have to
+      // go through every option and update its MutationObserver because it
+      // shouldn't have one yet - see HTMLOptionElement::NeedsMutationObserver.
+#if DCHECK_IS_ON()
+      for (auto& option : select_->GetOptionList()) {
+        DCHECK(!option.HasMutationObserver());
+      }
+#endif
+      needs_update = false;
+    }
+    appearance_state_ = new_state;
+  }
+  if (needs_update) {
+    for (auto& option : select_->GetOptionList()) {
+      option.UpdateMutationObserver(in_style_recalc);
+    }
+  }
 }
 
 // ============================================================================

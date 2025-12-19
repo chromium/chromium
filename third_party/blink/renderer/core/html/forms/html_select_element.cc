@@ -956,7 +956,14 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   if (element) {
     if (!element->Selected())
       should_update_popup = true;
-    element->SetSelectedState(true);
+    // skip_mutation_observer_update is set to true here because
+    // last_on_change_option_ isn't set to the new option element yet, which
+    // results in a DCHECK being hit in MenuListSelectType::OptionToBeShown when
+    // copying the option's text content to this select element's InnerElement
+    // which requires that SelectedOption() matches last_on_change_option_.
+    // Instead, UpdateMutationObserver is explicitly called after
+    // DidSelectOption later in this method.
+    element->SetSelectedState(true, /*skip_mutation_observer_update=*/true);
     if (flags & kMakeOptionDirtyFlag)
       element->SetDirty(true);
   }
@@ -972,6 +979,13 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   // Note that DidSelectOption fires change events, which can invoke script
   // and then change the selected option again.
   select_type_->DidSelectOption(element, flags, should_update_popup);
+
+  if (element) {
+    // Now that last_on_change_option_ has been updated by DidSelectOption, we
+    // can update the select's MutationObserver and update text.
+    element->UpdateMutationObserver(/*in_style_recalc=*/false);
+  }
+
   NotifyFormStateChanged();
   if (GetDocument().IsActive()) {
     GetDocument()

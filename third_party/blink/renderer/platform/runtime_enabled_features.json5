@@ -3647,6 +3647,12 @@
       status: "stable",
     },
     {
+      // Improves the performance of the option element's MutationObserver.
+      // Enabled in M145, can be removed in M147.
+      name: "OptionMutationObserverImprovement",
+      status: "stable",
+    },
+    {
       name: "OrientationEvent",
       status: {"Android": "stable"},
     },
