@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/channel_info.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
@@ -59,6 +60,13 @@ static jlong JNI_ComposeBoxQueryControllerBridge_Init(
     const base::android::JavaParamRef<jobject>& java_obj) {
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_service || !aim_service->IsAimEligible()) {
+    return 0L;
+  }
+
+  // TODO(crbug.com/469142288): this should only disable sharing; for now the
+  // resolution is that in M144 we disable all of the fusebox.
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
     return 0L;
   }
 
