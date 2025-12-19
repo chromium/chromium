@@ -20,7 +20,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
-#include "ui/views/view_utils.h"
 
 // Template to be used as a mixin class for vertical tabs tests extending
 // InProcessBrowserTest.
