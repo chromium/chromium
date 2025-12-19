@@ -19112,6 +19112,7 @@ class OverscrollEffectTest : public LayerTreeHostImplTest {
   void VerifyOverscrollBehavior(LayerImpl* layer) {
     InputHandler& handler = GetInputHandler();
     ScrollNode* scroll_node = GetScrollNode(layer);
+    bool is_root_scroller = layer == OuterViewportScrollLayer();
 
     // Scroll parameters
     const gfx::Vector2dF delta(10, 10);
@@ -19143,17 +19144,22 @@ class OverscrollEffectTest : public LayerTreeHostImplTest {
         delta, run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kAuto)));
 
     // Case 2: None
-    // Expectation: Unused delta is clamped to zero (bubbling suppressed).
+    // Expectation: Unused delta is clamped to zero (bubbling suppressed) for
+    // non-root scrollers. For the root scroller, it is preserved to allow
+    // the browser to handle the overscroll event (e.g. navigation blocking).
+    gfx::Vector2dF expected_none =
+        is_root_scroller ? delta : gfx::Vector2dF(0, 0);
     EXPECT_VECTOR2DF_EQ(
-        gfx::Vector2dF(0, 0),
+        expected_none,
         run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kNone)));
 
     // Case 3: Mixed (None on X, Auto on Y)
-    // Expectation: X is clamped, Y is reported as unused.
-    EXPECT_VECTOR2DF_EQ(
-        gfx::Vector2dF(0, delta.y()),
-        run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kNone,
-                                      OverscrollBehavior::Type::kAuto)));
+    // Expectation: X is clamped for non-root scrollers.
+    gfx::Vector2dF expected_mixed =
+        is_root_scroller ? delta : gfx::Vector2dF(0, delta.y());
+    EXPECT_VECTOR2DF_EQ(expected_mixed, run_scroll(OverscrollBehavior(
+                                            OverscrollBehavior::Type::kNone,
+                                            OverscrollBehavior::Type::kAuto)));
   }
 
  private:

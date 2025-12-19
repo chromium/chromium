@@ -143,10 +143,12 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // paths for animated and non-animated scrolls but we should probably
   // decide when it best makes sense to cancel a scroll animation (maybe
   // ScrollBy is a better place to do it).
+  bool had_ongoing_animation = false;
   if (scroll_state->delta_granularity() ==
       ui::ScrollGranularity::kScrollByPrecisePixel) {
     if (ScrollNode* animating_node =
             GetAnimatingNodeForCurrentScrollingNode()) {
+      had_ongoing_animation = true;
       compositor_delegate_->ScrollAnimationAbort(animating_node->element_id);
     }
     if (ScrollNode* scroll_node = CurrentlyScrollingNode()) {
@@ -154,7 +156,11 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     }
   }
 
-  if (CurrentlyScrollingNode() && type == latched_scroll_type_) {
+  // This allows re-latch to an existing `CurrentlyScrollNode()`, if it is the
+  // same scroll type - and animations / snaps have not yet been resolved on it.
+  if (CurrentlyScrollingNode() && type == latched_scroll_type_ &&
+      (GetAnimatingNodeForCurrentScrollingNode() || had_ongoing_animation ||
+       CurrentlyScrollingNode()->snap_container_data.has_value())) {
     // It's possible we haven't yet cleared the CurrentlyScrollingNode if we
     // received a GSE but we're still animating the last scroll. If that's the
     // case, we'll simply un-defer the GSE and continue latching to the same
@@ -437,8 +443,12 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   // When overscroll effect on non-root scrollers is enabled,
   // ensure overscroll-behaviour: none is respected.
+  // TODO(crbug.com/470393117): Investigate whether overscroll-behavior: none
+  // should be respected on the root scroller. Currently, it propagates upwards,
+  // but this might conflict with the spec.
   if (base::FeatureList::IsEnabled(
-          ::features::kOverscrollEffectOnNonRootScrollers)) {
+          ::features::kOverscrollEffectOnNonRootScrollers) &&
+      !is_root_scroller) {
     if (scroll_node.overscroll_behavior.x == OverscrollBehavior::Type::kNone) {
       unused_scroll_delta.set_x(0.f);
     }
@@ -574,6 +584,8 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
     DCHECK(!should_snap);
 
     InsertPendingScrollendContainer(scroll_node->element_id);
+    deferred_scroll_ends_.erase(scroll_node->element_id);
+
     // Only reset scrollbar controller and tell browser controls about this
     // ScrollEnd if we haven't latched onto and are actively scrolling something
     // else.
@@ -593,27 +605,27 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
       return;
     }
 
-    // Scroll end will be deferred if there is an overscroll animation and the
-    // scrolling node needs to be snapped. This avoids computing snap targets
-    // while the elastic overscroll stretch effect is active (Android applies
-    // the stretch via a non-identity TransformNode scale).
+    // ScrollEnd event will be deferred if the scrolling node has an active
+    // elastic overscroll effect animation on it. This avoids computing snap
+    // targets while the scroller is stretched (Android applies the stretch via
+    // a non-identity TransformNode scale), which interferes with the snap
+    // calculation.
     //
     // TODO(crbug.com/470083700): Allow the snap animation to run concurrently
     // with the elastic overscroll release. Currently, this is deferred to
     // avoid targeting errors caused by the non-identity stretch transform.
-    bool overscroll_snapped_node =
+    bool overscroll_node =
         scroll_elasticity_helper_ &&
         !scroll_elasticity_helper_->StretchAmount(latched_node->element_id)
-             .IsZero() &&
-        latched_node->snap_container_data.has_value();
-    if (overscroll_snapped_node) {
+             .IsZero();
+    if (overscroll_node) {
       deferred_scroll_ends_.insert(latched_node->element_id);
       return;
     }
 
-    // Snap takes priority over completing the scroll end. This allows us to
-    // guarantee that snapping has been handled when the scroll end is
-    // delivered.
+    // ScrollEnd event is deferred if a Snap is needed. This allows us to
+    // guarantee that snapping has been fully handled when the actual ScrollEnd
+    // event is delivered.
     if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
       deferred_scroll_ends_.insert(latched_node->element_id);
       return;
