@@ -43,7 +43,6 @@
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/browser/script_executor.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
@@ -103,35 +102,6 @@ void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
   std::string msg;
   EXPECT_TRUE(message_queue.WaitForMessage(&msg));
   EXPECT_EQ("\"Hello from acking script!\"", msg);
-}
-
-// Executes a `script` as a user script associated with the given `extension_id`
-// within the primary main frame of `web_contents`, waiting for the injection to
-// complete.
-void ExecuteUserScript(content::WebContents& web_contents,
-                       const ExtensionId& extension_id,
-                       const std::string& script) {
-  base::RunLoop run_loop;
-
-  ScriptExecutor script_executor(&web_contents);
-  std::vector<mojom::JSSourcePtr> sources;
-  sources.push_back(mojom::JSSource::New(script, GURL()));
-  script_executor.ExecuteScript(
-      mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
-      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-          std::move(sources), mojom::ExecutionWorld::kUserScript,
-          /*world_id=*/std::nullopt,
-          blink::mojom::WantResultOption::kWantResult,
-          blink::mojom::UserActivationOption::kDoNotActivate,
-          blink::mojom::PromiseResultOption::kAwait)),
-      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-      mojom::MatchOriginAsFallbackBehavior::kNever,
-      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-      GURL() /* webview_src */,
-      base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
-          run_loop.QuitWhenIdleClosure()));
-
-  run_loop.Run();
 }
 
 // Test suite covering `extensions::ScriptInjectionTracker` from
@@ -325,7 +295,8 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
   // Programmatically inject a user script.
   static constexpr char kUserScript[] =
       "document.body.innerText = 'user script has run';";
-  ExecuteUserScript(*web_contents, extension->id(), kUserScript);
+  browsertest_util::ExecuteUserScript(web_contents, extension->id(),
+                                      kUserScript);
 
   // Verify that the right processes show up as having been injected with
   // content scripts.

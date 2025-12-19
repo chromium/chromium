@@ -13,12 +13,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/mojom/host_id.mojom.h"
-#include "extensions/common/mojom/match_origin_as_fallback.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -78,49 +76,15 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
       const std::optional<std::string>& world_id = std::nullopt) {
     SCOPED_TRACE(script.c_str());
 
-    ScriptExecutor script_executor(GetActiveWebContents());
-    base::RunLoop run_loop;
-    std::vector<ScriptExecutor::FrameResult> script_results;
-    auto on_complete =
-        [&run_loop, &script_results](
-            std::vector<ScriptExecutor::FrameResult> frame_results) {
-          script_results = std::move(frame_results);
-          run_loop.Quit();
-        };
+    auto frame_result = browsertest_util::ExecuteUserScript(
+        GetActiveWebContents(), extension.id(), script, world_id);
 
-    std::vector<mojom::JSSourcePtr> sources;
-    sources.push_back(mojom::JSSource::New(script, GURL()));
-    script_executor.ExecuteScript(
-        mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            std::move(sources), mojom::ExecutionWorld::kUserScript, world_id,
-            blink::mojom::WantResultOption::kWantResult,
-            blink::mojom::UserActivationOption::kDoNotActivate,
-            blink::mojom::PromiseResultOption::kAwait)),
-        ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-        mojom::MatchOriginAsFallbackBehavior::kNever,
-        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */, base::BindLambdaForTesting(on_complete));
-    run_loop.Run();
-
-    if (script_results.size() != 1) {
-      ADD_FAILURE() << "Incorrect script execution result count: "
-                    << script_results.size();
-      return base::Value();
-    }
-
-    ScriptExecutor::FrameResult& frame_result = script_results[0];
-    if (!frame_result.error.empty()) {
-      ADD_FAILURE() << "Unexpected script error: " << frame_result.error;
-      return base::Value();
-    }
-
-    if (frame_result.value.is_none()) {
+    if (frame_result.is_none()) {
       ADD_FAILURE() << "Null return value";
       return base::Value();
     }
 
-    return std::move(frame_result.value);
+    return frame_result;
   }
 
   // Navigates the active web contents to `url`, waiting for the navigation to
