@@ -53,8 +53,7 @@ export function getHtml(this: HistoryItemElement) {
             </div>
             <div id="icons">
               ${this.shouldShowActorTooltip_() ? html`
-                <cr-tooltip-icon id="actor-icon"
-                    icon-class="${this.actorIconClass_()}"
+                <cr-tooltip-icon id="actor-icon" icon-class="history20:auto-nav"
                     tooltip-text="$i18n{actorTaskTooltip}"
                     icon-aria-label="$i18n{actorTaskTooltip}">
                 </cr-tooltip-icon>
