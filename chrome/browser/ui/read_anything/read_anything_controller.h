@@ -119,9 +119,11 @@ class ReadAnythingController {
   // Closes the Immersive Reading Mode UI.
   void CloseImmersiveUI(bool closed_by_tab_switch = false);
 
+  // Toggles the Immersive Reading Mode UI.
+  void ToggleImmersiveUI(ReadAnythingOpenTrigger trigger);
+
   // Toggles the Reading Mode UI by utilizing the SidePanelUI on the active
   // tab.
-  // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
   void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
 
   int GetNavCounterForTesting() const;

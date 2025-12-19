@@ -291,10 +291,15 @@ void ReadAnythingController::CloseImmersiveUI(bool closed_by_tab_switch) {
   }
 }
 
-// TODO(crbug.com/447418049): Toggle immersive reading mode via this
-// entrypoint. Currently just toggle side panel reading mode via
-// ReadAnythingController when is_immersive_read_anything_enabled_ flag is
-// enabled.
+void ReadAnythingController::ToggleImmersiveUI(
+    ReadAnythingOpenTrigger trigger) {
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+  } else {
+    ShowImmersiveUI(trigger);
+  }
+}
+
 void ReadAnythingController::ToggleReadAnythingSidePanel(
     SidePanelOpenTrigger trigger) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
