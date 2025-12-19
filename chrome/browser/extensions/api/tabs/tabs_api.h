@@ -387,6 +387,8 @@ class TabsUpdateFunction : public ExtensionFunction {
                            content::WebContents*& contents,
                            std::string& error);
 
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   // Updates the active or selected tab. Returns true on success or if there was
   // nothing to do. Returns false on failure with an error message.
   bool UpdateActiveTab(const api::tabs::Update::Params& params,
@@ -401,6 +403,7 @@ class TabsUpdateFunction : public ExtensionFunction {
                             TabStripModel* tab_strip,
                             int tab_index,
                             std::string& error);
+#endif
 
   DECLARE_EXTENSION_FUNCTION("tabs.update", TABS_UPDATE)
 };

@@ -30,8 +30,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -99,6 +101,9 @@ namespace windows = api::windows;
 constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
     "Cannot determine language: tab not loaded";
 constexpr char kFrameNotFoundError[] = "No frame with id * in tab *.";
+constexpr char kCannotUpdateMuteCaptured[] =
+    "Cannot update mute state for tab *, tab has audio or video currently "
+    "being captured";
 
 namespace {
 
@@ -2040,9 +2045,249 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
           new_tab_index))));
 }
 
-// TabsUpdateFunction has a production implementation in tabs_api_non_android.cc
-// and a stub implementation in tabs_api_android.cc, but these utility functions
-// are shared (and will stay here when there's finally a single implementation).
+TabsUpdateFunction::TabsUpdateFunction() = default;
+
+ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
+  std::optional<tabs::Update::Params> params =
+      tabs::Update::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error;
+  int tab_id = -1;
+  content::WebContents* contents = nullptr;
+  if (!params->tab_id) {
+    // Attempt to look up the current tab in the current window.
+    if (!ComputeDefaultTabId(tab_id, contents, error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  } else {
+    tab_id = *params->tab_id;
+  }
+
+  int tab_index = -1;
+  WindowController* window = nullptr;
+  if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                 include_incognito_information(), &window,
+                                 &contents, &tab_index, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  if (DevToolsWindow::IsDevToolsWindow(contents)) {
+    return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+  }
+
+  // tabs_internal::GetTabById may return a null window for prerender tabs.
+  if (!window || !window->SupportsTabs()) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+  }
+
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  Browser* browser = window->GetBrowser();
+  TabStripModel* tab_strip = browser->tab_strip_model();
+#endif
+
+  // Cache the original web contents.
+  content::WebContents* original_contents = contents;
+
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Update the active (aka selected) tab.
+  if (!UpdateActiveTab(*params, tab_strip, tab_index, contents, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Update the highlighted tab.
+  if (!UpdateHighlightedTab(*params, tab_strip, tab_index, error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+#endif
+
+  if (params->update_properties.muted &&
+      !SetTabAudioMuted(contents, *params->update_properties.muted,
+                        TabMutedReason::kExtension, extension()->id())) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kCannotUpdateMuteCaptured, base::NumberToString(tab_id))));
+  }
+
+  if (params->update_properties.opener_tab_id) {
+    int opener_id = *params->update_properties.opener_tab_id;
+    content::WebContents* opener_contents = nullptr;
+    if (opener_id == tab_id) {
+      return RespondNow(Error("Cannot set a tab's opener to itself."));
+    }
+    if (!ExtensionTabUtil::GetTabById(opener_id, browser_context(),
+                                      include_incognito_information(),
+                                      &opener_contents)) {
+      return RespondNow(Error(
+          ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+                                         base::NumberToString(opener_id))));
+    }
+
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+    // if the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    }
+
+    // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+    if (tab_strip->GetIndexOfWebContents(opener_contents) ==
+        TabStripModel::kNoTab) {
+      return RespondNow(
+          Error("Tab opener must be in the same window as the updated tab."));
+    }
+    tab_strip->SetOpenerOfWebContentsAt(tab_index, opener_contents);
+#endif
+  }
+
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (params->update_properties.auto_discardable) {
+    bool state = *params->update_properties.auto_discardable;
+    resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+        original_contents)
+        ->SetAutoDiscardable(state);
+  }
+#endif
+
+  if (params->update_properties.pinned) {
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
+    // the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    }
+
+    // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+    bool pinned = *params->update_properties.pinned;
+    tab_strip->SetTabPinned(tab_index, pinned);
+
+    // Update the tab index because it may move when being pinned.
+    tab_index = tab_strip->GetIndexOfWebContents(contents);
+#endif
+  }
+
+  // TODO(rafaelw): handle setting remaining tab properties:
+  // -title
+  // -favIconUrl
+
+  // Navigate the tab to a new location if the url is different.
+  if (params->update_properties.url) {
+    std::string updated_url = *params->update_properties.url;
+    if (window->profile()->IsIncognitoProfile() &&
+        !IsURLAllowedInIncognito(GURL(updated_url))) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          tabs_constants::kURLsNotAllowedInIncognitoError, updated_url)));
+    }
+
+    // Get last committed or pending URL.
+    std::string current_url = contents->GetVisibleURL().is_valid()
+                                  ? contents->GetVisibleURL().spec()
+                                  : std::string();
+
+    if (!UpdateURL(original_contents, updated_url, tab_id, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+    tabs_internal::NotifyExtensionTelemetry(
+        Profile::FromBrowserContext(browser_context()), extension(),
+        safe_browsing::TabsApiInfo::UPDATE, current_url, updated_url,
+        js_callstack());
+#endif
+  }
+
+  return RespondNow(GetResult(original_contents));
+}
+
+bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
+                                             content::WebContents*& contents,
+                                             std::string& error) {
+  const auto* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    error = ExtensionTabUtil::kNoCurrentWindowError;
+    return false;
+  }
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+  contents = window_controller->GetActiveTab();
+  if (!contents) {
+    error = tabs_constants::kNoSelectedTabError;
+    return false;
+  }
+  tab_id = ExtensionTabUtil::GetTabId(contents);
+  return true;
+}
+
+// TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+bool TabsUpdateFunction::UpdateActiveTab(
+    const api::tabs::Update::Params& params,
+    TabStripModel* tab_strip,
+    int tab_index,
+    const content::WebContents* contents,
+    std::string& error) {
+  bool active = false;
+  // TODO(rafaelw): Setting |active| from js doesn't make much sense.
+  // Move tab selection management up to window.
+  if (params.update_properties.selected) {
+    active = *params.update_properties.selected;
+  }
+
+  // The 'active' property has replaced 'selected'.
+  if (params.update_properties.active) {
+    active = *params.update_properties.active;
+  }
+
+  if (!active) {
+    // Nothing to activate.
+    return true;
+  }
+
+  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // if the user is dragging tabs.
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  if (tab_strip->active_index() != tab_index) {
+    tab_strip->ActivateTabAt(tab_index);
+    DCHECK_EQ(contents, tab_strip->GetActiveWebContents());
+  }
+  return true;
+}
+
+bool TabsUpdateFunction::UpdateHighlightedTab(
+    const api::tabs::Update::Params& params,
+    TabStripModel* tab_strip,
+    int tab_index,
+    std::string& error) {
+  if (!params.update_properties.highlighted.has_value()) {
+    // Nothing to highlight.
+    return true;
+  }
+
+  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // if the user is dragging tabs.
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  if (params.update_properties.highlighted.value()) {
+    tab_strip->SelectTabAt(tab_index);
+  } else {
+    tab_strip->DeselectTabAt(tab_index);
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
                                    const std::string& url_string,
                                    int tab_id,
