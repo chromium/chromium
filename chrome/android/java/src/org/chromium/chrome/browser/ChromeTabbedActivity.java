@@ -691,8 +691,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             setHasIncognitoExtra(getIntent());
         }
         super.attachBaseContext(newBase);
-        IncognitoUtils.initializeEligibleTabletStatus(
-                this, MultiWindowUtils.isMultiInstanceApi31Enabled());
+        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            IncognitoUtils.initializeEligibleTabletStatus(
+                    this, MultiWindowUtils.isMultiInstanceApi31Enabled());
+        }
     }
 
     @Override
