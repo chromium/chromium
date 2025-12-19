@@ -2019,6 +2019,21 @@ older client's versioned struct definition
 
 See [Converting Legacy Chrome IPC To Mojo](/docs/mojo_ipc_conversion.md).
 
+### Files to include
+
+|Mojo Types|C++ Type|`.mojom-forward.h`|Include|Notes|
+|----------|--------|-------|-------|-----|
+|`interface`|`mojo::Remote<Xyz>`, `mojo::PendingRemote<Xyz>`, ...||`.mojom.h`||
+|`interface`|`class Xyz`|Y|`.mojom.h`||
+|`struct`, `union`|`XyzPtr`|Y|`.mojom-shared.h`||
+|`struct`, `union`|`XyzDataView`|Y|`.mojom-data-view.h`|Use in `xyz_mojom_traits.*` only.|
+|`enum`|`enum class Xyz`|Y| `.mojom-shared.h`||
+|`feature`|`base::FeatureList Xyz`|Y|`.mojom-features.h`||
+
+Prefer `.mojom-forward.h` in headers. Avoid using several includes, so
+if you need anything in `.mojom.h` prefer that, then `.mojom-shared.h` then
+specific files like `.mojom-data-view.h` or `.mojom-feature.h`.
+
 ### Additional Documentation
 
 [Calling Mojo From Blink](/docs/mojo_ipc_conversion.md#Blink_Specific-Advice):
