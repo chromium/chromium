@@ -387,7 +387,7 @@ class NavigationManagerImpl final : public NavigationManager {
   const raw_ptr<NavigationManagerDelegate> delegate_;
 
   // The BrowserState that is associated with this instance.
-  const raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
+  const raw_ptr<BrowserState> browser_state_;
 
   // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;
