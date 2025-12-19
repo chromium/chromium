@@ -13,6 +13,7 @@ group("all") {
     ":mojo_c_system_bindings",
     ":rust_mojo_tests",
     "mojom_parser",
+    "sequences",
   ]
 }
 
@@ -48,6 +49,7 @@ group("tests") {
   testonly = true
   deps = [
     "mojom_parser:mojom_parser_unittests",
+    "sequences:rust_sequences_unittests",
     "test_mojom:test_mojom_rust",
     "test_system:system_api_unittests",
   ]
