@@ -223,6 +223,13 @@ data/accessibility/accname/name-image-spinbutton-valuenow-in-label-expected-blin
 data/accessibility/accname/name-image-spinbutton-valuenow-in-label.html
 data/accessibility/accname/name-image-title-expected-blink.txt
 data/accessibility/accname/name-image-title.html
+data/accessibility/accname/name-img-empty-alt-title-expected-android-external.txt
+data/accessibility/accname/name-img-empty-alt-title-expected-android.txt
+data/accessibility/accname/name-img-empty-alt-title-expected-auralinux.txt
+data/accessibility/accname/name-img-empty-alt-title-expected-blink.txt
+data/accessibility/accname/name-img-empty-alt-title-expected-mac.txt
+data/accessibility/accname/name-img-empty-alt-title-expected-win.txt
+data/accessibility/accname/name-img-empty-alt-title.html
 data/accessibility/accname/name-img-label-alt-title-expected-blink.txt
 data/accessibility/accname/name-img-label-alt-title.html
 data/accessibility/accname/name-img-label-expected-blink.txt

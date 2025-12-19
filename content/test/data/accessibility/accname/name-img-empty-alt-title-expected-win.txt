@@ -1,0 +1,1 @@
+ROLE_SYSTEM_GRAPHIC name='To get missing image descriptions, open the context menu.' READONLY description-from:tooltip description='title'
