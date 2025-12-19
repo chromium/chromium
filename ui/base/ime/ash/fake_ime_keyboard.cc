@@ -20,7 +20,7 @@ void FakeImeKeyboard::SetCurrentKeyboardLayoutByName(
     base::OnceCallback<void(bool)> callback) {
   ++set_current_keyboard_layout_by_name_count_;
   std::move(callback).Run(
-      ImeKeyboard::SetCurrentKeyboardLayoutByNameImpl(layout_name));
+      ImeKeyboard::SetCurrentKeyboardLayoutByNameImplBase(layout_name));
 }
 
 bool FakeImeKeyboard::SetAutoRepeatRate(const AutoRepeatRate& rate) {

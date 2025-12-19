@@ -22,7 +22,7 @@ void ImeKeyboard::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool ImeKeyboard::SetCurrentKeyboardLayoutByNameImpl(
+bool ImeKeyboard::SetCurrentKeyboardLayoutByNameImplBase(
     const std::string& layout_name) {
   // Only notify on keyboard layout change.
   if (last_layout_ == layout_name) {
