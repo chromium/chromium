@@ -271,7 +271,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
   </token>
   <token key="EntrypointType">
-    <variant name="AppMenu" summary="the app menu"/>
     <variant name="ToolbarButton"
         summary="the contextual tasks toolbar button"/>
   </token>
