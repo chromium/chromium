@@ -60,6 +60,7 @@ GlicUnpinEvent GetEmptyUnpinEvent() {
                         base::TimeTicks::Now());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
   BrowserList::AddObserver(this);
@@ -139,5 +140,6 @@ void GlicActiveTabForProfileTracker::NotifyActiveTabChanged(
     tabs::TabInterface* active_tab) {
   active_tab_changed_callback_list_.Notify(active_tab);
 }
+#endif
 
 }  // namespace glic

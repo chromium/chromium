@@ -6,9 +6,13 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_UTILS_H_
 
 #include "base/callback_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/tabs/public/tab_interface.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif
 
 class BrowserWindowInterface;
 class Profile;
@@ -39,6 +43,7 @@ GlicPinnedTabUsage GetEmptyPinnedTabUsage();
 // Returns an empty unpin event.
 GlicUnpinEvent GetEmptyUnpinEvent();
 
+#if !BUILDFLAG(IS_ANDROID)
 // Shared util for monitoring changes to "active tab" for a given profile.
 class GlicActiveTabForProfileTracker : public BrowserListObserver {
  public:
@@ -89,6 +94,7 @@ class GlicActiveTabForProfileTracker : public BrowserListObserver {
 
   raw_ptr<Profile> profile_;
 };
+#endif
 
 }  // namespace glic
 

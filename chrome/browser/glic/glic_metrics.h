@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -399,16 +400,17 @@ class GlicMetrics {
       std::optional<display::Display> display,
       const gfx::Point& glic_center_point);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the area relative to the given chrome browser a given center point
   // is.
   ChromeRelativePosition GetChromeRelativePositionOfPoint(
       Browser* browser,
       const gfx::Point& glic_center_point);
-
   // Returns the percent overlap of the given glic bounds and the given chrome
   // browser.
   PercentOverlap GetPercentOverlapWithBrowser(Browser* browser,
                                               const gfx::Rect& glic_bounds);
+#endif
 
   base::TimeTicks fre_accepted_time_;
 
