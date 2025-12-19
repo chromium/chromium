@@ -162,6 +162,8 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
   base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link;
   ret = CVDisplayLinkCreateWithCGDisplay(display_id,
                                          display_link.InitializeInto());
+
+  RecordDisplayLinkCreation(ret == kCVReturnSuccess);
   if (ret != kCVReturnSuccess) {
     LOG(ERROR) << "CVDisplayLinkCreateWithCGDisplay failed. CVReturn: " << ret;
     return nullptr;

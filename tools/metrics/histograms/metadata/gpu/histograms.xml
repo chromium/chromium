@@ -2123,7 +2123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.ExternalBeginFrameSourceMac.DisplayLink"
-    enum="DisplayLinkCreateResult" expires_after="2026-04-13">
+    enum="DisplayLinkCreateResult" expires_after="2026-12-15">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -2134,6 +2134,19 @@ chromium-metrics-reviews@google.com.
     recorded each time a DisplayLink is created during
     RootCompositorFrameSinkImpl/ExternalBeginFrameSourceMac creation or during
     the monitor change in the existing ExternalBeginFrameSourceMac.
+  </summary>
+</histogram>
+
+<histogram name="Viz.ExternalBeginFrameSourceMac.DisplayLink.Create"
+    enum="BooleanSuccess" expires_after="2026-12-15">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The result of creating CVDisplaylink with CVDisplayLinkCreateWithCGDisplay
+    or CADisplayLink with [screen displayLinkWithTarget]. It does not track
+    ExternalDisplayLinkMac or Timer. This histogram is recorded each time a
+    DisplayLink is created in ExternalBeginFrameSourceMac,
+    ImageTransportSurfaceOverlayMacEGL, or DisplayLinkMacMojo.
   </summary>
 </histogram>
 

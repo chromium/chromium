@@ -119,6 +119,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
 
     NSScreen* screen = display::GetNSScreenFromDisplayID(display_id);
     if (!screen) {
+      RecordDisplayLinkCreation(false);
       return nullptr;
     }
 
@@ -127,8 +128,11 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
                                                     selector:@selector(step:)];
 
     if (!objc_state->display_link) {
+      RecordDisplayLinkCreation(false);
       return nullptr;
     }
+
+    RecordDisplayLinkCreation(true);
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;

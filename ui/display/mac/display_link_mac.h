@@ -110,6 +110,12 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   friend class CADisplayLinkMac;
 
   virtual ~DisplayLinkMac() = default;
+
+  // This histogram tracks the creation status of CVDisplayLink or
+  // CADisplayLink. ExternalDisplayLinkMac is excluded due to potential IPC
+  // delays; for instance, ExternalBeginFrameSourceMac::SetVSyncDisplayID()
+  // might be triggered before Viz receives the display addition IPC.
+  static void RecordDisplayLinkCreation(bool success);
 };
 
 }  // namespace ui

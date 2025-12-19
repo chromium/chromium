@@ -5,6 +5,7 @@
 #include "ui/display/mac/display_link_mac.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "ui/display/display_features.h"
 #include "ui/display/mac/ca_display_link_mac.h"
@@ -61,6 +62,11 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   }
 
   return CVDisplayLinkMac::GetForDisplay(display_id);
+}
+
+void DisplayLinkMac::RecordDisplayLinkCreation(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("Viz.ExternalBeginFrameSourceMac.DisplayLink.Create",
+                        success);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
