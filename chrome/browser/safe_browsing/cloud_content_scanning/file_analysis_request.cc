@@ -286,13 +286,22 @@ void FileAnalysisRequest::OnGotFileData(
     }
     zip_analyzer_->Start();
   } else if (IsRarFile(ext, mime_type)) {
-    rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
-        path_,
-        /*password=*/password(),
-        base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                       weakptr_factory_.GetWeakPtr(),
-                       std::move(result_and_data.second)),
-        LaunchFileUtilService());
+    auto callback = base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
+                                   weakptr_factory_.GetWeakPtr(),
+                                   std::move(result_and_data.second));
+    if (is_obfuscated_ && base::FeatureList::IsEnabled(
+                              enterprise_obfuscation::
+                                  kEnterpriseFileObfuscationArchiveAnalyzer)) {
+      rar_analyzer_ = SandboxedRarAnalyzer::CreateObfuscatedAnalyzer(
+          path_,
+          /*password=*/password(), std::move(callback),
+          LaunchFileUtilService());
+    } else {
+      rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
+          path_,
+          /*password=*/password(), std::move(callback),
+          LaunchFileUtilService());
+    }
     rar_analyzer_->Start();
   } else {
     CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::kSuccess,

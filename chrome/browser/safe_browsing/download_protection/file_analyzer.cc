@@ -140,21 +140,17 @@ void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
 void FileAnalyzer::StartExtractZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  auto callback = base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
+                                 weakptr_factory_.GetWeakPtr());
   // We give the zip analyzer a weak pointer to this object.
   if (is_obfuscated_ &&
       base::FeatureList::IsEnabled(
           enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
-        tmp_path_, password_,
-        base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
-                       weakptr_factory_.GetWeakPtr()),
-        LaunchFileUtilService());
+        tmp_path_, password_, std::move(callback), LaunchFileUtilService());
   } else {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
-        tmp_path_, password_,
-        base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
-                       weakptr_factory_.GetWeakPtr()),
-        LaunchFileUtilService());
+        tmp_path_, password_, std::move(callback), LaunchFileUtilService());
   }
   zip_analyzer_->Start();
 }
@@ -215,13 +211,19 @@ void FileAnalyzer::OnZipAnalysisFinished(
 void FileAnalyzer::StartExtractRarFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  auto callback = base::BindOnce(&FileAnalyzer::OnRarAnalysisFinished,
+                                 weakptr_factory_.GetWeakPtr());
   // We give the rar analyzer a weak pointer to this object. Since the
   // analyzer is refcounted, it might outlive the request.
-  rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
-      tmp_path_, password_,
-      base::BindOnce(&FileAnalyzer::OnRarAnalysisFinished,
-                     weakptr_factory_.GetWeakPtr()),
-      LaunchFileUtilService());
+  if (is_obfuscated_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer)) {
+    rar_analyzer_ = SandboxedRarAnalyzer::CreateObfuscatedAnalyzer(
+        tmp_path_, password_, std::move(callback), LaunchFileUtilService());
+  } else {
+    rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
+        tmp_path_, password_, std::move(callback), LaunchFileUtilService());
+  }
   rar_analyzer_->Start();
 }
 

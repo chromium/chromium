@@ -646,4 +646,64 @@ TEST_F(FileAnalysisRequestTest, ObfuscatedEncryptedZipFile) {
   EXPECT_EQ(data.size, original_contents.size());
 }
 
+class FileAnalysisRequestRarTest : public FileAnalysisRequestTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool is_obfuscated() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(, FileAnalysisRequestRarTest, testing::Bool());
+
+TEST_P(FileAnalysisRequestRarTest, EncryptedRarFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (is_obfuscated()) {
+    scoped_feature_list.InitWithFeatures(
+        {enterprise_obfuscation::kEnterpriseFileObfuscation,
+         enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer},
+        {});
+  }
+
+  content::BrowserTaskEnvironment browser_task_environment;
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath test_rar;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_rar));
+  test_rar = test_rar.AppendASCII("safe_browsing")
+                 .AppendASCII("rar")
+                 .AppendASCII("passwd1234.rar");
+
+  std::string original_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_rar, &original_contents));
+
+  base::FilePath file_path = test_rar;
+  if (is_obfuscated()) {
+    // Obfuscate the file contents and write to file.
+    enterprise_obfuscation::DownloadObfuscator obfuscator;
+    auto obfuscation_result =
+        obfuscator.ObfuscateChunk(base::as_byte_span(original_contents), true);
+
+    ASSERT_TRUE(obfuscation_result.has_value());
+    file_path = temp_dir.GetPath().AppendASCII("obfuscated.rar");
+    ASSERT_TRUE(base::WriteFile(file_path, obfuscation_result.value()));
+  }
+
+  auto request = MakeRequest(file_path, file_path.BaseName(),
+                             /*delay_opening_file=*/false,
+                             /*mime_type=*/"application/x-rar-compressed",
+                             /*is_obfuscated=*/is_obfuscated());
+  request->set_password("67890");  // Incorrect password
+
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
+                         BinaryUploadRequest::Data>
+      future;
+  request->GetRequestData(future.GetCallback());
+  auto [result, data] = future.Take();
+
+  EXPECT_EQ(result,
+            enterprise_connectors::ScanRequestUploadResult::kFileEncrypted);
+  EXPECT_EQ(data.size, original_contents.size());
+}
+
 }  // namespace safe_browsing

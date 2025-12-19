@@ -1142,6 +1142,49 @@ TEST_F(FileAnalyzerTest, ObfuscatedZipAnalysis) {
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::VALID);
 }
+TEST_F(FileAnalyzerTest, ObfuscatedRarAnalysis) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {enterprise_obfuscation::kEnterpriseFileObfuscation,
+       enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer},
+      {});
+
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor, /*is_obfuscated=*/true);
+  base::RunLoop run_loop;
+
+  base::FilePath target_file_name(FILE_PATH_LITERAL("target.rar"));
+  base::FilePath tmp_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
+
+  base::FilePath rar_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &rar_path));
+  rar_path = rar_path.AppendASCII("safe_browsing")
+                 .AppendASCII("rar")
+                 .AppendASCII("has_exe.rar");
+
+  // Obfuscate
+  std::string original_rar_content;
+  ASSERT_TRUE(base::ReadFileToString(rar_path, &original_rar_content));
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+  auto obfuscation_result =
+      obfuscator.ObfuscateChunk(base::as_byte_span(original_rar_content), true);
+  ASSERT_TRUE(obfuscation_result.has_value());
+  ASSERT_TRUE(base::WriteFile(tmp_path, obfuscation_result.value()));
+
+  analyzer.Start(
+      target_file_name, tmp_path, /*password=*/std::nullopt,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
+  EXPECT_TRUE(result_.archived_executable);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::VALID);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing
