@@ -2781,8 +2781,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
-  if (![self isRunningTest:@selector
-             (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
+  if ([self isRunningTest:@selector
+            (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+  } else {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
