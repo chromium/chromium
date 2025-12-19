@@ -32,6 +32,7 @@ enum class IconType {
   kGeneric,
   kGform,
   kGmap,
+  kGproject,
   kGsheet,
   kGsite,
   kGmaillayout,

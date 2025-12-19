@@ -38,6 +38,8 @@ inline constexpr char kEncryptedMimeType[] =
     "application/vnd.google-gsuite.encrypted";
 inline constexpr char kEmailLayoutsMimeType[] =
     "application/vnd.google-apps.mail-layout";
+inline constexpr char kDriveProjectMimeType[] =
+    "application/vnd.google-apps.project";
 
 // Escapes ' to \' in the |str|. This is designed to use for string value of
 // search parameter on Drive API v2.

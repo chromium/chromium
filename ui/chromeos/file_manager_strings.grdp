@@ -1465,6 +1465,9 @@
   <message name="IDS_FILE_BROWSER_GMAP_DOCUMENT_FILE_TYPE" desc="Google map file type">
     Google map
   </message>
+  <message name="IDS_FILE_BROWSER_GPROJECT_DOCUMENT_FILE_TYPE" desc="Google drive project file type">
+    Google Project
+  </message>
   <message name="IDS_FILE_BROWSER_GSITE_DOCUMENT_FILE_TYPE" desc="Google site file type">
     Google site
   </message>

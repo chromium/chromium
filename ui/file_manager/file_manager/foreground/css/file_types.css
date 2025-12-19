@@ -103,6 +103,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
+[file-type-icon='gproject'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gproject.svg);
+}
+
 [file-type-icon='gsite'] {
   -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
@@ -214,6 +218,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
+.no-thumbnail[generic-thumbnail='gproject'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gproject.svg);
+}
+
 .no-thumbnail[generic-thumbnail='gsite'] {
   -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
@@ -292,6 +300,11 @@ body.check-select #list-container li[selected] [file-type-icon],
 .no-thumbnail[generic-thumbnail='gsite'],
 .no-thumbnail[generic-thumbnail='sites'] {
   background-color: var(--cros-sys-file_site);
+}
+
+[file-type-icon='gproject'],
+.no-thumbnail[generic-thumbnail='gproject'] {
+  background-color: var(--cros-sys-file_project);
 }
 
 [file-type-icon='excel'],
