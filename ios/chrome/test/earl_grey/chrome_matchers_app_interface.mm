@@ -791,9 +791,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
     UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
         SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
                                            GetAnyKeyWindow()));
-    return grey_allOf(grey_buttonTitle(navBar.backItem.title),
-                      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-                      nil);
+    return grey_allOf(
+        grey_buttonTitle(navBar.backItem.title),
+        grey_not([ChromeMatchersAppInterface navigationBarCloseButton]),
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
   }
 }
 

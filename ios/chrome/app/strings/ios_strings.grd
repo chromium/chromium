@@ -940,26 +940,17 @@
       <message name="IDS_IOS_BOOKMARK_ACTION_MOVE" desc="Title of the action that moves a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
         Move
       </message>
-      <message name="IDS_IOS_BOOKMARK_ACTION_SELECT" desc="Title of the action that selects a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
-        Select
-      </message>
       <message name="IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON" desc="Button to assign a folder to an uncategorized bookmark. [iOS only]">
         Choose folder
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE" desc="Text on the bookmarks context bar for delete action">
        Delete
       </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT" desc="Text on the bookmarks context bar for edit action">
-        Edit
-      </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE" desc="Text on the bookmarks context bar to show more context menu">
         More…
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER" desc="Text on the bookmarks context bar to create new folder">
         New folder
-      </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_SELECT" desc="Text on the bookmarks context bar for select action">
-        Select
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT" desc="Text on the bookmarks context menu to edit selected bookmark">
         Edit Bookmark
@@ -1010,6 +1001,12 @@
       </message>
       <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
+      </message>
+      <message name="IDS_IOS_BOOKMARK_NAVIGATION_BAR_DESELECT_ALL" desc="Text shown on left navigation bar button in the bookmarks menu to deselect all bookmarks.">
+        Deselect all
+      </message>
+      <message name="IDS_IOS_BOOKMARK_NAVIGATION_BAR_SELECT_ALL" desc="Text shown on left navigation bar button in the bookmarks menu to select all bookmarks.">
+        Select all
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_BOOKMARKS_BAR_TITLE" desc="Text that describes the bookmarks present in the bookmarks bar for chrome on desktop. [Length: 30em.] [iOS only]">
         Bookmarks bar
@@ -6301,6 +6298,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_IOS_SELECT_ACTION_TITLE" desc="Title of the action used to select items. [iOS only]">
+        Select
       </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON" desc="Text for the Allow button for the Send Tab to Self promo Magic Stack module.">
         Allow Tabs Notifications…

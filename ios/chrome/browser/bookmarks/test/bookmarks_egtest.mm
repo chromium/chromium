@@ -224,8 +224,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
-  // Verify context bar shows disabled "Delete" disabled "More" enabled
-  // "Cancel".
+  // Verify context bar shows disabled "Delete" disabled "More" and "Done"
+  // button.
   [[EarlGrey
       selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
@@ -240,9 +240,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Select single URL.
@@ -250,7 +249,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
       performAction:grey_tap()];
 
-  // Verify context bar shows enabled "Delete" enabled "More" enabled "Cancel".
+  // Verify context bar shows enabled "Delete" enabled "More" and "Done" button.
   [[EarlGrey
       selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
@@ -259,9 +258,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Unselect all.
@@ -269,8 +267,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Second URL")]
       performAction:grey_tap()];
 
-  // Verify context bar shows disabled "Delete" disabled "More" enabled
-  // "Cancel".
+  // Verify context bar shows disabled "Delete" disabled "More" and "Done"
+  // button.
   [[EarlGrey
       selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
@@ -285,9 +283,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Select single Folder.
@@ -304,9 +300,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Unselect all.
@@ -314,8 +309,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_tap()];
 
-  // Verify context bar shows disabled "Delete" disabled "More" enabled
-  // "Cancel".
+  // Verify context bar shows disabled "Delete" disabled "More" enabled and
+  // "Done" button.
   [[EarlGrey
       selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
@@ -330,9 +325,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Cancel edit mode
@@ -378,9 +371,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Unselect Folder 1, so that Second URL is selected.
@@ -398,9 +390,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Unselect all, but one Folder - Folder 1 is selected.
@@ -421,9 +412,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Unselect all.
@@ -431,8 +421,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_tap()];
 
-  // Verify context bar shows disabled "Delete" disabled "More" enabled
-  // "Cancel".
+  // Verify context bar shows disabled "Delete" disabled "More" and "Done"
+  // button.
   [[EarlGrey
       selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
                                    [BookmarkEarlGreyUI contextBarDeleteString])]
@@ -447,9 +437,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
-  [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
 
   // Cancel edit mode

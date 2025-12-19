@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
@@ -297,10 +298,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   _bookmarkModelBridge.reset();
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
-}
-
-- (void)setExternalBookmark:(const BookmarkNode*)node {
-  _externalBookmark = node;
 }
 
 - (BOOL)canDismiss {
@@ -608,6 +605,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       editing ? kTableViewNavigationAlphaForDisabledSearchBar : 1.0;
 
   self.tableView.dragInteractionEnabled = !editing;
+
+  self.navigationItem.rightBarButtonItem = [self createNavigationBarDoneButton];
 }
 
 - (void)refreshContents {
@@ -994,7 +993,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                               view:strongSelf.tableView];
     // Create the confirm button.
     [strongSelf.actionSheetCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
+        addItemWithTitle:GetNSString(
                              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)
                   action:^{
                     base::RecordAction(base::UserMetricsAction(
@@ -1007,7 +1006,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
     // Create the cancel button.
     [strongSelf.actionSheetCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
+        addItemWithTitle:GetNSString(
                              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_CANCEL)
                   action:^{
                     base::RecordAction(base::UserMetricsAction(
@@ -1385,12 +1384,76 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if ([self isDisplayingBookmarkRoot]) {
     [self navigationBarCancel:self];
   } else {
-    [self back];
+    [self backAction];
   }
   return YES;
 }
 
-#pragma mark - private
+#pragma mark - Accessors & Mutators
+
+- (UIBarButtonItem*)deleteButton {
+  if (!_deleteButton) {
+    _deleteButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                             target:self
+                             action:@selector(leadingButtonClicked)];
+    _deleteButton.accessibilityLabel =
+        GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE);
+    _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
+    _deleteButton.accessibilityIdentifier =
+        kBookmarksHomeLeadingButtonIdentifier;
+  }
+  return _deleteButton;
+}
+
+- (UIBarButtonItem*)moreButton {
+  if (!_moreButton) {
+    NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE);
+    _moreButton =
+        [[UIBarButtonItem alloc] initWithTitle:titleString
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(centerButtonClicked)];
+    _moreButton.accessibilityIdentifier = kBookmarksHomeCenterButtonIdentifier;
+  }
+  return _moreButton;
+}
+
+- (void)setContextBarState:(BookmarksContextBarState)state {
+  _contextBarState = state;
+  switch (state) {
+    case BookmarksContextBarDefault:
+      [self setBookmarksContextBarButtonsDefaultState];
+      [self setBookmarksNavigationBarButtonsDefaultState];
+      break;
+    case BookmarksContextBarBeginSelection:
+      [self setBookmarksContextBarSelectionStartState];
+      [self setBookmarksNavigationBarSelectionState];
+      self.moreButton.enabled = NO;
+      self.deleteButton.enabled = NO;
+      break;
+    case BookmarksContextBarSingleURLSelection:
+    case BookmarksContextBarMultipleURLSelection:
+    case BookmarksContextBarMultipleFolderSelection:
+    case BookmarksContextBarMixedSelection:
+    case BookmarksContextBarSingleFolderSelection:
+      // Reset to start state, and then override with customizations that apply.
+      [self setBookmarksContextBarSelectionStartState];
+      [self setBookmarksNavigationBarSelectionState];
+      self.moreButton.enabled = YES;
+      self.deleteButton.enabled = YES;
+      break;
+    case BookmarksContextBarNone:
+    default:
+      break;
+  }
+}
+
+- (void)setExternalBookmark:(const BookmarkNode*)node {
+  _externalBookmark = node;
+}
+
+#pragma mark - Private
 
 // Creates a delete action for the swipe menu with destructive style (and red
 // color).
@@ -1400,7 +1463,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   return [UIContextualAction
       contextualActionWithStyle:UIContextualActionStyleDestructive
                           title:
-                              l10n_util::GetNSString(
+                              GetNSString(
                                   IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_DELETE)
                         handler:^(UIContextualAction* action,
                                   UIView* sourceView,
@@ -1419,7 +1482,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   UIContextualAction* remindAction = [UIContextualAction
       contextualActionWithStyle:UIContextualActionStyleNormal
                           title:
-                              l10n_util::GetNSString(
+                              GetNSString(
                                   IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_REMIND)
                         handler:^(UIContextualAction* action,
                                   UIView* sourceView,
@@ -1549,7 +1612,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
             (BookmarksHomeViewController*)viewController
                                     usingBookmarkNode:
                                         (const BookmarkNode*)node {
-  viewController.navigationItem.leftBarButtonItem.action = @selector(back);
   // Disable large titles on every VC but the root controller.
   if (node != _bookmarkModel->root_node()) {
     viewController.navigationItem.largeTitleDisplayMode =
@@ -1558,26 +1620,165 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   // Add custom title.
   viewController.title = bookmark_utils_ios::TitleForBookmarkNode(node);
-
-  // Add custom done button.
-  viewController.navigationItem.rightBarButtonItem =
-      [self customizedDoneButton];
+  [viewController setBookmarksNavigationBarButtonsDefaultState];
 }
 
 // Back button callback for the new ui.
-- (void)back {
+- (void)backAction {
   [self navigateAway];
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (UIBarButtonItem*)customizedDoneButton {
+// Returns a button for the context bar that enables edit mode for bookmarks.
+- (UIBarButtonItem*)createEditButton {
+  NSString* titleString = GetNSString(IDS_IOS_SELECT_ACTION_TITLE);
+
+  UIBarButtonItem* editButton =
+      [[UIBarButtonItem alloc] initWithTitle:titleString
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(trailingButtonClicked)];
+  editButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
+  // The edit button is only enabled if the displayed root folder is editable
+  // and has items. Note that Bookmarks Bar, Mobile Bookmarks, and Other
+  // Bookmarks return as "editable" since their contents can be edited.
+  // Editing bookmarks must also be allowed.
+  editButton.enabled = [self isEditBookmarksEnabled] &&
+                       [self hasBookmarksOrFolders] &&
+                       [self isNodeEditableByUser:self.mediator.displayedNode];
+  return editButton;
+}
+
+// Returns a button to add a new folder to the bookmarks.
+- (UIBarButtonItem*)createNewFolderButton {
+  UIImage* newFolderIcon =
+      DefaultSymbolWithConfiguration(kFolderBadgePlusSymbol, nil);
+
+  UIBarButtonItem* newFolderButton =
+      [[UIBarButtonItem alloc] initWithImage:newFolderIcon
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(leadingButtonClicked)];
+  newFolderButton.accessibilityLabel =
+      GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER);
+  newFolderButton.accessibilityIdentifier =
+      kBookmarksHomeLeadingButtonIdentifier;
+  newFolderButton.enabled = [self allowsNewFolder];
+  return newFolderButton;
+}
+
+// Returns a button to select/deselect all bookmark nodes.
+- (UIBarButtonItem*)createMultiSelectButton {
+  CHECK(self.mediator.currentlyInEditMode);
+
+  BOOL hasSelectedNodes = !self.mediator.selectedNodesForEditMode.empty();
+  NSString* titleText = GetNSString(
+      hasSelectedNodes ? IDS_IOS_BOOKMARK_NAVIGATION_BAR_DESELECT_ALL
+                       : IDS_IOS_BOOKMARK_NAVIGATION_BAR_SELECT_ALL);
+  NSString* accessibilityID =
+      hasSelectedNodes ? kBookmarksHomeNavigationBarDeselectAllButtonIdentifier
+                       : kBookmarksHomeNavigationBarSelectAllButtonIdentifier;
+  SEL action = hasSelectedNodes ? @selector(didTapDeselectAll)
+                                : @selector(didTapSelectAll);
+
+  UIBarButtonItem* multiSelectButton =
+      [[UIBarButtonItem alloc] initWithTitle:titleText
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:action];
+  multiSelectButton.accessibilityIdentifier = accessibilityID;
+  return multiSelectButton;
+}
+
+// Selects all editable bookmark nodes currently displayed.
+- (void)didTapSelectAll {
+  std::set<const bookmarks::BookmarkNode*> allEditableNodes;
+  NSArray<TableViewItem*>* items = [self.tableViewModel
+      itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
+
+  for (TableViewItem* item in items) {
+    if (item.type == BookmarksHomeItemTypeBookmark) {
+      BookmarksHomeNodeItem* nodeItem =
+          base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
+      const bookmarks::BookmarkNode* node = nodeItem.bookmarkNode;
+      if ([self isNodeEditableByUser:node]) {
+        allEditableNodes.insert(node);
+      }
+    }
+  }
+
+  self.mediator.selectedNodesForEditMode = allEditableNodes;
+  [self restoreRowSelection];
+  [self handleSelectEditNodes:self.mediator.selectedNodesForEditMode];
+}
+
+// Deselects all currently selected bookmark nodes.
+- (void)didTapDeselectAll {
+  // Deselect all rows in the table view.
+  NSArray<NSIndexPath*>* selectedIndexPaths =
+      [self.tableView indexPathsForSelectedRows];
+  if (selectedIndexPaths.count > 0) {
+    for (NSIndexPath* indexPath in selectedIndexPaths) {
+      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+  }
+
+  // Clear the selected nodes in the mediator.
+  self.mediator.selectedNodesForEditMode.clear();
+  [self handleSelectEditNodes:self.mediator.selectedNodesForEditMode];
+}
+
+// Returns a done button for the context bar that disables edit mode in
+// bookmarks.
+- (UIBarButtonItem*)createDoneButton {
+  NSString* titleString = GetNSString(IDS_DONE);
+  UIBarButtonItem* doneButton =
+      [[UIBarButtonItem alloc] initWithTitle:titleString
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(trailingButtonClicked)];
+  doneButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
+  return doneButton;
+}
+
+// Returns a spacer to separate interactable buttons.
+- (UIBarButtonItem*)createSpacerButton {
+  return [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+}
+
+// Returns a Done button for the right side of the navigation bar.
+- (UIBarButtonItem*)createNavigationBarDoneButton {
+  BOOL isEditingWithoutActiveSearch =
+      self.mediator.currentlyInEditMode &&
+      !self.mediator.currentlyShowingSearchResults;
+  UIBarButtonSystemItem buttonItem = isEditingWithoutActiveSearch
+                                         ? UIBarButtonSystemItemDone
+                                         : UIBarButtonSystemItemClose;
+
   UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:buttonItem
                            target:self
-                           action:@selector(navigationBarCancel:)];
+                           action:@selector(didTapNavigationBarDoneButton)];
   doneButton.accessibilityIdentifier =
       kBookmarksHomeNavigationBarDoneButtonIdentifier;
   return doneButton;
+}
+
+// Called when the right navigation bar button is tapped. Exits search/edit mode
+// or dismisses the view.
+- (void)didTapNavigationBarDoneButton {
+  BOOL isEditingWithoutActiveSearch =
+      self.mediator.currentlyInEditMode &&
+      !self.mediator.currentlyShowingSearchResults;
+
+  if (isEditingWithoutActiveSearch) {
+    [self setTableViewEditing:NO];
+    return;
+  }
+  [self navigationBarCancel:nil];
 }
 
 // Saves the current position and asks the delegate to open the url, if delegate
@@ -2104,7 +2305,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self.actionSheetCoordinator start];
 }
 
-// Called when the trailing button, "Select" or "Cancel" is clicked.
+// Called when the trailing button, "Select" or "Done" is clicked.
 - (void)trailingButtonClicked {
   // Ignore the button tap if any of our controller is presenting.
   if ([self isAnyControllerPresenting]) {
@@ -2142,113 +2343,40 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 #pragma mark - ContextBarStates
 
-// Customizes the context bar buttons based the `state` passed in.
-- (void)setContextBarState:(BookmarksContextBarState)state {
-  _contextBarState = state;
-  switch (state) {
-    case BookmarksContextBarDefault:
-      [self setBookmarksContextBarButtonsDefaultState];
-      break;
-    case BookmarksContextBarBeginSelection:
-      [self setBookmarksContextBarSelectionStartState];
-      break;
-    case BookmarksContextBarSingleURLSelection:
-    case BookmarksContextBarMultipleURLSelection:
-    case BookmarksContextBarMultipleFolderSelection:
-    case BookmarksContextBarMixedSelection:
-    case BookmarksContextBarSingleFolderSelection:
-      // Reset to start state, and then override with customizations that apply.
-      [self setBookmarksContextBarSelectionStartState];
-      self.moreButton.enabled = YES;
-      self.deleteButton.enabled = YES;
-      break;
-    case BookmarksContextBarNone:
-    default:
-      break;
-  }
-}
-
+// Sets the context bar buttons in their default state (non-edit mode).
 - (void)setBookmarksContextBarButtonsDefaultState {
-  // Set New Folder button
-  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER);
-  UIBarButtonItem* newFolderButton =
-      [[UIBarButtonItem alloc] initWithTitle:titleString
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(leadingButtonClicked)];
-  newFolderButton.accessibilityIdentifier =
-      kBookmarksHomeLeadingButtonIdentifier;
-  newFolderButton.enabled = [self allowsNewFolder];
-
-  // Spacer button.
-  UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-
-  // Set Edit button.
-  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT);
-  UIBarButtonItem* editButton =
-      [[UIBarButtonItem alloc] initWithTitle:titleString
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(trailingButtonClicked)];
-  editButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
-  // The edit button is only enabled if the displayed root folder is editable
-  // and has items. Note that Bookmarks Bar, Mobile Bookmarks, and Other
-  // Bookmarks return as "editable" since their contents can be edited. Editing
-  // bookmarks must also be allowed.
-  editButton.enabled = [self isEditBookmarksEnabled] &&
-                       [self hasBookmarksOrFolders] &&
-                       [self isNodeEditableByUser:self.mediator.displayedNode];
-
-  [self setToolbarItems:@[ newFolderButton, spaceButton, editButton ]
-               animated:NO];
+  [self setToolbarItems:@[
+    [self createNewFolderButton], [self createSpacerButton],
+    [self createEditButton]
+  ]
+               animated:YES];
 }
 
+// Sets the context bar buttons in edit mode.
 - (void)setBookmarksContextBarSelectionStartState {
-  // Disabled Delete button.
-  NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE);
-  self.deleteButton =
-      [[UIBarButtonItem alloc] initWithTitle:titleString
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(leadingButtonClicked)];
-  self.deleteButton.tintColor = [UIColor colorNamed:kRedColor];
-  self.deleteButton.enabled = NO;
-  self.deleteButton.accessibilityIdentifier =
-      kBookmarksHomeLeadingButtonIdentifier;
+  BOOL isCurrentlyShowingSearchResults =
+      self.mediator.currentlyShowingSearchResults;
 
-  // Disabled More button.
-  titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE);
-  self.moreButton =
-      [[UIBarButtonItem alloc] initWithTitle:titleString
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(centerButtonClicked)];
-  self.moreButton.enabled = NO;
-  self.moreButton.accessibilityIdentifier =
-      kBookmarksHomeCenterButtonIdentifier;
+  [self setToolbarItems:isCurrentlyShowingSearchResults ? @[
+        self.deleteButton, [self createSpacerButton], self.moreButton,
+        [self createSpacerButton], [self createDoneButton]
+      ] : @[
+        self.deleteButton, [self createSpacerButton], self.moreButton
+      ] animated:YES];
+}
 
-  // Enabled Cancel button.
-  titleString = GetNSString(IDS_CANCEL);
-  UIBarButtonItem* cancelButton =
-      [[UIBarButtonItem alloc] initWithTitle:titleString
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(trailingButtonClicked)];
-  cancelButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
+// Sets the default navigation bar buttons.
+- (void)setBookmarksNavigationBarButtonsDefaultState {
+  // Restores the default back button.
+  self.navigationItem.leftBarButtonItem = nil;
+  self.navigationItem.leftBarButtonItem.action = @selector(backAction);
+  self.navigationItem.rightBarButtonItem = [self createNavigationBarDoneButton];
+}
 
-  // Spacer button.
-  UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-
-  [self setToolbarItems:@[
-    self.deleteButton, spaceButton, self.moreButton, spaceButton, cancelButton
-  ]
-               animated:NO];
+// Sets the navigation bar buttons in edit mode.
+- (void)setBookmarksNavigationBarSelectionState {
+  self.navigationItem.leftBarButtonItem = [self createMultiSelectButton];
+  self.navigationItem.rightBarButtonItem = [self createNavigationBarDoneButton];
 }
 
 #pragma mark - Context Menu
@@ -2464,7 +2592,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (void)addCancelActionToCoordinator:(AlertCoordinator*)coordinator {
   __weak BookmarksHomeViewController* weakSelf = self;
   [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+      addItemWithTitle:GetNSString(IDS_APP_CANCEL)
                 action:^{
                   [weakSelf dismissActionSheetCoordinator];
                 }

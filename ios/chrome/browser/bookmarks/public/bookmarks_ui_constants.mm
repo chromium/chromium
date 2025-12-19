@@ -28,6 +28,10 @@ NSString* const kBookmarkNavigationBarIdentifier =
     @"kBookmarkNavigationBarIdentifier";
 NSString* const kBookmarksHomeNavigationBarDoneButtonIdentifier =
     @"kBookmarksHomeNavigationBarDoneButtonIdentifier";
+NSString* const kBookmarksHomeNavigationBarDeselectAllButtonIdentifier =
+    @"kBookmarksHomeNavigationBarDeselectAllButtonIdentifier";
+NSString* const kBookmarksHomeNavigationBarSelectAllButtonIdentifier =
+    @"kBookmarksHomeNavigationBarSelectAllButtonIdentifier";
 NSString* const kBookmarkEditNavigationBarDoneButtonIdentifier =
     @"kBookmarkEditNavigationBarDoneButtonIdentifier";
 NSString* const kBookmarkFolderEditNavigationBarDoneButtonIdentifier =

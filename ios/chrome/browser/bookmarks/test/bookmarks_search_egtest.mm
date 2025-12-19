@@ -519,7 +519,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
-  // Cancel edito mode.
+  // Cancel edit mode.
   [BookmarkEarlGreyUI closeContextBarEditMode];
 
   // Verify search bar is enabled.

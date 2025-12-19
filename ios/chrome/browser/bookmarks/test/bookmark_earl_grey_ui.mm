@@ -34,6 +34,7 @@
 #pragma clang diagnostic pop
 
 using chrome_test_util::BookmarksDestinationButton;
+using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -277,10 +278,16 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (void)closeContextBarEditMode {
+  id<GREYMatcher> contextBarDoneButtonMatcher =
+      ContextBarTrailingButtonWithLabel(
+          [BookmarkEarlGreyUI contextBarCancelString]);
   [[EarlGrey
-      selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
-                                   [BookmarkEarlGreyUI contextBarCancelString])]
-      performAction:grey_tap()];
+      selectElementWithMatcher:grey_anyOf(
+                                   grey_allOf(contextBarDoneButtonMatcher,
+                                              grey_notNil(), nil),
+                                   grey_allOf(BookmarksHomeDoneButton(),
+                                              grey_notNil(), nil),
+                                   nil)] performAction:grey_tap()];
 }
 
 - (void)selectUrlsAndTapOnContextBarButtonWithLabelId:(int)buttonLabelId {
@@ -718,11 +725,11 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (NSString*)contextBarCancelString {
-  return l10n_util::GetNSString(IDS_CANCEL);
+  return l10n_util::GetNSString(IDS_DONE);
 }
 
 - (NSString*)contextBarSelectString {
-  return l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT);
+  return l10n_util::GetNSString(IDS_IOS_SELECT_ACTION_TITLE);
 }
 
 - (NSString*)contextBarMoreString {

@@ -267,6 +267,7 @@ extern NSString* const kSquareFilledOnSquareSymbol;
 extern NSString* const kPauseButton;
 extern NSString* const kPlayButton;
 extern NSString* const kFolderSymbol;
+extern NSString* const kFolderBadgePlusSymbol;
 extern NSString* const kCartSymbol;
 extern NSString* const kArrowUTurnForwardSymbol;
 extern NSString* const kArrowUTurnForwardCircleFillSymbol;

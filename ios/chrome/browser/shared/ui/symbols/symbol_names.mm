@@ -263,6 +263,7 @@ NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
 NSString* const kPauseButton = @"pause.circle";
 NSString* const kPlayButton = @"play.circle";
 NSString* const kFolderSymbol = @"folder";
+NSString* const kFolderBadgePlusSymbol = @"folder.badge.plus";
 NSString* const kCartSymbol = @"cart";
 NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
 NSString* const kArrowUTurnForwardCircleFillSymbol =
