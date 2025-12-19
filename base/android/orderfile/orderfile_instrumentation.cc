@@ -7,6 +7,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <array>
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -61,12 +63,12 @@ constexpr size_t kMaxElements = 1 << 20;
 
 // Data required to log reached offsets.
 struct LogData {
-  std::atomic<uint32_t> offsets[kBitfieldSize];
-  std::atomic<size_t> ordered_offsets[kMaxElements];
+  std::array<std::atomic<uint32_t>, kBitfieldSize> offsets;
+  std::array<std::atomic<size_t>, kMaxElements> ordered_offsets;
   std::atomic<size_t> index;
 };
 
-LogData g_data[kPhases];
+std::array<LogData, kPhases> g_data;
 std::atomic<int> g_data_index;
 
 // Number of unexpected addresses, that is addresses that are not within [start,
@@ -161,18 +163,18 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
                 "Collection and processing code assumes that sizeof(int) == 4");
   size_t offset_index = offset / 4;
 
-  auto* offsets = g_data[index].offsets;
+  auto& offsets = g_data[index].offsets;
   // Atomically set the corresponding bit in the array.
-  std::atomic<uint32_t>* element = offsets + (offset_index / 32);
+  std::atomic<uint32_t>& element = offsets[offset_index / 32];
   // First, a racy check. This saves a CAS if the bit is already set, and
   // allows the cache line to remain shared acoss CPUs in this case.
-  uint32_t value = element->load(std::memory_order_relaxed);
+  uint32_t value = element.load(std::memory_order_relaxed);
   uint32_t mask = 1 << (offset_index % 32);
   if (value & mask) {
     return;
   }
 
-  auto before = element->fetch_or(mask, std::memory_order_relaxed);
+  auto before = element.fetch_or(mask, std::memory_order_relaxed);
   if (before & mask) {
     return;
   }
@@ -181,7 +183,7 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
   // elements list.
   // Use relaxed ordering, as the value is not published, or used for
   // synchronization.
-  auto* ordered_offsets = g_data[index].ordered_offsets;
+  auto& ordered_offsets = g_data[index].ordered_offsets;
   auto& ordered_offsets_index = g_data[index].index;
   size_t insertion_index =
       ordered_offsets_index.fetch_add(1, std::memory_order_relaxed);
@@ -326,10 +328,8 @@ NO_INSTRUMENT_FUNCTION void ResetForTesting() {
   Disable();
   g_data_index = 0;
   for (int i = 0; i < kPhases; i++) {
-    memset(reinterpret_cast<uint32_t*>(g_data[i].offsets), 0,
-           sizeof(uint32_t) * kBitfieldSize);
-    memset(reinterpret_cast<uint32_t*>(g_data[i].ordered_offsets), 0,
-           sizeof(uint32_t) * kMaxElements);
+    std::ranges::fill(g_data[i].offsets, 0);
+    std::ranges::fill(g_data[i].ordered_offsets, 0);
     g_data[i].index.store(0);
   }
 
