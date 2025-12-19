@@ -18,6 +18,175 @@ function handleException(message, error) {
   bindingUtil.handleException(message || 'Unknown error', error);
 }
 
+/**
+ * Checks if two collections (Maps or Sets) are deeply equal, ignoring order.
+ * @param expected The expected collection.
+ * @param actual The actual collection.
+ * @param isMap True if the collections are Maps, false if Sets.
+ * @return True if the collections are equal.
+ */
+function checkCollectionEq(expected, actual, isMap) {
+  if (expected.size !== actual.size) {
+    return false;
+  }
+
+  const actualItems = Array.from(isMap ? actual.entries() : actual.values());
+  const matchedIndices = new Set();
+
+  const expectedIter = isMap ? expected.entries() : expected.values();
+  for (const expItem of expectedIter) {
+    let found = false;
+    for (let i = 0; i < actualItems.length; ++i) {
+      if (matchedIndices.has(i)) {
+        continue;
+      }
+      const actItem = actualItems[i];
+      let eq = false;
+      if (isMap) {
+        // For Maps, expItem and actItem are [key, value] pairs.
+        eq = checkEq(expItem[0], actItem[0]) && checkEq(expItem[1], actItem[1]);
+      } else {
+        // For Sets, they are values.
+        eq = checkEq(expItem, actItem);
+      }
+
+      if (eq) {
+        matchedIndices.add(i);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Checks if two values are deeply equal.
+ * @param expected The expected value.
+ * @param actual The actual value.
+ * @return True if the values are equal.
+ */
+function checkEq(expected, actual) {
+  if ((expected === null) != (actual === null)) {
+    return false;
+  }
+
+  // Check for strict equality (handles primitives and same object
+  // references).
+  if (expected === actual) {
+    return true;
+  }
+
+  if (Number.isNaN(expected) && Number.isNaN(actual)) {
+    return true;
+  }
+
+  if (typeof expected !== typeof actual) {
+    return false;
+  }
+
+  // If they are not objects, and not functions, and not strictly equal
+  // (checked above), they are unequal primitives.
+  if (typeof expected !== 'object' && typeof expected !== 'function') {
+    return false;
+  }
+
+  if (typeof expected === 'function') {
+    return expected.toString() === actual.toString();
+  }
+
+  // Initial checks for Arrays.
+  if ($Array.isArray(expected) !== $Array.isArray(actual)) {
+    return false;
+  }
+  if ($Array.isArray(expected) && expected.length !== actual.length) {
+    return false;
+  }
+
+  // Handle the ArrayBuffer cases. Bail out in case of type mismatch, to
+  // prevent the ArrayBuffer from being treated as an empty enumerable below.
+  if ((actual instanceof ArrayBuffer) !== (expected instanceof ArrayBuffer)) {
+    return false;
+  }
+  if ((actual instanceof ArrayBuffer) && (expected instanceof ArrayBuffer)) {
+    if (actual.byteLength != expected.byteLength) {
+      return false;
+    }
+    let actualView = new Uint8Array(actual);
+    let expectedView = new Uint8Array(expected);
+    for (let i = 0; i < actualView.length; ++i) {
+      if (actualView[i] != expectedView[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Check Date objects.
+  if (expected instanceof Date) {
+    if (!(actual instanceof Date)) {
+      return false;
+    }
+    return expected.getTime() === actual.getTime() ||
+        (Number.isNaN(expected.getTime()) && Number.isNaN(actual.getTime()));
+  }
+
+  // Check primitive wrappers.
+  if ((expected instanceof String) || (expected instanceof Number) ||
+      (expected instanceof Boolean)) {
+    if (Object.getPrototypeOf(expected) !== Object.getPrototypeOf(actual)) {
+      return false;
+    }
+    const expVal = expected.valueOf();
+    const actVal = actual.valueOf();
+    if (Number.isNaN(expVal) && Number.isNaN(actVal)) {
+      return true;
+    }
+    return expVal === actVal;
+  }
+
+  // Check Maps.
+  if (expected instanceof Map) {
+    if (!(actual instanceof Map)) {
+      return false;
+    }
+    return checkCollectionEq(expected, actual, /* isMap= */ true);
+  }
+
+  // Check Sets.
+  if (expected instanceof Set) {
+    if (!(actual instanceof Set)) {
+      return false;
+    }
+    return checkCollectionEq(expected, actual, /* isMap= */ false);
+  }
+
+  // Standard Object / Array property checking.
+  for (let p in actual) {
+    if ($Object.hasOwnProperty(actual, p) &&
+        !$Object.hasOwnProperty(expected, p)) {
+      return false;
+    }
+  }
+  for (let p in expected) {
+    if ($Object.hasOwnProperty(expected, p) &&
+        !$Object.hasOwnProperty(actual, p)) {
+      return false;
+    }
+  }
+
+  for (let p in expected) {
+    if (!checkEq(expected[p], actual[p])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 apiBridge.registerCustomHook(function(api) {
   const kFailureException = 'chrome.test.failure';
 
@@ -177,115 +346,48 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('checkDeepEq', function(expected, actual) {
-    if ((expected === null) != (actual === null))
-      return false;
+    return checkEq(expected, actual);
+  });
 
-    if (expected === actual)
-      return true;
-
-    if (typeof expected !== typeof actual)
-      return false;
-    if ($Array.isArray(expected) !== $Array.isArray(actual))
-      return false;
-
-    // Handle the ArrayBuffer cases. Bail out in case of type mismatch, to
-    // prevent the ArrayBuffer from being treated as an empty enumerable below.
-    if ((actual instanceof ArrayBuffer) !== (expected instanceof ArrayBuffer))
-      return false;
-    if ((actual instanceof ArrayBuffer) && (expected instanceof ArrayBuffer)) {
-      if (actual.byteLength != expected.byteLength)
-        return false;
-      let actualView = new Uint8Array(actual);
-      let expectedView = new Uint8Array(expected);
-      for (let i = 0; i < actualView.length; ++i) {
-        if (actualView[i] != expectedView[i]) {
-          return false;
+  apiFunctions.setHandleRequest(
+      'assertEq', function(expected, actual, message) {
+        if (chromeTest.checkDeepEq(expected, actual)) {
+          return;
         }
-      }
-      return true;
-    }
 
-    for (let p in actual) {
-      if ($Object.hasOwnProperty(actual, p) &&
-          !$Object.hasOwnProperty(expected, p)) {
-        return false;
-      }
-    }
-    for (let p in expected) {
-      if ($Object.hasOwnProperty(expected, p) &&
-          !$Object.hasOwnProperty(actual, p)) {
-        return false;
-      }
-    }
+        let errorMsg = 'API Test Error in ' + testName(currentTest);
+        if (message) {
+          errorMsg += ': ' + message;
+        }
 
-    for (let p in expected) {
-      let eq = true;
-      switch (typeof expected[p]) {
-        case 'object':
-          eq = chromeTest.checkDeepEq(expected[p], actual[p]);
-          break;
-        case 'function':
-          eq = (typeof actual[p] != 'undefined' &&
-                expected[p].toString() == actual[p].toString());
-          break;
-        default:
-          eq = expected[p] == actual[p] &&
-               typeof expected[p] == typeof actual[p];
-          break;
-      }
-      if (!eq)
-        return false;
-    }
-    return true;
-  });
-
-  apiFunctions.setHandleRequest('assertEq',
-                                function(expected, actual, message) {
-    let errorMsg = 'API Test Error in ' + testName(currentTest);
-    if (message)
-      errorMsg += ': ' + message;
-    if (typeof(expected) == 'object') {
-      if (!chromeTest.checkDeepEq(expected, actual)) {
-        errorMsg += '\nActual: ' + $JSON.stringify(actual) +
-                    '\nExpected: ' + $JSON.stringify(expected);
+        if (typeof expected == 'object' || typeof actual == 'object') {
+          errorMsg += '\nActual: ' + ($JSON.stringify(actual) || '' + actual) +
+              '\nExpected: ' + ($JSON.stringify(expected) || '' + expected);
+        } else {
+          errorMsg += `\nActual: ${actual}\nExpected: ${expected}`;
+          if (typeof expected != typeof actual) {
+            errorMsg += ` (type mismatch)\nActual Type: ${
+                typeof actual}\nExpected Type:${typeof expected}`;
+          }
+        }
         chromeTest.fail(errorMsg);
-      }
-      return;
-    }
-    if (expected != actual) {
-      chromeTest.fail(
-          `${errorMsg}\nActual: ${actual}\nExpected: ${expected}`);
-    }
-    if (typeof expected != typeof actual) {
-      chromeTest.fail(`${errorMsg} (type mismatch)\nActual Type: ${
-          typeof actual}\nExpected Type:${typeof expected}`);
-    }
-  });
+      });
 
-  apiFunctions.setHandleRequest('assertNe',
-                                function(expected, actual, message) {
-    // Easy case: different types are always inequal.
-    if (typeof expected != typeof actual)
-      return;
+  apiFunctions.setHandleRequest(
+      'assertNe', function(expected, actual, message) {
+        if (!chromeTest.checkDeepEq(expected, actual)) {
+          return;
+        }
 
-    let errorMsg = 'API Test Error in ' + testName(currentTest);
-    if (message)
-      errorMsg += ': ' + message;
+        let errorMsg = 'API Test Error in ' + testName(currentTest);
+        if (message) {
+          errorMsg += ': ' + message;
+        }
 
-    if (typeof expected == 'object') {
-      if (chromeTest.checkDeepEq(expected, actual)) {
-        errorMsg += '\nExpected inequal values, but both are ' +
-                    $JSON.stringify(expected);
+        errorMsg += '\nExpected unequal values, but both are ' +
+            $JSON.stringify(expected);
         chromeTest.fail(errorMsg);
-      }
-      return;
-    }
-
-    if (expected == actual) {
-      errorMsg += '\nExpected inequal values, but both are ' + expected;
-      chromeTest.fail(errorMsg);
-    }
-  });
+      });
 
   apiFunctions.setHandleRequest('assertNoLastError', function() {
     if (chrome.runtime.lastError != undefined) {

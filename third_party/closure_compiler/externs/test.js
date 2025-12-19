@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,7 +136,8 @@ chrome.test.checkDeepEq = function(expected, actual) {};
 /**
  * @param {*=} expected
  * @param {*=} actual
- * @param {string=} message
+ * @param {string=} message A custom error message to print out with the test
+ *     failure, if any.
  * @see https://developer.chrome.com/extensions/test#method-assertEq
  */
 chrome.test.assertEq = function(expected, actual, message) {};
