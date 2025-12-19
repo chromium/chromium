@@ -712,6 +712,8 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
       interception_bubble_url);
   interception_bubble_observer.StartWatchingNewWebContents();
 
+  login_ui_test_utils::WaitForSigninPageToLoad(
+      browser()->tab_strip_model()->GetActiveWebContents());
   sign_in_functions.SignInFromCurrentPage(
       browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
