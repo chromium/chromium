@@ -384,15 +384,21 @@ using base::UserMetricsAction;
     UILayoutGuide* layoutGuide =
         [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
     [self.baseViewController.view addLayoutGuide:layoutGuide];
-
+    CGRect frame = layoutGuide.layoutFrame;
     menu.modalPresentationStyle = UIModalPresentationPopover;
 
     UIPopoverPresentationController* popoverPresentationController =
         menu.popoverPresentationController;
+
+    // Hides the arrow on the popover.
+    popoverPresentationController.permittedArrowDirections = 0;
     popoverPresentationController.sourceView = self.baseViewController.view;
-    popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
-    popoverPresentationController.permittedArrowDirections =
-        UIPopoverArrowDirectionUp;
+    // With permittedArrowDirections = 0 (no arrow), apply an offset to position
+    // the popover approximately where it would be with an arrow-up.
+    popoverPresentationController.sourceRect =
+        CGRectMake(frame.origin.x, frame.origin.y + 360, frame.size.width,
+                   frame.size.height);
+
     popoverPresentationController.delegate = self;
     popoverPresentationController.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
