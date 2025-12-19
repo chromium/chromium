@@ -35,8 +35,6 @@ class BeginFrameSourceIOS
 
   // viz::mojom::ExternalBeginFrameControllerClient implementation.
   void SetNeedsBeginFrame(bool needs_begin_frames) override;
-  void NeedsBeginFrameWithId(int64_t display_id,
-                             bool needs_begin_frames) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   void NeedsBeginFrameWithId(int64_t display_id,
                              bool needs_begin_frames) override;
