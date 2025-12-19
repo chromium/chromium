@@ -6189,7 +6189,20 @@
       name: "XMLNoExternalEntities",
     },
     {
-      name: "XMLParsingRust",
+      // Switches from XML parsing through libxml2 to parsing XML using the
+      // Rust xml crate. This makes parsing memory safe but breaks XSLT
+      // as the Rust XML parsing code paths is incompatible with libxslt.
+      // https://crbug.com/441911594
+      name: "XMLParsingRust"
+    },
+    {
+      // Enables the Rust XML parser for situations where we know
+      // no XSLT processing will be required. This covers usage of
+      // JS DOMParser API to parse XML, and usage of XMLHttpRequest
+      // with its responseXML document.
+      // https://crbug.com/466303347
+      name: "XMLRustForNonXslt",
+      status: "experimental",
     },
     {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",

@@ -169,7 +169,8 @@ XMLDocumentParserRs::XMLDocumentParserRs(Document& document,
       current_node_(&document),
       read_state_(xml_ffi::create_read_state(*this)),
       parsing_fragment_(false) {
-  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled());
+  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+        RuntimeEnabledFeatures::XMLRustForNonXsltEnabled());
   // This is XML being used as a document resource.
   if (frame_view && IsA<XMLDocument>(document)) {
     UseCounter::Count(document, WebFeature::kXMLDocument);
@@ -188,7 +189,8 @@ XMLDocumentParserRs::XMLDocumentParserRs(
       current_node_(fragment),
       read_state_(xml_ffi::create_read_state(*this)),
       parsing_fragment_(true) {
-  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled());
+  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+        RuntimeEnabledFeatures::XMLRustForNonXsltEnabled());
   // Step 2 of
   // https://html.spec.whatwg.org/C/#xml-fragment-parsing-algorithm
   // The following code collects prefix-namespace mapping in scope on
@@ -840,7 +842,8 @@ void XMLDocumentParserRs::ResumeParsing() {
 
 HashMap<String, String> ParseAttributesRust(const String& attrs_string,
                                             bool& attrs_ok) {
-  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled());
+  CHECK(RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+        RuntimeEnabledFeatures::XMLRustForNonXsltEnabled());
   rust::Vec<xml_ffi::AttributeNameValue> attributes = xml_ffi::parse_attributes(
       base::StringViewToRustSlice(attrs_string.Utf8()), attrs_ok);
 

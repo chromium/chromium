@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Check if redundant xmlns="..." is dropped.
-  assert_equals: expected "<root><child/></root>" but got "<root><child xmlns=\\"\\"/></root>"
 [FAIL] Check if an attribute with namespace and no prefix is serialized with the nearest-declared prefix even if the prefix is assigned to another namespace.
   assert_equals: expected "<el1 xmlns:p=\\"u1\\" xmlns:q=\\"u1\\"><el2 xmlns:q=\\"u2\\" q:name=\\"v\\"/></el1>" but got "<el1 xmlns:p=\\"u1\\" xmlns:q=\\"u1\\"><el2 xmlns:q=\\"u2\\" p:name=\\"v\\"/></el1>"
 [FAIL] Check if the prefix of an attribute is NOT preserved in a case where neither its prefix nor its namespace URI is not already used.
@@ -9,5 +7,7 @@ This is a testharness.js-based test.
   assert_equals: expected "<root xmlns:x=\\"uri1\\"><x:table xmlns=\\"uri1\\"/></root>" but got "<root xmlns:x=\\"uri1\\"><table xmlns=\\"uri1\\"/></root>"
 [FAIL] Check if "ns1" is generated even if the element already has xmlns:ns1.
   assert_equals: expected "<root xmlns:ns2=\\"uri2\\"><child xmlns:ns1=\\"uri1\\" xmlns:ns1=\\"uri3\\" ns1:attr1=\\"value1\\"/></root>" but got "<root xmlns:ns2=\\"uri2\\"><child xmlns:ns1=\\"uri1\\" xmlns:ns3=\\"uri3\\" ns3:attr1=\\"value1\\"/></root>"
+[FAIL] Check if a prefix bound to an empty namespace URI ("no namespace") serialize
+  assert_equals: expected "<root xmlns=\\"\\" xmlns:foo=\\"\\"/>" but got "<root xmlns:foo=\\"\\"/>"
 Harness: the test ran to completion.
 

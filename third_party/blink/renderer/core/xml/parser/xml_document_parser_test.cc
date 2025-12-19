@@ -30,9 +30,11 @@ TEST(XMLDocumentParserTest, NodeNamespaceWithParseError) {
 
   // The first child of <html> is <parseerror>, not <body>.
   auto* foo = To<Element>(doc.documentElement()->lastChild()->firstChild());
-  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
+  if (RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+      RuntimeEnabledFeatures::XMLRustForNonXsltEnabled()) {
     // The Rust xml parser does not generate an element for the unbound d:foo
-    // prefix.
+    // prefix. The Rust xml parser also gets used when a document is created
+    // without a window, as in Document::CreateForTest().
     EXPECT_FALSE(foo);
   } else {
     EXPECT_TRUE(foo->namespaceURI().IsNull()) << foo->namespaceURI();

@@ -3632,6 +3632,13 @@ DocumentParser* Document::CreateParser() {
     return MakeGarbageCollected<HTMLDocumentParser>(*html_document,
                                                     parser_sync_policy_);
   }
+
+  // Use the Rust XML parser for situations like XMLHttpRequests and
+  // JS DOMParser, where no dom_window_ is available.
+  if (!GetFrame() && RuntimeEnabledFeatures::XMLRustForNonXsltEnabled()) {
+    return MakeGarbageCollected<XMLDocumentParserRs>(*this, View());
+  }
+
   // FIXME: this should probably pass the frame instead
   if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
     return MakeGarbageCollected<XMLDocumentParserRs>(*this, View());
