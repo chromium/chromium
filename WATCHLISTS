@@ -2141,6 +2141,9 @@
     'splitview': {
       'filepath': 'ash/wm/splitview/'
     },
+    'sql': {
+      'filepath': '^components/persistent_cache/|^sql/|^third_party/sqlite/',
+    },
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
     },
@@ -3309,6 +3312,7 @@
                                 'web-devrel-vitals-team@google.com',
                                 'sullivan@chromium.org'],
     'splitview': ['toshikikikuchi+watch-splitview@chromium.org'],
+    'sql': ['grt+watch@chromium.org'],
     'startup': ['nicolaso+watch@chromium.org',
                 'ydago+watch@chromium.org'],
     'storage': ['storage-reviews@chromium.org'],
