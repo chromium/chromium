@@ -373,8 +373,9 @@ ContextualTasksSidePanelCoordinator::
   }
   auto* contextual_tasks_ui =
       web_ui->GetController()->GetAs<ContextualTasksUI>();
-  return contextual_tasks_ui ? contextual_tasks_ui->GetContextualSessionHandle()
-                             : nullptr;
+  return contextual_tasks_ui
+             ? contextual_tasks_ui->GetOrCreateContextualSessionHandle()
+             : nullptr;
 }
 
 std::optional<ContextualTask>
@@ -811,7 +812,8 @@ void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
                 ->GetController()
                 ->GetAs<ContextualTasksUI>();
         if (contextual_tasks_ui) {
-          session_handle = contextual_tasks_ui->GetContextualSessionHandle();
+          session_handle =
+              contextual_tasks_ui->GetOrCreateContextualSessionHandle();
         }
       }
     }

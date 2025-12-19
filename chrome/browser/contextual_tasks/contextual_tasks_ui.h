@@ -130,10 +130,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   void CloseSidePanel();
 
-  // Returns a reference to the owned contextual search session handle for
-  // `composebox_handler_`.
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for `composebox_handler_`.
   contextual_search::ContextualSearchSessionHandle*
-  GetContextualSessionHandle();
+  GetOrCreateContextualSessionHandle();
 
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>

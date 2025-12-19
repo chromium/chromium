@@ -135,7 +135,8 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
-        pending_searchbox_handler)
+        pending_searchbox_handler,
+    GetSessionHandleCallback get_session_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
@@ -146,8 +147,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
               std::make_unique<ContextualTasksOmniboxClient>(profile,
                                                              web_contents,
                                                              this)),
-          base::BindRepeating(&ContextualTasksUI::GetContextualSessionHandle,
-                              base::Unretained(ui_controller))),
+          std::move(get_session_callback)),
       web_ui_controller_(ui_controller),
       context_controller_(
           contextual_tasks::ContextualTasksContextControllerFactory::

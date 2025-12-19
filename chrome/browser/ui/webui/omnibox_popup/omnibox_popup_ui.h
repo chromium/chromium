@@ -96,10 +96,10 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
 
-  // Returns a reference to the owned contextual search session handle for
-  // `omnibox_handler_` and `composebox_handler_`.
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for`omnibox_handler_` and `composebox_handler_`.
   contextual_search::ContextualSearchSessionHandle*
-  GetContextualSessionHandle();
+  GetOrCreateContextualSessionHandle();
 
  private:
   // Must outlive `omnibox_handler_` and `composebox_handler_`.

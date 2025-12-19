@@ -150,7 +150,7 @@ void WebUIBrowserUI::BindInterface(
   // WebUIOmniboxHandler.
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(webui), web_contents,
-      base::BindRepeating(&WebUIBrowserUI::GetContextualSessionHandle,
+      base::BindRepeating(&WebUIBrowserUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 }
 
@@ -260,7 +260,7 @@ void WebUIBrowserUI::CloseSidePanel() {
 }
 
 contextual_search::ContextualSearchSessionHandle*
-WebUIBrowserUI::GetContextualSessionHandle() {
+WebUIBrowserUI::GetOrCreateContextualSessionHandle() {
   if (!session_handle_) {
     auto* service = ContextualSearchServiceFactory::GetForProfile(
         Profile::FromWebUI(web_ui()));
