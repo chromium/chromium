@@ -16,13 +16,18 @@ import org.mockito.Mock;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper to simulate Omnibox suggestions being received from the server.
@@ -33,10 +38,11 @@ import java.util.List;
 public class FakeOmniboxSuggestions {
     private static FakeOmniboxSuggestions sInstance;
 
-    @Mock AutocompleteController mController;
     @Mock AutocompleteControllerJni mControllerJni;
 
-    private AutocompleteController.OnSuggestionsReceivedListener mListener;
+    private final Map<Profile, AutocompleteController> mControllers = new HashMap<>();
+    private final Map<Profile, Set<AutocompleteController.OnSuggestionsReceivedListener>>
+            mListenersMap = new HashMap<>();
 
     public FakeOmniboxSuggestions() {
         if (sInstance != null) {
@@ -52,10 +58,12 @@ public class FakeOmniboxSuggestions {
     /**
      * Simulate an autocomplete suggestion.
      *
+     * @param profile the profile to simulate suggestions for
      * @param startOfTerm start of term that user has input
      * @param autocompletion the rest of the term suggested as autocompletion
      */
-    public void simulateAutocompleteSuggestion(String startOfTerm, String autocompletion) {
+    public void simulateAutocompleteSuggestion(
+            Profile profile, String startOfTerm, String autocompletion) {
         AutocompleteMatch match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText(startOfTerm + autocompletion)
@@ -66,28 +74,51 @@ public class FakeOmniboxSuggestions {
                 AutocompleteResult.fromCache(
                         List.of(match),
                         GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_QUERY_TILES).build());
-        simulateSuggestionsReceived(result);
-    }
 
-    private void simulateSuggestionsReceived(AutocompleteResult result) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mListener.onSuggestionsReceived(result, /* isFinal= */ true));
+        // Simulate suggestions received.
+        Set<AutocompleteController.OnSuggestionsReceivedListener> listeners =
+                mListenersMap.get(profile);
+        if (listeners != null) {
+            for (AutocompleteController.OnSuggestionsReceivedListener listener : listeners) {
+                ThreadUtils.postOnUiThread(
+                        () -> listener.onSuggestionsReceived(result, /* isFinal= */ true));
+            }
+        }
     }
 
     public void initMocks() {
-        mController = mock(AutocompleteController.class);
         mControllerJni = mock(AutocompleteControllerJni.class);
         AutocompleteControllerJni.setInstanceForTesting(mControllerJni);
 
-        when(mControllerJni.getForProfile(any())).thenReturn(mController);
-        doAnswer(
+        when(mControllerJni.getForProfile(any()))
+                .thenAnswer(
                         inv -> {
-                            // Currently supports only one listener, assert if this changes.
-                            assert mListener == null || mListener == inv.getArgument(0);
-                            mListener = inv.getArgument(0);
-                            return null;
-                        })
-                .when(mController)
-                .addOnSuggestionsReceivedListener(any());
+                            Profile profile = inv.getArgument(0);
+                            return getOrCreateController(profile);
+                        });
+    }
+
+    private AutocompleteController getOrCreateController(Profile profile) {
+        if (!mControllers.containsKey(profile)) {
+            AutocompleteController controller = mock(AutocompleteController.class);
+            mControllers.put(profile, controller);
+            mListenersMap.put(profile, new HashSet<>());
+
+            doAnswer(
+                            inv -> {
+                                mListenersMap.get(profile).add(inv.getArgument(0));
+                                return null;
+                            })
+                    .when(controller)
+                    .addOnSuggestionsReceivedListener(any());
+            doAnswer(
+                            inv -> {
+                                mListenersMap.get(profile).remove(inv.getArgument(0));
+                                return null;
+                            })
+                    .when(controller)
+                    .removeOnSuggestionsReceivedListener(any());
+        }
+        return mControllers.get(profile);
     }
 }
