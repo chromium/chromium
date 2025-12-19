@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
@@ -31,21 +32,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using chrome_test_util::SwipeActionDeleteButton;
+using omnibox::PopupRowWithUrlMatcher;
 
 namespace {
-
-/// Returns the popup row containing the `url` as suggestion.
-id<GREYMatcher> PopupRowWithUrl(GURL url) {
-  NSString* urlString = [NSString cr_fromString:url.GetContent()];
-  // Lower to visibility threshold for the visibility of the element, because
-  // it can be overlaid by a blur effect view, which isn't considered
-  // translucent by EG.
-  id<GREYMatcher> URLMatcher = grey_allOf(
-      grey_descendant(
-          chrome_test_util::StaticTextWithAccessibilityLabel(urlString)),
-      grey_minimumVisiblePercent(0.7), nil);
-  return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
-}
 
 id<GREYMatcher> LinkYouCopiedRow() {
   NSString* linkYouCopiedLabel =
@@ -59,7 +48,7 @@ id<GREYMatcher> LinkYouCopiedRow() {
 /// Returns the switch to open tab element for the `url`.
 id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
-      grey_ancestor(PopupRowWithUrl(url)),
+      grey_ancestor(PopupRowWithUrlMatcher(url)),
       grey_accessibilityID(kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
       grey_interactable(), nil);
 }
@@ -219,7 +208,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL2)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_not(grey_interactable())];
@@ -237,11 +226,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Swipe one of the historical suggestions, to the left.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+    [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL1)]
         performAction:GREYSwipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                              0.09, 0.3)];
   } else {
-    [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+    [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL1)]
         performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
   }
 
@@ -254,7 +243,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   // Historical suggestion with URL1 is now deleted.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL1)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -286,13 +275,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Check that we have the switch button for the first page.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(grey_ancestor(PopupRowWithUrl(_URL1)),
+          grey_allOf(grey_ancestor(PopupRowWithUrlMatcher(_URL1)),
                      grey_accessibilityID(
                          kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that we have the suggestion for the second page, but not the switch.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL2)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_nil()];
@@ -308,13 +297,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Check that we have the switch button for the second page.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(grey_ancestor(PopupRowWithUrl(_URL2)),
+          grey_allOf(grey_ancestor(PopupRowWithUrlMatcher(_URL2)),
                      grey_accessibilityID(
                          kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that we have the suggestion for the first page, but not the switch.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL1)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL1)]
       assertWithMatcher:grey_nil()];
@@ -461,7 +450,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrlMatcher(_URL1)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
@@ -665,7 +654,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Wait for suggestions to show.
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:PopupRowWithUrl(_URL1)];
+      waitForSufficientlyVisibleElementWithMatcher:PopupRowWithUrlMatcher(
+                                                       _URL1)];
 
   // The omnibox popup may update multiple times.  Don't downArrow until this
   // is done.

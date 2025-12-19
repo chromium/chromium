@@ -37,10 +37,13 @@ id<GREYMatcher> PopupRowAtIndex(NSIndexPath* index) {
 
 id<GREYMatcher> PopupRowWithUrlMatcher(GURL url) {
   NSString* url_string = [NSString cr_fromString:url.GetContent()];
+  // Lower to visibility threshold for the visibility of the element, because
+  // it can be overlaid by a blur effect view, which isn't considered
+  // translucent by EG.
   id<GREYMatcher> url_matcher = grey_allOf(
       grey_descendant(
           chrome_test_util::StaticTextWithAccessibilityLabel(url_string)),
-      grey_sufficientlyVisible(), nil);
+      grey_minimumVisiblePercent(0.7), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), url_matcher, nil);
 }
 
