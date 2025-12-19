@@ -31,6 +31,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/js_injection/browser/js_communication_host.h"
+#include "components/js_injection/common/enum.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class SkBitmap;
@@ -38,7 +39,7 @@ class SkBitmap;
 namespace content {
 class PrerenderHandle;
 class WebContents;
-}
+}  // namespace content
 
 namespace android_webview {
 
@@ -175,12 +176,14 @@ class AwContents : public FindHelper::Listener,
 
   js_injection::JsCommunicationHost* GetJsCommunicationHost();
 
-  jint AddDocumentStartJavaScript(
+  jint AddPersistentJavaScript(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& script,
-      const base::android::JavaRef<jobjectArray>& allowed_origin_rules);
+      const std::u16string& script,
+      js_injection::mojom::DocumentInjectionTime event_type,
+      const std::vector<std::string>& allowed_origin_rules,
+      jint world_identifier);
 
-  void RemoveDocumentStartJavaScript(JNIEnv* env, jint script_id);
+  void RemovePersistentJavaScript(JNIEnv* env, jint script_id);
 
   base::android::ScopedJavaLocalRef<jstring> AddWebMessageListener(
       JNIEnv* env,

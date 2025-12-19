@@ -83,6 +83,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/js_injection/browser/js_communication_host.h"
+#include "components/js_injection/common/enum.mojom.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -1330,19 +1331,17 @@ JsCommunicationHost* AwContents::GetJsCommunicationHost() {
   return js_communication_host_.get();
 }
 
-jint AwContents::AddDocumentStartJavaScript(
+jint AwContents::AddPersistentJavaScript(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& script,
-    const base::android::JavaRef<jobjectArray>& allowed_origin_rules) {
-  std::vector<std::string> native_allowed_origin_rule_strings;
-  AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
-                                      &native_allowed_origin_rule_strings);
+    const std::u16string& script,
+    js_injection::mojom::DocumentInjectionTime event_type,
+    const std::vector<std::string>& allowed_origin_rules,
+    jint world_identifier) {
   web_contents()->GetController().GetBackForwardCache().Flush(
       NotRestoredReason::kWebViewDocumentStartJavascriptChanged);
   web_contents()->CancelAllPrerendering();
-  auto result = GetJsCommunicationHost()->AddDocumentStartJavaScript(
-      base::android::ConvertJavaStringToUTF16(env, script),
-      native_allowed_origin_rule_strings);
+  auto result = GetJsCommunicationHost()->AddPersistentJavaScript(
+      script, event_type, allowed_origin_rules, world_identifier);
   if (result.error_message) {
     env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"),
                   result.error_message->data());
@@ -1352,9 +1351,9 @@ jint AwContents::AddDocumentStartJavaScript(
   return result.script_id.value();
 }
 
-void AwContents::RemoveDocumentStartJavaScript(JNIEnv* env, jint script_id) {
+void AwContents::RemovePersistentJavaScript(JNIEnv* env, jint script_id) {
   web_contents()->CancelAllPrerendering();
-  GetJsCommunicationHost()->RemoveDocumentStartJavaScript(script_id);
+  GetJsCommunicationHost()->RemovePersistentJavaScript(script_id);
 }
 
 base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
@@ -1398,16 +1397,19 @@ AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
     return {};
   }
 
-  const std::vector<js_injection::DocumentStartJavaScript>& scripts =
-      GetJsCommunicationHost()->GetDocumentStartJavascripts();
+  const std::vector<js_injection::JavaScriptExecutable>& scripts =
+      GetJsCommunicationHost()->GetPersistentJavaScripts();
 
   std::vector<ScopedJavaLocalRef<jobject>> script_objects;
   for (const auto& script : scripts) {
     const std::vector<std::string> rules =
         script.allowed_origin_rules_.Serialize();
-    script_objects.push_back(Java_StartupJavascriptInfo_create(
-        env, base::android::ConvertUTF16ToJavaString(env, script.script_),
-        base::android::ToJavaArrayOfStrings(env, rules)));
+    if (script.event_type_ ==
+        js_injection::mojom::DocumentInjectionTime::kDocumentStart) {
+      script_objects.push_back(Java_StartupJavascriptInfo_create(
+          env, base::android::ConvertUTF16ToJavaString(env, script.script_),
+          base::android::ToJavaArrayOfStrings(env, rules)));
+    }
   }
 
   return script_objects;

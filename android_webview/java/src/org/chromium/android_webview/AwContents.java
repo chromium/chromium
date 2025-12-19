@@ -133,6 +133,7 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.device.gamepad.GamepadList;
+import org.chromium.js_injection.mojom.DocumentInjectionTime;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -3054,12 +3055,17 @@ public class AwContents implements SmartClipProvider {
         return new ScriptHandler(
                 this,
                 AwContentsJni.get()
-                        .addDocumentStartJavaScript(mNativeAwContents, script, allowedOriginRules));
+                        .addPersistentJavaScript(
+                                mNativeAwContents,
+                                script,
+                                DocumentInjectionTime.DOCUMENT_START,
+                                allowedOriginRules,
+                                /* worldId= */ 0));
     }
 
     /* package */ void removeDocumentStartJavaScript(int scriptId) {
         if (isDestroyed(WARN)) return;
-        AwContentsJni.get().removeDocumentStartJavaScript(mNativeAwContents, scriptId);
+        AwContentsJni.get().removePersistentJavaScript(mNativeAwContents, scriptId);
     }
 
     /**
@@ -4980,10 +4986,16 @@ public class AwContents implements SmartClipProvider {
 
         AwRenderProcess getRenderProcess(long nativeAwContents);
 
-        int addDocumentStartJavaScript(
-                long nativeAwContents, String script, String[] allowedOriginRules);
+        int addPersistentJavaScript(
+                long nativeAwContents,
+                @JniType("std::u16string") String script,
+                @JniType("js_injection::mojom::DocumentInjectionTime")
+                        @DocumentInjectionTime.EnumType
+                        int eventType,
+                @JniType("std::vector<std::string>") String[] allowedOriginRules,
+                int worldId);
 
-        void removeDocumentStartJavaScript(long nativeAwContents, int scriptId);
+        void removePersistentJavaScript(long nativeAwContents, int scriptId);
 
         String addWebMessageListener(
                 long nativeAwContents,

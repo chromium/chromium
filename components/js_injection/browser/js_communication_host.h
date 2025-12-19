@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/js_injection/common/enum.mojom-forward.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,19 +25,22 @@ namespace js_injection {
 struct JsObject;
 class WebMessageHostFactory;
 
-struct DocumentStartJavaScript {
-  DocumentStartJavaScript(std::u16string script,
-                          origin_matcher::OriginMatcher allowed_origin_rules,
-                          int32_t script_id);
-
-  DocumentStartJavaScript(DocumentStartJavaScript&) = delete;
-  DocumentStartJavaScript& operator=(DocumentStartJavaScript&) = delete;
-  DocumentStartJavaScript(DocumentStartJavaScript&&) = default;
-  DocumentStartJavaScript& operator=(DocumentStartJavaScript&&) = default;
+struct JavaScriptExecutable {
+  JavaScriptExecutable(std::u16string script,
+                       mojom::DocumentInjectionTime event_type,
+                       origin_matcher::OriginMatcher allowed_origin_rules,
+                       int32_t world_identifier,
+                       int32_t script_id);
+  JavaScriptExecutable(JavaScriptExecutable&) = delete;
+  JavaScriptExecutable& operator=(JavaScriptExecutable&) = delete;
+  JavaScriptExecutable(JavaScriptExecutable&&) = default;
+  JavaScriptExecutable& operator=(JavaScriptExecutable&&) = default;
 
   std::u16string script_;
   origin_matcher::OriginMatcher allowed_origin_rules_;
   int32_t script_id_;
+  mojom::DocumentInjectionTime event_type_;
+  int32_t world_identifier_;
 };
 
 // This class is 1:1 with WebContents, when AddWebMessageListener() is called,
@@ -66,16 +70,17 @@ class JsCommunicationHost : public content::WebContentsObserver {
     std::optional<int> script_id;
   };
 
-  // Native side AddDocumentStartJavaScript, returns an error message if the
+  // Native side AddPersistentJavaScript, returns an error message if the
   // parameters didn't pass necessary checks.
-  AddScriptResult AddDocumentStartJavaScript(
-      const std::u16string& script,
-      const std::vector<std::string>& allowed_origin_rules);
+  AddScriptResult AddPersistentJavaScript(
+      std::u16string script,
+      mojom::DocumentInjectionTime event_type,
+      const std::vector<std::string>& allowed_origin_rules,
+      int32_t world_identifier);
 
-  bool RemoveDocumentStartJavaScript(int script_id);
+  bool RemovePersistentJavaScript(int script_id);
 
-  const std::vector<DocumentStartJavaScript>& GetDocumentStartJavascripts()
-      const;
+  const std::vector<JavaScriptExecutable>& GetPersistentJavaScripts() const;
 
   // Adds a new WebMessageHostFactory. For any urls that match
   // |allowed_origin_rules|, |js_object_name| is registered as a JS object that
@@ -112,17 +117,17 @@ class JsCommunicationHost : public content::WebContentsObserver {
   class JsToBrowserMessagingList;
   void NotifyFrameForWebMessageListener(
       content::RenderFrameHost* render_frame_host);
-  void NotifyFrameForAllDocumentStartJavaScripts(
+  void NotifyFrameForAllPersistentJavaScripts(
       content::RenderFrameHost* render_frame_host);
-  void NotifyFrameForAddDocumentStartJavaScript(
-      const DocumentStartJavaScript* script,
+  void NotifyFrameForPersistentJavaScript(
+      const JavaScriptExecutable* script,
       content::RenderFrameHost* render_frame_host);
-  void NotifyFrameForRemoveDocumentStartJavaScript(
+  void NotifyFrameForRemovePersistentJavaScript(
       int32_t script_id,
       content::RenderFrameHost* render_frame_host);
 
   int32_t next_script_id_ = 0;
-  std::vector<DocumentStartJavaScript> scripts_;
+  std::vector<JavaScriptExecutable> sticky_scripts_;
   std::vector<std::unique_ptr<JsObject>> js_objects_;
   std::map<content::GlobalRenderFrameHostId,
            std::unique_ptr<JsToBrowserMessagingList>>

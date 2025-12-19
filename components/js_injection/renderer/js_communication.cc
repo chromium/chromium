@@ -5,6 +5,7 @@
 #include "components/js_injection/renderer/js_communication.h"
 
 #include "base/feature_list.h"
+#include "components/js_injection/common/interfaces.mojom-data-view.h"
 #include "components/js_injection/renderer/js_binding.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -67,10 +68,12 @@ class JsCommunication::JsObjectInfo
   cppgc::WeakPersistent<JsBinding> js_binding_;
 };
 
-struct JsCommunication::DocumentStartJavaScript {
+struct JsCommunication::JavaScriptExecutable {
   origin_matcher::OriginMatcher origin_matcher;
   blink::WebString script;
   int32_t script_id;
+  mojom::DocumentInjectionTime injection_time;
+  int32_t js_world;
 };
 
 JsCommunication::JsCommunication(content::RenderFrame* render_frame)
@@ -97,15 +100,16 @@ void JsCommunication::SetJsObjects(
   client_remote_.Bind(std::move(client));
 }
 
-void JsCommunication::AddDocumentStartScript(
-    mojom::DocumentStartJavaScriptPtr script_ptr) {
-  DocumentStartJavaScript* script = new DocumentStartJavaScript{
+void JsCommunication::AddPersistentJavaScript(
+    mojom::JavaScriptExecutablePtr script_ptr) {
+  JavaScriptExecutable* script = new JavaScriptExecutable{
       script_ptr->origin_matcher,
-      blink::WebString::FromUTF16(script_ptr->script), script_ptr->script_id};
-  scripts_.push_back(std::unique_ptr<DocumentStartJavaScript>(script));
+      blink::WebString::FromUTF16(script_ptr->script), script_ptr->script_id,
+      script_ptr->injection_time, script_ptr->js_world};
+  scripts_.push_back(std::unique_ptr<JavaScriptExecutable>(script));
 }
 
-void JsCommunication::RemoveDocumentStartScript(int32_t script_id) {
+void JsCommunication::RemovePersistentJavaScript(int32_t script_id) {
   for (auto it = scripts_.begin(); it != scripts_.end(); ++it) {
     if ((*it)->script_id == script_id) {
       scripts_.erase(it);
@@ -179,11 +183,6 @@ void JsCommunication::DidClearWindowObject() {
 
 void JsCommunication::WillReleaseScriptContext(v8::Local<v8::Context> context,
                                                int32_t world_id) {
-  // We created v8 global objects only in the main world, should clear them only
-  // when this is for main world.
-  if (world_id != content::ISOLATED_WORLD_ID_GLOBAL)
-    return;
-
   for (const auto& js_binding : js_bindings_) {
     if (js_binding)
       js_binding->ReleaseV8GlobalObjects();
@@ -198,10 +197,20 @@ void JsCommunication::RunScriptsAtDocumentStart() {
   url::Origin frame_origin =
       url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin());
   for (const auto& script : scripts_) {
-    if (!script->origin_matcher.Matches(frame_origin))
+    if (!script->origin_matcher.Matches(frame_origin)) {
       continue;
-    render_frame()->GetWebFrame()->ExecuteScript(
-        blink::WebScriptSource(script->script));
+    }
+    if (script->injection_time ==
+        mojom::DocumentInjectionTime::kDocumentStart) {
+      if (script->js_world == content::ISOLATED_WORLD_ID_GLOBAL) {
+        render_frame()->GetWebFrame()->ExecuteScript(
+            blink::WebScriptSource(script->script));
+      } else {
+        render_frame()->GetWebFrame()->ExecuteScriptInIsolatedWorld(
+            script->js_world, blink::WebScriptSource(script->script),
+            blink::BackForwardCacheAware::kAllow);
+      }
+    }
   }
 }
 

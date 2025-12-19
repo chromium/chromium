@@ -13,6 +13,7 @@
 #include "components/js_injection/browser/navigation_web_message_sender.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
+#include "components/js_injection/common/enum.mojom.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
@@ -72,13 +73,17 @@ struct JsObject {
   std::unique_ptr<WebMessageHostFactory> factory;
 };
 
-DocumentStartJavaScript::DocumentStartJavaScript(
+JavaScriptExecutable::JavaScriptExecutable(
     std::u16string script,
+    mojom::DocumentInjectionTime event_type,
     origin_matcher::OriginMatcher allowed_origin_rules,
+    int32_t world_identifier,
     int32_t script_id)
     : script_(std::move(script)),
       allowed_origin_rules_(allowed_origin_rules),
-      script_id_(script_id) {}
+      script_id_(script_id),
+      event_type_(event_type),
+      world_identifier_(world_identifier) {}
 
 JsCommunicationHost::AddScriptResult::AddScriptResult() = default;
 JsCommunicationHost::AddScriptResult::AddScriptResult(
@@ -125,9 +130,11 @@ JsCommunicationHost::JsCommunicationHost(content::WebContents* web_contents)
 JsCommunicationHost::~JsCommunicationHost() = default;
 
 JsCommunicationHost::AddScriptResult
-JsCommunicationHost::AddDocumentStartJavaScript(
-    const std::u16string& script,
-    const std::vector<std::string>& allowed_origin_rules) {
+JsCommunicationHost::AddPersistentJavaScript(
+    std::u16string script,
+    mojom::DocumentInjectionTime injection_time,
+    const std::vector<std::string>& allowed_origin_rules,
+    int world_identifier) {
   origin_matcher::OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
@@ -137,27 +144,28 @@ JsCommunicationHost::AddDocumentStartJavaScript(
     return result;
   }
 
-  scripts_.emplace_back(script, origin_matcher, next_script_id_++);
+  sticky_scripts_.emplace_back(script, injection_time, origin_matcher,
+                               world_identifier, next_script_id_++);
 
   ForEachRenderFrameHostWithinSameWebContents(
       web_contents()->GetPrimaryMainFrame(),
       [this](content::RenderFrameHost* render_frame_host) {
-        NotifyFrameForAddDocumentStartJavaScript(&*scripts_.rbegin(),
-                                                 render_frame_host);
+        NotifyFrameForPersistentJavaScript(&*sticky_scripts_.rbegin(),
+                                           render_frame_host);
       });
-  result.script_id = scripts_.rbegin()->script_id_;
+  result.script_id = sticky_scripts_.rbegin()->script_id_;
   return result;
 }
 
-bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
-  for (auto it = scripts_.begin(); it != scripts_.end(); ++it) {
+bool JsCommunicationHost::RemovePersistentJavaScript(int script_id) {
+  for (auto it = sticky_scripts_.begin(); it != sticky_scripts_.end(); ++it) {
     if (it->script_id_ == script_id) {
-      scripts_.erase(it);
+      sticky_scripts_.erase(it);
       ForEachRenderFrameHostWithinSameWebContents(
           web_contents()->GetPrimaryMainFrame(),
           [this, script_id](content::RenderFrameHost* render_frame_host) {
-            NotifyFrameForRemoveDocumentStartJavaScript(script_id,
-                                                        render_frame_host);
+            NotifyFrameForRemovePersistentJavaScript(script_id,
+                                                     render_frame_host);
           });
       return true;
     }
@@ -165,9 +173,9 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
   return false;
 }
 
-const std::vector<DocumentStartJavaScript>&
-JsCommunicationHost::GetDocumentStartJavascripts() const {
-  return scripts_;
+const std::vector<JavaScriptExecutable>&
+JsCommunicationHost::GetPersistentJavaScripts() const {
+  return sticky_scripts_;
 }
 
 std::u16string JsCommunicationHost::AddWebMessageHostFactory(
@@ -255,7 +263,7 @@ void JsCommunicationHost::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   base::ElapsedTimer timer;
   NotifyFrameForWebMessageListener(render_frame_host);
-  NotifyFrameForAllDocumentStartJavaScripts(render_frame_host);
+  NotifyFrameForAllPersistentJavaScripts(render_frame_host);
   base::UmaHistogramTimes("Android.WebView.JsInjection.RenderFrameCreatedTime",
                           timer.Elapsed());
 }
@@ -283,10 +291,10 @@ void JsCommunicationHost::RenderFrameHostStateChanged(
   }
 }
 
-void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
+void JsCommunicationHost::NotifyFrameForAllPersistentJavaScripts(
     content::RenderFrameHost* render_frame_host) {
-  for (const auto& script : scripts_) {
-    NotifyFrameForAddDocumentStartJavaScript(&script, render_frame_host);
+  for (const auto& script : sticky_scripts_) {
+    NotifyFrameForPersistentJavaScript(&script, render_frame_host);
   }
 }
 
@@ -361,25 +369,25 @@ void JsCommunicationHost::PrimaryPageChanged(content::Page& page) {
   }
 }
 
-void JsCommunicationHost::NotifyFrameForAddDocumentStartJavaScript(
-    const DocumentStartJavaScript* script,
+void JsCommunicationHost::NotifyFrameForPersistentJavaScript(
+    const JavaScriptExecutable* script,
     content::RenderFrameHost* render_frame_host) {
   DCHECK(script);
   mojo::AssociatedRemote<mojom::JsCommunication> configurator_remote;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &configurator_remote);
-  configurator_remote->AddDocumentStartScript(
-      mojom::DocumentStartJavaScript::New(script->script_id_, script->script_,
-                                          script->allowed_origin_rules_));
+  configurator_remote->AddPersistentJavaScript(mojom::JavaScriptExecutable::New(
+      script->script_id_, script->script_, script->allowed_origin_rules_,
+      script->event_type_, script->world_identifier_));
 }
 
-void JsCommunicationHost::NotifyFrameForRemoveDocumentStartJavaScript(
+void JsCommunicationHost::NotifyFrameForRemovePersistentJavaScript(
     int32_t script_id,
     content::RenderFrameHost* render_frame_host) {
   mojo::AssociatedRemote<mojom::JsCommunication> configurator_remote;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &configurator_remote);
-  configurator_remote->RemoveDocumentStartScript(script_id);
+  configurator_remote->RemovePersistentJavaScript(script_id);
 }
 
 }  // namespace js_injection

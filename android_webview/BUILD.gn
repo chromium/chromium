@@ -649,6 +649,7 @@ if (_is_default_toolchain) {
       "//components/embedder_support/android:util_java",
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/embedder_support/android:web_contents_delegate_java_resources",
+      "//components/js_injection/common:enum_mojom_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/navigation_interception/android:navigation_interception_java",
       "//components/origin_matcher/android:java",
