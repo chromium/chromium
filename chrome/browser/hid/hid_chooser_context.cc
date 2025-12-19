@@ -40,7 +40,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/containers/fixed_flat_set.h"
-
+#include "chrome/browser/hid/hid_common.h"
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -525,15 +525,8 @@ bool HidChooserContext::HasDevicePermission(
 
 bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  static constexpr auto kPrivilegedExtensionIds =
-      base::MakeFixedFlatSet<std::string_view>({
-          "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
-          "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
-          "gdmilihokhggmmlomocddffphkaikkke",  // gnubbyd-v3 flywheel
-      });
-
   if (origin.scheme() == extensions::kExtensionScheme &&
-      base::Contains(kPrivilegedExtensionIds, origin.host())) {
+      base::Contains(kPrivilegedFidoExtensionIds, origin.host())) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
