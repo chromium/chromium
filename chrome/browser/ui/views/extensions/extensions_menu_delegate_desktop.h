@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_DESKTOP_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
@@ -31,19 +31,16 @@ class ToolbarActionsModel;
 // TODO(crbug.com/449814184): Separate extensions UI business logic (e.g what
 // text should appear on a button) versus UI platform logic (e.g updating the
 // view).
-class ExtensionsMenuViewPlatformDelegateViews
-    : public ExtensionsMenuViewModel::Observer,
-      public ExtensionsMenuHandler {
+class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Observer,
+                                      public ExtensionsMenuHandler {
  public:
-  ExtensionsMenuViewPlatformDelegateViews(
-      Browser* browser,
-      ExtensionsContainerViews* extensions_container,
-      views::View* bubble_contents);
-  ExtensionsMenuViewPlatformDelegateViews(
-      const ExtensionsMenuViewPlatformDelegateViews&) = delete;
-  const ExtensionsMenuViewPlatformDelegateViews& operator=(
-      const ExtensionsMenuViewPlatformDelegateViews&) = delete;
-  ~ExtensionsMenuViewPlatformDelegateViews() override;
+  ExtensionsMenuDelegateDesktop(Browser* browser,
+                                ExtensionsContainerViews* extensions_container,
+                                views::View* bubble_contents);
+  ExtensionsMenuDelegateDesktop(const ExtensionsMenuDelegateDesktop&) = delete;
+  const ExtensionsMenuDelegateDesktop& operator=(
+      const ExtensionsMenuDelegateDesktop&) = delete;
+  ~ExtensionsMenuDelegateDesktop() override;
 
   // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
@@ -118,8 +115,6 @@ class ExtensionsMenuViewPlatformDelegateViews
 
   // Adds or updates a request access entry for `extension_id` in `main_page` at
   // `index`.
-  // TODO(crbug.com/449814184): Remove in favor of
-  // ExtensionsMenuPlatformDelegate methods.
   void AddOrUpdateExtensionRequestingAccess(
       ExtensionsMenuMainPageView* main_page,
       const extensions::ExtensionId& extension_id,
@@ -145,4 +140,4 @@ class ExtensionsMenuViewPlatformDelegateViews
   views::ViewTracker current_page_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_DESKTOP_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 
 #include <algorithm>
 
@@ -58,11 +58,10 @@ ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
 
 }  // namespace
 
-ExtensionsMenuViewPlatformDelegateViews::
-    ExtensionsMenuViewPlatformDelegateViews(
-        Browser* browser,
-        ExtensionsContainerViews* extensions_container,
-        views::View* bubble_contents)
+ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
+    Browser* browser,
+    ExtensionsContainerViews* extensions_container,
+    views::View* bubble_contents)
     : browser_(browser),
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
@@ -71,15 +70,14 @@ ExtensionsMenuViewPlatformDelegateViews::
   menu_model_observation_.Observe(menu_model_.get());
 }
 
-ExtensionsMenuViewPlatformDelegateViews::
-    ~ExtensionsMenuViewPlatformDelegateViews() = default;
+ExtensionsMenuDelegateDesktop::~ExtensionsMenuDelegateDesktop() = default;
 
-void ExtensionsMenuViewPlatformDelegateViews::OnActiveWebContentsChanged(
+void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
     content::WebContents* web_contents) {
   UpdatePage(web_contents);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAddedOrUpdated(
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
     const extensions::ExtensionId& extension_id,
     content::WebContents* web_contents) {
   CHECK(current_page_);
@@ -98,7 +96,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAddedOrUpdated(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestRemoved(
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id) {
   CHECK(current_page_);
 
@@ -112,7 +110,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestRemoved(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestsCleared() {
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestsCleared() {
   // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
   if (!main_page) {
@@ -123,9 +121,8 @@ void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestsCleared() {
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::
-    OnHostAccessRequestDismissedByUser(
-        const extensions::ExtensionId& extension_id) {
+void ExtensionsMenuDelegateDesktop::OnHostAccessRequestDismissedByUser(
+    const extensions::ExtensionId& extension_id) {
   CHECK(current_page_);
 
   // Site access requests only affect the main page.
@@ -138,10 +135,9 @@ void ExtensionsMenuViewPlatformDelegateViews::
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::
-    OnShowHostAccessRequestsInToolbarChanged(
-        const extensions::ExtensionId& extension_id,
-        bool can_show_requests) {
+void ExtensionsMenuDelegateDesktop::OnShowHostAccessRequestsInToolbarChanged(
+    const extensions::ExtensionId& extension_id,
+    bool can_show_requests) {
   CHECK(current_page_);
 
   // Changing whether an extension can show requests access in the toolbar only
@@ -158,7 +154,7 @@ void ExtensionsMenuViewPlatformDelegateViews::
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
+void ExtensionsMenuDelegateDesktop::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
 
@@ -177,7 +173,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
+void ExtensionsMenuDelegateDesktop::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
 
@@ -197,11 +193,11 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
   main_page->RemoveMenuItem(action_id);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated() {
+void ExtensionsMenuDelegateDesktop::OnToolbarActionUpdated() {
   UpdatePage(GetActiveWebContents());
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
+void ExtensionsMenuDelegateDesktop::OnToolbarModelInitialized() {
   CHECK(current_page_);
 
   // Toolbar model should have been initialized if site permissions page is
@@ -214,7 +210,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
   PopulateMainPage(main_page);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
+void ExtensionsMenuDelegateDesktop::OnToolbarPinnedActionsChanged() {
   CHECK(current_page_);
 
   // Do nothing when is not the main page, as site permissions page doesn't have
@@ -232,8 +228,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::
-    OnUserPermissionsSettingsChanged() {
+void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
   CHECK(current_page_);
 
   if (GetSitePermissionsPage(current_page_.view())) {
@@ -260,7 +255,7 @@ void ExtensionsMenuViewPlatformDelegateViews::
   // blocked actions that don't require a page refresh to run.
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
+void ExtensionsMenuDelegateDesktop::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get(), GetActiveWebContents());
   PopulateMainPage(main_page.get());
@@ -268,7 +263,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
   SwitchToPage(std::move(main_page));
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OpenSitePermissionsPage(
+void ExtensionsMenuDelegateDesktop::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
   CHECK(menu_model_->CanShowSitePermissionsPage(extension_id));
 
@@ -284,18 +279,18 @@ void ExtensionsMenuViewPlatformDelegateViews::OpenSitePermissionsPage(
       base::UserMetricsAction("Extensions.Menu.SitePermissionsPageOpened"));
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::CloseBubble() {
+void ExtensionsMenuDelegateDesktop::CloseBubble() {
   bubble_contents_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnSiteAccessSelected(
+void ExtensionsMenuDelegateDesktop::OnSiteAccessSelected(
     const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
   menu_model_->UpdateSiteAccess(extension_id, site_access);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
+void ExtensionsMenuDelegateDesktop::OnSiteSettingsToggleButtonPressed(
     bool is_on) {
   PermissionsManager::UserSiteSetting site_setting =
       is_on ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
@@ -303,7 +298,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
   menu_model_->UpdateSiteSetting(site_setting);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(
+void ExtensionsMenuDelegateDesktop::OnExtensionToggleSelected(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   if (is_on) {
@@ -313,27 +308,27 @@ void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnReloadPageButtonClicked() {
+void ExtensionsMenuDelegateDesktop::OnReloadPageButtonClicked() {
   menu_model_->ReloadWebContents();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnAllowExtensionClicked(
+void ExtensionsMenuDelegateDesktop::OnAllowExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   menu_model_->AllowHostAccessRequest(extension_id);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnDismissExtensionClicked(
+void ExtensionsMenuDelegateDesktop::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   menu_model_->DismissHostAccessRequest(extension_id);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnShowRequestsTogglePressed(
+void ExtensionsMenuDelegateDesktop::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   menu_model_->ShowHostAccessRequestsInToolbar(extension_id, is_on);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::UpdatePage(
+void ExtensionsMenuDelegateDesktop::UpdatePage(
     content::WebContents* web_contents) {
   DCHECK(current_page_);
 
@@ -360,7 +355,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdatePage(
   UpdateMainPage(main_page, web_contents);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
+void ExtensionsMenuDelegateDesktop::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -413,7 +408,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
+void ExtensionsMenuDelegateDesktop::UpdateSitePermissionsPage(
     ExtensionsMenuSitePermissionsPageView* site_permissions_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -439,18 +434,18 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
 }
 
 ExtensionsMenuMainPageView*
-ExtensionsMenuViewPlatformDelegateViews::GetMainPageViewForTesting() {
+ExtensionsMenuDelegateDesktop::GetMainPageViewForTesting() {
   DCHECK(current_page_);
   return GetMainPage(current_page_.view());
 }
 
 ExtensionsMenuSitePermissionsPageView*
-ExtensionsMenuViewPlatformDelegateViews::GetSitePermissionsPageForTesting() {
+ExtensionsMenuDelegateDesktop::GetSitePermissionsPageForTesting() {
   DCHECK(current_page_);
   return GetSitePermissionsPage(current_page_.view());
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::SwitchToPage(
+void ExtensionsMenuDelegateDesktop::SwitchToPage(
     std::unique_ptr<views::View> page) {
   if (current_page_) {
     bubble_contents_->RemoveChildViewT(current_page_.view());
@@ -459,7 +454,7 @@ void ExtensionsMenuViewPlatformDelegateViews::SwitchToPage(
   current_page_.SetView(bubble_contents_->AddChildView(std::move(page)));
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::PopulateMainPage(
+void ExtensionsMenuDelegateDesktop::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
   std::vector<std::string> sorted_ids = menu_model_->GetSortedExtensions();
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
@@ -467,7 +462,7 @@ void ExtensionsMenuViewPlatformDelegateViews::PopulateMainPage(
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
+void ExtensionsMenuDelegateDesktop::InsertMenuItemMainPage(
     ExtensionsMenuMainPageView* main_page,
     const extensions::ExtensionId& extension_id,
     int index) {
@@ -483,12 +478,11 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
                                      index);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::
-    AddOrUpdateExtensionRequestingAccess(
-        ExtensionsMenuMainPageView* main_page,
-        const extensions::ExtensionId& extension_id,
-        int index,
-        content::WebContents* web_contents) {
+void ExtensionsMenuDelegateDesktop::AddOrUpdateExtensionRequestingAccess(
+    ExtensionsMenuMainPageView* main_page,
+    const extensions::ExtensionId& extension_id,
+    int index,
+    content::WebContents* web_contents) {
   ToolbarActionViewModel* view_model =
       extensions_container_->GetActionForId(extension_id);
   std::u16string name = view_model->GetActionName();
@@ -501,7 +495,7 @@ void ExtensionsMenuViewPlatformDelegateViews::
                                                   index);
 }
 
-content::WebContents*
-ExtensionsMenuViewPlatformDelegateViews::GetActiveWebContents() const {
+content::WebContents* ExtensionsMenuDelegateDesktop::GetActiveWebContents()
+    const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }

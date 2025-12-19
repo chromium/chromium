@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
