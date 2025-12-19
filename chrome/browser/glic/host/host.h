@@ -20,7 +20,6 @@
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/views/widget/widget.h"
 
 namespace actor {
 class ActorTaskDelegate;
