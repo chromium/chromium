@@ -94,8 +94,8 @@ int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
 }  // namespace
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
-  return ByteCount::FromUnsigned(zx_system_get_physmem());
+ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
+  return ByteSize(zx_system_get_physmem());
 }
 
 // static

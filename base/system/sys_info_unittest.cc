@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -92,7 +91,7 @@ TEST_F(SysInfoTest, NumProcsWithSecurityMitigationEnabled) {
 
 TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), ByteCount(0));
+  EXPECT_GT(SysInfo::AmountOfTotalPhysicalMemory(), ByteSize(0));
   // The maxmimal amount of virtual memory can be zero which means unlimited.
   EXPECT_GE(SysInfo::AmountOfVirtualMemory(), ByteSize(0));
 }

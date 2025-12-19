@@ -9,10 +9,11 @@
 #include <sys/sysctl.h>
 
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
   int pages, page_size;
   size_t size = sizeof(pages);
   sysctlbyname("vm.stats.vm.v_page_count", &pages, &size, NULL, 0);
@@ -20,7 +21,7 @@ ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
   if (pages == -1 || page_size == -1) {
     NOTREACHED();
   }
-  return ByteCount(page_size) * pages;
+  return ByteSize(checked_cast<unsigned>(page_size)) * pages;
 }
 
 // static

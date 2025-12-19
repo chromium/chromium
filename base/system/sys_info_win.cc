@@ -20,7 +20,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -190,8 +189,8 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
 }
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys).AsDeprecatedByteCount();
+ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
+  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys);
 }
 
 // static

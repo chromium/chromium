@@ -95,8 +95,14 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
-  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
-  static ByteCount AmountOfPhysicalMemory();
+  static ByteSize AmountOfTotalPhysicalMemory();
+
+  // Deprecated: Prefer AmountOfTotalPhysicalMemory(), which returns a ByteSize.
+  // ByteCount is deprecated.
+  // TODO(crbug.com/448661443): Migrate all callers and remove this.
+  static ByteCount AmountOfPhysicalMemory() {
+    return AmountOfTotalPhysicalMemory().AsDeprecatedByteCount();
+  }
 
   // Return the number of bytes of current available physical memory on the
   // machine.
@@ -334,7 +340,7 @@ class BASE_EXPORT SysInfo {
 
   // Returns true for low-end devices that may require extreme tradeoffs,
   // including user-visible changes, for acceptable performance.
-  // For general memory optimizations, consider |AmountOfPhysicalMemoryMB|.
+  // For general memory optimizations, consider |AmountOfTotalPhysicalMemory|.
   //
   // On Android this returns true when memory <= 1GB on Android O and later.
   // This is not the same as "low-memory".
@@ -381,7 +387,7 @@ class BASE_EXPORT SysInfo {
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
   static int NumberOfEfficientProcessorsImpl();
-  static ByteCount AmountOfPhysicalMemoryImpl();
+  static ByteSize AmountOfTotalPhysicalMemoryImpl();
   static ByteSize AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
@@ -394,8 +400,8 @@ class BASE_EXPORT SysInfo {
 
   // Sets the amount of physical memory for testing, thus allowing tests to run
   // irrespective of the host machine's configuration.
-  static std::optional<ByteCount> SetAmountOfPhysicalMemoryForTesting(
-      ByteCount amount_of_memory);
+  static std::optional<ByteSize> SetAmountOfPhysicalMemoryForTesting(
+      ByteSize amount_of_memory);
   static void ClearAmountOfPhysicalMemoryForTesting();
 };
 

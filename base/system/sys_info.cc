@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info_internal.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,7 +25,7 @@
 
 namespace base {
 namespace {
-std::optional<ByteCount> g_amount_of_physical_memory_for_testing;
+std::optional<ByteSize> g_amount_of_physical_memory_for_testing;
 }  // namespace
 
 // static
@@ -34,22 +35,22 @@ int SysInfo::NumberOfEfficientProcessors() {
 }
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemory() {
+ByteSize SysInfo::AmountOfTotalPhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Keep using 512MB as the simulated RAM amount for when users or tests have
     // manually enabled low-end device mode. Note this value is different from
     // the threshold used for low end devices.
-    constexpr ByteCount kSimulatedMemoryForEnableLowEndDeviceMode = MiB(512);
+    constexpr ByteSize kSimulatedMemoryForEnableLowEndDeviceMode = MiBU(512);
     return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
-                    AmountOfPhysicalMemoryImpl());
+                    AmountOfTotalPhysicalMemoryImpl());
   }
 
   if (g_amount_of_physical_memory_for_testing) {
     return *g_amount_of_physical_memory_for_testing;
   }
 
-  return AmountOfPhysicalMemoryImpl();
+  return AmountOfTotalPhysicalMemoryImpl();
 }
 
 // static
@@ -58,11 +59,11 @@ ByteSize SysInfo::AmountOfAvailablePhysicalMemory() {
           switches::kEnableLowEndDeviceMode)) {
     // Estimate the available memory by subtracting our memory used estimate
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
-    const ByteSize memory_used = ByteSize::FromByteSizeDelta(
-        ByteSize::FromDeprecatedByteCount(AmountOfPhysicalMemoryImpl()) -
-        AmountOfAvailablePhysicalMemoryImpl());
-    const ByteSize memory_limit =
-        MiBS(features::kLowMemoryDeviceThresholdMB.Get()).AsByteSize();
+    const ByteSize memory_used =
+        ByteSize::FromByteSizeDelta(AmountOfTotalPhysicalMemoryImpl() -
+                                    AmountOfAvailablePhysicalMemoryImpl());
+    const ByteSize memory_limit = MiBU(
+        checked_cast<unsigned>(features::kLowMemoryDeviceThresholdMB.Get()));
     // |memory_used| can be > |memory_limit|.
     const ByteSizeDelta memory_available = memory_limit - memory_used;
     return memory_available.is_positive() ? memory_available.AsByteSize()
@@ -94,32 +95,33 @@ enum class BucketizedSize {
 };
 
 BucketizedSize GetSystemRamBucketizedSize() {
-  ByteCount physical_memory = SysInfo::AmountOfPhysicalMemory();
+  const ByteSize physical_memory = SysInfo::AmountOfTotalPhysicalMemory();
 
-  // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller
+  // Because of Android carveouts, AmountOfTotalPhysicalMemory() returns smaller
   // than the actual memory size, So we will use a small lowerbound than "X"GB
   // to discriminate real "X"GB devices from lower memory ones.
   // Addendum: This logic should also work for ChromeOS.
 
-  constexpr ByteCount kUpperBound2GB = GiB(2);  // inclusive
+  constexpr ByteSize kUpperBound2GB = GiBU(2);  // inclusive
   if (physical_memory <= kUpperBound2GB) {
     return BucketizedSize::k2GbOrLess;
   }
 
-  constexpr ByteCount kLowerBound3GB = kUpperBound2GB;  // exclusive
-  constexpr ByteCount kUpperBound3GB = GiB(3.2);        // inclusive
+  constexpr ByteSize kLowerBound3GB = kUpperBound2GB;  // exclusive
+  constexpr ByteSize kUpperBound3GB = GiBU(3.2);       // inclusive
   if (kLowerBound3GB < physical_memory && physical_memory <= kUpperBound3GB) {
     return BucketizedSize::k3Gb;
   }
 
-  constexpr ByteCount kLowerBound4GB = kUpperBound3GB;  // exclusive
-  constexpr ByteCount kUpperBound4GB = GiB(4);          // inclusive
+  constexpr ByteSize kLowerBound4GB = kUpperBound3GB;  // exclusive
+  constexpr ByteSize kUpperBound4GB = GiBU(4);         // inclusive
   if (kLowerBound4GB < physical_memory && physical_memory <= kUpperBound4GB) {
     return BucketizedSize::k4Gb;
   }
 
-  constexpr ByteCount kLowerBound6GB = kUpperBound4GB;     // exclusive
-  constexpr ByteCount kUpperBound6GB = GiB(6.5) - MiB(1);  // inclusive
+  constexpr ByteSize kLowerBound6GB = kUpperBound4GB;  // exclusive
+  constexpr ByteSize kUpperBound6GB =
+      ByteSize::FromByteSizeDelta(GiBU(6.5) - MiBU(1));  // inclusive
   if (kLowerBound6GB < physical_memory && physical_memory <= kUpperBound6GB) {
     return BucketizedSize::k6Gb;
   }
@@ -203,17 +205,19 @@ bool DetectLowEndDevice() {
     return false;
   }
 
-  ByteCount ram_size = SysInfo::AmountOfPhysicalMemory();
+  ByteSize ram_size = SysInfo::AmountOfTotalPhysicalMemory();
 #if BUILDFLAG(IS_ANDROID)
   if (FeatureList::GetInstance() == nullptr) {
-    int threshold_mb = base::android::GetCachedLowMemoryDeviceThresholdMb();
-    if (threshold_mb > 0) {
-      return ram_size > ByteCount(0) && ram_size <= MiB(threshold_mb);
+    ByteSize threshold = MiBU(checked_cast<unsigned>(
+        base::android::GetCachedLowMemoryDeviceThresholdMb()));
+    if (threshold > ByteSize(0)) {
+      return ram_size > ByteSize(0) && ram_size <= threshold;
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  return ram_size > ByteCount(0) &&
-         ram_size <= MiB(features::kLowMemoryDeviceThresholdMB.Get());
+  return ram_size > ByteSize(0) &&
+         ram_size <= MiBU(checked_cast<unsigned>(
+                         features::kLowMemoryDeviceThresholdMB.Get()));
   // LINT.ThenChange(//base/android/java/src/org/chromium/base/SysUtils.java)
 }
 
@@ -275,9 +279,9 @@ std::string SysInfo::ProcessCPUArchitecture() {
 }
 
 // static
-std::optional<ByteCount> SysInfo::SetAmountOfPhysicalMemoryForTesting(
-    ByteCount amount_of_memory) {
-  std::optional<ByteCount> current = g_amount_of_physical_memory_for_testing;
+std::optional<ByteSize> SysInfo::SetAmountOfPhysicalMemoryForTesting(
+    ByteSize amount_of_memory) {
+  std::optional<ByteSize> current = g_amount_of_physical_memory_for_testing;
   g_amount_of_physical_memory_for_testing.emplace(amount_of_memory);
   return current;
 }

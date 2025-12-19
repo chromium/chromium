@@ -98,9 +98,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   BruschettaInstallerTest()
       : fake_20gb_memory(
             // TODO(crbug.com/429140103): This was migrated as-is to 20TiB in
-            // ByteCount, but the legacy code potentially intended 20GiB, needs
+            // ByteSize, but the legacy code potentially intended 20GiB, needs
             // investigation.
-            base::GiB(20 * 1024)) {}
+            base::GiBU(20 * 1024)) {}
   BruschettaInstallerTest(const BruschettaInstallerTest&) = delete;
   BruschettaInstallerTest& operator=(const BruschettaInstallerTest&) = delete;
   ~BruschettaInstallerTest() override = default;

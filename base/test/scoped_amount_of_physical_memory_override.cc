@@ -10,8 +10,8 @@
 namespace base::test {
 
 ScopedAmountOfPhysicalMemoryOverride::ScopedAmountOfPhysicalMemoryOverride(
-    ByteCount amount_of_memory) {
-  CHECK_GT(amount_of_memory, ByteCount(0));
+    ByteSize amount_of_memory) {
+  CHECK_GT(amount_of_memory, ByteSize(0));
   old_amount_of_physical_memory_ =
       base::SysInfo::SetAmountOfPhysicalMemoryForTesting(amount_of_memory);
 }

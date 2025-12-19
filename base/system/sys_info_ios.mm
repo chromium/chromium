@@ -12,7 +12,6 @@
 #include <sys/types.h>
 
 #include "base/apple/scoped_mach_port.h"
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"

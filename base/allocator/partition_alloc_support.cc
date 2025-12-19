@@ -1358,7 +1358,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // Devices almost always report less physical memory than what they actually
     // have, so use 3.2GB (a threshold commonly uses throughout code) to avoid
     // accidentally catching devices advertised as 4GB.
-    if (base::SysInfo::AmountOfPhysicalMemory().InGiBF() < 3.2) {
+    if (base::SysInfo::AmountOfTotalPhysicalMemory().InGiBF() < 3.2) {
       largest_cached_size_ = ::partition_alloc::kThreadCacheDefaultSizeThreshold;
     }
 #endif  // BUILDFLAG(IS_ANDROID)

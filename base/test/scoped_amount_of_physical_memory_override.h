@@ -9,7 +9,7 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 
 namespace base::test {
 
@@ -20,7 +20,7 @@ namespace base::test {
 class ScopedAmountOfPhysicalMemoryOverride {
  public:
   // Constructor that initializes the amount of memory override.
-  explicit ScopedAmountOfPhysicalMemoryOverride(ByteCount amount_of_memory);
+  explicit ScopedAmountOfPhysicalMemoryOverride(ByteSize amount_of_memory);
 
   ScopedAmountOfPhysicalMemoryOverride(
       const ScopedAmountOfPhysicalMemoryOverride&) = delete;
@@ -30,7 +30,7 @@ class ScopedAmountOfPhysicalMemoryOverride {
   ~ScopedAmountOfPhysicalMemoryOverride();
 
  private:
-  std::optional<ByteCount> old_amount_of_physical_memory_;
+  std::optional<ByteSize> old_amount_of_physical_memory_;
 };
 
 }  // namespace base::test

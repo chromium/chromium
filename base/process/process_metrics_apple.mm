@@ -16,7 +16,6 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
@@ -255,8 +254,7 @@ size_t GetSystemCommitCharge() {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
-  meminfo->total =
-      ByteSize::FromDeprecatedByteCount(SysInfo::AmountOfPhysicalMemory());
+  meminfo->total = SysInfo::AmountOfTotalPhysicalMemory();
 
   base::apple::ScopedMachSendRight host(mach_host_self());
   vm_statistics64_data_t vm_info;
