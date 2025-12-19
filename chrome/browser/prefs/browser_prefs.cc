@@ -910,6 +910,10 @@ constexpr char kMerchantTrustPageInfoLastOpenTime[] =
     "merchant_trust.page_info.last_open_time";
 
 // Deprecated 12/2025.
+constexpr char kCloudPrintProxyEnabled[] = "cloud_print.enabled";
+constexpr char kCloudPrintEmail[] = "cloud_print.email";
+
+// Deprecated 12/2025.
 constexpr char kTrackingProtectionEligibleSince[] =
     "tracking_protection.tracking_protection_eligible_since";
 constexpr char kTrackingProtectionOnboardedSince[] =
@@ -944,7 +948,6 @@ constexpr char kFingerprintingProtectionEnabled[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kUserAgentClientHintsGREASEUpdateEnabled, true);
 
@@ -1291,6 +1294,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kReduceUserAgentMinorVersion, false);
   registry->RegisterTimePref(kMerchantTrustUiLastInteractionTime, base::Time());
   registry->RegisterTimePref(kMerchantTrustPageInfoLastOpenTime, base::Time());
+
+  // Deprecated 12/2025.
+  registry->RegisterBooleanPref(kCloudPrintProxyEnabled, true);
+  registry->RegisterStringPref(kCloudPrintEmail, std::string());
 }
 
 }  // namespace
@@ -2518,6 +2525,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kReduceUserAgentMinorVersion);
   profile_prefs->ClearPref(kMerchantTrustUiLastInteractionTime);
   profile_prefs->ClearPref(kMerchantTrustPageInfoLastOpenTime);
+
+  // Added 12/2025.
+  profile_prefs->ClearPref(kCloudPrintProxyEnabled);
+  profile_prefs->ClearPref(kCloudPrintEmail);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

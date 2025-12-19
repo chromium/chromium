@@ -3364,40 +3364,6 @@ inline constexpr char kToastAlertLevel[] = "settings.toast.alert_level";
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 
-inline constexpr char kCloudPrintRoot[] = "cloud_print";
-inline constexpr char kCloudPrintProxyEnabled[] = "cloud_print.enabled";
-// The unique id for this instance of the cloud print proxy.
-inline constexpr char kCloudPrintProxyId[] = "cloud_print.proxy_id";
-// The GAIA auth token for Cloud Print
-inline constexpr char kCloudPrintAuthToken[] = "cloud_print.auth_token";
-// The email address of the account used to authenticate with the Cloud Print
-// server.
-inline constexpr char kCloudPrintEmail[] = "cloud_print.email";
-// Settings specific to underlying print system.
-inline constexpr char kCloudPrintPrintSystemSettings[] =
-    "cloud_print.print_system_settings";
-// A boolean indicating whether we should poll for print jobs when don't have
-// an XMPP connection (false by default).
-inline constexpr char kCloudPrintEnableJobPoll[] =
-    "cloud_print.enable_job_poll";
-inline constexpr char kCloudPrintRobotRefreshToken[] =
-    "cloud_print.robot_refresh_token";
-inline constexpr char kCloudPrintRobotEmail[] = "cloud_print.robot_email";
-// A boolean indicating whether we should connect to cloud print new printers.
-inline constexpr char kCloudPrintConnectNewPrinters[] =
-    "cloud_print.user_settings.connectNewPrinters";
-// A boolean indicating whether we should ping XMPP connection.
-inline constexpr char kCloudPrintXmppPingEnabled[] =
-    "cloud_print.xmpp_ping_enabled";
-// An int value indicating the average timeout between xmpp pings.
-inline constexpr char kCloudPrintXmppPingTimeout[] =
-    "cloud_print.xmpp_ping_timeout_sec";
-// Dictionary with settings stored by connector setup page.
-inline constexpr char kCloudPrintUserSettings[] = "cloud_print.user_settings";
-// List of printers settings.
-inline constexpr char kCloudPrintPrinters[] =
-    "cloud_print.user_settings.printers";
-
 // Preference to store proxy settings.
 inline constexpr char kMaxConnectionsPerProxy[] =
     "net.max_connections_per_proxy";

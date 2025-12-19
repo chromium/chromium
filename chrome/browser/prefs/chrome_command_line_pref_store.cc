@@ -76,8 +76,6 @@ const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
         {switches::kDisable3DAPIs, prefs::kDisable3DAPIs, true},
         {switches::kEnableUnsafeSwiftShader, prefs::kEnableUnsafeSwiftShader,
          true},
-        {switches::kEnableCloudPrintProxy, prefs::kCloudPrintProxyEnabled,
-         true},
         {switches::kNoPings, prefs::kEnableHyperlinkAuditing, false},
         {switches::kAllowRunningInsecureContent,
          prefs::kWebKitAllowRunningInsecureContent, true},
