@@ -114,19 +114,6 @@ struct HasGetBeginMethod<T,
                          std::void_t<decltype(T::GetBegin(std::declval<U&>()))>>
     : std::true_type {};
 
-template <typename T, typename U, typename SFINAE = void>
-struct HasGetDataMethod : std::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-// TODO(dcheng): Figure out why the `&` below is load-bearing and document it or
-// improve this and remove the hack.
-template <typename T, typename U>
-struct HasGetDataMethod<T,
-                        U,
-                        std::void_t<decltype(&T::GetData(std::declval<U&>()))>>
-    : std::true_type {};
-
 }  // namespace internal
 }  // namespace mojo
 
