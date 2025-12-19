@@ -2085,10 +2085,13 @@ using UserFeedbackDataCallback =
         self.mainInterface.profile->GetSharedURLLoaderFactory(),
         base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
             .Then(base::BindOnce(^{
-              [weakSelf presentUserFeedbackViewController:baseViewController
-                                     withUserFeedbackData:data
-                                 cancelFamilyMembersFetch:NO
-                                               completion:completion];
+              [weakSelf
+                  reportAnIssueFamilyMembersListFetchedForBaseViewController:
+                      baseViewController
+                                                            userFeedbackData:
+                                                                data
+                                                                  completion:
+                                                                      completion];
             })));
 
     // Timeout the request to list family members.
@@ -2107,6 +2110,23 @@ using UserFeedbackDataCallback =
                      withUserFeedbackData:data
                  cancelFamilyMembersFetch:NO
                                completion:completion];
+}
+
+// Callback for when the Family Members list is fetched.
+- (void)
+    reportAnIssueFamilyMembersListFetchedForBaseViewController:
+        (UIViewController*)baseViewController
+                                              userFeedbackData:
+                                                  (UserFeedbackData*)data
+                                                    completion:
+                                                        (UserFeedbackDataCallback)
+                                                            completion {
+  [self presentUserFeedbackViewController:baseViewController
+                     withUserFeedbackData:data
+                 cancelFamilyMembersFetch:NO
+                               completion:completion];
+  // Reset the fetcher now that it has done its job.
+  _familyMembersFetcher.reset();
 }
 
 - (void)presentUserFeedbackViewController:(UIViewController*)baseViewController

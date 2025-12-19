@@ -109,7 +109,7 @@ class FetchProcess {
   virtual void OnResponse(std::optional<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
-  const raw_ref<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;
