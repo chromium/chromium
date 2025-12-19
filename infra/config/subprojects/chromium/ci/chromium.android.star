@@ -64,6 +64,14 @@ consoles.console_view(
     },
 )
 
+# TODO(crbug.com/406463490): Can get rid of this if/when the codesearch builders
+# move to the chromium project.
+branches.console_view_entry(
+    console_view = "cronet rotation",
+    builder = "infra:codesearch/codesearch-gen-chromium-cronet",
+    category = "codesearch",
+)
+
 ci.builder(
     name = "Android arm Builder (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
