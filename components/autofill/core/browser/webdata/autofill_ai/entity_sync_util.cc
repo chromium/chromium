@@ -68,8 +68,10 @@ sync_pb::Any SerializeChromeValuablesMetadata(const EntityInstance& entity) {
   return AnyWrapProto(metadata);
 }
 
-// Takes the `serialized_metadata` and populates `attributes` with the
-// information that was serialized in it. `entity_type` indicates what type of
+// Deserializes data in `serialized_metadata` and extends pre-populated
+// `attributes` with the information that was serialized. Notably, only
+// attributes with equivalent information will be "enriched" to prevent stale
+// metadata to override the latest updates. `entity_type` indicates what type of
 // entity does the metadata store information for.
 void ReadChromeValuablesMetadata(
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
@@ -80,6 +82,8 @@ void ReadChromeValuablesMetadata(
   if (!metadata.ParseFromString(serialized_metadata.value())) {
     return;
   }
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      parsed_metadata_attributes;
   for (const ChromeValuablesMetadataEntry& entry :
        metadata.metadata_entries()) {
     std::optional<AttributeType> attribute_type =
@@ -91,12 +95,26 @@ void ReadChromeValuablesMetadata(
     if (!attribute_type || field_type == UNKNOWN_TYPE || !status) {
       continue;
     }
-    auto it = attributes.find(*attribute_type);
+    auto it = parsed_metadata_attributes.find(*attribute_type);
     AttributeInstance& attribute =
-        it != attributes.end()
+        it != parsed_metadata_attributes.end()
             ? *it
-            : *attributes.insert(AttributeInstance(*attribute_type)).first;
+            : *parsed_metadata_attributes
+                   .insert(AttributeInstance(*attribute_type))
+                   .first;
     attribute.SetRawInfo(field_type, value, *status);
+  }
+
+  for (const AttributeInstance& attribute : parsed_metadata_attributes) {
+    auto attributes_it = attributes.find(attribute);
+    // Merge metadata into existing attributes only when values are identical.
+    // This prevents stale metadata from reverting recent updates to the primary
+    // fields.
+    if (attributes_it != attributes.end() &&
+        attributes_it->GetCompleteRawInfo() == attribute.GetCompleteRawInfo()) {
+      attributes.erase(attributes_it);
+      attributes.insert(attribute);
+    }
   }
 }
 
@@ -154,11 +172,13 @@ GetFlightReservationAttributesFromSpecifics(
         base::UnlocalizedTimeFormatWithPattern(
             offsetted_departure_time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
   }
-
+  // Always call `ReadChromeValuablesMetadata` after all other attributes have
+  // been set.
   ReadChromeValuablesMetadata(attributes,
                               EntityType(EntityTypeName::kFlightReservation),
                               specifics.serialized_chrome_valuables_metadata());
   for (AttributeInstance& attribute : attributes) {
+    // Build the attribute's substructures if they don't exist.
     attribute.FinalizeInfo();
   }
   return attributes;
@@ -274,9 +294,12 @@ GetVehicleAttributesFromSpecifics(
   add_attribute(kVehiclePlateState, vehicle.license_plate_region());
   add_attribute(kVehicleOwner, vehicle.owner_name());
 
+  // Always call `ReadChromeValuablesMetadata` after all other attributes have
+  // been set.
   ReadChromeValuablesMetadata(attributes, EntityType(EntityTypeName::kVehicle),
                               specifics.serialized_chrome_valuables_metadata());
   for (AttributeInstance& attribute : attributes) {
+    // Build the attribute's substructures if they don't exist.
     attribute.FinalizeInfo();
   }
   return attributes;
