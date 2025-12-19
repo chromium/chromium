@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
@@ -42,32 +43,43 @@ static std::optional<signin::RestoreData> g_restore_data;
 static_assert(
     std::is_trivially_destructible<std::optional<signin::RestoreData>>::value);
 
-// Copies a string value from a dictionary if the given key is present.
-void CopyStringFromDict(std::string& to,
-                        const base::Value::Dict& dict,
-                        const char* key) {
-  const std::string* found = dict.FindString(key);
-  if (found) {
-    to = *found;
+// Returns a non-empty string found in `dict` by `key` or nullptr if a string is
+// not found or `key` contains an empty string.
+const std::string* FindStringIfNonEmpty(const base::Value::Dict& dict,
+                                        std::string_view key) {
+  const std::string* value = dict.FindString(key);
+  if (!value) {
+    return nullptr;
   }
+  return value->empty() ? nullptr : value;
 }
 
 // Returns an AccountInfo from the values in a dictionary.
 AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
-  AccountInfo account;
-  const std::string* account_id_str = dict.FindString(kAccountInfoKeyAccountId);
-  if (account_id_str) {
-    account.account_id = CoreAccountId::FromString(*account_id_str);
+  const std::string* gaia_id = FindStringIfNonEmpty(dict, kAccountInfoKeyGaia);
+  const std::string* email = FindStringIfNonEmpty(dict, kAccountInfoKeyEmail);
+  if (!gaia_id || !email) {
+    return AccountInfo();
   }
-  const std::string* gaia_id_str = dict.FindString(kAccountInfoKeyGaia);
-  if (gaia_id_str) {
-    account.gaia = GaiaId(*gaia_id_str);
+
+  AccountInfo::Builder builder(GaiaId(*gaia_id), *email);
+  if (const std::string* account_id =
+          FindStringIfNonEmpty(dict, kAccountInfoKeyAccountId)) {
+    builder.SetAccountId(CoreAccountId::FromString(*account_id));
   }
-  CopyStringFromDict(account.email, dict, kAccountInfoKeyEmail);
-  CopyStringFromDict(account.full_name, dict, kAccountInfoKeyFullName);
-  CopyStringFromDict(account.given_name, dict, kAccountInfoKeyGivenName);
-  CopyStringFromDict(account.picture_url, dict, kAccountInfoKeyPictureUrl);
-  return account;
+  if (const std::string* full_name =
+          FindStringIfNonEmpty(dict, kAccountInfoKeyFullName)) {
+    builder.SetFullName(*full_name);
+  }
+  if (const std::string* given_name =
+          FindStringIfNonEmpty(dict, kAccountInfoKeyGivenName)) {
+    builder.SetGivenName(*given_name);
+  }
+  if (const std::string* picture_url =
+          FindStringIfNonEmpty(dict, kAccountInfoKeyPictureUrl)) {
+    builder.SetAvatarUrl(*picture_url);
+  }
+  return builder.Build();
 }
 
 // Loads data related to the device restore. This method needs to be called
@@ -132,13 +144,18 @@ std::optional<base::Time> LastDeviceRestoreTimestamp() {
 void StorePreRestoreIdentity(PrefService* profile_pref,
                              AccountInfo account,
                              bool history_sync_enabled) {
+  std::string avatar_url_to_set;
+  if (std::optional<std::string_view> avatar_url = account.GetAvatarUrl()) {
+    avatar_url_to_set =
+        avatar_url->empty() ? kNoPictureURLFound : std::string(*avatar_url);
+  }
   ScopedDictPrefUpdate update(profile_pref, prefs::kIosPreRestoreAccountInfo);
-  update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
-  update->Set(kAccountInfoKeyGaia, account.gaia.ToString());
-  update->Set(kAccountInfoKeyEmail, account.email);
-  update->Set(kAccountInfoKeyFullName, account.full_name);
-  update->Set(kAccountInfoKeyGivenName, account.given_name);
-  update->Set(kAccountInfoKeyPictureUrl, account.picture_url);
+  update->Set(kAccountInfoKeyAccountId, account.GetAccountId().ToString());
+  update->Set(kAccountInfoKeyGaia, account.GetGaiaId().ToString());
+  update->Set(kAccountInfoKeyEmail, account.GetEmail());
+  update->Set(kAccountInfoKeyFullName, account.GetFullName().value_or(""));
+  update->Set(kAccountInfoKeyGivenName, account.GetGivenName().value_or(""));
+  update->Set(kAccountInfoKeyPictureUrl, avatar_url_to_set);
   update->Set(kHistorySyncEnabled, history_sync_enabled);
 }
 
