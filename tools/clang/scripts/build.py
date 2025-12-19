@@ -1200,7 +1200,7 @@ def main():
       with open(training_source, 'wb') as f:
         DownloadUrl(CDS_URL + '/' + training_source, f)
       train_cmd = [os.path.join(LLVM_INSTRUMENTED_DIR, 'bin', 'clang++'),
-                  '-target', 'x86_64-unknown-unknown', '-O2', '-g', '-std=c++20',
+                  '-target', 'x86_64-unknown-unknown', '-O2', '-g', '-std=c++23',
                    '-fno-exceptions', '-fno-rtti', '-w', '-c', training_source]
       if sys.platform == 'darwin':
         train_cmd.extend(['-isysroot', isysroot])

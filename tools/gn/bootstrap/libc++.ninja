@@ -7,7 +7,7 @@ libcxxabi = third_party/libc++abi/src/src
 
 defines = -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64
 includes = -isystem$root/buildtools/third_party/libc++ -isystem$root/$libcxx/../include -isystem$root/$libcxx -isystem$root/$libcxxabi/../include -isystem$root/$libc
-cflags = $cxxflags $defines $includes -O2 -g0 -pthread -pipe -fno-exceptions -std=c++20 -Wno-c++11-narrowing -nostdinc++ -fPIC
+cflags = $cxxflags $defines $includes -O2 -g0 -pthread -pipe -fno-exceptions -std=c++23 -Wno-c++11-narrowing -nostdinc++ -fPIC
 
 rule cxx_libcxx
   command = $cxx $cflags -D_LIBCPP_NO_EXCEPTIONS -D_LIBCPP_BUILDING_LIBRARY -DLIBCXX_BUILDING_LIBCXXABI -c $in -o $out
