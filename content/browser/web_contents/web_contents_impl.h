@@ -2137,6 +2137,13 @@ class CONTENT_EXPORT WebContentsImpl
   // have a distinct RenderFrameHostImpl in this result.
   std::vector<RenderFrameHostImpl*> GetOutermostMainFrames();
 
+  // Returns the main frames that should have their views updated when
+  // WebContents's view changes. This includes the primary main frame, its
+  // associated speculative render frame host, main frames of prerendering frame
+  // trees, and main frames of any bfcached pages. Used when attaching
+  // WebContents to an embedder or detaching from one.
+  std::vector<RenderFrameHostImpl*> GetOutermostMainFramesForViewChange();
+
   // Called when the base::ScopedClosureRunner returned by
   // IncrementCapturerCount() is destructed.
   void DecrementCapturerCount(bool stay_hidden,

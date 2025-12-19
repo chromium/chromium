@@ -1954,12 +1954,40 @@ std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   // sometimes exceed 1. For example, for WebUIBrowser, when a prerendering code
   // path is triggered, a prerender frame tree is generated, but the path to
   // activate or discard it does not run before this point.
-  //
-  // TODO(webium): Fix prerendering and bfcache for WebUIBrowser, which are not
-  // yet fully enabled.
   DCHECK(
       !GetOuterWebContents() || (result.size() == 1) ||
       base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
+
+  return result;
+}
+
+std::vector<RenderFrameHostImpl*>
+WebContentsImpl::GetOutermostMainFramesForViewChange() {
+  // Do nothing if the WebContents is currently being initialized or destroyed.
+  if (!GetPrimaryMainFrame()) {
+    return {};
+  }
+
+  std::vector<RenderFrameHostImpl*> result;
+
+  result.push_back(GetPrimaryMainFrame());
+
+  if (auto* speculative_rfh = GetPrimaryFrameTree()
+                                  .root()
+                                  ->render_manager()
+                                  ->speculative_frame_host()) {
+    result.push_back(speculative_rfh);
+  }
+
+  for (FrameTree* prerender_frame_tree :
+       GetPrerenderHostRegistry()->GetPrerenderFrameTrees()) {
+    DCHECK(prerender_frame_tree->GetMainFrame());
+    result.push_back(prerender_frame_tree->GetMainFrame());
+  }
+
+  for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
+    result.push_back(entry->render_frame_host());
+  }
 
   return result;
 }
@@ -3253,13 +3281,6 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
       inner_web_contents_impl->GetRenderManager();
   RenderFrameHostImpl* inner_main_frame =
       inner_render_manager->current_frame_host();
-  RenderViewHostImpl* inner_render_view_host =
-      inner_main_frame->render_view_host();
-  RenderFrameHostImpl* inner_speculative_frame =
-      inner_render_manager->speculative_frame_host();
-  RenderViewHostImpl* inner_speculative_render_view_host =
-      inner_speculative_frame ? inner_speculative_frame->render_view_host()
-                              : nullptr;
   auto* outer_render_manager =
       render_frame_host_impl->frame_tree_node()->render_manager();
 
@@ -3274,52 +3295,36 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
       GetContentClient()->browser()->GetWebContentsViewDelegate(
           inner_web_contents_impl),
       &inner_web_contents_impl->render_view_host_delegate_view_);
-  // On platforms where destroying the WebContents' view does not also destroy
-  // the platform RenderWidgetHostView, we need to destroy it if it exists.
-  // TODO(mcnee): Should all platforms' WebContentsView destroy the platform
-  // RWHV?
-  if (RenderWidgetHostViewBase* prev_rwhv =
-          inner_render_manager->GetRenderWidgetHostView()) {
-    if (!prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
-      prev_rwhv->Destroy();
-    }
-  }
-  // Do the same for speculative render frame host's view.
-  if (inner_speculative_frame) {
-    RenderWidgetHostViewBase* prev_speculative_rwhv =
-        static_cast<RenderWidgetHostViewBase*>(
-            inner_speculative_frame->GetView());
-    if (prev_speculative_rwhv &&
-        !prev_speculative_rwhv->IsRenderWidgetHostViewChildFrame()) {
-      prev_speculative_rwhv->Destroy();
-    }
-  }
 
-  // When the WebContents being initialized has not already navigated, the
-  // browser side Render{View,Frame}Host must be initialized and the
-  // RenderWidgetHostView created. This is needed because the usual
-  // initialization happens during the first navigation, but not all guest types
-  // navigate before attaching. If the browser side is already initialized, the
-  // calls below will just early return.
-  inner_render_manager->InitRenderView(
-      inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
-      /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
-  if (!inner_render_manager->GetRenderWidgetHostView()) {
-    inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(
-        inner_render_view_host);
-  }
-  // Do the same for speculative render frame host.
-  if (inner_speculative_render_view_host) {
-    inner_render_manager->InitRenderView(
-        inner_speculative_frame->GetSiteInstance()->group(),
-        inner_speculative_render_view_host,
-        /*proxy=*/nullptr, /*navigation_metrics_token=*/std::nullopt);
-    RenderWidgetHostViewBase* speculative_rwhv =
-        static_cast<RenderWidgetHostViewBase*>(
-            inner_speculative_frame->GetView());
-    if (!speculative_rwhv) {
-      inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(
-          inner_speculative_render_view_host);
+  // Update views for all outermost main frames impacted by the view change of
+  // the inner WebContents, including speculative render frame host and the
+  // ones in prerender and BFCache.
+  for (auto* rfh :
+       inner_web_contents_impl->GetOutermostMainFramesForViewChange()) {
+    // On platforms where destroying the WebContents' view does not also destroy
+    // the platform RenderWidgetHostView, we need to destroy it if it exists.
+    // TODO(mcnee): Should all platforms' WebContentsView destroy the platform
+    // RWHV?
+    if (RenderWidgetHostViewBase* prev_rwhv =
+            static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
+      if (prev_rwhv && !prev_rwhv->IsRenderWidgetHostViewChildFrame()) {
+        prev_rwhv->Destroy();
+      }
+    }
+
+    // When the WebContents being initialized has not already navigated, the
+    // browser side Render{View,Frame}Host must be initialized and the
+    // RenderWidgetHostView created. This is needed because the usual
+    // initialization happens during the first navigation, but not all guest
+    // types navigate before attaching. If the browser side is already
+    // initialized, the calls below will just early return.
+    auto* render_manager = rfh->frame_tree_node()->render_manager();
+    RenderViewHostImpl* rvh = rfh->render_view_host();
+    render_manager->InitRenderView(rfh->GetSiteInstance()->group(), rvh,
+                                   /*proxy=*/nullptr,
+                                   /*navigation_metrics_token=*/std::nullopt);
+    if (!rfh->GetView()) {
+      inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(rvh);
     }
   }
 
@@ -3392,21 +3397,24 @@ void WebContentsImpl::DetachUnownedInnerWebContents(
 
   // RenderWidgetHostView are of type RenderWidgetHostViewChildFrame and they
   // need to be re-created with appropriate platform views.
+  // Do this for all outermost main frames including speculative render frame
+  // host and the ones in prerender and BFCache.
   std::vector<RenderViewHostImpl*> list_of_rvh_with_rwhv;
-  inner_web_contents_impl->GetPrimaryFrameTree().ForEachRenderViewHost(
-      [&list_of_rvh_with_rwhv](RenderViewHostImpl* rvh) {
-        if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
-          // While in theory only child frame RWHVs should exist at this stage,
-          // in practice, a race with navigation cleanup could result in a main
-          // frame RWHV that is pending deletion still existing here.
-          // This might happen when a WebContents is destroyed immediately
-          // after it navigates and then attaches to an outer WebContents.
-          if (rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
-            list_of_rvh_with_rwhv.push_back(rvh);
-          }
-          rvh->GetWidget()->GetView()->Destroy();
-        }
-      });
+  for (auto* rfh :
+       inner_web_contents_impl->GetOutermostMainFramesForViewChange()) {
+    RenderViewHostImpl* rvh = rfh->render_view_host();
+    if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
+      // While in theory only child frame RWHVs should exist at this stage,
+      // in practice, a race with navigation cleanup could result in a main
+      // frame RWHV that is pending deletion still existing here.
+      // This might happen when a WebContents is destroyed immediately
+      // after it navigates and then attaches to an outer WebContents.
+      if (rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
+        list_of_rvh_with_rwhv.push_back(rvh);
+      }
+      rvh->GetWidget()->GetView()->Destroy();
+    }
+  }
 
   // Destroy WebContentsViewChildFrame.
   inner_web_contents_impl->render_view_host_delegate_view_ = nullptr;
@@ -4361,16 +4369,26 @@ void WebContentsImpl::RemoveObserver(WebContentsObserver* observer) {
 std::set<RenderWidgetHostViewBase*>
 WebContentsImpl::GetRenderWidgetHostViewsInWebContentsTree() {
   std::set<RenderWidgetHostViewBase*> result;
-  // Views for speculative render frame host could also be frame sink id owner
-  // and should move frame sink id registration from inner WebContents to outer
-  // WebContents when WebContents is attached/detached.
-  GetPrimaryMainFrame()->ForEachRenderFrameHostImplIncludingSpeculative(
-      [&result](RenderFrameHostImpl* rfh) {
-        if (auto* view =
-                static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
-          result.insert(view);
-        }
-      });
+  // Views for speculative render frame host, prerender and BFCache could also
+  // be frame sink id owner and should move frame sink id registration from
+  // inner WebContents to outer WebContents when WebContents is
+  // attached/detached.
+  auto* speculative_main_frame =
+      GetPrimaryFrameTree().root()->render_manager()->speculative_frame_host();
+  for (auto* main_frame : GetOutermostMainFramesForViewChange()) {
+    if (main_frame == speculative_main_frame) {
+      // Skip speculative main frame host as it will be handled by
+      // main_frame->ForEachRenderFrameHostImplIncludingSpeculative.
+      continue;
+    }
+    main_frame->ForEachRenderFrameHostImplIncludingSpeculative(
+        [&result](RenderFrameHostImpl* rfh) {
+          if (auto* view =
+                  static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
+            result.insert(view);
+          }
+        });
+  }
   return result;
 }
 
