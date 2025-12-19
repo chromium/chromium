@@ -14907,6 +14907,8 @@ from previous Chrome versions.
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
   <int value="190395448" label="SearchWebInSidePanel:enabled"/>
+  <int value="190906756"
+      label="ClientSideDetectionServerModelForScamDetectionAndroid:enabled"/>
   <int value="191737931" label="enable-mark-http-as"/>
   <int value="191891628" label="AutocompleteExtendedSuggestions:enabled"/>
   <int value="192167036" label="LogJsConsoleMessages:disabled"/>
@@ -15006,6 +15008,8 @@ from previous Chrome versions.
   <int value="224381468"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:enabled"/>
   <int value="224476390" label="PageInfoAboutThisSiteNonMsbb:enabled"/>
+  <int value="224623575"
+      label="ClientSideDetectionServerModelForScamDetectionAndroid:disabled"/>
   <int value="225059444" label="ViewTransitionLayeredCapture:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="225857705" label="NtpNextFeatures:disabled"/>

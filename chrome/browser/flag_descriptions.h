@@ -5246,6 +5246,13 @@ inline constexpr char
         "of "
         "the page on Android.";
 
+inline constexpr char
+    kClientSideDetectionServerModelForScamDetectionAndroidName[] =
+        "Client Side Detection Server Model for Scam Detection on Android";
+inline constexpr char
+    kClientSideDetectionServerModelForScamDetectionAndroidDescription[] =
+        "Enables server model for scam detection on Android.";
+
 inline constexpr char kClientSideDetectionShowScamVerdictWarningAndroidName[] =
     "Client Side Detection Show Scam Verdict Warning on Android";
 inline constexpr char

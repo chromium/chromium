@@ -1779,6 +1779,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "client-side-detection-server-model-for-scam-detection-android",
+    "owners": [
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "client-side-detection-show-scam-verdict-warning",
     "owners": [
       "andysjlim@chromium.org",
