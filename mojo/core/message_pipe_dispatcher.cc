@@ -18,6 +18,7 @@
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace mojo {
 namespace core {
@@ -409,9 +410,8 @@ MojoResult MessagePipeDispatcher::CloseNoLock() {
     node_controller_->ClosePort(port_);
 
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("mojom"),
-                           "MessagePipe closing", pipe_id_ + endpoint_,
-                           TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mojom"), "MessagePipe closing",
+                perfetto::Flow::ProcessScoped(pipe_id_ + endpoint_));
 #endif
   }
 
@@ -464,9 +464,9 @@ HandleSignalsState MessagePipeDispatcher::GetHandleSignalsStateNoLock() const {
   const bool is_peer_closed =
       rv.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   if (is_peer_closed && !was_peer_closed) {
-    TRACE_EVENT_WITH_FLOW0(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("mojom"), "MessagePipe peer closed",
-        pipe_id_ + (1 - endpoint_), TRACE_EVENT_FLAG_FLOW_IN);
+        perfetto::TerminatingFlow::ProcessScoped(pipe_id_ + (1 - endpoint_)));
   }
 #endif
   last_known_satisfied_signals_ = rv.satisfied_signals;
