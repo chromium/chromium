@@ -192,7 +192,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  raw_ptr<web::WebState, DanglingUntriaged> _webState;
+  raw_ptr<web::WebState> _webState;
 
   PasswordControllerDriverHelper* _driverHelper;
 
@@ -462,6 +462,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   _lastFocusedFormIdentifier = FormRendererId();
   _lastFocusedFieldIdentifier = FieldRendererId();
   _lastFocusedFrame = nullptr;
+  _driverHelper = nil;
   _passwordManager = nullptr;
   _lastSubmittedPasswordManagerDriver = nullptr;
   _agentDelegate.reset();
