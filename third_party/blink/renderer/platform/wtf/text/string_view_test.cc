@@ -14,6 +14,8 @@
 
 namespace blink {
 
+namespace {
+
 const LChar* Address8(const StringImpl& impl, size_t offset = 0) {
   return offset ? impl.Span8().subspan(offset).data() : impl.Span8().data();
 }
@@ -46,10 +48,13 @@ const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
 const UChar* const kChars16 = reinterpret_cast<const UChar*>(kCharsU);
+const base::span<const LChar> kSpan8 = base::byte_span_from_cstring(kChars);
+const base::span<const UChar> kSpan16 = base::span_from_cstring(kCharsU);
+
+}  // namespace
 
 TEST(StringViewTest, ConstructionStringImpl8) {
-  scoped_refptr<StringImpl> impl8_bit =
-      StringImpl::Create(UNSAFE_TODO({kChars8, 5u}));
+  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create(kSpan8);
 
   // StringView(StringImpl*);
   ASSERT_TRUE(StringView(impl8_bit.get()).Is8Bit());
@@ -77,8 +82,7 @@ TEST(StringViewTest, ConstructionStringImpl8) {
 }
 
 TEST(StringViewTest, ConstructionStringImpl16) {
-  scoped_refptr<StringImpl> impl16_bit =
-      StringImpl::Create(UNSAFE_TODO({kChars16, 5u}));
+  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create(kSpan16);
 
   // StringView(StringImpl*);
   ASSERT_FALSE(StringView(impl16_bit.get()).Is8Bit());
@@ -107,8 +111,7 @@ TEST(StringViewTest, ConstructionStringImpl16) {
 }
 
 TEST(StringViewTest, ConstructionStringImplRef8) {
-  scoped_refptr<StringImpl> impl8_bit =
-      StringImpl::Create(UNSAFE_TODO({kChars8, 5u}));
+  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create(kSpan8);
 
   // StringView(StringImpl&);
   ASSERT_TRUE(StringView(*impl8_bit).Is8Bit());
@@ -135,8 +138,7 @@ TEST(StringViewTest, ConstructionStringImplRef8) {
 }
 
 TEST(StringViewTest, ConstructionStringImplRef16) {
-  scoped_refptr<StringImpl> impl16_bit =
-      StringImpl::Create(UNSAFE_TODO({kChars16, 5u}));
+  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create(kSpan16);
 
   // StringView(StringImpl&);
   ASSERT_FALSE(StringView(*impl16_bit).Is8Bit());
@@ -164,7 +166,7 @@ TEST(StringViewTest, ConstructionStringImplRef16) {
 }
 
 TEST(StringViewTest, ConstructionString8) {
-  String string8_bit = String(StringImpl::Create(UNSAFE_TODO({kChars8, 5u})));
+  String string8_bit = String(StringImpl::Create(kSpan8));
 
   // StringView(const String&);
   ASSERT_TRUE(StringView(string8_bit).Is8Bit());
@@ -191,7 +193,7 @@ TEST(StringViewTest, ConstructionString8) {
 }
 
 TEST(StringViewTest, ConstructionString16) {
-  String string16_bit = String(StringImpl::Create(UNSAFE_TODO({kChars16, 5u})));
+  String string16_bit = String(StringImpl::Create(kSpan16));
 
   // StringView(const String&);
   ASSERT_FALSE(StringView(string16_bit).Is8Bit());
@@ -220,8 +222,7 @@ TEST(StringViewTest, ConstructionString16) {
 }
 
 TEST(StringViewTest, ConstructionAtomicString8) {
-  AtomicString atom8_bit =
-      AtomicString(StringImpl::Create(UNSAFE_TODO({kChars8, 5u})));
+  AtomicString atom8_bit = AtomicString(StringImpl::Create(kSpan8));
 
   // StringView(const AtomicString&);
   ASSERT_TRUE(StringView(atom8_bit).Is8Bit());
@@ -233,8 +234,8 @@ TEST(StringViewTest, ConstructionAtomicString8) {
   // StringView(const AtomicString&, unsigned offset);
   ASSERT_TRUE(StringView(atom8_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(atom8_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(atom8_bit.Span8().data() + 2,
-                        StringView(atom8_bit, 2).Span8().data()));
+  EXPECT_EQ(atom8_bit.Span8().subspan(2u).data(),
+            StringView(atom8_bit, 2).Span8().data());
   EXPECT_EQ(3u, StringView(atom8_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(atom8_bit, 2));
   EXPECT_EQ("345", StringView(atom8_bit, 2));
@@ -242,16 +243,15 @@ TEST(StringViewTest, ConstructionAtomicString8) {
   // StringView(const AtomicString&, unsigned offset, unsigned length);
   ASSERT_TRUE(StringView(atom8_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(atom8_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(atom8_bit.Span8().data() + 2,
-                        StringView(atom8_bit, 2, 1).Span8().data()));
+  EXPECT_EQ(atom8_bit.Span8().subspan(2u).data(),
+            StringView(atom8_bit, 2, 1).Span8().data());
   EXPECT_EQ(1u, StringView(atom8_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(atom8_bit, 2, 1));
   EXPECT_EQ("3", StringView(atom8_bit, 2, 1));
 }
 
 TEST(StringViewTest, ConstructionAtomicString16) {
-  AtomicString atom16_bit =
-      AtomicString(StringImpl::Create(UNSAFE_TODO({kChars16, 5u})));
+  AtomicString atom16_bit = AtomicString(StringImpl::Create(kSpan16));
 
   // StringView(const AtomicString&);
   ASSERT_FALSE(StringView(atom16_bit).Is8Bit());

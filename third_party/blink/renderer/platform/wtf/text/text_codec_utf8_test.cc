@@ -99,11 +99,12 @@ TEST(TextCodecUTF8, DecodeOverflow) {
                 FlushBehavior::kDoNotFlush, false, saw_error);
   EXPECT_FALSE(saw_error);
 
-  UNSAFE_TODO(EXPECT_DEATH_IF_SUPPORTED(
-      codec->Decode(base::as_bytes(
-                        base::span("", std::numeric_limits<wtf_size_t>::max())),
+  EXPECT_DEATH_IF_SUPPORTED(
+      // SAFETY: Unsafe operation for a death test.
+      codec->Decode(base::as_bytes(UNSAFE_BUFFERS(base::span(
+                        "", std::numeric_limits<wtf_size_t>::max()))),
                     FlushBehavior::kDataEOF, false, saw_error),
-      ""));
+      "");
 }
 
 TEST(TextCodecUTF8, DecodeMultiplePartialsAfterError) {
