@@ -3911,8 +3911,7 @@
     },
     {
       name: "PerformanceNavigationTimingConfidence",
-      origin_trial_feature_name: "PerformanceNavigationTimingConfidence",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PeriodicBackgroundSync",
