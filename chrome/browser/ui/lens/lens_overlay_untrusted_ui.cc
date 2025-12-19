@@ -350,6 +350,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   html_source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   html_source->AddBoolean("composeboxContextDragAndDropEnabled", false);
+  html_source->AddBoolean("composeboxShowRecentTabChip", false);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);

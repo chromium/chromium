@@ -140,7 +140,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      showRecentTabChip_: {type: Boolean},
+      showRecentTabChip: {type: Boolean},
       inDeepSearchMode_: {
         reflect: true,
         type: Boolean,
@@ -162,6 +162,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
   accessor showVoiceSearch: boolean = false;
+  accessor showRecentTabChip: boolean = false;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
 
@@ -182,8 +183,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
-  protected accessor showRecentTabChip_: boolean =
-      loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
@@ -205,7 +204,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get shouldShowRecentTabChip_(): boolean {
     return this.shouldShowContextualSearchChips_() &&
-        !!this.recentTabForChip_ && this.showRecentTabChip_;
+        !!this.recentTabForChip_ && this.showRecentTabChip;
   }
 
   protected get shouldShowLensSearchChip_(): boolean {
