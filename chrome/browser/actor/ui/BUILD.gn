@@ -267,6 +267,7 @@ source_set("browser_tests") {
 
   sources = [
     "actor_overlay_browsertest.cc",
+    "actor_overlay_ui_browsertest.cc",
     "actor_ui_tab_controller_browsertest.cc",
     "dom_node_geometry_browsertest.cc",
     "handoff_button_controller_pixel_test.cc",

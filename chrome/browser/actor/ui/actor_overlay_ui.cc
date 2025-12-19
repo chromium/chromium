@@ -73,18 +73,12 @@ void ActorOverlayUI::SetHandlerInitializedCallback(base::OnceClosure callback) {
 }
 
 void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
-  if (!handler_) {
-    return;
-  }
-
+  DCHECK(handler_);
   handler_->SetOverlayBackground(is_visible);
 }
 
 void ActorOverlayUI::SetBorderGlowVisibility(bool is_visible) {
-  if (!handler_) {
-    return;
-  }
-
+  DCHECK(handler_);
   handler_->SetBorderGlowVisibility(is_visible);
 }
 
