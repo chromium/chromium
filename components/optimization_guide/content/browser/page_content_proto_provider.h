@@ -69,7 +69,6 @@ struct AIPageContentResult {
   // Callers should use this to map the frame identifiers in the proto to the
   // right frame host.
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers;
-  std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction;
 };
 
 // Provides AIPageContentResult (AnnotatedPageContent proto and metadata) for
