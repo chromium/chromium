@@ -560,12 +560,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   CompositorElementId GetScrollElementId() const override;
 
   bool VisualViewportSuppliesScrollbars() const override;
-  bool ShouldAvoidHidingOverlayScrollbars() const override;
-
-  bool ShouldSupplyScrollbarsForVisualViewport(
-      ScrollbarOrientation orientation) const;
-
-  void DidUpdateVisualViewport() override;
 
   bool HasHorizontalOverflow() const;
   bool HasVerticalOverflow() const;

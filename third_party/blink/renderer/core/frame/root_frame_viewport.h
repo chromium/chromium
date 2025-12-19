@@ -52,8 +52,10 @@ class CORE_EXPORT RootFrameViewport final
 
   void RestoreToAnchor(const ScrollOffset&);
 
+  // Callback whenever the visual viewport changes scroll position or scale.
+  void DidUpdateVisualViewport();
+
   // ScrollableArea Implementation
-  void DidUpdateVisualViewport() override;
   PhysicalOffset LocalToScrollOriginOffset() const final;
   bool IsRootFrameViewport() const override { return true; }
   bool SetScrollOffset(const ScrollOffset&,

@@ -1610,44 +1610,6 @@ TEST_P(PaintLayerScrollableAreaTest,
 }
 
 TEST_P(PaintLayerScrollableAreaTest,
-       ShowRootScrollbarsForVisualViewportIfOverlay) {
-  ScopedMockOverlayScrollbars scoped_mock_overlay_scrollbars;
-
-  SetBodyInnerHTML(R"HTML(
-    <div>foo</div>
-  )HTML");
-
-  const auto* root_scrollable = GetDocument().View()->LayoutViewport();
-  EXPECT_FALSE(root_scrollable->HasScrollbar());
-
-  // Simulate pinch-zoom.
-  GetPage().GetVisualViewport().SetScale(2);
-
-  // Overlay scrollbars are shown because the visual viewport is scrollable
-  // after pinch-zooming.
-  EXPECT_TRUE(root_scrollable->HasScrollbar());
-}
-
-TEST_P(PaintLayerScrollableAreaTest,
-       DoNotShowRootScrollbarsForVisualViewportIfNotOverlay) {
-  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
-
-  SetBodyInnerHTML(R"HTML(
-    <div>foo</div>
-  )HTML");
-
-  const auto* root_scrollable = GetDocument().View()->LayoutViewport();
-  EXPECT_FALSE(root_scrollable->HasScrollbar());
-
-  // Simulate pinch-zoom.
-  GetPage().GetVisualViewport().SetScale(2);
-
-  // Scrollbars are not shown even though the visual viewport is scrolalble
-  // because showing scrollbars would cause layout changes.
-  EXPECT_FALSE(root_scrollable->HasScrollbar());
-}
-
-TEST_P(PaintLayerScrollableAreaTest,
        ResizeSmallerToBeScrollableWithResizerAndStackedChild) {
   USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
