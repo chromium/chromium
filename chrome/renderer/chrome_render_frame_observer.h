@@ -22,7 +22,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/task_id.h"
+#include "chrome/common/actor/task_id.h"  // nogncheck
 #include "chrome/renderer/actor/tool_executor.h"
 #endif
 
@@ -31,7 +31,7 @@ class SkBitmap;
 namespace actor {
 class Journal;
 class PageStabilityMonitor;
-}
+}  // namespace actor
 
 namespace gfx {
 class Size;
@@ -44,7 +44,7 @@ class PageTextAgent;
 namespace safe_browsing {
 class PhishingClassifierDelegate;
 class PhishingImageEmbedderDelegate;
-}
+}  // namespace safe_browsing
 
 namespace translate {
 class TranslateAgent;
