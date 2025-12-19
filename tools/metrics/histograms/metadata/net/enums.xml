@@ -33,6 +33,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="both valid and invalid entries"/>
 </enum>
 
+<enum name="AdditionalHttpsRecordStatus">
+  <int value="0" label="Malformed"/>
+  <int value="1" label="Alias"/>
+  <int value="2" label="Service"/>
+</enum>
+
 <enum name="AddressFamily">
   <int value="0" label="Unspecified"/>
   <int value="1" label="IPv4"/>
@@ -3286,12 +3292,6 @@ Called by update_net_trust_anchors.py.-->
     /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,
     /components/unexportable_keys/service_error.h:ServiceError
 ) -->
-
-<enum name="UnsolicitedHttpsRecordStatus">
-  <int value="0" label="Malformed"/>
-  <int value="1" label="Alias"/>
-  <int value="2" label="Service"/>
-</enum>
 
 <enum name="URLRequestReferrerPolicy">
   <int value="0" label="CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE"/>
