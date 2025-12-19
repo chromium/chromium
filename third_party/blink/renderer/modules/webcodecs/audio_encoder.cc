@@ -523,6 +523,14 @@ void AudioEncoder::ProcessConfigure(Request* request) {
           MakeUnwrappingCrossThreadHandle(request))));
 }
 
+bool AudioEncoder::ReadyToProcessNextRequest() {
+  if (active_encodes_ >= kMaxActiveEncodes) {
+    return false;
+  }
+
+  return Base::ReadyToProcessNextRequest();
+}
+
 void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
@@ -551,6 +559,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
           self->MakeEncodingError("Encoding error.", std::move(status)));
     }
 
+    --self->active_encodes_;
     req->EndTracing();
     self->ProcessRequests();
   };
@@ -578,6 +587,8 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   --requested_encodes_;
   ScheduleDequeueEvent();
+  ++active_encodes_;
+
   media_encoder_->Encode(
       std::move(audio_bus), timestamp,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
@@ -608,6 +619,11 @@ bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
 bool AudioEncoder::VerifyCodecSupport(ParsedConfig* config,
                                       String* js_error_message) {
   return VerifyCodecSupportStatic(config, js_error_message);
+}
+
+void AudioEncoder::ResetInternal(DOMException* ex) {
+  Base::ResetInternal(ex);
+  active_encodes_ = 0;
 }
 
 void AudioEncoder::OnNewEncode(InputType* input,
@@ -681,6 +697,10 @@ ScriptPromise<AudioEncoderSupport> AudioEncoder::isConfigSupported(
 
 const AtomicString& AudioEncoder::InterfaceName() const {
   return event_target_names::kAudioEncoder;
+}
+
+bool AudioEncoder::HasPendingActivity() const {
+  return (active_encodes_ > 0) || Base::HasPendingActivity();
 }
 
 DOMException* AudioEncoder::MakeOperationError(std::string error_msg,

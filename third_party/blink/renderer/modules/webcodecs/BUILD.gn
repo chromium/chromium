@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
     "audio_decoder_test.cc",
+    "audio_encoder_test.cc",
     "codec_pressure_gauge_test.cc",
     "codec_pressure_manager_test.cc",
     "decoder_selector_test.cc",
