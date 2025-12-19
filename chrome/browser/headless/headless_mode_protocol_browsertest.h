@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/headless/headless_mode_devtooled_browsertest.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -63,6 +64,7 @@ class HeadlessModeProtocolBrowserTest
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   TestMetaInfo test_meta_info_;
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 };
 
 #define HEADLESS_MODE_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)           \

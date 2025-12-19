@@ -99,7 +99,7 @@ TEST(HeadlessTestMetaInfoTest, CommandLineSwitch) {
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
   base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
+  meta_info.value().ProcessCommandLineSwitches(command_line);
 
   EXPECT_TRUE(command_line.HasSwitch("single-process"));
   EXPECT_TRUE(command_line.HasSwitch("window-size"));
@@ -123,7 +123,7 @@ TEST(HeadlessTestMetaInfoTest, DuplicateCommandLineSwitch) {
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
   base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
+  meta_info.value().ProcessCommandLineSwitches(command_line);
 
   EXPECT_EQ(command_line.GetSwitchValueASCII("window-size"), "1600x1200");
 }
@@ -138,10 +138,29 @@ TEST(HeadlessTestMetaInfoTest, CompositeCommandLineSwitch) {
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
   base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
+  meta_info.value().ProcessCommandLineSwitches(command_line);
 
   EXPECT_EQ(command_line.GetSwitchValueASCII("js-flags"),
             "--expose-gc,--allow-natives-syntax");
+}
+
+TEST(HeadlessTestMetaInfoTest, FeaturesCommandLineSwitches) {
+  auto meta_info = TestMetaInfo::FromString(R"(
+  // META: --enable-features=one,two,three
+  // META: --disable-features=no_one,no_two,no_three
+  // )");
+
+  ASSERT_TRUE(meta_info.has_value());
+
+  EXPECT_FALSE(meta_info.value().IsEmpty());
+
+  base::CommandLine command_line(0, nullptr);
+  auto feature_list =
+      meta_info.value().ProcessCommandLineSwitches(command_line);
+  EXPECT_NE(feature_list.get(), nullptr);
+
+  EXPECT_FALSE(command_line.HasSwitch("enable-features"));
+  EXPECT_FALSE(command_line.HasSwitch("disable-features"));
 }
 
 TEST(HeadlessTestMetaInfoTest, ForkHeadlessModeExpectations) {

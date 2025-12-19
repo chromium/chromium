@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_HEADLESS_TEST_TEST_META_INFO_H_
 #define COMPONENTS_HEADLESS_TEST_TEST_META_INFO_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 
 namespace headless {
@@ -41,7 +43,8 @@ struct TestMetaInfo {
 
   bool IsEmpty() const;
 
-  void AppendToCommandLine(base::CommandLine& command_line);
+  std::unique_ptr<base::test::ScopedFeatureList> ProcessCommandLineSwitches(
+      base::CommandLine& command_line);
 };
 
 }  // namespace headless

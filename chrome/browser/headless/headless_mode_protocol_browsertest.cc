@@ -77,7 +77,7 @@ void HeadlessModeProtocolBrowserTest::SetUpCommandLine(
                                   "MAP *.test 127.0.0.1");
   HeadlessModeDevTooledBrowserTest::SetUpCommandLine(command_line);
 
-  test_meta_info_.AppendToCommandLine(*command_line);
+  feature_list_ = test_meta_info_.ProcessCommandLineSwitches(*command_line);
 }
 
 base::Value::Dict HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {

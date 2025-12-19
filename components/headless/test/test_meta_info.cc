@@ -4,6 +4,7 @@
 
 #include "components/headless/test/test_meta_info.h"
 
+#include "base/base_switches.h"
 #include "base/strings/string_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -42,6 +43,13 @@ std::vector<std::string> CollectMetaInfos(std::string_view test_body) {
   }
 
   return meta_infos;
+}
+
+void AppendAfterCommaIfNotEmpty(std::string& text, std::string_view value) {
+  if (!text.empty()) {
+    text.append(",");
+  }
+  text.append(value);
 }
 
 }  // namespace
@@ -86,14 +94,36 @@ bool TestMetaInfo::IsEmpty() const {
   return *this == TestMetaInfo();
 }
 
-void TestMetaInfo::AppendToCommandLine(base::CommandLine& command_line) {
+std::unique_ptr<base::test::ScopedFeatureList>
+TestMetaInfo::ProcessCommandLineSwitches(base::CommandLine& command_line) {
+  std::string enable_features;
+  std::string disable_features;
+
   for (const auto& [name, value] : command_line_switches) {
+    if (name == ::switches::kEnableFeatures) {
+      AppendAfterCommaIfNotEmpty(enable_features, value);
+      continue;
+    }
+
+    if (name == ::switches::kDisableFeatures) {
+      AppendAfterCommaIfNotEmpty(disable_features, value);
+      continue;
+    }
+
     if (!value.empty()) {
       command_line.AppendSwitchASCII(name, value);
     } else {
       command_line.AppendSwitch(name);
     }
   }
+
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list;
+  if (!enable_features.empty() || !disable_features.empty()) {
+    feature_list = std::make_unique<base::test::ScopedFeatureList>();
+    feature_list->InitFromCommandLine(enable_features, disable_features);
+  }
+
+  return feature_list;
 }
 
 }  // namespace headless
