@@ -1548,7 +1548,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     annotation_manager_->ScrollTo(std::move(params), std::move(callback),
-                                  &host());
+                                  &host(), this);
   }
 
   void DropScrollToHighlight() override {
