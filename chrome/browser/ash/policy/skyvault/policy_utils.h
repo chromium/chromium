@@ -127,11 +127,14 @@ MigrationDestination GetMigrationDestination();
 // Returns true if `destination` is set to a cloud location.
 bool IsCloudDestination(MigrationDestination destination);
 
-// Get the destination where downloads are saved.
+// Returns the destination where downloads are saved.
 FileSaveDestination GetDownloadsDestination(Profile* profile);
 
-// Get the destination where screen captures are saved.
+// Returns the destination where screen captures are saved.
 FileSaveDestination GetScreenCaptureDestination(Profile* profile);
+
+// Returns the destination where camera app files are saved.
+FileSaveDestination GetCameraDestination(Profile* profile);
 
 // Returns whether `download` should be saved to tmp/ directory.
 bool DownloadToTemp(Profile* profile);

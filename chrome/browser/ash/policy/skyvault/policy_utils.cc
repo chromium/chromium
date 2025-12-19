@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
@@ -22,8 +23,10 @@ namespace policy::local_user_files {
 
 namespace {
 
-FileSaveDestination GetDestinationForPref(Profile* profile,
-                                          const std::string& pref_name) {
+FileSaveDestination GetDestinationForPref(
+    Profile* profile,
+    const std::string& pref_name,
+    FileSaveDestination fallback = FileSaveDestination::kDownloads) {
   DCHECK(profile);
   auto* pref = profile->GetPrefs()->FindPreference(pref_name);
   if (!pref || !pref->GetValue() || !pref->IsManaged()) {
@@ -40,7 +43,7 @@ FileSaveDestination GetDestinationForPref(Profile* profile,
     return FileSaveDestination::kOneDrive;
   }
 
-  return FileSaveDestination::kDownloads;
+  return fallback;
 }
 
 }  // namespace
@@ -99,6 +102,11 @@ FileSaveDestination GetDownloadsDestination(Profile* profile) {
 
 FileSaveDestination GetScreenCaptureDestination(Profile* profile) {
   return GetDestinationForPref(profile, ash::prefs::kCaptureModePolicySavePath);
+}
+
+FileSaveDestination GetCameraDestination(Profile* profile) {
+  return GetDestinationForPref(profile, ash::prefs::kCameraSaveLocation,
+                               FileSaveDestination::kNotSpecified);
 }
 
 bool DownloadToTemp(Profile* profile) {

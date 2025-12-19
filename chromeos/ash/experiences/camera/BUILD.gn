@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("camera_save_handler") {
+  sources = [
+    "camera_save_handler.cc",
+    "camera_save_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+}

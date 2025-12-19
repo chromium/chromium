@@ -81,6 +81,13 @@ export function isCCADisallowed(): boolean {
 }
 
 /**
+ * Returns the path relative to the root folder where files will be saved.
+ */
+export function getPathRelativeToRoot(): string {
+  return loadTimeData.getString('path_relative_to_root');
+}
+
+/**
  * Returns the OS version string.
  */
 export function getOsVersion(): string {

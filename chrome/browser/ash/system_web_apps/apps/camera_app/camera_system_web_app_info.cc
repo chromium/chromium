@@ -4,18 +4,20 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_camera_app_resources.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/files/file_path.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_constants.h"
+#include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_save_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "components/prefs/pref_service.h"
+#include "chromeos/ash/experiences/camera/camera_save_handler.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -32,7 +34,13 @@ CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::CAMERA,
                                 "Camera",
                                 GURL("chrome://camera-app/views/main.html"),
-                                profile) {}
+                                profile) {
+  CHECK(profile);
+  if (!CameraSaveHandler::Get(*profile)) {
+    CameraSaveHandler::Create(
+        *profile, std::make_unique<ChromeCameraSaveDelegate>(profile));
+  }
+}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CameraSystemAppDelegate::GetWebAppInfo() const {
@@ -83,5 +91,5 @@ bool CameraSystemAppDelegate::UseSystemThemeColor() const {
 
 base::FilePath CameraSystemAppDelegate::GetLaunchDirectory(
     const apps::AppLaunchParams& params) const {
-  return file_manager::util::GetMyFilesFolderForProfile(profile_);
+  return CHECK_DEREF(CameraSaveHandler::Get(*profile_)).GetWritableRoot();
 }

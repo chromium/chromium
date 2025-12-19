@@ -2,4 +2,7 @@ specific_include_rules = {
   "camera_app_integration_browsertest.cc": [
     "+chrome/browser/ui/views",
   ],
+  "chrome_camera_save_delegate\\.(cc|h)": [
+    "+chrome/browser/ash/policy/skyvault",
+  ],
 }

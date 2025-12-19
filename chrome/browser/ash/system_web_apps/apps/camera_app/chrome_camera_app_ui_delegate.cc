@@ -13,6 +13,7 @@
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -52,6 +53,7 @@
 #include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
+#include "chromeos/ash/experiences/camera/camera_save_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -508,13 +510,18 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("super_res", base::FeatureList::IsEnabled(
                                       ash::features::kCameraSuperResSupported));
 
-  const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  const PrefService* prefs = profile->GetPrefs();
   GURL cca_url = GURL(ash::kChromeUICameraAppURL);
   bool url_allowed = policy::IsOriginInAllowlist(
       cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
   source->AddBoolean(
       "cca_disallowed",
       !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
+  source->AddString("path_relative_to_root",
+                    CHECK_DEREF(CameraSaveHandler::Get(*profile))
+                        .GetWritablePathRelativeToRoot()
+                        .value());
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";
