@@ -241,6 +241,12 @@ COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool>
     kLensOverlayTextSelectionContextMenuEntrypointContextualize;
 
+// If positive, the maximum number of times to show the non-blocking privacy
+// notice. Otherwise, the notice may appear an unlimited number of times.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<int>
+    kLensOverlayNonBlockingPrivacyNoticeImpressionCap;
+
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -1071,6 +1077,12 @@ int GetLensAimSuggestionsCount();
 // Whether to use the non-blocking privacy notice for the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayNonBlockingPrivacyNoticeEnabled();
+
+// Returns the maximum number of times to show the non-blocking privacy
+// notice. If the notice may appear an unlimited number of times, returns a
+// non-positive value.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

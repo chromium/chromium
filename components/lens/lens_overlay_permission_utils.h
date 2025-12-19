@@ -31,6 +31,11 @@ enum class LensOverlaySettingsPolicyValue {
 inline constexpr char kLensOverlaySettings[] =
     "lens.policy.lens_overlay_settings";
 
+// An integer setting counting the number of times the non-blocking privacy
+// notice has been shown.
+inline constexpr char kLensOverlayNonBlockingPrivacyNoticeShownCount[] =
+    "lens.non_blocking_privacy_notice.shown_count";
+
 // A boolean indicating whether the whether the user has permitted sharing page
 // screenshot with the Lens Overlay server.
 inline constexpr char kLensSharingPageScreenshotEnabled[] =

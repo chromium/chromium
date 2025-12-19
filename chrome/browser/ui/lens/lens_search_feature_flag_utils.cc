@@ -124,4 +124,38 @@ void GrantLensOverlayNeededPermissions(PrefService* pref_service) {
   pref_service->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
 }
 
+bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
+    PrefService* pref_service) {
+  // This function should not be called if the non-blocking privacy notice is
+  // not enabled.
+  CHECK(lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled());
+
+  if (DidUserGrantLensOverlayNeededPermissions(pref_service)) {
+    // User has already granted permissions. Do not show the privacy notice.
+    return true;
+  }
+
+  int impression_cap =
+      features::GetLensOverlayNonBlockingPrivacyNoticeImpressionCap();
+  if (impression_cap <= 0) {
+    // No impression cap. The privacy notice should be shown.
+    return false;
+  }
+
+  int shown_count = pref_service->GetInteger(
+      prefs::kLensOverlayNonBlockingPrivacyNoticeShownCount);
+  if (shown_count >= impression_cap) {
+    // Shown count has reached impression cap. Grant permissions and do not show
+    // the privacy notice.
+    GrantLensOverlayNeededPermissions(pref_service);
+    return true;
+  }
+
+  // Shown count has not reached impression cap. Increment the count and show
+  // the privacy notice.
+  pref_service->SetInteger(
+      prefs::kLensOverlayNonBlockingPrivacyNoticeShownCount, shown_count + 1);
+  return false;
+}
+
 }  // namespace lens

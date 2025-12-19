@@ -571,6 +571,9 @@ const base::FeatureParam<LensAimSuggestionsType> kLensAimSuggestionsType(
     LensAimSuggestionsType::kNone,  // Default Value
     &kLensAimSuggestionsTypeOptions);
 
+const base::FeatureParam<int> kLensOverlayNonBlockingPrivacyNoticeImpressionCap{
+    &kLensOverlayNonBlockingPrivacyNotice, "impression-cap", 0};
+
 std::string_view LensAimSuggestionModeToString(
     LensAimSuggestionsType type) {
   switch (type) {
@@ -1294,6 +1297,10 @@ bool IsLensOverlayOptimizationFilterEnabled() {
 
 bool IsLensOverlayNonBlockingPrivacyNoticeEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayNonBlockingPrivacyNotice);
+}
+
+int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap() {
+  return kLensOverlayNonBlockingPrivacyNoticeImpressionCap.Get();
 }
 
 }  // namespace lens::features
