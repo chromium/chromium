@@ -75,12 +75,12 @@ class MockDropDelegate
   MOCK_METHOD(void,
               HandleTabDrop,
               (MultiContentsDropTargetView::DropSide,
-               TabDragDelegate::DragController&),
+               TabDragTarget::DragController&),
               (override));
   MOCK_METHOD(void, OnDragEntered, (const ui::DropTargetEvent& event));
 };
 
-class MockTabDragController : public TabDragDelegate::DragController {
+class MockTabDragController : public TabDragTarget::DragController {
  public:
   MOCK_METHOD(std::unique_ptr<tabs::TabModel>,
               DetachTabAtForInsertion,

@@ -64,7 +64,7 @@ MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
     : drop_side(drop_side), drag_type(drag_type) {}
 
 TabDragContext* MultiContentsViewDropTargetController::OnTabDragUpdated(
-    TabDragDelegate::DragController& controller,
+    TabDragTarget::DragController& controller,
     const gfx::Point& point_in_screen) {
   // Only allow creating split with a single dragged tab.
   if (controller.GetSessionData().num_dragging_tabs() != 1) {
@@ -196,7 +196,7 @@ void MultiContentsViewDropTargetController::DoDrop(
 }
 
 void MultiContentsViewDropTargetController::HandleTabDrop(
-    TabDragDelegate::DragController& controller) {
+    TabDragTarget::DragController& controller) {
   CHECK(drop_target_view_->GetVisible());
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =

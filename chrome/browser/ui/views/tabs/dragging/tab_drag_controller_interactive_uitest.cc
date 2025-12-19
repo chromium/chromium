@@ -165,16 +165,16 @@ namespace {
 const char kTabDragControllerInteractiveUITestUserDataKey[] =
     "TabDragControllerInteractiveUITestUserData";
 
-class FakeTabDragDelegate : public TabDragDelegate {
+class FakeTabDragTarget : public TabDragTarget {
  public:
-  FakeTabDragDelegate() {
+  FakeTabDragTarget() {
     drop_callback_ = base::BindRepeating([](DragController&) {});
   }
-  ~FakeTabDragDelegate() override = default;
+  ~FakeTabDragTarget() override = default;
 
-  // TabDragDelegate:
-  TabDragContext* OnTabDragUpdated(TabDragDelegate::DragController& controller,
-                        const gfx::Point& point_in_screen) override {
+  // TabDragTarget:
+  TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
+                                   const gfx::Point& point_in_screen) override {
     drag_updated_ = true;
     return nullptr;
   }
@@ -216,12 +216,12 @@ class FakeTabDragDelegate : public TabDragDelegate {
 
 class FakeTabDragPointResolver : public TabDragPointResolver {
  public:
-  explicit FakeTabDragPointResolver(FakeTabDragDelegate* delegate)
+  explicit FakeTabDragPointResolver(FakeTabDragTarget* delegate)
       : delegate_(delegate) {}
   ~FakeTabDragPointResolver() override = default;
 
-  TabDragDelegate* GetDragTarget(BrowserView& browser_view,
-                                 const gfx::Point& point_in_screen) override {
+  TabDragTarget* GetDragTarget(BrowserView& browser_view,
+                               const gfx::Point& point_in_screen) override {
     // Return the delegate only if the drag is outside the tabstrip.
     gfx::Rect tabstrip_bounds =
         GetTabStripForBrowser(browser_view.browser())->GetBoundsInScreen();
@@ -232,7 +232,7 @@ class FakeTabDragPointResolver : public TabDragPointResolver {
   }
 
  private:
-  raw_ptr<FakeTabDragDelegate> delegate_;
+  raw_ptr<FakeTabDragTarget> delegate_;
 };
 
 class TabDragControllerInteractiveUITestUserData
@@ -2304,33 +2304,33 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // TODO(crbug.com/40934892): ChromeOS and Wayland flakes for tests that involve
 // detaching to a new window.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_OZONE_WAYLAND)
-class TabDragDelegateTest : public DetachToBrowserTabDragControllerTest {
+class TabDragTargetTest : public DetachToBrowserTabDragControllerTest {
  public:
-  TabDragDelegateTest() {
-    delegate_ = std::make_unique<test::FakeTabDragDelegate>();
+  TabDragTargetTest() {
+    delegate_ = std::make_unique<test::FakeTabDragTarget>();
     resolver_ =
         std::make_unique<test::FakeTabDragPointResolver>(delegate_.get());
     SetTabDragPointResolver(*resolver_);
   }
 
-  ~TabDragDelegateTest() override = default;
+  ~TabDragTargetTest() override = default;
 
  protected:
-  std::unique_ptr<test::FakeTabDragDelegate> delegate_;
+  std::unique_ptr<test::FakeTabDragTarget> delegate_;
   std::unique_ptr<test::FakeTabDragPointResolver> resolver_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE_WAYLAND)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
-    TabDragDelegateTest,
+    TabDragTargetTest,
     ::testing::Combine(
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse", "touch")));
 #else
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
-    TabDragDelegateTest,
+    TabDragTargetTest,
     ::testing::Combine(
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse")));
@@ -2338,7 +2338,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Simple test that confirms the drag delegate receives the right events,
 // and accepts the tab drop without doing anything.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DragToDelegateAcceptsDrop) {
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DragToDelegateAcceptsDrop) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2367,7 +2367,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DragToDelegateAcceptsDrop) {
 
 // Simple test that confirms the drag delegate receives the right events,
 // and rejects the drop.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateDeniesDrop) {
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateDeniesDrop) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2398,7 +2398,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateDeniesDrop) {
 
 // Validates behavior when the drag delegate moves the dragged tab back to the
 // source tab strip.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateMovesTabToSourceTabStrip) {
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateMovesTabToSourceTabStrip) {
   AddTabsAndResetBrowser(browser(), 2);
   ASSERT_EQ("0 1 2", IDString(browser()->tab_strip_model()));
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2406,7 +2406,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateMovesTabToSourceTabStrip) {
   // The delegate inserts the dragged tab to index 1 of the source
   // tabstrip.
   delegate_->set_drop_callback(base::BindRepeating(
-      [](Browser* browser, TabDragDelegate::DragController& controller) {
+      [](Browser* browser, TabDragTarget::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(0);
         browser->tab_strip_model()->InsertDetachedTabAt(1, std::move(tab), 0,
                                                         std::nullopt);
@@ -2427,7 +2427,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateMovesTabToSourceTabStrip) {
 
 // Validates behavior when the drag delegate moves the dragged tab to another
 // browser's window.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
                        DelegateMovesTabToOtherBrowserTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
   ASSERT_EQ("0 1", IDString(browser()->tab_strip_model()));
@@ -2438,7 +2438,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
   // The delegate inserts the dragged tab to index 0 of the new
   // tabstrip.
   delegate_->set_drop_callback(base::BindRepeating(
-      [](Browser* browser2, TabDragDelegate::DragController& controller) {
+      [](Browser* browser2, TabDragTarget::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(0);
         browser2->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab), 0,
                                                          std::nullopt);
@@ -2461,7 +2461,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
 
 // Validates behavior when the drag delegate moves a subset of multiple dragged
 // tabs back to the source tab strip.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
                        DelegateMovesSubsetOfTabsToSourceTabStrip) {
   AddTabsAndResetBrowser(browser(), 4);
   ASSERT_EQ("0 1 2 3 4", IDString(browser()->tab_strip_model()));
@@ -2478,7 +2478,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
   // The delegate moves tab 2 to the first index of the source tab strip,
   // and tab 0 to the 2nd position of the source tab strip.
   delegate_->set_drop_callback(base::BindRepeating(
-      [](Browser* browser, TabDragDelegate::DragController& controller) {
+      [](Browser* browser, TabDragTarget::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(1);
         browser->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab), 0,
                                                         std::nullopt);
@@ -2503,7 +2503,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
 }
 
 // Validates behavior when the drag delegate rearranges multiple dragged tabs.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateRearrangesDraggedTabs) {
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateRearrangesDraggedTabs) {
   AddTabsAndResetBrowser(browser(), 4);
   ASSERT_EQ("0 1 2 3 4", IDString(browser()->tab_strip_model()));
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2517,7 +2517,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateRearrangesDraggedTabs) {
 
   // Moves tab 2 to the front of the detached window.
   delegate_->set_drop_callback(base::BindLambdaForTesting(
-      [&](TabDragDelegate::DragController& controller) {
+      [&](TabDragTarget::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(1);
         CHECK_EQ(2u, chrome::GetTotalBrowserCount());
         BrowserWindowInterface* const new_browser =
@@ -2540,8 +2540,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest, DelegateRearrangesDraggedTabs) {
 
 // Validates behavior when the drag delegate moves a dragged tab that belongs
 // to a group.
-IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
-                       DelegateRemovesDraggedTabFromGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateRemovesDraggedTabFromGroup) {
   AddTabsAndResetBrowser(browser(), 3);
   ASSERT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2553,7 +2552,7 @@ IN_PROC_BROWSER_TEST_P(TabDragDelegateTest,
   model->SelectTabAt(1);
 
   delegate_->set_drop_callback(base::BindRepeating(
-      [](Browser* browser, TabDragDelegate::DragController& controller) {
+      [](Browser* browser, TabDragTarget::DragController& controller) {
         auto tab = controller.DetachTabAtForInsertion(0);
         browser->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab), 0,
                                                         std::nullopt);

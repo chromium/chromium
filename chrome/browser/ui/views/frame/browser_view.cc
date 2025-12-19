@@ -2381,7 +2381,7 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #endif
 }
 
-TabDragDelegate* BrowserView::GetTabDragDelegate(
+TabDragTarget* BrowserView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
   if (!multi_contents_view_ || multi_contents_view_->IsInSplitView() ||
       !multi_contents_view_->IsDragAndDropEnabled()) {

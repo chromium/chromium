@@ -49,7 +49,7 @@ using testing::ReturnRef;
 
 namespace {
 
-class MockDragController : public TabDragDelegate::DragController {
+class MockDragController : public TabDragTarget::DragController {
  public:
   MockDragController() = default;
   MockDragController(const MockDragController&) = delete;

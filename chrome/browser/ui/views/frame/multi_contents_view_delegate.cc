@@ -125,7 +125,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
 
 void MultiContentsViewDelegateImpl::HandleTabDrop(
     MultiContentsDropTargetView::DropSide side,
-    TabDragDelegate::DragController& drag_controller) {
+    TabDragTarget::DragController& drag_controller) {
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
   // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.

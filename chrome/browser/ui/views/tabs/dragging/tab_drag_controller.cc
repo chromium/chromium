@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
@@ -192,9 +193,9 @@ class DefaultTabDragPointResolver : public TabDragPointResolver {
   DefaultTabDragPointResolver() = default;
   ~DefaultTabDragPointResolver() override = default;
 
-  TabDragDelegate* GetDragTarget(BrowserView& browser_view,
-                                 const gfx::Point& point_in_screen) override {
-    return browser_view.GetTabDragDelegate(point_in_screen);
+  TabDragTarget* GetDragTarget(BrowserView& browser_view,
+                               const gfx::Point& point_in_screen) override {
+    return browser_view.GetTabDragTarget(point_in_screen);
   }
 };
 
@@ -901,9 +902,9 @@ TabDragController::Liveness TabDragController::ContinueDragging(
     }
     target_context = context;
     UpdateDragTarget(drop_target);
-    if (current_drag_delegate_) {
+    if (current_drag_target_) {
       TabDragContext* delegate_context =
-          current_drag_delegate_->OnTabDragUpdated(*this, point_in_screen);
+          current_drag_target_->OnTabDragUpdated(*this, point_in_screen);
       if (!delegate_context && current_state_ == DragState::kDraggingWindow) {
         delegate_context = attached_context_;
       }
@@ -932,21 +933,21 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   return Liveness::kAlive;
 }
 
-void TabDragController::UpdateDragTarget(TabDragDelegate* new_target) {
-  if (current_drag_delegate_ && current_drag_delegate_ != new_target) {
-    current_drag_delegate_->OnTabDragExited();
+void TabDragController::UpdateDragTarget(TabDragTarget* new_target) {
+  if (current_drag_target_ && current_drag_target_ != new_target) {
+    current_drag_target_->OnTabDragExited();
   }
-  current_drag_delegate_ = new_target;
-  if (current_drag_delegate_) {
-    current_drag_delegate_->OnTabDragEntered();
-    drag_delegate_destroyed_subscription_ =
-        current_drag_delegate_->RegisterWillDestroyCallback(base::BindOnce(
+  current_drag_target_ = new_target;
+  if (current_drag_target_) {
+    current_drag_target_->OnTabDragEntered();
+    drag_target_destroyed_subscription_ =
+        current_drag_target_->RegisterWillDestroyCallback(base::BindOnce(
             &TabDragController::ResetDragTarget, base::Unretained(this)));
   }
 }
 
 void TabDragController::ResetDragTarget() {
-  current_drag_delegate_ = nullptr;
+  current_drag_target_ = nullptr;
 }
 
 TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
@@ -1207,7 +1208,7 @@ void TabDragController::DetachAndAttachToNewContext(
   AttachToNewContext(target_context, std::move(me), std::move(owned_tabs));
 }
 
-std::tuple<TabDragController::Liveness, TabDragContext*, TabDragDelegate*>
+std::tuple<TabDragController::Liveness, TabDragContext*, TabDragTarget*>
 TabDragController::GetDragTargetForPoint(gfx::Point point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::GetTargetTabStripForPoint",
                "point_in_screen", point_in_screen.ToString());
@@ -1228,7 +1229,7 @@ TabDragController::GetDragTargetForPoint(gfx::Point point_in_screen) {
     if (destination_tab_strip) {
       if (DoesTabStripContain(destination_tab_strip, point_in_screen)) {
         return std::tuple(Liveness::kAlive, destination_tab_strip, nullptr);
-      } else if (TabDragDelegate* candidate =
+      } else if (TabDragTarget* candidate =
                      GetTabDragPointResolver()->GetDragTarget(
                          *browser_view, point_in_screen)) {
         // The delegate will provide the context to attach to.
@@ -1266,7 +1267,7 @@ void TabDragController::StartDrag() {
   // `source_context_` already owns `this` (it created us, even), so no need
   // to hand off ownership.
   CHECK_EQ(source_context_->GetDragController(), this);
-  CHECK(!current_drag_delegate_);
+  CHECK(!current_drag_target_);
   attached_context_ = source_context_;
 
   AttachImpl();
@@ -1790,8 +1791,8 @@ void TabDragController::EndDragImpl(EndDragType type) {
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.tab_drag_data_.clear();
-  if (current_drag_delegate_) {
-    current_drag_delegate_->OnTabDragEnded();
+  if (current_drag_target_) {
+    current_drag_target_->OnTabDragEnded();
     ResetDragTarget();
   }
 
@@ -2117,16 +2118,16 @@ void TabDragController::CompleteDrag() {
   CHECK_NE(current_state_, DragState::kNotStarted);
   CHECK(attached_context_);
 
-  if (current_drag_delegate_ && current_drag_delegate_->CanDropTab()) {
-    current_drag_delegate_->HandleTabDrop(*this);
+  if (current_drag_target_ && current_drag_target_->CanDropTab()) {
+    current_drag_target_->HandleTabDrop(*this);
     attached_context_->StoppedDragging();
 
     // The delegate is expected to handle all tab dragging finalization, and
     // therefore we return here.
     // The logic below is specific for dragging to a tabstrip, most of which
-    // should be moved to tabstrip's `TabDragDelegate` implementation. Some
+    // should be moved to tabstrip's `TabDragTarget` implementation. Some
     // functionality, such as restoring tab model selection, may be shared as
-    // part of the `TabDragDelegate::DragController` interface.
+    // part of the `TabDragTarget::DragController` interface.
     return;
   }
 

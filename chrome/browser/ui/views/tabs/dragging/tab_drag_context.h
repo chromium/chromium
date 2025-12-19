@@ -62,7 +62,7 @@ class TabDragPositioningDelegateBase {
 
 // A delegate that returns necessary information for `DraggingTabsSession`
 // to correctly position the dragged tabs in the horizontal tab strip.
-// This does not apply for vertical tabs, which relies on `TabDragDelegate`
+// This does not apply for vertical tabs, which relies on `TabDragTarget`
 // instead for positioning. Eventually, the horizontal tab strip should use
 // a separate pattern, which will make this class obsolete.
 class TabDragPositioningDelegate : public TabDragPositioningDelegateBase {

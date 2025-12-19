@@ -105,7 +105,7 @@ class MultiContentsDropTargetView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  void HandleTabDrop(TabDragDelegate::DragController& controller);
+  void HandleTabDrop(TabDragTarget::DragController& controller);
 
   std::optional<DropSide> side() const { return side_; }
   std::optional<DragType> drag_type() const { return drag_type_; }

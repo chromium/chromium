@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
-#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
@@ -28,7 +28,7 @@ class PrefService;
 // There exists one `MultiContentsViewDropTargetController` per
 // `MultiContentesView`.
 class MultiContentsViewDropTargetController final
-    : public TabDragDelegate,
+    : public TabDragTarget,
       public MultiContentsDropTargetView::DragDelegate {
  public:
   // Delegate for handling the drop callback.
@@ -42,7 +42,7 @@ class MultiContentsViewDropTargetController final
 
     // Handles tabs that are dropped on the view.
     virtual void HandleTabDrop(MultiContentsDropTargetView::DropSide side,
-                               TabDragDelegate::DragController& controller) = 0;
+                               TabDragTarget::DragController& controller) = 0;
   };
 
   MultiContentsViewDropTargetController(
@@ -55,14 +55,14 @@ class MultiContentsViewDropTargetController final
   MultiContentsViewDropTargetController& operator=(
       const MultiContentsViewDropTargetController&) = delete;
 
-  // TabDragDelegate
-  TabDragContext* OnTabDragUpdated(TabDragDelegate::DragController& controller,
+  // TabDragTarget
+  TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
                                    const gfx::Point& point_in_screen) override;
   void OnTabDragEntered() override;
   void OnTabDragExited() override;
   void OnTabDragEnded() override;
   bool CanDropTab() override;
-  void HandleTabDrop(TabDragDelegate::DragController& controller) override;
+  void HandleTabDrop(TabDragTarget::DragController& controller) override;
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback) override;
 

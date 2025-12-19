@@ -85,7 +85,7 @@ class MultiContentsView;
 class ProjectsPanelView;
 class ScrimView;
 class SidePanel;
-class TabDragDelegate;
+class TabDragTarget;
 class TabSearchBubbleHost;
 class TabStrip;
 class TabStripRegionView;
@@ -863,7 +863,7 @@ class BrowserView : public BrowserWindow,
   void Paste();
 
   // Returns a `TabDragHandler`, if any available, to handle a tab drag.
-  TabDragDelegate* GetTabDragDelegate(const gfx::Point& point_in_screen);
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // This is used only for SWA/PWA scenario.

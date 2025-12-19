@@ -36,7 +36,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_utils.h"
 
-class MockTabDragController : public TabDragDelegate::DragController {
+class MockTabDragController : public TabDragTarget::DragController {
  public:
   MOCK_METHOD(std::unique_ptr<tabs::TabModel>,
               DetachTabAtForInsertion,
