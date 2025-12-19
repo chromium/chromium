@@ -41,8 +41,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event_handler.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -620,6 +622,64 @@ TEST_F(RootWindowControllerTest, FocusBlockedWindow) {
     UnblockUserSession();
   }
 }
+
+class ExpandedHitRegionRootWindowControllerTest
+    : public AshTestBase,
+      public testing::WithParamInterface<ash::ShellWindowId> {
+ public:
+  views::Widget* CreateTestWindow(const gfx::Rect& bounds,
+                                  ash::ShellWindowId container_id) {
+    RootWindowController* controller = Shell::GetPrimaryRootWindowController();
+    aura::Window* container = controller->GetContainer(container_id);
+
+    views::Widget* widget =
+        Widget::CreateWindowWithParent(nullptr, container, bounds);
+
+    widget->Show();
+    return widget;
+  }
+};
+
+TEST_P(ExpandedHitRegionRootWindowControllerTest,
+       ExpandedHitRegionForCertainContainer) {
+  views::Widget* widget = CreateTestWindow(gfx::Rect(20, 20, 100, 100),
+                                           /*container_id=*/GetParam());
+  aura::Window* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize);
+
+  ui::EventTarget* root_target = window->GetRootWindow();
+  auto* targeter = root_target->GetEventTargeter();
+  {
+    // Mouse event outside the extended hit region.
+    gfx::Point location{0, 0};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_NE(window, targeter->FindTargetForEvent(root_target, &mouse));
+  }
+  {
+    // Mouse event inside the extended hit region.
+    gfx::Point location{18, 18};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(window, targeter->FindTargetForEvent(root_target, &mouse));
+  }
+  {
+    // Touch event inside the extended hit region.
+    gfx::PointF location{9, 9};
+    ui::TouchEvent touch(ui::EventType::kTouchPressed, location, location,
+                         ui::EventTimeForNow(),
+                         ui::PointerDetails(ui::EventPointerType::kTouch));
+    EXPECT_EQ(window, targeter->FindTargetForEvent(root_target, &touch));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ExpandedHitRegionRootWindowControllerTest,
+    testing::Values(kShellWindowId_AlwaysOnTopContainer,
+                    kShellWindowId_FloatContainer,
+                    kShellWindowId_DeskContainerA));
 
 // Tracks whether OnWindowDestroying() has been invoked.
 class DestroyedWindowObserver : public aura::WindowObserver {

@@ -311,8 +311,6 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
   delegate->RegisterWidgetInitializedCallback(base::BindOnce(
       [](views::WidgetDelegate* delegate) {
         auto* frame_window = delegate->GetWidget()->GetNativeWindow();
-        ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
-            frame_window->parent());
         ash::window_util::InstallResizeHandleWindowTargeterForWindow(
             frame_window);
       },
