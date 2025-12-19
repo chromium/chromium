@@ -7,47 +7,10 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      const audit = Audit.createTaskRunner();
-      const autoplayFlag = internals.settings.autoplayIgnoresWebAudioEnabled;
-
-      internals.settings.setAutoplayPolicy('document-user-activation-required');
-      internals.settings.autoplayIgnoresWebAudioEnabled = false;
-
-      // Suspend a context explicitly and then start a source node after
-      // user gesture. The context state should stay the same.
-      audit.define({label: 'suspend-and-start'}, async (task, should) => {
-        const context = new AudioContext();
-        const source = new OscillatorNode(context);
-        source.connect(context.destination);
-
-        await context.suspend();
-        should(context.state, 'The context state after explicit suspension')
-            .beEqualTo('suspended');
-
-        // Starting a source node should not unlock an explicitly suspended
-        // context, even if the event is originated from user gesture.
-        await emulateUserGesture();
-        source.start();
-        should(context.state,
-            'The context state after user gesture followed by source start')
-            .beEqualTo('suspended');
-
-        task.done();
-      });
-
-      audit.define({label: 'clean-up'}, (task, should) => {
-        internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = autoplayFlag;
-        internals.settings.setAutoplayPolicy('no-user-gesture-required');
-        task.done();
-      });
-
-      audit.run();
-
-      function emulateUserGesture() {
+    <script>
+      const emulateUserGesture = () => {
         return new Promise((resolve, reject) => {
           chrome.gpuBenchmarking.pointerActionSequence([{
             source: 'mouse',
@@ -57,7 +20,44 @@
             ]
           }], resolve);
         });
-      }
+      };
+
+      promise_test(async t => {
+        const autoplayFlag = internals.settings.autoplayIgnoresWebAudioEnabled;
+
+        internals.settings.setAutoplayPolicy(
+            'document-user-activation-required');
+        internals.settings.autoplayIgnoresWebAudioEnabled = false;
+
+        t.add_cleanup(() => {
+          internals.settings.autoplayIgnoresWebAudioEnabled = autoplayFlag;
+          internals.settings.setAutoplayPolicy('no-user-gesture-required');
+        });
+
+        // Suspend a context explicitly and then start a source node after
+        // user gesture. The context state should stay the same.
+        const context = new AudioContext();
+        const source = new OscillatorNode(context);
+        source.connect(context.destination);
+
+        await context.suspend();
+
+        assert_equals(
+            context.state,
+            'suspended',
+            'The context state after explicit suspension');
+
+        // Starting a source node should not unlock an explicitly suspended
+        // context, even if the event is originated from user gesture.
+        await emulateUserGesture();
+        source.start();
+
+        assert_equals(
+            context.state,
+            'suspended',
+            'The context state after user gesture followed by source start');
+      }, 'Test if starting source node does not resume an explicitly ' +
+          'suspended context');
     </script>
   </body>
 </html>
