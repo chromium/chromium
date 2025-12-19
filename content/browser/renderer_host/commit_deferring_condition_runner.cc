@@ -20,6 +20,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 

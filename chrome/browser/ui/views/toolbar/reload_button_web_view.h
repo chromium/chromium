@@ -63,6 +63,8 @@ class ReloadButtonWebView : public views::View,
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 
+  views::WebView* GetWebViewForTesting() { return web_view_; }
+
  private:
   void UpdateAccessibleHasPopup();
   void SetReloadButtonUIState();

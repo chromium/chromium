@@ -143,6 +143,7 @@ QuietPromptInteractiveUITest.*
 RecentActivityBubbleDialogViewInteractiveUiTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
+ReloadButtonWebViewPixelBrowserTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
 *SaveOrUpdateAutofillAiDataBubbleViewBrowsertest*

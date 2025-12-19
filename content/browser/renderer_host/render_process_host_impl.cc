@@ -293,18 +293,6 @@
 
 namespace features {
 
-// When enabled, the IPC channel will not be paused when launching non-guest
-// renderer processes. This makes it possible for all kinds of mojo calls
-// to be sent to the renderer process before OnProcessLaunched fires. When the
-// feature is disabled, those messages are instead queued because the IPC
-// channel is paused, and only flushed at OnProcessLaunched.
-BASE_FEATURE(kSkipIPCChannelPausingForNonGuests,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> skip_channel_pausing_for_internal_webui_only{
-    &features::kSkipIPCChannelPausingForNonGuests, "internal_webui_only",
-    false};
-
 #if BUILDFLAG(IS_ANDROID)
 // The feature flag is added for a holdback experiment to estimate
 // the performance impace of the first spare renderer not using the warm-up
@@ -3522,7 +3510,7 @@ bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
 
   if (base::FeatureList::IsEnabled(
           features::kSkipIPCChannelPausingForNonGuests)) {
-    if (features::skip_channel_pausing_for_internal_webui_only.Get()) {
+    if (features::kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly.Get()) {
 #if !BUILDFLAG(IS_ANDROID)
       // Skip pausing if we're on initial WebUI, so return false in that case.
       return !IsForInitialWebUI();

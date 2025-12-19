@@ -16,6 +16,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 

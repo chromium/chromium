@@ -532,6 +532,11 @@ BASE_FEATURE_PARAM(std::string,
                    "ignore_duplicate_navs_origins",
                    "");
 
+// Whether initial WebUI navigations should synchronously go from navigation
+// start to commit, by doing e.g. in-renderer body loading.
+BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -821,6 +826,18 @@ BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// When enabled, the IPC channel will not be paused when launching non-guest
+// renderer processes. This makes it possible for all kinds of mojo calls
+// to be sent to the renderer process before OnProcessLaunched fires. When the
+// feature is disabled, those messages are instead queued because the IPC
+// channel is paused, and only flushed at OnProcessLaunched.
+BASE_FEATURE(kSkipIPCChannelPausingForNonGuests,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly{
+        &kSkipIPCChannelPausingForNonGuests, "internal_webui_only", false};
 
 // When enabled, skip pagehide-in-commit when navigating to DSE.
 // (See: https://crbug.com/375385416)
