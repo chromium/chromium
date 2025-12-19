@@ -46,6 +46,7 @@
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1077,6 +1078,11 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeReadFromConfig(
       FilterAddresses(std::move(*preset_addrs), key.query_types);
   if (filtered_addresses.empty())
     return std::nullopt;
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBootstrapIPRandomizationForDoh)) {
+    base::RandomShuffle(filtered_addresses.begin(), filtered_addresses.end());
+  }
 
   return HostCache::Entry(OK, std::move(filtered_addresses), /*aliases=*/{},
                           HostCache::Entry::SOURCE_CONFIG);

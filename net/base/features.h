@@ -734,6 +734,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAddAutomaticWithDohFallbackMode);
 NET_EXPORT BASE_DECLARE_FEATURE(
     kUseQuicProxiesWithoutWaitingForConnectResponse);
 
+// If enabled, the configured bootstrap IP addresses of DoH providers will
+// be randomized for better load balancing of the initial DoH URL lookups.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableBootstrapIPRandomizationForDoh);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
