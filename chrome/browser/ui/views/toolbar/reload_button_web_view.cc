@@ -71,11 +71,11 @@ ReloadButtonWebView::ReloadButtonWebView(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  // The tooltip is handled by the WebUI.
   GetViewAccessibility().SetDefaultActionVerb(
       ax::mojom::DefaultActionVerb::kPress);
   GetViewAccessibility().AddAction(ax::mojom::Action::kShowContextMenu);
   UpdateAccessibleHasPopup();
-  UpdateTooltipText();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
@@ -111,7 +111,6 @@ void ReloadButtonWebView::ChangeMode(ReloadControl::Mode mode, bool force) {
   // in the future.
   mode_ = mode;
   SetReloadButtonUIState();
-  UpdateTooltipText();
 }
 
 views::View* ReloadButtonWebView::GetAsViewClassForTesting() {
@@ -126,7 +125,6 @@ void ReloadButtonWebView::SetMenuEnabled(bool is_menu_enabled) {
   is_menu_enabled_ = is_menu_enabled;
   UpdateAccessibleHasPopup();
   SetReloadButtonUIState();
-  UpdateTooltipText();
 }
 
 bool ReloadButtonWebView::HandleContextMenu(
@@ -169,14 +167,6 @@ void ReloadButtonWebView::UpdateAccessibleHasPopup() {
   GetViewAccessibility().SetHasPopup((is_menu_enabled_ && menu_model_)
                                          ? ax::mojom::HasPopup::kMenu
                                          : ax::mojom::HasPopup::kNone);
-}
-
-void ReloadButtonWebView::UpdateTooltipText() {
-  SetTooltipText(l10n_util::GetStringUTF16(
-      mode_ == ReloadControl::Mode::kReload
-          ? (is_menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU
-                              : IDS_TOOLTIP_RELOAD)
-          : IDS_TOOLTIP_STOP));
 }
 
 void ReloadButtonWebView::SetReloadButtonUIState() {

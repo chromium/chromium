@@ -68,7 +68,6 @@ class ReloadButtonWebView : public views::View,
  private:
   void UpdateAccessibleHasPopup();
   void SetReloadButtonUIState();
-  void UpdateTooltipText();
 
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
   raw_ptr<views::WebView> web_view_ = nullptr;
