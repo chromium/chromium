@@ -1936,7 +1936,7 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
   options.index = index_;
 
   base::expected<content::WebContents*, std::string> result =
-      OpenTabHelper::OpenTab(validated_url_, browser, this, options);
+      OpenTabHelper::OpenTab(validated_url_, browser, *this, options);
   if (!result.has_value()) {
     Respond(Error(result.error()));
     return;

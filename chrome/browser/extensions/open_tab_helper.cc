@@ -147,15 +147,15 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
 base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     const GURL& validated_url,
     BrowserWindowInterface& browser,
-    ExtensionFunction* function,
+    const ExtensionFunction& function,
     const Params& params) {
-  auto* const extension = function->extension();
+  auto* const extension = function.extension();
 
   // DCHECK because the input should already have been validated, and this is
   // a somewhat costly function.
   DCHECK(ExtensionTabUtil::PrepareURLForNavigation(
              validated_url.spec(), extension,
-             Profile::FromBrowserContext(function->browser_context()))
+             Profile::FromBrowserContext(function.browser_context()))
              .has_value())
       << "Invalid URL: " << validated_url;
 
@@ -210,8 +210,7 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     navigate_params.is_renderer_initiated = true;
     navigate_params.initiator_origin = extension->origin();
     navigate_params.source_site_instance = content::SiteInstance::CreateForURL(
-        function->browser_context(),
-        navigate_params.initiator_origin->GetURL());
+        function.browser_context(), navigate_params.initiator_origin->GetURL());
   }
 
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&navigate_params);

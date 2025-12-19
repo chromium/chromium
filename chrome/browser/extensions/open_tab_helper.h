@@ -51,7 +51,7 @@ class OpenTabHelper {
   static base::expected<content::WebContents*, std::string> OpenTab(
       const GURL& validated_url,
       BrowserWindowInterface& browser,
-      ExtensionFunction* function,
+      const ExtensionFunction& function,
       const Params& params);
 };
 

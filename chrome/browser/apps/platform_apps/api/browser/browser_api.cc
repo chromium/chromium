@@ -37,7 +37,7 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
 
   base::expected<content::WebContents*, std::string> result =
       extensions::OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(),
-                                         this,
+                                         *this,
                                          extensions::OpenTabHelper::Params());
   return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }

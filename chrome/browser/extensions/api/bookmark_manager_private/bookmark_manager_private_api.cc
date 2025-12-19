@@ -701,7 +701,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   }
 
   base::expected<content::WebContents*, std::string> result =
-      OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(), this,
+      OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(), *this,
                              options);
   if (!result.has_value())
     return Error(result.error());
