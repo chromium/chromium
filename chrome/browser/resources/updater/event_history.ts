@@ -795,8 +795,12 @@ function parsePolicySet(
   return {policiesByName, policiesByAppId};
 }
 
+// Microseconds between 1601-01-01 and 1970-01-01.
+const WINDOWS_TO_UNIX_EPOCH_OFFSET = 11644473600000000n;
+
 /**
- * Parses a Date field from a message.
+ * Parses a Date field from a message. Dates are received as string-encoded
+ * integer number of microseconds since Windows epoch.
  */
 function parseDate(
     message: Record<string, unknown>,
@@ -806,12 +810,20 @@ function parseDate(
   if (dateStr === undefined) {
     return undefined;
   }
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
+  let windowsMicroseconds;
+  try {
+    windowsMicroseconds = BigInt(dateStr);
+  } catch (e) {
     throw new ParseError(`Message has field '${
         fieldName}' with unparsable datetime value '${dateStr}'`);
   }
-  return date;
+  const unixMilliseconds =
+      Number((windowsMicroseconds - WINDOWS_TO_UNIX_EPOCH_OFFSET) / 1000n);
+  if (!Number.isFinite(unixMilliseconds)) {
+    throw new ParseError(`Message has field '${
+        fieldName}' with unparsable datetime value '${dateStr}'`);
+  }
+  return new Date(unixMilliseconds);
 }
 
 /**

@@ -165,8 +165,8 @@ suite('parseEvent', () => {
       'pid': 126,
       'processToken': 'token4',
       'eulaRequired': true,
-      'lastChecked': '2025-11-24T12:00:00Z',
-      'lastStarted': '2025-11-24T11:00:00Z',
+      'lastChecked': '13408459200000000',  // 2025-11-24T12:00:00Z
+      'lastStarted': '13408455600000000',  // 2025-11-24T11:00:00Z
       'registeredApps': [
         {
           'appId': '{app4}',
@@ -437,7 +437,7 @@ suite('parseEvent', () => {
       'processToken': 'token9',
       'bound': 'START',
       'commandLine': 'foo --bar',
-      'timestamp': '2025-11-24T12:00:00Z',
+      'timestamp': '13408459200000000',  // 2025-11-24T12:00:00Z,
       'updaterVersion': '1.0',
       'scope': 'USER',
       'osPlatform': 'Mac',
@@ -812,6 +812,22 @@ suite('parseEvent', () => {
       expect(() => parseEvent(message))
           .to.throw(
               'Message contains unknown eventType: FOOBAR',
+          );
+    });
+
+    test('should throw if date field has invalid date string', () => {
+      const message: Record<string, unknown> = {
+        'eventType': 'PERSISTED_DATA',
+        'eventId': 'event4',
+        'deviceUptime': '42345',
+        'pid': 126,
+        'processToken': 'token4',
+        'eulaRequired': true,
+        'lastChecked': 'not-a-number',
+      };
+      expect(() => parseEvent(message))
+          .to.throw(
+              `Message has field 'lastChecked' with unparsable datetime value 'not-a-number'`,
           );
     });
 

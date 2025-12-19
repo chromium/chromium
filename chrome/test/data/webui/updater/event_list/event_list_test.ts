@@ -48,7 +48,7 @@ suite('EventListElement', () => {
         'processToken': 'token1',
         'bound': 'START',
         'updaterVersion': '123.0.142.0',
-        'timestamp': '2025-11-24T12:00:00Z',
+        'timestamp': '13408459200000000',  // 2025-11-24T12:00:00Z
         'scope': 'USER',
       },
       {
@@ -131,7 +131,7 @@ suite('EventListElement', () => {
         'processToken': 'token1',
         'bound': 'START',
         'updaterVersion': '123.0.142.0',
-        'timestamp': '2025-11-24T12:00:00Z',
+        'timestamp': '13408459200000000',  // 2025-11-24T12:00:00Z
         'scope': 'USER',
       },
       {
@@ -213,7 +213,7 @@ suite('EventListElement', () => {
         'processToken': 'token1',
         'bound': 'START',
         'updaterVersion': '123.0.142.0',
-        'timestamp': '2025-11-24T12:00:00Z',
+        'timestamp': '13408459200000000',  // 2025-11-24T12:00:00Z
         'scope': 'USER',
       },
       {
@@ -287,7 +287,7 @@ suite('EventListElement', () => {
         'pid': '100',
         'processToken': 'token1',
         'bound': 'START',
-        'timestamp': '2025-12-17T12:00:00Z',
+        'timestamp': '13410446400000000',  // '2025-12-17T12:00:00Z'
       },
       {
         'eventType': 'UPDATER_PROCESS',
@@ -324,7 +324,7 @@ suite('EventListElement', () => {
         'pid': '200',
         'processToken': 'token2',
         'bound': 'START',
-        'timestamp': '2025-12-17T14:00:00Z',
+        'timestamp': '13410453600000000',  // 2025-12-17T14:00:00Z
       },
       {
         'eventType': 'UPDATER_PROCESS',
