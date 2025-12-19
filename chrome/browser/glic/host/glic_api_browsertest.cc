@@ -109,6 +109,10 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif
+
 // This file runs the respective JS tests from
 // chrome/test/data/webui/glic/browser_tests/glic_api_browsertest.ts.
 
@@ -129,13 +133,6 @@
 // This skips a test for the multi-instance variant. It's a marker to remember
 // to revisit this test later.
 #define TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST() SKIP_TEST_FOR_MULTI_INSTANCE()
-
-// TODO(crbug.com/460826483): Disable failing tests on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE(test_name) DISABLED_##test_name
-#else
-#define MAYBE(test_name) test_name
-#endif
 
 namespace glic {
 namespace {
@@ -505,6 +502,13 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
   // Create the mock service.
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* browser_context) override {
+#if BUILDFLAG(IS_CHROMEOS)
+    // ChromeOS may create profiles other than regular profile (signin profile
+    // and its primary OTR profiles). Skip those profiles.
+    if (!ash::IsUserBrowserContext(browser_context)) {
+      return;
+    }
+#endif
     mock_cueing_service_ = static_cast<
         testing::NiceMock<contextual_cueing::MockContextualCueingService>*>(
         contextual_cueing::ContextualCueingServiceFactory::GetInstance()
@@ -720,7 +724,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE(testAllTestsAreRegistered)) {
+// TODO(crbug.com/460826483): Enable on CrOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_testAllTestsAreRegistered DISABLED_testAllTestsAreRegistered
+#else
+#define MAYBE_testAllTestsAreRegistered testAllTestsAreRegistered
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
@@ -1613,7 +1623,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       MAYBE(testGetZeroStateSuggestionsForFocusedTabApi)) {
+                       testGetZeroStateSuggestionsForFocusedTabApi) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -1677,7 +1687,7 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
 
 IN_PROC_BROWSER_TEST_P(
     GlicApiTestWithOneTabAndContextualCueing,
-    MAYBE(testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden)) {
+    testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(0);
@@ -1686,7 +1696,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       MAYBE(testGetZeroStateSuggestionsApi)) {
+                       testGetZeroStateSuggestionsApi) {
   if (GetParam().multi_instance) {
     EXPECT_CALL(
         *mock_cueing_service(),
@@ -1704,8 +1714,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 // TODO(crbug.com/449897870): Flaky on Win-asan.
-// TODO(crbug.com/460826483): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
   DISABLED_testGetZeroStateSuggestionsMultipleNavigations
 #else
@@ -1741,7 +1750,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       MAYBE(testGetZeroStateSuggestionsFailsWhenHidden)) {
+                       testGetZeroStateSuggestionsFailsWhenHidden) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   // Initial state.
@@ -3648,7 +3657,7 @@ auto DefaultTestParamSet() {
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicApiTestWithOneTab,
-#if defined(SLOW_BINARY) || BUILDFLAG(IS_CHROMEOS)
+#if defined(SLOW_BINARY)
     // TODO(crbug.com/460826483): Evaluate the feasibility of multi_instance.
     // Even the test setup sometimes doesn't finish on ASAN for multi-instance.
     testing::Values(TestParams{.multi_instance = false}),
@@ -3659,12 +3668,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicApiTest,
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/460826483): Evaluate the feasibility of multi_instance.
-    testing::Values(TestParams{.multi_instance = false}),
-#else
     DefaultTestParamSet(),
-#endif
     &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDefaultTabContextEnabled,
