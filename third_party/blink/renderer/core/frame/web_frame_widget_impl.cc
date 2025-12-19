@@ -4142,9 +4142,8 @@ void WebFrameWidgetImpl::GetCompositionCharacterBoundsInWindow(
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 
-void GetLineBounds(Vector<gfx::QuadF>& line_quads,
-                   TextControlInnerEditorElement* inner_editor) {
-  for (const Node& node : NodeTraversal::DescendantsOf(*inner_editor)) {
+void GetLineBounds(Vector<gfx::QuadF>& line_quads, Node* editor_node) {
+  for (const Node& node : NodeTraversal::DescendantsOf(*editor_node)) {
     if (!node.GetLayoutObject() || !node.GetLayoutObject()->IsText()) {
       continue;
     }
@@ -4161,21 +4160,32 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
   if (!focused_element) {
     return bounds_in_dips;
   }
-  TextControlElement* text_control = ToTextControlOrNull(focused_element);
-  if (!text_control || text_control->IsDisabledOrReadOnly() ||
-      text_control->Value().empty() || !text_control->GetLayoutObject()) {
+
+  Node* editor_node;
+  if (TextControlElement* text_control = ToTextControlOrNull(focused_element);
+      text_control && !text_control->IsDisabledOrReadOnly() &&
+      !text_control->Value().empty()) {
+    editor_node = text_control->InnerEditorElement();
+  } else if (IsEditable(*focused_element) &&
+             !focused_element->textContent().empty()) {
+    editor_node = focused_element;
+  } else {
+    return bounds_in_dips;
+  }
+
+  LayoutObject* layout_object = focused_element->GetLayoutObject();
+  if (!layout_object) {
     return bounds_in_dips;
   }
 
   Vector<gfx::QuadF> bounds_from_blink;
-  GetLineBounds(bounds_from_blink, text_control->InnerEditorElement());
+  GetLineBounds(bounds_from_blink, editor_node);
 
   gfx::Rect screen = LocalRootImpl()->GetFrameView()->FrameToScreen(
       GetPage()->GetVisualViewport().VisibleContentRect());
   for (auto& quad : bounds_from_blink) {
-    gfx::Rect bounding_box =
-        focused_element->GetLayoutObject()->GetFrameView()->FrameToScreen(
-            gfx::ToRoundedRect(quad.BoundingBox()));
+    gfx::Rect bounding_box = layout_object->GetFrameView()->FrameToScreen(
+        gfx::ToRoundedRect(quad.BoundingBox()));
     bounding_box.Intersect(screen);
     if (bounding_box.IsEmpty()) {
       continue;
@@ -4197,9 +4207,15 @@ void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
   if (!focused_element) {
     return;
   }
-  TextControlElement* text_control = ToTextControlOrNull(focused_element);
-  if (!text_control || text_control->IsDisabledOrReadOnly() ||
-      !text_control->GetLayoutObject()) {
+
+  // Only update cursor for active text controls or contenteditable elements.
+  if (TextControlElement* text_control = ToTextControlOrNull(focused_element);
+      (!text_control || text_control->IsDisabledOrReadOnly()) &&
+      !IsEditable(*focused_element)) {
+    return;
+  }
+  LayoutObject* layout_object = focused_element->GetLayoutObject();
+  if (!layout_object) {
     return;
   }
 
@@ -4220,8 +4236,7 @@ void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
 
   mojom::blink::TextAppearanceInfoPtr text_appearance_info =
       mojom::blink::TextAppearanceInfo::New(
-          text_control->GetLayoutObject()
-              ->StyleRef()
+          layout_object->StyleRef()
               .VisitedDependentColor(GetCSSPropertyColor())
               .Rgb());
 

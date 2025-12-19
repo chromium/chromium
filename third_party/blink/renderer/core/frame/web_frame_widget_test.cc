@@ -16,6 +16,7 @@
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/scroll_source_type.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
@@ -56,6 +57,7 @@
 namespace blink {
 
 using testing::_;
+using testing::ContainerEq;
 
 bool operator==(const InputHandlerProxy::DidOverscrollParams& lhs,
                 const InputHandlerProxy::DidOverscrollParams& rhs) {
@@ -1833,6 +1835,50 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
   }
+}
+
+TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectForContenteditable) {
+  WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
+  auto* widget = WebView().MainFrameViewWidget();
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/Ahem.woff2",
+                                      "font/woff2");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <!doctype html>
+      <style>
+        @font-face {
+          font-family: custom-font;
+          src: url(https://example.com/Ahem.woff2) format("woff2");
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          border: 0;
+        }
+        .target {
+          font: 10px/1 custom-font, monospace;
+          margin: 0;
+          padding: 0;
+          border: none;
+        }
+      </style>
+      <div contenteditable id='first' class='target'>ABCD</div>
+      )HTML");
+  Compositor().BeginFrame();
+  // Finish font loading, and trigger invalidations.
+  font_resource.Complete(
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
+  Compositor().BeginFrame();
+  Element* first = GetDocument().getElementById(AtomicString("first"));
+  first->Focus();
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+
+  Vector<gfx::Rect> expected = {gfx::Rect(0, 0, 40, 10)};
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
+  EXPECT_THAT(expected, ContainerEq(actual));
 }
 
 TEST_F(WebFrameWidgetSimTest, DisplayStateMatchesWindowShowState) {
