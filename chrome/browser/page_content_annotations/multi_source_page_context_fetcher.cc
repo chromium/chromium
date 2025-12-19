@@ -181,7 +181,6 @@ base::expected<paint_preview::RedactionParams, std::string> GetRedactionParams(
           /*allowed_origins=*/{frame->GetLastCommittedOrigin()},
           /*allowed_sites=*/{});
   }
-  NOTREACHED();
 }
 
 SkBitmap RedactScreenshotOnWorkerThread(
@@ -459,7 +458,6 @@ class PageContextFetcher : public content::WebContentsObserver {
       pending_result_->screenshot_result.emplace(
           gfx::SkISizeToSize(bitmap->dimensions()));
       screenshot_bitmap_ = *bitmap;
-
       base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
                               elapsed_timer_.Elapsed());
       RedactAndEncodeScreenshotIfNeeded();
@@ -481,32 +479,50 @@ class PageContextFetcher : public content::WebContentsObserver {
               SkBitmap redacted_bitmap = RedactScreenshotOnWorkerThread(
                   bitmap, visible_bounding_boxes_for_password_redaction);
               std::optional<std::vector<uint8_t>> encoded;
+              std::string encode_debug_data;
               switch (GetScreenshotImageType()) {
                 case ScreenshotImageType::kJpeg:
                   encoded = gfx::JPEGCodec::Encode(redacted_bitmap,
                                                    GetScreenshotJpegQuality());
+                  if (!encoded) {
+                    encode_debug_data = absl::StrFormat(
+                        "JPEG, quality=%d", GetScreenshotJpegQuality());
+                  }
                   break;
                 case ScreenshotImageType::kPng:
                   if (ShouldPngScreenshotBeLowQuality()) {
                     encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
                         redacted_bitmap, /*discard_transparency=*/true);
+                    if (!encoded) {
+                      encode_debug_data = "PNG, quality=low";
+                    }
                   } else {
                     encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
                         redacted_bitmap, /*discard_transparency=*/true);
+                    if (!encoded) {
+                      encode_debug_data = "PNG, quality=normal";
+                    }
                   }
                   break;
                 case ScreenshotImageType::kWebp:
                   encoded = gfx::WebpCodec::Encode(redacted_bitmap,
                                                    GetScreenshotWebPQuality());
+                  if (!encoded) {
+                    encode_debug_data = absl::StrFormat(
+                        "webp, quality=%d", GetScreenshotWebPQuality());
+                  }
                   break;
                 default:
-                  break;
+                  NOTREACHED();
               }
               base::expected<std::vector<uint8_t>, std::string> reply;
               if (encoded) {
                 reply.emplace(std::move(encoded.value()));
               } else {
-                reply = base::unexpected("JPEGCodec failed to encode");
+                reply = base::unexpected(absl::StrFormat(
+                    "Failed to encode %d x %d bitmap: %s",
+                    redacted_bitmap.width(), redacted_bitmap.height(),
+                    encode_debug_data));
               }
               return reply;
             },
