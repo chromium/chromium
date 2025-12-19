@@ -20,7 +20,6 @@ source_set("coordinator") {
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/coordinator:first_run_provider",
     "//ios/chrome/browser/first_run/default_browser/ui",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_FEATURES_H_
-#define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_FEATURES_H_
+#ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_PUBLIC_FEATURES_H_
+#define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_PUBLIC_FEATURES_H_
 
 #import "base/feature_list.h"
 
@@ -30,4 +30,4 @@ bool IsDefaultBrowserPromoRefreshEnabled();
 // Returns the default browser promo refresh param.
 std::string DefaultBrowserPromoRefreshParam();
 
-#endif  // IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_PUBLIC_FEATURES_H_

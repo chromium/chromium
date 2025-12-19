@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_promo/ui_bundled/base_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/tailored/ui/base_default_browser_promo_view_provider.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"

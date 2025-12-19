@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_promo/ui_bundled/made_for_ios_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/tailored/ui/made_for_ios_default_browser_promo_view_provider.h"
 
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"

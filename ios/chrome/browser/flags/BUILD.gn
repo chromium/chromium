@@ -84,7 +84,7 @@ source_set("flags") {
     "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_promo/ui_bundled:features",
+    "//ios/chrome/browser/default_promo/ui_bundled/public:features",
     "//ios/chrome/browser/download/ui:features",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/first_run/public:features",

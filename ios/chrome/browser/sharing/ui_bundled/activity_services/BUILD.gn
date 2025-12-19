@@ -23,7 +23,6 @@ source_set("activity_services") {
     "//components/prefs",
     "//components/ui_metrics",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

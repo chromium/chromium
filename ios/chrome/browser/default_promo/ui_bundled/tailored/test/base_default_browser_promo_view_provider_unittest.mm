@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_promo/ui_bundled/base_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/tailored/ui/base_default_browser_promo_view_provider.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -10,7 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/all_tabs_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/tailored/ui/all_tabs_default_browser_promo_view_provider.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

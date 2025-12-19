@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/ui/default_browser_instructions_view_controller.h"
 
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
