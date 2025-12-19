@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/browser_window.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace glic {
 

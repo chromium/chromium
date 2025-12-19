@@ -16,14 +16,18 @@ assert(enable_glic || enable_glic_android)
 # the "impl" target.
 source_set("glic") {
   sources = [
+    "glic_pref_names.h",
     "host/auth_controller.h",
     "host/glic_cookie_synchronizer.h",
+    "public/context/glic_sharing_manager.h",
     "public/glic_instance.h",
     "service/glic_instance_helper.cc",
     "service/glic_instance_helper.h",
     "service/metrics/glic_instance_helper_metrics.h",
   ]
   if (!is_android) {
+    # TODO(b/470059315): Make these work on Android, or move them to the
+    # desktop-only section.
     sources += [
       "browser_ui/glic_button_controller.h",
       "browser_ui/glic_button_controller_delegate.h",
@@ -33,14 +37,11 @@ source_set("glic") {
       "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
       "gemini_act_on_web_settings_policy_handler.h",
-      "glic_hotkey.h",
       "glic_metrics.h",
       "glic_net_log.h",
-      "glic_pref_names.h",
       "glic_profile_manager.h",
       "glic_settings_util.h",
       "glic_user_status_code.h",
-      "glic_user_status_fetcher.h",
       "glic_user_status_request.h",
       "glic_zero_state_suggestions_manager.h",
       "host/context/glic_focused_browser_manager_interface.h",
@@ -56,12 +57,17 @@ source_set("glic") {
       "host/guest_util.h",
       "host/host.h",
       "host/host_metrics.h",
-      "public/context/glic_sharing_manager.h",
       "public/glic_enabling.h",
       "public/glic_keyed_service.h",
       "public/glic_keyed_service_factory.h",
       "widget/glic_view.h",
       "widget/glic_window_controller.h",
+    ]
+
+    # Desktop-only sources
+    sources += [
+      "glic_hotkey.h",
+      "glic_user_status_fetcher.h",
       "widget/local_hotkey_manager.h",
     ]
   }
@@ -105,6 +111,7 @@ source_set("glic") {
 
   deps = [
     "//chrome/common",
+    "//components/tabs:public",
     "//components/user_education/common",
     "//ui/base/interaction",
   ]
@@ -129,29 +136,31 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
+    "glic_pref_names.cc",
+    "glic_user_status_fetcher.cc",
+    "glic_user_status_request.cc",
     "host/auth_controller.cc",
     "host/auth_controller.h",
     "host/glic_cookie_synchronizer.cc",
     "host/glic_cookie_synchronizer.h",
     "host/glic_synthetic_trial_manager.cc",
     "host/glic_synthetic_trial_manager.h",
+    "public/context/glic_sharing_manager.cc",
   ]
 
   if (!is_android) {
+    # TODO(b/470059315): Make these work on Android, or move them to the
+    # desktop-only section.
     sources += [
       "gemini_act_on_web_settings_policy_handler.cc",
-      "glic_hotkey.cc",
       "glic_metrics.cc",
       "glic_metrics_provider.cc",
       "glic_metrics_provider.h",
       "glic_net_log.cc",
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
-      "glic_pref_names.cc",
       "glic_profile_manager.cc",
       "glic_settings_util.cc",
-      "glic_user_status_fetcher.cc",
-      "glic_user_status_request.cc",
       "glic_zero_state_suggestions_manager.cc",
       "host/context/glic_active_instance_sharing_manager.cc",
       "host/context/glic_active_instance_sharing_manager.h",
@@ -200,7 +209,6 @@ source_set("impl") {
       "host/page_metadata_manager.h",
       "host/webui_contents_container.cc",
       "host/webui_contents_container.h",
-      "public/context/glic_sharing_manager.cc",
       "public/glic_enabling.cc",
       "public/glic_keyed_service.cc",
       "public/glic_keyed_service_factory.cc",
@@ -222,8 +230,6 @@ source_set("impl") {
       "service/metrics/glic_instance_metrics.h",
       "service/metrics/glic_metrics_session_manager.cc",
       "service/metrics/glic_metrics_session_manager.h",
-      "widget/application_hotkey_delegate.cc",
-      "widget/application_hotkey_delegate.h",
       "widget/browser_conditions.cc",
       "widget/browser_conditions.h",
       "widget/glic_floating_ui.cc",
@@ -232,8 +238,6 @@ source_set("impl") {
       "widget/glic_inactive_floating_ui.h",
       "widget/glic_inactive_side_panel_ui.cc",
       "widget/glic_inactive_side_panel_ui.h",
-      "widget/glic_panel_hotkey_delegate.cc",
-      "widget/glic_panel_hotkey_delegate.h",
       "widget/glic_side_panel_ui.cc",
       "widget/glic_side_panel_ui.h",
       "widget/glic_view.cc",
@@ -251,6 +255,15 @@ source_set("impl") {
       "widget/glic_window_resize_animation.h",
       "widget/inactive_view_controller.cc",
       "widget/inactive_view_controller.h",
+    ]
+
+    # Desktop only
+    sources += [
+      "glic_hotkey.cc",
+      "widget/application_hotkey_delegate.cc",
+      "widget/application_hotkey_delegate.h",
+      "widget/glic_panel_hotkey_delegate.cc",
+      "widget/glic_panel_hotkey_delegate.h",
       "widget/local_hotkey_manager.cc",
     ]
   }
@@ -285,7 +298,6 @@ source_set("impl") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sessions",
-    "//components/tabs:public",
     "//components/variations/service",
     "//components/webui/chrome_urls",
     "//third_party/metrics_proto",
@@ -375,10 +387,11 @@ mojom("mojo_bindings") {
   component_deps = [ "//content/public/common" ]
 }
 
-if (!is_android) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  if (!is_android) {
+    sources += [
       "glic_metrics_unittest.cc",
       "host/context/glic_pin_candidate_comparator_unittest.cc",
       "host/context/glic_screenshot_capturer_unittest.cc",
@@ -393,10 +406,16 @@ if (!is_android) {
       "widget/glic_panel_hotkey_delegate_unittest.cc",
       "widget/local_hotkey_manager_unittest.cc",
     ]
-    deps = [
-      ":glic",
-      ":impl",
-      "//base/test:test_support",
+  }
+  deps = [
+    ":glic",
+    ":impl",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (!is_android) {
+    deps += [
       "//chrome/browser:global_features",
       "//chrome/browser/background",
       "//chrome/browser/background/glic",
@@ -416,14 +435,14 @@ if (!is_android) {
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/tabs:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
-    if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/test:test_support" ]
-    }
   }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/test:test_support" ]
+  }
+}
 
+if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

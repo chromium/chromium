@@ -248,9 +248,9 @@
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
-#include "components/feed/core/common/pref_names.h"         // nogncheck
-#include "components/feed/core/shared_prefs/pref_names.h"   // nogncheck
-#include "components/feed/core/v2/ios_shared_prefs.h"       // nogncheck
+#include "components/feed/core/common/pref_names.h"        // nogncheck
+#include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
+#include "components/feed/core/v2/ios_shared_prefs.h"      // nogncheck
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/webapps/browser/android/install_prompt_prefs.h"
@@ -281,8 +281,8 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/organization/prefs.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -540,7 +540,7 @@
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
 #include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
@@ -1413,7 +1413,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
   registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   gcm::RegisterPrefs(registry);
   headless::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
@@ -1596,7 +1596,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
   glic::prefs::RegisterLocalStatePrefs(registry);
 #endif
 
@@ -1642,7 +1642,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
   glic::prefs::RegisterProfilePrefs(registry);
 #endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
@@ -1794,7 +1794,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   webapps::InstallPromptPrefs::RegisterProfilePrefs(registry);
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserUserEducationStorageService::RegisterProfilePrefs(registry);

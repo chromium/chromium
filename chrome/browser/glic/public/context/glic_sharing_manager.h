@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"

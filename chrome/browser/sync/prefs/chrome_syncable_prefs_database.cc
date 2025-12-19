@@ -43,7 +43,7 @@
 #include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
 #include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
@@ -1868,12 +1868,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kDesktopToiOSLensPromoOptOut, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
     {glic::prefs::kGlicRolloutEligibility,
      {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#endif  // BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
     {subscription_eligibility::prefs::kAiSubscriptionTier,
      {syncable_prefs_ids::kSubscriptionEligibilityAiSubscriptionTier,
       syncer::PRIORITY_PREFERENCES,

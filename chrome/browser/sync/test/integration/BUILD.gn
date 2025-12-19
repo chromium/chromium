@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else {
   import("//build/config/ui.gni")
-  import("//chrome/common/features.gni")
   import("//printing/buildflags/buildflags.gni")
 }
 
@@ -336,12 +336,6 @@ source_set("sync_integration_tests_impl") {
     if (enable_printing) {
       deps += [ "//printing" ]
     }
-    if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic/test_support",
-      ]
-    }
     data += [
       "//chrome/test/data/password/",
       "//chrome/test/data/webapps_integration/",
@@ -349,6 +343,13 @@ source_set("sync_integration_tests_impl") {
       "//chrome/test/data/banners/",
       "//net/tools/testserver/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
+    ]
+  }
+
+  if (enable_glic || enable_glic_android) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
     ]
   }
 }

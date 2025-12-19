@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicGetContextFromTabError) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicGetContextFromTabError) -->
 
 <!-- LINT.IfChange(GlicHostApiRequestType) -->
 

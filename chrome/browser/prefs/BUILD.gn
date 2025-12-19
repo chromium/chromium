@@ -371,11 +371,11 @@ source_set("impl") {
     deps += [ "//chrome/browser/web_applications" ]
   }
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/background/glic",
-      "//chrome/browser/glic",
-    ]
+  if (enable_glic || enable_glic_android) {
+    deps += [ "//chrome/browser/glic" ]
+    if (enable_glic) {
+      deps += [ "//chrome/browser/background/glic" ]
+    }
   }
 
   if (!is_android && !is_chromeos) {

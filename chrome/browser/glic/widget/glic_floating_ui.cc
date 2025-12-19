@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)

@@ -467,11 +467,11 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/ui/tabs:glic",
-    ]
+  if (enable_glic || enable_glic_android) {
+    deps += [ "//chrome/browser/glic" ]
+    if (enable_glic) {
+      deps += [ "//chrome/browser/ui/tabs:glic" ]
+    }
   }
 
   if (enable_on_device_translation) {

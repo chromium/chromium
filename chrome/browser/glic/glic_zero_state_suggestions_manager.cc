@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

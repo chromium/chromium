@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -224,22 +225,6 @@ enum class GlicRequestEvent {
   kMaxValue = kRequestReceivedWhileHidden,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
-
-// Error types for when attempting to extract context from a tab.
-// LINT.IfChange(GlicGetContextFromTabError)
-enum class GlicGetContextFromTabError {
-  kUnknown = 0,
-  // Tab context requests when the panel is hidden are now reported as both as
-  // "hidden" and "error" in Glic.Api.* histograms.
-  kPermissionDeniedWindowNotShowing_DEPRECATED = 1,
-  kTabNotFound = 2,
-  kPermissionDeniedContextPermissionNotEnabled = 3,
-  kPermissionDenied = 4,
-  kWebContentsChanged = 5,
-  kPageContextNotEligible = 6,
-  kMaxValue = kPageContextNotEligible,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromTabError)
 
 // LINT.IfChange(GlicTabPinnedForSharingResult)
 enum class GlicTabPinnedForSharingResult {
