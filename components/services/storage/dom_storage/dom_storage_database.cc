@@ -5,10 +5,13 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
 #include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
+#include "components/services/storage/dom_storage/sqlite/dom_storage_sqlite.h"
 
 namespace storage {
 namespace {
@@ -139,6 +142,13 @@ void DomStorageDatabaseFactory::Open(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    return CreateSequenceBoundDomStorageDatabase<DomStorageSqlite>(
+        std::move(blocking_task_runner), directory, name, memory_dump_id,
+        base::BindOnce(&OnDatabaseOpened<DomStorageSqlite>,
+                       std::move(callback)));
+  }
+
   switch (storage_type) {
     case StorageType::kLocalStorage:
       return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
