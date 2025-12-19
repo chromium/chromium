@@ -166,29 +166,18 @@ std::vector<device::PublicKeyCredentialDescriptor> ReadCredentials(
   return credential_descriptors;
 }
 
-// Builds a IOSPasskeyClient::RequestInfo object from the parameters contained
-// in the provided dictionary.
-IOSPasskeyClient::RequestInfo BuildRequestInfo(const base::Value::Dict& dict) {
-  const std::string* frame_id = dict.FindString(kFrameId);
-  const std::string* request_id = dict.FindString(kRequestId);
-  if (!frame_id || !request_id) {
-    // Return an invalid request info.
-    return IOSPasskeyClient::RequestInfo("", "");
-  }
-
-  return IOSPasskeyClient::RequestInfo(*frame_id, *request_id);
-}
-
 // Builds a PasskeyRequestParams object from the parameters contained in the
 // provided dictionary.
-PasskeyRequestParams BuildRequestParams(const base::Value::Dict& dict) {
+base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
+    IOSPasskeyClient::RequestInfo request_info,
+    const base::Value::Dict& dict) {
   const base::Value::Dict* request_dict = dict.FindDict(kRequest);
   if (!request_dict) {
-    return PasskeyRequestParams();
+    return base::unexpected(PasskeysParsingError::kMissingRequest);
   }
 
   return PasskeyRequestParams(
-      BuildRequestInfo(dict), BuildRpEntity(dict.FindDict(kRpEntity)),
+      std::move(request_info), BuildRpEntity(dict.FindDict(kRpEntity)),
       Base64Decode(request_dict->FindString(kChallenge)),
       ToUserVerificationRequirement(
           request_dict->FindString(kUserVerification)));
@@ -196,17 +185,46 @@ PasskeyRequestParams BuildRequestParams(const base::Value::Dict& dict) {
 
 }  // namespace
 
-AssertionRequestParams BuildAssertionRequestParams(
-    const base::Value::Dict& dict) {
+base::expected<IOSPasskeyClient::RequestInfo, PasskeysParsingError>
+BuildRequestInfo(const base::Value::Dict& dict) {
+  const std::string* frame_id = dict.FindString(kFrameId);
+  if (!frame_id) {
+    return base::unexpected(PasskeysParsingError::kMissingFrameId);
+  } else if (frame_id->empty()) {
+    return base::unexpected(PasskeysParsingError::kEmptyFrameId);
+  }
+
+  const std::string* request_id = dict.FindString(kRequestId);
+  if (!request_id) {
+    return base::unexpected(PasskeysParsingError::kMissingRequestId);
+  } else if (request_id->empty()) {
+    return base::unexpected(PasskeysParsingError::kEmptyRequestId);
+  }
+
+  return IOSPasskeyClient::RequestInfo(*frame_id, *request_id);
+}
+
+base::expected<AssertionRequestParams, PasskeysParsingError>
+BuildAssertionRequestParams(IOSPasskeyClient::RequestInfo request_info,
+                            const base::Value::Dict& dict) {
+  auto request_params = BuildRequestParams(std::move(request_info), dict);
+  if (!request_params.has_value()) {
+    return base::unexpected(request_params.error());
+  }
   return AssertionRequestParams(
-      BuildRequestParams(dict),
+      std::move(*request_params),
       ReadCredentials(dict.FindList(kAllowCredentials)));
 }
 
-RegistrationRequestParams BuildRegistrationRequestParams(
-    const base::Value::Dict& dict) {
+base::expected<RegistrationRequestParams, PasskeysParsingError>
+BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
+                               const base::Value::Dict& dict) {
+  auto request_params = BuildRequestParams(std::move(request_info), dict);
+  if (!request_params.has_value()) {
+    return base::unexpected(request_params.error());
+  }
   return RegistrationRequestParams(
-      BuildRequestParams(dict), BuildUserEntity(dict.FindDict(kUserEntity)),
+      std::move(*request_params), BuildUserEntity(dict.FindDict(kUserEntity)),
       ReadCredentials(dict.FindList(kExcludeCredentials)));
 }
 

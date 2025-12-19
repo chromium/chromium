@@ -231,36 +231,54 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (*event == kHandleGetRequest) {
-    if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
-      // TODO(crbug.com/369629469): Log metrics for unexpected events.
-      return;
-    }
+  bool is_handle_get_request_event = (*event == kHandleGetRequest);
+  bool is_handle_create_request_event = (*event == kHandleCreateRequest);
+  if (!is_handle_get_request_event && !is_handle_create_request_event) {
+    std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
+        log_event_type = ReadLogEventType(*event, dict, *passkey_tab_helper);
 
-    passkey_tab_helper->LogEvent(
-        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
-    passkey_tab_helper->HandleGetRequestedEvent(
-        BuildAssertionRequestParams(dict));
-    return;
-  } else if (*event == kHandleCreateRequest) {
-    if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
-      // TODO(crbug.com/369629469): Log metrics for unexpected events.
-      return;
+    if (log_event_type.has_value()) {
+      passkey_tab_helper->LogEvent(*log_event_type);
     }
-
-    passkey_tab_helper->LogEvent(
-        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-            kCreateRequested);
-    passkey_tab_helper->HandleCreateRequestedEvent(
-        BuildRegistrationRequestParams(dict));
     return;
   }
 
-  std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
-      log_event_type = ReadLogEventType(*event, dict, *passkey_tab_helper);
+  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+    // TODO(crbug.com/369629469): Log metrics for unexpected events.
+    return;
+  }
 
-  if (log_event_type.has_value()) {
-    passkey_tab_helper->LogEvent(*log_event_type);
+  auto request_info = BuildRequestInfo(dict);
+  if (!request_info.has_value()) {
+    // TODO(460485333): Log the error.
+    return;
+  }
+
+  if (is_handle_get_request_event) {
+    passkey_tab_helper->LogEvent(
+        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
+    auto assertion_request_params =
+        BuildAssertionRequestParams(std::move(*request_info), dict);
+    if (!assertion_request_params.has_value()) {
+      // TODO(460485333): Call DeferToRenderer.
+      return;
+    }
+
+    passkey_tab_helper->HandleGetRequestedEvent(
+        std::move(*assertion_request_params));
+  } else {  // is_handle_create_request_event
+    passkey_tab_helper->LogEvent(
+        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+            kCreateRequested);
+    auto registration_request_params =
+        BuildRegistrationRequestParams(std::move(*request_info), dict);
+    if (!registration_request_params.has_value()) {
+      // TODO(460485333): Call DeferToRenderer.
+      return;
+    }
+
+    passkey_tab_helper->HandleCreateRequestedEvent(
+        std::move(*registration_request_params));
   }
 }
 

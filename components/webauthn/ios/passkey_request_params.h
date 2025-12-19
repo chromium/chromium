@@ -20,7 +20,6 @@ namespace webauthn {
 // registration requests.
 class PasskeyRequestParams {
  public:
-  PasskeyRequestParams();
   PasskeyRequestParams(IOSPasskeyClient::RequestInfo request_info,
                        device::PublicKeyCredentialRpEntity rp_entity,
                        std::vector<uint8_t> challenge,

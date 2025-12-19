@@ -24,10 +24,6 @@ std::set<std::string> GetIdsFromDescriptors(
 
 }  // namespace
 
-PasskeyRequestParams::PasskeyRequestParams()
-    : request_info_("", ""),
-      user_verification_(device::UserVerificationRequirement::kPreferred) {}
-
 PasskeyRequestParams::PasskeyRequestParams(
     IOSPasskeyClient::RequestInfo request_info,
     device::PublicKeyCredentialRpEntity rp_entity,
