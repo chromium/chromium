@@ -295,25 +295,41 @@ bool StructTraits<
       return false;
     }
 #elif BUILDFLAG(IS_LINUX)
-    // The dictionary must contain three strings.
-    const base::Value* value = system_print_dialog_data.Find(
-        printing::kLinuxSystemPrintDialogDataPrinter);
-    if (!value || !value->is_string()) {
-      return false;
-    }
-    value = system_print_dialog_data.Find(
-        printing::kLinuxSystemPrintDialogDataPrintSettings);
-    if (!value || !value->is_string()) {
-      return false;
-    }
-    value = system_print_dialog_data.Find(
-        printing::kLinuxSystemPrintDialogDataPageSetup);
-    if (!value || !value->is_string()) {
-      return false;
-    }
-
-    // There should not be any other keys present.
-    if (system_print_dialog_data.size() != 3) {
+    // The dictionary should either contain the GTK print dialog data or the
+    // portal print dialog data, but not a mix of both.
+    if (system_print_dialog_data.size() == 3) {
+      // GTK print dialog data.
+      if (!system_print_dialog_data.FindString(
+              printing::kLinuxSystemPrintDialogDataPrinter)) {
+        return false;
+      }
+      if (!system_print_dialog_data.FindString(
+              printing::kLinuxSystemPrintDialogDataPrintSettings)) {
+        return false;
+      }
+      if (!system_print_dialog_data.FindString(
+              printing::kLinuxSystemPrintDialogDataPageSetup)) {
+        return false;
+      }
+    } else if (system_print_dialog_data.size() == 4) {
+      // Portal print dialog data.
+      if (!system_print_dialog_data.FindBlob(
+              printing::kLinuxSystemPrintDialogDataPrintSettingsBin)) {
+        return false;
+      }
+      if (!system_print_dialog_data.FindBlob(
+              printing::kLinuxSystemPrintDialogDataPageSetupBin)) {
+        return false;
+      }
+      if (!system_print_dialog_data.FindString(
+              printing::kLinuxSystemPrintDialogDataPrintToken)) {
+        return false;
+      }
+      if (!system_print_dialog_data.FindString(
+              printing::kLinuxSystemPrintDialogDataParentHandle)) {
+        return false;
+      }
+    } else {
       return false;
     }
 #else

@@ -32,7 +32,7 @@ BASE_FEATURE(kAlignPdfDefaultPrintSettingsWithHTML,
 BASE_FEATURE(kCupsIppPrintingBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the XDG Print Portal for the system print dialog.
-BASE_FEATURE(kLinuxXdgPrintPortal, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLinuxXdgPrintPortal, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

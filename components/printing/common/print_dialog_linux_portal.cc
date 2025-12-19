@@ -4,6 +4,7 @@
 
 #include "components/printing/common/print_dialog_linux_portal.h"
 
+#include <dbus/dbus-shared.h>
 #include <dbus/dbus.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -15,9 +16,9 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -25,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/write_value.h"
 #include "components/dbus/xdg/portal.h"
@@ -52,6 +54,9 @@ constexpr char kPrintInterfaceName[] = "org.freedesktop.portal.Print";
 
 constexpr char kMethodPreparePrint[] = "PreparePrint";
 constexpr char kMethodPrint[] = "Print";
+
+constexpr char kDBusInterfaceName[] = "org.freedesktop.DBus";
+constexpr char kMethodGetId[] = "GetId";
 
 // Keys for settings dictionary. Defined in org.freedesktop.portal.Print spec.
 // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Print.html
@@ -123,12 +128,62 @@ constexpr char kKeyToken[] = "token";
 
 constexpr int kXdgPortalRequiredVersion = 3;
 
+constexpr char16_t kPrintDialogLinuxPortalDeviceName[] =
+    u"PrintDialogLinuxPortal";
+
 void WriteDataToPipe(base::ScopedFD fd, std::vector<char> data) {
   base::File file(std::move(fd));
   if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
     LOG(ERROR) << "Failed to save metafile to pipe";
   }
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+// Serializes a D-Bus value into a byte vector.
+template <typename T>
+std::vector<uint8_t> SerializeValue(const T& value) {
+  std::unique_ptr<dbus::Response> message = dbus::Response::CreateEmpty();
+  dbus::MessageWriter writer(message.get());
+  dbus_utils::WriteValue(writer, value);
+
+  char* marshalled_data = nullptr;
+  int len = 0;
+  if (!dbus_message_marshal(message->raw_message(), &marshalled_data, &len)) {
+    return {};
+  }
+
+  // SAFETY: dbus_message_marshal guarantees that `marshalled_data` points to a
+  // buffer of `len` bytes.
+  auto data_span =
+      UNSAFE_BUFFERS(base::span(marshalled_data, static_cast<size_t>(len)));
+  auto bytes_span = base::as_bytes(data_span);
+  std::vector<uint8_t> result(bytes_span.begin(), bytes_span.end());
+
+  dbus_free(marshalled_data);
+  return result;
+}
+
+// Deserializes a D-Bus value from a byte span.
+template <typename T>
+std::optional<T> DeserializeValue(base::span<const uint8_t> data) {
+  DBusError error;
+  dbus_error_init(&error);
+  DBusMessage* raw_message = dbus_message_demarshal(
+      reinterpret_cast<const char*>(data.data()), data.size(), &error);
+  if (dbus_error_is_set(&error)) {
+    dbus_error_free(&error);
+    return std::nullopt;
+  }
+  if (!raw_message) {
+    return std::nullopt;
+  }
+
+  std::unique_ptr<dbus::Response> message =
+      dbus::Response::FromRawMessage(raw_message);
+  dbus::MessageReader reader(message.get());
+  return dbus_utils::ReadValue<T>(reader);
+}
+#endif
 
 dbus_xdg::Dictionary ConvertSettingsToDictionary(
     const PrintSettings& settings) {
@@ -546,7 +601,54 @@ void PrintDialogLinuxPortal::UpdateSettings(
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 void PrintDialogLinuxPortal::LoadPrintSettings(const PrintSettings& settings) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // In the OOP print service, the D-Bus connection may not be initialized.
+  // Make a no-op call to initialize it and ensure the bus has a name, which
+  // is required for XDG portal requests.
+  dbus_utils::CallMethod<"", "s">(
+      bus_->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)),
+      kDBusInterfaceName, kMethodGetId, base::DoNothing());
+
+  if (fallback_dialog_) {
+    fallback_dialog_->LoadPrintSettings(settings);
+    return;
+  }
+  settings_ = std::make_unique<PrintSettings>(settings);
+
+  const std::vector<uint8_t>* settings_data =
+      settings.system_print_dialog_data().FindBlob(
+          kLinuxSystemPrintDialogDataPrintSettingsBin);
+  if (settings_data) {
+    if (auto dict = DeserializeValue<dbus_xdg::Dictionary>(*settings_data)) {
+      ParseSettingsFromDictionary(*dict, settings_.get());
+    }
+  }
+
+  const std::vector<uint8_t>* page_setup_data =
+      settings.system_print_dialog_data().FindBlob(
+          kLinuxSystemPrintDialogDataPageSetupBin);
+  if (page_setup_data) {
+    if (auto dict = DeserializeValue<dbus_xdg::Dictionary>(*page_setup_data)) {
+      ParsePageSetupFromDictionary(*dict, settings_.get());
+    }
+  }
+
+  const std::string* token_str = settings.system_print_dialog_data().FindString(
+      kLinuxSystemPrintDialogDataPrintToken);
+  if (token_str) {
+    unsigned int token_value = 0;
+    if (base::StringToUint(*token_str, &token_value)) {
+      token_ = token_value;
+    }
+  }
+
+  const std::string* parent_handle_str =
+      settings.system_print_dialog_data().FindString(
+          kLinuxSystemPrintDialogDataParentHandle);
+  if (parent_handle_str) {
+    parent_handle_ = *parent_handle_str;
+  }
 }
 #endif
 
@@ -643,9 +745,18 @@ void PrintDialogLinuxPortal::OnPreparePrintResponse(dbus_xdg::Results results) {
     settings_ = std::make_unique<PrintSettings>();
   }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  base::Value::Dict dialog_data;
+#endif
+
   if (auto it = results->find(kKeySettings); it != results->end()) {
     if (auto settings_dict =
             std::move(it->second).Take<dbus_xdg::Dictionary>()) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+      dialog_data.Set(kLinuxSystemPrintDialogDataPrintSettingsBin,
+                      SerializeValue(*settings_dict));
+#endif
+
       ParseSettingsFromDictionary(*settings_dict, settings_.get());
     }
   }
@@ -658,9 +769,26 @@ void PrintDialogLinuxPortal::OnPreparePrintResponse(dbus_xdg::Results results) {
   if (auto it = results->find(kKeyPageSetup); it != results->end()) {
     if (auto page_setup_dict =
             std::move(it->second).Take<dbus_xdg::Dictionary>()) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+      dialog_data.Set(kLinuxSystemPrintDialogDataPageSetupBin,
+                      SerializeValue(*page_setup_dict));
+#endif
+
       ParsePageSetupFromDictionary(*page_setup_dict, settings_.get());
     }
   }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (token_) {
+    dialog_data.Set(kLinuxSystemPrintDialogDataPrintToken,
+                    base::NumberToString(*token_));
+  }
+  dialog_data.Set(kLinuxSystemPrintDialogDataParentHandle, parent_handle_);
+  settings_->set_system_print_dialog_data(std::move(dialog_data));
+
+  // A dummy device name is required.
+  settings_->set_device_name(kPrintDialogLinuxPortalDeviceName);
+#endif
 
   // Update context with the settings selected by the user (or confirmed).
   if (context_) {
@@ -720,6 +848,12 @@ void PrintDialogLinuxPortal::StartPrintRequest(const std::string& title,
       base::BindOnce(&PrintDialogLinuxPortal::OnPrintResponse,
                      weak_factory_.GetWeakPtr()),
       parent_handle_, title, std::move(fd));
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  // In the OOP print service, the dialog may be destroyed before the print
+  // request completes. Release the request to avoid cancelling it on
+  // destruction.
+  request_->Release();
+#endif
 }
 
 void PrintDialogLinuxPortal::OnPrintResponse(dbus_xdg::Results results) {

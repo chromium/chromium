@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
@@ -26,6 +27,11 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
     virtual ~PrintDialogFactory() = default;
     virtual std::unique_ptr<PrintDialogLinuxInterface> CreatePrintDialog(
         PrintingContextLinux* context) = 0;
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+    virtual std::unique_ptr<PrintDialogLinuxInterface>
+    CreatePrintDialogForSettings(PrintingContextLinux* context,
+                                 const PrintSettings& settings) = 0;
+#endif
   };
 
   static void SetPrintDialogFactory(PrintDialogFactory* factory);

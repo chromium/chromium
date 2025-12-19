@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "build/buildflag.h"
-#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_dialog_linux_interface.h"
@@ -138,7 +137,17 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
     // Take the settings captured by the browser process from the system print
     // dialog and apply them to this printing context in the PrintBackend
     // service.
-    EnsurePrintDialog();
+    if (!print_dialog_) {
+      // Ensure a print dialog is created with a type matching the settings
+      // provided by the browser process.
+      if (g_print_dialog_factory) {
+        print_dialog_ = g_print_dialog_factory->CreatePrintDialogForSettings(
+            this, *settings_);
+      }
+    }
+    if (print_dialog_) {
+      print_dialog_->LoadPrintSettings(*settings_);
+    }
   }
 #endif
 

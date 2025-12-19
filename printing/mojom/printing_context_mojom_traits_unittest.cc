@@ -92,6 +92,20 @@ base::Value::Dict GenerateSampleSystemPrintDialogData(
 
   return data;
 }
+
+#if BUILDFLAG(IS_LINUX)
+base::Value::Dict GenerateSampleSystemPrintDialogDataPortal() {
+  base::Value::Dict data;
+  data.Set(kLinuxSystemPrintDialogDataPrintSettingsBin,
+           base::Value::BlobStorage({0x01, 0x02}));
+  data.Set(kLinuxSystemPrintDialogDataPageSetupBin,
+           base::Value::BlobStorage({0x03, 0x04}));
+  data.Set(kLinuxSystemPrintDialogDataPrintToken, "123");
+  data.Set(kLinuxSystemPrintDialogDataParentHandle, "handle");
+
+  return data;
+}
+#endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
 // Support two possible sample `PrintSettings`, to ensure that certain fields
@@ -874,6 +888,35 @@ TEST(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataPortal) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  input.set_system_print_dialog_data(
+      GenerateSampleSystemPrintDialogDataPortal());
+
+  PrintSettings output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_EQ(output.system_print_dialog_data(),
+            input.system_print_dialog_data());
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataMixed) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+  base::Value::Dict portal_data = GenerateSampleSystemPrintDialogDataPortal();
+  for (auto item : portal_data) {
+    data.Set(item.first, item.second.Clone());
+  }
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
 TEST(
     PrintingContextMojomTraitsTest,
     TestSerializeAndDeserializePrintSettingsSystemPrintDialogPrinterInvalidDataType) {

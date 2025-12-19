@@ -42,4 +42,22 @@ PrintDialogLinuxFactory::CreatePrintDialog(PrintingContextLinux* context) {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+std::unique_ptr<PrintDialogLinuxInterface>
+PrintDialogLinuxFactory::CreatePrintDialogForSettings(
+    PrintingContextLinux* context,
+    const PrintSettings& settings) {
+#if BUILDFLAG(USE_DBUS)
+  if (settings.system_print_dialog_data().FindString(
+          kLinuxSystemPrintDialogDataPrintToken)) {
+    return std::make_unique<PrintDialogLinuxPortal>(context);
+  }
+#endif
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    return linux_ui->CreatePrintDialog(context);
+  }
+  return nullptr;
+}
+#endif
+
 }  // namespace printing

@@ -53,10 +53,20 @@ inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
+// Used by PrintDialogGtk
 inline constexpr char kLinuxSystemPrintDialogDataPrinter[] = "printer_name";
 inline constexpr char kLinuxSystemPrintDialogDataPrintSettings[] =
     "print_settings";
 inline constexpr char kLinuxSystemPrintDialogDataPageSetup[] = "page_setup";
+
+// Used by PrintDialogLinuxPortal.
+inline constexpr char kLinuxSystemPrintDialogDataPrintSettingsBin[] =
+    "print_settings_bin";
+inline constexpr char kLinuxSystemPrintDialogDataPageSetupBin[] =
+    "page_setup_bin";
+inline constexpr char kLinuxSystemPrintDialogDataPrintToken[] = "print_token";
+inline constexpr char kLinuxSystemPrintDialogDataParentHandle[] =
+    "parent_handle";
 #endif  // BUILDFLAG(IS_LINUX)
 
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
