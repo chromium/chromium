@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -16,10 +17,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +25,12 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#endif
 
 namespace glic {
 
@@ -435,12 +439,14 @@ void GlicShareImageHandler::MaybeShowErrorToast(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
-
+#if !BUILDFLAG(IS_ANDROID)
   if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
     if (auto* controller = browser->GetFeatures().toast_controller()) {
       controller->MaybeShowToast(ToastParams(ToastId::kGlicShareImageFailed));
     }
   }
+#else  // TODO(b/470059315): Implement for android
+#endif
 }
 
 void GlicShareImageHandler::StopObservingNavigation() {
