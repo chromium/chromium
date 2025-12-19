@@ -5,6 +5,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -48,12 +50,23 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // TODO(crbug.com/462477497): Do not show the permission prompt. Until this
-  // is fixed, always accept all permission requests.
-  void SetPermissionResponse() {
-    permissions::PermissionRequestManager::FromWebContents(web_contents())
-        ->set_auto_response_for_test(permissions::PermissionRequestManager::
-                                         AutoResponseType::ACCEPT_ALL);
+  bool NavigateToInstallElementPage(
+      const std::string& path = "/web_apps/install_element/index.html") {
+    VLOG(0) << https_server()->GetURL(path).spec();
+    // We must await installability checks to avoid race conditions with our
+    // WebInstallFromUrlCommand which also fetches the manifest.
+    // TODO(crbug.com/468047211): Change to ui_test_utils::NavigateToURL after
+    // WebInstallServiceImpl stops using InstallableManager.
+    return NavigateAndAwaitInstallabilityCheck(browser(),
+                                               https_server()->GetURL(path));
+  }
+
+  void BlockWebInstallPermission(const GURL& url) {
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(profile());
+    settings_map->SetContentSettingDefaultScope(
+        url, GURL(), ContentSettingsType::WEB_APP_INSTALLATION,
+        CONTENT_SETTING_BLOCK);
   }
 
   bool SetButtonInstallUrl(const GURL& install_url) {
@@ -155,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
       https_server()->GetURL("/web_apps/install_element/index.html")));
 
   // Setup test listeners and dialog auto-accepts.
-  SetPermissionResponse();
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
 
@@ -192,7 +204,6 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
       https_server()->GetURL("/web_apps/install_element/index.html")));
 
   // Setup test listeners and dialog auto-accepts.
-  SetPermissionResponse();
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
 
@@ -229,7 +240,6 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
       https_server()->GetURL("/web_apps/install_element/index.html")));
 
   // Simulate the user declining the install prompt.
-  SetPermissionResponse();
   auto auto_decline_pwa_install_confirmation =
       SetAutoDeclinePWAInstallConfirmationForTesting();
 
@@ -246,6 +256,71 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   WaitForDismissEvent(kInstallElementId);
 
   // The registrar should still have zero apps installed.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 0u);
+}
+
+// Test that current document install succeeds even when permission is denied,
+// since current document installs bypass permission.
+IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
+  // TODO(crbug.com/469831343): Fix race condition with <install></install>.
+  // Replace this with a basic `NavigateToURL`.
+  // Navigate to a page with <install> elements and wait for installability
+  // checks to complete.
+  const GURL current_document_url = https_server()->GetURL(
+      "/web_apps/install_element/"
+      "index.html");
+  EXPECT_TRUE(
+      NavigateAndAwaitInstallabilityCheck(browser(), current_document_url));
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
+
+  // Block the web install permission for the current document origin.
+  BlockWebInstallPermission(current_document_url);
+
+  // Click the install element and wait for the app to open.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ClickElementWithId(kInstallElementId);
+  Browser* web_app_browser = browser_created_observer.Wait();
+
+  // Verify promptaction event was fired.
+  WaitForPromptActionEvent(kInstallElementId);
+
+  // Verify the app launched.
+  ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
+  const WebAppBrowserController* app_controller =
+      WebAppBrowserController::From(web_app_browser);
+  EXPECT_EQ(app_controller->GetTitle(),
+            u"Web app install element test app with id");
+
+  // The registrar should now have one app installed.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 1u);
+}
+
+// Test that when permission is denied for background document install, no
+// install occurs.
+IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
+                       InstallWithUrl_DenyPermission) {
+  // Navigate to a page with <install> elements.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL("/web_apps/install_element/index.html")));
+
+  // Dynamically set the installurl attribute to a background document URL.
+  const GURL install_url =
+      https_server()->GetURL("/web_apps/custom_id/install_url.html");
+  ASSERT_TRUE(SetButtonInstallUrl(install_url));
+
+  // Block the web install permission for this origin.
+  BlockWebInstallPermission(install_url);
+
+  // Click the install element.
+  ClickElementWithId(kInstallElementId);
+
+  // When permission is already denied, promptdismiss should fire without
+  // showing an actual prompt.
+  WaitForDismissEvent(kInstallElementId);
+
+  // Verify that no app was installed by checking the app count hasn't changed.
   EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 0u);
 }
 

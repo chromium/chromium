@@ -118,7 +118,7 @@ void HTMLInstallElement::OnActivated() {
       options->manifest_id = manifest_id_url;
     }
   }
-  WebInstallService()->Install(
+  WebInstallService()->InstallFromElement(
       std::move(options),
       BindOnce(&HTMLInstallElement::OnInstallResult, WrapWeakPersistent(this)));
 }

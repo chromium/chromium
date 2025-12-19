@@ -74,6 +74,12 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
   // mojom::blink::WebInstallService impl:
   void Install(mojom::blink::InstallOptionsPtr options,
                InstallCallback callback) override {
+    // Only for installs from the JS API. Use InstallFromElement() instead.
+    NOTIMPLEMENTED();
+  }
+
+  void InstallFromElement(mojom::blink::InstallOptionsPtr options,
+                          InstallCallback callback) override {
     CHECK(!callback_) << "Keep the tests simple: one call at a time.";
     options_ = std::move(options);
     callback_ = std::move(callback);

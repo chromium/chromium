@@ -88,6 +88,8 @@ class WebInstallServiceImpl
   // blink::mojom::WebInstallService implementation:
   void Install(blink::mojom::InstallOptionsPtr options,
                InstallCallback callback) override;
+  void InstallFromElement(blink::mojom::InstallOptionsPtr options,
+                          InstallCallback callback) override;
 
  private:
   WebInstallServiceImpl(
@@ -161,6 +163,8 @@ class WebInstallServiceImpl
   blink::mojom::InstallOptionsPtr install_options_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;
+  // True if install was triggered from <install> element rather than JS API.
+  bool triggered_from_element_ = false;
   base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
 };
 

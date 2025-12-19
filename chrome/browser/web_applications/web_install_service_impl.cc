@@ -271,6 +271,13 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics)));
 }
 
+void WebInstallServiceImpl::InstallFromElement(
+    blink::mojom::InstallOptionsPtr options,
+    InstallCallback callback) {
+  triggered_from_element_ = true;
+  Install(std::move(options), std::move(callback));
+}
+
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
     InstallCallbackWithMetrics callback_with_metrics) {
   std::move(callback_with_metrics)
@@ -297,6 +304,8 @@ void WebInstallServiceImpl::TryInstallCurrentDocument(
     webapps::InstallableParams params;
     params.installable_criteria =
         webapps::InstallableCriteria::kValidManifestWithIcons;
+    // TODO(crbug.com/468047211): Remove InstallableManager usage to avoid race
+    // conditions with concurrent manifest fetch and installability checks.
     data_retriever->CheckInstallabilityAndRetrieveManifest(
         web_contents,
         base::BindOnce(&WebInstallServiceImpl::
@@ -461,6 +470,15 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
       break;
   }
 
+  if (triggered_from_element_) {
+    // Do not show permission prompt for installs from an element entry point.
+    // Grant permission by default if not already granted or denied.
+    std::move(callback).Run(
+        std::vector<content::PermissionResult>({content::PermissionResult(
+            PermissionStatus::GRANTED,
+            content::PermissionStatusSource::UNSPECIFIED)}));
+    return;
+  }
   GURL requesting_origin = origin().GetURL();
   // User gesture requirement is enforced in NavigatorWebInstall::InstallImpl.
   permission_controller->RequestPermissionsFromCurrentDocument(
