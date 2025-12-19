@@ -1096,14 +1096,6 @@ public class ToolbarPhone extends ToolbarLayout
         int leftViewPosition = getLeftPositionOfLocationBarBackground(visualState);
         int rightViewPosition = getRightPositionOfLocationBarBackground(visualState);
         int verticalInset = mLocationBarBackgroundVerticalInset - calculateOnFocusHeightIncrease();
-        int horizontalInset = 0;
-
-        if (urlHasFocus() && ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
-            int strokePx =
-                    getContext().getResources().getDimensionPixelSize(R.dimen.chip_border_width);
-            verticalInset -= strokePx;
-            horizontalInset = strokePx;
-        }
 
         // The bounds are set by the following:
         // - The left most visible location bar child view.
@@ -1112,9 +1104,9 @@ public class ToolbarPhone extends ToolbarLayout
         // - The bottom of the viewport is aligned with the bottom of the location bar.
         // Additional padding can be applied for use during animations.
         out.set(
-                leftViewPosition - horizontalInset,
+                leftViewPosition,
                 mLocationBar.getPhoneCoordinator().getTop() + verticalInset,
-                rightViewPosition + horizontalInset,
+                rightViewPosition,
                 mLocationBar.getPhoneCoordinator().getBottom() - verticalInset);
         onLocationBarBackgroundViewBoundsChanged();
     }
