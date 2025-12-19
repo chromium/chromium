@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -383,6 +384,13 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   }
   request_info->query_start_time = query_start_time;
   request_info->lens_overlay_selection_type = lens_selection_type;
+
+  // Add mandatory Lens specific query parameters if not already present.
+  const bool has_text = query_text.has_value() && !query_text->empty();
+  const bool has_image = region || region_bytes.has_value();
+  lens::AppendLensOverlaySidePanelParams(additional_search_query_params,
+                                         has_text, has_image);
+
   request_info->additional_params = additional_search_query_params;
   request_info->invocation_source = invocation_source;
 
