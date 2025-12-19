@@ -121,7 +121,6 @@ source_set("unit_tests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
-    "//ios/web/test/fakes",
     "//net:test_support",
     "//testing/gtest",
     "//url",

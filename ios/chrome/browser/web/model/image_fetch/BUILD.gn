@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
-    "//ios/web/test:js_test_util_internal",
     "//ios/web/web_state/ui:web_controller_header",
     "//net:test_support",
     "//services/network:test_support",
