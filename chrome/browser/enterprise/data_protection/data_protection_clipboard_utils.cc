@@ -693,54 +693,7 @@ void ReplaceSameTabClipboardDataIfRequiredByPolicy(
   }
 }
 
-bool HandleWriteTextToClipboard(content::WebContents* web_contents,
-                                ui::ClipboardBuffer clipboard_buffer,
-                                const std::u16string_view& text) {
-  if (clipboard_buffer == ui::ClipboardBuffer::kSelection) {
-    return false;
-  }
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-
-  if (!rfh) {
-    return false;
-  }
-
-  ui::DataTransferEndpoint dte(
-      rfh->GetMainFrame()->GetLastCommittedURL(),
-      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
-
-  content::ClipboardEndpoint clipboard_endpoint =
-      MakeClipboardEndpoint(dte, rfh);
-
-  content::ClipboardPasteData data;
-  data.text = text;
-  auto meta = ui::ClipboardMetadata{
-      .size = data.text.size() * sizeof(std::u16string::value_type),
-      .format_type = ui::ClipboardFormatType::PlainTextType(),
-  };
-
-  IsClipboardCopyAllowedByPolicy(
-      std::move(clipboard_endpoint), meta, std::move(data),
-      base::BindOnce(
-          [](ui::ClipboardBuffer clipboard_buffer,
-             std::unique_ptr<ui::DataTransferEndpoint> dte,
-             const ui::ClipboardFormatType& data_type,
-             const content::ClipboardPasteData& data,
-             std::optional<std::u16string> replacement_data) {
-            ui::ScopedClipboardWriter scw(clipboard_buffer, std::move(dte));
-            if (replacement_data) {
-              scw.WriteText(std::move(*replacement_data));
-            } else {
-              scw.WriteText(data.text);
-            }
-          },
-          clipboard_buffer,
-          std::make_unique<ui::DataTransferEndpoint>(std::move(dte))));
-
-  return true;
-}
-
-bool DragAndDropForTextIsAllowed(content::WebContents* web_contents) {
+bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   if (!rfh) {
     return true;
@@ -764,11 +717,6 @@ bool DragAndDropForTextIsAllowed(content::WebContents* web_contents) {
                      ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
   return verdict.level() != data_controls::Rule::Level::kBlock;
-}
-
-bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
-  // Alias for DragAndDropForTextIsAllowed to avoid code duplication.
-  return DragAndDropForTextIsAllowed(web_contents);
 }
 
 }  // namespace enterprise_data_protection
