@@ -69,6 +69,9 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
             case ModuleType.QUICK_DELETE_PROMO:
+            // TODO(crbug.com/469425754): Remove once segmentation platform based ranking is
+            // skipped for setup list.
+            case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
                 return inputContext;
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(

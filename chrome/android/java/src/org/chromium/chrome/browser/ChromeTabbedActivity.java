@@ -119,8 +119,7 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
-import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
-import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
+import org.chromium.chrome.browser.educational_tip.HomeTipsModulesProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.FeedUma;
@@ -3095,13 +3094,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
 
         if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
-            Set<Integer> tipModuleTypes = EducationalTipModuleUtils.getModuleTypes();
-            for (@ModuleType int tipModule : tipModuleTypes) {
-                EducationalTipModuleBuilder educationalTipModuleBuilder =
-                        new EducationalTipModuleBuilder(
-                                tipModule, createEducationTipModuleActionDelegate());
-                moduleRegistry.registerModule(tipModule, educationalTipModuleBuilder);
-            }
+            // Fetch and register the appropriate collection of educational tip or setup list
+            // modules.
+            HomeTipsModulesProvider.registerTipModules(
+                    createEducationTipModuleActionDelegate(), moduleRegistry);
         }
 
         // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the

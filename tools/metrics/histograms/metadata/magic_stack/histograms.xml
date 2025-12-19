@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ModuleType">
   <variant name="AuxiliarySearch"/>
   <variant name="DefaultBrowserPromo"/>
+  <variant name="EnhancedSafeBrowsingPromo"/>
   <variant name="HistorySyncPromo"/>
   <variant name="PriceChange"/>
   <variant name="QuickDeletePromo"/>

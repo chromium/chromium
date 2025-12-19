@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
@@ -61,7 +62,8 @@ public class HomeModulesUtils {
                             TAB_GROUP_SYNC_PROMO,
                             QUICK_DELETE_PROMO,
                             HISTORY_SYNC_PROMO,
-                            TIPS_NOTIFICATIONS_PROMO));
+                            TIPS_NOTIFICATIONS_PROMO,
+                            ENHANCED_SAFE_BROWSING_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -111,6 +113,7 @@ public class HomeModulesUtils {
             case QUICK_DELETE_PROMO:
             case HISTORY_SYNC_PROMO:
             case TIPS_NOTIFICATIONS_PROMO:
+            case ENHANCED_SAFE_BROWSING_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:

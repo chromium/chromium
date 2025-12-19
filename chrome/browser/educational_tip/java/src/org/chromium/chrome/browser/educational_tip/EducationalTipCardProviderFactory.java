@@ -8,6 +8,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.EnhancedSafeBrowsingPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
@@ -48,6 +49,9 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.TIPS_NOTIFICATIONS_PROMO:
                 return new TipsNotificationsPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
+            case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
+                return new EnhancedSafeBrowsingPromoCoordinator(
+                        onModuleClickedCallback, actionDelegate);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

@@ -742,6 +742,11 @@ public abstract class ChromeFeatureList {
                     ANDROID_SETTINGS_CONTAINMENT,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidSetupList =
+            newCachedFlag(
+                    ANDROID_SETUP_LIST,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,
@@ -1108,6 +1113,7 @@ public abstract class ChromeFeatureList {
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSettingsContainment,
+                    sAndroidSetupList,
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,

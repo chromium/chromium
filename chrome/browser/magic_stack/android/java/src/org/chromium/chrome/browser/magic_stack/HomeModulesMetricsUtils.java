@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
@@ -133,6 +134,8 @@ public class HomeModulesMetricsUtils {
                 return "HistorySyncPromo";
             case TIPS_NOTIFICATIONS_PROMO:
                 return "TipsNotificationsPromo";
+            case ENHANCED_SAFE_BROWSING_PROMO:
+                return "EnhancedSafeBrowsingPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -161,6 +164,8 @@ public class HomeModulesMetricsUtils {
                 return HISTORY_SYNC_PROMO;
             case "TipsNotificationsPromo":
                 return TIPS_NOTIFICATIONS_PROMO;
+            case "EnhancedSafeBrowsingPromo":
+                return ENHANCED_SAFE_BROWSING_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

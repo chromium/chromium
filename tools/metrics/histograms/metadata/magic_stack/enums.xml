@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ModuleType">
-  <int value="0" label="Sinlge tab module"/>
+  <int value="0" label="Single tab module"/>
   <int value="1" label="Price change module"/>
   <int value="2" label="Tab resumption module"/>
   <int value="3" label="Safety hub module"/>
@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Quick Delete Promo Card"/>
   <int value="10" label="History Sync Promo Card"/>
   <int value="11" label="Tips Notifications Promo Card"/>
+  <int value="12" label="Enhanced Safe Browsing Promo Card"/>
 </enum>
 
 </enums>

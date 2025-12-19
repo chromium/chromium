@@ -149,6 +149,21 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.ANDROID_SETUP_LIST
+    })
+    public void testShowSetupList_EnhancedSafeBrowsingPromo() {
+        // Test showing enhance safe browsing promo card.
+        testShowModuleImpl(
+                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                R.string.educational_tip_enhanced_safe_browsing_title,
+                R.string.educational_tip_enhanced_safe_browsing_description,
+                R.drawable.default_browser_promo_logo);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerInitialized_ShouldDisplay() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());

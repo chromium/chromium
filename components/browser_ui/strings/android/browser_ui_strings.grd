@@ -1345,6 +1345,17 @@
         Notify me
       </message>
 
+      <!-- Enhanced Safe Browsing promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_TITLE" desc="Title of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
+        Enhance your security
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_DESCRIPTION" desc="Description of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
+        Get Chrome’s strongest protection against online threats
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_BUTTON" desc="Text on the clickable button on the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
+        Go to settings
+      </message>
+
       <!-- Safety Hub Magic Stack strings -->
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
         Safety Check
