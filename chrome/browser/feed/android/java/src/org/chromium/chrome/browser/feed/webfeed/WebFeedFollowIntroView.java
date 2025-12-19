@@ -88,7 +88,6 @@ class WebFeedFollowIntroView {
                         onTouchListener,
                         /* inverseColor= */ false);
         mFollowBubble.addOnDismissListener(this::introDismissed);
-        // TODO(crbug.com/40158714): Figure out a way to dismiss on outside taps as well.
         mFollowBubble.setAutoDismissTimeout(mShowTimeoutMillis);
         turnOnHighlightForFollowMenuItem();
 
