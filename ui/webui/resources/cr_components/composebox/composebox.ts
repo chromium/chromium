@@ -163,6 +163,7 @@ export class ComposeboxElement extends I18nMixinLit
       transcript_: {type: String},
       receivedSpeech_: {type: Boolean},
       maxSuggestions: {type: Number},
+      disableVoiceSearchAnimation: {type: Boolean},
     };
   }
 
@@ -173,6 +174,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor entrypointName: string = '';
+  accessor disableVoiceSearchAnimation: boolean = false;
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until
@@ -502,6 +504,10 @@ export class ComposeboxElement extends I18nMixinLit
     const isExpanded = this.showDropdown_ || this.contextFilesSize_ > 0;
     return isExpanded ? this.showVoiceSearchInExpandedComposebox_ :
                         this.showVoiceSearchInSteadyComposebox_;
+  }
+
+  protected shouldShowVoiceSearchAnimation_(): boolean {
+    return !this.disableVoiceSearchAnimation && this.shouldShowVoiceSearch_();
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {

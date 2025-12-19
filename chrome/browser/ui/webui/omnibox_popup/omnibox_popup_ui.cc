@@ -72,7 +72,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
-  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui),
+                                         /*enable_voice_search=*/false,
+                                         /*enable_lens_search=*/false);
 
   source->AddBoolean("isTopChromeSearchbox", true);
   source->AddBoolean(
