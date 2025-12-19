@@ -399,7 +399,9 @@ void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
 
 WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
-    : manifest_id_(manifest_id), start_url_(start_url) {
+    : scope(start_url.GetWithoutFilename()),
+      manifest_id_(manifest_id),
+      start_url_(start_url) {
   CheckValidManifestIdAndStartUrl(manifest_id_, start_url_);
 }
 

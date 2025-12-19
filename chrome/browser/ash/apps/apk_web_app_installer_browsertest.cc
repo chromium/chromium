@@ -71,7 +71,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInstallInfo(
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   web_app_install_info->title = u"App Title";
   web_app_install_info->theme_color = SK_ColorBLUE;
-  web_app_install_info->scope = url.Resolve("scope");
+  web_app_install_info->scope = url;
   web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
   web_app_install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -107,7 +107,7 @@ void ExpectInitialManifestFieldsFromWebAppInstallInfo(
   // Manifest fields:
   EXPECT_EQ(web_app->untranslated_name(), "App Title");
   EXPECT_EQ(web_app->start_url(), url);
-  EXPECT_EQ(web_app->scope().spec(), url.Resolve("scope"));
+  EXPECT_EQ(web_app->scope().spec(), url);
   EXPECT_EQ(web_app->display_mode(), web_app::DisplayMode::kBrowser);
 
   ASSERT_TRUE(web_app->theme_color().has_value());
@@ -117,7 +117,7 @@ void ExpectInitialManifestFieldsFromWebAppInstallInfo(
   EXPECT_EQ(SK_ColorBLUE, web_app->sync_proto().theme_color());
 
   EXPECT_EQ("App Title", web_app->sync_proto().name());
-  EXPECT_EQ(url.Resolve("scope").spec(), web_app->sync_proto().scope());
+  EXPECT_EQ(url.spec(), web_app->sync_proto().scope());
   {
     SCOPED_TRACE("web_app->manifest_icons()");
     ExpectInitialIconInfosFromWebAppInstallInfo(web_app->manifest_icons(), url);

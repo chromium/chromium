@@ -157,7 +157,6 @@ class WebAppInstallFinalizer {
   void OnOriginAssociationValidatedForUpdate(
       WebAppInstallInfo web_app_info,
       InstallFinalizedCallback callback,
-      webapps::AppId app_id,
       OriginAssociations validated_origin_associations);
 
   void SetWebAppManifestFieldsAndWriteData(
@@ -181,7 +180,6 @@ class WebAppInstallFinalizer {
       WebAppInstallInfo web_app_info,
       FinalizeOptions options,
       InstallFinalizedCallback callback,
-      webapps::AppId app_id,
       OriginAssociations validated_origin_associations);
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,

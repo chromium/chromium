@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 
+#include <string_view>
+
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -30,6 +33,8 @@ namespace chromeos {
 
 const char kMicrosoft365WebAppUrl[] =
     "https://www.microsoft365.com/?from=Homescreen";
+static constexpr std::string_view kMicrosoft365WebAppScope =
+    "https://www.microsoft365.com/";
 const int kMicrosoft365WebAppIconSize = 192;
 
 namespace {
@@ -69,24 +74,28 @@ void InstallMicrosoft365Offline(
   options.fallback_app_name = kMicrosoft365FallbackName;
   options.add_to_quick_launch_bar = false;
   options.only_use_app_info_factory = true;
-  options.app_info_factory = base::BindRepeating([]() {
-    GURL start_url = GURL(kMicrosoft365WebAppUrl);
-    webapps::ManifestId manifest_id =
-        web_app::GenerateManifestIdFromStartUrlOnly(start_url);
-    auto info =
-        std::make_unique<web_app::WebAppInstallInfo>(manifest_id, start_url);
-    info->title =
-        l10n_util::GetStringUTF16(IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT);
-    info->scope = GURL("/");
-    info->display_mode = web_app::DisplayMode::kStandalone;
+  options.app_info_factory =
+      base::BindRepeating([]() -> std::unique_ptr<web_app::WebAppInstallInfo> {
+        GURL start_url = GURL(kMicrosoft365WebAppUrl);
+        webapps::ManifestId manifest_id =
+            web_app::GenerateManifestIdFromStartUrlOnly(start_url);
+        auto info = std::make_unique<web_app::WebAppInstallInfo>(manifest_id,
+                                                                 start_url);
+        info->manifest_url =
+            GURL("https://www.microsoft365.com/webmanifest.json");
+        info->title =
+            l10n_util::GetStringUTF16(IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT);
+        info->scope = GURL(kMicrosoft365WebAppScope);
+        info->display_mode = web_app::DisplayMode::kStandalone;
 
-    gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        IDR_OFFICE_WEB_APP_ICONS_OFFICE_192_PNG);
-    info->icon_bitmaps.any[kMicrosoft365WebAppIconSize] = image.AsBitmap();
-    info->background_color = 0xFFD53A00;
-    info->theme_color = 0xFFD53A00;
-    return info;
-  });
+        gfx::Image image =
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                IDR_OFFICE_WEB_APP_ICONS_OFFICE_192_PNG);
+        info->icon_bitmaps.any[kMicrosoft365WebAppIconSize] = image.AsBitmap();
+        info->background_color = 0xFFD53A00;
+        info->theme_color = 0xFFD53A00;
+        return info;
+      });
 
   provider->externally_managed_app_manager().InstallNow(
       std::move(options), base::BindOnce(&OnOfficeWebAppInstalledOffline,

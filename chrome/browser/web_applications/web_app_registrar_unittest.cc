@@ -1509,7 +1509,7 @@ TEST_F(WebAppRegistrarTest, GetAllAppsControllingUrl_ScopeExtensions) {
   StartWebAppProvider();
 
   auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://example.com/start"));
+      GURL("https://example.com/app/start"));
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info->scope = GURL("https://example.com/app/");
   web_app_info->validated_scope_extensions = {
