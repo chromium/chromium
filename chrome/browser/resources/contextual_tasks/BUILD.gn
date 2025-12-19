@@ -41,6 +41,8 @@ build_webui("build") {
     "favicon_group.html.ts",
     "icons.html.ts",
     "post_message_handler.ts",
+    "sources_menu.ts",
+    "sources_menu.html.ts",
     "top_toolbar.ts",
     "top_toolbar.html.ts",
     "internals/app.ts",
@@ -53,6 +55,7 @@ build_webui("build") {
     "composebox.css",
     "error_page.css",
     "favicon_group.css",
+    "sources_menu.css",
     "top_toolbar.css",
     "internals/app.css",
   ]

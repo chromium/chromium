@@ -44,20 +44,8 @@ export function getHtml(this: TopToolbarElement) {
     </div>
   </div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
-    <cr-action-menu>
-      <div class="header">$i18n{sourcesMenuTabsHeader}</div>
-      ${this.attachedTabs.map(tab => html`
-        <button class="dropdown-item" @click="${() => this.onTabClick_(tab)}">
-          <div class="tab-favicon" style="background-image:
-            ${this.faviconUrl_(tab)}">
-          </div>
-          <div class="tab-info">
-            <div class="tab-title">${tab.title}</div>
-            <div class="tab-url">${tab.url.url}</div>
-          </div>
-        </button>
-      `)}
-    </cr-action-menu>`}">
+    <contextual-tasks-sources-menu .attachedTabs="${this.attachedTabs}">
+    </contextual-tasks-sources-menu>`}">
   </cr-lazy-render-lit>
   <cr-lazy-render-lit id="menu" .template="${() => html`
     <cr-action-menu>
