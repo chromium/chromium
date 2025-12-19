@@ -13523,7 +13523,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"overscroll-effect-on-non-root-scrollers",
      flag_descriptions::kOverscrollEffectOnNonRootScrollersName,
      flag_descriptions::kOverscrollEffectOnNonRootScrollersDescription,
-     kOsMac | kOsAndroid,
+     kOsMac | kOsAndroid | kOsWin,
      FEATURE_VALUE_TYPE(features::kOverscrollEffectOnNonRootScrollers)},
 
 #if BUILDFLAG(IS_ANDROID)
