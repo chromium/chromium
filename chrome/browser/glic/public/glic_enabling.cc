@@ -174,7 +174,14 @@ std::optional<bool> GetLocaleEnablement(
   return std::ranges::any_of(enabled_locales, matches_locale);
 }
 
+bool g_bypass_enablement_checks_for_testing = false;
+
 }  // namespace
+
+// static
+void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
+  g_bypass_enablement_checks_for_testing = bypass;
+}
 
 std::string GlicGlobalEnabling::Delegate::GetCountryCode() {
   std::string country_code =
@@ -197,6 +204,10 @@ std::string GlicGlobalEnabling::Delegate::GetLocale() {
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
   ProfileEnablement result;
+
+  if (g_bypass_enablement_checks_for_testing) {
+    return result;
+  }
 
   if (!IsEnabledByFlags()) {
     result.feature_disabled = true;

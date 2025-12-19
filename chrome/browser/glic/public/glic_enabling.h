@@ -273,6 +273,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
   }
 
+  // Test-only method to bypass enablement checks.
+  static void SetBypassEnablementChecksForTesting(bool bypass);
+
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
   base::CallbackListSubscription RegisterAllowedChanged(
