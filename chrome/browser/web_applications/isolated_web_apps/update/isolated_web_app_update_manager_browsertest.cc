@@ -44,7 +44,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
@@ -243,13 +243,9 @@ class IsolatedWebAppUpdateManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    data_provider_.Update(
+    data_provider_->Update(
         [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
     AddInitialBundle();
-  }
-
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
   }
 
   void AddInitialBundle() {
@@ -263,7 +259,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
@@ -328,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   IwaVersion installed_version = app_isolation_data.version();
 
   // Clear the allowlist, so the app is not allowlisted
-  data_provider_.Update([&](auto& update) { update.SetManagedAllowlist({}); });
+  data_provider_->Update([&](auto& update) { update.SetManagedAllowlist({}); });
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
@@ -1312,10 +1308,6 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(
@@ -1334,13 +1326,13 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   web_package::SignedWebBundleId web_bundle_id_ = kWebBundleId1;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        Succeeds) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
@@ -1377,7 +1369,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
   // Key rotation should trigger a discovery in the update manager.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
   manifest_updated_observer.Wait();
@@ -1397,7 +1389,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        AppStopsOpeningOnUpdateFailure) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
@@ -1442,7 +1434,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and clear the reader cache.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 
@@ -1485,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        DoesntAffectRunningApps) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
@@ -1528,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and queue a cache clear request for this bundle reader.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 
@@ -1561,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        PolicyReprocessOnComponentUpdate) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   base::HistogramTester ht;
 
@@ -1600,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   waiter.BeginListening({app_id});
 
   // Key rotation should trigger a policy reprocess.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 

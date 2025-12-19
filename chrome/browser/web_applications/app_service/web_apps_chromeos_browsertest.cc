@@ -30,7 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
@@ -178,10 +178,6 @@ class WebAppsPreventCloseChromeOsBrowserTest
       const WebAppsPreventCloseChromeOsBrowserTest&) = delete;
   ~WebAppsPreventCloseChromeOsBrowserTest() override = default;
 
-  web_app::ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   void TearDownOnMainThread() override {
     // Clear policy values, otherwise we won't be able to gracefully close stop
     // browser test.
@@ -213,7 +209,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
       case AppType::kIsolatedWebApp:
         auto web_bundle_id = web_app::test::GetDefaultEd25519WebBundleId();
-        data_provider_.Update(
+        data_provider_->Update(
             [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
 
         iwa_test_update_server_.AddBundle(
@@ -263,7 +259,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
   std::optional<std::string> installed_app_url_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
 
-  web_app::FakeIwaRuntimeDataProvider data_provider_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {

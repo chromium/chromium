@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -175,7 +175,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
   }
 
   void SetSkipNotificationsAndManagedAllowlist() {
-    data_provider_.Update([&](auto& update) {
+    data_provider_->Update([&](auto& update) {
       for (const auto& skipping_app : skip_notification_apps_) {
         update.AddToSpecialPermissions(
             skipping_app.bundle_id,
@@ -185,10 +185,6 @@ class MultiCaptureUsageIndicatorBrowserTestBase
         update.AddToManagedAllowlist(installed_app.bundle_id);
       }
     });
-  }
-
-  web_app::ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
   }
 
   const web_app::WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
@@ -217,7 +213,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
   std::map<std::string, message_center::Notification> visible_notifications_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  web_app::FakeIwaRuntimeDataProvider data_provider_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 
  private:
   const std::vector<InstalledApp> installed_apps_;
@@ -349,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureUsageIndicatorDynamicAppBrowserTest,
                        Field(&message_center::NotifierId::id,
                              "multi-capture-login-privacy-indicators"))))));
 
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(kApp2.bundle_id); });
 
   InstallIwa(kApp2);

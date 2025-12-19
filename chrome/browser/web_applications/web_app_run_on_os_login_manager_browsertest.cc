@@ -31,7 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -629,7 +629,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
     SetUpFilesAndServer();
     run_on_os_login_handler_.ResetSkipRunOnOsLoginStartup();
 
-    data_provider_.Update([&](auto& update) {
+    data_provider_->Update([&](auto& update) {
       update.AddToManagedAllowlist(url_info_->web_bundle_id());
     });
   }
@@ -637,10 +637,6 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   void TearDownOnMainThread() override {
     run_on_os_login_handler_.TearDown();
     IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
-  }
-
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
   }
 
   void SetUpFilesAndServer() {
@@ -708,8 +704,8 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   std::unique_ptr<BundledIsolatedWebApp> bundle_304_;
   web_package::test::Ed25519KeyPair key_pair_ =
       test::GetDefaultEd25519KeyPair();
-  FakeIwaRuntimeDataProvider data_provider_;
   RunOnOsLoginTestHandlerMixin run_on_os_login_handler_{&mixin_host_, this};
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,

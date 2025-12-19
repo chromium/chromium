@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
@@ -112,10 +112,6 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   }
 
  protected:
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
     return GetParam().feature_flag;
   }
@@ -158,7 +154,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
         web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             web_bundle_id);
 
-    data_provider_.Update(
+    data_provider_->Update(
         [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
 
     web_app::WebAppTestInstallObserver observer(profile());
@@ -233,7 +229,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   policy::DevicePolicyCrosTestHelper policy_helper_;
   web_app::IsolatedWebAppTestUpdateServer
       isolated_web_app_iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,

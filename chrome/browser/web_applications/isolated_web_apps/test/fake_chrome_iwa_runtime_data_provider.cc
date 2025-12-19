@@ -177,16 +177,4 @@ FakeIwaRuntimeDataProvider::GetSkipMultiCaptureNotificationBundleIds() const {
   return bundle_ids;
 }
 
-FakeIwaRuntimeDataProviderInitializer::FakeIwaRuntimeDataProviderInitializer(
-    ChromeIwaRuntimeDataProvider& data_provider)
-    : data_provider_(data_provider) {}
-
-FakeIwaRuntimeDataProviderInitializer::
-    ~FakeIwaRuntimeDataProviderInitializer() = default;
-
-void FakeIwaRuntimeDataProviderInitializer::PreCreateThreads() {
-  resetter_ =
-      ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&*data_provider_);
-}
-
 }  // namespace web_app

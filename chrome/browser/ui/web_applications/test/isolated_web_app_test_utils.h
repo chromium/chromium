@@ -15,7 +15,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -57,12 +56,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   ~IsolatedWebAppBrowserTestHarness() override;
 
  protected:
-  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
-
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
       base::FilePath::StringViewType chrome_test_data_relative_root);
-
-  virtual ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider();
 
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);

@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -105,12 +105,8 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
                                    std::move(update_manifest_entries));
   }
 
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 
 #if !BUILDFLAG(IS_CHROMEOS)
  private:
@@ -120,7 +116,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
                        RetrieveWebAppSize) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
 
   const webapps::AppId app_id =

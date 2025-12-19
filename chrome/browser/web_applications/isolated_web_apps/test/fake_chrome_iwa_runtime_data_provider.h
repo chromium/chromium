@@ -10,8 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
-#include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -125,20 +123,6 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
   KeyRotations key_rotations_;
   SpecialPermissions special_permissions_;
   UserInstallAllowlist user_install_allowlist_;
-};
-
-class FakeIwaRuntimeDataProviderInitializer
-    : public ChromeBrowserMainExtraParts {
- public:
-  explicit FakeIwaRuntimeDataProviderInitializer(ChromeIwaRuntimeDataProvider&);
-  ~FakeIwaRuntimeDataProviderInitializer() override;
-
- protected:
-  void PreCreateThreads() override;
-
- private:
-  raw_ref<ChromeIwaRuntimeDataProvider> data_provider_;
-  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 }  // namespace web_app
