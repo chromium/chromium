@@ -1307,26 +1307,47 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile_->GetPath());
-    if (!entry) {
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfileIfExists(profile_);
+    if (!entry || !identity_manager) {
       std::move(callback).Run(nullptr);
       return;
     }
 
+    // ChromeOS doesn't support multi-profile, so `entry` would not be populated
+    // with the correct user information. However, all profile entries are
+    // populated from IdentityManager, which is supported on all platforms.
+    const auto account_info =
+        identity_manager->FindExtendedAccountInfoByGaiaId(entry->GetGAIAId());
+
     auto result = glic::mojom::UserProfileInfo::New();
+
+    result->display_name = account_info.GetFullName().value_or("");
+    result->email = base::UTF16ToUTF8(entry->GetUserName());
+    result->given_name = account_info.GetGivenName().value_or("");
+
+    policy::ManagementService* management_service =
+        policy::ManagementServiceFactory::GetForProfile(profile_);
+    result->is_managed =
+        management_service && management_service->IsAccountManaged();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // ChromeOS doesn't support profile, so local profile name and custom
+    // profile avatar are not supported. Instead, we will just use the user
+    // account avatar.
+    auto icon = account_info.GetAvatarImage();
+    if (icon.has_value()) {
+      result->avatar_icon = icon->AsBitmap();
+    }
+#else
+    result->local_profile_name =
+        base::UTF16ToUTF8(entry->GetLocalProfileName());
     // TODO(crbug.com/382794680): Determine the correct size.
     gfx::Image icon = entry->GetAvatarIcon(512);
     if (!icon.IsEmpty()) {
       result->avatar_icon = icon.AsBitmap();
     }
-    result->display_name = base::UTF16ToUTF8(entry->GetGAIAName());
-    result->email = base::UTF16ToUTF8(entry->GetUserName());
-    result->given_name = base::UTF16ToUTF8(entry->GetGAIAGivenName());
-    result->local_profile_name =
-        base::UTF16ToUTF8(entry->GetLocalProfileName());
-    policy::ManagementService* management_service =
-        policy::ManagementServiceFactory::GetForProfile(profile_);
-    result->is_managed =
-        management_service && management_service->IsAccountManaged();
+#endif  //  BUILDFLAG(IS_CHROMEOS)
     std::move(callback).Run(std::move(result));
   }
 
