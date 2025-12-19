@@ -212,7 +212,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  bool delay_presenetation_until_next_vsync =
+  bool delay_presentation_until_next_vsync =
       features::IsVSyncAlignedPresentEnabled() && data.is_handling_interaction;
 
   // The current frame has been added to
@@ -222,12 +222,12 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // the queue if there is already one before this.
   if (features::IsVSyncAlignedPresentEnabled() &&
       ca_layer_tree_coordinator_->NumPendingSwaps() > 1) {
-    delay_presenetation_until_next_vsync = true;
+    delay_presentation_until_next_vsync = true;
   }
 
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
-    if (delay_presenetation_until_next_vsync) {
+    if (delay_presentation_until_next_vsync) {
       // Delay CommitPresentedFrameToCA() until OnVSyncPresentation().
       return;
     }
