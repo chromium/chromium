@@ -195,8 +195,6 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
  protected:
   FakeAutofillCommands* autofill_commands_;
-  std::unique_ptr<web::WebState> web_state_;
-  raw_ptr<AutofillBottomSheetTabHelper> bottomsheet_tab_helper_;
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -204,6 +202,10 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestChromeAutofillClient> autofill_client_;
+
+ protected:
+  std::unique_ptr<web::WebState> web_state_;
+  raw_ptr<AutofillBottomSheetTabHelper> bottomsheet_tab_helper_;
 };
 
 // Test that save card bottomsheet is not shown for local save when flag is

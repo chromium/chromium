@@ -51,7 +51,7 @@ class SessionCertificatePolicyCache {
 
  private:
   // The WebState's BrowserState used for retrieving the CertificatePolicyCache.
-  raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 };
 
 }  // namespace web
