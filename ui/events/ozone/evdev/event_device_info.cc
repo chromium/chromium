@@ -609,55 +609,55 @@ void EventDeviceInfo::SetName(const std::string& name) {
 bool EventDeviceInfo::HasEventType(unsigned int type) const {
   if (type > EV_MAX)
     return false;
-  return EvdevBitIsSet(ev_bits_.data(), type);
+  return EvdevBitIsSet(ev_bits_, type);
 }
 
 bool EventDeviceInfo::HasKeyEvent(unsigned int code) const {
   if (code > KEY_MAX)
     return false;
-  return EvdevBitIsSet(key_bits_.data(), code);
+  return EvdevBitIsSet(key_bits_, code);
 }
 
 bool EventDeviceInfo::HasRelEvent(unsigned int code) const {
   if (code > REL_MAX)
     return false;
-  return EvdevBitIsSet(rel_bits_.data(), code);
+  return EvdevBitIsSet(rel_bits_, code);
 }
 
 bool EventDeviceInfo::HasAbsEvent(unsigned int code) const {
   if (code > ABS_MAX)
     return false;
-  return EvdevBitIsSet(abs_bits_.data(), code);
+  return EvdevBitIsSet(abs_bits_, code);
 }
 
 bool EventDeviceInfo::HasMscEvent(unsigned int code) const {
   if (code > MSC_MAX)
     return false;
-  return EvdevBitIsSet(msc_bits_.data(), code);
+  return EvdevBitIsSet(msc_bits_, code);
 }
 
 bool EventDeviceInfo::HasSwEvent(unsigned int code) const {
   if (code > SW_MAX)
     return false;
-  return EvdevBitIsSet(sw_bits_.data(), code);
+  return EvdevBitIsSet(sw_bits_, code);
 }
 
 bool EventDeviceInfo::HasLedEvent(unsigned int code) const {
   if (code > LED_MAX)
     return false;
-  return EvdevBitIsSet(led_bits_.data(), code);
+  return EvdevBitIsSet(led_bits_, code);
 }
 
 bool EventDeviceInfo::HasFfEvent(unsigned int code) const {
   if (code > FF_MAX)
     return false;
-  return EvdevBitIsSet(ff_bits_.data(), code);
+  return EvdevBitIsSet(ff_bits_, code);
 }
 
 bool EventDeviceInfo::HasProp(unsigned int code) const {
   if (code > INPUT_PROP_MAX)
     return false;
-  return EvdevBitIsSet(prop_bits_.data(), code);
+  return EvdevBitIsSet(prop_bits_, code);
 }
 
 bool EventDeviceInfo::SupportsHeatmap() const {

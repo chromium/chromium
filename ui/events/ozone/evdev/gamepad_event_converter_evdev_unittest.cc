@@ -280,7 +280,7 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadHasKeys) {
   const std::vector<uint64_t> key_bits = dev->GetGamepadKeyBits();
 
   // BTN_A should be supported.
-  EXPECT_TRUE(EvdevBitUint64IsSet(key_bits.data(), 305));
+  EXPECT_TRUE(EvdevBitUint64IsSet(key_bits, 305));
 }
 
 TEST_F(GamepadEventConverterEvdevTest, DescribeStateForLog) {

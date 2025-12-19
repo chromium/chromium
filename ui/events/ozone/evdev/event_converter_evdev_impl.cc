@@ -84,8 +84,8 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
   const auto key_bits = devinfo.GetKeyBits();
   key_bits_.resize(EVDEV_BITS_TO_INT64(KEY_CNT));
   for (int i = 0; i < KEY_CNT; i++) {
-    if (EvdevBitIsSet(key_bits.data(), i)) {
-      EvdevSetUint64Bit(key_bits_.data(), i);
+    if (EvdevBitIsSet(key_bits, i)) {
+      EvdevSetUint64Bit(key_bits_, i);
     }
   }
 

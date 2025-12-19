@@ -178,7 +178,7 @@ GestureInterpreterLibevdevCros::GestureInterpreterLibevdevCros(
       property_provider_(property_provider),
       dispatcher_(dispatcher),
       device_properties_(new GestureDeviceProperties) {
-  UNSAFE_TODO(memset(&prev_key_state_, 0, sizeof(prev_key_state_)));
+  std::ranges::fill(prev_key_state_, 0);
 }
 
 GestureInterpreterLibevdevCros::~GestureInterpreterLibevdevCros() {
@@ -246,7 +246,7 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   stime_t timestamp = StimeFromTimeval(&time);
 
   // If the device has keys on it, dispatch any presses/release.
-  DispatchChangedKeys(evdev->key_state_bitmask, timestamp);
+  UNSAFE_TODO(DispatchChangedKeys(evdev->key_state_bitmask, timestamp));
 
   HardwareState hwstate;
   UNSAFE_TODO(memset(&hwstate, 0, sizeof(hwstate)));
@@ -653,9 +653,9 @@ void GestureInterpreterLibevdevCros::SetReceivedValidMouseInputCallback(
 }
 
 void GestureInterpreterLibevdevCros::DispatchChangedKeys(
-    unsigned long* new_key_state,
+    base::span<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> new_key_state,
     stime_t timestamp) {
-  unsigned long key_state_diff[EVDEV_BITS_TO_LONGS(KEY_CNT)];
+  EvdevKeyState key_state_diff;
 
   // Clear any set modifiers so they do not generate downstream events.
   if (block_modifiers_) {
@@ -667,8 +667,8 @@ void GestureInterpreterLibevdevCros::DispatchChangedKeys(
   }
 
   // Find changed keys.
-  for (unsigned long i = 0; i < std::size(key_state_diff); ++i) {
-    UNSAFE_TODO(key_state_diff[i] = new_key_state[i] ^ prev_key_state_[i]);
+  for (unsigned long i = 0; i < key_state_diff.size(); ++i) {
+    key_state_diff[i] = new_key_state[i] ^ prev_key_state_[i];
   }
 
   // Dispatch events for changed keys.
@@ -700,14 +700,12 @@ void GestureInterpreterLibevdevCros::DispatchChangedKeys(
   }
 
   // Update internal key state.
-  for (unsigned long i = 0; i < EVDEV_BITS_TO_LONGS(KEY_CNT); ++i) {
-    UNSAFE_TODO(prev_key_state_[i] = new_key_state[i]);
-  }
+  base::span(prev_key_state_).copy_from_nonoverlapping(new_key_state);
 }
 
 void GestureInterpreterLibevdevCros::ReleaseKeys(stime_t timestamp) {
-  unsigned long new_key_state[EVDEV_BITS_TO_LONGS(KEY_CNT)];
-  UNSAFE_TODO(memset(&new_key_state, 0, sizeof(new_key_state)));
+  EvdevKeyState new_key_state;
+  std::ranges::fill(new_key_state, 0);
 
   DispatchChangedKeys(new_key_state, timestamp);
 }
@@ -746,10 +744,8 @@ void GestureInterpreterLibevdevCros::SetBlockModifiers(bool block_modifiers) {
   // update it in the normal code path to remove pressed modifier keys which
   // will in turn generate the release events.
   if (should_release_held_modifiers) {
-    unsigned long copy_key_state[EVDEV_BITS_TO_LONGS(KEY_CNT)];
-    static_assert(sizeof(copy_key_state) == sizeof(prev_key_state_));
-    UNSAFE_TODO(
-        memcpy(copy_key_state, prev_key_state_, sizeof(prev_key_state_)));
+    EvdevKeyState copy_key_state;
+    base::span(copy_key_state).copy_from_nonoverlapping(prev_key_state_);
     DispatchChangedKeys(copy_key_state,
                         ui::EventTimeStampToSeconds(ui::EventTimeForNow()));
   }
