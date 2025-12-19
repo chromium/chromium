@@ -59,7 +59,7 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
     AutofillClient* autofill_client)
     : autofill_client_(autofill_client),
       payments_data_manager_(CHECK_DEREF(payments_data_manager)),
-      payments_network_interface_(payments_network_interface) {
+      payments_network_interface_(CHECK_DEREF(payments_network_interface)) {
   // `autofill_client_` does not exist on Clank settings page where this flow
   // can also be triggered.
   if (autofill_client_ && autofill_client_->GetStrikeDatabase()) {

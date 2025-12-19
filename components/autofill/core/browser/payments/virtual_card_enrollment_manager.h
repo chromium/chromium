@@ -386,7 +386,7 @@ class VirtualCardEnrollmentManager {
 
   // The associated `payments_network_interface_` that is used for all requests
   // to the server.
-  const raw_ptr<payments::MultipleRequestPaymentsNetworkInterface>
+  const raw_ref<payments::MultipleRequestPaymentsNetworkInterface>
       payments_network_interface_;
 
   // The database that is used to count instrument_id-keyed strikes to suppress

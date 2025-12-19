@@ -97,8 +97,7 @@ void CreditCardAccessManagerTestBase::SetUp() {
           autofill_client().GetURLLoaderFactory(),
           autofill_client().GetIdentityManager(), &personal_data()));
   payments_autofill_client().set_multiple_request_payments_network_interface(
-      std::make_unique<
-          autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
+      std::make_unique<payments::MockMultipleRequestPaymentsNetworkInterface>(
           autofill_client().GetURLLoaderFactory(),
           *autofill_client().GetIdentityManager()));
   autofill_client().set_test_strike_database(

@@ -97,6 +97,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -785,6 +786,10 @@ class MockAutofillClient : public TestAutofillClient {
           std::make_unique<payments::TestPaymentsNetworkInterface>(
               GetURLLoaderFactory(), GetIdentityManager(),
               &GetPersonalDataManager()));
+      x->set_multiple_request_payments_network_interface(
+          std::make_unique<
+              payments::MockMultipleRequestPaymentsNetworkInterface>(
+              GetURLLoaderFactory(), *GetIdentityManager()));
       return x;
     };
 

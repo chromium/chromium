@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -537,11 +538,14 @@ class FormDataImporterTest : public testing::Test {
     test_api(address_data_manager()).set_auto_accept_address_imports(true);
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
 
+    payments_client().set_multiple_request_payments_network_interface(
+        std::make_unique<payments::MockMultipleRequestPaymentsNetworkInterface>(
+            client().GetURLLoaderFactory(), *client().GetIdentityManager()));
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
             &payments_data_manager(),
             static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-                nullptr),
+                payments_client().GetMultipleRequestPaymentsNetworkInterface()),
             &client());
     payments_client().set_virtual_card_enrollment_manager(
         std::move(virtual_card_enrollment_manager));

@@ -2666,9 +2666,10 @@ TEST_F(CreditCardAccessManagerTest, InvokeVirtualCardEnrollmentPreflightCall) {
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          autofill_client()
-              .GetPaymentsAutofillClient()
-              ->GetMultipleRequestPaymentsNetworkInterface(),
+          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+              autofill_client()
+                  .GetPaymentsAutofillClient()
+                  ->GetMultipleRequestPaymentsNetworkInterface()),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
@@ -2693,9 +2694,10 @@ TEST_F(CreditCardAccessManagerTest,
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          autofill_client()
-              .GetPaymentsAutofillClient()
-              ->GetMultipleRequestPaymentsNetworkInterface(),
+          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+              autofill_client()
+                  .GetPaymentsAutofillClient()
+                  ->GetMultipleRequestPaymentsNetworkInterface()),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
