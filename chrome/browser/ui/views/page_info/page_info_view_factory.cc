@@ -456,10 +456,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
                                 : &vector_icons::kRouterIcon;
       break;
-    // TODO(crbug.com/465491626): use finalized desktop icon
     case ContentSettingsType::LOOPBACK_NETWORK:
-      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
-                                : &vector_icons::kRouterIcon;
+      icon = show_blocked_badge ? &vector_icons::kDesktopAccessDisabledIcon
+                                : &vector_icons::kDesktopWindowsIcon;
       break;
     default:
       break;

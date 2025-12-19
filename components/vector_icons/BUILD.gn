@@ -77,6 +77,8 @@ if (current_toolchain == default_toolchain) {
       "database.icon",
       "database_off.icon",
       "description.icon",
+      "desktop_access_disabled.icon",
+      "desktop_windows.icon",
       "devices.icon",
       "devices_off.icon",
       "directions_car.icon",

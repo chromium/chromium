@@ -106,11 +106,11 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kKeyboardLockIcon;
     case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadChromeRefreshIcon;
-    // TODO(crbug.com/465491626): fix icon for Loopback Network
     case RequestType::kLocalNetwork:
     case RequestType::kLocalNetworkAccess:
-    case RequestType::kLoopbackNetwork:
       return vector_icons::kRouterIcon;
+    case RequestType::kLoopbackNetwork:
+      return vector_icons::kDesktopWindowsIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicChromeRefreshIcon;
     case RequestType::kMidiSysex:
@@ -171,11 +171,11 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kHandGestureOffIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
-    // TODO(crbug.com/465491626): fix icon for Loopback Network
     case RequestType::kLocalNetwork:
     case RequestType::kLocalNetworkAccess:
-    case RequestType::kLoopbackNetwork:
       return vector_icons::kRouterOffIcon;
+    case RequestType::kLoopbackNetwork:
+      return vector_icons::kDesktopAccessDisabledIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicOffChromeRefreshIcon;
     case RequestType::kMidiSysex:

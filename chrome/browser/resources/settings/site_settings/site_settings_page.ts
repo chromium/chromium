@@ -277,8 +277,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_LOOPBACK_NETWORK,
       id: Id.LOOPBACK_NETWORK,
       label: 'siteSettingsLoopbackNetwork',
-      // TODO(crbug.com/465491626): use finalized desktop icon.
-      icon: 'settings20:router',
+      icon: 'settings20:desktop-windows',
       enabledLabel: 'siteSettingsLoopbackNetworkAsk',
       disabledLabel: 'siteSettingsLoopbackNetworkBlock',
       // This is shown when we've got LNA enabled with split permissions.
