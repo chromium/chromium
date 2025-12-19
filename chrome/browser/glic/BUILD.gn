@@ -272,6 +272,17 @@ source_set("impl") {
       "widget/glic_panel_hotkey_delegate.h",
       "widget/local_hotkey_manager.cc",
     ]
+  } else {  # is_android
+    sources += [
+      "widget/glic_floating_ui_android.cc",
+      "widget/glic_floating_ui_android.h",
+      "widget/glic_inactive_floating_ui_android.cc",
+      "widget/glic_inactive_floating_ui_android.h",
+      "widget/glic_inactive_side_panel_ui_android.cc",
+      "widget/glic_inactive_side_panel_ui_android.h",
+      "widget/glic_side_panel_ui_android.cc",
+      "widget/glic_side_panel_ui_android.h",
+    ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [

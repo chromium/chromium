@@ -231,7 +231,9 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Test support.
   void CloseAllEmbeddersForTesting();
+#if !BUILDFLAG(IS_ANDROID)
   views::View* GetActiveEmbedderGlicViewForTesting();
+#endif
   std::string DescribeForTesting();
 
   // ActorTaskDelegate:

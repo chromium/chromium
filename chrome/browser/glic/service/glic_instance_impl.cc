@@ -29,9 +29,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
-#include "chrome/browser/glic/widget/glic_floating_ui.h"
-#include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
-#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -49,6 +46,17 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/widget/glic_floating_ui_android.h"
+#include "chrome/browser/glic/widget/glic_inactive_floating_ui_android.h"
+#include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
+#include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
+#else
+#include "chrome/browser/glic/widget/glic_floating_ui.h"
+#include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
+#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
+#endif
 
 namespace glic {
 
@@ -1146,6 +1154,7 @@ void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   auto* embedder = GetActiveEmbedder();
   if (!embedder) {
@@ -1153,6 +1162,7 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   }
   return embedder->GetView().get();
 }
+#endif
 
 void GlicInstanceImpl::OnTabAddedToTask(
     actor::TaskId task_id,
