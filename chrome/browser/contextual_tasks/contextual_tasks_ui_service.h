@@ -137,7 +137,7 @@ class ContextualTasksUiService : public KeyedService {
   bool IsContextualTasksUrl(const GURL& url);
 
   // Returns whether the provided URL is for the search results page.
-  bool IsSearchResultsPage(const GURL& url);
+  bool IsValidSearchResultsPage(const GURL& url);
 
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.

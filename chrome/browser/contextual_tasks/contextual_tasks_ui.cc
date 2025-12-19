@@ -690,7 +690,7 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
 
 void ContextualTasksUI::TransferNavigationToEmbeddedPage(
     content::OpenURLParams params) {
-  bool is_allowed_url = ui_service_->IsSearchResultsPage(params.url) ||
+  bool is_allowed_url = ui_service_->IsValidSearchResultsPage(params.url) ||
                         ui_service_->IsAiUrl(params.url);
   if (!embedded_web_contents_ || !is_allowed_url) {
     return;
