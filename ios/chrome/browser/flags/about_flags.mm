@@ -99,7 +99,7 @@
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/public/features.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"

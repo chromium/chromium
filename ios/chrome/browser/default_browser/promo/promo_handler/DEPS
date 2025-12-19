@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/promos_manager/coordinator",
+  "+ios/chrome/browser/promos_manager/model",
+]
