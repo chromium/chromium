@@ -1311,8 +1311,16 @@ IN_PROC_BROWSER_TEST_P(
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
+// TODO(crbug.com/470163229): Disabled due to flakiness.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
+  DISABLED_ClosesBubbleOnNavigationToPasswordDetailsSubpage
+#else
+#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
+  ClosesBubbleOnNavigationToPasswordDetailsSubpage
+#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
+                       MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
   base::HistogramTester histogram_tester;
 
   SetupManagingPasswords();
