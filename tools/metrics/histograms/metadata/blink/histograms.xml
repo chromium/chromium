@@ -4430,19 +4430,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PermissionElement.UserInteractionAccepted"
-    enum="Boolean" expires_after="2025-08-24">
+    enum="Boolean" expires_after="2026-04-26">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether a user interaction (e.g., user click on the permission
     element) is accepted. This metric is emitted once for every user interaction
     that has been handled.
+
+    Warning: this histogram was expired from 2025-08-24 to M145; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
     enum="PermissionElementUserInteractionDeniedReason"
-    expires_after="2025-12-28">
+    expires_after="2026-04-26">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -4454,7 +4457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.PermissionElementIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-04-26">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
