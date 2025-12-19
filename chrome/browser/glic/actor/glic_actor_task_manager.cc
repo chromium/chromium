@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -38,10 +39,10 @@ BASE_FEATURE(kGlicReloadAfterPerformActionsCrash,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-GlicActorTaskManager::GlicActorTaskManager(
-    Profile* profile,
-    actor::ActorKeyedService* actor_keyed_service)
-    : profile_(profile), actor_keyed_service_(actor_keyed_service) {
+GlicActorTaskManager::GlicActorTaskManager(Profile* profile)
+    : profile_(profile),
+      actor_keyed_service_(
+          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)) {
   CHECK(profile_);
   CHECK(actor_keyed_service_);
 }

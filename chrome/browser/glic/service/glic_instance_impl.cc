@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -29,11 +28,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
@@ -218,9 +214,7 @@ GlicInstanceImpl::GlicInstanceImpl(
               &sharing_manager_,
               this,
               contextual_cueing_service)),
-      actor_task_manager_(std::make_unique<GlicActorTaskManager>(
-          profile,
-          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile))),
+      actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
       last_active_time_(base::TimeTicks::Now()) {
   browser_list_observation_.Observe(BrowserList::GetInstance());
   host_.SetDelegate(&empty_embedder_delegate_);

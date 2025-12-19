@@ -3,19 +3,30 @@
 # found in the LICENSE file.
 
 source_set("actor") {
-  sources = [
-    "glic_actor_task_manager.cc",
-    "glic_actor_task_manager.h",
-  ]
+  sources = [ "glic_actor_task_manager.h" ]
+  if (is_android) {
+    sources += [ "glic_actor_task_manager_android.cc" ]
+  } else {
+    sources += [ "glic_actor_task_manager.cc" ]
+  }
+
   deps = [
     "//base",
-    "//chrome/browser/actor",
-    "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/common:actor_webui_mojom",
     "//components/tabs:public",
     "//mojo/public/mojom/base:protobuf_support",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/actor/ui",
+    ]
+  } else {  #is_android
+    deps += [ "//chrome/browser/glic:actor_types_for_migration" ]
+  }
+
   public_deps = [ "//chrome/browser/profiles:profile" ]
 }

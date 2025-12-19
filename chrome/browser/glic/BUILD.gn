@@ -290,6 +290,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/feedback",
+    "//chrome/browser/glic/actor",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/picture_in_picture",
@@ -330,7 +331,6 @@ source_set("impl") {
       "//chrome/browser/actor/ui",
       "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing",
-      "//chrome/browser/glic/actor",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/media",
@@ -357,6 +357,8 @@ source_set("impl") {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
     ]
+  } else {  # is_android
+    deps += [ ":actor_types_for_migration" ]
   }
 
   if (is_mac) {
@@ -610,5 +612,22 @@ if (!is_android) {
   group("internal_tests") {
     testonly = true
     deps = [ "e2e_test:glic_internal_e2e_interactive_ui_tests" ]
+  }
+}
+
+if (is_android) {
+  source_set("actor_types_for_migration") {
+    sources = [
+      "//chrome/browser/actor/actor_task_delegate.h",
+      "//chrome/common/actor/task_id.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/common:actor_webui_mojom",
+      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+      "//components/tabs:public",
+      "//ui/gfx",
+      "//url",
+    ]
   }
 }
