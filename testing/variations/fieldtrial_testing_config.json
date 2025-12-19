@@ -4544,6 +4544,21 @@
             ]
         }
     ],
+    "CADisplayLinkInBrowser": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CADisplayLinkInBrowser"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTAdaptiveButton": [
         {
             "platforms": [
