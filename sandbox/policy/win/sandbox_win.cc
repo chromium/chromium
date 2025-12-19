@@ -64,6 +64,7 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace sandbox {
 namespace policy {
@@ -830,14 +831,14 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
 
   void BeforeTargetProcessCreateOnCreationThread(
       const void* trace_id) override {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "TargetProcess::Create",
-                                      trace_id);
+    TRACE_EVENT_BEGIN("startup", "TargetProcess::Create",
+                      perfetto::Track::FromPointer(trace_id));
   }
 
   void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                 DWORD process_id) override {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
-                                    trace_id, "pid", process_id);
+    TRACE_EVENT_END("startup", perfetto::Track::FromPointer(trace_id), "pid",
+                    process_id);
   }
 
   void OnCreateThreadActionCreateFailure(DWORD last_error) override {
@@ -969,8 +970,8 @@ ResultCode SandboxWin::StartSandboxedProcess(
   timer.OnPolicyGenerated();
 
   int64_t trace_event_id = timer.GetStartTimeInMicroseconds();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "startup", "StartProcessWithAccess::LAUNCHPROCESS", trace_event_id);
+  TRACE_EVENT_BEGIN("startup", "StartProcessWithAccess::LAUNCHPROCESS",
+                    perfetto::Track(trace_event_id));
 
   g_broker_services->SpawnTargetAsync(
       cmd_line.GetProgram().value(), cmd_line.GetCommandLineString(),
@@ -989,8 +990,7 @@ void SandboxWin::FinishStartSandboxedProcess(
     DWORD last_error,
     ResultCode result) {
   int64_t trace_event_id = timer.GetStartTimeInMicroseconds();
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "startup", "StartProcessWithAccess::LAUNCHPROCESS", trace_event_id);
+  TRACE_EVENT_END("startup", perfetto::Track(trace_event_id));
   if (SBOX_ALL_OK != result) {
     base::UmaHistogramSparse("Process.Sandbox.Launch.Error", last_error);
     if (result == SBOX_ERROR_GENERIC) {

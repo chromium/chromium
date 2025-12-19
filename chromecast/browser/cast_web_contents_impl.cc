@@ -51,6 +51,7 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -1040,16 +1041,16 @@ void CastWebContentsImpl::MediaStoppedPlaying(
 
 void CastWebContentsImpl::TracePageLoadBegin(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
-      "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_BEGIN("browser,navigation", "CastWebContentsImpl Launch",
+                    perfetto::Track::FromPointer(this), "URL",
+                    url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::TracePageLoadEnd(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
-      "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_END("browser,navigation", /*"CastWebContentsImpl Launch"*/
+                  perfetto::Track::FromPointer(this), "URL",
+                  url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::DisableDebugging() {

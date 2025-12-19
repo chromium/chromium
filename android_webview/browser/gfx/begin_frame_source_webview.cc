@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/RootBeginFrameSourceWebView_jni.h"
@@ -87,11 +88,13 @@ void BeginFrameSourceWebView::ObserveBeginFrameSource(
 
 void BeginFrameSourceWebView::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (needs_begin_frames) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
+    TRACE_EVENT_BEGIN("cc,benchmark", "NeedsBeginFrames",
+                      perfetto::Track::FromPointer(this));
     if (observed_begin_frame_source_)
       observed_begin_frame_source_->AddObserver(parent_observer_.get());
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+    TRACE_EVENT_END("cc,benchmark", /*"NeedsBeginFrames"*/
+                    perfetto::Track::FromPointer(this));
     if (observed_begin_frame_source_)
       observed_begin_frame_source_->RemoveObserver(parent_observer_.get());
   }

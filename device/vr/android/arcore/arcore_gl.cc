@@ -36,6 +36,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/transform_utils.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -1092,26 +1093,20 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   static uint32_t frame_id_for_tracing = 0;
   uint32_t trace_id = ++frame_id_for_tracing;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Animating",
-                                                   trace_id, frame->time_pose,
-                                                   "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "xr", "ArCoreGl::Animating", trace_id, frame->time_js_submit, "frame",
-      frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Animating", perfetto::Track(trace_id),
+                    frame->time_pose, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Animating"*/ perfetto::Track(trace_id),
+                  frame->time_js_submit, "frame", frame->index);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "xr", "ArCoreGl::Processing", trace_id, frame->time_js_submit, "frame",
-      frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Processing",
-                                                 trace_id, frame->time_copied,
-                                                 "frame", frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Processing", perfetto::Track(trace_id),
+                    frame->time_js_submit, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Processing"*/ perfetto::Track(trace_id),
+                  frame->time_copied, "frame", frame->index);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
-                                                   trace_id, frame->time_copied,
-                                                   "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
-                                                 trace_id, completion_time,
-                                                 "frame", frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Rendering", perfetto::Track(trace_id),
+                    frame->time_copied, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Rendering"*/ perfetto::Track(trace_id),
+                  completion_time, "frame", frame->index);
 }
 
 void ArCoreGl::SubmitFrameMissing(int16_t frame_index,

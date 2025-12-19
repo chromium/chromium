@@ -38,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/size.h"
@@ -1773,13 +1774,15 @@ void OpenXrApiWrapper::SetXrSessionState(XrSessionState new_state) {
            << " to: " << new_state_name;
 
   if (session_state_ != XR_SESSION_STATE_UNKNOWN) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("xr", "XRSessionState", this, "state",
-                                    old_state_name);
+    TRACE_EVENT_END("xr", /*"XRSessionState"*/
+                    perfetto::Track::FromPointer(this), "state",
+                    old_state_name);
   }
 
   if (new_state != XR_SESSION_STATE_UNKNOWN) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("xr", "XRSessionState", this, "state",
-                                      new_state_name);
+    TRACE_EVENT_BEGIN("xr", "XRSessionState",
+                      perfetto::Track::FromPointer(this), "state",
+                      new_state_name);
   }
 
   session_state_ = new_state;

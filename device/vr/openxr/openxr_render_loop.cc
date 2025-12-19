@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -130,9 +131,8 @@ void OpenXrRenderLoop::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
   if (delayed_get_frame_data_id_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "xr", "DelayedGetFrameData",
-        TRACE_ID_LOCAL(*delayed_get_frame_data_id_));
+    TRACE_EVENT_END("xr", /*"DelayedGetFrameData"*/
+                    perfetto::Track(*delayed_get_frame_data_id_));
     delayed_get_frame_data_id_.reset();
   }
   TRACE_EVENT0("xr", "OpenXrRenderLoop::GetFrameData");
@@ -169,8 +169,8 @@ void OpenXrRenderLoop::GetFrameData(
     }
     // next_frame_id_ is only changed once we successfully generate a frame.
     delayed_get_frame_data_id_ = next_frame_id_;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "DelayedGetFrameData",
-                                      TRACE_ID_LOCAL(next_frame_id_));
+    TRACE_EVENT_BEGIN("xr", "DelayedGetFrameData",
+                      perfetto::Track(next_frame_id_));
     delayed_get_frame_data_callback_ =
         base::BindOnce(&OpenXrRenderLoop::GetFrameData, base::Unretained(this),
                        std::move(options), std::move(callback));
@@ -901,8 +901,8 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
     const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "OpenXrRenderLoop::WaitSyncToken",
-                                    TRACE_ID_LOCAL(frame_index));
+  TRACE_EVENT_BEGIN("xr", "OpenXrRenderLoop::WaitSyncToken",
+                    perfetto::Track(frame_index));
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -918,8 +918,8 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     std::vector<LayerId> updated_layers,
     GLuint id,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "OpenXrRenderLoop::WaitSyncToken",
-                                  TRACE_ID_LOCAL(frame_index));
+  TRACE_EVENT_END("xr", /*"OpenXrRenderLoop::WaitSyncToken"*/
+                  perfetto::Track(frame_index));
   // openxr_ and context_provider can be nullptr if we receive
   // OnWebXrTokenSignaled after the session has ended. Ensure we don't crash in
   // that case.

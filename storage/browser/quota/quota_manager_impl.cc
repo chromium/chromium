@@ -71,6 +71,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -648,9 +649,10 @@ class QuotaManagerImpl::BucketDataDeleter {
             {"storage_key: ", bucket_.storage_key.Serialize(),
              ", is_default: ", bucket_.is_default ? "true" : "false",
              ", id: ", base::NumberToString(bucket_.id.value())});
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-            "browsing_data", "QuotaManagerImpl::BucketDataDeleter",
-            ++tracing_id, "client_type", client_type, "bucket", bucket_params);
+        TRACE_EVENT_BEGIN("browsing_data",
+                          "QuotaManagerImpl::BucketDataDeleter",
+                          perfetto::Track(++tracing_id), "client_type",
+                          client_type, "bucket", bucket_params);
         client->DeleteBucketData(
             bucket_, base::BindOnce(&BucketDataDeleter::DidDeleteBucketData,
                                     weak_factory_.GetWeakPtr(), tracing_id));
@@ -675,8 +677,9 @@ class QuotaManagerImpl::BucketDataDeleter {
                            blink::mojom::QuotaStatusCode status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GT(remaining_clients_, 0u);
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "browsing_data", "QuotaManagerImpl::BucketDataDeleter", tracing_id);
+    TRACE_EVENT_END("browsing_data",
+                    /*"QuotaManagerImpl::BucketDataDeleter"*/
+                    perfetto::Track(tracing_id));
 
     if (status != blink::mojom::QuotaStatusCode::kOk) {
       ++error_count_;

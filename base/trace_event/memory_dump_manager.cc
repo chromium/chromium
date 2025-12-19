@@ -321,9 +321,9 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                           ProcessMemoryDumpCallback callback) {
   char guid_str[20];
   base::SpanPrintf(guid_str, "0x%" PRIx64, args.dump_guid);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTraceCategory, "ProcessMemoryDump",
-                                    TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
-                                    TRACE_STR_COPY(guid_str));
+  TRACE_EVENT_BEGIN(kTraceCategory, "ProcessMemoryDump",
+                    perfetto::Track(args.dump_guid), "dump_guid",
+                    TRACE_STR_COPY(guid_str));
 
   scoped_refptr<ProcessMemoryDumpAsyncState> pmd_async_state;
   {
@@ -523,8 +523,8 @@ void MemoryDumpManager::FinishAsyncProcessDump(
              std::move(pmd_async_state->process_memory_dump));
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(kTraceCategory, "ProcessMemoryDump",
-                                  TRACE_ID_LOCAL(dump_guid));
+  TRACE_EVENT_END(kTraceCategory, /* ProcessMemoryDump */
+                  perfetto::Track(dump_guid));
 }
 
 void MemoryDumpManager::SetupForTracing(
