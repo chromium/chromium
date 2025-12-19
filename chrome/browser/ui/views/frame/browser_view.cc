@@ -205,6 +205,7 @@
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
@@ -1413,6 +1414,10 @@ void BrowserView::OnVerticalTabStripStateChanged(
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
+  if (InitialWebUIManager::From(browser())->ShouldDeferShow()) {
+    return;
+  }
+
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The Browser associated with this browser window must become the active
   // browser at the time |Show()| is called. This is the natural behavior under

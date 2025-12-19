@@ -115,6 +115,7 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
@@ -644,6 +645,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             extension_keybinding_delegate_.get());
   }
 
+  initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
+
   // Initialize post-window dependent embedder features last.
   embedder_browser_window_features_->InitPostWindowConstruction(browser);
 }
@@ -845,6 +848,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
+  initial_web_ui_manager_.reset();
   tab_search_toolbar_button_controller_.reset();
   profile_menu_coordinator_.reset();
   toast_service_.reset();

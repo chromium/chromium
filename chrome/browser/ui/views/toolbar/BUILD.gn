@@ -44,6 +44,7 @@ source_set("toolbar") {
     "//base",
     "//build:buildflag_header_h",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/page_action:icon_type",
