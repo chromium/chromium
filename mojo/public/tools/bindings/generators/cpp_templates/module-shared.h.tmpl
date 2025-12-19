@@ -42,7 +42,7 @@
 #include "mojo/public/cpp/bindings/lib/native_struct_serialization.h"
 {%- endif %}
 
-#include "{{module.path}}-data-view.h"
+#include "{{module.path}}-data-view.h"  // IWYU pragma: export
 
 
 {%- for send_validation_module in send_validation_modules %}
