@@ -875,9 +875,21 @@ void PrivacySandboxServiceImpl::SetFledgeJoiningAllowed(
   }
 }
 
-void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram(
-    FirstPartySetsState state) {
-  base::UmaHistogramEnumeration("Settings.FirstPartySets.State", state);
+void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram() {
+  auto rws_status = FirstPartySetsState::kFpsNotRelevant;
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
+    rws_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
+                     ? FirstPartySetsState::kFpsEnabled
+                     : FirstPartySetsState::kFpsDisabled;
+  }
+  base::UmaHistogramEnumeration("Settings.FirstPartySets.State", rws_status);
+}
+
+void PrivacySandboxServiceImpl::RecordTrackingProtectionStateHistogram() {
+  base::UmaHistogramBoolean(
+      "Settings.TrackingProtection.Enabled",
+      pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
 }
 
 void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
@@ -1060,16 +1072,8 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   if (!IsRegularProfile(profile_type_)) {
     return;
   }
-
-  auto rws_status = FirstPartySetsState::kFpsNotRelevant;
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
-    rws_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
-                     ? FirstPartySetsState::kFpsEnabled
-                     : FirstPartySetsState::kFpsDisabled;
-  }
-  RecordFirstPartySetsStateHistogram(rws_status);
-
+  RecordFirstPartySetsStateHistogram();
+  RecordTrackingProtectionStateHistogram();
   RecordPrivacySandbox4StartupMetrics();
 }
 

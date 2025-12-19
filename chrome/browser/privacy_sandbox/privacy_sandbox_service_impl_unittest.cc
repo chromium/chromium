@@ -138,6 +138,8 @@ using privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::TestState;
 
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
+const char kTrackingProtectionStateHistogram[] =
+    "Settings.TrackingProtection.Enabled";
 const char kDefaultProfileUsername[] = "user@gmail.com";
 const char kTestEmail[] = "test@test.com";
 
@@ -1312,6 +1314,23 @@ TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
       kFirstPartySetsStateHistogram,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
 }
+
+class TrackingProtectionHistogramTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(TrackingProtectionHistogramTest,
+                         TrackingProtectionHistogramTest,
+                         testing::Bool());
+
+TEST_P(TrackingProtectionHistogramTest, HistogramReflectsPref) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, GetParam());
+  CreateService();
+  histogram_tester.ExpectUniqueSample(kTrackingProtectionStateHistogram,
+                                      GetParam(), 1);
+}
+
 TEST_F(PrivacySandboxServiceTest,
        GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhen3pcAllowed) {
   GURL associate1_gurl("https://associate1.test");

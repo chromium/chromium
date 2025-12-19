@@ -1695,17 +1695,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackingProtection.BlockAllThirdParty" enum="Boolean"
-    expires_after="2026-05-03">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the state of the pref that represents whether the user has chosen to
-    block all third-party cookies on the Tracking Protection settings page.
-    Logged on startup.
-  </summary>
-</histogram>
-
 <histogram name="Settings.TrackingProtection.Enabled" enum="BooleanEnabled"
     expires_after="2026-05-03">
   <owner>fmacintosh@google.com</owner>

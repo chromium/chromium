@@ -105,10 +105,7 @@ if (!is_android) {
   source_set("settings_browser_test") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "privacy_sandbox_settings_browsertest.cc",
-      "tracking_protection_settings_browsertest.cc",
-    ]
+    sources = [ "privacy_sandbox_settings_browsertest.cc" ]
     deps = [
       "//base/test:test_support",
       "//chrome/browser/browsing_data:constants",

@@ -46,18 +46,6 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (profiles::IsRegularUserProfile(profile)) {
-    if (profile->GetPrefs()->GetBoolean(
-            prefs::kTrackingProtection3pcdEnabled)) {
-      base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", true);
-      base::UmaHistogramBoolean(
-          "Settings.TrackingProtection.BlockAllThirdParty",
-          profile->GetPrefs()->GetBoolean(prefs::kBlockAll3pcToggleEnabled));
-    } else {
-      base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", false);
-    }
-  }
-
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
       profile->IsIncognitoProfile());

@@ -282,7 +282,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   };
 
   // Helper function to log first party sets state.
-  void RecordFirstPartySetsStateHistogram(FirstPartySetsState state);
+  void RecordFirstPartySetsStateHistogram();
+
+  // Helper function to log tracking protection state.
+  void RecordTrackingProtectionStateHistogram();
 
   // Logs the state of the privacy sandbox and cookie settings. Called once per
   // profile startup.
