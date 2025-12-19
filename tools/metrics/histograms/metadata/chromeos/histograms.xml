@@ -4740,7 +4740,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.CableSpeed" enum="CableSpeedMetric"
-    expires_after="2026-05-10">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4763,7 +4763,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.ModeEntry" enum="ModeEntryMetric"
-    expires_after="2026-01-01">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4774,7 +4774,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PartnerLocation" enum="PartnerLocationMetric"
-    expires_after="2026-01-01">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4788,7 +4788,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PartnerType" enum="PartnerTypeMetric"
-    expires_after="2026-05-10">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4799,7 +4799,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.PowerSourceLocation"
-    enum="PowerSourceLocationMetric" expires_after="2026-01-01">
+    enum="PowerSourceLocationMetric" expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4813,7 +4813,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TypeC.WrongConfiguration"
-    enum="WrongConfigurationMetric" expires_after="2026-05-10">
+    enum="WrongConfigurationMetric" expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4827,7 +4827,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.DeviceAttached.{Status}.{USBDeviceClass}"
-    enum="ChromeOSUsbEventTiming" expires_after="2026-04-19">
+    enum="ChromeOSUsbEventTiming" expires_after="2027-01-01">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
@@ -4866,7 +4866,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.DeviceError" enum="ChromeOSUsbDeviceError"
-    expires_after="2026-01-01">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4877,7 +4877,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
-    enum="ChromeOSUsbEventTiming" expires_after="2026-01-01">
+    enum="ChromeOSUsbEventTiming" expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>allenwebb@chromium.org</owner>
   <owner>chromeos-usb@google.com</owner>
@@ -4920,7 +4920,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
-    enum="ChromeOSUsbDeviceClass" expires_after="2026-05-10">
+    enum="ChromeOSUsbDeviceClass" expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4935,7 +4935,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
-    enum="ChromeOSUsbDeviceSpeed" expires_after="2026-05-10">
+    enum="ChromeOSUsbDeviceSpeed" expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4950,7 +4950,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.UnboundInterface" enum="ChromeOSUsbDeviceClass"
-    expires_after="2026-05-10">
+    expires_after="2027-01-01">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
