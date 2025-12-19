@@ -27,7 +27,7 @@ class TestWebLocationBar final : public WebLocationBar {
   LocationBarModel* GetLocationBarModel() override;
 
  private:
-  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
+  raw_ptr<web::WebState> web_state_;
   raw_ptr<LocationBarModel> location_bar_model_;
 };
 
