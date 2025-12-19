@@ -156,7 +156,7 @@ BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
 // This is a kill switch for pausing microtask while the page is in the BFCache.
 // Remove by m148 if things go well.
 BASE_FEATURE(kBackForwardCachePauseMicrotasks,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable background resource fetch in Blink. See https://crbug.com/1379780 for
 // more details.
