@@ -4529,7 +4529,7 @@
   {
     "name": "enable-touchscreen-mapping",
     "owners": [ "dpad@google.org", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "enable-touchscreens-in-diagnostics-app",
