@@ -4,10 +4,6 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 
-#include <vector>
-
-#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-
 namespace autofill {
 
 void PaymentsDataManagerTestApi::AddServerCreditCard(
