@@ -24,7 +24,9 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -213,6 +215,28 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
   }
   std::move(callback).Run(
       base::flat_map<std::string, std::string>(params.begin(), params.end()));
+}
+
+void ContextualTasksPageHandler::OnboardingTooltipDismissed() {
+  if (!web_ui_controller_->web_ui()) {
+    return;
+  }
+
+  Profile* profile = Profile::FromWebUI(web_ui_controller_->web_ui());
+  if (!profile) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return;
+  }
+
+  int count = prefs->GetInteger(
+      contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount);
+  prefs->SetInteger(
+      contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount,
+      count + 1);
 }
 
 void ContextualTasksPageHandler::PostMessageToWebview(

@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace contextual_tasks {
 
@@ -55,6 +57,12 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<ContextualTasksUiService>(
       profile, ContextualTasksContextControllerFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile));
+}
+
+void ContextualTasksUiServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(kContextualTasksOnboardingTooltipDismissedCount,
+                                0);
 }
 
 bool ContextualTasksUiServiceFactory::ServiceIsCreatedWithBrowserContext()

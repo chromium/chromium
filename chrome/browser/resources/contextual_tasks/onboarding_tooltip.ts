@@ -55,10 +55,6 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     if (changedProperties.has('target') && this.target) {
       this.tooltip_.target = this.target;
     }
-
-    if (changedProperties.has('shouldShow') && !this.shouldShow) {
-      this.hide();
-    }
   }
 
   show() {
@@ -75,7 +71,12 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
 
   protected onTooltipClose_(e: Event) {
     e.stopPropagation();
+    BrowserProxyImpl.getInstance().handler.onboardingTooltipDismissed();
     this.hide();
+    this.dispatchEvent(new CustomEvent('onboarding-tooltip-dismissed', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   protected onHelpLinkClick_(e: Event) {

@@ -76,6 +76,13 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private searchboxListenerIds_: number[] = [];
+  private onboardingTooltipIsVisible_: boolean = false;
+  private numberOfTimesTooltipShown_: number = 0;
+  private readonly maximumTimesTooltipShown_: number = loadTimeData.getInteger(
+      'composeboxShowOnboardingTooltipSessionImpressionCap');
+  private isOnboardingTooltipDismissCountBelowCap_: boolean =
+      loadTimeData.getBoolean('isOnboardingTooltipDismissCountBelowCap');
+  private userDismissedTooltip_: boolean = false;
 
   constructor() {
     super();
@@ -116,6 +123,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
               composebox.style.setProperty(
                   '--carousel-height', `${e.detail.carouselHeight}px`);
             }
+            if (e.detail.height !== undefined) {
+              this.composeboxHeight_ = e.detail.height;
+            }
           });
 
       this.eventTracker_.add(
@@ -142,14 +152,30 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       tooltip.target = this.$.composebox;
     }
 
-    const context = this.$.composebox.getDropTarget();
-    const hasTabChip = context.hasTabFile();
-    tooltip.shouldShow = hasTabChip;
-    if (tooltip.shouldShow) {
-      tooltip.show();
-    } else {
-      tooltip.hide();
+    if (this.onboardingTooltipIsVisible_ && !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
+        tooltip.hide();
+        this.onboardingTooltipIsVisible_ = false;
+    } else if(this.$.composebox.getHasAutomaticActiveTabChipToken()){
+      const shouldShow = this.shouldShowOnboardingTooltip();
+      if (shouldShow) {
+        tooltip.show();
+        this.numberOfTimesTooltipShown_++;
+        this.onboardingTooltipIsVisible_ = true;
+      }
     }
+    tooltip.shouldShow = this.onboardingTooltipIsVisible_;
+  }
+
+  private shouldShowOnboardingTooltip(): boolean {
+    return this.showOnboardingTooltip_ &&
+        this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_
+        && this.isOnboardingTooltipDismissCountBelowCap_ &&
+        !this.userDismissedTooltip_;
+  }
+
+  protected onTooltipDismissed_() {
+    this.userDismissedTooltip_ = true;
+    this.onboardingTooltipIsVisible_ = false;
   }
 
   override disconnectedCallback() {
@@ -167,6 +193,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected async refreshTabSuggestions_() {
     const {tabs} = await this.searchboxHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
+    this.updateTooltipVisibility_();
   }
 
   clearInputAndFocus(): void {
