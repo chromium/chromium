@@ -39,7 +39,8 @@ class ExtensionsMenuCoordinator;
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ExtensionsContainerViews,
                                    public ToolbarActionView::Delegate,
-                                   public views::WidgetObserver {
+                                   public views::WidgetObserver,
+                                   public ExtensionsToolbarViewModel::Observer {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
 
  public:
@@ -165,7 +166,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   }
 
   int GetNumberOfActionsForTesting() {
-    return view_model_->GetActions().size();
+    return toolbar_view_model_->GetActions().size();
   }
 
   ToolbarButton* GetCloseSidePanelButtonForTesting() {
@@ -230,6 +231,13 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   bool CanStartDragForView(View* sender,
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
+
+  // ExtensionsToolbarViewModel::Observer:
+  void OnActionsInitialized() override;
+  void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnPinnedActionsChanged() override;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;
@@ -333,7 +341,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       action_hover_card_controller_;
 
   // The view model for this container.
-  std::unique_ptr<ExtensionsToolbarViewModel> view_model_;
+  std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
 
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
@@ -360,6 +368,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   // Observes and listens to side panel alignment changes.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Observes and listens to changes to the view model.
+  base::ScopedObservation<ExtensionsToolbarViewModel,
+                          ExtensionsToolbarViewModel::Observer>
+      toolbar_view_model_observation_{this};
 
   base::WeakPtrFactory<ExtensionsToolbarContainer> weak_ptr_factory_{this};
 

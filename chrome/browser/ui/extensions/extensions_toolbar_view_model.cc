@@ -8,9 +8,21 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-ExtensionsToolbarViewModel::ExtensionsToolbarViewModel() = default;
+ExtensionsToolbarViewModel::ExtensionsToolbarViewModel(
+    ToolbarActionsModel* actions_model)
+    : actions_model_(actions_model) {
+  actions_model_observation_.Observe(actions_model_);
+}
 
 ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() = default;
+
+void ExtensionsToolbarViewModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ExtensionsToolbarViewModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void ExtensionsToolbarViewModel::AddAction(
     const ToolbarActionsModel::ActionId& action_id,
@@ -29,4 +41,37 @@ ExtensionsToolbarViewModel::RemoveAction(
   std::unique_ptr<ToolbarActionViewModel> model = std::move(*iter);
   actions_.erase(iter);
   return model;
+}
+
+void ExtensionsToolbarViewModel::OnToolbarModelInitialized() {
+  for (Observer& obs : observers_) {
+    obs.OnActionsInitialized();
+  }
+}
+
+void ExtensionsToolbarViewModel::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (Observer& obs : observers_) {
+    obs.OnActionAdded(action_id);
+  }
+}
+
+void ExtensionsToolbarViewModel::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (Observer& obs : observers_) {
+    obs.OnActionRemoved(action_id);
+  }
+}
+
+void ExtensionsToolbarViewModel::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (Observer& obs : observers_) {
+    obs.OnActionUpdated(action_id);
+  }
+}
+
+void ExtensionsToolbarViewModel::OnToolbarPinnedActionsChanged() {
+  for (Observer& obs : observers_) {
+    obs.OnPinnedActionsChanged();
+  }
 }

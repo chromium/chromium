@@ -14,7 +14,6 @@ class ExtensionsToolbarContainer;
 
 class ExtensionsToolbarContainerViewController final
     : public TabStripModelObserver,
-      public ToolbarActionsModel::Observer,
       public extensions::PermissionsManager::Observer {
  public:
   // Flex behavior precedence for the container's views.
@@ -61,16 +60,6 @@ class ExtensionsToolbarContainerViewController final
                     int index,
                     TabChangeType change_type) override;
 
-  // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarModelInitialized() override;
-  void OnToolbarPinnedActionsChanged() override;
-
   // PermissionsManager::Observer:
   void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
@@ -93,8 +82,6 @@ class ExtensionsToolbarContainerViewController final
 
   raw_ptr<ExtensionsToolbarContainer> extensions_container_;
 
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observation_{this};
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>
       permissions_manager_observation_{this};

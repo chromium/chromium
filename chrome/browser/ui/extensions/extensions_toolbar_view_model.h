@@ -16,18 +16,41 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 // ViewModel for the ExtensionsToolbarContainer. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
-class ExtensionsToolbarViewModel {
+class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
  public:
-  ExtensionsToolbarViewModel();
+  // Observer used to notify platforms about changes to the model.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called after all actions are added to the model.
+    virtual void OnActionsInitialized() = 0;
+
+    // Called when an action is added to the model.
+    virtual void OnActionAdded(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Called when an action is removed from the model.
+    virtual void OnActionRemoved(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Called when an action in the model is updated.
+    virtual void OnActionUpdated(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Called when the pinned actions in the model are changed.
+    virtual void OnPinnedActionsChanged() = 0;
+  };
+
+  explicit ExtensionsToolbarViewModel(ToolbarActionsModel* actions_model);
   ExtensionsToolbarViewModel(const ExtensionsToolbarViewModel&) = delete;
   ExtensionsToolbarViewModel& operator=(ExtensionsToolbarViewModel&) = delete;
-  ~ExtensionsToolbarViewModel();
+  ~ExtensionsToolbarViewModel() override;
 
-  // TODO(crbug.com/461981075): This is temporary for the refactor. We should
-  // only expose attributes that are necessary.
   const std::vector<std::unique_ptr<ToolbarActionViewModel>>& GetActions() {
     return actions_;
   }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Adds the action view model corresponding to `action_id` to the list of
   // actions.
@@ -42,9 +65,24 @@ class ExtensionsToolbarViewModel {
   std::unique_ptr<ToolbarActionViewModel> RemoveAction(
       const ToolbarActionsModel::ActionId& action_id);
 
+  // ToolbarActionsModel::Observer:
+  void OnToolbarModelInitialized() override;
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarPinnedActionsChanged() override;
+
  private:
-  // TODO(crbug.com/461981075): Use the order of this vector as the
-  // source of truth for action view order.
+  const raw_ptr<ToolbarActionsModel> actions_model_;
+
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      actions_model_observation_{this};
+
+  base::ObserverList<Observer> observers_;
+
   // Actions for all extensions.
   std::vector<std::unique_ptr<ToolbarActionViewModel>> actions_;
 };
