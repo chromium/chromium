@@ -148,7 +148,6 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
  public:
   SegmentationPlatformServiceFactoryTest()
       : test_utils_(std::make_unique<UkmDataManagerTestUtils>(&ukm_recorder_)) {
-    // TODO(b/293500507): Create a base class for testing default models.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
