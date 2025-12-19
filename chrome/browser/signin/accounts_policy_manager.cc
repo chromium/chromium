@@ -4,7 +4,10 @@
 
 #include "chrome/browser/signin/accounts_policy_manager.h"
 
+#include <string>
+
 #include "base/auto_reset.h"
+#include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +16,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
@@ -32,6 +37,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -91,7 +97,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
 
     active_browser_ = browser;
     browser_did_become_inactive_subscription_ =
-        active_browser_->RegisterDidBecomeActive(base::BindRepeating(
+        active_browser_->RegisterDidBecomeInactive(base::BindRepeating(
             &DeleteProfileDialogManager::OnBrowserDidBecomeInactive,
             base::Unretained(this)));
 
@@ -249,9 +255,11 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
 
   CoreAccountInfo primary_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (CanOfferSignin(profile, primary_account.gaia, primary_account.email,
-                     /*allow_account_from_other_profile=*/true)
-          .IsOk()) {
+
+  SigninUIError signin_ui_error =
+      CanOfferSignin(profile, primary_account.gaia, primary_account.email,
+                     /*allow_account_from_other_profile=*/true);
+  if (signin_ui_error.IsOk()) {
     return;
   }
 
@@ -268,6 +276,41 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     // This may be called while the profile is initializing, so it must be
     // scheduled for later to allow the profile initialization to complete.
     CHECK(profiles::IsMultipleProfilesEnabled());
+
+    if (LOG_IS_ON(WARNING)) {
+      // Extra logging for b/460765618.
+      std::u16string profile_name = u"NameNotFound";
+      ProfileAttributesEntry* profile_attributes =
+          g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile->GetPath());
+      if (profile_attributes) {
+        profile_name = profile_attributes->GetName();
+      }
+      std::string signin_level = "NotSignedIn";
+      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        signin_level =
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+                ? "Syncing"
+                : "SignedIn";
+      }
+      LOG(WARNING)
+          << "Primary account " << primary_account.email
+          << " not allowed for profile " << profile_name
+          << ", SigninUIError::message=" << signin_ui_error.message()
+          << ", SigninUIError::Type="
+          << static_cast<int>(signin_ui_error.type())
+          << ", ProfileSignoutSource="
+          << static_cast<int>(clear_primary_account_source)
+          << ", signin.allowed preference="
+          << profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)
+          << " (managed="
+          << profile->GetPrefs()->IsManagedPreference(prefs::kSigninAllowed)
+          << "), SigninLevel=" << signin_level << ", ProfileType="
+          << static_cast<int>(profile_metrics::GetBrowserProfileType(profile));
+      LOG(WARNING) << base::debug::StackTrace().ToString();
+    }
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AccountsPolicyManager::ShowDeleteProfileDialog,

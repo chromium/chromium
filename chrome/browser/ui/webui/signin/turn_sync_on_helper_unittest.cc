@@ -958,7 +958,7 @@ class TurnSyncOnHelperTestWithSigninAllowedDisabled
 TEST_F(TurnSyncOnHelperTestWithSigninAllowedDisabled,
        CanOfferSigninErrorKeepAccount) {
   // Set expectations.
-  expected_login_error_ = SigninUIError::Other(kEmail);
+  expected_login_error_ = SigninUIError::SigninDisallowed(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.
@@ -977,7 +977,7 @@ TEST_F(TurnSyncOnHelperTestWithSigninAllowedDisabled,
 TEST_F(TurnSyncOnHelperTestWithSigninAllowedDisabled,
        CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
-  expected_login_error_ = SigninUIError::Other(kEmail);
+  expected_login_error_ = SigninUIError::SigninDisallowed(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.

@@ -3233,7 +3233,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   const SigninUIError& error =
       LoginUIServiceFactory::GetForProfile(profile_being_created)
           ->GetLastLoginError();
-  EXPECT_EQ(error.type(), SigninUIError::Type::kOther);
+  EXPECT_EQ(error.type(), SigninUIError::Type::kSigninCookiesDisallowed);
   EXPECT_EQ(base::UTF16ToUTF8(error.email()), "joe.consumer@gmail.com");
 }
 

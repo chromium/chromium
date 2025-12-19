@@ -27,11 +27,6 @@ SigninUIError SigninUIError::Ok() {
 }
 
 // static
-SigninUIError SigninUIError::Other(const std::string& email) {
-  return SigninUIError(Type::kOther, email, std::u16string());
-}
-
-// static
 SigninUIError SigninUIError::UsernameNotAllowedByPatternFromPrefs(
     const std::string& email) {
   return SigninUIError(
@@ -94,6 +89,22 @@ SigninUIError SigninUIError::FromCredentialProviderUiExitCode(
 SigninUIError SigninUIError::ProfileIsBlocked() {
   return SigninUIError(Type::kProfileIsBlocked, /*email=*/std::string(),
                        /*error_message=*/std::u16string());
+}
+
+SigninUIError SigninUIError::NoProfile(const std::string& email) {
+  return SigninUIError(Type::kNoProfile, email, std::u16string());
+}
+
+SigninUIError SigninUIError::SigninDisallowed(const std::string& email) {
+  return SigninUIError(Type::kSigninDisallowed, email, std::u16string());
+}
+
+SigninUIError SigninUIError::SigninCookiesDisallowed(const std::string& email) {
+  return SigninUIError(Type::kSigninCookiesDisallowed, email, std::u16string());
+}
+
+SigninUIError SigninUIError::NoIdentityManager(const std::string& email) {
+  return SigninUIError(Type::kNoIdentityManager, email, std::u16string());
 }
 
 SigninUIError::SigninUIError(const SigninUIError& other) = default;
