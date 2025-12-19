@@ -272,6 +272,9 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
 
   // Do any additional adjustments required by the specific layout.
   DoPostLayoutVisualAdjustments();
+
+  // Update bubbles (like the find bar).
+  UpdateBubbles();
 }
 
 // Dialog positioning.
