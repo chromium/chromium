@@ -10,9 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/string_number_conversions.h"
-#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -27,13 +24,8 @@ using base::android::ScopedJavaLocalRef;
 namespace download {
 
 namespace {
-// Default value for |kDownloadExpirationDurationFinchKey|, when no parameter is
-// specified.
+// Default value for expiration duration.
 const int kDefaultExpirationDurationInDays = 3;
-
-// Finch parameter key value of the duration in days for an intermediate
-// download to expire.
-constexpr char kDownloadExpirationDurationFinchKey[] = "expiration_duration";
 
 // Used by tests to simulate that a list of file names exists in the system.
 // Must be used on main thread.
@@ -197,12 +189,7 @@ base::FilePath DownloadCollectionBridge::GetDisplayName(
 
 static jint JNI_DownloadCollectionBridge_GetExpirationDurationInDays(
     JNIEnv* env) {
-  std::string finch_value = base::GetFieldTrialParamValueByFeature(
-      features::kRefreshExpirationDate, kDownloadExpirationDurationFinchKey);
-  int days;
-  return base::StringToInt(finch_value, &days)
-             ? days
-             : kDefaultExpirationDurationInDays;
+  return kDefaultExpirationDurationInDays;
 }
 
 // static

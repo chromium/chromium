@@ -21,9 +21,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kBackoffInDownloading);
 COMPONENTS_DOWNLOAD_EXPORT bool IsBackoffInDownloadingEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
-// Whether download expiration date will be refreshed on resumption.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kRefreshExpirationDate);
-
 // Whether to enable smart suggestion for large downloads
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kSmartSuggestionForLargeDownloads);
