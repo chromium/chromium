@@ -1646,7 +1646,9 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
 class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
  public:
   SessionServiceImplWithStoreTest()
-      : context_(CreateTestURLRequestContextBuilder()->Build()),
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()),
         store_(std::make_unique<StrictMock<SessionStoreMock>>()),
         service_(unexportable_key_service_, context_.get(), store_.get()) {
     scoped_feature_list_.InitAndEnableFeature(
@@ -1906,6 +1908,7 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
 }
 
 TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList feature_list(
       unexportable_keys::kUnexportableKeyDeletion);
   unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
@@ -1966,13 +1969,28 @@ TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
   EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kWrappedKey2)))
       .Times(0);
   EXPECT_CALL(mock_key_provider, DeleteSigningKeySlowly(Eq(kStaleWrappedKey)))
-      .WillOnce([&] {
-        run_loop.Quit();
-        return true;
-      });
+      .WillOnce(Return(true));
 
   FinishLoadingSessions(std::move(session_map));
-  run_loop.Run();
+  // Advance time to allow StartGarbageCollection to run.
+  FastForwardUntilNoTasksRemain();
+
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "TotalKeyCount",
+      3, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "UsedKeyCount",
+      2, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "ObsoleteKeyCount",
+      1, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "ObsoleteKeyDeletionCount",
+      1, 1);
 }
 
 TEST_F(SessionServiceImplWithStoreTest,

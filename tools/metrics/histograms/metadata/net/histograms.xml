@@ -596,6 +596,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Crypto.UnexportableKeys.GarbageCollection.{KeyDeletionClient}.{MetricName}"
+    units="keys" expires_after="2026-06-07">
+  <owner>alexilin@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records {MetricName} at the time of garbage collection triggered for
+    {KeyDeletionClient}.
+
+    Typically, the unexportable keys garbage collection runs with some delay
+    after a profile startup but it also might be triggered in response to
+    UnexportableKeyService deletion events. For example, a garbage collection
+    will run when a profile is deleted.
+  </summary>
+  <token key="KeyDeletionClient">
+    <variant name="DeviceBoundSessions"
+        summary="the binding of sessions credentials with device-bound keys"/>
+    <variant name="ObsoleteOTRProfiles" summary="obsolete OTR profiles"/>
+    <variant name="ObsoleteProfiles" summary="obsolete profiles"/>
+    <variant name="RefreshTokenBinding"
+        summary="the binding of refresh tokens with device-bound keys"/>
+  </token>
+  <token key="MetricName">
+    <variant name="ObsoleteKeyCount" summary="the number of obsolete keys"/>
+    <variant name="ObsoleteKeyDeletionCount"
+        summary="the number of obsolete keys deleted"/>
+    <variant name="TotalKeyCount"
+        summary="the total number of unexportable keys"/>
+    <variant name="UsedKeyCount"
+        summary="the number of unexportable keys still in use"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.VirtualKeySupport" enum="TPMSupport"
     expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>

@@ -10,12 +10,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
@@ -47,6 +50,11 @@ namespace {
 //    attempts to prevent identity linking for federated sessions.
 constexpr size_t kSigningQuota = 6;
 constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
+
+// The delay between when the session service is loaded and the garbage
+// collection is started. This is delayed to not slow down the startup of the
+// browser.
+constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
 
 bool SessionMatchesFilter(
     const SchemefulSite& site,
@@ -190,7 +198,17 @@ void SessionServiceImpl::LoadSessionsAsync() {
   }
   session_store_->LoadSessions(base::BindOnce(
       &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
-  StartGarbageCollection();
+
+  // Schedule a task for original profiles to obtain all keys that were
+  // created for this profile in the past, including all OTR profiles.
+  if (base::FeatureList::IsEnabled(
+          unexportable_keys::kUnexportableKeyDeletion)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SessionServiceImpl::StartGarbageCollection,
+                       weak_factory_.GetWeakPtr()),
+        kGarbageCollectionDelay);
+  }
 }
 
 void SessionServiceImpl::RegisterBoundSession(
@@ -410,15 +428,8 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 }
 
 void SessionServiceImpl::StartGarbageCollection() {
-  if (!base::FeatureList::IsEnabled(
-          unexportable_keys::kUnexportableKeyDeletion)) {
-    return;
-  }
-
-  // Use the maximum priority to reduce the risk of returning a new and valid
-  // key that is not part of `known_key_ids`.
   key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-      unexportable_keys::BackgroundTaskPriority::kMaxValue,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(&SessionServiceImpl::OnGetAllKeysForGarbageCollection,
                      weak_factory_.GetWeakPtr()));
 }
@@ -444,6 +455,12 @@ void SessionServiceImpl::OnGetAllKeysForGarbageCollection(
 
 void SessionServiceImpl::DoGarbageCollection(
     std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
+  const size_t key_count = all_key_ids.size();
+  base::UmaHistogramCounts100(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "TotalKeyCount",
+      key_count);
+
   absl::flat_hash_set<unexportable_keys::UnexportableKeyId> known_key_ids;
   for (const auto& [_, session] : unpartitioned_sessions_) {
     if (Session::KeyIdOrError key_id_or_error = session->unexportable_key_id();
@@ -452,10 +469,35 @@ void SessionServiceImpl::DoGarbageCollection(
     }
   }
 
-  // Remove all keys that are still used.
+  // Remove all keys that are still used, or were created after the process
+  // started.
   std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
-    return known_key_ids.contains(key_id);
+    return known_key_ids.contains(key_id) ||
+           key_service_->GetCreationTime(key_id).value_or(base::Time::Now()) >=
+               base::Process::Current().CreationTime();
   });
+
+  base::UmaHistogramCounts100(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "UsedKeyCount",
+      key_count - all_key_ids.size());
+
+  base::UmaHistogramCounts100(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "ObsoleteKeyCount",
+      all_key_ids.size());
+
+  const auto barrier_callback =
+      base::BarrierCallback<unexportable_keys::ServiceErrorOr<void>>(
+          all_key_ids.size(),
+          base::BindOnce([](std::vector<unexportable_keys::ServiceErrorOr<void>>
+                                results) {
+            base::UmaHistogramCounts100(
+                "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+                "ObsoleteKeyDeletionCount",
+                std::ranges::count_if(
+                    results, [](auto result) { return result.has_value(); }));
+          }));
 
   // Delete all remaining keys.
   std::ranges::for_each(
@@ -463,9 +505,7 @@ void SessionServiceImpl::DoGarbageCollection(
         key_service_->DeleteKeySlowlyAsync(
             unknown_key_id,
             unexportable_keys::BackgroundTaskPriority::kBestEffort,
-            // TODO(crbug.com/455538313): Add metrics for the number of keys
-            // deleted.
-            base::DoNothing());
+            barrier_callback);
       });
 }
 
