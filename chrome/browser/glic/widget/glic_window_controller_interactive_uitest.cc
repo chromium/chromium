@@ -273,6 +273,19 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForGlicClose());
 }
 
+// TODO(crbug.com/454088252): Re-enable this test when there is a glic state for
+// post-resize.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       DISABLED_CloseWithContextMenu) {
+  RunTestSequence(
+      OpenGlicFloatingWindow(), MoveMouseTo(kGlicViewElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT), WaitForHide(kBrowserViewElementId),
+          InAnyContext(
+              SelectMenuItem(RenderViewContextMenu::kGlicCloseMenuItem))),
+      CheckControllerHasWidget(false));
+}
+
 // TODO(crbug.com/401158115): Flaky on macOS
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_OpenMenuItemShows DISABLED_OpenMenuItemShows

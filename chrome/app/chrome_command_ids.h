@@ -459,6 +459,7 @@
 #define IDC_CONTENT_CONTEXT_EMOJI 50220
 #define IDC_CONTEXT_COMPOSE 50230
 // Context menu items to control glic
+#define IDC_CONTENT_CONTEXT_CLOSE_GLIC  50231
 #define IDC_CONTENT_CONTEXT_RELOAD_GLIC  50232
 #define IDC_CONTENT_CONTEXT_ARCHIVE_GLIC 50233
 // Context menu items in the bookmark bar
