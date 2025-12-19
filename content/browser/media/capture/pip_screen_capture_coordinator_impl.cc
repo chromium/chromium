@@ -109,6 +109,25 @@ PipScreenCaptureCoordinatorImpl::Captures() const {
   return captures_;
 }
 
+std::optional<DesktopMediaID::Id>
+PipScreenCaptureCoordinatorImpl::GetPipWindowToExcludeFromScreenCapture(
+    DesktopMediaID::Id desktop_id) {
+  if (!pip_window_id_) {
+    return std::nullopt;
+  }
+
+  // The PiP window should not be excluded if there are captures from other
+  // render frame hosts.
+  for (const auto& capture : captures_) {
+    if (capture.desktop_media_id.id == desktop_id &&
+        capture.render_frame_host_id != pip_owner_render_frame_host_id_) {
+      return std::nullopt;
+    }
+  }
+
+  return *pip_window_id_;
+}
+
 void PipScreenCaptureCoordinatorImpl::AddCaptureOnUIThread(
     PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
   captures_.push_back(std::move(capture_info));

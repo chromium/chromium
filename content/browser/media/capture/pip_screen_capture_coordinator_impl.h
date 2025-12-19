@@ -48,6 +48,8 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
       const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) override;
   void OnPipClosed() override;
   std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy() override;
+  std::optional<DesktopMediaID::Id> GetPipWindowToExcludeFromScreenCapture(
+      DesktopMediaID::Id desktop_id) override;
 
   void OnPipShown(
       DesktopMediaID::Id pip_window_id,

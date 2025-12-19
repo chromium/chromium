@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -40,6 +41,10 @@ class CONTENT_EXPORT PipScreenCaptureCoordinator {
       const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) = 0;
   // Called when the PiP window is closed.
   virtual void OnPipClosed() = 0;
+  // Returns the ID of the PiP window if it exists and should be excluded from
+  // the capture of the specified `desktop_id`.
+  virtual std::optional<DesktopMediaID::Id>
+  GetPipWindowToExcludeFromScreenCapture(DesktopMediaID::Id desktop_id) = 0;
 
   virtual std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy() = 0;
 

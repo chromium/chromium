@@ -21,6 +21,12 @@ namespace content {
 
 namespace {
 
+const content::GlobalRenderFrameHostId kPipOwnerId(1, 1);
+const content::GlobalRenderFrameHostId kOtherId(2, 2);
+constexpr content::DesktopMediaID::Id kPipWindowId = 123;
+constexpr content::DesktopMediaID::Id kDesktopId = 234;
+constexpr content::DesktopMediaID::Id kDiffDesktopId = 567;
+
 class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
  public:
   MockObserver() = default;
@@ -418,6 +424,107 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveCaptureNotifiesProxy) {
   }
 
   proxy->RemoveObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       GetPipWindowToExcludeFromScreenCapture_NoPip) {
+  // If no PiP window is shown, nothing should be excluded.
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::nullopt);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       GetPipWindowToExcludeFromScreenCapture_PipShownNoCaptures) {
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // If PiP is shown but no one is capturing yet (e.g. the user is about to
+  // select a screen), it can be excluded from captures from the RenderFrameHost
+  // owning the PiP-window.
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::make_optional(kPipWindowId));
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       GetPipWindowToExcludeFromScreenCapture_CaptureByOwner) {
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // Register a capture by the PiP owner.
+  const auto capture_info = PipScreenCaptureCoordinatorProxy::CaptureInfo{
+      .session_id = base::UnguessableToken::Create(),
+      .render_frame_host_id = kPipOwnerId,
+      .desktop_media_id = content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_SCREEN, kDesktopId)};
+  coordinator_->AddCapture(capture_info);
+
+  // The owner capturing the screen containing the PiP should trigger exclusion.
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::make_optional(kPipWindowId));
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       GetPipWindowToExcludeFromScreenCapture_CaptureByOther) {
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // Register a capture by a different frame (Other).
+  const auto capture_info = PipScreenCaptureCoordinatorProxy::CaptureInfo{
+      .session_id = base::UnguessableToken::Create(),
+      .render_frame_host_id = kOtherId,
+      .desktop_media_id = content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_SCREEN, kDesktopId)};
+  coordinator_->AddCapture(capture_info);
+
+  // Since someone other than the owner is capturing, we cannot exclude the PiP.
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::nullopt);
+}
+
+TEST_F(
+    PipScreenCaptureCoordinatorImplTest,
+    GetPipWindowToExcludeFromScreenCapture_CaptureByOtherOnDifferentDesktop) {
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // Register a capture by 'Other' on a DIFFERENT desktop.
+  const auto capture_info = PipScreenCaptureCoordinatorProxy::CaptureInfo{
+      .session_id = base::UnguessableToken::Create(),
+      .render_frame_host_id = kOtherId,
+      .desktop_media_id = content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_SCREEN, kDiffDesktopId)};
+  coordinator_->AddCapture(capture_info);
+
+  // The other capture is on a different screen, so it shouldn't interfere with
+  // the exclusion decision for kDesktopId.
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::make_optional(kPipWindowId));
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest,
+       GetPipWindowToExcludeFromScreenCapture_MultipleCaptures) {
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+
+  // 1. Owner starts capturing -> Exclude.
+  const base::UnguessableToken session_owner = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_owner,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::make_optional(kPipWindowId));
+
+  // 2. Other starts capturing same screen -> Stop Excluding (Conflict).
+  const base::UnguessableToken session_other = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_other,
+       .render_frame_host_id = kOtherId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::nullopt);
+
+  // 3. Other stops capturing -> Resume Excluding.
+  coordinator_->RemoveCapture(session_other);
+  EXPECT_EQ(coordinator_->GetPipWindowToExcludeFromScreenCapture(kDesktopId),
+            std::make_optional(kPipWindowId));
 }
 
 }  // namespace content

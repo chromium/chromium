@@ -28,6 +28,10 @@ class MockPipScreenCaptureCoordinator : public PipScreenCaptureCoordinator {
               CreateProxy,
               (),
               (override));
+  MOCK_METHOD(std::optional<DesktopMediaID::Id>,
+              GetPipWindowToExcludeFromScreenCapture,
+              (DesktopMediaID::Id),
+              (override));
 };
 
 class DocumentPictureInPictureWindowControllerImplTest
