@@ -123,12 +123,8 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON));
-  DialogDelegate::SetButtonLabel(
-      ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(
-          controller_->IsSavePrompt()
-              ? IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON
-              : IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON));
+  DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
+                                 controller_->GetDialogPrimaryButtonText());
   SetAcceptCallback(
       base::BindOnce(&AutofillAiImportDataBubbleView::OnDialogAccepted,
                      base::Unretained(this)));

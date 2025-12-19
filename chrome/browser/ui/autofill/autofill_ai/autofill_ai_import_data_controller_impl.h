@@ -50,6 +50,7 @@ class AutofillAiImportDataControllerImpl
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
   std::u16string GetPrimaryAccountEmail() const override;
+  std::u16string GetDialogPrimaryButtonText() const override;
   bool IsWalletableEntity() const override;
   void OnGoToWalletLinkClicked() override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()

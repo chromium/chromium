@@ -1412,7 +1412,7 @@ void ChromeAutofillClient::ShowEntityImportBubble(
     EntityImportPromptResultCallback prompt_closed_callback) {
 #if BUILDFLAG(IS_ANDROID)
   autofill_ai_save_update_entity_flow_manager_->OfferSave(
-      new_entity, std::move(prompt_closed_callback));
+      new_entity, std::move(old_entity), std::move(prompt_closed_callback));
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           &*web_contents(), GetAppLocale())) {

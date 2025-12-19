@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_AI_SAVE_UPDATE_ENTITY_FLOW_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -46,6 +47,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   // If another flow is in progress, the incoming offer will be auto-declined.
   void OfferSave(
       const EntityInstance& entity,
+      std::optional<EntityInstance> old_entity,
       AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
 
  private:
@@ -54,7 +56,8 @@ class AutofillAiSaveUpdateEntityFlowManager {
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
-      const EntityInstance& entity);
+      const EntityInstance& entity,
+      bool is_save_prompt);
 
   void RunPromptClosedCallback(
       AutofillClient::AutofillAiBubbleClosedReason decision);

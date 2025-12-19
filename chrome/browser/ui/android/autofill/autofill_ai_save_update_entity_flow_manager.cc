@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
@@ -31,11 +32,6 @@ std::u16string GetMessageDescription() {
   // TODO: crbug.com/460410690 - Confirm save/update subtitle strings.
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AI_SAVE_ENTITY_MESSAGE_SUBTITLE);
-}
-
-std::u16string GetMessagePrimaryButtonText() {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON);
 }
 
 int GetMessageIconResourceId(const EntityInstance& entity) {
@@ -71,25 +67,27 @@ AutofillAiSaveUpdateEntityFlowManager::
 
 void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
     const EntityInstance& entity,
+    std::optional<EntityInstance> old_entity,
     AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
   prompt_closed_callback_ = std::move(prompt_closed_callback);
-  autofill_message_controller_->Show(CreateMessageModel(entity));
+  autofill_message_controller_->Show(
+      CreateMessageModel(entity, /*is_save_prompt=*/!old_entity.has_value()));
 }
 
 std::unique_ptr<AutofillMessageModel>
 AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    bool is_save_prompt) {
   // Binding with base::Unretained(this) is safe here because
   // AutofillAiSaveUpdateEntityMessageController owns message_. Callbacks won't
   // be called after the current object is destroyed.
   auto message = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::SAVE_UPDATE_ENTITY);
 
-  message->SetTitle(
-      GetPromptTitle(entity.type().name(), /*is_save_prompt=*/true));
+  message->SetTitle(GetPromptTitle(entity.type().name(), is_save_prompt));
   message->SetDescription(GetMessageDescription());
   message->SetDescriptionMaxLines(kDescriptionMaxLines);
-  message->SetPrimaryButtonText(GetMessagePrimaryButtonText());
+  message->SetPrimaryButtonText(GetPrimaryButtonText(is_save_prompt));
   message->SetPrimaryButtonTextMaxLines(1);
   message->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(GetMessageIconResourceId(entity)));

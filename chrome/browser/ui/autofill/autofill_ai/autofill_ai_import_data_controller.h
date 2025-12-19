@@ -75,6 +75,8 @@ class AutofillAiImportDataController {
   // Returns the user's primary account email.
   virtual std::u16string GetPrimaryAccountEmail() const = 0;
 
+  virtual std::u16string GetDialogPrimaryButtonText() const = 0;
+
   // Returns true if the entity to be saved or updated will be stored in the
   // wallet server.
   virtual bool IsWalletableEntity() const = 0;

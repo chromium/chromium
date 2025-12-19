@@ -385,6 +385,7 @@ source_set("test_support") {
     sources += [
       "autofill_keyboard_accessory_controller_impl_test_api.h",
       "autofill_message_controller_test_api.h",
+      "autofill_message_model_test_api.h",
       "mock_autofill_message_controller.cc",
       "mock_autofill_message_controller.h",
     ]

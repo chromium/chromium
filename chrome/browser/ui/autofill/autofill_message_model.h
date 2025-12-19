@@ -62,6 +62,7 @@ class AutofillMessageModel {
 
  private:
   friend class AutofillMessageModelTest;
+  friend class AutofillMessageModelTestApi;
 
   // Converts a message model type to a string for debugging and metrics.
   static std::string_view TypeToString(Type message_type);

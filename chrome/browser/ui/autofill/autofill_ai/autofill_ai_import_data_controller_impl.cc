@@ -120,6 +120,11 @@ std::u16string AutofillAiImportDataControllerImpl::GetPrimaryAccountEmail()
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
+std::u16string AutofillAiImportDataControllerImpl::GetDialogPrimaryButtonText()
+    const {
+  return GetPrimaryButtonText(IsSavePrompt());
+}
+
 bool AutofillAiImportDataControllerImpl::IsSavePrompt() const {
   return !old_entity_.has_value();
 }
