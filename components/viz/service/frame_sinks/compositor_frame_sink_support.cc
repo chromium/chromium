@@ -50,6 +50,7 @@
 #include "components/viz/service/transitions/surface_animation_manager.h"
 #include "media/filters/video_cadence_estimator.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 // This determines whether the provided time since last interval corresponds
 // to a cadence frame that needs to be rendered.
@@ -822,13 +823,11 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       local_surface_id == last_created_surface_id_.local_surface_id()) {
     current_surface = prev_surface;
   } else {
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_GLOBAL(local_surface_id.submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-        "ReceiveCompositorFrame", "local_surface_id",
-        local_surface_id.ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Submission.Flow",
+                perfetto::Flow::Global(local_surface_id.submission_trace_id()),
+                "step", "ReceiveCompositorFrame", "local_surface_id",
+                local_surface_id.ToString());
 
     SurfaceId surface_id(frame_sink_id_, local_surface_id);
     SurfaceInfo surface_info(surface_id, frame.device_scale_factor(),
@@ -969,10 +968,9 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       frame.metadata.begin_frame_ack.frame_id);
 
   const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
-                         "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "step", "ReceiveHitTestData");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+              "Event.Pipeline", perfetto::Flow::Global(trace_id), "step",
+              "ReceiveHitTestData");
 
   // QueueFrame can fail in unit tests, so SubmitHitTestRegionList has to be
   // called before that.

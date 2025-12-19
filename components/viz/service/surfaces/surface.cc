@@ -34,6 +34,7 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
@@ -708,13 +709,13 @@ void Surface::ActivateFrame(FrameData frame_data) {
     surface_client_->OnSurfaceActivated(this);
 
   if (!seen_first_frame_activation_) {
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_GLOBAL(
+        perfetto::TerminatingFlow::Global(
             surface_info_.id().local_surface_id().submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "FirstSurfaceActivation",
-        "surface_id", surface_info_.id().ToString());
+        "step", "FirstSurfaceActivation", "surface_id",
+        surface_info_.id().ToString());
 
     seen_first_frame_activation_ = true;
     allocation_group_->OnFirstSurfaceActivation(this);
@@ -816,12 +817,12 @@ void Surface::UpdateActivationDependencies(
       group->RegisterBlockedEmbedder(this, surface_id);
       new_blocking_allocation_groups.insert(group);
     }
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Embed.Flow",
-        TRACE_ID_GLOBAL(surface_id.local_surface_id().embed_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-        "AddedActivationDependency", "child_surface_id", surface_id.ToString());
+        perfetto::Flow::Global(surface_id.local_surface_id().embed_trace_id()),
+        "step", "AddedActivationDependency", "child_surface_id",
+        surface_id.ToString());
     new_activation_dependencies.push_back(surface_id);
   }
   activation_dependencies_ = std::move(new_activation_dependencies);
@@ -1024,12 +1025,12 @@ void Surface::OnWillBeDrawn() {
   if (!seen_first_surface_embedding_) {
     seen_first_surface_embedding_ = true;
 
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Embed.Flow",
-        TRACE_ID_GLOBAL(surface_info_.id().local_surface_id().embed_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "FirstSurfaceEmbedding", "surface_id",
-        surface_info_.id().ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Embed.Flow",
+                perfetto::TerminatingFlow::Global(
+                    surface_info_.id().local_surface_id().embed_trace_id()),
+                "step", "FirstSurfaceEmbedding", "surface_id",
+                surface_info_.id().ToString());
   }
   surface_manager_->SurfaceWillBeDrawn(this);
   MarkAsDrawn();
