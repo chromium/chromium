@@ -129,7 +129,7 @@ void OverlayRequestQueueImpl::InsertRequest(
         request.get(), this, web_state_);
   }
   static_cast<OverlayRequestImpl*>(request.get())
-      ->set_queue_web_state(web_state_);
+      ->set_queue_web_state(web_state_ ? web_state_->GetWeakPtr() : nullptr);
   request_storages_.emplace(request_storages_.begin() + index,
                             std::move(request), std::move(cancel_handler));
   for (auto& observer : observers_) {
