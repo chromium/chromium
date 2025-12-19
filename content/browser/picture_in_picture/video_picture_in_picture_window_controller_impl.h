@@ -85,7 +85,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
       int minimum_size_px,
       int desired_size_px,
       MediaSession::GetMediaImageBitmapCallback callback) override;
-  std::optional<gfx::Rect> GetWindowBounds() override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
 
   std::optional<url::Origin> GetOrigin() override;
   void SetOrigin(std::optional<url::Origin> origin);

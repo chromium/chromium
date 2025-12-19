@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   gfx::Size new_size(50, 50);
   overlay_window()->UpdateNaturalSize(new_size);
 
-  EXPECT_EQ(window_controller()->GetWindowBounds().value(),
+  EXPECT_EQ(window_controller()->GetWindowBoundsInScreen().value(),
             gfx::Rect(new_size));
 }
 

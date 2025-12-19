@@ -41,7 +41,9 @@ class TestPictureInPictureWindowController
   content::WebContents* GetChildWebContents() override { return nullptr; }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
 
-  std::optional<gfx::Rect> GetWindowBounds() override { return bounds_; }
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override {
+    return bounds_;
+  }
   void SetWindowBounds(gfx::Rect bounds) { bounds_ = bounds; }
 
  private:

@@ -400,6 +400,10 @@ PictureInPictureResult WebContentsDelegate::EnterPictureInPicture(
   return PictureInPictureResult::kNotSupported;
 }
 
+std::optional<gfx::Rect> WebContentsDelegate::GetWindowBoundsInScreen() {
+  return std::nullopt;
+}
+
 bool WebContentsDelegate::ShouldAllowLazyLoad() {
   return true;
 }

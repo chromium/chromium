@@ -747,6 +747,7 @@ class Browser : public TabStripModelObserver,
       content::WebContents* web_contents) override;
   content::WebContents* GetResponsibleWebContents(
       content::WebContents* web_contents) override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }

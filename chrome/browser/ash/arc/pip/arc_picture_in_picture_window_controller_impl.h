@@ -41,7 +41,7 @@ class ArcPictureInPictureWindowControllerImpl
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
   content::WebContents* GetWebContents() override;
-  std::optional<gfx::Rect> GetWindowBounds() override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
   content::WebContents* GetChildWebContents() override;
   std::optional<url::Origin> GetOrigin() override;
 

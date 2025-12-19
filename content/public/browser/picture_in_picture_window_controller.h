@@ -18,9 +18,9 @@ class DocumentPictureInPictureWindowController;
 class VideoPictureInPictureWindowController;
 
 // Interface for Picture in Picture window controllers. This is currently tied
-// to a WebContents |web_contents| and created when a Picture in Picture window
-// is to be shown. This allows creation of a single window for the WebContents
-// WebContents.
+// to a WebContents `web_contents` and created when a Picture in Picture window
+// is to be shown. This allows creation of a single window for the
+// `web_contents`.
 class PictureInPictureWindowController {
  public:
   // Gets a reference to the controller of the appropriate type associated with
@@ -57,7 +57,7 @@ class PictureInPictureWindowController {
   virtual WebContents* GetWebContents() = 0;
 
   // Called to get the Picture-in-Picture window bounds.
-  virtual std::optional<gfx::Rect> GetWindowBounds() = 0;
+  virtual std::optional<gfx::Rect> GetWindowBoundsInScreen() = 0;
 
   // Called to get the child web contents to be PiP for document PiP. This will
   // be null for video PiP.

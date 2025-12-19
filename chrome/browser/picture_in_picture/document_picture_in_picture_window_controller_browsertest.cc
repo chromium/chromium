@@ -506,15 +506,23 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// Window controller bounds should be same as the web content bounds.
+// Window controller bounds should be greater or equal to the web content
+// bounds.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CheckWindowBoundsSameAsWebContents) {
+                       CheckWindowBoundsGreaterOrEqualToWebContents) {
   LoadTabAndEnterPictureInPicture(browser());
   auto* web_contents = window_controller()->GetChildWebContents();
   ASSERT_TRUE(web_contents);
 
-  EXPECT_EQ(web_contents->GetContainerBounds(),
-            window_controller()->GetWindowBounds());
+  std::optional<gfx::Rect> pip_window_bounds =
+      PictureInPictureWindowManager::GetInstance()
+          ->GetPictureInPictureWindowBoundsInScreen();
+  ASSERT_TRUE(pip_window_bounds.has_value());
+
+  gfx::Rect container_bounds = web_contents->GetContainerBounds();
+
+  EXPECT_GE(pip_window_bounds->width(), container_bounds.width());
+  EXPECT_GE(pip_window_bounds->height(), container_bounds.height());
 }
 
 #if BUILDFLAG(IS_WIN)

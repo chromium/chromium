@@ -406,9 +406,10 @@ gfx::Size PictureInPictureWindowManager::AdjustRequestedSizeIfNecessary(
 }
 
 std::optional<gfx::Rect>
-PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
-  return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
-                                : std::nullopt;
+PictureInPictureWindowManager::GetPictureInPictureWindowBoundsInScreen() const {
+  return pip_window_controller_
+             ? pip_window_controller_->GetWindowBoundsInScreen()
+             : std::nullopt;
 }
 
 gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(

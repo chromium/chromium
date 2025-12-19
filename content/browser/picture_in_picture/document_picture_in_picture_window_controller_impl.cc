@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "media/base/media_switches.h"
@@ -128,10 +129,15 @@ void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
 }
 
 std::optional<gfx::Rect>
-DocumentPictureInPictureWindowControllerImpl::GetWindowBounds() {
+DocumentPictureInPictureWindowControllerImpl::GetWindowBoundsInScreen() {
   if (!child_contents_)
     return std::nullopt;
-  return child_contents_->GetContainerBounds();
+
+  if (auto* delegate = child_contents_->GetDelegate()) {
+    return delegate->GetWindowBoundsInScreen();
+  }
+
+  return std::nullopt;
 }
 
 void DocumentPictureInPictureWindowControllerImpl::PrimaryPageChanged(Page&) {

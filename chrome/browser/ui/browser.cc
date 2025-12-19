@@ -2564,6 +2564,17 @@ content::WebContents* Browser::GetResponsibleWebContents(
   return web_contents;
 }
 
+std::optional<gfx::Rect> Browser::GetWindowBoundsInScreen() {
+  if (!window_) {
+    return std::nullopt;
+  }
+
+  // Note that `GetBounds` here returns the screen coordinate bounds
+  // from the browser widget. This is not to be confused with
+  // `views::View::bounds()` which returns parent-relative bounds.
+  return GetBrowserView().GetBounds();
+}
+
 void Browser::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,

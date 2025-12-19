@@ -153,7 +153,9 @@ class TestVideoPictureInPictureWindowController
               (const media_session::MediaImage& image,
                int minimum_size_px,
                int desired_size_px));
-  std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override {
+    return std::nullopt;
+  }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
   void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 

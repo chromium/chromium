@@ -618,7 +618,7 @@ void VideoPictureInPictureWindowControllerImpl::GetMediaImage(
 }
 
 std::optional<gfx::Rect>
-VideoPictureInPictureWindowControllerImpl::GetWindowBounds() {
+VideoPictureInPictureWindowControllerImpl::GetWindowBoundsInScreen() {
   if (!window_)
     return std::nullopt;
   return window_->GetBounds();
