@@ -241,6 +241,10 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
       kAmountExtractionWaitTime);
 }
 
+bool AmountExtractionManager::HasTimedOutForPageLoad() const {
+  return has_timed_out_;
+}
+
 void AmountExtractionManager::OnCheckoutAmountReceived(
     base::TimeTicks search_request_start_timestamp,
     const std::string& extracted_amount) {
@@ -325,6 +329,7 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
+  has_timed_out_ = true;
   // Once timeout is reached, cancel all the pending function calls.
   weak_ptr_factory_.InvalidateWeakPtrs();
 

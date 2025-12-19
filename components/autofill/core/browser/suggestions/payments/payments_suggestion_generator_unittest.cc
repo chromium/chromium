@@ -275,6 +275,10 @@ class PaymentsSuggestionGeneratorTest
         .test_payments_data_manager();
   }
 
+  payments::AmountExtractionManager& amount_extraction_manager() {
+    return autofill_manager().GetAmountExtractionManager();
+  }
+
   const std::string& app_locale() { return payments_data().app_locale(); }
 
   void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {
@@ -295,7 +299,7 @@ class PaymentsSuggestionGeneratorTest
 
     return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
-        {suggestion_data});
+        {suggestion_data}, /*has_timed_out_for_page_load=*/false);
   }
 
   std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
@@ -316,7 +320,8 @@ class PaymentsSuggestionGeneratorTest
 
     return GenerateCreditCardOrCvcFieldSuggestionsSync(
         client, trigger_field, trigger_field_type, should_show_scan_credit_card,
-        summary, is_card_number_field_empty, {suggestion_data});
+        summary, is_card_number_field_empty, {suggestion_data},
+        /*has_timed_out_for_page_load=*/false);
   }
 
  private:
@@ -1349,7 +1354,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
       GetCreditCardFooterSuggestionsForTest(
           autofill_client(), /*should_show_bnpl_suggestion*/ false,
           /*should_show_scan_credit_card=*/true, /*is_autofilled=*/true,
-          /*with_gpay_logo=*/true);
+          /*with_gpay_logo=*/true, /*has_timed_out_for_page_load=*/false);
 
   for (size_t index = 0; index < footer_suggestions.size(); index++) {
     EXPECT_TRUE(IsCreditCardFooterSuggestion(footer_suggestions, index));
@@ -2199,6 +2204,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_OneIssuer) {
           /*icon=*/Suggestion::Icon::kBnpl,
           /*labels=*/
           {{Suggestion::Text(bnpl_issuers[0].GetDisplayName())}}));
+  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_TwoIssuers) {
@@ -2224,6 +2230,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_TwoIssuers) {
               // Affirm comes before Zip.
               bnpl_issuers[1].GetDisplayName(),
               bnpl_issuers[0].GetDisplayName()))}}));
+  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
@@ -2251,6 +2258,25 @@ TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
               bnpl_issuers[2].GetDisplayName(),
               bnpl_issuers[0].GetDisplayName(),
               bnpl_issuers[1].GetDisplayName()))}}));
+  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_DeactivatedStyle) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000,
+      /*has_timed_out_for_page_load=*/true);
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*type=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl));
+  EXPECT_EQ(suggestion.acceptability,
+            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_FlagDisabled) {
@@ -2375,7 +2401,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2413,7 +2440,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2444,7 +2472,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2472,7 +2501,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2501,7 +2531,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2529,7 +2560,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2548,7 +2580,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2580,7 +2613,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2612,7 +2646,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -3563,7 +3598,8 @@ TEST_F(
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -3958,7 +3994,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -3994,7 +4031,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
-      u"1111", /*is_card_number_field_empty=*/false);
+      u"1111", /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4023,7 +4061,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4040,7 +4079,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4064,7 +4104,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4098,7 +4139,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false);
+      /*is_card_number_field_empty=*/false,
+      /*has_timed_out_for_page_load=*/false);
 
   EXPECT_THAT(
       suggestions,
@@ -4130,8 +4172,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verify that the suggestion's `main_text` and `minor_text` are populated
 // correctly for both the virtual card and the real card. Furthermore, it
-// verifies that if the merchant has opted out of VCN, `apply_deactivated_style`
-// is set only for the virtual card, not for the real card.
+// verifies that if the merchant has opted out of VCN,
+// `has_timed_out_for_page_load` is set only for the virtual card, not for the
+// real card.
 TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
        GetCreditCardSuggestionsForTouchToFill_MainTextMinorTextMerchantOptOut) {
   CreditCard virtual_card = test::GetVirtualCard();

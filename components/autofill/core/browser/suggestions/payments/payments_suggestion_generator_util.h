@@ -85,9 +85,13 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
 // second line of text, as well as what IPH bubble should be shown.
 // `extracted_amount_in_micros` is used to set the extracted amount in the BNPL
 // suggestion to be used where necessary for the BNPL flow.
+// `has_timed_out_for_page_load` indicates whether the AI amount extraction
+// request timed out. If true, the returned BNPL suggestion is deactivated
+// for the remainder of this page load.
 Suggestion CreateBnplSuggestion(
     std::vector<BnplIssuer> bnpl_issuers,
-    std::optional<int64_t> extracted_amount_in_micros);
+    std::optional<int64_t> extracted_amount_in_micros,
+    bool has_timed_out_for_page_load = false);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
@@ -147,12 +151,16 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
 // suggestion to the end of the payment methods suggestions.
 // `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
 // payment methods suggestion.
+// `has_timed_out_for_page_load` indicates whether
+// the AI amount extraction request timed out. If true, the returned BNPL
+// suggestion is deactivated for the remainder of this page load.
 std::vector<Suggestion> GetCreditCardFooterSuggestions(
     const AutofillClient& client,
     bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
-    bool with_gpay_logo);
+    bool with_gpay_logo,
+    bool has_timed_out_for_page_load);
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.
@@ -205,7 +213,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
-    bool with_gpay_logo);
+    bool with_gpay_logo,
+    bool has_timed_out_for_page_load);
 
 // Exposes `GetBnplPriceLowerBound` in tests.
 std::u16string GetBnplPriceLowerBoundForTest(

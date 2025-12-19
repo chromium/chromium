@@ -150,6 +150,8 @@ class AmountExtractionManager {
   // Trigger the search for the final checkout amount using server-side AI.
   virtual void TriggerCheckoutAmountExtractionWithAi();
 
+  bool HasTimedOutForPageLoad() const;
+
  private:
   friend class AmountExtractionManagerTest;
   friend class AmountExtractionManagerTestApi;
@@ -215,6 +217,11 @@ class AmountExtractionManager {
   // The timer to enforce the timeout on client-side for AI-based amount
   // extraction.
   base::OneShotTimer timeout_timer_;
+
+  // Indicates whether the AI-based amount extraction timed out for the current
+  // page load. Tied to the lifecycle of `this` and should not be reset by
+  // `Reset()`.
+  bool has_timed_out_ = false;
 
   base::WeakPtrFactory<AmountExtractionManager> weak_ptr_factory_{this};
 };

@@ -1442,6 +1442,7 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_TimeoutDuringFetch) {
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kTimeout))));
+  ASSERT_FALSE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Fast forward past the timeout limit.
   task_environment_.FastForwardBy(
@@ -1451,6 +1452,7 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_TimeoutDuringFetch) {
   // Model should NOT execute because the request already timed out.
   EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
   ASSERT_TRUE(fetch_callback);
+  EXPECT_TRUE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   std::move(fetch_callback).Run(std::make_optional(test_proto));
 }
@@ -1490,6 +1492,7 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kTimeout))));
+  ASSERT_FALSE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Fast forward past the timeout limit.
   task_environment_.FastForwardBy(
@@ -1505,6 +1508,7 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi)
       .Times(0);
+  EXPECT_TRUE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Model execution still returns and verifies its response is ignored.
   std::move(model_callback)

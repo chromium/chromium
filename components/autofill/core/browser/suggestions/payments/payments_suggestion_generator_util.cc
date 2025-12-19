@@ -751,7 +751,8 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
 
 Suggestion CreateBnplSuggestion(
     std::vector<BnplIssuer> bnpl_issuers,
-    std::optional<int64_t> extracted_amount_in_micros) {
+    std::optional<int64_t> extracted_amount_in_micros,
+    bool has_timed_out_for_page_load) {
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
   bnpl_suggestion.main_text = Suggestion::Text(
@@ -829,6 +830,11 @@ Suggestion CreateBnplSuggestion(
   payments_payload.extracted_amount_in_micros =
       std::move(extracted_amount_in_micros);
   bnpl_suggestion.payload = std::move(payments_payload);
+
+  bnpl_suggestion.acceptability =
+      has_timed_out_for_page_load
+          ? Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle
+          : Suggestion::Acceptability::kAcceptable;
 
   return bnpl_suggestion;
 }
@@ -1114,10 +1120,11 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
-    bool with_gpay_logo) {
-  return GetCreditCardFooterSuggestions(client, should_show_bnpl_suggestion,
-                                        should_show_scan_credit_card,
-                                        is_autofilled, with_gpay_logo);
+    bool with_gpay_logo,
+    bool has_timed_out_for_page_load) {
+  return GetCreditCardFooterSuggestions(
+      client, should_show_bnpl_suggestion, should_show_scan_credit_card,
+      is_autofilled, with_gpay_logo, has_timed_out_for_page_load);
 }
 
 std::u16string GetBnplPriceLowerBoundForTest(
@@ -1338,7 +1345,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
-    bool with_gpay_logo) {
+    bool with_gpay_logo,
+    bool has_timed_out_for_page_load) {
   std::vector<Suggestion> footer_suggestions;
 
   // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
@@ -1354,7 +1362,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
         CreateBnplSuggestion(client.GetPersonalDataManager()
                                  .payments_data_manager()
                                  .GetBnplIssuers(),
-                             /*extracted_amount_in_micros=*/std::nullopt));
+                             /*extracted_amount_in_micros=*/std::nullopt,
+                             has_timed_out_for_page_load));
   }
 
   if (should_show_scan_credit_card) {

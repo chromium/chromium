@@ -343,7 +343,8 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
           autofill_manager.client(), *autofill_field_for_labels,
           autofill_field_for_labels->Type().GetCreditCardType(),
           /*should_show_scan_credit_card=*/false, summary,
-          /*is_card_number_field_empty=*/true, {suggestion_data});
+          /*is_card_number_field_empty=*/true, {suggestion_data},
+          /*has_timed_out_for_page_load=*/false);
 
   std::erase_if(suggestions, [](const Suggestion& s) {
     return s.type != SuggestionType::kCreditCardEntry;
