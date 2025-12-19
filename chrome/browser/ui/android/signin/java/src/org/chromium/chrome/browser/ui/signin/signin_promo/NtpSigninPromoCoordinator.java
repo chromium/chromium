@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -18,7 +19,8 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 @NullMarked
 public class NtpSigninPromoCoordinator {
     private final SigninPromoCoordinator mSigninPromoCoordinator;
-    private final PersonalizedSigninPromoView mSigninPromoView;
+    private final ViewStub mSigninPromoViewContainerStub;
+    private @Nullable PersonalizedSigninPromoView mSigninPromoView;
 
     /**
      * Creates an instance of the {@link NtpSigninPromoCoordinator}.
@@ -42,9 +44,7 @@ public class NtpSigninPromoCoordinator {
                         profile,
                         new NtpSigninPromoDelegate(
                                 context, profile, launcher, this::onPromoStateChange));
-        mSigninPromoView = (PersonalizedSigninPromoView) signinPromoViewContainerStub.inflate();
-        mSigninPromoView.setCardBackgroundResource(R.drawable.home_surface_ui_background);
-        mSigninPromoCoordinator.setView(mSigninPromoView);
+        mSigninPromoViewContainerStub = signinPromoViewContainerStub;
         onPromoStateChange();
     }
 
@@ -53,7 +53,19 @@ public class NtpSigninPromoCoordinator {
     }
 
     private void onPromoStateChange() {
-        mSigninPromoView.setVisibility(
-                mSigninPromoCoordinator.canShowPromo() ? View.VISIBLE : View.GONE);
+        final boolean canShowPromo = mSigninPromoCoordinator.canShowPromo();
+        if (canShowPromo && mSigninPromoView == null) {
+            inflateView();
+        }
+        if (mSigninPromoView != null) {
+            mSigninPromoView.setVisibility(canShowPromo ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void inflateView() {
+        assert mSigninPromoView == null;
+        mSigninPromoView = (PersonalizedSigninPromoView) mSigninPromoViewContainerStub.inflate();
+        mSigninPromoView.setCardBackgroundResource(R.drawable.home_surface_ui_background);
+        mSigninPromoCoordinator.setView(mSigninPromoView);
     }
 }
