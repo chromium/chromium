@@ -1,5 +1,0 @@
-[Exposed=Window, RuntimeEnabled=DocumentPatching]
-interface Patch {
-  [SameObject, CallWith=ScriptState] readonly attribute Promise<undefined> finished;
-  [SameObject] readonly attribute HTMLTemplateElement source;
-};

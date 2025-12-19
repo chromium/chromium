@@ -123,7 +123,6 @@ class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class OverscrollAreaTracker;
-class Patch;
 class PointerLockOptions;
 class PopoverData;
 class PseudoElement;
@@ -1153,7 +1152,6 @@ class CORE_EXPORT Element : public ContainerNode {
   void FocusWithinStateChanged();
   void ActiveViewTransitionStateChanged();
   void ActiveViewTransitionTypeStateChanged();
-  void PatchStateChanged();
   void OverscrollTargetStateChanged();
   void SetDragged(bool) override;
 
@@ -1669,9 +1667,6 @@ class CORE_EXPORT Element : public ContainerNode {
 
   void setEditContext(EditContext* editContext, ExceptionState&);
   EditContext* editContext() const;
-
-  // https://github.com/WICG/declarative-partial-updates
-  Patch* currentPatch();
 
   // Helpers for V8DOMActivityLogger::logEvent.  They call logEvent only if
   // the element is isConnected() and the context is an isolated world.

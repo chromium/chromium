@@ -186,9 +186,6 @@ dictionary SetHTMLUnsafeOptions {
 
     // Scoped Custom Element Registries
     [RuntimeEnabled=ScopedCustomElementRegistry] readonly attribute CustomElementRegistry? customElementRegistry;
-
-    // Declarative document updates
-    [RuntimeEnabled=DocumentPatching] readonly attribute Patch? currentPatch;
 };
 
 Element includes ParentNode;

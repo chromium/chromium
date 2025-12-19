@@ -239,7 +239,6 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
@@ -4335,16 +4334,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   }
 
   return kInsertionDone;
-}
-
-// https://github.com/WICG/declarative-partial-updates
-Patch* Element::currentPatch() {
-  PatchSupplement* supplement = PatchSupplement::FromIfExists(GetDocument());
-  if (!supplement) {
-    return nullptr;
-  }
-  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  return supplement->CurrentPatchFor(*this);
 }
 
 void Element::MovedFrom(ContainerNode& old_parent) {
@@ -8523,14 +8512,6 @@ void Element::ActiveViewTransitionTypeStateChanged() {
           style_change_reason::kPseudoClass,
           style_change_extra_data::g_active_view_transition_type));
   PseudoStateChanged(CSSSelector::kPseudoActiveViewTransitionType);
-}
-
-void Element::PatchStateChanged() {
-  SetNeedsStyleRecalc(kLocalStyleChange,
-                      StyleChangeReasonForTracing::CreateWithExtraData(
-                          style_change_reason::kPseudoClass,
-                          style_change_extra_data::g_patching));
-  PseudoStateChanged(CSSSelector::kPseudoPatching);
 }
 
 void Element::OverscrollTargetStateChanged() {

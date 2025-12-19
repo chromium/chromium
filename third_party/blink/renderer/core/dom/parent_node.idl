@@ -42,9 +42,4 @@ interface mixin ParentNode {
 
   [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
   [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);
-  [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream patchSelf();
-  [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream patchBetween(Node prev_child, Node next_child);
-  [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream patchAfter(Node ref);
-  [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream patchBefore(Node ref);
-  [RuntimeEnabled=DocumentPatching, CallWith=ScriptState] WritableStream patchAll();
 };

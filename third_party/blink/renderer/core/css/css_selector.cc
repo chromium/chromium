@@ -482,7 +482,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoParent:
     case kPseudoPart:
     case kPseudoPastCue:
-    case kPseudoPatching:
     case kPseudoPaused:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
@@ -660,7 +659,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"optional", CSSSelector::kPseudoOptional},
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"past", CSSSelector::kPseudoPastCue},
-    {"patching", CSSSelector::kPseudoPatching},
     {"paused", CSSSelector::kPseudoPaused},
     {"permission-icon", CSSSelector::kPseudoPermissionIcon},
     {"picker-icon", CSSSelector::kPseudoPickerIcon},
@@ -781,11 +779,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoPlaying &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoPatching &&
-      !RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -1054,7 +1047,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoOverscrollTarget:
     case kPseudoParent:
     case kPseudoPastCue:
-    case kPseudoPatching:
     case kPseudoPaused:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
@@ -1851,7 +1843,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFullscreen:
     case kPseudoInRange:
     case kPseudoOutOfRange:
-    case kPseudoPatching:
     case kPseudoPaused:
     case kPseudoPictureInPicture:
     case kPseudoPlaying:

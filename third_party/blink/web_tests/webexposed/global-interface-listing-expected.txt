@@ -2192,11 +2192,6 @@ interface Document : Node
     method importNode
     method moveBefore
     method open
-    method patchAfter
-    method patchAll
-    method patchBefore
-    method patchBetween
-    method patchSelf
     method prepend
     method queryCommandEnabled
     method queryCommandIndeterm
@@ -2367,11 +2362,6 @@ interface DocumentFragment : Node
     method getElementById
     method getPartRoot
     method moveBefore
-    method patchAfter
-    method patchAll
-    method patchBefore
-    method patchBetween
-    method patchSelf
     method prepend
     method querySelector
     method querySelectorAll
@@ -2515,7 +2505,6 @@ interface Element : Node
     getter containerTiming
     getter containerTimingIgnore
     getter currentCSSZoom
-    getter currentPatch
     getter elementTiming
     getter firstElementChild
     getter headingOffset
@@ -2577,11 +2566,6 @@ interface Element : Node
     method insertAdjacentText
     method matches
     method moveBefore
-    method patchAfter
-    method patchAll
-    method patchBefore
-    method patchBetween
-    method patchSelf
     method prepend
     method pseudo
     method querySelector
@@ -7346,15 +7330,6 @@ interface PasswordCredential : Credential
     getter iconURL
     getter name
     getter password
-    method constructor
-interface Patch
-    attribute @@toStringTag
-    getter finished
-    getter source
-    method constructor
-interface PatchEvent : Event
-    attribute @@toStringTag
-    getter patch
     method constructor
 interface Path2D
     attribute @@toStringTag

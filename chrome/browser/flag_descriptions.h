@@ -8208,7 +8208,7 @@ inline constexpr char kDcheckIsFatalDescription[] =
 inline constexpr char kDocumentPatchingName[] = "Document patching";
 inline constexpr char kDocumentPatchingDescription[] =
     "Allow out-of-order streaming of HTML content using <template patchfor> "
-    "and node.patchSelf(). "
+    "and node.streamHTMLUnsafe(). "
     "See https://github.com/WICG/declarative-partial-updates";
 
 inline constexpr char kRouteMatchingName[] = "Route matching";
