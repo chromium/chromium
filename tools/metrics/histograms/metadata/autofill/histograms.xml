@@ -1730,6 +1730,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AiAmountExtraction.InvalidResponseReason"
+    enum="AiAmountExtractionInvalidResponseReason" expires_after="2026-06-01">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the specific reason why the AI-generated checkout amount response
+    failed validation, when the response is present and it is an error. This
+    provides a diagnostic breakdown for the 'Invalid response' bucket of
+    Autofill.AiAmountExtraction.Result. Recorded once per page load when the
+    model execution completes but the output data does not meet requirements
+    (e.g., the amount is negative, the currency is missing, or the currency is
+    unsupported).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AiAmountExtraction.Result"
     enum="AiAmountExtractionResult" expires_after="2026-06-01">
   <owner>jamessun@google.com</owner>

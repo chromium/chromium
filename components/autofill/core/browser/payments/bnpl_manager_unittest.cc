@@ -2272,7 +2272,7 @@ TEST_F(BnplManagerTest,
 }
 
 TEST_F(BnplManagerTest,
-       OnAmountExtractionReturnedFromAi_InvalidAmount_ShowsErrorUi) {
+       OnAmountExtractionReturnedFromAi_NegativeAmount_ShowsErrorUi) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -2285,7 +2285,24 @@ TEST_F(BnplManagerTest,
                       /*is_permanent_error=*/false)));
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
-      base::unexpected(AiAmountExtractionResult::Error::kInvalidAmount));
+      base::unexpected(AiAmountExtractionResult::Error::kNegativeAmount));
+}
+
+TEST_F(BnplManagerTest,
+       OnAmountExtractionReturnedFromAi_AmountMissing_ShowsErrorUi) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  InSequence s;
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi);
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowAutofillErrorUi(
+                  AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                      /*is_permanent_error=*/false)));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      base::unexpected(AiAmountExtractionResult::Error::kAmountMissing));
 }
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Timeout_ShowsErrorUi) {

@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill::autofill_metrics {
@@ -32,6 +33,33 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
 void LogAiAmountExtractionApcFetchResult(bool success) {
   base::UmaHistogramBoolean("Autofill.AiAmountExtraction.ApcFetchResult",
                             success);
+}
+
+void LogAiAmountExtractionInvalidResponseReason(
+    payments::AiAmountExtractionResult::Error error) {
+  AiAmountExtractionInvalidResponseReason reason;
+
+  switch (error) {
+    case payments::AiAmountExtractionResult::Error::kNegativeAmount:
+      reason = AiAmountExtractionInvalidResponseReason::kNegativeAmount;
+      break;
+    case payments::AiAmountExtractionResult::Error::kAmountMissing:
+      reason = AiAmountExtractionInvalidResponseReason::kAmountMissing;
+      break;
+    case payments::AiAmountExtractionResult::Error::kUnsupportedCurrency:
+      reason = AiAmountExtractionInvalidResponseReason::kUnsupportedCurrency;
+      break;
+    case payments::AiAmountExtractionResult::Error::kMissingCurrency:
+      reason = AiAmountExtractionInvalidResponseReason::kCurrencyCodeMissing;
+      break;
+    case payments::AiAmountExtractionResult::Error::kFailureToGenerateApc:
+    case payments::AiAmountExtractionResult::Error::kMissingServerResponse:
+    case payments::AiAmountExtractionResult::Error::kTimeout:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      "Autofill.AiAmountExtraction.InvalidResponseReason", reason);
 }
 
 }  // namespace autofill::autofill_metrics

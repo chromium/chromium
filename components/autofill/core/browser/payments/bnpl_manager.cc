@@ -315,7 +315,8 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     switch (result.error()) {
       case AiAmountExtractionResult::Error::kFailureToGenerateApc:
       case AiAmountExtractionResult::Error::kMissingServerResponse:
-      case AiAmountExtractionResult::Error::kInvalidAmount:
+      case AiAmountExtractionResult::Error::kNegativeAmount:
+      case AiAmountExtractionResult::Error::kAmountMissing:
       case AiAmountExtractionResult::Error::kMissingCurrency:
       case AiAmountExtractionResult::Error::kTimeout:
         payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(

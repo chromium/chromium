@@ -263,6 +263,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="kOverlayPopupAd"/>
 </enum>
 
+<enum name="AiAmountExtractionInvalidResponseReason">
+  <int value="0" label="Negative amount"/>
+  <int value="1" label="Amount missing"/>
+  <int value="2" label="Unsupported currency"/>
+  <int value="3" label="Currency code missing"/>
+</enum>
+
 <enum name="AiAmountExtractionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to find checkout amount"/>

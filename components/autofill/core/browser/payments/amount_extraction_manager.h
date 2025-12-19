@@ -52,10 +52,11 @@ struct AiAmountExtractionResult {
   enum class Error {
     kFailureToGenerateApc = 0,
     kMissingServerResponse = 1,
-    kInvalidAmount = 2,
-    kMissingCurrency = 3,
-    kUnsupportedCurrency = 4,
-    kTimeout = 5,
+    kNegativeAmount = 2,
+    kAmountMissing = 3,
+    kMissingCurrency = 4,
+    kUnsupportedCurrency = 5,
+    kTimeout = 6,
   };
 
   using ResultType = base::expected<AmountAndCurrency, Error>;
@@ -195,6 +196,11 @@ class AmountExtractionManager {
   // lifetime of `this`. This ensures the amount extraction result metric is
   // logged once per page load.
   bool has_logged_amount_extraction_result_ = false;
+
+  // Set to true after the first time the AI-based amount extraction invalid
+  // response reason is logged. Ensures that logging occurs at most once per
+  // page load.
+  bool has_logged_ai_amount_extraction_invalid_response_reason_ = false;
 
   // Set to true after the first time the annotated page content (APC) fetch
   // result is logged. Ensures that logging occurs at most once per page load.

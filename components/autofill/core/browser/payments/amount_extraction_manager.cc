@@ -89,12 +89,18 @@ AmountExtractionManager::ValidateAmountExtractionResponse(
 
   // Higher priority check: checkout amount. If it is missing or invalid, the
   // error code will be overwritten.
-  if (!response.has_final_checkout_amount() ||
-      response.final_checkout_amount() < 0) {
-    error = AiAmountExtractionResult::Error::kInvalidAmount;
+  if (!response.has_final_checkout_amount()) {
+    error = AiAmountExtractionResult::Error::kAmountMissing;
+  } else if (response.final_checkout_amount() < 0) {
+    error = AiAmountExtractionResult::Error::kNegativeAmount;
   }
 
   if (error.has_value()) {
+    if (!has_logged_ai_amount_extraction_invalid_response_reason_) {
+      autofill_metrics::LogAiAmountExtractionInvalidResponseReason(*error);
+      has_logged_ai_amount_extraction_invalid_response_reason_ = true;
+    }
+
     return base::unexpected(*error);
   }
 
