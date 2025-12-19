@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_delegate.h"
@@ -73,6 +74,22 @@
       headerHeight < scrollView.contentOffset.y + scrollView.contentInset.top;
   [self.viewDelegate gridViewHeaderHidden:headerHidden];
   [super scrollViewDidScroll:scrollView];
+}
+
+#pragma mark - UICollectionViewDropDelegate
+
+- (UICollectionViewDropProposal*)
+              collectionView:(UICollectionView*)collectionView
+        dropSessionDidUpdate:(id<UIDropSession>)session
+    withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  // Can't create a group within a group.
+  UIDropOperation dropOperation = [self.dragDropHandler
+      dropOperationForDropSession:session
+                          toIndex:destinationIndexPath.item];
+  return [[UICollectionViewDropProposal alloc]
+      initWithDropOperation:dropOperation
+                     intent:
+                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
 }
 
 #pragma mark - Parent's functions
