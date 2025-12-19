@@ -137,8 +137,8 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<MockTranslateClient> client_;
   std::unique_ptr<TestLanguageModel> language_model_;
-  std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<MockTranslateRanker> ranker_;
+  std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<TestInfoBarManager> infobar_manager_;
 };
 

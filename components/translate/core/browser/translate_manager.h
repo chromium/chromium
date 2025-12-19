@@ -358,7 +358,7 @@ class TranslateManager {
 
   raw_ptr<TranslateClient> translate_client_;        // Weak.
   raw_ptr<TranslateDriver> translate_driver_;        // Weak.
-  raw_ptr<TranslateRanker, DanglingUntriaged> translate_ranker_;  // Weak.
+  raw_ptr<TranslateRanker> translate_ranker_;        // Weak.
   raw_ptr<language::LanguageModel> language_model_;  // Weak.
 
   base::WeakPtr<TranslateMetricsLogger> active_translate_metrics_logger_;
