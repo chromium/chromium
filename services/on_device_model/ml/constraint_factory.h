@@ -34,6 +34,10 @@ class ConstraintFactory {
   ConstraintFactory(const ChromeML& chrome_ml,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  bool GetTokenizerParams(ChromeMLModel model,
+                          ChromeMLSession session,
+                          const ChromeMLGetTokenizerParamsFn& fn);
+
   const raw_ref<const ChromeML> chrome_ml_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

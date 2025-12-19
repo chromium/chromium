@@ -35,6 +35,21 @@ ConstraintFactory::~ConstraintFactory() {
 #endif
 }
 
+bool ConstraintFactory::GetTokenizerParams(
+    ChromeMLModel model,
+    ChromeMLSession session,
+    const ChromeMLGetTokenizerParamsFn& fn) {
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+  if (chrome_ml_->api().GetTokenizerParamsV2) {
+    return chrome_ml_->api().GetTokenizerParamsV2(model, session, fn);
+  } else {
+    return chrome_ml_->api().GetTokenizerParams(model, fn);
+  }
+#else
+  return false;
+#endif
+}
+
 DISABLE_CFI_DLSYM
 ChromeMLConstraint ConstraintFactory::CreateConstraint(
     ChromeMLSession session,
@@ -45,8 +60,8 @@ ChromeMLConstraint ConstraintFactory::CreateConstraint(
   TRACE_EVENT("optimization_guide", "ConstraintFactory::CreateConstraint");
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (!tokenizer_) {
-    CHECK(chrome_ml_->api().GetTokenizerParams(
-        model, [&](const ChromeMLTokenizerParams& params) {
+    CHECK(GetTokenizerParams(
+        model, session, [&](const ChromeMLTokenizerParams& params) {
           LlgTokenizerInit tokenizer_init{
               .vocab_size = params.vocab_size,
               .tok_eos = params.eos_token_id,
