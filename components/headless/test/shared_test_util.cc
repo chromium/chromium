@@ -26,13 +26,13 @@ base::FilePath GetTestExpectationFilePath(
     case HeadlessType::kUnspecified:
       break;
     case HeadlessType::kHeadlessMode:
-      if (test_meta_info.fork_headless_mode_expectations) {
+      if (test_meta_info.fork_headless_mode_expectations()) {
         expectation_path =
             test_script_path.InsertBeforeExtension(kHeadlessMode);
       }
       break;
     case HeadlessType::kHeadlessShell:
-      if (test_meta_info.fork_headless_shell_expectations) {
+      if (test_meta_info.fork_headless_shell_expectations()) {
         expectation_path =
             test_script_path.InsertBeforeExtension(kHeadlessShell);
       }

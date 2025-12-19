@@ -45,13 +45,6 @@ std::vector<std::string> CollectMetaInfos(std::string_view test_body) {
   return meta_infos;
 }
 
-void AppendAfterCommaIfNotEmpty(std::string& text, std::string_view value) {
-  if (!text.empty()) {
-    text.append(",");
-  }
-  text.append(value);
-}
-
 }  // namespace
 
 TestMetaInfo::TestMetaInfo() = default;
@@ -70,17 +63,18 @@ base::expected<TestMetaInfo, std::string> TestMetaInfo::FromString(
     std::string value;
     static RE2 re_command_line_switch(R"(--([\w-]+)(?:=(.*))?)");
     if (RE2::FullMatch(meta_info, re_command_line_switch, &name, &value)) {
-      result.command_line_switches[name] = value;
+      CHECK(!result.command_line_switches_.contains(name));
+      result.command_line_switches_[name] = value;
       continue;
     }
 
     if (meta_info == kForkHeadlessModeExpectations) {
-      result.fork_headless_mode_expectations = true;
+      result.fork_headless_mode_expectations_ = true;
       continue;
     }
 
     if (meta_info == kForkHeadlessShellExpectations) {
-      result.fork_headless_shell_expectations = true;
+      result.fork_headless_shell_expectations_ = true;
       continue;
     }
 
@@ -96,20 +90,10 @@ bool TestMetaInfo::IsEmpty() const {
 
 std::unique_ptr<base::test::ScopedFeatureList>
 TestMetaInfo::ProcessCommandLineSwitches(base::CommandLine& command_line) {
-  std::string enable_features;
-  std::string disable_features;
+  std::string enable_features = TakeSwitch(::switches::kEnableFeatures);
+  std::string disable_features = TakeSwitch(::switches::kDisableFeatures);
 
-  for (const auto& [name, value] : command_line_switches) {
-    if (name == ::switches::kEnableFeatures) {
-      AppendAfterCommaIfNotEmpty(enable_features, value);
-      continue;
-    }
-
-    if (name == ::switches::kDisableFeatures) {
-      AppendAfterCommaIfNotEmpty(disable_features, value);
-      continue;
-    }
-
+  for (const auto& [name, value] : command_line_switches_) {
     if (!value.empty()) {
       command_line.AppendSwitchASCII(name, value);
     } else {
@@ -124,6 +108,17 @@ TestMetaInfo::ProcessCommandLineSwitches(base::CommandLine& command_line) {
   }
 
   return feature_list;
+}
+
+std::string TestMetaInfo::TakeSwitch(std::string_view switch_name) {
+  std::string value;
+  if (auto it = command_line_switches_.find(switch_name);
+      it != command_line_switches_.cend()) {
+    value = it->second;
+    command_line_switches_.erase(it);
+  }
+
+  return value;
 }
 
 }  // namespace headless
