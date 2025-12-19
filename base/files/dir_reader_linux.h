@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_FILES_DIR_READER_LINUX_H_
 #define BASE_FILES_DIR_READER_LINUX_H_
 
@@ -17,6 +12,9 @@
 #include <string.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -36,10 +34,8 @@ struct linux_dirent {
 class DirReaderLinux {
  public:
   explicit DirReaderLinux(const char* directory_path)
-      : fd_(open(directory_path, O_RDONLY | O_DIRECTORY)),
-        offset_(0),
-        size_(0) {
-    memset(buf_, 0, sizeof(buf_));
+      : fd_(open(directory_path, O_RDONLY | O_DIRECTORY)) {
+    std::ranges::fill(buf_, 0);
   }
 
   DirReaderLinux(const DirReaderLinux&) = delete;
@@ -66,7 +62,7 @@ class DirReaderLinux {
       return true;
     }
 
-    const long r = syscall(__NR_getdents64, fd_, buf_, sizeof(buf_));
+    const long r = syscall(__NR_getdents64, fd_, buf_.data(), buf_.size());
     if (r == 0) {
       return false;
     }
@@ -97,9 +93,9 @@ class DirReaderLinux {
 
  private:
   const int fd_;
-  alignas(linux_dirent) unsigned char buf_[512];
-  size_t offset_;
-  size_t size_;
+  alignas(linux_dirent) std::array<unsigned char, 512> buf_;
+  size_t offset_ = 0;
+  size_t size_ = 0;
 };
 
 }  // namespace base
