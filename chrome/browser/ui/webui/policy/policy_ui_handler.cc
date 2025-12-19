@@ -161,6 +161,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"ignoredByExtension", IDS_POLICY_IGNORED_EXTENSION},
       {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
       {"ok", IDS_POLICY_OK},
+      {"restartRequired", IDS_POLICY_RESTART_REQUIRED},
       {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
       {"scopeUser", IDS_POLICY_SCOPE_USER},
       {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},

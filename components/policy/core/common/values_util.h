@@ -31,6 +31,9 @@ POLICY_EXPORT base::flat_set<std::string> ValueToStringSet(
 POLICY_EXPORT ComponentPolicyMap
 CopyComponentPolicyMap(const ComponentPolicyMap& map);
 
+// Returns a hash for the given value.
+POLICY_EXPORT size_t PolicyValueHash(const base::Value& value);
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_VALUES_UTIL_H_

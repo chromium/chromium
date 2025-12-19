@@ -42,10 +42,12 @@ const char kTestPolicyName8[] = "policy.test.8";
 // Dummy error message.
 const char16_t kTestError[] = u"Test error message";
 
-const PolicyDetails kExternalDetails_ = {false, false, kProfile, 0, 10, {}};
-const PolicyDetails kNonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
+const PolicyDetails kExternalDetails_ =
+  {false, false, false, kProfile, 0, 10, {}};
+const PolicyDetails kNonExternalDetails_ =
+  {false, false, false, kProfile, 0, 0, {}};
 #if !BUILDFLAG(IS_CHROMEOS)
-const PolicyDetails kUserCloudDetails = {false, false, kSingleProfile,
+const PolicyDetails kUserCloudDetails = {false, false, false, kSingleProfile,
                                          0,     0,     {}};
 #endif
 

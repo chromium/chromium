@@ -36,6 +36,10 @@ struct POLICY_EXPORT PolicyDetails {
   // True if the policy hasn't been released yet.
   bool is_future : 1;
 
+  // True if this policy supports dynamic refresh (does not need browser
+  // restart to take effect).
+  bool supports_dynamic_refresh : 1;
+
   // The scope of the policy.
   Scope scope;
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
@@ -96,6 +97,16 @@ class POLICY_EXPORT PolicyService {
   virtual bool HasProvider(ConfigurationPolicyProvider* provider) const = 0;
 
   virtual const PolicyMap& GetPolicies(const PolicyNamespace& ns) const = 0;
+
+  // Returns the hash of the initial value (see PolicyValueHash) of
+  // `policy_name` in the POLICY_DOMAIN_CHROME domain. Returns `{}` if
+  // - `policy_name` is marked as dynamic_refresh: true (currently, policy
+  // hashes
+  //    are not calculated for that case as an optimization)
+  // - `policy_name` does not exist
+  // - POLICY_DOMAIN_CHROME policies are not initialized yet.
+  virtual std::optional<size_t> GetInitialChromePolicyValueHash(
+      std::string_view policy_name) const = 0;
 
   // The PolicyService loads policy from several sources, and some require
   // asynchronous loads. IsInitializationComplete() returns true once all

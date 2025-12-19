@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MOCK_POLICY_SERVICE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MOCK_POLICY_SERVICE_H_
 
+#include "absl/container/flat_hash_map.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
@@ -46,6 +47,9 @@ class MockPolicyService : public PolicyService {
   MOCK_CONST_METHOD1(HasProvider, bool(ConfigurationPolicyProvider*));
 
   MOCK_CONST_METHOD1(GetPolicies, const PolicyMap&(const PolicyNamespace&));
+
+  MOCK_CONST_METHOD1(GetInitialChromePolicyValueHash,
+                     std::optional<size_t>(std::string_view policy_name));
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
   MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD2(RefreshPolicies, void(base::OnceClosure, PolicyFetchReason));

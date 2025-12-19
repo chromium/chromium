@@ -370,6 +370,9 @@ Additional details:
   <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy." meaning="Policy is working as expected.">
     OK
   </message>
+  <message name="IDS_POLICY_RESTART_REQUIRED" desc="Text displayed in the status column when a policy requires a browser restart to take effect.">
+    Restart required
+  </message>
   <message name="IDS_POLICY_UNSET" desc="Text displayed in the status column when no value is set for a policy.">
     Not set.
   </message>

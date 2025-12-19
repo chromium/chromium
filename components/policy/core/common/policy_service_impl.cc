@@ -8,14 +8,20 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -247,6 +253,15 @@ const PolicyMap& PolicyServiceImpl::GetPolicies(
     const PolicyNamespace& ns) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return policy_bundle_.Get(ns);
+}
+
+std::optional<size_t> PolicyServiceImpl::GetInitialChromePolicyValueHash(
+    std::string_view policy_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = startup_chrome_policy_hash_map_.find(policy_name);
+  return it != startup_chrome_policy_hash_map_.end()
+             ? std::make_optional(it->second)
+             : std::nullopt;
 }
 
 bool PolicyServiceImpl::IsInitializationComplete(PolicyDomain domain) const {
@@ -599,6 +614,20 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
             .size(),
         base::Time::Now() - creation_time_);
   }
+
+  // Check if POLICY_DOMAIN_CHROME has just become initialized and we haven't
+  // cached the startup chrome policy map.
+  if (startup_chrome_policy_hash_map_.empty() &&
+      std::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
+          updated_domains.end() &&
+      policy_domain_status_[POLICY_DOMAIN_CHROME] ==
+          PolicyDomainStatus::kPolicyReady) {
+    VLOG_POLICY(1, POLICY_PROCESSING)
+        << "Taking initial snapshot of POLICY_DOMAIN_CHROME policies";
+    const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+    startup_chrome_policy_hash_map_ =
+        CopyPoliciesStartupHash(policy_bundle_.Get(chrome_namespace));
+  }
 }
 
 void PolicyServiceImpl::CheckRefreshComplete() {
@@ -646,4 +675,21 @@ void PolicyServiceImpl::RecordInitializationTime(
   }
 }
 
+absl::flat_hash_map<std::string, size_t>
+PolicyServiceImpl::CopyPoliciesStartupHash(
+    const PolicyMap& startup_policy_map) {
+  absl::flat_hash_map<std::string, size_t>
+      startup_policy_dynamic_refresh_false_map;
+  for (const auto& [key, entry] : startup_policy_map) {
+    const policy::PolicyDetails* policy_details = GetChromePolicyDetails(key);
+    if (policy_details && !policy_details->supports_dynamic_refresh) {
+      const base::Value* policy_value = entry.value_unsafe();
+      if (policy_value) {
+        startup_policy_dynamic_refresh_false_map[key] =
+            policy::PolicyValueHash(*policy_value);
+      }
+    }
+  }
+  return startup_policy_dynamic_refresh_false_map;
+}
 }  // namespace policy

@@ -65,6 +65,22 @@ std::vector<std::string> PopulateExpectedPolicy(const std::string& name,
   return expected_policy;
 }
 
+std::vector<std::string> PopulateExpectedRestartPolicy(
+    const std::string& name,
+    const std::string& value) {
+  std::vector<std::string> expected_policy;
+
+  // Populate expected policy column and row fields.
+  expected_policy.push_back(name);
+  expected_policy.push_back(value);
+  expected_policy.push_back("Platform");
+  expected_policy.push_back("Machine");
+  expected_policy.push_back("Mandatory");
+  expected_policy.push_back("Restart required");
+
+  return expected_policy;
+}
+
 void VerifyPolicies(
     const std::vector<std::vector<std::string>>& expected_policies) {
   // Retrieve the text contents of the policy table cells for all policies.
@@ -271,7 +287,7 @@ id<GREYMatcher> DownloadButton() {
   expected_policies.push_back(
       PopulateExpectedPolicy("AutofillCreditCardEnabled", "false"));
   expected_policies.push_back(
-      PopulateExpectedPolicy("IncognitoModeAvailability", "1"));
+      PopulateExpectedRestartPolicy("IncognitoModeAvailability", "1"));
   VerifyPolicies(expected_policies);
 }
 

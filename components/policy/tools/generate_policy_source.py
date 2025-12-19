@@ -90,6 +90,7 @@ class PolicyDetails:
     self.internal_only = features.get('internal_only', False)
     self.metapolicy_type = features.get('metapolicy_type', '')
     self.is_deprecated = policy.get('deprecated', False)
+    self.supports_dynamic_refresh = features.get('dynamic_refresh', True)
     self.is_device_only = policy.get('device_only', False)
     self.is_sensitive = policy.get('sensitive', False)
     self.per_profile = features.get('per_profile', False)
@@ -1104,7 +1105,8 @@ namespace policy {
   # TODO(crbug.com/40127969): kChromePolicyDetails shouldn't be declare if there
   # is no policy.
   f.write('''[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated is_future scope id max_external_data_size, risk tags
+// is_deprecated, is_future, supports_dynamic_refresh, scope id,
+// max_external_data_size, risk tags
 ''')
   for policy in policies:
     if policy.is_supported:
@@ -1112,10 +1114,12 @@ namespace policy {
       assert (policy.max_size >= MIN_EXTERNAL_DATA_SIZE and
               policy.max_size <= MAX_EXTERNAL_DATA_SIZE)
       f.write('  // %s\n' % policy.name)
-      f.write('  { %-14s%-10s%-17s%4s,%22s, %s },\n' %
+      f.write('  { %-14s%-10s%-17s%-17s%4s,%22s, %s },\n' %
               ('true,' if policy.is_deprecated else 'false,',
-               'true,' if policy.is_future else 'false, ', policy.scope + ",",
-               policy.id, policy.max_size, risk_tags.ToInitString(policy.tags)))
+               'true,' if policy.is_future else 'false, ', 'true,'
+               if policy.supports_dynamic_refresh else 'false, ',
+               policy.scope + ',', policy.id, policy.max_size,
+               risk_tags.ToInitString(policy.tags)))
   f.write('};\n\n')
 
   _WriteSensitivePoliciesSource(f, policies)

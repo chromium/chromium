@@ -1348,6 +1348,7 @@ var policyTests = [
             "chromePolicies":
               {"AllowDinosaurEasterEgg":
                 {"level":"mandatory",
+                 "restartRequired": true,
                  "scope":"user",
                  "source":"cloud",
                  "value":true}
