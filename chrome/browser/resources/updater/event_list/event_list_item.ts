@@ -117,7 +117,8 @@ export class EventListItemElement extends CrLitElement {
 
   private computeAppLabel(): string {
     return this.appId !== undefined ?
-        getKnownAppNamesById().get(this.appId.toUpperCase()) ?? this.appId :
+        getKnownAppNamesById().get(this.appId.toLowerCase()) ??
+            this.appId.toUpperCase() :
         loadTimeData.getString('internal');
   }
 

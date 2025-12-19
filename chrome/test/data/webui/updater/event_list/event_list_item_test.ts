@@ -613,4 +613,74 @@ suite('EventListItemElement', () => {
     await microtasksFinished();
     assertStringContains(item.shadowRoot.textContent, '1h 1m 1ms 2μs');
   });
+
+  test('displays app name for known app', async () => {
+    loadTimeData.overrideValues({
+      numKnownApps: 1,
+      knownAppName0: 'Chrome',
+      knownAppIds0: '{app1}',
+    });
+    const event: MergedHistoryEvent = {
+      eventType: 'INSTALL',
+      startEvent: {
+        eventType: 'INSTALL',
+        eventId: '1',
+        deviceUptime: 0,
+        pid: 0,
+        processToken: '',
+        bound: 'START',
+        errors: [],
+        appId: '{APP1}',
+      },
+      endEvent: {
+        eventType: 'INSTALL',
+        eventId: '1',
+        deviceUptime: 1000,
+        pid: 0,
+        processToken: '',
+        bound: 'END',
+        errors: [],
+        version: '1.0',
+      },
+    };
+    item.event = event;
+    await microtasksFinished();
+    const appSpan = item.shadowRoot.querySelector('.event-app');
+    assertTrue(!!appSpan);
+    assertEquals('Chrome', appSpan.textContent.trim());
+  });
+
+  test('displays app id for unknown app', async () => {
+    loadTimeData.overrideValues({
+      numKnownApps: 0,
+    });
+    const event: MergedHistoryEvent = {
+      eventType: 'INSTALL',
+      startEvent: {
+        eventType: 'INSTALL',
+        eventId: '1',
+        deviceUptime: 0,
+        pid: 0,
+        processToken: '',
+        bound: 'START',
+        errors: [],
+        appId: '{unknown-app}',
+      },
+      endEvent: {
+        eventType: 'INSTALL',
+        eventId: '1',
+        deviceUptime: 1000,
+        pid: 0,
+        processToken: '',
+        bound: 'END',
+        errors: [],
+        version: '1.0',
+      },
+    };
+    item.event = event;
+    await microtasksFinished();
+    const appSpan = item.shadowRoot.querySelector('.event-app');
+    assertTrue(!!appSpan);
+    assertEquals('{UNKNOWN-APP}', appSpan.textContent.trim());
+  });
 });
