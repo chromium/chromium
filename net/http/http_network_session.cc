@@ -280,8 +280,7 @@ base::Value HttpNetworkSession::SocketPoolInfoToValue() const {
   return normal_socket_pool_manager_->SocketPoolInfoToValue();
 }
 
-std::unique_ptr<base::Value> HttpNetworkSession::SpdySessionPoolInfoToValue()
-    const {
+base::Value HttpNetworkSession::SpdySessionPoolInfoToValue() const {
   return spdy_session_pool_.SpdySessionPoolInfoToValue();
 }
 

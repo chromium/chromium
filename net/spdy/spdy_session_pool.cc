@@ -529,15 +529,14 @@ void SpdySessionPool::MakeCurrentSessionsGoingAway(Error error) {
   }
 }
 
-std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
-    const {
-  base::Value::List list;
+base::Value SpdySessionPool::SpdySessionPoolInfoToValue() const {
+  auto list = base::Value::List::with_capacity(sessions_.size());
 
   for (const auto& session : sessions_) {
     list.Append(session->GetInfoAsValue());
   }
 
-  return std::make_unique<base::Value>(std::move(list));
+  return base::Value(std::move(list));
 }
 
 void SpdySessionPool::OnIPAddressChanged(

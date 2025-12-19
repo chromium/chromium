@@ -1303,12 +1303,12 @@ int GetPoolGroupCount(HttpNetworkSession* session,
 
 // Return count of distinct spdy sessions.
 int GetSpdySessionCount(HttpNetworkSession* session) {
-  std::unique_ptr<base::Value> value(
-      session->spdy_session_pool()->SpdySessionPoolInfoToValue());
-  if (!value || !value->is_list()) {
+  base::Value value =
+      session->spdy_session_pool()->SpdySessionPoolInfoToValue();
+  if (!value.is_list()) {
     return -1;
   }
-  return value->GetList().size();
+  return value.GetList().size();
 }
 
 // Return count of sockets handed out by a given socket pool.

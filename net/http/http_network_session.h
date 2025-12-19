@@ -266,7 +266,7 @@ class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver,
   base::Value SocketPoolInfoToValue() const;
 
   // Creates a Value summary of the state of the SPDY sessions.
-  std::unique_ptr<base::Value> SpdySessionPoolInfoToValue() const;
+  base::Value SpdySessionPoolInfoToValue() const;
 
   // Creates a Value summary of the state of the QUIC sessions and
   // configuration.

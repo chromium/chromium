@@ -416,8 +416,7 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
   // Log SPDY Sessions.
   {
     net_info_dict.Set(kNetInfoSpdySessions,
-                      base::Value::FromUniquePtrValue(
-                          http_network_session->SpdySessionPoolInfoToValue()));
+                      http_network_session->SpdySessionPoolInfoToValue());
   }
 
   // Log SPDY status.

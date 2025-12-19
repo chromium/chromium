@@ -323,7 +323,7 @@ class NET_EXPORT SpdySessionPool
   void MakeCurrentSessionsGoingAway(Error error);
 
   // Creates a Value summary of the state of the spdy session pool.
-  std::unique_ptr<base::Value> SpdySessionPoolInfoToValue() const;
+  base::Value SpdySessionPoolInfoToValue() const;
 
   HttpServerProperties* http_server_properties() {
     return http_server_properties_;
