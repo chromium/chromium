@@ -282,6 +282,11 @@ interface UntrustedPageHandler {
   // TODO (b/358169090): Create a cpp typemap to use the ui::AXNodeID type
   // instead of int32
   ScrollToTargetNode(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+
+  // Informs the browser that the user clicked the close button. This is
+  // only used by the immersive reading mode, because the Side Panel
+  // has its own close button that handles closing itself.
+  CloseUI();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

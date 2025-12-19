@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './read_anything_header.js';
+import './immersive_mode_header.js';
 import './read_anything_toolbar.js';
 import '/strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
@@ -35,14 +35,14 @@ import {ReadAnythingLogger, TimeFrom} from '../shared/read_anything_logger.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
-import type {ReadAnythingHeaderElement} from './read_anything_header.js';
+import type {ImmersiveModeHeaderElement} from './immersive_mode_header.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
-    header: ReadAnythingHeaderElement,
+    immersiveHeader: ImmersiveModeHeaderElement,
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
     containerParent: HTMLElement,
@@ -83,6 +83,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechEngineLoaded_: {type: Boolean},
       willDrawAgainSoon_: {type: Boolean},
       pageLanguage_: {type: String},
+      presentationState_: {type: Number},
     };
   }
 
@@ -146,7 +147,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
 
-  protected presentationState: number|undefined = undefined;
+  protected accessor presentationState_: number|undefined = undefined;
+
+  isImmersiveMode(): boolean {
+    // The kInImmersiveOverlay enum value is 3 in ReadAnythingPresentationState.
+    // See chrome/common/read_anything/read_anything.mojom.
+    return this.presentationState_ === 3;
+  }
 
   constructor() {
     super();
@@ -177,6 +184,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
       chrome.readingMode.onConnected();
     }
 
+    // Request the presentation state to determine whether we should use the UI
+    // for immersive mode.
+    chrome.readingMode.sendGetPresentationStateRequest();
     // Push ShowUI() callback to the event queue to allow deferred rendering
     // to take place.
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
@@ -305,7 +315,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
         (presentationState: number) => {
           // TODO (crbug.com/450950100): The Read Anything app should determine
           // which content to display based on the presentation state.
-          this.presentationState = presentationState;
+          this.presentationState_ = presentationState;
         };
   }
 

@@ -24,21 +24,21 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './read_anything_header.css.js';
-import {getHtml} from './read_anything_header.html.js';
+import {getCss} from './immersive_mode_header.css.js';
+import {getHtml} from './immersive_mode_header.html.js';
 
-export interface ReadAnythingHeaderElement {
+export interface ImmersiveModeHeaderElement {
   $: {
     close: CrIconButtonElement,
   };
 }
 
-const ReadAnythingHeaderElementBase =
+const ImmersiveModeHeaderElementBase =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
-export class ReadAnythingHeaderElement extends ReadAnythingHeaderElementBase {
+export class ImmersiveModeHeaderElement extends ImmersiveModeHeaderElementBase {
   static get is() {
-    return 'read-anything-header';
+    return 'immersive-mode-header';
   }
   static override get styles() {
     return getCss();
@@ -54,12 +54,17 @@ export class ReadAnythingHeaderElement extends ReadAnythingHeaderElementBase {
     super();
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
   }
+
+  protected onCloseClick_() {
+    chrome.readingMode.close();
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'read-anything-header': ReadAnythingHeaderElement;
+    'immersive-mode-header': ImmersiveModeHeaderElement;
   }
 }
 
-customElements.define(ReadAnythingHeaderElement.is, ReadAnythingHeaderElement);
+customElements.define(
+    ImmersiveModeHeaderElement.is, ImmersiveModeHeaderElement);

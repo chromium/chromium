@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ReadAnythingHeaderElement} from './read_anything_header.js';
+import type {ImmersiveModeHeaderElement} from './immersive_mode_header.js';
 
-export function getHtml(this: ReadAnythingHeaderElement) {
+export function getHtml(this: ImmersiveModeHeaderElement) {
   if (!this.isImmersiveEnabled_) {
     return html``;
   }
@@ -25,7 +25,7 @@ export function getHtml(this: ReadAnythingHeaderElement) {
       iron-icon="cr:close"
       aria-label="$i18n{readingModeLanguageMenuClose}"
       title="$i18n{readingModeLanguageMenuClose}"
-    >
+      @click="${this.onCloseClick_}">
     </cr-icon-button>
   </div>
 </header>

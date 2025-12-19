@@ -142,6 +142,7 @@ class MockReadAnythingUntrustedPageHandler
               (read_anything::mojom::DistillationStatus, int word_count),
               (override));
   MOCK_METHOD(void, GetPresentationState, (), (override));
+  MOCK_METHOD(void, CloseUI, (), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {

@@ -302,6 +302,7 @@ class ReadAnythingAppController
   void UpdateWordsSeen(int words_seen);
   void UpdateWordsHeard(int words_heard);
   void LogEmptyState();
+  void CloseUI();
 
   // The language code that should be used to determine which voices are
   // supported for speech.

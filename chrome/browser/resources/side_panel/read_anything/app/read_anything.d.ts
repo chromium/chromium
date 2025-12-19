@@ -328,6 +328,9 @@ declare namespace chrome {
     // Called by the Read Anything app to request the presentation state.
     function sendGetPresentationStateRequest(): void;
 
+    // Called by the Read Anything app to close the Read Anything UI.
+    function close(): void;
+
     // Whether the Google Docs load more button is visible.
     let isDocsLoadMoreButtonVisible: boolean;
 

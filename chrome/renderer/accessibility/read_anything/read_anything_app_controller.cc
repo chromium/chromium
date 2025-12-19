@@ -1296,7 +1296,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isDocsLoadMoreButtonVisible",
                    &ReadAnythingAppController::IsDocsLoadMoreButtonVisible)
       .SetMethod("sendGetPresentationStateRequest",
-                 &ReadAnythingAppController::SendGetPresentationStateRequest);
+                 &ReadAnythingAppController::SendGetPresentationStateRequest)
+      .SetMethod("close", &ReadAnythingAppController::CloseUI);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -2242,6 +2243,15 @@ void ReadAnythingAppController::ReadingModeWillClose() {
   }
 
   ExecuteJavaScript("chrome.readingMode.readingModeWillClose();");
+}
+
+void ReadAnythingAppController::CloseUI() {
+  // This CloseUI() method is only used for the immersive UI, so skip if flag is
+  // not enabled
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  page_handler_->CloseUI();
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {

@@ -18,8 +18,8 @@ build_webui("build") {
     "app/app_style_updater.ts",
     "app/app.html.ts",
     "app/app.ts",
-    "app/read_anything_header.html.ts",
-    "app/read_anything_header.ts",
+    "app/immersive_mode_header.html.ts",
+    "app/immersive_mode_header.ts",
     "app/read_anything_toolbar.html.ts",
     "app/read_anything_toolbar.ts",
     "content/content_controller.ts",
@@ -78,7 +78,7 @@ build_webui("build") {
   ]
   css_files = [
     "app/app.css",
-    "app/read_anything_header.css",
+    "app/immersive_mode_header.css",
     "app/read_anything_toolbar.css",
     "app/toolbar_styles_shared.css",
     "menus/font_select.css",

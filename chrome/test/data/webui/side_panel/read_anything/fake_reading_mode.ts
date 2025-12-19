@@ -527,4 +527,10 @@ export class FakeReadingMode {
 
   // Logs the extension state.
   logExtenstionState() {}
+
+  // Called by the Read Anything app to request the presentation state.
+  sendGetPresentationStateRequest() {}
+
+  // Called by the Read Anything app to close the immersive mode UI.
+  close() {}
 }
