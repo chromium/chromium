@@ -62,20 +62,31 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
 
     @Override
     public void testFinished(Description desc) throws Exception {
-        Bundle bundle = new Bundle();
+        try {
+            Bundle bundle = new Bundle();
 
-        Class<?> curClass = desc.getTestClass();
-        if (!curClass.equals(mActiveTestClass)) {
-            bundle.putString("class", curClass.getName());
+            Class<?> curClass = desc.getTestClass();
+            if (!curClass.equals(mActiveTestClass)) {
+                bundle.putString("class", curClass.getName());
+                bundle.putString(
+                        "class_annotations",
+                        getAnnotationJSON(Arrays.asList(curClass.getAnnotations())).toString());
+            }
+            bundle.putString("method", desc.getMethodName());
             bundle.putString(
-                    "class_annotations",
-                    getAnnotationJSON(Arrays.asList(curClass.getAnnotations())).toString());
-            mActiveTestClass = curClass;
-        }
-        bundle.putString("method", desc.getMethodName());
-        bundle.putString("method_annotations", getAnnotationJSON(desc.getAnnotations()).toString());
+                    "method_annotations", getAnnotationJSON(desc.getAnnotations()).toString());
 
-        sendStatus(STATUS_CODE, bundle);
+            sendStatus(STATUS_CODE, bundle);
+
+            // Do this last: if we threw an exception in the above code, we don't want to update
+            // our state, as we haven't yet told the consumer that the current class has changed.
+            mActiveTestClass = curClass;
+        } catch (Throwable e) {
+            // Record the failure for later logging, as the exception seems to get silently dropped
+            // otherwise.
+            mFailures.add(new Failure(desc, e));
+            throw e;
+        }
     }
 
     /** Store the test method description to a Map at the beginning of a test run. */
