@@ -433,6 +433,15 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
                                                 GetBufferPool()));
 }
 
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> DupCryptoBuffers(
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> buffers) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> result;
+  for (auto& buf : buffers) {
+    result.push_back(bssl::UpRef(buf));
+  }
+  return result;
+}
+
 bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
   DCHECK(a && b);
   if (a == b)

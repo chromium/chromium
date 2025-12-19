@@ -138,6 +138,10 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER>
 CreateCryptoBufferFromStaticDataUnsafe(base::span<const uint8_t> data);
 
+// Returns a vector containing new references to the same buffers.
+NET_EXPORT std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> DupCryptoBuffers(
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> buffers);
+
 // Compares two CRYPTO_BUFFERs and returns true if they have the same contents.
 NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
                                   const CRYPTO_BUFFER* b);
