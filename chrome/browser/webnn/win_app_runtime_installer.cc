@@ -264,6 +264,8 @@ void StartInstallation() {
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<AppInstallAsyncOp> async_op;
+  // This operation runs in the background and continues even after process
+  // termination.
   hr = app_install_manager_3->StartProductInstallAsync(
       base::win::HStringReference(kWinAppRuntimeProductId.c_str()).Get(),
       /*catalogId=*/nullptr, /*flightId=*/nullptr, /*clientId=*/nullptr,
@@ -275,6 +277,7 @@ void StartInstallation() {
     return;
   }
 
+  // Post a handler to wait for the completion of `StartProductInstallAsync()`.
   hr = base::win::PostAsyncHandlers(
       async_op.Get(),
       base::BindOnce(&OnInstallationStarted, std::move(app_install_manager)),
@@ -314,8 +317,7 @@ void EnsureInstallation() {
   }
 
   // Before starting the installation, first try to create the package
-  // dependency, in case it has already been installed by another application on
-  // the system.
+  // dependency to check if it has already been installed.
   std::wstring new_dependency_id = TryCreateWinAppRuntimePackageDependency();
   if (!new_dependency_id.empty()) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kRuntimeAlreadyPresent);

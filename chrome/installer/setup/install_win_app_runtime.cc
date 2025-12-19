@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/windows_version.h"
@@ -39,8 +40,11 @@ bool TriggerInstallation(bool system_install) {
           RuntimeClass_Windows_ApplicationModel_Store_Preview_InstallControl_AppInstallManager)
           .Get(),
       &app_install_manager);
+  base::UmaHistogramSparse("Setup.Install.WinAppRuntime.ActivateManager.Result",
+                           hr);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to activate IAppInstallManager instance.";
+    LOG(ERROR) << "Failed to activate IAppInstallManager instance. Error: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
   Microsoft::WRL::ComPtr<abi_install::IAppInstallManager6>
@@ -54,8 +58,11 @@ bool TriggerInstallation(bool system_install) {
           RuntimeClass_Windows_ApplicationModel_Store_Preview_InstallControl_AppInstallOptions)
           .Get(),
       &install_options);
+  base::UmaHistogramSparse("Setup.Install.WinAppRuntime.ActivateOptions.Result",
+                           hr);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to activate IAppInstallOptions instance.";
+    LOG(ERROR) << "Failed to activate IAppInstallOptions instance. Error: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
@@ -68,12 +75,20 @@ bool TriggerInstallation(bool system_install) {
   }
 
   Microsoft::WRL::ComPtr<AppInstallAsyncOp> async_op;
+  // The process does not wait for completion of this operation, which continues
+  // in the background even after process termination. When the browser
+  // launches, it will check if the package has been installed successfully by
+  // trying to create a dependency on it, see `EnsureInstallation()` in
+  // //chrome/browser/webnn/win_app_runtime_installer.cc.
   hr = app_install_manager_6->StartProductInstallWithOptionsAsync(
       base::win::HStringReference(webnn::kWinAppRuntimeProductId.c_str()).Get(),
       /*flightId=*/nullptr, /*clientId=*/nullptr,
       /*correlationVector=*/nullptr, install_options.Get(), &async_op);
+  base::UmaHistogramSparse("Setup.Install.WinAppRuntime.StartInstall.Result",
+                           hr);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to start Windows App Runtime installation.";
+    LOG(ERROR) << "Failed to start Windows App Runtime installation. Error: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 

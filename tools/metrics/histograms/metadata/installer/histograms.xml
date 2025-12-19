@@ -311,6 +311,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Setup.Install.WinAppRuntime.{Operation}.Result" enum="Hresult"
+    expires_after="2026-12-16">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The HRESULT of a call to {Operation} when trying to trigger the Windows App
+    Runtime installation. Recorded once per process.
+  </summary>
+  <token key="Operation">
+    <variant name="ActivateManager"/>
+    <variant name="ActivateOptions"/>
+    <variant name="StartInstall"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
