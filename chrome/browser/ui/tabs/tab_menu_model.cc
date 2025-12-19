@@ -309,7 +309,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
-      glic::GlicEnabling::IsMultiInstanceEnabled()) {
+      glic::GlicEnabling::IsMultiInstanceEnabled() &&
+      base::FeatureList::IsEnabled(features::kGlicMITabContextMenu)) {
     glic_tab_sub_menu_model_ =
         std::make_unique<glic::GlicTabSubMenuModel>(tab_strip, index);
     AddSubMenu(TabStripModel::CommandGlicShare,

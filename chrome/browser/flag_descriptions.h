@@ -8314,6 +8314,11 @@ inline constexpr char kComposeSelectionNudgeDescription[] =
 inline constexpr char kGlicName[] = "Glic";
 inline constexpr char kGlicDescription[] = "Enables glic";
 
+inline constexpr char kGlicMITabContextMenuName[] =
+    "Glic Multi-Instance Tab Context Menu";
+inline constexpr char kGlicMITabContextMenuDescription[] =
+    "Enables the Glic context menu for the tabs in the tabstrip.";
+
 inline constexpr char kGlicZOrderChangesName[] = "Glic Z Order Changes";
 inline constexpr char kGlicZOrderChangesDescription[] =
     "Enables glic z order changing";
