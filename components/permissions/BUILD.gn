@@ -310,7 +310,6 @@ source_set("test_support") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",

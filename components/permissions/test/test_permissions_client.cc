@@ -6,7 +6,6 @@
 
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permission_actions_history.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -41,12 +40,6 @@ HostContentSettingsMap* TestPermissionsClient::GetSettingsMap(
 
 scoped_refptr<content_settings::CookieSettings>
 TestPermissionsClient::GetCookieSettings(
-    content::BrowserContext* browser_context) {
-  return nullptr;
-}
-
-privacy_sandbox::TrackingProtectionSettings*
-TestPermissionsClient::GetTrackingProtectionSettings(
     content::BrowserContext* browser_context) {
   return nullptr;
 }

@@ -39,10 +39,6 @@ namespace content_settings {
 class CookieSettings;
 }
 
-namespace privacy_sandbox {
-class TrackingProtectionSettings;
-}  // namespace privacy_sandbox
-
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionActionsHistory;
@@ -77,10 +73,6 @@ class PermissionsClient {
   // Retrieves the CookieSettings for this context.
   virtual scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
       content::BrowserContext* browser_context) = 0;
-
-  // Retrieves the TrackingProtectionSettings for this context.
-  virtual privacy_sandbox::TrackingProtectionSettings*
-  GetTrackingProtectionSettings(content::BrowserContext* browser_context) = 0;
 
   // Retrieves the subresource filter activation from browser website settings.
   virtual bool IsSubresourceFilterActivated(

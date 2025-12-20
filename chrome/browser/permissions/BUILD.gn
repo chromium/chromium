@@ -107,7 +107,6 @@ source_set("permissions") {
     "//components/permissions/prediction_service",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
