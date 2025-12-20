@@ -417,15 +417,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               *browser, browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      (contextual_tasks::kShowEntryPoint.Get() ==
-       contextual_tasks::EntryPointOption::kToolbarRevisit)) {
-    contextual_tasks_ephemeral_button_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<ContextualTasksEphemeralButtonController>(*browser,
-                                                                      browser);
-  }
-
   // Initialize embedder features last.
   embedder_browser_window_features_ =
       GetUserDataFactory().CreateInstance<EmbedderBrowserWindowFeatures>(
@@ -708,6 +699,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             .CreateInstance<
                 contextual_tasks::ContextualTasksSidePanelCoordinator>(
                 *browser_, browser_);
+
+    if (contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kToolbarRevisit) {
+      contextual_tasks_ephemeral_button_controller_ =
+          GetUserDataFactory()
+              .CreateInstance<ContextualTasksEphemeralButtonController>(
+                  *browser_, browser_);
+    }
   }
 
   side_panel_coordinator_->Init(browser_view->browser());

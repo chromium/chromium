@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -42,6 +44,11 @@ ContextualTasksEphemeralButtonController::
       browser_window_interface_->RegisterActiveTabDidChange(base::BindRepeating(
           &ContextualTasksEphemeralButtonController::OnActiveTabChange,
           base::Unretained(this)));
+
+  contextual_task_entry_observation_.Observe(
+      SidePanelRegistry::From(browser_window_interface_)
+          ->GetEntryForKey(
+              SidePanelEntryKey(SidePanelEntryId::kContextualTasks)));
 }
 
 ContextualTasksEphemeralButtonController::
@@ -57,16 +64,7 @@ ContextualTasksEphemeralButtonController::From(
 void ContextualTasksEphemeralButtonController::OnTaskAdded(
     const contextual_tasks::ContextualTask& task,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
-  std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
-  if (!current_tab_session_id.has_value()) {
-    return;
-  }
-
-  for (SessionID id : task.GetTabIds()) {
-    if (current_tab_session_id.value() == id) {
-      should_update_visibility_callbacks_.Notify(true);
-    }
-  }
+  MaybeNotifyVisibilityShouldChange();
 }
 
 void ContextualTasksEphemeralButtonController::OnTaskUpdated(
@@ -78,6 +76,10 @@ void ContextualTasksEphemeralButtonController::OnTaskUpdated(
 void ContextualTasksEphemeralButtonController::OnTaskRemoved(
     const base::Uuid& task_id,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
+  ephemeral_button_eligible_tasks_.erase(
+      std::remove(ephemeral_button_eligible_tasks_.begin(),
+                  ephemeral_button_eligible_tasks_.end(), task_id),
+      ephemeral_button_eligible_tasks_.end());
   should_update_visibility_callbacks_.Notify(false);
 }
 
@@ -95,6 +97,25 @@ void ContextualTasksEphemeralButtonController::OnTaskAssociatedToTab(
 void ContextualTasksEphemeralButtonController::OnTaskDisassociatedFromTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
+  MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksEphemeralButtonController::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  if (!IsActiveTabAssociatedToTask()) {
+    return;
+  }
+
+  if (reason == SidePanelEntryHideReason::kBackgrounded) {
+    return;
+  }
+
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      GetContextualTasksService()->GetContextualTaskForTab(
+          GetCurrentTabSessionId().value());
+
+  ephemeral_button_eligible_tasks_.emplace_back(current_task->GetTaskId());
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -121,6 +142,18 @@ ContextualTasksEphemeralButtonController::GetCurrentTabSessionId() {
   }
 }
 
+bool ContextualTasksEphemeralButtonController::IsActiveTabAssociatedToTask() {
+  std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
+  if (!current_tab_session_id.has_value()) {
+    return false;
+  }
+
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      GetContextualTasksService()->GetContextualTaskForTab(
+          current_tab_session_id.value());
+  return current_task.has_value();
+}
+
 void ContextualTasksEphemeralButtonController::OnActiveTabChange(
     BrowserWindowInterface* browser_window_interface) {
   MaybeNotifyVisibilityShouldChange();
@@ -128,13 +161,21 @@ void ContextualTasksEphemeralButtonController::OnActiveTabChange(
 
 void ContextualTasksEphemeralButtonController::
     MaybeNotifyVisibilityShouldChange() {
-  std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
-  if (!current_tab_session_id.has_value()) {
+  // TabInterface can be null on browser shutdown.
+  tabs::TabInterface* const tab_interface =
+      browser_window_interface_->GetActiveTabInterface();
+
+  if (!tab_interface) {
     return;
   }
 
   std::optional<contextual_tasks::ContextualTask> current_task =
       GetContextualTasksService()->GetContextualTaskForTab(
-          current_tab_session_id.value());
-  should_update_visibility_callbacks_.Notify(current_task.has_value());
+          GetCurrentTabSessionId().value());
+  // The ephemeral toolbar button should show if the contextual task side panel
+  // was closed.
+  should_update_visibility_callbacks_.Notify(
+      current_task.has_value() &&
+      base::Contains(ephemeral_button_eligible_tasks_,
+                     current_task->GetTaskId()));
 }

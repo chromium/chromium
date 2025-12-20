@@ -11,16 +11,20 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/uuid.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
+class SidePanelEntry;
 
 // Controller used to trigger the contextual task toolbar button to show
 // while the active tab is associated to a task and hidden otherwise.
 class ContextualTasksEphemeralButtonController
-    : public contextual_tasks::ContextualTasksService::Observer {
+    : public contextual_tasks::ContextualTasksService::Observer,
+      public SidePanelEntryObserver {
  public:
   DECLARE_USER_DATA(ContextualTasksEphemeralButtonController);
   explicit ContextualTasksEphemeralButtonController(
@@ -46,6 +50,9 @@ class ContextualTasksEphemeralButtonController
   void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
                                   SessionID tab_id) override;
 
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
+
   using ShouldUpdateVisibilityCallbackList =
       base::RepeatingCallbackList<void(bool)>;
   base::CallbackListSubscription RegisterShouldUpdateButtonVisibility(
@@ -54,9 +61,13 @@ class ContextualTasksEphemeralButtonController
  private:
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
+  bool IsActiveTabAssociatedToTask();
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void MaybeNotifyVisibilityShouldChange();
 
+  std::vector<base::Uuid> ephemeral_button_eligible_tasks_;
+  base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
+      contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   base::CallbackListSubscription tab_change_subscription_;
