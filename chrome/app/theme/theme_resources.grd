@@ -106,6 +106,7 @@
       </if>
       <if expr="not is_android">
         <if expr="_google_chrome">
+            <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_16" file="google_chrome/google_g_gradient_16.png" />
             <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_20" file="google_chrome/google_g_gradient_20.png" />
             <structure type="chrome_scaled_image" name="IDR_GOOGLE_G" file="google_chrome/google_icon.png" />
         </if>
