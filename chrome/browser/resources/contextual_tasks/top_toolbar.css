@@ -17,39 +17,50 @@
 
   align-items: center;
   background-color: var(--cr-fallback-color-surface);
+  color: var(--cr-fallback-color-on-surface);
   display: flex;
-  height: 48px;
-  justify-content: space-between;
+  height: 20px;
+  padding: 7px 12px;
+  margin: 6px 4px 0px 4px;
 }
 
-.leftSide {
-  align-items: center;
-  display: flex;
-  font-size: 16px;
-  flex-grow: 1;
+.top-toolbar-title {
   overflow: hidden;
+  align-items: center;
+  font-size: 16px;
+  flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.toolbarLogo {
+.top-toolbar-logo {
+  flex:0;
   box-sizing: border-box;
   display: inline-block;
-  margin: 0 12px 0 8px;
-  min-width: 22px;
-  min-height: 22px;
+  margin-right: 8px;
+  --cr-icon-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-.rightSide {
-  display: flex;
-  flex-shrink: 0;
-  justify-content: flex-end;
+.chrome-logo-dark {
+  display: none;
 }
 
-#rightButtonContainer {
-  align-items: center;
+@media (prefers-color-scheme: dark) {
+  .chrome-logo-light {
+    display: none;
+  }
+
+  .chrome-logo-dark {
+    display: inline-block;
+  }
+}
+
+.top-toolbar-action-buttons {
+  flex: 0;
   display: flex;
-  padding-right: 16px;
+  flex-direction: row;
 }
 
 .dropdown-item {

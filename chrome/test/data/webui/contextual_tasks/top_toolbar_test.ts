@@ -14,6 +14,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {assertHTMLElement} from './test_utils.js';
 
 suite('TopToolbarTest', () => {
   let topToolbar: TopToolbarElement;
@@ -31,15 +32,27 @@ suite('TopToolbarTest', () => {
   });
 
   test('shows correct logo', () => {
+    // <if expr="_google_chrome">
+    const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+        '.top-toolbar-logo');
+    assertHTMLElement(logo);
     assertEquals(
-        topToolbar.$.topToolbarLogo.src,
-        // <if expr="_google_chrome">
-        'chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg',
-        // </if>
-        // <if expr="not _google_chrome">
-        'chrome://resources/cr_components/searchbox/icons/chrome_product.svg',
-        // </if>
-    );
+        logo.src,
+        'chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg');
+    // </if>
+    // <if expr="not _google_chrome">
+    const lightLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+        '.chrome-logo-light');
+    assertHTMLElement(lightLogo);
+    assertEquals(
+        lightLogo.src,
+        'chrome://resources/cr_components/searchbox/icons/chrome_product.svg');
+    const darkLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+        '.chrome-logo-dark');
+    assertHTMLElement(darkLogo);
+    assertEquals(
+        darkLogo.src, 'chrome://resources/images/chrome_logo_dark.svg');
+    // </if>
   });
 
   test('handles new thread button click', async () => {
