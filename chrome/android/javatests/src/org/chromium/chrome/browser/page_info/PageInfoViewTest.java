@@ -263,7 +263,8 @@ public class PageInfoViewTest {
                                     null)
                             .show(
                                     tab,
-                                    ChromePageInfoHighlight.forPermission(highlightedPermission));
+                                    ChromePageInfoHighlight.highlightPermission(
+                                            highlightedPermission));
                 });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
     }

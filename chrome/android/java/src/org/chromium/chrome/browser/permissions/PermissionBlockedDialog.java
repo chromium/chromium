@@ -212,12 +212,11 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                                 .WebContentsOfflinePageLoadUrlDelegate(webContents),
                         /* storeInfoActionHandlerSupplier= */ null,
                         /* ephemeralTabCoordinatorSupplier= */ null,
-                        ChromePageInfoHighlight.forPermission(contentSettingsType),
+                        ChromePageInfoHighlight.highlightPermission(contentSettingsType),
                         tabCreator,
                         /* packageName= */ null),
-                ChromePageInfoHighlight.forPermission(contentSettingsType),
-                dialogPosition,
-                /* openPermissionsSubpage= */ true);
+                ChromePageInfoHighlight.openPermissionSubpage(contentSettingsType),
+                dialogPosition);
     }
 
     @NativeMethods

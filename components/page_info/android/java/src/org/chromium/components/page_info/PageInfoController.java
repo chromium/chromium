@@ -167,10 +167,7 @@ public class PageInfoController
             PageInfoControllerDelegate delegate,
             PageInfoHighlight pageInfoHighlight,
             @OpenedFromSource int source,
-            @GravityInt int dialogPosition,
-            // TODO(crbug.com/458351800): Remove this variable if the Loud Clapper experiment cannot
-            // be launched.
-            boolean openPermissionsSubpage) {
+            @GravityInt int dialogPosition) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -356,7 +353,7 @@ public class PageInfoController
             dialog.show();
         }
 
-        if (openPermissionsSubpage) {
+        if (pageInfoHighlight.shouldOpenPermissionsSubpage()) {
             launchSubpage(mPermissionsController);
         }
     }
@@ -543,8 +540,6 @@ public class PageInfoController
      * @param delegate The PageInfoControllerDelegate used to provide embedder-specific info.
      * @param pageInfoHighlight Providing the highlight row info related to this dialog.
      * @param dialogPosition The position of the dialog.
-     * @param openPermissionsSubpage Whether to open the permissions subpage when the dialog is
-     *     shown.
      */
     public static void show(
             final Activity activity,
@@ -553,9 +548,7 @@ public class PageInfoController
             @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
             PageInfoHighlight pageInfoHighlight,
-            @GravityInt int dialogPosition,
-            // TODO(crbug.com/458351800): Create a config class and move parameters into it.
-            boolean openPermissionsSubpage) {
+            @GravityInt int dialogPosition) {
         // Don't show the dialog if this tab doesn't have an activity. See https://crbug.com/1267383
         if (activity == null) return;
         // If the activity's decor view is not attached to window, we don't show the dialog because
@@ -587,8 +580,7 @@ public class PageInfoController
                                 delegate,
                                 pageInfoHighlight,
                                 source,
-                                dialogPosition,
-                                openPermissionsSubpage));
+                                dialogPosition));
     }
 
     @VisibleForTesting

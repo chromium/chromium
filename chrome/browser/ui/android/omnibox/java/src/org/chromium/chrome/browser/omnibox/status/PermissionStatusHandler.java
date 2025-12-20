@@ -182,7 +182,7 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
      */
     @Nullable ChromePageInfoHighlight getPageInfoHighlight() {
         if (mLastPermission != PageInfoController.NO_HIGHLIGHTED_PERMISSION) {
-            return ChromePageInfoHighlight.forPermission(mLastPermission);
+            return ChromePageInfoHighlight.highlightPermission(mLastPermission);
         }
         return null;
     }

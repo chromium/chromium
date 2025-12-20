@@ -112,7 +112,6 @@ public class ChromePageInfo {
                         mTabCreator,
                         packageName),
                 pageInfoHighlight,
-                dialogPosition,
-                /* openPermissionsSubpage= */ false);
+                dialogPosition);
     }
 }
