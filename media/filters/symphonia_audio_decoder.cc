@@ -60,6 +60,9 @@ SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
   SymphoniaDecoderConfig symphonia_config;
   symphonia_config.codec = ToSymphoniaCodec(config.codec());
   symphonia_config.extra_data = ToRustVec(config.extra_data());
+  symphonia_config.bytes_per_sample =
+      SampleFormatToBytesPerChannel(config.sample_format());
+
   return symphonia_config;
 }
 
