@@ -3408,11 +3408,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // for details.
   bool BelongsToElementChangingOverflowBehaviour() const;
 
-  // Should be called after this object has been reinserted into the
-  // layout-tree after a style update. Invoked when its out-of-flow/in-flow
-  // state changes.
-  void UpdateAfterReinsert(const ComputedStyle& old_style);
-
  protected:
   void SetDestroyedForTesting() {
     NOT_DESTROYED();

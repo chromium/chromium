@@ -830,7 +830,6 @@ PaintLayerType LayoutInline::LayerTypeRequired() const {
 
 void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
   NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
   DCHECK(!child->IsInline());
   // Following tests reach here.
   //  * external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html

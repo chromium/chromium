@@ -392,19 +392,6 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   return false;
 }
 
-bool ComputedStyle::NeedsReinsertLayoutTree(const ComputedStyle& old_style,
-                                            const ComputedStyle& new_style) {
-  if (old_style.IsFloating() != new_style.IsFloating()) {
-    return true;
-  }
-
-  if (old_style.HasOutOfFlowPosition() != new_style.HasOutOfFlowPosition()) {
-    return true;
-  }
-
-  return false;
-}
-
 ComputedStyle::Difference ComputedStyle::ComputeDifference(
     const ComputedStyle* old_style,
     const ComputedStyle* new_style) {

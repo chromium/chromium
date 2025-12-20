@@ -366,14 +366,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
   }
-
-  if (RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
-    if (!FirstChild() && IsMergeableAnonymousBlock(this)) {
-      // If we don't have any children, and this was created as an anonymous
-      // block, remove this object as we aren't needed anymore.
-      Destroy();
-    }
-  }
 }
 
 bool LayoutBlockFlow::CanMergeWith(const LayoutBoxModelObject& other) const {
@@ -388,8 +380,6 @@ bool LayoutBlockFlow::CanMergeWith(const LayoutBoxModelObject& other) const {
 
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-
   if (IsAnonymousBlockFlow()) {
     if (auto* parent_inline = DynamicTo<LayoutInline>(Parent())) {
       // The child used to be an in-flow block-in-inline, which requires an
@@ -650,7 +640,6 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
 
 void LayoutBlockFlow::ChildBecameNonInline(LayoutObject*) {
   NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
   MakeChildrenNonInline();
   auto* parent_layout_block = DynamicTo<LayoutBlock>(Parent());
   if (IsAnonymousBlockFlow() && parent_layout_block) {

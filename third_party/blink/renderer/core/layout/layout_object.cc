@@ -2701,7 +2701,6 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
 // object again. We have to make sure the layout tree updates as needed to
 // accommodate the new normal flow object.
 static inline void HandleDynamicFloatPositionChange(LayoutObject* object) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
   // We have gone from not affecting the inline status of the parent flow to
   // suddenly having an impact.  See if there is a mismatch between the parent
   // flow's childrenInline() state and our state.
@@ -3255,18 +3254,6 @@ bool LayoutObject::BelongsToElementChangingOverflowBehaviour() const {
          IsA<HTMLImageElement>(element);
 }
 
-void LayoutObject::UpdateAfterReinsert(const ComputedStyle& old_style) {
-  NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-
-  // Now that we are in the layout-tree, disable scroll-anchoring on our scroll
-  // container as per:
-  // https://drafts.csswg.org/css-scroll-anchoring-1/#suppression-triggers
-  if (old_style.HasOutOfFlowPosition() != StyleRef().HasOutOfFlowPosition()) {
-    SetScrollAnchorDisablingStyleChangedOnAncestor();
-  }
-}
-
 void LayoutObject::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
@@ -3344,8 +3331,7 @@ void LayoutObject::StyleDidChange(
   // it's not affected.
   SetOutlineMayBeAffectedByDescendants(style_->HasOutline());
 
-  if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
-      style_change_context.became_normal_flow) {
+  if (style_change_context.became_normal_flow) {
     HandleDynamicFloatPositionChange(this);
   }
 
@@ -3355,22 +3341,18 @@ void LayoutObject::StyleDidChange(
     //
     // TODO(layout-dev): Move this code down to LayoutBox. Only those can become
     // out-of-flow or spanners.
-    if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
-      if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
-        SetScrollAnchorDisablingStyleChangedOnAncestor();
-        MarkParentForSpannerOrOutOfFlowPositionedChange();
-        if (old_style->HasOutOfFlowPosition()) {
-          if (auto* box = DynamicTo<LayoutBox>(this)) {
-            box->NotifyContainingDisplayLocksForAnchorPositioning(
-                box->DisplayLocksAffectedByAnchors(), nullptr);
-          }
+    if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
+      SetScrollAnchorDisablingStyleChangedOnAncestor();
+      MarkParentForSpannerOrOutOfFlowPositionedChange();
+      if (old_style->HasOutOfFlowPosition()) {
+        if (auto* box = DynamicTo<LayoutBox>(this)) {
+          box->NotifyContainingDisplayLocksForAnchorPositioning(
+              box->DisplayLocksAffectedByAnchors(), nullptr);
         }
       }
-    }
-
-    if (IsBox() &&
-        To<LayoutBox>(this)->IsValidColumnSpannerInTree(*old_style) !=
-            To<LayoutBox>(this)->IsValidColumnSpannerInTree(*style_)) {
+    } else if (IsBox() &&
+               To<LayoutBox>(this)->IsValidColumnSpannerInTree(*old_style) !=
+                   To<LayoutBox>(this)->IsValidColumnSpannerInTree(*style_)) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
 

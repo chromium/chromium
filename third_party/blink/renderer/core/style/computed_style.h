@@ -425,11 +425,6 @@ class ComputedStyle final : public ComputedStyleBase {
                                       const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
 
-  // Returns true if the ComputedStyle change requires the LayoutObject to be
-  // reinserted into the layout-tree.
-  static bool NeedsReinsertLayoutTree(const ComputedStyle& old_style,
-                                      const ComputedStyle& new_style);
-
   StyleSelfAlignmentData ResolvedAlignSelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;

@@ -3161,11 +3161,6 @@
       status: "stable",
     },
     {
-      name: "LayoutReinsertOnInFlowStateChange",
-      depends_on: ["LayoutMergeAnonymousFix", "DisableDocumentBeingDestroyed"],
-      status: "stable",
-    },
-    {
       name: "LayoutTableCellAlignmentSafe",
       status: "stable",
     },
