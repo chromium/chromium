@@ -1,6 +1,6 @@
 {
-  "version": "79.3",
-  "log_list_timestamp": "2025-12-19T12:52:25Z",
+  "version": "80.1",
+  "log_list_timestamp": "2025-12-20T12:53:42Z",
   "operators": [
     {
       "name": "Google",
@@ -289,8 +289,8 @@
           "url": "https://wyvern.ct.digicert.com/2027h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-10T18:00:00Z"
+            "usable": {
+              "timestamp": "2025-12-20T18:00:00Z"
             }
           },
           "temporal_interval": {
@@ -305,8 +305,8 @@
           "url": "https://wyvern.ct.digicert.com/2027h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-10T18:00:00Z"
+            "usable": {
+              "timestamp": "2025-12-20T18:00:00Z"
             }
           },
           "temporal_interval": {
@@ -369,8 +369,8 @@
           "url": "https://sphinx.ct.digicert.com/2027h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-10T18:00:00Z"
+            "usable": {
+              "timestamp": "2025-12-20T18:00:00Z"
             }
           },
           "temporal_interval": {
@@ -385,8 +385,8 @@
           "url": "https://sphinx.ct.digicert.com/2027h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-10T18:00:00Z"
+            "usable": {
+              "timestamp": "2025-12-20T18:00:00Z"
             }
           },
           "temporal_interval": {
