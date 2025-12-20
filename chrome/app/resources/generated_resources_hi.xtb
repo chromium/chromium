@@ -1746,6 +1746,7 @@
 <translation id="2157457598652721267">माउस का बायां या दायां बटन चुनने के लिए, “/” और “-” का इस्तेमाल करें. दोनों बटन चुनने के लिए, “*” का इस्तेमाल करें.</translation>
 <translation id="2157474325782140681">ज़्यादा सुविधाएं पाने के लिए, ऐसा Dell डॉकिंग स्टेशन इस्तेमाल करें जिसे इस Chromebook के साथ काम करने के लिए बनाया गया हो.</translation>
 <translation id="215753907730220065">फ़ुल स्क्रीन से बाहर निकलें</translation>
+<translation id="2157632422749995237">Wallet बाद में, आपके इवेंट के बारे में सूचनाएं भेज सकता है</translation>
 <translation id="2157779167749714207">आपको <ph name="DEVICE_TYPE" /> में Gemini की सुविधा मिलती है</translation>
 <translation id="2158103060812356265">मिलते-जुलते प्रॉडक्ट की तुलना आसानी से करें</translation>
 <translation id="2158249272743343757">आपके हिसाब से बनाने से जुड़ा डेटा मिटाया जा रहा है...</translation>
@@ -2444,6 +2445,7 @@
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" हटाना है?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> इंस्टॉल नहीं कर सका, लेकिन इसकी डिस्क इमेज से चलना जारी रहेगा.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">अपने डिवाइस से, इवेंट के टिकट और लॉयल्टी कार्ड जैसे पास ऐक्सेस करें</translation>
 <translation id="2634199532920451708">प्रिंट का इतिहास</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">इससे आपको निजी साइटों के बारे में चेतावनी नहीं मिलती. जैसे, आपकी कंपनी का इंट्रानेट</translation>
@@ -4403,6 +4405,7 @@
 <translation id="394984172568887996">IE से आयात किया गया</translation>
 <translation id="3949999964543783947">सुरक्षित तरीके से फ़ाइलें डाउनलोड करने के लिए, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">तेज़ी से साइन इन करने के लिए, अपने-आप पासकी बनने की सुविधा चालू करें</translation>
+<translation id="3950755269510650933">उस जानकारी को मैनेज करें जिसे Gemini आपको मनमुताबिक़ अनुभव देने में इस्तेमाल कर सकता है</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
@@ -4432,6 +4435,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">आईडी</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
+<translation id="3971355433478412726">Gemini के लिए निर्देश</translation>
 <translation id="3971764089670057203">इस सुरक्षा कुंजी के लिए दर्ज किए गए फ़िंगरप्रिंट</translation>
 <translation id="3973005893595042880">उपयोगकर्ता को वीएम चलाने की अनुमति नहीं है</translation>
 <translation id="3973660817924297510">पासवर्ड की जांच की जा रही है (<ph name="TOTAL_PASSWORDS" /> में से <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -4720,6 +4724,7 @@
 <translation id="4178220097446335546">इस सदस्यता और इससे जुड़े नेटवर्क को हटाने के लिए, पासपॉइंट की सदस्यता वाले पेज पर जाएं और इस सदस्यता को हटाएं.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
+<translation id="4182182457914031017">आपकी विज़िट की गई साइट का यूआरएल और पेज का पूरा कॉन्टेंट, Google के साथ शेयर किया जाता है, ताकि आपको सुझाव भेजे जा सकें और इस सुविधा को बेहतर बनाया जा सके.</translation>
 <translation id="4182339886482390129">बेहतर सुरक्षित ब्राउज़िंग की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4184803915913850597">एचआईडी डिवाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> को आपकी सुरक्षा कुंजी के मॉडल और उसके मैन्युफ़ैक्चरर के बारे में पता चल जाएगा</translation>
@@ -5840,6 +5845,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">क्या आपको बुकमार्क सिर्फ़ इस डिवाइस के फ़ोल्डर में सेव करना है?</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
+<translation id="4959581970694896608">यह तय करें कि Gemini आपको किस तरह से जवाब दे</translation>
 <translation id="4960020053211143927">कुछ ऐप्लिकेशन पर काम नहीं करती</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
@@ -8993,6 +8999,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>
 <translation id="7175353351958621980">यहां से लोड किया गया:</translation>
 <translation id="7177659256878428843">टैब ग्रुप को बुकमार्क फ़ोल्डर में बदलें</translation>
+<translation id="7180569503618416775">Wallet, देखे जा रहे पेजों की जानकारी सेव करने का विकल्प दे सकता है. जैसे, खरीदे गए टिकट</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7181117767881540376">बुकमार्क बार छिपाएं</translation>
@@ -10352,6 +10359,7 @@
 <translation id="8084429490152575036">मोबाइल की एपीएन सेटिंग</translation>
 <translation id="8084510406207562688">सभी टैब पहले जैसे करें</translation>
 <translation id="8084628902026812045">यह साइट सुरक्षित कनेक्शन का इस्तेमाल नहीं कर रही है और हो सकता है कि फ़ाइल के साथ छेड़छाड़ की गई हो</translation>
+<translation id="808488435221187916">Google Wallet में मौजूद आपकी जानकारी, साइन इन किए गए सभी डिवाइसों पर दिखेगी</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086121155774250556">यह टैब आपकी स्क्रीन शेयर कर रहा है</translation>
 <translation id="8086610718778464681">Linux के ऐप्लिकेशन और फ़ाइलों का बैक अप नहीं लिया जा सकता</translation>
@@ -10956,7 +10964,7 @@
 <translation id="849488240089599592">हाल ही में किए गए डाउनलोड पर वापस जाएं</translation>
 <translation id="8496717697661868878">यह प्लग इन चलाएं</translation>
 <translation id="8497219075884839166">Windows सुविधाएं</translation>
-<translation id="8497819894150712946">Chrome से सेव किया गया फ़ोल्डर</translation>
+<translation id="8497819894150712946">Chrome से सेव की गई</translation>
 <translation id="8498214519255567734">यह मंद रोशनी में आपकी स्क्रीन देखना या पढ़ना आसान बनाती है</translation>
 <translation id="8499083585497694743">माइक्रोफ़ोन को अनम्यूट करें</translation>
 <translation id="8500044868721690197">इस साइट को आपके एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करने से रोक दिया गया है</translation>

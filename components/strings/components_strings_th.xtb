@@ -1553,6 +1553,7 @@
 <translation id="3525130752944427905">10 x 14 นิ้ว</translation>
 <translation id="3525435918300186947">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="3527181387426738155">เพลงและเสียง</translation>
+<translation id="3527624163937328588">นำไฟล์แนบออก</translation>
 <translation id="3528171143076753409">ใบรับรองของเซิร์ฟเวอร์ไม่น่าเชื่อถือ</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{อย่างน้อย 1 รายการบนอุปกรณ์ที่ซิงค์}=1{1 รายการ (และมากกว่าบนอุปกรณ์ที่ซิงค์)}other{# รายการ (และมากกว่าบนอุปกรณ์ที่ซิงค์)}}</translation>
 <translation id="3531366304259615706">ใช้การล็อกหน้าจอ</translation>
@@ -1609,6 +1610,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">ปุ่มจัดการการตั้งค่าความเป็นส่วนตัวของ Google เปิดใช้งานเพื่อไปที่การตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
 <translation id="3603507503523709">ผู้ดูแลระบบบล็อกแอปพลิเคชันไว้</translation>
+<translation id="3605082766859363473">เลือกโหมด AI</translation>
 <translation id="3605899229568538311">5 x 5 นิ้ว</translation>
 <translation id="3606917451836803637">รายการทีวี</translation>
 <translation id="3608932978122581043">ฟีดกระดาษตามแนว</translation>
@@ -1944,6 +1946,7 @@
 <translation id="411918202192379658">การป้อนข้อความอัตโนมัติดีขึ้นกว่าเดิม</translation>
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
+<translation id="4125597496726375563">เลือกสร้างรูปภาพ</translation>
 <translation id="412601465078863288">การอัปโหลดหมดเวลาแล้ว</translation>
 <translation id="4127317221386336246">เครื่องประดับเสื้อผ้า</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
@@ -2936,6 +2939,7 @@
 <translation id="5730040223043577876">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="5732392974455271431">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="573555826359077410">ปุ่มสร้างแบบฟอร์ม เปิดใช้งานเพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
+<translation id="5737022235680044108">องค์กรของคุณได้บล็อก <ph name="HOST_NAME" /> ในโหมดไม่ระบุตัวตน</translation>
 <translation id="5738385766833540397">จัดการวิธีรับการแจ้งเตือนเมื่อราคาลดลงสำหรับผลิตภัณฑ์ที่คุณติดตาม</translation>
 <translation id="5739619009927381786">ปลดล็อกหน้าจอในขั้นตอนถัดไป โดยปกติจะใช้ลายนิ้วมือ หรือคุณสามารถ<ph name="BEGIN_LINK" />ยืนยันด้วยวิธีอื่น<ph name="END_LINK" /></translation>
 <translation id="573974402615125334">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้ซิงค์ประวัติการเข้าชมและแท็บ</translation>
@@ -2979,6 +2983,7 @@
 <translation id="5826507051599432481">ชื่อทั่วไป (CN)</translation>
 <translation id="5830698870816298009">การใช้และขยับกล้อง</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">โปรดเลือกวิธีการชำระเงินอื่นเพื่อทำการซื้อนี้ให้เสร็จสมบูรณ์</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5832976493438355584">ล็อกอยู่</translation>
 <translation id="5837220895135257862">เพิ่มพื้นที่ว่างใน <ph name="CLOUD_PROVIDER" /> ก่อนแล้วลองอีกครั้ง</translation>
@@ -3617,6 +3622,7 @@
 <translation id="6844998850832008753">อนุญาตให้ใช้การติดตามการเคลื่อนไหวของมือในครั้งนี้</translation>
 <translation id="6849023911358004088">ปุ่มจัดการการตั้งค่าความปลอดภัย เปิดใช้งานเพื่อจัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="6850286078059909152">สีข้อความ</translation>
+<translation id="685163597635765693">องค์กรของคุณบล็อกลิงก์ <ph name="HOST_NAME" /> ในโหมดไม่ระบุตัวตน</translation>
 <translation id="6852204201400771460">โหลดแอปซ้ำไหม</translation>
 <translation id="6854691830678097752">บันทึก CVC นี้ไว้ในบัญชี <ph name="ACCOUNT_EMAIL" /> เพื่อให้ชำระเงินได้เร็วขึ้น</translation>
 <translation id="6857776781123259569">จัดการรหัสผ่าน...</translation>
@@ -3659,6 +3665,7 @@
 <translation id="6917795328362592458">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
 <translation id="6917873303492266709">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้เปิดการตั้งค่าและเปิด "อนุญาตให้ลงชื่อเข้าใช้ Chrome"</translation>
 <translation id="6921197121276419421">อนุญาตให้ติดตั้งเว็บแอป</translation>
+<translation id="6922905531092220751">นำไฟล์แนบที่เป็นรูปภาพออก</translation>
 <translation id="69238565902785824">การลิงก์บัญชีไว้จะช่วยให้คุณชำระเงินด้วย <ph name="BNPL_ISSUER_NAME" /> ได้เร็วขึ้น ทั้งนี้ คุณสามารถยกเลิกการลิงก์ได้ที่ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">เลือกว่าต้องการดูสิทธิประโยชน์ของบัตรที่จุดชำระเงินหรือไม่ (เป็นไปตามข้อกำหนดของธนาคาร)</translation>
 <translation id="6924933062125062950">ลบบัตรประจำตัว</translation>
@@ -3887,6 +3894,7 @@
 <translation id="7273111226200291353">ไฟล์ที่คุณดาวน์โหลดจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="7275808129217605899">การรับประทานอาหารเพื่อสุขภาพ</translation>
+<translation id="7282894295403887199">คุณเข้าชมหน้านี้ในโหมดไม่ระบุตัวตนไม่ได้</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเปลี่ยนรหัสผ่านของบัญชี Google</translation>
 <translation id="7286908876112207905">ไม่อนุญาตให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7291578327729322058">เพิ่มใบขับขี่</translation>
@@ -4259,6 +4267,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="784623644169604270">ไม่มีกิจกรรมล่าสุด</translation>
+<translation id="7853222852810008596">ฟีเจอร์จ่ายทีหลังไม่พร้อมใช้งานในสกุลเงินนี้</translation>
 <translation id="785476343534277563">กีฬาวิทยาลัย</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">ป้อนวันที่หมดอายุใหม่และ CVC ที่<ph name="SIDE_OF_CARD" /></translation>

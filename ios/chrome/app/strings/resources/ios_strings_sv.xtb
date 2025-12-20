@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 har valts}other{# har valts}}</translation>
 <translation id="3668816008081204991">Läslistan har dolts</translation>
 <translation id="3670030362669914947">Nummer</translation>
+<translation id="3672283986707092811">Markera alla</translation>
 <translation id="3679163990085797665">Radera lästa</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
 <translation id="3695446226812920698">Läs mer</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Visningsnamn</translation>
 <translation id="4375772272517383391">Stänga alla flikar</translation>
 <translation id="4378154925671717803">Mobil</translation>
+<translation id="4380677808580146413">Markera</translation>
 <translation id="4389019817280890563">Tryck för att byta språk.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Efter 1 dag}other{Efter {COUNT} dagar}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 flik}other{# flikar}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Spara fil</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="536067926684072644">Visa bokmärken</translation>
+<translation id="5364647308446127983">{count,plural, =1{Det gick inte att importera {count} nyckel}other{Det gick inte att importera {count} nycklar}}</translation>
 <translation id="5371112366564891538">Öka textstorleken</translation>
+<translation id="5376135254804080693">Avmarkera alla</translation>
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>

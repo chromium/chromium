@@ -2468,6 +2468,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2646132387794831258">Simpan ke folder di Akun Google Anda?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
+<translation id="2649331484502514724">DNS Aman</translation>
 <translation id="2649508632465204949">Ajari saya keterampilan baru</translation>
 <translation id="2651259505411913186">Ya, pisahkan data saya dari profil sekolah</translation>
 <translation id="265156376773362237">Pramuat standar</translation>
@@ -3398,6 +3399,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="329838636886466101">Perbaiki</translation>
 <translation id="3298789223962368867">URL yang dimasukkan tidak valid.</translation>
 <translation id="32991397311664836">Perangkat:</translation>
+<translation id="330140779027048024">Selalu gunakan penyedia DNS-over-HTTPS yang dipilih</translation>
 <translation id="3301554464236215299">File ini tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="3301996560342889673">Sinkronkan histori?</translation>
 <translation id="33022249435934718">Penangan GDI</translation>
@@ -4405,6 +4407,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="394984172568887996">Diimpor dari IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> untuk membuat file didownload dengan lebih aman</translation>
 <translation id="3950479158728806902">Buat kunci sandi secara otomatis untuk login lebih cepat</translation>
+<translation id="3950755269510650933">Kelola informasi yang dapat digunakan Gemini untuk mempersonalisasi pengalaman Anda</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3950841222883198950">Dikte</translation>
 <translation id="3953834000574892725">Akun saya</translation>
@@ -4434,6 +4437,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Menghitung...</translation>
+<translation id="3971355433478412726">Petunjuk untuk Gemini</translation>
 <translation id="3971764089670057203">Sidik jari pada kunci keamanan ini</translation>
 <translation id="3973005893595042880">Pengguna tidak diizinkan</translation>
 <translation id="3973660817924297510">Memeriksa sandi (<ph name="CHECKED_PASSWORDS" /> dari <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -4754,6 +4758,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Laporan Masukan</translation>
 <translation id="4206585797409671301">Diizinkan menampilkan permintaan</translation>
+<translation id="4207144975205749656">Mengenkripsi permintaan navigasi sehingga penyerang di jaringan yang sama tidak dapat melihat traffic Anda</translation>
 <translation id="4207932031282227921">Izin diminta, tekan F6 untuk merespons</translation>
 <translation id="4208390505124702064">Telusuri <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
@@ -5844,6 +5849,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Simpan ke folder hanya di perangkat ini?</translation>
 <translation id="4959262764292427323">Sandi disimpan di Akun Google agar Anda dapat menggunakannya di perangkat mana pun</translation>
+<translation id="4959581970694896608">Sesuaikan cara Gemini merespons Anda</translation>
 <translation id="4960020053211143927">Tidak didukung oleh beberapa aplikasi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
@@ -6159,6 +6165,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5186362203408605578">Gunakan perangkat lain dengan memindai kode QR</translation>
 <translation id="5186381005592669696">Sesuaikan bahasa tampilan untuk aplikasi yang didukung</translation>
 <translation id="5186788525428341874">Anda dapat menggunakan kunci sandi ini untuk login lebih cepat di seluruh perangkat Anda. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Gunakan default jika tersedia</translation>
 <translation id="5187641678926990264">&amp;Instal Halaman sebagai Aplikasi...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Dibagikan oleh <ph name="USER_NAME" /></translation>
@@ -7133,6 +7140,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5863445608433396414">Aktifkan fitur debug</translation>
 <translation id="5863515189965725638">Edit IBAN</translation>
 <translation id="5864195618110239517">Gunakan koneksi berbayar</translation>
+<translation id="5864624288360677142">Gunakan default jika tersedia dan Google DNS sebagai cadangan</translation>
 <translation id="5864754048328252126">Tidak ada aktivitas saat mengisi daya</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan segera dijeda</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> dari citra disknya. Dengan memasangnya di komputer, Anda dapat menjalankannya tanpa citra disk, dan memastikannya tetap mutakhir.</translation>
@@ -7583,6 +7591,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6180550893222597997">Kunci sandi mana yang ingin Anda gunakan untuk <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Aplikasi terkadang memperbarui brandingnya. Tinjau semua perubahan untuk memastikan Anda tidak merasa keberatan dengan perubahan tersebut sebelum melakukan perubahan.</translation>
 <translation id="6181431612547969857">Download diblokir</translation>
+<translation id="6182100780603067202">Bagikan juga audio aplikasi (dari semua jendelanya)</translation>
 <translation id="6183369864942961155">Tema terang/gelap otomatis</translation>
 <translation id="6184099524311454384">Telusuri Tab</translation>
 <translation id="6185132558746749656">Lokasi Perangkat</translation>

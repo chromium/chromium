@@ -4402,6 +4402,7 @@
 <translation id="394984172568887996">從 IE 匯入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
 <translation id="3950479158728806902">自動建立密鑰，加快登入速度</translation>
+<translation id="3950755269510650933">管理 Gemini 在提供個人化體驗時可用的資料</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3950841222883198950">語音輸入</translation>
 <translation id="3953834000574892725">我的帳戶</translation>
@@ -4431,6 +4432,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3971355433478412726">Gemini 指示</translation>
 <translation id="3971764089670057203">此安全金鑰上的指紋</translation>
 <translation id="3973005893595042880">不允許此使用者</translation>
 <translation id="3973660817924297510">正在檢查密碼 (已檢查 <ph name="CHECKED_PASSWORDS" /> 個，共 <ph name="TOTAL_PASSWORDS" /> 個)…</translation>
@@ -5837,6 +5839,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">只將資料夾儲存至此裝置嗎？</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
+<translation id="4959581970694896608">自訂 Gemini 的答覆方式</translation>
 <translation id="4960020053211143927">部分應用程式不支援此設定</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>

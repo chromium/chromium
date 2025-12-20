@@ -1732,6 +1732,7 @@
 <translation id="2157457598652721267">Тінтуірдің сол не оң жақ түймесін таңдау үшін "/" және "-" пернелерін басыңыз. Екеуін де таңдау үшін "*" пернесін басыңыз.</translation>
 <translation id="2157474325782140681">Қосымша функцияларды пайдалану үшін осы Chromebook құрылғысымен жұмыс істеуге арналған қондыру станциясын пайдаланыңыз.</translation>
 <translation id="215753907730220065">Толық экраннан шығу</translation>
+<translation id="2157632422749995237">Кейінірек Wallet сізге іс-шаралар туралы хабарландырулар жібере алады.</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> құрылғысы Gemini-мен бірге ұсынылады</translation>
 <translation id="2158103060812356265">Ұқсас өнімдерді оңай салыстырыңыз.</translation>
 <translation id="2158249272743343757">Жекелендіру деректерін жою...</translation>
@@ -2427,6 +2428,7 @@
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" жоясыз ба?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> орнатуды аяқтай алмады, бірақ жұмысын диск кескінінен жалғастырады.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Іс-шара билеттері мен тұрақты клиент карталары сияқты билеттерге құрылғыдан кіріңіз.</translation>
 <translation id="2634199532920451708">Басып шығару тарихы</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Компанияның интранеті сияқты жеке сайттар туралы ескертпейді.</translation>
@@ -4385,6 +4387,7 @@
 <translation id="394984172568887996">IE браузерінен импортталған</translation>
 <translation id="3949999964543783947">Файлдарды жүктеп алуды қауіпсіз ету үшін <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Тезірек кіру үшін кіру кілтін автоматты түрде жасау</translation>
+<translation id="3950755269510650933">Gemini қызметтерді жекелендіру үшін пайдалана алатын ақпаратты басқару</translation>
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3950841222883198950">Дауыспен теру</translation>
 <translation id="3953834000574892725">Аккаунттарым</translation>
@@ -4414,6 +4417,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
+<translation id="3971355433478412726">Gemini-ға арналған нұсқаулар</translation>
 <translation id="3971764089670057203">Осы қауіпсіздік кілтіндегі саусақ іздері</translation>
 <translation id="3973005893595042880">Пайдаланушыға рұқсат берілмеген.</translation>
 <translation id="3973660817924297510">Құпия сөздерді (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />) тексеру…</translation>
@@ -4702,6 +4706,7 @@
 <translation id="4178220097446335546">Бұл жазылым мен онымен байланысты желілер қажет болмаса, Passpoint жазылым бетіне өтіп, жазылымды өшіріңіз.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Тілдер</translation>
+<translation id="4182182457914031017">Ұсыныстарды қалыптастыру және бұл функцияны жақсарту үшін сіз кірген сайттың URL мекенжайы мен толық бет контенті Google-ға жіберіледі.</translation>
 <translation id="4182339886482390129">Күшейтілген Safe Browsing мүмкіндігі қауіпті веб-сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғау үшін көбірек жұмыс істейді</translation>
 <translation id="4184803915913850597">HID құрылғысы (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> сайты қауіпсіздік кілтіңіздің маркасы мен үлгісін білетін болады.</translation>
@@ -5822,6 +5827,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Тек осы құрылғыдағы қалтаға сақтау қажет пе?</translation>
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
+<translation id="4959581970694896608">Gemini-дың сізге қалай жауап беретінін бейімдеу</translation>
 <translation id="4960020053211143927">Кейбір қолданбаларда қолдау көрсетілмейді</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
@@ -8969,6 +8975,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> желісін конфигурациялау</translation>
 <translation id="7175353351958621980">Жүктелген орны:</translation>
 <translation id="7177659256878428843">Қойындылар тобын бетбелгілер қалтасына түрлендіру</translation>
+<translation id="7180569503618416775">Wallet сіз көріп отырған беттердегі ақпаратты (мысалы, сатып алған билеттерді) сақтауды ұсынуы мүмкін.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7180865173735832675">Реттеу</translation>
 <translation id="7181117767881540376">&amp;Бетбелгілер жолағын жасыру</translation>
@@ -10327,6 +10334,7 @@
 <translation id="8084429490152575036">Ұялы APN параметрлері</translation>
 <translation id="8084510406207562688">Барлық қойындыны қалпына келтіру</translation>
 <translation id="8084628902026812045">Бұл сайтта қауіпсіз байланыс пайдаланылып жатқан жоқ және файл өзгертілген болуы мүмкін</translation>
+<translation id="808488435221187916">Ақпаратыңыз аккаунтқа кірген кез келген құрылғыдағы Google Wallet-те қолжетімді.</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурациялануда...</translation>
 <translation id="8086121155774250556">Бұл қойынды экраныңызды бөлісіп жатыр</translation>
 <translation id="8086610718778464681">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау мүмкін емес</translation>

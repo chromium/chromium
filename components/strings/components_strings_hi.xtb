@@ -2981,6 +2981,7 @@
 <translation id="5826507051599432481">सामान्य नाम (CN)</translation>
 <translation id="5830698870816298009">हलचल को कैप्चर करने के लिए, कैमरे का इस्तेमाल करें</translation>
 <translation id="5831217499016131155">Google वॉलेट</translation>
+<translation id="5831259154333754661">इस खरीदारी को पूरा करने के लिए, पेमेंट का कोई दूसरा तरीका चुनें.</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5832976493438355584">लॉक किया गया</translation>
 <translation id="5837220895135257862">फिर से कोशिश करने से पहले, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें</translation>
@@ -4263,6 +4264,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="784623644169604270">हाल ही में कोई गतिविधि नहीं हुई</translation>
+<translation id="7853222852810008596">बाद में पेमेंट करने की सुविधा, इस मुद्रा के लिए उपलब्ध नहीं है</translation>
 <translation id="785476343534277563">कॉलेज स्पोर्ट्स</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> मौजूद, कार्ड की समयसीमा खत्म होने की नई तारीख और सीवीसी डालें</translation>

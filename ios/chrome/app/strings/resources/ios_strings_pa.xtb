@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 ਨੂੰ ਚੁਣਿਆ ਗਿਆ}one{# ਨੂੰ ਚੁਣਿਆ ਗਿਆ}other{# ਨੂੰ ਚੁਣਿਆ ਗਿਆ}}</translation>
 <translation id="3668816008081204991">ਪੜ੍ਹਨ-ਸੂਚੀ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
 <translation id="3670030362669914947">ਨੰਬਰ</translation>
+<translation id="3672283986707092811">ਸਭ ਚੁਣੋ</translation>
 <translation id="3679163990085797665">ਪੜ੍ਹੇ ਹੋਏ ਇੰਦਰਾਜ਼ਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="368329460027487650">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਇਹ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">ਡਿਸਪਲੇ ਨਾਮ</translation>
 <translation id="4375772272517383391">ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
+<translation id="4380677808580146413">ਚੁਣੋ</translation>
 <translation id="4389019817280890563">ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 ਦਿਨ ਬਾਅਦ}one{{COUNT} ਦਿਨ ਬਾਅਦ}other{{COUNT} ਦਿਨਾਂ ਬਾਅਦ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ਟੈਬ}one{# ਟੈਬ}other{# ਟੈਬਾਂ}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5355191726083956201">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="536067926684072644">ਬੁੱਕਮਾਰਕ ਦਿਖਾਓ</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} ਪਾਸਕੀ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}one{{count} ਪਾਸਕੀ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}other{{count} ਪਾਸਕੀਆਂ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}}</translation>
 <translation id="5371112366564891538">ਲਿਖਤ ਦਾ ਆਕਾਰ ਵਧਾਓ</translation>
+<translation id="5376135254804080693">ਸਭ ਅਣ-ਚੁਣਿਆ ਕਰੋ</translation>
 <translation id="537853552771686272">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਅਤੇ ਸਾਈਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ਟੈਬ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}one{{count} ਟੈਬ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}other{{count} ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="5394975111793637642">'ਤੁਹਾਡੇ ਲਈ ਉਤਪਾਦ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ</translation>

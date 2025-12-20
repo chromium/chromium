@@ -1735,6 +1735,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2157457598652721267">Erabili "/" eta "-" saguaren ezkerreko edo eskuineko botoia hautatzeko. Erabili "*" biak hautatzeko.</translation>
 <translation id="2157474325782140681">Eginbide gehiago lortzeko, erabili Chromebook honekin funtzionatzeko diseinatu den Dell-eko oinarri bat.</translation>
 <translation id="215753907730220065">Irten pantaila osoko modutik</translation>
+<translation id="2157632422749995237">Geroago, Diru-zorroa zerbitzuak gertaerei buruzko jakinarazpenak bidaliko dizkizu</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> gailuak Gemini dakar</translation>
 <translation id="2158103060812356265">Alderatu antzeko produktuak erraz</translation>
 <translation id="2158249272743343757">Ezabatu pertsonalizatzeko datuak…</translation>
@@ -2430,6 +2431,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" luzapena kendu nahi duzu?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />-k ezin izan du instalazioa osatu, baina disko gogorreko iruditik funtzionatzen jarraituko du.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Atzitu txartelak (adibidez, sarrerak eta fideltasun-txartelak) gailutik</translation>
 <translation id="2634199532920451708">Inprimatze-historia</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Ez du abisurik erakusten webgune pribatuei buruz (esaterako, zure enpresaren intraneta)</translation>
@@ -4705,6 +4707,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4178220097446335546">Harpidetza hau eta lotuta dauzkan sareak ahazteko, joan Passpoint-eko harpidetzaren orrira harpidetza kentzeko.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
+<translation id="4182182457914031017">Iradokizunak eskaintzeko eta eginbidea hobetzeko, bisitatzen duzun webgunearen URLa eta orriaren eduki osoa Google-rekin partekatzen dira</translation>
 <translation id="4182339886482390129">Arakatze seguru hobetuak are gehiago babesten zaitu webgune, deskarga eta luzapen arriskutsuen aurka</translation>
 <translation id="4184803915913850597">HID bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> webguneak zure segurtasun-giltzaren marka eta modeloa ikusiko ditu.</translation>
@@ -8972,6 +8975,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7175037578838465313">Konfiguratu <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Hemendik kargatua:</translation>
 <translation id="7177659256878428843">Bihurtu fitxa taldea laster-marken karpeta</translation>
+<translation id="7180569503618416775">Diru-zorroa zerbitzuak ikusten ari zaren orrietako informazioa gordetzeko eskainiko dizu; adibidez, erosten dituzun sarrerak</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7181117767881540376">Ezkutatu laster-marken barra</translation>
@@ -10330,6 +10334,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8084429490152575036">APN mugikorraren ezarpenak</translation>
 <translation id="8084510406207562688">&amp;Leheneratu fitxa guztiak</translation>
 <translation id="8084628902026812045">Webgune honen konexioa ez da segurua, eta agian fitxategia manipulatu da</translation>
+<translation id="808488435221187916">Informazioa erabilgarri dago saioa hasita daukan edozein gailutako Google Diru-zorroa zerbitzuan</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiguratzen…</translation>
 <translation id="8086121155774250556">Fitxa hau pantaila partekatzen ari da</translation>
 <translation id="8086610718778464681">Ezin izan dira egin Linux-eko aplikazio eta fitxategien babeskopiak</translation>

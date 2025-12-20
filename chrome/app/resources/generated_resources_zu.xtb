@@ -1745,6 +1745,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2157457598652721267">Sebenzisa okuthi “/” nokuthi “-” ukuze ukhethe inkinobho yemawuzi ekwesokunxele noma ekwesokudla. Sebenzisa okuthi “*” ukuze ukhethe kokubili.</translation>
 <translation id="2157474325782140681">Ukuze uthole izici ezingeziwe, sebenzisa isiteshi sedokhu se-Dell esidizayinelwe ukusebenza nale Chromebook.</translation>
 <translation id="215753907730220065">Phuma kusikrini esigcwele</translation>
+<translation id="2157632422749995237">Kamuva, iWallet ingakuthumelela izaziso mayelana nemicimbi yakho</translation>
 <translation id="2157779167749714207">Okuthi <ph name="DEVICE_TYPE" /> kwakho kuza ne-Gemini</translation>
 <translation id="2158103060812356265">Qhathanisa kalula imikhiqizo efanayo</translation>
 <translation id="2158249272743343757">Susa idatha yomuntu siqu...</translation>
@@ -2444,6 +2445,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2633212996805280240">Susa i-"<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">I-<ph name="PRODUCT_NAME" /> ayikwazanga ukuqedelela ukufakwa, kodwa izoqhubeka isebenze kusuka kusithombe sayo sediski.</translation>
 <translation id="2633764681656412085">I-FIDO</translation>
+<translation id="2634116253227318548">Finyelela izimvume zakho, njengamathikithi omcimbi namakhadi obuqotho, kusukela kudivayisi yakho</translation>
 <translation id="2634199532920451708">Phrinta umlando</translation>
 <translation id="2635094637295383009">I-Twitter</translation>
 <translation id="2635164452434513092">Ayikuxwayisi ngamasayithi ayimfihlo, njenge-intanethi yangaphakathi yenkampani yakho</translation>
@@ -4403,6 +4405,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="394984172568887996">Kungeniswe kusuka ku-IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ukwenza ukudawuniloda amafayela kuphephe</translation>
 <translation id="3950479158728806902">Sungula ngokuzenzakalelayo ukhiye wokudlula ukuze ungene ngemvume ngokushesha</translation>
+<translation id="3950755269510650933">Lawula ulwazi iGemini engalusebenzisa ukuze iqondanise nomuntu siqu umuzwa wakho</translation>
 <translation id="3950820424414687140">Ngena ngemvume</translation>
 <translation id="3950841222883198950">Ukuthayipha ngezwi</translation>
 <translation id="3953834000574892725">Ama-akhawunti ami</translation>
@@ -4432,6 +4435,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3968739731834770921">I-Kana</translation>
 <translation id="3970114302595058915">I-ID</translation>
 <translation id="397105322502079400">Iyabala...</translation>
+<translation id="3971355433478412726">Imiyalelo yeGemini</translation>
 <translation id="3971764089670057203">Izigxivizo zeminwe kulo khiye wokuqinisekisa ubunikazi</translation>
 <translation id="3973005893595042880">Umsebenzisi akavumelekile</translation>
 <translation id="3973660817924297510">Kuhlola Amaphasiwedi (<ph name="CHECKED_PASSWORDS" /> kwangu-<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4720,6 +4724,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4178220097446335546">Ukuze ukhohlwe lokhu kubhalisa namanethiwekhi akho ahlobene, hamba ekhasini lokubhalisa le-Passpoint ukuze ususe ukubhalisa.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Izilimi</translation>
+<translation id="4182182457914031017">Ukuze ufake iziphakamiso uthuthukise nalesi sakhi, i-URL nekhontenti yekhasi lesayithi oyivakashelayo kwabelwana ngakho neGoogle.</translation>
 <translation id="4182339886482390129">Ukubhrawuza Ngokuphepha Okugqamile kwenza okuningi ukukuvikela kumawebhusayithi ayingozi, kokudawunilodiwe, kanye nakuzandiso</translation>
 <translation id="4184803915913850597">Idivayisi ye-HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">I-<ph name="WEBSITE" /> izofunda ukwenziwa nemodeli yokhiye wakho wokuqinisekisa ubunikazi</translation>
@@ -5841,6 +5846,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Londoloza kufolda ekule divayisi kuphela?</translation>
 <translation id="4959262764292427323">Amaphasiwedi alondolozwa ku-akhawunti yakho ye-Google ukuze ukwazi ukuwasebenzisa kunoma iyiphi idivayisi</translation>
+<translation id="4959581970694896608">Qamba ngokwabahlinzekelwayo indlela iGemini ekuphendula ngayo</translation>
 <translation id="4960020053211143927">Akusekelwa ngamanye ama-app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Sakaza isikrini</translation>
@@ -8995,6 +9001,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7175037578838465313">Lungisa i-<ph name="NAME" /></translation>
 <translation id="7175353351958621980">Kulayishwe kusuka ku-:</translation>
 <translation id="7177659256878428843">Guqula iqembu lamathebhu libe yifolda yamabhukhimakhi</translation>
+<translation id="7180569503618416775">IWallet inganikeza ukulondoloza ulwazi oluvela emakhasini owabukayo, njengamathikithi owathengayo</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7180865173735832675">Yenza ngokwezifiso</translation>
 <translation id="7181117767881540376">&amp;Fihla ibha yamabhukhimakhi</translation>
@@ -10354,6 +10361,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8084429490152575036">Amasethingi Ocingo e-APN</translation>
 <translation id="8084510406207562688">Phindisela wonke amathebhu</translation>
 <translation id="8084628902026812045">Le sayithi ayisebenzisi uxhumano oluvikelekile futhi ifayela kungenzeka liphazanyisiwe</translation>
+<translation id="808488435221187916">Ulwazi lwakho luyatholakala kuGoogle Wallet kunoma iyiphi idivayisi ongene ngemvume kuyo</translation>
 <translation id="8086015605808120405">Ilungisa i-<ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Leli thebhu labelana ngesikrini sakho</translation>
 <translation id="8086610718778464681">Ayikwazi ukwenza isipele ama-app namafayela e-Linux</translation>

@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 ఎంచుకోబడింది}other{# ఎంచుకున్నారు}}</translation>
 <translation id="3668816008081204991">చదవాల్సిన లిస్ట్ దాచబడింది</translation>
 <translation id="3670030362669914947">నంబర్</translation>
+<translation id="3672283986707092811">అన్నీ ఎంచుకోండి</translation>
 <translation id="3679163990085797665">చదివిన వాటిని తొలగించండి</translation>
 <translation id="368329460027487650">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేయడానికి ఆప్షన్‌లను తెరుస్తుంది.</translation>
 <translation id="3695446226812920698">ఎలాగో తెలుసుకోండి</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">డిస్‌ప్లే పేరు</translation>
 <translation id="4375772272517383391">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
+<translation id="4380677808580146413">ఎంచుకోండి</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 రోజు తర్వాత}other{{COUNT} రోజుల తర్వాత}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="536067926684072644">బుక్‌మార్క్‌లను చూడండి</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} పాస్-కీని దిగుమతి చేయడం సాధ్యపడలేదు}other{{count} పాస్-కీలను దిగుమతి చేయడం సాధ్యపడలేదు}}</translation>
 <translation id="5371112366564891538">టెక్స్ట్ సైజ్‌ను పెంచండి</translation>
+<translation id="5376135254804080693">అన్ని ట్యాబ్‌ల ఎంపికలను తొలగించండి</translation>
 <translation id="537853552771686272">మీకు ఆసక్తి ఉన్న టాపిక్‌లను, సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}‌ను మూసివేయడం జరిగింది}other{{count}‌ను మూసివేయడం జరిగింది}}</translation>
 <translation id="5394975111793637642">మీ కార్డ్ కోసం ప్రోడక్ట్ రివ్యూలను దాచండి</translation>

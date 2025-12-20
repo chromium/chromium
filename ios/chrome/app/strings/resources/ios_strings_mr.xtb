@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{१ निवडला आहे}other{# निवडले आहेत}}</translation>
 <translation id="3668816008081204991">वाचन सूची लपवलेली आहे</translation>
 <translation id="3670030362669914947">नंबर</translation>
+<translation id="3672283986707092811">सर्व निवडा</translation>
 <translation id="3679163990085797665">वाचलेल्या एंट्री हटवा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">दाखवण्याचे नाव</translation>
 <translation id="4375772272517383391">सर्व टॅब बंद करा</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="4380677808580146413">निवडा</translation>
 <translation id="4389019817280890563">भाषा बदलण्यासाठी टॅप करा.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{१ दिवसानंतर}other{{COUNT} दिवसांनंतर}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{१ टॅब}other{# टॅब}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">फाइल सेव्ह करा</translation>
 <translation id="5355191726083956201">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="536067926684072644">बुकमार्क दाखवा</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} पासकी इंपोर्ट करता आली नाही}other{{count} पासकी इंपोर्ट करता आल्या नाहीत}}</translation>
 <translation id="5371112366564891538">मजकुराचा आकार वाढवा</translation>
+<translation id="5376135254804080693">सर्व निवडी रद्द करा</translation>
 <translation id="537853552771686272">तुम्हाला स्वारस्य असलेले विषय आणि साइट व्यवस्थापित करा</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} बंद केला आहे}other{{count} बंद केले आहेत}}</translation>
 <translation id="5394975111793637642">तुमच्या कार्डसाठीची उत्पादनांची परीक्षणे लपवा</translation>

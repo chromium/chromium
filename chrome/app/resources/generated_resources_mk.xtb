@@ -1746,6 +1746,7 @@
 <translation id="2157457598652721267">Користете „/“ и „-“ за да го изберете левото или десното копче на глувчето. Користете „*“ за да ги изберете и двете.</translation>
 <translation id="2157474325782140681">За да добиете дополнителни функции, користете приклучна станица од Dell што е дизајнирана да работи со овој Chromebook.</translation>
 <translation id="215753907730220065">Излези од цел екран</translation>
+<translation id="2157632422749995237">Подоцна, Wallet може да ви испраќа известувања за вашите настани</translation>
 <translation id="2157779167749714207">Вашиот уред <ph name="DEVICE_TYPE" /> доаѓа со Gemini</translation>
 <translation id="2158103060812356265">Лесно споредувајте слични производи</translation>
 <translation id="2158249272743343757">Избришете ги податоците за персонализација…</translation>
@@ -2444,6 +2445,7 @@
 <translation id="2633212996805280240">Да се отстрани „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> не може да заврши со инсталирање, но ќе продолжи да работи од сликата на дискот.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Пристапувајте до вашите пропусници, како билети за настани и картички за лојалност, од вашиот уред</translation>
 <translation id="2634199532920451708">Историја на налози за печатење</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Не ве предупредува за приватни сајтови, како интранетот на вашата компанија</translation>
@@ -2467,6 +2469,7 @@
 <translation id="2646132387794831258">Да се зачува во папка во вашата сметка на Google?</translation>
 <translation id="264897126871533291">Протаномалија</translation>
 <translation id="2649045351178520408">Base64-шифриран ASCII, ланец на сертификати</translation>
+<translation id="2649331484502514724">Безбеден DNS</translation>
 <translation id="2649508632465204949">Научи ме нова вештина</translation>
 <translation id="2651259505411913186">Да, чувај ги моите податоци одделно од училишниот профил</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
@@ -3397,6 +3400,7 @@
 <translation id="329838636886466101">Поправи</translation>
 <translation id="3298789223962368867">Внесена неважечка URL-адреса.</translation>
 <translation id="32991397311664836">Уреди:</translation>
+<translation id="330140779027048024">Секогаш користи со избраниот давател на услуги на „DNS преку HTTPS“</translation>
 <translation id="3301554464236215299">Датотекава не се презема често и може да биде опасна</translation>
 <translation id="3301996560342889673">Да се синхронизира историјата?</translation>
 <translation id="33022249435934718">Рачки на ГДИ</translation>
@@ -4404,6 +4408,7 @@
 <translation id="394984172568887996">Увезени од IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> за да го направите преземањето датотеки побезбедно</translation>
 <translation id="3950479158728806902">Создајте криптографски клуч автоматски за да се најавите побрзо</translation>
+<translation id="3950755269510650933">Управувајте со податоците што може да ги користи Gemini за да го персонализира вашето доживување</translation>
 <translation id="3950820424414687140">Најавете се</translation>
 <translation id="3950841222883198950">Гласовно пишување</translation>
 <translation id="3953834000574892725">Мои сметки</translation>
@@ -4433,6 +4438,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
+<translation id="3971355433478412726">Инструкции за Gemini</translation>
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
 <translation id="3973005893595042880">Корисникот не е дозволен</translation>
 <translation id="3973660817924297510">Се проверуваат лозинките (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4721,6 +4727,7 @@
 <translation id="4178220097446335546">За да ја заборавите претплатава и нејзините поврзани мрежи, одете на страницата со претплата на Passpoint за да ја отстраните претплатата.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Јазици</translation>
+<translation id="4182182457914031017">За да се нудат предлози и да се подобрува функцијава, со Google се споделуваат URL-адресата и целосните содржини на страниците на сајтот што го посетувате</translation>
 <translation id="4182339886482390129">„Подобрено безбедно прелистување“ нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
 <translation id="4184803915913850597">HID-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> ќе ги дознае брендот и моделот на вашиот безбедносен клуч</translation>
@@ -4752,6 +4759,7 @@
 <translation id="4206144641569145248">Вонземјанин</translation>
 <translation id="4206323443866416204">Извештај за повратни информации</translation>
 <translation id="4206585797409671301">Дозволено е да се прикажуваат барања</translation>
+<translation id="4207144975205749656">Ги шифрира барањата за навигација за да не може напаѓачите на истата мрежа да го видат вашиот сообраќај</translation>
 <translation id="4207932031282227921">Побарана е дозвола. Притиснете F6 за да одговорите</translation>
 <translation id="4208390505124702064">Пребарај на <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Голем</translation>
@@ -5842,6 +5850,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Да се зачува во папка само на овој уред?</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
+<translation id="4959581970694896608">Приспособете го начинот на кој ви одговара Gemini</translation>
 <translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
@@ -6157,6 +6166,7 @@
 <translation id="5186362203408605578">Користете друг уред со скенирање на QR-кодот</translation>
 <translation id="5186381005592669696">Приспособување на јазикот на прикажување за поддржаните апликации</translation>
 <translation id="5186788525428341874">Може да го користите овој криптографски клуч за да се најавувате побрзо на вашите уреди. Ќе се зачува во Google Password Manager за <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Користи ја стандардната опција ако е достапна</translation>
 <translation id="5187641678926990264">&amp;Инсталирај страница како апликација…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Споделено од <ph name="USER_NAME" /></translation>
@@ -7131,6 +7141,7 @@
 <translation id="5863445608433396414">Овозможете ги функциите за отстранување грешки</translation>
 <translation id="5863515189965725638">Изменете го IBAN</translation>
 <translation id="5864195618110239517">Користи врска со ограничен интернет</translation>
+<translation id="5864624288360677142">Користи ја стандардната опција ако е достапна и Google DNS како резервна опција</translation>
 <translation id="5864754048328252126">Дејство при неактивност додека се полни</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ќе се паузира наскоро</translation>
 <translation id="586567932979200359">Го активиравте производот <ph name="PRODUCT_NAME" /> од неговата слика на дискот. Со негово инсталирање на компјутер, може да го активирате без сликата на диск и се обезбедува дека ќе биде ажурен.</translation>
@@ -7581,6 +7592,7 @@
 <translation id="6180550893222597997">Кој криптографски клуч сакате да го користите за <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Апликациите понекогаш го променуваат своето брендирање. Пред да промените, прегледајте ги сите промени за да потврдите дека ви одговараат.</translation>
 <translation id="6181431612547969857">Преземањето е блокирано</translation>
+<translation id="6182100780603067202">Споделувај и аудио од апликацијата (од сите нејзини прозорци)</translation>
 <translation id="6183369864942961155">Автоматска „Светла тема“/„Темна тема“</translation>
 <translation id="6184099524311454384">Пребарајте ги картичките</translation>
 <translation id="6185132558746749656">Локација на уредот</translation>
@@ -8995,6 +9007,7 @@
 <translation id="7175037578838465313">Конфигурирање на <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Вчитано од:</translation>
 <translation id="7177659256878428843">Конвертирајте ја групата картички во папка со обележувачи</translation>
+<translation id="7180569503618416775">Wallet може да понуди да зачувува податоци од страниците што ги прегледувате, како билетите што ги купувате</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Приспособи</translation>
 <translation id="7181117767881540376">Скриј ја лентата со обележувачи</translation>
@@ -10354,6 +10367,7 @@
 <translation id="8084429490152575036">Поставки за APN за мобилна мрежа</translation>
 <translation id="8084510406207562688">&amp;Врати ги сите картички</translation>
 <translation id="8084628902026812045">Сајтов не користи безбедна врска и датотеката може да е неовластено изменета</translation>
+<translation id="808488435221187916">Вашите податоци се достапни во Google Wallet на кој било најавен уред</translation>
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Картичкава го споделува вашиот екран</translation>
 <translation id="8086610718778464681">Не може да се направи бекап на апликациите и датотеките на Linux</translation>

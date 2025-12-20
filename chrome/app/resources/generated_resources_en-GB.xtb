@@ -2468,6 +2468,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2646132387794831258">Save to a folder in your Google Account?</translation>
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
+<translation id="2649331484502514724">Secure DNS</translation>
 <translation id="2649508632465204949">Teach me a new skill</translation>
 <translation id="2651259505411913186">Yes, keep my data separate from school</translation>
 <translation id="265156376773362237">Standard preloading</translation>
@@ -3398,6 +3399,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="329838636886466101">Repair</translation>
 <translation id="3298789223962368867">Invalid URL entered.</translation>
 <translation id="32991397311664836">Devices:</translation>
+<translation id="330140779027048024">Use always with selected DNS-over-HTTPS provider</translation>
 <translation id="3301554464236215299">This file isn't commonly downloaded and it may be dangerous</translation>
 <translation id="3301996560342889673">Sync history?</translation>
 <translation id="33022249435934718">GDI Handles</translation>
@@ -4405,6 +4407,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="394984172568887996">Imported From IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> to make downloading files safer</translation>
 <translation id="3950479158728806902">Automatically create a passkey to sign in faster</translation>
+<translation id="3950755269510650933">Manage the information that Gemini can use to personalise your experience</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">My accounts</translation>
@@ -4434,6 +4437,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculating...</translation>
+<translation id="3971355433478412726">Instructions for Gemini</translation>
 <translation id="3971764089670057203">Fingerprints on this security key</translation>
 <translation id="3973005893595042880">User is not allowed</translation>
 <translation id="3973660817924297510">Checking passwords (<ph name="CHECKED_PASSWORDS" /> of <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4754,6 +4758,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedback Report</translation>
 <translation id="4206585797409671301">Allowed to show requests</translation>
+<translation id="4207144975205749656">Encrypts navigation requests so that attackers on the same network can't see your traffic</translation>
 <translation id="4207932031282227921">Permission requested, press F6 to respond</translation>
 <translation id="4208390505124702064">Search <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Large</translation>
@@ -5844,6 +5849,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Save to a folder only on this device?</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
+<translation id="4959581970694896608">Customise how Gemini responds to you</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast screen</translation>
@@ -6159,6 +6165,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5186362203408605578">Use another device by scanning the QR code</translation>
 <translation id="5186381005592669696">Customise display language for supported apps</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Use default if available</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Shared by <ph name="USER_NAME" /></translation>
@@ -7133,6 +7140,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5863445608433396414">Enable debugging features</translation>
 <translation id="5863515189965725638">Edit IBAN</translation>
 <translation id="5864195618110239517">Use metered connection</translation>
+<translation id="5864624288360677142">Use default if available and Google DNS as backup</translation>
 <translation id="5864754048328252126">Idle action while charging</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
@@ -7583,6 +7591,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6180550893222597997">Which passkey do you want to use for <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Apps sometimes update their branding. Review all changes to make sure that you're comfortable with them before updating.</translation>
 <translation id="6181431612547969857">Download blocked</translation>
+<translation id="6182100780603067202">Also share application audio (from all its windows)</translation>
 <translation id="6183369864942961155">Automatic Light/Dark theme</translation>
 <translation id="6184099524311454384">Search tabs</translation>
 <translation id="6185132558746749656">Device Location</translation>

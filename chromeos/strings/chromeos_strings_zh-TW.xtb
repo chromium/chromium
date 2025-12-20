@@ -155,7 +155,7 @@
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選擇螢幕保護程式背景</translation>
-<translation id="1587031308639983732">時間方面的變動可能不準確。這項設定是由系統管理員管理。</translation>
+<translation id="1587031308639983732">時間方面的變動可能不準確。這項設定是由管理員管理。</translation>
 <translation id="1588438908519853928">一般</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1593528591614229756">請務必選取行動服務供應商或管理員提供的 APN。選取 APN 後，系統會停用所有自訂 APN。如果 APN 無效，行動連線可能會因此中斷。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -623,7 +623,7 @@
 <translation id="3780740315729837296">指定鍵盤按鍵</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3785643128701396311">像素畫</translation>
-<translation id="3799381533888781854">關閉 - 這項設定是由系統管理員管理。</translation>
+<translation id="3799381533888781854">關閉 - 這項設定是由管理員管理。</translation>
 <translation id="380097101658023925">rgb 控制選項</translation>
 <translation id="380493988330050229">無法為這個轉錄稿語言建立摘要</translation>
 <translation id="38114475217616659">清除所有記錄</translation>

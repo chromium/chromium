@@ -2983,6 +2983,7 @@
 <translation id="5826507051599432481">Κοινό όνομα (CN)</translation>
 <translation id="5830698870816298009">χρήση και μετακίνηση κάμερας</translation>
 <translation id="5831217499016131155">Πορτοφόλι Google</translation>
+<translation id="5831259154333754661">Επιλέξτε άλλον τρόπο πληρωμής για να ολοκληρώσετε αυτή την αγορά.</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5832976493438355584">Κλειδώθηκε</translation>
 <translation id="5837220895135257862">Ελευθερώστε χώρο στο <ph name="CLOUD_PROVIDER" />, προτού δοκιμάσετε ξανά</translation>
@@ -4266,6 +4267,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
 <translation id="784623644169604270">Δεν υπάρχει πρόσφατη δραστηριότητα</translation>
+<translation id="7853222852810008596">Η επιλογή για πληρωμή αργότερα δεν είναι διαθέσιμη σε αυτό το νόμισμα</translation>
 <translation id="785476343534277563">Κολεγιακά αθλήματα</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Εισαγάγετε τη νέα ημερομηνία λήξης και το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>

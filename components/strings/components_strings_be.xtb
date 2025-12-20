@@ -2980,6 +2980,7 @@
 <translation id="5826507051599432481">Звычайнае імя (ЗІ)</translation>
 <translation id="5830698870816298009">выкарыстоўванне і рух камеры</translation>
 <translation id="5831217499016131155">Google Кашалёк</translation>
+<translation id="5831259154333754661">Каб завяршыць куплю, выберыце іншы спосаб аплаты.</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5832976493438355584">Заблакіравана</translation>
 <translation id="5837220895135257862">Вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />" і паўтарыце спробу</translation>
@@ -4262,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
 <translation id="784623644169604270">Няма нядаўніх дзеянняў</translation>
+<translation id="7853222852810008596">Для гэтай валюты аплата ў растэрміноўку недаступная</translation>
 <translation id="785476343534277563">Студэнцкі спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Укажыце новы тэрмін дзеяння і код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>

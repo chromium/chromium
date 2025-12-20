@@ -1737,6 +1737,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2157457598652721267">Klávesou „/“ vyberete levé a klávesou „-“ pravé tlačítko myši. Klávesou „*“ vyberete obě.</translation>
 <translation id="2157474325782140681">Chcete-li získat další funkce, použijte dokovací stanici Dell kompatibilní s tímto Chromebookem.</translation>
 <translation id="215753907730220065">Ukončit režim celé obrazovky</translation>
+<translation id="2157632422749995237">Později vám Peněženka může posílat oznámení o vašich událostech</translation>
 <translation id="2157779167749714207">Zařízení <ph name="DEVICE_TYPE" /> je vybaveno Gemini</translation>
 <translation id="2158103060812356265">Snadno porovnávejte podobné produkty</translation>
 <translation id="2158249272743343757">Smazat data personalizace…</translation>
@@ -2432,6 +2433,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2633212996805280240">Odstranit rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101">Aplikace <ph name="PRODUCT_NAME" /> nemůže dokončit svou instalaci, ale bude se i nadále spouštět z bitové kopie disku.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Mít ze zařízení přístup ke kartám, jako jsou vstupenky na akce a věrnostní karty</translation>
 <translation id="2634199532920451708">Historie tisku</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Nevaruje vás před soukromými weby, jako je intranet vaší společnosti</translation>
@@ -4389,6 +4391,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="394984172568887996">Importováno z aplikace IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby bylo stahování souborů bezpečnější</translation>
 <translation id="3950479158728806902">Automaticky vytvořit přístupový klíč pro rychlejší přihlášení</translation>
+<translation id="3950755269510650933">Spravujte informace, které může Gemini používat k personalizaci vašeho prostředí</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3950841222883198950">Hlasové zadávání</translation>
 <translation id="3953834000574892725">Mé účty</translation>
@@ -4418,6 +4421,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
+<translation id="3971355433478412726">Instrukce pro Gemini</translation>
 <translation id="3971764089670057203">Otisky prstů na tomto bezpečnostním klíči</translation>
 <translation id="3973005893595042880">Uživatel není povolen</translation>
 <translation id="3973660817924297510">Probíhá kontrola hesel (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4706,6 +4710,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4178220097446335546">Pokud toto předplatné a jeho přidružené sítě chcete zapomenout, přejděte na stránku předplatných Passpoint a odeberte ho.</translation>
 <translation id="4181602000363099176">20×</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4182182457914031017">Za účelem nabízení návrhů a vylepšování této funkce se adresa URL a obsah celé stránky navštíveného webu sdílí s Googlem</translation>
 <translation id="4182339886482390129">Vylepšené Bezpečné prohlížení vás lépe ochrání před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
 <translation id="4184803915913850597">Zařízení HID (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> se dozví značku a model vašeho bezpečnostního klíče</translation>
@@ -5180,7 +5185,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4508765956121923607">Z&amp;obrazit zdrojový kód</translation>
 <translation id="4509277363725254222">Když sdílíte kopii svého <ph name="BEGIN_BOLD_USERNAME" />uživatelského jména<ph name="END_BOLD_USERNAME" /> a <ph name="BEGIN_BOLD_PASSWORD" />hesla<ph name="END_BOLD_PASSWORD" />, člen vaší rodiny je může vyplnit pomocí Správce hesel Google</translation>
 <translation id="4509421746503122514">Spustit znovu a aktualizovat</translation>
-<translation id="4509741852167209430">Mezi weby jsou sdíleny omezené typy dat za účelem měření výkonu reklam (například aby weby mohli zjistit, zda jste po návštěvě webu uskutečnili nákup)</translation>
+<translation id="4509741852167209430">Mezi weby jsou sdíleny omezené typy dat za účelem měření výkonu reklam (například aby weby mohly zjistit, zda jste po návštěvě webu uskutečnili nákup)</translation>
 <translation id="4510195992002502722">Zpětnou vazbu se nepodařilo odeslat. Další pokus...</translation>
 <translation id="4510479820467554003">Seznam účtů rodičů</translation>
 <translation id="4511344327646819192">Pokud ostatním v používání vašeho hesla budete chtít zabránit, změňte ho na webu <ph name="WEBSITE" /></translation>
@@ -5826,6 +5831,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Uložit do složky jen na tomto zařízení?</translation>
 <translation id="4959262764292427323">Hesla se ukládají do vašeho účtu Google, abyste je mohli používat na všech zařízeních</translation>
+<translation id="4959581970694896608">Přizpůsobte si, jak vám má Gemini odpovídat</translation>
 <translation id="4960020053211143927">Některé aplikace toto nastavení nepodporují</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
@@ -8978,6 +8984,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Načteno z:</translation>
 <translation id="7177659256878428843">Převedení skupiny karet na složku záložek</translation>
+<translation id="7180569503618416775">Peněženka vám může nabídnout uložení informací (například zakoupených lístků) ze stránek, které si prohlížíte</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7180865173735832675">Personalizovat</translation>
 <translation id="7181117767881540376">&amp;Skrýt lištu záložek</translation>
@@ -10337,6 +10344,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8084429490152575036">Nastavení mobilního APN</translation>
 <translation id="8084510406207562688">&amp;Obnovit všechny karty</translation>
 <translation id="8084628902026812045">Tento web nepoužívá zabezpečené připojení a se souborem mohl někdo manipulovat</translation>
+<translation id="808488435221187916">Vaše informace jsou k dispozici v Peněžence Google na každém zařízení, ve kterém jste přihlášeni</translation>
 <translation id="8086015605808120405">Probíhá konfigurace tiskárny <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Tato karta sdílí vaši obrazovku</translation>
 <translation id="8086610718778464681">Aplikace a soubory systému Linux nelze zálohovat</translation>

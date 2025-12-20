@@ -2981,6 +2981,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5826507051599432481">Nom commun (CN)</translation>
 <translation id="5830698870816298009">Utiliser et bouger la caméra</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Choisissez un autre mode de paiement pour finaliser cet achat.</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5832976493438355584">Verrouillé</translation>
 <translation id="5837220895135257862">Libérez de l'espace sur <ph name="CLOUD_PROVIDER" /> avant de réessayer</translation>
@@ -4264,6 +4265,7 @@ Informations supplémentaires :
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application (<ph name="EXAMPLE_APP_1" />)}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
+<translation id="7853222852810008596">Payer plus tard n'est pas disponible dans cette devise</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> : <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Saisissez la nouvelle date d'expiration et le nouveau code CVC au <ph name="SIDE_OF_CARD" /></translation>

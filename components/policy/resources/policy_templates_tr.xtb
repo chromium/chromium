@@ -9354,6 +9354,23 @@ etkilemez.</translation>
 
       Not: Tarama özelliği şu anda bir özellik bayrağı tarafından varsayılan olarak devre dışıdır. Kullanıcı bu özelliği özellik bayrağını kullanarak etkinleştirirse özellik bu politika tarafından yine de devre dışı bırakılabilir.</translation>
 <translation id="7115684775550072082">Yalnızca metin ve XML MIME türleri için boşluğu koru</translation>
+<translation id="7116098886490965998">Listelenen kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile tek oturum açma özelliğini devre dışı bırakın.
+
+<ph name="POLICY_VALUE_ALL" /> değeri eklendiğinde TOA için desteklenen tüm kimlik sağlayıcılar devre dışı bırakılır.
+
+<ph name="POLICY_VALUE_MICROSOFT" /> değeri eklendiğinde Chrome'da Microsoft® bulut kimliği sağlayıcısı için tek oturum açma desteği devre dışı bırakılır.
+
+Bu politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm kimlik sağlayıcılar etkinleştirilir.
+
+<ph name="PRODUCT_NAME" /> için etkinleştirilen ve yönetici tarafından cihazda yapılandırılan kimlik sağlayıcılar için, <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> özelliğini destekleyen herhangi bir uygulamada bu kimlik sağlayıcıyı kullanarak oturum açan kullanıcılar, web mülklerinde otomatik olarak bu kimlik sağlayıcıyı kullanarak oturum açabilirler. Kullanıcının kimlik doğrulama bilgileriyle ilgili veriler her kimlik doğrulama etkinliğinde kullanıcının bulut kimlik sağlayıcısına iletilir.
+
+Notlar:
+
+<ph name="PRODUCT_NAME" />, Gizli veya Misafir modlarında <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini desteklemez.
+
+<ph name="PRODUCT_NAME" />, yalnızca aşağıdaki kimlik sağlayıcılar için <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ile Tek Oturum Açma özelliğini destekler: Microsoft, Okta.
+
+Bu özellik, <ph name="MAC_OS_NAME" /> 10.15 sürümünden itibaren kullanılabilir.</translation>
 <translation id="7119538491527883595">Yerel kullanıcı verilerini depolama</translation>
 <translation id="7121046543122812054">Bu politika kullanımdan kaldırıldı. Bunun yerine <ph name="BROWSER_SIGNIN_POLICY_NAME" /> politikasını kullanabilirsiniz.
 
@@ -12422,6 +12439,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="9206472508136116830">NetBIOS paylaşım keşfine izin verme</translation>
 <translation id="9207596996305971030">Giriş/çıkış etkinliklerini raporlama</translation>
 <translation id="9210647066889383361">Kullanıcıların cihazlarında Smart Lock ile oturum açmasına izin ver</translation>
+<translation id="9212598607138782107">Okta® bulut kimlik sağlayıcısı</translation>
 <translation id="9213751049772256263">Tüm varyasyonları devre dışı bırakma</translation>
 <translation id="9217154963008402249">İzleme amaçlı ağ paketlerinin sıklığı</translation>
 <translation id="9220314833408124365">Varsayılan yönlendirme politikası olarak "no-referrer-when-downgrade" kullan</translation>

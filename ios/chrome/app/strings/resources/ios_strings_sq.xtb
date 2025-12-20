@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 e zgjedhur}other{# të zgjedhura}}</translation>
 <translation id="3668816008081204991">"Lista e leximit" është e fshehur</translation>
 <translation id="3670030362669914947">Numri</translation>
+<translation id="3672283986707092811">Zgjidhi të gjithë</translation>
 <translation id="3679163990085797665">Fshi të lexuarat</translation>
 <translation id="368329460027487650">Ke dalë. Hap opsionet për t'u identifikuar.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Emri prezantues</translation>
 <translation id="4375772272517383391">Mbyll të gjitha skedat</translation>
 <translation id="4378154925671717803">Telefoni</translation>
+<translation id="4380677808580146413">Zgjidh</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pas 1 dite}other{Pas {COUNT} ditësh}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Ruaj skedarin</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="536067926684072644">Shfaq faqeshënuesit</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} çelës kalimi nuk mund të importohej}other{{count} çelësa kalimi nuk mund të importoheshin}}</translation>
 <translation id="5371112366564891538">Rrit madhësinë e tekstit</translation>
+<translation id="5376135254804080693">Hiq përzgjedhjen për të gjitha</translation>
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>

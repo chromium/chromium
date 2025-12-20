@@ -2981,6 +2981,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5826507051599432481">Algemene naam (AN)</translation>
 <translation id="5830698870816298009">kameragebruik en -beweging</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Kies ’n ander betaalmetode om hierdie aankoop te voltooi.</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5832976493438355584">Gesluit</translation>
 <translation id="5837220895135257862">Maak spasie in <ph name="CLOUD_PROVIDER" /> beskikbaar voordat jy weer probeer</translation>
@@ -4262,6 +4263,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>
 <translation id="784623644169604270">Geen onlangse aktiwiteit nie</translation>
+<translation id="7853222852810008596">Betaal Later is nie in hierdie geldeenheid beskikbaar nie</translation>
 <translation id="785476343534277563">Kollegesport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Voer jou nuwe vervaldatum en CVC op die <ph name="SIDE_OF_CARD" /> in</translation>

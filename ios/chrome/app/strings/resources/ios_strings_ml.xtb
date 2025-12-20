@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{ഒരെണ്ണം തിരഞ്ഞെടുത്തു}other{# തിരഞ്ഞെടുത്തു}}</translation>
 <translation id="3668816008081204991">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് മറച്ചിരിക്കുന്നു</translation>
 <translation id="3670030362669914947">നമ്പർ</translation>
+<translation id="3672283986707092811">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3679163990085797665">വായിച്ചവ ഇല്ലാതാക്കുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
 <translation id="3695446226812920698">എങ്ങനെയെന്നറിയുക</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">പ്രദർശിപ്പിക്കുന്ന പേര്</translation>
 <translation id="4375772272517383391">എല്ലാ ടാബുകളും അടയ്‌ക്കുക</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
+<translation id="4380677808580146413">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4389019817280890563">ഭാഷ മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{{COUNT} ദിവസത്തിന് ശേഷം}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ഫയൽ സംരക്ഷിക്കുക</translation>
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="536067926684072644">ബുക്ക്‌മാർക്കുകൾ കാണിക്കുക</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} പാസ്‌കീ ഇമ്പോർട്ട് ചെയ്യാനായില്ല}other{{count} പാസ്‌കീകൾ ഇമ്പോർട്ട് ചെയ്യാനായില്ല}}</translation>
 <translation id="5371112366564891538">ടെക്‌സ്‌റ്റിന്റെ വലുപ്പം കൂട്ടുക</translation>
+<translation id="5376135254804080693">എല്ലാം തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
 <translation id="537853552771686272">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളും സൈറ്റുകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} എണ്ണം അടച്ചു}other{{count} എണ്ണം അടച്ചു}}</translation>
 <translation id="5394975111793637642">നിങ്ങളുടെ കാർഡിനുള്ള ഉൽപ്പന്ന റിവ്യൂകൾ മറയ്ക്കുക</translation>

@@ -1732,6 +1732,7 @@
 <translation id="2157457598652721267">「/」キーを使用してマウスの左ボタン、「-」キーを使用してマウスの右ボタン、「*」キーを使用して両方を選択する</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
+<translation id="2157632422749995237">後で、ウォレットからイベントに関する通知が届きます</translation>
 <translation id="2157779167749714207">この <ph name="DEVICE_TYPE" /> には Gemini が搭載されています</translation>
 <translation id="2158103060812356265">同様の商品を簡単に比較できます</translation>
 <translation id="2158249272743343757">入力履歴を削除...</translation>
@@ -2425,6 +2426,7 @@
 <translation id="2633212996805280240">「<ph name="EXTENSION_NAME" />」を削除しますか？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> のインストールを完了できませんでした。ただし、今後もディスク イメージから実行できます。</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">デバイスからイベント チケットやポイントカードなどのパスにアクセスできます</translation>
 <translation id="2634199532920451708">印刷履歴</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">会社のイントラネットなど、非公開サイトについては警告を表示しません</translation>
@@ -2448,6 +2450,7 @@
 <translation id="2646132387794831258">Google アカウントのフォルダに保存しますか？</translation>
 <translation id="264897126871533291">第一色弱</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
+<translation id="2649331484502514724">セキュア DNS</translation>
 <translation id="2649508632465204949">新しいスキルを身に付ける</translation>
 <translation id="2651259505411913186">はい、自分のデータを学校用とは別に保持します</translation>
 <translation id="265156376773362237">標準プリロード</translation>
@@ -2676,7 +2679,7 @@
 <translation id="2792697226874849938">制限の画像</translation>
 <translation id="2794522004398861033">eSIM を設定するには Wi-Fi またはイーサネットに接続してください</translation>
 <translation id="2794977172822818797">現在のサイトを追加</translation>
-<translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
+<translation id="2795716239552913152">多くのサイトは、地域のニュースや近くの店舗情報の表示など、最適な機能を提供するために位置情報を利用します</translation>
 <translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> 日間表示しない</translation>
 <translation id="2798347533012571708">常に更新</translation>
 <translation id="2799223571221894425">再起動</translation>
@@ -3376,6 +3379,7 @@
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">入力された URL が無効です。</translation>
 <translation id="32991397311664836">デバイス:</translation>
+<translation id="330140779027048024">選択した DNS-over-HTTPS プロバイダを常に使用する</translation>
 <translation id="3301554464236215299">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります</translation>
 <translation id="3301996560342889673">履歴を同期しますか？</translation>
 <translation id="33022249435934718">GDI ハンドル</translation>
@@ -4382,6 +4386,7 @@
 <translation id="394984172568887996">IE ブックマーク</translation>
 <translation id="3949999964543783947">ファイルのダウンロードの安全性を高めるために <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">パスキーを自動作成してすばやくログイン</translation>
+<translation id="3950755269510650933">Gemini がエクスペリエンスをカスタマイズするために使用できる情報を管理します</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3950841222883198950">音声入力</translation>
 <translation id="3953834000574892725">マイ アカウント</translation>
@@ -4411,6 +4416,7 @@
 <translation id="3968739731834770921">かな</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算しています...</translation>
+<translation id="3971355433478412726">Gemini への指示</translation>
 <translation id="3971764089670057203">このセキュリティ キーのフィンガープリント</translation>
 <translation id="3973005893595042880">ユーザーは許可されていません</translation>
 <translation id="3973660817924297510">パスワードを確認しています（<ph name="CHECKED_PASSWORDS" /> 件目 / <ph name="TOTAL_PASSWORDS" /> 件中）…</translation>
@@ -4699,6 +4705,7 @@
 <translation id="4178220097446335546">この登録とそれに関連付けられているネットワークを削除するには、Passpoint の登録ページに移動して登録を削除してください。</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4182182457914031017">候補を表示して、この機能を改善するため、アクセスしたサイトの URL とページ全体のコンテンツが Google と共有されます</translation>
 <translation id="4182339886482390129">セーフ ブラウジング保護強化機能では、危険なウェブサイト、ダウンロード、拡張機能から高いセキュリティ強度で保護されます</translation>
 <translation id="4184803915913850597">HID デバイス（<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />）</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> はセキュリティ キーのメーカーとモデルを読み取ります</translation>
@@ -4729,6 +4736,7 @@
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
 <translation id="4206585797409671301">リクエストの表示を許可するウェブサイト</translation>
+<translation id="4207144975205749656">ナビゲーション リクエストを暗号化して、同じネットワーク上の攻撃者がトラフィックを追跡できないようにします</translation>
 <translation id="4207932031282227921">権限がリクエストされました。対応するには、F6 キーを押してください</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> を検索</translation>
 <translation id="4209092469652827314">大</translation>
@@ -5817,6 +5825,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">このデバイスのフォルダにのみ保存しますか？</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
+<translation id="4959581970694896608">Gemini の回答をカスタマイズします</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
@@ -6131,6 +6140,7 @@
 <translation id="5186362203408605578">QR コードをスキャンして別のデバイスを使用できます</translation>
 <translation id="5186381005592669696">対応アプリの表示言語をカスタマイズする</translation>
 <translation id="5186788525428341874">このパスキーを使用してどのデバイスでもすばやくログインできます。パスキーは <ph name="ACCOUNT_NAME" /> の Google パスワード マネージャーに保存されます。</translation>
+<translation id="5186792064936776005">利用可能な場合はデフォルトを使用する</translation>
 <translation id="5187641678926990264">ページをアプリとしてインストール(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> さんが共有しました</translation>
@@ -7102,6 +7112,7 @@
 <translation id="5863445608433396414">デバッグ機能を有効にする</translation>
 <translation id="5863515189965725638">IBAN の編集</translation>
 <translation id="5864195618110239517">従量制接続を使用</translation>
+<translation id="5864624288360677142">利用可能な場合はデフォルトを使用し、Google DNS をバックアップとして使用する</translation>
 <translation id="5864754048328252126">充電時のアイドル操作</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> はまもなく一時的に利用できなくなります</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
@@ -7552,6 +7563,7 @@
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
 <translation id="6181218116951226898">アプリでブランディングが更新されることがあります。更新の前に、すべての変更内容に問題がないことを確認してください。</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
+<translation id="6182100780603067202">（すべてのウィンドウの）アプリケーションの音声も共有する</translation>
 <translation id="6183369864942961155">ライトモード / ダークモード自動設定</translation>
 <translation id="6184099524311454384">タブを検索</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
@@ -8963,6 +8975,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
 <translation id="7175353351958621980">ロード元:</translation>
 <translation id="7177659256878428843">タブグループをブックマーク フォルダに変換</translation>
+<translation id="7180569503618416775">購入するチケットなど、表示中のページの情報をウォレットに保存するか確認します</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7181117767881540376">ブックマーク バーを非表示(&amp;H)</translation>
@@ -10322,6 +10335,7 @@
 <translation id="8084429490152575036">モバイル APN 設定</translation>
 <translation id="8084510406207562688">すべてのタブを復元(&amp;E)</translation>
 <translation id="8084628902026812045">このサイトは安全な接続を使用していないため、ファイルが改ざんされている可能性があります</translation>
+<translation id="808488435221187916">保存した情報は、ログインしているデバイスから Google ウォレットにアクセスして確認できます</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086121155774250556">このタブはデスクトップ画面を共有しています</translation>
 <translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>

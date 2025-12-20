@@ -4407,6 +4407,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="394984172568887996">Diimport Daripada IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> untuk menjadikan kerja memuat turun fail lebih selamat</translation>
 <translation id="3950479158728806902">Buat kunci laluan secara automatik untuk log masuk dengan lebih pantas</translation>
+<translation id="3950755269510650933">Urus maklumat yang boleh digunakan oleh Gemini untuk memeribadikan pengalaman anda</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="3950841222883198950">Penaip suara</translation>
 <translation id="3953834000574892725">Akaun saya</translation>
@@ -4436,6 +4437,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Mengira...</translation>
+<translation id="3971355433478412726">Arahan untuk Gemini</translation>
 <translation id="3971764089670057203">Cap jari pada kunci keselamatan ini</translation>
 <translation id="3973005893595042880">Pengguna tidak dibenarkan</translation>
 <translation id="3973660817924297510">Menyemak kata laluan (<ph name="CHECKED_PASSWORDS" /> daripada <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5847,6 +5849,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Simpan dalam folder pada peranti ini sahaja?</translation>
 <translation id="4959262764292427323">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti</translation>
+<translation id="4959581970694896608">Sesuaikan cara Gemini memberikan respons kepada anda</translation>
 <translation id="4960020053211143927">Tidak disokong oleh sesetengah apl</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Hantar skrin</translation>

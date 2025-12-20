@@ -2982,6 +2982,7 @@
 <translation id="5826507051599432481">কমন নেম (CN)</translation>
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">এই কেনাকাটা সম্পূর্ণ করতে অন্য কোনও পেমেন্ট পদ্ধতি বেছে নিন।</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5832976493438355584">লক করা রয়েছে</translation>
 <translation id="5837220895135257862">আবার চেষ্টা করার আগে <ph name="CLOUD_PROVIDER" />-এ স্পেস খালি করুন</translation>
@@ -4263,6 +4264,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="784623644169604270">কোনও সাম্প্রতিক অ্যাক্টিভিটি নেই</translation>
+<translation id="7853222852810008596">এই মুদ্রায় পরে পেমেন্ট করার সুবিধা উপলভ্য নেই</translation>
 <translation id="785476343534277563">কলেজের খেলাধূলা</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />-এ মেয়াদ শেষের নতুন তারিখ এবং CVC লিখুন</translation>

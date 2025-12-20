@@ -1736,6 +1736,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2157457598652721267">Utiliser "/" et "-" pour sélectionner le bouton gauche ou droit de la souris. Utiliser “*” pour sélectionner les deux.</translation>
 <translation id="2157474325782140681">Pour bénéficier de fonctionnalités supplémentaires, utilisez une station d'accueil Dell compatible avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
+<translation id="2157632422749995237">Plus tard, Wallet pourra vous envoyer des notifications concernant vos événements</translation>
 <translation id="2157779167749714207">Gemini est fourni avec votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">Comparez facilement des produits similaires</translation>
 <translation id="2158249272743343757">Supprimer les données de personnalisation</translation>
@@ -2431,6 +2432,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2633212996805280240">Désinstaller "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> n'a pas pu terminer l'installation, mais va poursuivre son exécution à partir de son image disque.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accédez à vos pass, comme des billets pour des événements et des cartes de fidélité, depuis votre appareil</translation>
 <translation id="2634199532920451708">Historique d'impression</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Ne vous avertit pas pour les sites privés, comme l'intranet de votre entreprise</translation>
@@ -4389,6 +4391,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="394984172568887996">Importés depuis IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pour sécuriser davantage le téléchargement de fichiers</translation>
 <translation id="3950479158728806902">Créer automatiquement une clé d'accès pour vous connecter plus vite</translation>
+<translation id="3950755269510650933">Gérez les informations que Gemini peut utiliser pour personnaliser votre expérience</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3950841222883198950">Saisie vocale</translation>
 <translation id="3953834000574892725">Mes comptes</translation>
@@ -4418,6 +4421,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
+<translation id="3971355433478412726">Instructions pour Gemini</translation>
 <translation id="3971764089670057203">Empreintes sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">Utilisateur non autorisé</translation>
 <translation id="3973660817924297510">Vérification des mots de passe (<ph name="CHECKED_PASSWORDS" /> sur <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4706,6 +4710,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4178220097446335546">Pour supprimer cet abonnement et les réseaux associés, accédez à la page d'abonnement Passpoint et supprimez l'abonnement.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Langues</translation>
+<translation id="4182182457914031017">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu complet de la page du site que vous consultez sont partagés avec Google</translation>
 <translation id="4182339886482390129">La navigation sécurisée avec protection renforcée vous protège davantage contre les sites Web, les extensions et les téléchargements malveillants</translation>
 <translation id="4184803915913850597">Appareil HID (<ph name="VENDOR_ID" /> : <ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> connaîtra la marque et le modèle de votre clé de sécurité</translation>
@@ -5826,6 +5831,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Enregistrer dans un dossier sur cet appareil uniquement ?</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils</translation>
+<translation id="4959581970694896608">Personnalisez la façon dont Gemini vous répond</translation>
 <translation id="4960020053211143927">Non compatible avec certaines applis</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
@@ -8980,6 +8986,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Chargé depuis :</translation>
 <translation id="7177659256878428843">Convertir le groupe d'onglets en dossier de favoris</translation>
+<translation id="7180569503618416775">Wallet peut vous proposer d'enregistrer des informations à partir des pages que vous consultez, comme les billets que vous achetez</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7181117767881540376">Masquer la barre de favoris</translation>
@@ -10340,6 +10347,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084429490152575036">Paramètres de l'APN mobile</translation>
 <translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8084628902026812045">Le fichier a peut-être été falsifié, car la connexion qu'utilise actuellement ce site n'est pas sécurisée</translation>
+<translation id="808488435221187916">Vos informations sont disponibles dans Google Wallet sur n'importe quel appareil connecté à votre compte</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Cet onglet partage votre écran</translation>
 <translation id="8086610718778464681">Impossible de sauvegarder les applis et fichiers Linux</translation>

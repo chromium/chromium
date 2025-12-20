@@ -4396,6 +4396,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="394984172568887996">Imporditud IE'st</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, et faile ohutumalt alla laadida</translation>
 <translation id="3950479158728806902">Loo kiiremaks sisselogimiseks automaatselt pääsuvõti</translation>
+<translation id="3950755269510650933">Hallake teavet, mida Gemini saab teie kasutuskogemuse isikupärastamiseks kasutada</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3950841222883198950">Häälsisestus</translation>
 <translation id="3953834000574892725">Minu kontod</translation>
@@ -4425,6 +4426,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
+<translation id="3971355433478412726">Juhised Geminile</translation>
 <translation id="3971764089670057203">Sellel turvavõtmel olevad sõrmejäljed</translation>
 <translation id="3973005893595042880">Kasutaja pole lubatud</translation>
 <translation id="3973660817924297510">Paroolide kontrollimine (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -5835,6 +5837,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Kas salvestada ainult selle seadme kausta?</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
+<translation id="4959581970694896608">Kohandage, kuidas Gemini teile vastab</translation>
 <translation id="4960020053211143927">Ei toetata osades rakendustes</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>

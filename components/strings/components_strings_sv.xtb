@@ -524,7 +524,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1822995137827688764">Fastighetsutveckling</translation>
 <translation id="1823768272150895732">Teckensnitt</translation>
 <translation id="1824402189105105503">Åttonde rullen</translation>
-<translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1826516787628120939">Betalkonto</translation>
 <translation id="1829026591231985685">sparar information i Google Wallet i inställningarna</translation>
 <translation id="1832730227369924598">Synkronisering av skrivbord</translation>
 <translation id="1834452765064623979">Byggnad och underhåll</translation>
@@ -1554,6 +1554,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3525130752944427905">10 x 14 tum</translation>
 <translation id="3525435918300186947">Vill du styra och omprogrammera MIDI-enheter?</translation>
 <translation id="3527181387426738155">Musik och ljud</translation>
+<translation id="3527624163937328588">Ta bort bilaga</translation>
 <translation id="3528171143076753409">Servercertifikatet är inte tillförlitligt.</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Minst 1 objekt på synkroniserade enheter}=1{1 objekt (och fler på synkroniserade enheter)}other{# objekt (och fler på synkroniserade enheter)}}</translation>
 <translation id="3531366304259615706">Använd skärmlåset</translation>
@@ -1610,6 +1611,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen Hantera Googles integritetsinställningar: aktivera om du vill öppna Google-kontots integritetsinställningar</translation>
 <translation id="3603507503523709">Appen blockeras av administratören</translation>
+<translation id="3605082766859363473">AI-läge har valts</translation>
 <translation id="3605899229568538311">5 x 5 tum</translation>
 <translation id="3606917451836803637">Tv-serier och tv-program</translation>
 <translation id="3608932978122581043">Ställa in riktning</translation>
@@ -1945,6 +1947,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="411918202192379658">Autofyll har nu blivit ännu bättre</translation>
 <translation id="4121428309786185360">Giltig till</translation>
 <translation id="4123572138124678573">Tre hål längst ned</translation>
+<translation id="4125597496726375563">Skapa bild har valts</translation>
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
 <translation id="4127317221386336246">Accessoarer</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
@@ -3663,6 +3666,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6917795328362592458">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att se över dina sparade lösenord.</translation>
 <translation id="6917873303492266709">Om du vill dela, gå med i och samarbeta i flikgrupper öppnar du inställningarna och aktiverar Tillåt inloggning i Chrome</translation>
 <translation id="6921197121276419421">Att installera webbappar tillåts</translation>
+<translation id="6922905531092220751">Ta bort bifogad bild</translation>
 <translation id="69238565902785824">Genom att ha kontot länkat kan du betala snabbare med <ph name="BNPL_ISSUER_NAME" />, men du kan ta bort länken på <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Välj om du vill se dina kortförmåner i kassan (bankvillkor gäller)</translation>
 <translation id="6924933062125062950">Radera id-kort</translation>

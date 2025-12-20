@@ -1736,6 +1736,7 @@
 <translation id="2157457598652721267">माउसको बायाँ वा दायाँ बटन चयन गर्न “/” र “-” प्रयोग गर्नुहोस्। दुवै बटन चयन गर्न “*” प्रयोग गर्नुहोस्।</translation>
 <translation id="2157474325782140681">अतिरिक्त सुविधाहरू प्राप्त गर्न यो Chromebook का लागि उपयुक्त हुने गरी डिजाइन गरिएको Dell डकिङ स्टेसन प्रयोग गर्नुहोस्।</translation>
 <translation id="215753907730220065">पूरा स्क्रिन मोडबाट निस्कनुहोस्</translation>
+<translation id="2157632422749995237">Wallet ले तपाईंलाई पछि तपाईंका कार्यक्रमहरूका बारेमा नोटिफिकेसन पठाउन सक्छ</translation>
 <translation id="2157779167749714207">तपाईंको <ph name="DEVICE_TYPE" /> मा Gemini एप उपलब्ध हुन्छ</translation>
 <translation id="2158103060812356265">मिल्दाजुल्दा उत्पादनहरू सजिलैसँग तुलना गर्नुहोस्</translation>
 <translation id="2158249272743343757">पर्सनलाइजेसन डेटा मेटाउनुहोस्...</translation>
@@ -2431,6 +2432,7 @@
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" हटाउने?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ले स्थापना पूरा गर्न सकेन, तर यसको डिस्क छविबाट चालउन जारी राख्नेछ।</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">आफ्नो डिभाइसमा भएका कार्यक्रमका टिकट र लोयल्टी कार्डहरू जस्ता पासहरू एक्सेस गर्नुहोस्</translation>
 <translation id="2634199532920451708">प्रिन्टको इतिहास</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">तपाईंलाई तपाईंको कम्पनीको इनट्रानेटलगायतका निजी साइटहरूका बारेमा चेतावनी दिँदैन</translation>
@@ -4389,6 +4391,7 @@
 <translation id="394984172568887996">IE बाट आयात गरिएको</translation>
 <translation id="3949999964543783947">सुरक्षित तरिकाले फाइलहरू डाउनलोड गर्न <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">अझ छिटो साइन इन गर्नका निम्ति पासकी स्वतः बनाउनुहोस्</translation>
+<translation id="3950755269510650933">Gemini ले तपाईंलाई प्रदान गरिने सुविधा पर्सनलाइज गर्ने प्रयोजनका लागि प्रयोग गर्न सक्ने जानकारी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3950841222883198950">भ्वाइस टाइपिङ</translation>
 <translation id="3953834000574892725">मेरा खाताहरू</translation>
@@ -4418,6 +4421,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
+<translation id="3971355433478412726">Gemini लाई दिइने निर्देशनहरू</translation>
 <translation id="3971764089670057203">यो सुरक्षा साँचोमा भएका फिंगरप्रिन्टहरू</translation>
 <translation id="3973005893595042880">यी प्रयोगकर्तालाई VM चलाउने अनुमति दिइएको छैन</translation>
 <translation id="3973660817924297510">पासवर्डहरू जाँच गर्दै (<ph name="TOTAL_PASSWORDS" /> मध्ये <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -4706,6 +4710,7 @@
 <translation id="4178220097446335546">यो सदस्यता र यससँग सम्बन्धित नेटवर्कहरू हटाउन पासपोइन्टको "सदस्यता" पेजमा जानुहोस् र सदस्यता हटाउनुहोस्।</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
+<translation id="4182182457914031017">सुझावहरू दिन र यो सुविधामा सुधार ल्याउन तपाईंले खोल्ने साइटको URL र पेजमा भएको पूरा कन्टेन्ट Google सँग सेयर गरिन्छ</translation>
 <translation id="4182339886482390129">परिष्कृत Safe Browsing सुविधाले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड तथा एक्स्टेन्सनहरूबाट थप सुरक्षित राख्छ</translation>
 <translation id="4184803915913850597">HID डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> ले तपाईंको सुरक्षा साँचोको ब्रान्डको नाम र मोडेलका बारेमा जानकारी प्राप्त गर्ने छ</translation>
@@ -5827,6 +5832,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">यसलाई यो डिभाइसमा भएको कुनै फोल्डरमा सेभ गर्ने हो?</translation>
 <translation id="4959262764292427323">तपाईं जुनसुकै बेला पासवर्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सेभ गरिन्छ</translation>
+<translation id="4959581970694896608">Gemini ले तपाईंको प्रश्नको जवाफ दिने तरिका कस्टमाइज गर्नुहोस्</translation>
 <translation id="4960020053211143927">केही एपहरूमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
@@ -8977,6 +8983,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> कन्फिगर गर्नुहोस्</translation>
 <translation id="7175353351958621980">यहाँबाट लोड गरिएको:</translation>
 <translation id="7177659256878428843">ट्याब समूहलाई बुकमार्क फोल्डरमा रूपान्तरण गर्नुहोस्</translation>
+<translation id="7180569503618416775">Wallet ले तपाईंले हेरिरहेका पेजहरूमा भएका जानकारी (जस्तै, तपाईंले खरिद गरेका टिकटहरू) सेभ गर्ने विकल्प उपलब्ध गराउन सक्छ</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7180865173735832675">कस्टमाइज गर्नुहोस्</translation>
 <translation id="7181117767881540376">बुकमार्क बार लुकाउनुहोस्</translation>
@@ -10336,6 +10343,7 @@
 <translation id="8084429490152575036">सेलुलर APN सम्बन्धी सेटिङ</translation>
 <translation id="8084510406207562688">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="8084628902026812045">यो साइटले सुरक्षित कनेक्सन प्रयोग गरिरहेको छैन र यो फाइलमा छेडखानी गरिएको हुन सक्छ</translation>
+<translation id="808488435221187916">तपाईंको जानकारी साइन इन गरिएका सबै डिभाइसहरूबाट Google Wallet मा हेर्न मिल्छ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> लाई कन्फिगर गर्दै ...</translation>
 <translation id="8086121155774250556">यो ट्याबले तपाईंको स्क्रिन सेयर गरिरहेको छ</translation>
 <translation id="8086610718778464681">Linux एप तथा फाइलहरू ब्याकअप गर्न सकिएन</translation>

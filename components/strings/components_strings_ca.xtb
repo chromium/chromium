@@ -262,7 +262,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1408696301184924537">Perquè aquest IBAN s'empleni automàticament la propera vegada, desa'l al teu Compte de Google</translation>
 <translation id="1408787208417187241">Grapat triple a la part superior</translation>
 <translation id="1410365862999780287">La resta de persones que utilitzin aquest dispositiu no veuran la teva activitat, de manera que pots navegar de manera més privada. Això no afectarà la manera com recullen les dades els llocs web que visites ni els serveis que utilitzen, incloent-hi Google. Les baixades, les adreces d'interès i els elements de la llista de lectura sí que es desaran.</translation>
-<translation id="1410941016594047814">Sobre Invite</translation>
+<translation id="1410941016594047814">Sobre d'invitació</translation>
 <translation id="1413809658975081374">Error de privadesa</translation>
 <translation id="1414134146594747368">Llar d'infants</translation>
 <translation id="1419305130220238697">Botó Gestiona les baixades a Chrome: activa'l per gestionar els fitxers que has baixat a Chrome</translation>
@@ -2981,6 +2981,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5826507051599432481">Nom comú (CN)</translation>
 <translation id="5830698870816298009">ús i moviment de la càmera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Tria una altra forma de pagament per completar aquesta compra.</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5832976493438355584">Bloquejat</translation>
 <translation id="5837220895135257862">Allibera espai a <ph name="CLOUD_PROVIDER" /> abans de tornar-ho a provar</translation>
@@ -3747,7 +3748,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7042465939346919737">Google utilitza la informació de la pàgina de tramitació de la compra i altres dades rellevants per oferir aquestes opcions. Per amagar les opcions de Paga més tard, ves a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Refina els resultats</translation>
-<translation id="7043552168914147882">Inventari d'etiquetes</translation>
+<translation id="7043552168914147882">Paper amb pestanyes</translation>
 <translation id="7044081119134178347">S'ha permès l'ús de la càmera aquesta vegada</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Has provat de connectar-te a <ph name="DOMAIN" />, però el servidor ha presentat un certificat amb un període de validesa massa llarg per poder confiar-hi.</translation>
@@ -4263,6 +4264,7 @@ Detalls addicionals:
 <translation id="7844689747373518809">{COUNT,plural, =0{Cap}=1{1 aplicació (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="784623644169604270">Sense activitat recent</translation>
+<translation id="7853222852810008596">L'opció Paga més tard no està disponible en aquesta moneda</translation>
 <translation id="785476343534277563">Esports universitaris</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introdueix la nova data de caducitat i el CVC que figura al <ph name="SIDE_OF_CARD" /></translation>

@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{‫۱ مورد انتخاب شد}one{‫# مورد انتخاب شد}other{‫# مورد انتخاب شد}}</translation>
 <translation id="3668816008081204991">«فهرست خواندن» پنهان شده است</translation>
 <translation id="3670030362669914947">عدد</translation>
+<translation id="3672283986707092811">انتخاب همه</translation>
 <translation id="3679163990085797665">حذف کردن خوانده‌شده‌ها</translation>
 <translation id="368329460027487650">از سیستم خارج شده‌اید. گزینه‌هایی را برای ورود به سیستم باز می‌کند.</translation>
 <translation id="3695446226812920698">با نحوه انجام کار آشنا شوید</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">نام نمایشی</translation>
 <translation id="4375772272517383391">بستن همه زبانه‌ها</translation>
 <translation id="4378154925671717803">تلفن</translation>
+<translation id="4380677808580146413">انتخاب</translation>
 <translation id="4389019817280890563">برای تغییر زبان، تک‌ضرب بزنید.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{پس‌از ۱ روز}one{پس‌از {COUNT} روز}other{پس‌از {COUNT} روز}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{‫۱ زبانه}one{‫# زبانه}other{‫# زبانه}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ذخیره کردن فایل</translation>
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="536067926684072644">نمایش نشانک‌ها</translation>
+<translation id="5364647308446127983">{count,plural, =1{وارد کردن {count} گذرکلید ممکن نبود}one{وارد کردن {count} گذرکلید ممکن نبود}other{وارد کردن {count} گذرکلید ممکن نبود}}</translation>
 <translation id="5371112366564891538">افزایش اندازه نوشتار</translation>
+<translation id="5376135254804080693">لغو انتخاب همه</translation>
 <translation id="537853552771686272">موضوعات و سایت‌های موردعلاقه‌تان را مدیریت کنید</translation>
 <translation id="5390458669633674385">{count,plural, =1{‫{count} برگه بسته شد}one{‫{count} برگه بسته شد}other{‫{count} برگه بسته شد}}</translation>
 <translation id="5394975111793637642">پنهان کردن کارت «مرورهای محصول برای شما»</translation>

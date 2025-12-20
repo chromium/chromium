@@ -1736,6 +1736,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2157457598652721267">Utilisez « / » et « - » pour sélectionner les boutons gauche ou droit de la souris. Utilisez « * » pour choisir les deux.</translation>
 <translation id="2157474325782140681">Pour obtenir des fonctionnalités supplémentaires, servez-vous d'une station d'accueil Dell conçue pour être utilisée avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
+<translation id="2157632422749995237">Plus tard, Portefeuille pourra vous envoyer des notifications concernant vos événements</translation>
 <translation id="2157779167749714207">Votre <ph name="DEVICE_TYPE" /> est doté de Gemini</translation>
 <translation id="2158103060812356265">Comparez facilement des produits similaires</translation>
 <translation id="2158249272743343757">Supprimer les données personnelles…</translation>
@@ -2432,6 +2433,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2633212996805280240">Désinstaller « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> n'a pas pu terminer l'installation, mais va poursuivre son exécution à partir de son image disque.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accédez à vos cartes, comme les billets d'événement et les cartes de fidélité, à partir de votre appareil</translation>
 <translation id="2634199532920451708">Historique d'impression</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Ne vous avertit pas pour les sites privés, tels que l'intranet de votre entreprise</translation>
@@ -2455,6 +2457,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2646132387794831258">Enregistrer dans un dossier de votre compte Google?</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
+<translation id="2649331484502514724">DNS sécurisé</translation>
 <translation id="2649508632465204949">Apprends-moi une nouvelle compétence</translation>
 <translation id="2651259505411913186">Oui, séparer mes données de mon profil scolaire</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
@@ -3386,6 +3389,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="329838636886466101">Réparer</translation>
 <translation id="3298789223962368867">L'adresse URL entrée est invalide.</translation>
 <translation id="32991397311664836">Appareils :</translation>
+<translation id="330140779027048024">Toujours utiliser avec le fournisseur DNS sur HTTPS sélectionné</translation>
 <translation id="3301554464236215299">Ce fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="3301996560342889673">Synchroniser l'historique?</translation>
 <translation id="33022249435934718">Descripteurs GDI</translation>
@@ -4393,6 +4397,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394984172568887996">Importés d'Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pour télécharger les fichiers de façon plus sécuritaire</translation>
 <translation id="3950479158728806902">Créer automatiquement une clé d'accès pour vous connecter plus rapidement</translation>
+<translation id="3950755269510650933">Gérez les informations que Gemini peut utiliser pour personnaliser votre expérience</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3950841222883198950">Entrée vocale</translation>
 <translation id="3953834000574892725">Mes comptes</translation>
@@ -4422,6 +4427,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
+<translation id="3971355433478412726">Instructions pour Gemini</translation>
 <translation id="3971764089670057203">Empreintes digitales sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">L'utilisateur n'est pas autorisé</translation>
 <translation id="3973660817924297510">Vérification des mots de passe en cours… (<ph name="CHECKED_PASSWORDS" /> sur <ph name="TOTAL_PASSWORDS" />)</translation>
@@ -4710,6 +4716,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4178220097446335546">Pour oublier cet abonnement et les réseaux qui lui sont associés, accédez à la page d'abonnement Passpoint pour le retirer.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Langues</translation>
+<translation id="4182182457914031017">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu complet de la page du site que vous visitez sont partagés avec Google</translation>
 <translation id="4182339886482390129">La navigation sécurisée améliorée fait plus pour vous protéger contre les sites Web dangereux, les téléchargements et les extensions</translation>
 <translation id="4184803915913850597">Appareil HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> connaîtra la marque et le modèle de votre clé de sécurité</translation>
@@ -4741,6 +4748,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
 <translation id="4206585797409671301">Autorisé à afficher les demandes</translation>
+<translation id="4207144975205749656">Chiffre les demandes de navigation afin que les pirates sur le même réseau ne puissent pas voir votre trafic</translation>
 <translation id="4207932031282227921">Autorisation demandée, appuyez sur F6 pour répondre</translation>
 <translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grand</translation>
@@ -5830,6 +5838,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Enregistrer dans un dossier uniquement sur cet appareil?</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
+<translation id="4959581970694896608">Personnalisez la façon dont Gemini vous répond</translation>
 <translation id="4960020053211143927">N'est pas pris en charge par certaines applications</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Diffuser un écran</translation>
@@ -6145,6 +6154,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5186362203408605578">Utiliser un autre appareil en balayant le code QR</translation>
 <translation id="5186381005592669696">Personnalisez la langue d'affichage pour les applications prises en charge</translation>
 <translation id="5186788525428341874">Vous pouvez utiliser cette clé d'accès pour vous connecter plus rapidement sur l'ensemble de vos appareils. Elle sera enregistrée dans le gestionnaire de mots de passe Google du compte <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Utiliser la valeur par défaut si elle est accessible</translation>
 <translation id="5187641678926990264">&amp;Installer la page en tant qu'application…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partagé par <ph name="USER_NAME" /></translation>
@@ -7118,6 +7128,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5863445608433396414">Activer les fonctionnalités de débogage</translation>
 <translation id="5863515189965725638">Modifier l'IBAN</translation>
 <translation id="5864195618110239517">Utiliser une connexion mesurée</translation>
+<translation id="5864624288360677142">Utiliser la valeur par défaut si elle est accessible, et le DNS de Google comme sauvegarde</translation>
 <translation id="5864754048328252126">Action en cas d'inactivité durant la recharge</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sera bientôt mise en pause</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
@@ -7568,6 +7579,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6180550893222597997">Quelle clé d'accès voulez-vous utiliser pour <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Les applis mettent parfois à jour leur stratégie de marque. Examinez toutes les modifications pour vous assurer qu'elles vous conviennent avant de procéder à la mise à jour.</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
+<translation id="6182100780603067202">Partager également l'audio de l'application (à partir de toutes ses fenêtres)</translation>
 <translation id="6183369864942961155">Thème clair/sombre automatique</translation>
 <translation id="6184099524311454384">Rechercher des onglets</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
@@ -8982,6 +8994,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Chargé de :</translation>
 <translation id="7177659256878428843">Convertissez le groupe d'onglets en dossier de favoris</translation>
+<translation id="7180569503618416775">Portefeuille peut vous proposer d'enregistrer des informations à partir des pages que vous consultez, comme les billets que vous achetez</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7181117767881540376">Masquer la barre de favoris</translation>
@@ -10341,6 +10354,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084429490152575036">Paramètres du nom de point d'accès cellulaire</translation>
 <translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8084628902026812045">Ce site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
+<translation id="808488435221187916">Vos informations sont accessibles dans Google Portefeuille sur n'importe quel appareil connecté</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
 <translation id="8086121155774250556">Cet onglet partage votre écran</translation>
 <translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>

@@ -2981,6 +2981,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">uso e movimento da câmera</translation>
 <translation id="5831217499016131155">Carteira do Google</translation>
+<translation id="5831259154333754661">Escolha outra forma de pagamento para concluir a compra.</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libere espaço em <ph name="CLOUD_PROVIDER" /> antes de tentar de novo</translation>
@@ -4263,6 +4264,7 @@ Mais detalhes:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhum}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="784623644169604270">Nenhuma atividade recente</translation>
+<translation id="7853222852810008596">A opção "Pague depois" não está disponível nesta moeda</translation>
 <translation id="785476343534277563">Esportes universitários</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Insira a nova data de validade e o CVC que ficam na <ph name="SIDE_OF_CARD" /></translation>

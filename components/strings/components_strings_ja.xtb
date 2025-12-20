@@ -2981,6 +2981,7 @@
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="5831217499016131155">Google ウォレット</translation>
+<translation id="5831259154333754661">この購入を完了するには、別のお支払い方法を選択してください。</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5832976493438355584">ロックされています</translation>
 <translation id="5837220895135257862"><ph name="CLOUD_PROVIDER" /> の空き容量を増やしてからもう一度お試しください</translation>
@@ -4264,6 +4265,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="784623644169604270">最近のアクティビティはありません</translation>
+<translation id="7853222852810008596">この通貨では後払いをご利用いただけません</translation>
 <translation id="785476343534277563">大学スポーツ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">新しい有効期限と <ph name="SIDE_OF_CARD" /> に記載されている CVC を入力してください</translation>

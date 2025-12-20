@@ -1737,6 +1737,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2157457598652721267">Lai atlasītu peles kreiso vai labo pogu, izmantojiet taustiņus “/” un “-”; lai atlasītu abas pogas, izmantojiet taustiņu “*”</translation>
 <translation id="2157474325782140681">Lai varētu izmantot papildu funkcijas, lietojiet Dell dokstaciju, kas paredzēta darbam ar šo Chromebook datoru.</translation>
 <translation id="215753907730220065">Iziet no pilnekrāna režīma</translation>
+<translation id="2157632422749995237">Vēlāk jums var tikt nosūtīti paziņojumi no lietotnes Maks par jūsu pasākumiem.</translation>
 <translation id="2157779167749714207">Jūsu ierīcē (<ph name="DEVICE_TYPE" />) ir ietverts pakalpojums Gemini</translation>
 <translation id="2158103060812356265">Ērti salīdziniet līdzīgus produktus.</translation>
 <translation id="2158249272743343757">Dzēst personalizācijas datus…</translation>
@@ -2432,6 +2433,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2633212996805280240">Vai noņemt paplašinājumu <ph name="EXTENSION_NAME" />?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nevarēja pabeigt instalēšanu, tomēr turpinās izpildīties no diska attēla.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Piekļūstiet savām kartēm, piemēram, pasākumu biļetēm un lojalitātes kartēm, savā ierīcē.</translation>
 <translation id="2634199532920451708">Drukāšanas vēsture</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Netiek rādīti brīdinājumi par privātām vietnēm, piemēram, par jūsu uzņēmuma iekštīklu.</translation>
@@ -4707,6 +4709,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4178220097446335546">Lai aizmirstu šo abonementu un ar to saistītos tīklus, pārejiet uz Passpoint abonementa lapu un noņemiet abonementu.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Valodas</translation>
+<translation id="4182182457914031017">Lai sniegtu ieteikumus un uzlabotu šo funkciju, ar uzņēmumu Google tiek kopīgots jūsu apmeklētās vietnes URL un viss lapas saturs.</translation>
 <translation id="4182339886482390129">Droša pārlūkošana ar papildu aizsardzību efektīvāk aizsargā no bīstamām vietnēm, lejupielādēm un paplašinājumiem</translation>
 <translation id="4184803915913850597">HID ierīce (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">Vietne <ph name="WEBSITE" /> saņems informāciju par jūsu drošības atslēgas ražotāju un modeli.</translation>
@@ -8980,6 +8983,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7175037578838465313">Tīkla “<ph name="NAME" />” konfigurēšana</translation>
 <translation id="7175353351958621980">Ielādēts no:</translation>
 <translation id="7177659256878428843">Pārveidojiet ciļņu grupu par grāmatzīmju mapi</translation>
+<translation id="7180569503618416775">Lietotnē Maks var tikt piedāvāts saglabāt informāciju no jūsu skatītajām lapām, piemēram, iegādātās biļetes.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7180865173735832675">Pielāgot</translation>
 <translation id="7181117767881540376">&amp;Slēpt grāmatzīmju joslu</translation>
@@ -10340,6 +10344,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8084429490152575036">Mobilā tīkla APN iestatījumi</translation>
 <translation id="8084510406207562688">Atjaunot visas cilnes</translation>
 <translation id="8084628902026812045">Šī vietne neizmanto drošu savienojumu, un fails, iespējams, ir pārveidots</translation>
+<translation id="808488435221187916">Jūsu informācija ir pieejama lietotnē Google maks jebkurā ierīcē, kurā veikta pierakstīšanās.</translation>
 <translation id="8086015605808120405">Notiek printera <ph name="PRINTER_NAME" /> konfigurēšana...</translation>
 <translation id="8086121155774250556">Šī cilne kopīgo jūsu ekrānu</translation>
 <translation id="8086610718778464681">Nevar dublēt Linux lietotnes un failus</translation>

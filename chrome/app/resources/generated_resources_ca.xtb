@@ -1735,6 +1735,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2157457598652721267">Utilitza / i - per seleccionar els botons esquerre o dret del ratolí. Utilitza * per seleccionar-los tots dos.</translation>
 <translation id="2157474325782140681">Per obtenir funcions addicionals, fes servir una base de connexió Dell que funcioni amb aquest Chromebook.</translation>
 <translation id="215753907730220065">Surt de la pantalla completa</translation>
+<translation id="2157632422749995237">Més tard, Wallet et pot enviar notificacions sobre els teus esdeveniments</translation>
 <translation id="2157779167749714207">El teu <ph name="DEVICE_TYPE" /> inclou Gemini</translation>
 <translation id="2158103060812356265">Compara fàcilment productes similars</translation>
 <translation id="2158249272743343757">Suprimeix les dades de personalització...</translation>
@@ -2430,6 +2431,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2633212996805280240">Voleu eliminar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no ha pogut completar la instal·lació, però es continuarà executant des de la imatge de disc.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accedeix als teus passis, com ara entrades per a esdeveniments i targetes de fidelització, des del dispositiu</translation>
 <translation id="2634199532920451708">Historial d'impressió</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">No t'avisa dels llocs privats, com ara la intranet de l'empresa</translation>
@@ -4387,6 +4389,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="394984172568887996">Importat d'IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> perquè els fitxers es baixin de manera més segura</translation>
 <translation id="3950479158728806902">Crea una clau d'accés automàticament per iniciar la sessió més ràpidament</translation>
+<translation id="3950755269510650933">Gestiona la informació que Gemini pot utilitzar per personalitzar la teva experiència</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3950841222883198950">Escriptura per veu</translation>
 <translation id="3953834000574892725">Els meus comptes</translation>
@@ -4416,6 +4419,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identificador</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
+<translation id="3971355433478412726">Instruccions per a Gemini</translation>
 <translation id="3971764089670057203">Empremtes digitals d'aquesta clau de seguretat</translation>
 <translation id="3973005893595042880">L'usuari no està permès</translation>
 <translation id="3973660817924297510">S'estan comprovant les contrasenyes (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4704,6 +4708,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4178220097446335546">A fi d'oblidar aquesta subscripció i les xarxes associades, ves a la pàgina de subscripció de Passpoint per suprimir la subscripció.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomes</translation>
+<translation id="4182182457914031017">Per oferir suggeriments i millorar aquesta funció, l'URL i el contingut complet de la pàgina del lloc web que visites es comparteixen amb Google</translation>
 <translation id="4182339886482390129">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades, extensions i llocs web perillosos</translation>
 <translation id="4184803915913850597">Dispositiu d'interfície humana (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> sabrà la marca i el model de la teva clau de seguretat</translation>
@@ -5824,6 +5829,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vols desar-la en una carpeta només en aquest dispositiu?</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
+<translation id="4959581970694896608">Personalitza com et respon Gemini</translation>
 <translation id="4960020053211143927">No és compatible amb algunes aplicacions</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
@@ -8974,6 +8980,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Carregat des de:</translation>
 <translation id="7177659256878428843">Converteix el grup de pestanyes en una carpeta d'adreces d'interès</translation>
+<translation id="7180569503618416775">Wallet pot oferir-te desar informació de les pàgines que consultes, com ara les entrades que compres</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7181117767881540376">Amaga la barra d'adreces d'interès</translation>
@@ -10334,6 +10341,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8084429490152575036">Configuració de l'APN mòbil</translation>
 <translation id="8084510406207562688">R&amp;estaura totes les pestanyes</translation>
 <translation id="8084628902026812045">Aquest lloc web no utilitza una connexió segura i és possible que el fitxer s'hagi manipulat</translation>
+<translation id="808488435221187916">La teva informació està disponible a Google Wallet en qualsevol dispositiu amb la sessió iniciada</translation>
 <translation id="8086015605808120405">S'està configurant <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Aquesta pestanya comparteix la teva pantalla</translation>
 <translation id="8086610718778464681">No es pot crear una còpia de seguretat de les aplicacions i dels fitxers de Linux</translation>

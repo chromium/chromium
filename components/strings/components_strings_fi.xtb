@@ -1555,6 +1555,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3525130752944427905">10 x 14 tuumaa</translation>
 <translation id="3525435918300186947">Saako sivusto ohjata ja uudelleenohjelmoida MIDI-laitteita?</translation>
 <translation id="3527181387426738155">Musiikki ja audio</translation>
+<translation id="3527624163937328588">Poista liite</translation>
 <translation id="3528171143076753409">Palvelimen varmenne ei ole luotettava.</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Vähintään 1 kohde synkronoiduilla laitteilla}=1{1 kohde (ja lisää synkronoiduilla laitteilla)}other{# kohdetta (ja lisää synkronoiduilla laitteilla)}}</translation>
 <translation id="3531366304259615706">Käytä näytön lukitusta</translation>
@@ -1611,6 +1612,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tarkista Googlen yksityisyysasetukset ‑painike, aktivoi siirtyäksesi Google-tilisi yksityisyysasetuksiin</translation>
 <translation id="3603507503523709">Järjestelmänvalvoja esti sovelluksen</translation>
+<translation id="3605082766859363473">Tekoälytila valittu</translation>
 <translation id="3605899229568538311">5 x 5 tuumaa</translation>
 <translation id="3606917451836803637">TV-ohjelmat</translation>
 <translation id="3608932978122581043">Syöttösuunta</translation>
@@ -1946,6 +1948,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="411918202192379658">Automaattinen täyttö on entistä parempi</translation>
 <translation id="4121428309786185360">Vanhenee</translation>
 <translation id="4123572138124678573">Kolme reikää alareunassa</translation>
+<translation id="4125597496726375563">Luo kuva valittu</translation>
 <translation id="412601465078863288">Lataus aikakatkaistu</translation>
 <translation id="4127317221386336246">Asusteet</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
@@ -2982,6 +2985,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5826507051599432481">Yleinen nimi (CN)</translation>
 <translation id="5830698870816298009">kameran käyttö ja liike</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Viimeistele ostos valitsemalla toinen maksutapa.</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5832976493438355584">Poistettu käytöstä</translation>
 <translation id="5837220895135257862">Vapauta tilaa (<ph name="CLOUD_PROVIDER" />) ja yritä uudelleen</translation>
@@ -3663,6 +3667,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6917795328362592458">Juuri käyttämäsi salasana on löytynyt tietosuojaloukkauksesta. Tiliesi suojaamiseksi Salasanat suosittelee, että tarkistat tallennetut salasanasi.</translation>
 <translation id="6917873303492266709">Avaa asetukset ja laita Salli Chrome-kirjautuminen päälle, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="6921197121276419421">Verkkosovellusten asentaminen sallittu</translation>
+<translation id="6922905531092220751">Poista kuvaliite</translation>
 <translation id="69238565902785824">Pidä tili linkitettynä, niin voit maksaa nopeammin palvelun <ph name="BNPL_ISSUER_NAME" /> avulla. Voit halutessasi poistaa linkityksen osoitteessa <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />.</translation>
 <translation id="6924013822850225188">Valitse, näkyvätkö korttiedut kassalla (huomioi pankin ehdot)</translation>
 <translation id="6924933062125062950">Henkilöllisyyskortin poistaminen</translation>
@@ -4264,6 +4269,7 @@ Lisätietoja:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ei mitään}=1{1 sovellus (<ph name="EXAMPLE_APP_1" />)}=2{2 sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="784623644169604270">Ei uutta toimintaa</translation>
+<translation id="7853222852810008596">Maksa myöhemmin ‑vaihtoehto ei ole saatavilla tässä valuutassa</translation>
 <translation id="785476343534277563">Yliopistourheilu</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Lisää uusi viimeinen voimassaolopäivä ja CVC-koodi (<ph name="SIDE_OF_CARD" />)</translation>

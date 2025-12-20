@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
 <translation id="3668816008081204991">વાંચન સૂચિ છુપાવેલી છે</translation>
 <translation id="3670030362669914947">નંબર</translation>
+<translation id="3672283986707092811">તમામને પસંદ કરો</translation>
 <translation id="3679163990085797665">વાંચેલું ડિલીટ કરો</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
 <translation id="3695446226812920698">જાણો કેવી રીતે</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">ડિસ્પ્લે નામ</translation>
 <translation id="4375772272517383391">બધા ટૅબ બંધ કરો</translation>
 <translation id="4378154925671717803">ફોન</translation>
+<translation id="4380677808580146413">પસંદ કરો</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 દિવસ પછી}one{{COUNT} દિવસ પછી}other{{COUNT} દિવસ પછી}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ટૅબ}one{# ટૅબ}other{# ટૅબ}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ફાઇલ સાચવો</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="536067926684072644">બુકમાર્ક બતાવો</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} પાસકી આયાત કરી શક્યા નથી}one{{count} પાસકી આયાત કરી શક્યા નથી}other{{count} પાસકી આયાત કરી શક્યા નથી}}</translation>
 <translation id="5371112366564891538">ટેક્સ્ટનું કદ વધારો</translation>
+<translation id="5376135254804080693">તમામને નાપસંદ કરો</translation>
 <translation id="537853552771686272">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} બંધ કર્યું}one{{count} બંધ કર્યું}other{{count} બંધ કર્યા}}</translation>
 <translation id="5394975111793637642">તમારા કાર્ડ માટે પ્રોડક્ટ રિવ્યૂ છુપાવો</translation>

@@ -2453,6 +2453,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2646132387794831258">Želite da sačuvate u folderu na Google nalogu?</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">ASCII datoteka šifrovana metodom „Base64“, lanac sertifikata</translation>
+<translation id="2649331484502514724">Bezbedan DNS</translation>
 <translation id="2649508632465204949">Nauči me novoj veštini</translation>
 <translation id="2651259505411913186">Da, ne objedinjuj moje podatke sa školskim profilom</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
@@ -3383,6 +3384,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="329838636886466101">Popravi</translation>
 <translation id="3298789223962368867">Uneta je nevažeća URL adresa.</translation>
 <translation id="32991397311664836">Uređaji:</translation>
+<translation id="330140779027048024">Uvek koristi sa izabranim dobavljačem protokola DNS over HTTPS</translation>
 <translation id="3301554464236215299">Ovaj fajl se ne preuzima često i možda je opasan</translation>
 <translation id="3301996560342889673">Želite da sinhronizujete istoriju?</translation>
 <translation id="33022249435934718">GDI nadimci</translation>
@@ -4390,6 +4392,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="394984172568887996">Uvezeno iz IE pregledača</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> da bi preuzimanje fajlova bilo bezbednije</translation>
 <translation id="3950479158728806902">Automatski napravi pristupni ključ da biste se brže prijavljivali</translation>
+<translation id="3950755269510650933">Upravljajte podacima koje Gemini može da koristi za personalizovanje doživljaja</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
 <translation id="3950841222883198950">Unos teksta glasom</translation>
 <translation id="3953834000574892725">Moji nalozi</translation>
@@ -4419,6 +4422,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3968739731834770921">kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
+<translation id="3971355433478412726">Uputstva za Gemini</translation>
 <translation id="3971764089670057203">Otisci prstiju na ovom bezbednosnom ključu</translation>
 <translation id="3973005893595042880">Korisnik nije dozvoljen</translation>
 <translation id="3973660817924297510">Lozinke se proveravaju (<ph name="CHECKED_PASSWORDS" /> od <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4739,6 +4743,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izveštaj sa povratnim informacijama</translation>
 <translation id="4206585797409671301">Dozvoljeno je prikazivanje zahteva</translation>
+<translation id="4207144975205749656">Šifruje zahteve za navigaciju tako da napadači na istoj mreži ne mogu da vide vaš saobraćaj</translation>
 <translation id="4207932031282227921">Zatražena je dozvola. Pritisnite F6 da biste odgovorili</translation>
 <translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velika</translation>
@@ -5829,6 +5834,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite da sačuvate u folderu samo na ovom uređaju?</translation>
 <translation id="4959262764292427323">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju</translation>
+<translation id="4959581970694896608">Prilagodite način na koji vam Gemini odgovara</translation>
 <translation id="4960020053211143927">Neke aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
@@ -6144,6 +6150,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5186362203408605578">Koristite drugi uređaj tako što ćete skenirati QR kôd</translation>
 <translation id="5186381005592669696">Prilagodite jezik prikaza za podržane aplikacije</translation>
 <translation id="5186788525428341874">Ovaj pristupni ključ možete da koristite da biste se brže prijavljivali na svim uređajima. Čuva se u Google menadžeru lozinki za <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Koristi podrazumevano ako je dostupno</translation>
 <translation id="5187641678926990264">&amp;Instaliraj stranicu kao aplikaciju…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Deli <ph name="USER_NAME" /></translation>
@@ -7117,6 +7124,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5863445608433396414">Omogući funkcije za otklanjanje grešaka</translation>
 <translation id="5863515189965725638">Izmenite IBAN</translation>
 <translation id="5864195618110239517">Koristi vezu sa ograničenjem</translation>
+<translation id="5864624288360677142">Koristi podrazumevano ako je dostupno i Google DNS kao rezervu</translation>
 <translation id="5864754048328252126">Neaktivnost tokom punjenja</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> će se uskoro pauzirati</translation>
 <translation id="586567932979200359">Pokrećete <ph name="PRODUCT_NAME" /> sa diska. Instalacija na računar omogućava pokretanje bez diska i redovno ažuriranje.</translation>
@@ -7567,6 +7575,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6180550893222597997">Koji pristupni kôd želite da koristite za aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Aplikacije ponekad ažuriraju svoje brendiranje. Pregledajte sve promene da biste bili sigurni da vam odgovaraju pre ažuriranja.</translation>
 <translation id="6181431612547969857">Preuzimanje je blokirano</translation>
+<translation id="6182100780603067202">Deli i zvuk aplikacije (iz svih prozora)</translation>
 <translation id="6183369864942961155">Automatska svetla/tamna tema</translation>
 <translation id="6184099524311454384">Pretražite kartice</translation>
 <translation id="6185132558746749656">Lokacija uređaja</translation>
@@ -9659,7 +9668,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7642778300616172920">Sakrij osetljiv sadržaj</translation>
 <translation id="7643117827468520640">Pregledajte ove uslove</translation>
 <translation id="7644953783774050577">Opozovi sav izbor</translation>
-<translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
+<translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik/ca)</translation>
 <translation id="7645681574855902035">Otkazuje se pravljenje rezervne kopije za Linux</translation>
 <translation id="7646425900255826066">Lozinke možete da čuvate pomoću Google menadžera lozinki kada ste prijavljni u Chrome</translation>
 <translation id="7646499124171960488">Upozorava vas na nebezbedne javne sajtove</translation>

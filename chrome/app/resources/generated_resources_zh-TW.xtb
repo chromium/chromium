@@ -1505,7 +1505,7 @@
 <translation id="2002109485265116295">即時</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的數據服務，請先連上 Wi-Fi 網路</translation>
 <translation id="200321182559008924">妥善整理分頁</translation>
-<translation id="2003596238737586336">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。這項設定是由系統管理員管理。</translation>
+<translation id="2003596238737586336">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。這項設定是由管理員管理。</translation>
 <translation id="2004413981947727241">在任何裝置都能使用你的密碼</translation>
 <translation id="2006638907958895361">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="2007404777272201486">回報問題...</translation>
@@ -1735,6 +1735,7 @@
 <translation id="2157457598652721267">按下「/」和「-」鍵表示選取滑鼠左鍵或右鍵，按下「*」表示同時選取這兩個按鍵。</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用這部 Chromebook 的專用座架。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
+<translation id="2157632422749995237">之後，錢包可傳送活動相關通知</translation>
 <translation id="2157779167749714207">Gemini 是 <ph name="DEVICE_TYPE" /> 隨附的服務</translation>
 <translation id="2158103060812356265">輕鬆比較類似產品</translation>
 <translation id="2158249272743343757">刪除個人化資料...</translation>
@@ -2430,6 +2431,7 @@
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟映像執行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">透過裝置存取活動票券和會員卡等票證</translation>
 <translation id="2634199532920451708">列印記錄</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">不對私人網站 (例如公司內部網路) 發出警告</translation>
@@ -3780,7 +3782,7 @@
 <translation id="3568431410312984116">允許「幫我寫」功能自動開啟</translation>
 <translation id="3569382839528428029">你想讓 <ph name="APP_NAME" /> 共用你的畫面嗎？</translation>
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。</translation>
-<translation id="3569617221227793022">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。這項設定是由系統管理員管理。</translation>
+<translation id="3569617221227793022">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。這項設定是由管理員管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可以檢視下列檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> 項擴充功能已關閉</translation>
@@ -4386,6 +4388,7 @@
 <translation id="394984172568887996">從 IE 匯入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
 <translation id="3950479158728806902">自動建立密碼金鑰，加快登入速度</translation>
+<translation id="3950755269510650933">管理 Gemini 可用來提供個人化體驗的資訊</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3950841222883198950">語音輸入</translation>
 <translation id="3953834000574892725">我的帳戶</translation>
@@ -4415,6 +4418,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3971355433478412726">給 Gemini 的指令</translation>
 <translation id="3971764089670057203">這個安全金鑰上的指紋</translation>
 <translation id="3973005893595042880">不允許這位使用者</translation>
 <translation id="3973660817924297510">正在檢查密碼 (已檢查 <ph name="CHECKED_PASSWORDS" /> 個，共 <ph name="TOTAL_PASSWORDS" /> 個)…</translation>
@@ -4703,6 +4707,7 @@
 <translation id="4178220097446335546">如要清除此訂閱項目及相關網路，請前往 Passpoint 訂閱頁面移除訂閱項目。</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4182182457914031017">為提供建議及改良這項功能，系統會將你造訪的網站網址和完整網頁內容提供給 Google</translation>
 <translation id="4182339886482390129">安全瀏覽強化防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4184803915913850597">HID 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> 將知道安全金鑰的製造商和型號</translation>
@@ -5820,6 +5825,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要儲存到這部裝置的資料夾嗎？</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
+<translation id="4959581970694896608">自訂 Gemini 的回覆方式</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>
@@ -8967,6 +8973,7 @@
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
 <translation id="7177659256878428843">將分頁群組轉換為書籤資料夾</translation>
+<translation id="7180569503618416775">錢包可儲存瀏覽網頁的資訊，例如購買的票券</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
@@ -10169,7 +10176,7 @@
 <translation id="7985528042147759910">要允許外接配件存取記憶體嗎？</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7986764869610100215">這樣做會持續與訪客共用 USB 裝置。裝置與訪客共用後，會自動嘗試連線至該訪客。如果手動中斷裝置連線，就會停用這項持續性設定；如果完全停用這項功能，系統會重設所有持續性設定。確定嗎？</translation>
-<translation id="798779949890829624">這項設定是由系統管理員管理</translation>
+<translation id="798779949890829624">這項設定是由管理員管理</translation>
 <translation id="7987814697832569482">一律透過這個 VPN 建立連線</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
 <translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>
@@ -10326,6 +10333,7 @@
 <translation id="8084429490152575036">行動網路 APN 設定</translation>
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8084628902026812045">這個網站未使用安全連線，且檔案可能已遭竄改</translation>
+<translation id="808488435221187916">只要在裝置上登入帳戶，即可在 Google 錢包查看你的資訊</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">這個分頁正在共用你的畫面</translation>
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
@@ -10582,7 +10590,7 @@
 <translation id="8263149565724023141">相關應用程式</translation>
 <translation id="8263228331881858381">密碼金鑰已儲存</translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
-<translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
+<translation id="8264024885325823677">這項設定是由管理員管理。</translation>
 <translation id="8264195025773092348">只顯示支援的裝置。中斷連線之前，原生應用程式將無法再使用 USB 裝置。</translation>
 <translation id="8265018477030547118">僅儲存到這部裝置</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>

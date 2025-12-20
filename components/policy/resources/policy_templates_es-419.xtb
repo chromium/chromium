@@ -9583,6 +9583,23 @@ APIs de accesibilidad.</translation>
 
       Nota: Por el momento, la función de análisis está inhabilitada de forma predeterminada mediante una marca de función. Si el usuario habilita la función mediante la marca de función, se podrá inhabilitar a través de la política.</translation>
 <translation id="7115684775550072082">Solo conservar espacios en blanco para los tipos de MIME de texto y XML</translation>
+<translation id="7116098886490965998">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidad que se muestran.
+
+Si agregas el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidad compatibles para SSO.
+
+Si agregas el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilitará la compatibilidad con el inicio de sesión único para el proveedor de identidad en la nube de Microsoft® en Chrome.
+
+Si no estableces esta política, se habilitarán todos los proveedores de identidad que admita <ph name="PRODUCT_NAME" />.
+
+En el caso de los proveedores de identidad que están habilitados en <ph name="PRODUCT_NAME" /> y configurados en el dispositivo por el administrador, los usuarios que accedan a su cuenta con ese proveedor de identidad, en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, pueden acceder a las propiedades web con ese proveedor de identidad de forma automática. La información de autenticación del usuario se transmite al proveedor de identidad en la nube del usuario para cada evento de autenticación.
+
+Notas:
+
+<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o de invitado.
+
+<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidad: Microsoft, Okta.
+
+Esta función está disponible a partir de la versión 10.15 de <ph name="MAC_OS_NAME" />.</translation>
 <translation id="7119538491527883595">Almacenamiento local de datos del usuario</translation>
 <translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -12723,6 +12740,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="9206472508136116830">No permitir la Detección de archivos compartidos de NetBIOS</translation>
 <translation id="9207596996305971030">No informar eventos de acceso y salida</translation>
 <translation id="9210647066889383361">Permitir que los usuarios accedan a sus dispositivos con Smart Lock</translation>
+<translation id="9212598607138782107">Proveedor de identidad en la nube de Okta®</translation>
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
 <translation id="9220314833408124365">Usar una política de referente predeterminado con el valor no-referrer-when-downgrade</translation>

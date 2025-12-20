@@ -2977,6 +2977,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5826507051599432481">Izen arrunta (CN)</translation>
 <translation id="5830698870816298009">kameraren erabilera eta mugimendua</translation>
 <translation id="5831217499016131155">Google Diru-zorroa</translation>
+<translation id="5831259154333754661">Aukeratu beste ordainketa-metodo bat erosketa osatzeko.</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5832976493438355584">Blokeatuta</translation>
 <translation id="5837220895135257862">Egin tokia <ph name="CLOUD_PROVIDER" /> zerbitzuan berriro saiatu baino lehen</translation>
@@ -4257,6 +4258,7 @@ Xehetasun gehiago:
 <translation id="7844689747373518809">{COUNT,plural, =0{Bat ere ez}=1{1 aplikazio (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikazio (<ph name="EXAMPLE_APP_1" /> eta <ph name="EXAMPLE_APP_2" />)}other{# aplikazio (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> eta<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Errore bat gertatu da. Saiatu berriro.</translation>
 <translation id="784623644169604270">Ez dago jarduerarik azken aldian</translation>
+<translation id="7853222852810008596">Geroago ordaintzeko aukera ez dago erabilgarri dibisa honetan</translation>
 <translation id="785476343534277563">Unibertsitateko kirolak</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Idatzi iraungitze-data berria eta <ph name="SIDE_OF_CARD" /> dagoen CVCa</translation>

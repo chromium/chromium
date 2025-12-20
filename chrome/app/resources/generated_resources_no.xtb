@@ -1739,6 +1739,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2157457598652721267">Bruk «/» og «-» for å velge venstre eller høyre museknapp. Bruk «*» for å velge begge.</translation>
 <translation id="2157474325782140681">For å få flere funksjoner, bruk en Dell-dokkingstasjon som er laget for å fungere sammen med denne Chromebooken.</translation>
 <translation id="215753907730220065">Avslutt fullskjermmodus</translation>
+<translation id="2157632422749995237">Senere kan Wallet sende deg varsler om arrangementene dine</translation>
 <translation id="2157779167749714207">Gemini følger med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">Sammenlign lignende produkter enkelt</translation>
 <translation id="2158249272743343757">Slett data for personlig tilpassing…</translation>
@@ -2437,6 +2438,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2633212996805280240">Vil du fjerne «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> kan ikke fullføre installeringen, men vil fortsette å kjøre fra diskavbildningen.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Bruk kort og billetter, for eksempel arrangementsbilletter og stamkundekort, fra enheten din</translation>
 <translation id="2634199532920451708">Utskriftslogg</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Advarer deg ikke om private nettsteder, for eksempel bedriftens intranett</translation>
@@ -4395,6 +4397,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="394984172568887996">Importert fra Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> for å gjøre det tryggere å laste ned filer</translation>
 <translation id="3950479158728806902">Opprett en passnøkkel automatisk for å logge på raskere</translation>
+<translation id="3950755269510650933">Administrer informasjonen som Gemini kan bruke til å tilpasse opplevelsen din</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3950841222883198950">Stemmestyrt skriving</translation>
 <translation id="3953834000574892725">Mine kontoer</translation>
@@ -4424,6 +4427,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Beregner …</translation>
+<translation id="3971355433478412726">Instruksjoner for Gemini</translation>
 <translation id="3971764089670057203">Fingeravtrykk på denne sikkerhetsnøkkelen</translation>
 <translation id="3973005893595042880">Brukeren er ikke tillatt</translation>
 <translation id="3973660817924297510">Sjekker passord (<ph name="CHECKED_PASSWORDS" /> av <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -4712,6 +4716,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4178220097446335546">For å glemme dette abonnementet og de tilknyttede nettverkene, gå til Passpoint-abonnementsiden og fjern abonnementet.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4182182457914031017">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren nettadressen og hele sideinnholdet på nettstedet du besøker, med Google</translation>
 <translation id="4182339886482390129">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="4184803915913850597">HID-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> får vite merke og modell for sikkerhetsnøkkelen din</translation>
@@ -5832,6 +5837,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du lagre dette i en mappe bare på denne enheten?</translation>
 <translation id="4959262764292427323">Passordene er lagret i Google-kontoen din, slik at du kan bruke dem på alle enheter</translation>
+<translation id="4959581970694896608">Tilpass hvordan Gemini svarer deg</translation>
 <translation id="4960020053211143927">Støttes ikke av enkelte apper</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
@@ -8982,6 +8988,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Lastet fra:</translation>
 <translation id="7177659256878428843">Konverter fanegruppen til en bokmerkemappe</translation>
+<translation id="7180569503618416775">Wallet kan tilby å lagre informasjon fra sider du ser på, for eksempel billetter du kjøper</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7180865173735832675">Tilpass</translation>
 <translation id="7181117767881540376">&amp;Skjul bokmerkeraden</translation>
@@ -10342,6 +10349,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8084429490152575036">Innstillinger for mobil-APN</translation>
 <translation id="8084510406207562688">Gjenopprett alle faner</translation>
 <translation id="8084628902026812045">Dette nettstedet bruker ikke en sikker tilkobling, og filen kan ha blitt tuklet med</translation>
+<translation id="808488435221187916">Informasjonen din er tilgjengelig i Google Wallet på alle enheter du er logget på</translation>
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" /> …</translation>
 <translation id="8086121155774250556">Denne fanen deler skjermen din</translation>
 <translation id="8086610718778464681">Kan ikke sikkerhetskopiere Linux-apper og -filer</translation>

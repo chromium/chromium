@@ -1743,6 +1743,7 @@
 <translation id="2157457598652721267">ဘယ်ဘက် (သို့) ညာဘက် မောက်စ်ခလုတ် ရွေးရန် “/” နှင့် “-” တို့ကို သုံးပါ။ နှစ်ခုလုံးရွေးရန် “*” ကိုသုံးပါ။</translation>
 <translation id="2157474325782140681">နောက်ထပ်ဝန်ဆောင်မှုများ ရရှိရန် ဤ Chromebook နှင့်တွဲသုံးရန် ထုတ်လုပ်ထားသော Dell အထိုင်စက်ကို အသုံးပြုပါ။</translation>
 <translation id="215753907730220065">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
+<translation id="2157632422749995237">နောက်ပိုင်းတွင် Wallet သည် သင့်ပွဲများနှင့်ပတ်သက်၍ အကြောင်းကြားချက်များ ပို့နိုင်သည်</translation>
 <translation id="2157779167749714207">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Gemini ပါဝင်သည်</translation>
 <translation id="2158103060812356265">အလားတူကုန်ပစ္စည်းများကို အလွယ်တကူနှိုင်းယှဉ်ပါ</translation>
 <translation id="2158249272743343757">ပုဂ္ဂိုလ်ရေးသီးသန့်အချက်အလက်များ ဖျက်ရန်…</translation>
@@ -2441,6 +2442,7 @@
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />"ကို ဖယ်ရှားမလား?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> အားထည့်သွင်းခြင်း မပြီးဆုံးလိုက်ပါ၊ သို့သော် ၎င်း၏ဒစ်ပုံမှ ဆက်လက်ဖွင့်ပါမည်။</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">ပွဲလက်မှတ်နှင့် ဖောက်သည်ကတ်ကဲ့သို့သော သင့်ပါ့စ်များကို စက်မှသုံးနိုင်သည်</translation>
 <translation id="2634199532920451708">ပရင့်ထုတ်သော မှတ်တမ်း</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">သင့်ကုမ္ပဏီ၏ အင်တရာနက်ကဲ့သို့ သီးသန့်ဝဘ်ဆိုက်များအတွက် သင့်ကို သတိမပေးပါ</translation>
@@ -4401,6 +4403,7 @@
 <translation id="394984172568887996">IE ထံမှ တင်သွင်းခဲ့</translation>
 <translation id="3949999964543783947">ဖိုင်များ ပိုမိုလုံခြုံစွာ ဒေါင်းလုဒ်လုပ်ရန် <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">အမြန်လက်မှတ်ထိုးဝင်ရန်အတွက် လျှို့ဝှက်ကီး အလိုအလျောက်ပြုလုပ်ရန်</translation>
+<translation id="3950755269510650933">သင့်အသုံးပြုမှုကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန်အတွက် Gemini က သုံးနိုင်သည့် အချက်အလက်ကို စီမံပါ</translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
 <translation id="3950841222883198950">အသံဖြင့်စာရိုက်ခြင်း</translation>
 <translation id="3953834000574892725">ကျွန်ုပ်၏ အကောင့်များ</translation>
@@ -4430,6 +4433,7 @@
 <translation id="3968739731834770921">ကာန</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
+<translation id="3971355433478412726">Gemini အတွက် ညွှန်ကြားချက်များ</translation>
 <translation id="3971764089670057203">ဤလုံခြုံရေးကီးပေါ်ရှိ လက်ဗွေများ</translation>
 <translation id="3973005893595042880">ဤအသုံးပြုသူကို ခွင့်ပြုမထားပါ</translation>
 <translation id="3973660817924297510">စကားဝှက်များကို စစ်ဆေးနေသည် (<ph name="TOTAL_PASSWORDS" /> အနက် <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -4718,6 +4722,7 @@
 <translation id="4178220097446335546">ဤစာရင်းသွင်းမှုနှင့် ၎င်း၏သက်ဆိုင်ရာကွန်ရက်ကို မေ့ထားရန် ဖြတ်သန်းခွင့်ပြုမှတ် စာရင်းသွင်းသည့် စာမျက်နှာသို့သွားပြီး စာရင်းသွင်းမှုဖယ်ရှားနိုင်သည်။</translation>
 <translation id="4181602000363099176">၂၀ ဆ</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
+<translation id="4182182457914031017">အကြံပြုချက်များ ကမ်းလှမ်းရန်နှင့် ဤတူးလ် ပိုကောင်းအောင်လုပ်ရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်၏ URL နှင့် စာမျက်နှာအကြောင်းအရာအပြည့်အစုံကို Google နှင့် မျှဝေသည်</translation>
 <translation id="4182339886482390129">‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ သည် အန္တရာယ်ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများရန်မှ ကာကွယ်ရန် ပိုမိုလုပ်ဆောင်ပေးသည်</translation>
 <translation id="4184803915913850597">HID စက်ပစ္စည်း (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> သည် သင့်လုံခြုံရေးကီး၏ ထုတ်လုပ်သူနှင့် မော်ဒယ်ကို လေ့လာပါမည်</translation>
@@ -5839,6 +5844,7 @@
 <translation id="4956847150856741762">၁</translation>
 <translation id="4958009531430054995">ဤစက်တွင်သာ ဖိုင်တွဲတစ်ခုထဲသို့ သိမ်းမလား။</translation>
 <translation id="4959262764292427323">မည်သည့်စက်ပစ္စည်းတွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google အကောင့်ထဲတွင် သိမ်းဆည်းထားပါသည်</translation>
+<translation id="4959581970694896608">Gemini က သင့်အားပြန်ကြားပုံကို စိတ်ကြိုက်လုပ်ပါ</translation>
 <translation id="4960020053211143927">အက်ပ်အချို့တွင် ပံ့ပိုးမထားပါ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
@@ -8988,6 +8994,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> ကို စီစဉ်သတ်မှတ်ရန်</translation>
 <translation id="7175353351958621980">မှ တင်ခဲ့သည်:</translation>
 <translation id="7177659256878428843">တဘ်အုပ်စုကို လိပ်စာဖိုင်တွဲအဖြစ် ပြောင်းခြင်း</translation>
+<translation id="7180569503618416775">Wallet သည် သင်ဝယ်ယူသော လက်မှတ်များကဲ့သို့ သင်ကြည့်နေသည့် စာမျက်နှာများမှ အချက်အလက်ကိုသိမ်းရန် ကမ်းလှမ်းနိုင်သည်</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7180865173735832675">ပြုပြင်ရန်</translation>
 <translation id="7181117767881540376">&amp;လိပ်စာစာရင်းဘား ဖျောက်ရန်</translation>
@@ -10347,6 +10354,7 @@
 <translation id="8084429490152575036">ဆယ်လူလာ APN ဆက်တင်များ</translation>
 <translation id="8084510406207562688">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="8084628902026812045">ဤဝဘ်ဆိုက်သည် လုံခြုံသောချိတ်ဆက်မှု သုံးမနေသည့်အတွက် ဖိုင်ကို ကလိထားနိုင်သည်</translation>
+<translation id="808488435221187916">လက်မှတ်ထိုးဝင်ထားသည့် စက်တိုင်းရှိ Google Wallet တွင် သင့်အချက်အလက်ကို ရနိုင်သည်</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ကို စီစဉ်သတ်မှတ်နေသည် …</translation>
 <translation id="8086121155774250556">ဤတဘ်သည် သင့်စခရင်ကို မျှဝေနေသည်</translation>
 <translation id="8086610718778464681">Linux အက်ပ်နှင့် ဖိုင်များကို မိတ္တူကူး၍မရပါ</translation>

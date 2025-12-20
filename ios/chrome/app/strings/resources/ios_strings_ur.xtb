@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{‫1 کو منتخب کیا گیا}other{‫# کو منتخب کیا گیا}}</translation>
 <translation id="3668816008081204991">پڑھنے کی فہرست چھپی ہوئی ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
+<translation id="3672283986707092811">سبھی منتخب کریں</translation>
 <translation id="3679163990085797665">پڑھے ہوئے کو حذف کریں</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3695446226812920698">طریقہ جانیں</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">ڈسپلے نام</translation>
 <translation id="4375772272517383391">سبھی ٹیبز بند کریں</translation>
 <translation id="4378154925671717803">فون</translation>
+<translation id="4380677808580146413">منتخب کریں</translation>
 <translation id="4389019817280890563">زبان تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{‫1 دن کے بعد}other{‫{COUNT} دن کے بعد}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">فائل محفوظ کریں</translation>
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
+<translation id="5364647308446127983">{count,plural, =1{‫{count} پاس کی درآمد نہیں ہو سکی}other{‫{count} پاس کیز درآمد نہیں ہو سکیں}}</translation>
 <translation id="5371112366564891538">ٹیکسٹ کا سائز بڑھائیں</translation>
+<translation id="5376135254804080693">سبھی غیر منتخب کریں</translation>
 <translation id="537853552771686272">ان عنوانات اور سائٹس کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
 <translation id="5390458669633674385">{count,plural, =1{‫{count} کو بند کیا گیا}other{‫{count} کو بند کیا گیا}}</translation>
 <translation id="5394975111793637642">اپنے کارڈ کے لیے پروڈکٹ کے جائزے چھپائیں</translation>

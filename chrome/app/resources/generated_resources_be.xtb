@@ -1736,6 +1736,7 @@
 <translation id="2157457598652721267">Каб выбраць правую ці левую кнопку мышы, выкарыстайце "/" і "-". Каб выбраць абедзве, выкарыстайце "*".</translation>
 <translation id="2157474325782140681">Каб карыстацца дадатковымі функцыямі, знайдзіце док-станцыю Dell, сумяшчальную з гэтым Chromebook.</translation>
 <translation id="215753907730220065">Выключыць поўнаэкранны рэжым</translation>
+<translation id="2157632422749995237">Пазней Кашалёк зможа адпраўляць вам апавяшчэнні пра вашы падзеі</translation>
 <translation id="2157779167749714207">На прыладзе "<ph name="DEVICE_TYPE" />" ёсць функцыя Gemini</translation>
 <translation id="2158103060812356265">Лёгкае параўнанне падобных тавараў</translation>
 <translation id="2158249272743343757">Выдаліць даныя для персаналізацыі...</translation>
@@ -2431,6 +2432,7 @@
 <translation id="2633212996805280240">Выдаліць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">Браўзеру <ph name="PRODUCT_NAME" /> не ўдалося завяршыць усталяванне, але ён працягне працу з вобраза дыска.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Доступ да картак (напрыклад, білетаў на мерапрыемствы і картак лаяльнасці) з прылады</translation>
 <translation id="2634199532920451708">Гісторыя друку</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Не папярэджвае пра прыватныя сайты, напрыклад сайты ў інтранэце кампаніі</translation>
@@ -2454,6 +2456,7 @@
 <translation id="2646132387794831258">Захаваць у папцы ва Уліковым запісе Google?</translation>
 <translation id="264897126871533291">Пратанамалія</translation>
 <translation id="2649045351178520408">ASCII з кадзіраваннем Base64, ланцужок сертыфікатаў</translation>
+<translation id="2649331484502514724">Абароненая DNS</translation>
 <translation id="2649508632465204949">Навучыцца чаму-небудзь новаму</translation>
 <translation id="2651259505411913186">Так, я хачу захоўваць свае даныя адасоблена ад навучальных</translation>
 <translation id="265156376773362237">Стандартная перадзагрузка</translation>
@@ -3384,6 +3387,7 @@
 <translation id="329838636886466101">Выправіць</translation>
 <translation id="3298789223962368867">Уведзены недапушчальны URL-адрас.</translation>
 <translation id="32991397311664836">Прылады:</translation>
+<translation id="330140779027048024">Заўсёды выкарыстоўваць з выбраным пастаўшчыком DNS праз HTTPS</translation>
 <translation id="3301554464236215299">Гэты файл спампоўваецца рэдка і можа быць небяспечным</translation>
 <translation id="3301996560342889673">Сінхранізаваць гісторыю?</translation>
 <translation id="33022249435934718">Маркеры GDI</translation>
@@ -4389,6 +4393,7 @@
 <translation id="394984172568887996">Імпартаваныя з IE</translation>
 <translation id="3949999964543783947">Для бяспечнага спампоўвання файлаў <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Аўтаматычна ствараць ключ доступу, каб паскорыць уваход</translation>
+<translation id="3950755269510650933">Кіруйце інфармацыяй, якую Gemini можа выкарыстоўваць для персаналізацыі</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3950841222883198950">Галасавы ўвод</translation>
 <translation id="3953834000574892725">Мае ўліковыя запісы</translation>
@@ -4418,6 +4423,7 @@
 <translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">Ідэнтыфікатар</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
+<translation id="3971355433478412726">Інструкцыі для Gemini</translation>
 <translation id="3971764089670057203">Лічбавыя адбіткі на гэтым ключы бяспекі</translation>
 <translation id="3973005893595042880">Карыстальнік не мае дазволу</translation>
 <translation id="3973660817924297510">Праверка пароляў (<ph name="CHECKED_PASSWORDS" /> з <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4706,6 +4712,7 @@
 <translation id="4178220097446335546">Каб выдаліць даныя падпіскі і звязаных з ёй сетак, перайдзіце на старонку падпіскі Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мовы</translation>
+<translation id="4182182457914031017">У мэтах паляпшэння функцыі і падбору адпаведных прапаноў URL-адрас і ўсё змесціва сайта, які вы наведваеце, абагульваюцца з Google</translation>
 <translation id="4182339886482390129">Палепшаны Бяспечны прагляд забяспечвае лепшую абарону ад небяспечных вэб-сайтаў, спамповак і пашырэнняў</translation>
 <translation id="4184803915913850597">Прылада HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> атрымае доступ да маркі і мадэлі ключа бяспекі</translation>
@@ -4737,6 +4744,7 @@
 <translation id="4206144641569145248">Прышэлец</translation>
 <translation id="4206323443866416204">Адпраўка водгуку</translation>
 <translation id="4206585797409671301">Пашырэнню дазволена паказваць запыты</translation>
+<translation id="4207144975205749656">Шыфруе запыты на пераход, каб зламыснікі ў той жа сетцы не маглі бачыць ваш трафік</translation>
 <translation id="4207932031282227921">Запытаны дазвол. Каб адказаць, націсніце F6</translation>
 <translation id="4208390505124702064">Шукаць тут: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Вялікі</translation>
@@ -5827,6 +5835,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Захаваць у папцы толькі на гэтай прыладзе?</translation>
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
+<translation id="4959581970694896608">Наладзіць адказы Gemini</translation>
 <translation id="4960020053211143927">Не падтрымліваецца некаторымі праграмамі</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
@@ -6142,6 +6151,7 @@
 <translation id="5186362203408605578">Каб выкарыстоўваць іншую прыладу, адсканіруйце QR-код</translation>
 <translation id="5186381005592669696">Наладзьце мову інтэрфейсу для прыдатных праграм</translation>
 <translation id="5186788525428341874">Праз гэты ключ доступу вы можаце хутчэй уваходзіць у свае прылады. Ён будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Выкарыстоўваць стандартную DNS, калі яна даступная</translation>
 <translation id="5187641678926990264">&amp;Усталяваць старонку як праграму...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Абагулена карыстальнікам <ph name="USER_NAME" /></translation>
@@ -7115,6 +7125,7 @@
 <translation id="5863445608433396414">Уключыць функцыі адладкі</translation>
 <translation id="5863515189965725638">Змяненне нумара IBAN</translation>
 <translation id="5864195618110239517">Выкарыстоўваць падключэнне з улікам трафіка</translation>
+<translation id="5864624288360677142">Выкарыстоўваць стандартную DNS (калі яна даступная), а ў якасці рэзервовай – Google DNS</translation>
 <translation id="5864754048328252126">Пры бяздзейнасці падчас зарадкі</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> хутка прыпыніцца</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працуе з вобраза дыска. Калі ўсталяваць праграму на камп’ютар, вы зможаце запускаць яе без вобраза, і яна будзе рэгулярна абнаўляцца.</translation>
@@ -7565,6 +7576,7 @@
 <translation id="6180550893222597997">Які ключ доступу вы хочаце выкарыстаць для <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Брэндынг праграм час ад часу змяняецца. Перш чым абнаўляць праграму, пераканайцеся, што ўнесеныя ў яе змяненні вас задавольваюць.</translation>
 <translation id="6181431612547969857">Спампоўванне заблакіравана</translation>
+<translation id="6182100780603067202">Таксама абагульваць аўдыя з праграмы (з усіх яе вокнаў)</translation>
 <translation id="6183369864942961155">Аўтаматычнае ўключэнне светлай/цёмнай тэмы</translation>
 <translation id="6184099524311454384">Пошук укладак</translation>
 <translation id="6185132558746749656">Месцазнаходжанне прылады</translation>
@@ -8983,6 +8995,7 @@
 <translation id="7175037578838465313">Наладка сеткі "<ph name="NAME" />"</translation>
 <translation id="7175353351958621980">Загружана адсюль:</translation>
 <translation id="7177659256878428843">Пераўтварэнне групы ўкладак у папку закладак</translation>
+<translation id="7180569503618416775">Кашалёк можа прапанаваць захаваць інфармацыю са старонак, якія вы праглядаеце, напрыклад пра купленыя білеты</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7180865173735832675">Наладзіць</translation>
 <translation id="7181117767881540376">&amp;Схаваць панэль закладак</translation>
@@ -10342,6 +10355,7 @@
 <translation id="8084429490152575036">Налады APN для сотавай сеткі</translation>
 <translation id="8084510406207562688">Аднавіць усе ўкладкі</translation>
 <translation id="8084628902026812045">Гэты сайт не выкарыстоўвае абароненае падключэнне, таму файл мог быць падроблены</translation>
+<translation id="808488435221187916">Ваша інфармацыя даступная ў Google Кашальку на любой прыладзе, на якой выкананы ўваход</translation>
 <translation id="8086015605808120405">Ідзе наладжванне прынтара <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Гэта ўкладка абагульвае ваш экран</translation>
 <translation id="8086610718778464681">Не ўдалося стварыць рэзервовыя копіі файлаў і праграм Linux</translation>

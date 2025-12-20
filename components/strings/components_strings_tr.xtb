@@ -2981,6 +2981,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="5831217499016131155">Google Cüzdan</translation>
+<translation id="5831259154333754661">Bu satın alma işlemini tamamlamak için başka bir ödeme yöntemi seçin.</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5832976493438355584">Kilitli</translation>
 <translation id="5837220895135257862">Tekrar denemeden önce <ph name="CLOUD_PROVIDER" /> depolama alanında yer açın</translation>
@@ -4263,6 +4264,7 @@ Ek ayrıntılar:
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="784623644169604270">Yeni etkinlik yok</translation>
+<translation id="7853222852810008596">Sonra ödeme seçeneği bu para biriminde kullanılamıyor</translation>
 <translation id="785476343534277563">Üniversite Sporları</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> yer alan yeni son kullanma tarihini ve CVC'yi girin</translation>

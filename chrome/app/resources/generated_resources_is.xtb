@@ -1746,6 +1746,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2157457598652721267">Notaðu „/“ og „-“ til að velja vinstri eða hægri músarhnapp. Notaðu „*“ til að velja báða.</translation>
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
+<translation id="2157632422749995237">Síðar getur Veski sent þér tilkynningar um viðburðina þína</translation>
 <translation id="2157779167749714207">Gemini fylgir með <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">Berðu svipaðar vörur saman á auðveldan hátt</translation>
 <translation id="2158249272743343757">Eyða sérsniðsgögnum...</translation>
@@ -2444,6 +2445,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2633212996805280240">Fjarlægja „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101">Ekki var hægt að ljúka uppsetningu <ph name="PRODUCT_NAME" /> en það verður keyrt af diskmyndinni.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Hafðu aðgang að pössunum þínum, eins og miðum á viðburði og tryggðarkortum, í tækinu þínu</translation>
 <translation id="2634199532920451708">Prentferill</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Varar þig ekki við lokuðum vefsvæðum, s.s. innra neti fyrirtækisins þíns</translation>
@@ -4404,6 +4406,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="394984172568887996">Flutt inn úr IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> til að gera niðurhal skráa öruggara</translation>
 <translation id="3950479158728806902">Búa til aðgangslykil sjálfkrafa fyrir fljótlegri innskráningu</translation>
+<translation id="3950755269510650933">Veldu hvaða upplýsingar Gemini má nota til að sérsníða upplifun þína</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3950841222883198950">Raddinnsláttur</translation>
 <translation id="3953834000574892725">Reikningarnir mínir</translation>
@@ -4433,6 +4436,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Auðkenni</translation>
 <translation id="397105322502079400">Reiknar...</translation>
+<translation id="3971355433478412726">Leiðbeiningar fyrir Gemini</translation>
 <translation id="3971764089670057203">Fingraför á þessum öryggislykli</translation>
 <translation id="3973005893595042880">Notandi ekki leyfður</translation>
 <translation id="3973660817924297510">Athugar aðgangsorð (<ph name="CHECKED_PASSWORDS" /> af <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4721,6 +4725,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4178220097446335546">Til að gleyma þessari áskrift og tengdum netkerfum skaltu fara á áskriftarsíðu Aðgangspunkts og fjarlægja áskriftina.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Tungumál</translation>
+<translation id="4182182457914031017">Vefslóð og öllu efni vefsvæðisins sem þú heimsækir er deilt með Google í því skyni að birta þér tillögur og bæta eiginleikann</translation>
 <translation id="4182339886482390129">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum, niðurhali og viðbótum</translation>
 <translation id="4184803915913850597">HID-tæki (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> fær upplýsingar um gerð og útgáfu öryggislykilsins þíns</translation>
@@ -5842,6 +5847,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vista í möppu eingöngu í þessu tæki?</translation>
 <translation id="4959262764292427323">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er</translation>
+<translation id="4959581970694896608">Sérsníddu hvernig Gemini svarar þér</translation>
 <translation id="4960020053211143927">Ekki stutt í tilteknum forritum</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Varpa skjá</translation>
@@ -8995,6 +9001,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7175037578838465313">Stilla <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Hlaðið frá:</translation>
 <translation id="7177659256878428843">Breyta flipahópi í bókamerkjamöppu</translation>
+<translation id="7180569503618416775">Veski getur boðist til að vista upplýsingar af síðum sem þú skoðar, t.d. miða sem þú kaupir</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7181117767881540376">Fela bókamerkjastiku</translation>
@@ -10354,6 +10361,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8084429490152575036">Stillingar farsímaaðgangsstaðar</translation>
 <translation id="8084510406207562688">Endurheimta alla flipa</translation>
 <translation id="8084628902026812045">Þetta vefsvæði notar ekki örugga tengingu og hugsanlega er búið að eiga við skrána</translation>
+<translation id="808488435221187916">Upplýsingarnar þínar eru tiltækar í Google-veski í öllum innskráðum tækjum</translation>
 <translation id="8086015605808120405">Stillir <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Þessi flipi er að deila skjánum þínum</translation>
 <translation id="8086610718778464681">Ekki tókst að taka öryggisafrit af Linux-forritum og skrám</translation>

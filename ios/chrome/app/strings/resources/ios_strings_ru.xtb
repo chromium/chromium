@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Выбрано: 1}one{Выбрано: #}few{Выбрано: #}many{Выбрано: #}other{Выбрано: #}}</translation>
 <translation id="3668816008081204991">Список для чтения скрыт</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3672283986707092811">Выбрать все</translation>
 <translation id="3679163990085797665">Удалить прочитанное</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
 <translation id="3695446226812920698">Подробнее</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Отображаемое имя</translation>
 <translation id="4375772272517383391">Закрыть все вкладки</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Выбрать</translation>
 <translation id="4389019817280890563">Нажмите, чтобы изменить язык.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Через 1 день}one{Через {COUNT} день}few{Через {COUNT} дня}many{Через {COUNT} дней}other{Через {COUNT} дня}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Сохранить файл</translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="536067926684072644">Показать закладки</translation>
+<translation id="5364647308446127983">{count,plural, =1{Не удалось импортировать {count} ключ доступа.}one{Не удалось импортировать {count} ключ доступа.}few{Не удалось импортировать {count} ключа доступа.}many{Не удалось импортировать {count} ключей доступа.}other{Не удалось импортировать {count} ключа доступа.}}</translation>
 <translation id="5371112366564891538">Увеличить размер шрифта</translation>
+<translation id="5376135254804080693">Отменить выбор</translation>
 <translation id="537853552771686272">Управляйте темами и сайтами, которые вам интересны</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="5394975111793637642">Скрыть карточку "Отзывы о товарах для вас"</translation>

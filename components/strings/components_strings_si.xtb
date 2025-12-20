@@ -2981,6 +2981,7 @@
 <translation id="5826507051599432481">පොදු නම (CN)</translation>
 <translation id="5830698870816298009">කැමරා භාවිතය සහ චලනය</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">මෙම මිල දී ගැනීම සම්පූර්ණ කිරීමට වෙනත් ගෙවීම් ක්‍රමයක් තෝරා ගන්න.</translation>
 <translation id="583281660410589416">නොදනී</translation>
 <translation id="5832976493438355584">අගුළු ලා ඇත</translation>
 <translation id="5837220895135257862">නැවත උත්සාහ කිරීමට පෙර <ph name="CLOUD_PROVIDER" /> හි ඉඩ නිදහස් කරන්න</translation>
@@ -4262,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{කිසිවක් නැත}=1{1 යෙදුමක් (<ph name="EXAMPLE_APP_1" />)}=2{යෙදුම් 2ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="784623644169604270">මෑතකාලීන ක්‍රියාකාරකම් නැත</translation>
+<translation id="7853222852810008596">මෙම මුදල් වර්ගයෙන් පසුව ගෙවීම නොමැත</translation>
 <translation id="785476343534277563">පාසල් ක්‍රීඩා</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> මත ඔබේ නව කල් ඉකුත් වන දිනය සහ CVC ඇතුළු කරන්න</translation>

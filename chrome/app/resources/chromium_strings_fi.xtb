@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">Asennus epäonnistui, koska käyttämääsi Windows-versiota ei tueta.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="1232234696885483911">Kun avaat kuvahaun, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään automaattisesti palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromiumissa. Jos haluat muuttaa tätä, siirry kohtaan "Tilisi Chromiumissa".</translation>
 <translation id="1262876892872089030">Kun tämä välilehti ei ollut aktiivinen, muistia vapautettiin Chromiumin pitämiseksi nopeana. Voit halutessasi valita, että tämä sivusto ei ole koskaan ei-aktiivinen.</translation>
 <translation id="1265577313130862557">Chromium on estänyt tämän latauksen, koska tiedosto on haitallinen</translation>

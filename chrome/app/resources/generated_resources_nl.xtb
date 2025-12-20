@@ -2455,6 +2455,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2646132387794831258">Opslaan in een map in je Google-account?</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Base64 Encoded ASCII, certificaatketen</translation>
+<translation id="2649331484502514724">Beveiligde DNS</translation>
 <translation id="2649508632465204949">Leer me een nieuwe vaardigheid</translation>
 <translation id="2651259505411913186">Ja, mijn gegevens gescheiden houden van school</translation>
 <translation id="265156376773362237">Standaard vooraf laden</translation>
@@ -3383,6 +3384,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="329838636886466101">Repareren</translation>
 <translation id="3298789223962368867">Ongeldige URL opgegeven</translation>
 <translation id="32991397311664836">Apparaten:</translation>
+<translation id="330140779027048024">Altijd gebruiken met geselecteerde DNS-over-HTTPS-provider</translation>
 <translation id="3301554464236215299">Dit bestand wordt niet vaak gedownload en kan gevaarlijk zijn</translation>
 <translation id="3301996560342889673">Geschiedenis synchroniseren?</translation>
 <translation id="33022249435934718">GDI-handles</translation>
@@ -4390,6 +4392,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="394984172568887996">Geïmporteerd uit Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> om het downloaden van bestanden veiliger te maken</translation>
 <translation id="3950479158728806902">Automatisch een toegangssleutel maken om sneller in te loggen</translation>
+<translation id="3950755269510650933">Beheer de informatie die Gemini kan gebruiken om de functionaliteit te personaliseren</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3950841222883198950">Spraakgestuurd typen</translation>
 <translation id="3953834000574892725">Mijn accounts</translation>
@@ -4419,6 +4422,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Berekenen...</translation>
+<translation id="3971355433478412726">Instructies voor Gemini</translation>
 <translation id="3971764089670057203">Vingerafdrukken op deze beveiligingssleutel</translation>
 <translation id="3973005893595042880">Gebruiker is niet toegestaan</translation>
 <translation id="3973660817924297510">Wachtwoorden controleren (<ph name="CHECKED_PASSWORDS" /> van <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4738,6 +4742,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4206585797409671301">Toestemming om verzoeken te tonen</translation>
+<translation id="4207144975205749656">Versleutelt navigatieverzoeken zodat aanvallers in hetzelfde netwerk je verkeer niet kunnen zien</translation>
 <translation id="4207932031282227921">Rechten gevraagd, druk op F6 om te reageren</translation>
 <translation id="4208390505124702064">Zoeken op <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
@@ -5827,6 +5832,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Alleen opslaan in een map op dit apparaat?</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
+<translation id="4959581970694896608">Pas aan hoe Gemini op je reageert</translation>
 <translation id="4960020053211143927">Niet ondersteund door bepaalde apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Scherm casten</translation>
@@ -6142,6 +6148,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5186362203408605578">Gebruik een ander apparaat door de QR-code te scannen</translation>
 <translation id="5186381005592669696">Pas de weergavetaal aan voor ondersteunde apps</translation>
 <translation id="5186788525428341874">Je kunt deze toegangssleutel gebruiken om sneller in te loggen op al je apparaten. Deze wordt opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Standaard gebruiken indien beschikbaar</translation>
 <translation id="5187641678926990264">Pagina &amp;installeren als app...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Gedeeld door <ph name="USER_NAME" /></translation>
@@ -7113,6 +7120,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5863445608433396414">Foutopsporingsfuncties aanzetten</translation>
 <translation id="5863515189965725638">IBAN bewerken</translation>
 <translation id="5864195618110239517">Verbinding met datalimiet gebruiken</translation>
+<translation id="5864624288360677142">Standaard gebruiken indien beschikbaar en Google DNS als back-up</translation>
 <translation id="5864754048328252126">Inactieve actie tijdens opladen</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> wordt straks onderbroken</translation>
 <translation id="586567932979200359">Je voert <ph name="PRODUCT_NAME" /> uit via de schijfkopie. Als je dit programma installeert op je computer, kun je dit uitvoeren zonder de schijfkopie te gebruiken en blijft het programma bijgewerkt.</translation>
@@ -7562,6 +7570,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6180550893222597997">Welke toegangssleutel wil je gebruiken voor <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Apps updaten soms hun branding. Controleer alle wijzigingen om er zeker van te zijn dat je ermee akkoord gaat voordat je een update uitvoert.</translation>
 <translation id="6181431612547969857">Download geblokkeerd</translation>
+<translation id="6182100780603067202">App-audio ook delen (van alle vensters)</translation>
 <translation id="6183369864942961155">Automatisch licht/donker thema</translation>
 <translation id="6184099524311454384">Tabbladen doorzoeken</translation>
 <translation id="6185132558746749656">Apparaatlocatie</translation>

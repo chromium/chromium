@@ -2455,6 +2455,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2646132387794831258">Guardar numa pasta na sua Conta Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Cadeia de certificados ASCII codificados em Base64</translation>
+<translation id="2649331484502514724">DNS seguro</translation>
 <translation id="2649508632465204949">Aprenda uma nova competência</translation>
 <translation id="2651259505411913186">Sim, manter os meus dados separados dos da escola</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
@@ -3386,6 +3387,7 @@ Quer pará-lo?</translation>
 <translation id="329838636886466101">Reparar</translation>
 <translation id="3298789223962368867">Introduzido um URL inválido.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
+<translation id="330140779027048024">Usar sempre com o fornecedor de DNS-over-HTTPS selecionado</translation>
 <translation id="3301554464236215299">Este ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="3301996560342889673">Sincronizar o histórico?</translation>
 <translation id="33022249435934718">Identificadores de GDI</translation>
@@ -4393,6 +4395,7 @@ Quer pará-lo?</translation>
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar a transferência de ficheiros mais segura</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>
+<translation id="3950755269510650933">Faça a gestão das informações que o Gemini pode usar para personalizar a sua experiência</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3950841222883198950">Digitação por voz</translation>
 <translation id="3953834000574892725">As minhas contas</translation>
@@ -4422,6 +4425,7 @@ Quer pará-lo?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">A calcular...</translation>
+<translation id="3971355433478412726">Instruções para o Gemini</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4742,6 +4746,7 @@ Quer pará-lo?</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Relatório de comentários</translation>
 <translation id="4206585797409671301">Com autorização para mostrar pedidos</translation>
+<translation id="4207144975205749656">Encripta os pedidos de navegação para que os atacantes na mesma rede não possam ver o seu tráfego</translation>
 <translation id="4207932031282227921">Autorização solicitada, prima F6 para responder</translation>
 <translation id="4208390505124702064">Pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
@@ -5832,6 +5837,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Guardar numa pasta apenas neste dispositivo?</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
+<translation id="4959581970694896608">Personalize a forma como o Gemini lhe responde</translation>
 <translation id="4960020053211143927">Não suportado por algumas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
@@ -6147,6 +6153,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5186362203408605578">Use outro dispositivo lendo o código QR</translation>
 <translation id="5186381005592669696">Personalize o idioma de apresentação das apps suportadas</translation>
 <translation id="5186788525428341874">Pode usar esta chave de acesso para iniciar sessão mais rapidamente nos seus dispositivos. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Usar predefinição, se disponível</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partilhado por <ph name="USER_NAME" /></translation>
@@ -7122,6 +7129,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5863445608433396414">Ativar funcionalidades de depuração</translation>
 <translation id="5863515189965725638">Edite o IBAN</translation>
 <translation id="5864195618110239517">Usar ligação com acesso limitado</translation>
+<translation id="5864624288360677142">Usar a predefinição, se disponível, e o DNS da Google como alternativa</translation>
 <translation id="5864754048328252126">Ação de inatividade ao carregar</translation>
 <translation id="5865508026715185451">A app <ph name="APP_NAME" /> será colocada em pausa em breve</translation>
 <translation id="586567932979200359">Está a executar o <ph name="PRODUCT_NAME" /> a partir da respectiva imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e assegura que o mesmo é mantido atualizado.</translation>
@@ -7572,6 +7580,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6180550893222597997">Que token de acesso quer usar para a app <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Por vezes, as apps atualizam o respetivo branding. Reveja todas as alterações para se certificar de que concorda com estas antes de atualizar.</translation>
 <translation id="6181431612547969857">Transferência bloqueada</translation>
+<translation id="6182100780603067202">Partilhar também o áudio da aplicação (de todas as respetivas janelas)</translation>
 <translation id="6183369864942961155">Tema claro/escuro automático</translation>
 <translation id="6184099524311454384">Pesquisar separadores</translation>
 <translation id="6185132558746749656">Localização do dispositivo</translation>

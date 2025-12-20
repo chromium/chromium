@@ -403,6 +403,7 @@
 <translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2484459871750294497">ฉันจะเปิดใช้ฟีเจอร์นี้ได้อย่างไร</translation>
+<translation id="2485534095078940149">ไฟล์แนบ {title}</translation>
 <translation id="2493269659028026145">ล็อกทันทีด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2496626742194544812">ไปที่แท็บแรก</translation>
@@ -687,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{เลือกไว้ 1 รายการ}other{เลือกไว้ # รายการ}}</translation>
 <translation id="3668816008081204991">เรื่องรออ่านซ่อนอยู่</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
+<translation id="3672283986707092811">เลือกทั้งหมด</translation>
 <translation id="3679163990085797665">ลบรายการที่อ่านแล้ว</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3695446226812920698">ดูวิธีการ</translation>
@@ -869,6 +871,7 @@
 <translation id="4367971618859387374">ชื่อที่แสดง</translation>
 <translation id="4375772272517383391">ปิดแท็บทั้งหมด</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
+<translation id="4380677808580146413">เลือก</translation>
 <translation id="4389019817280890563">แตะเพื่อเปลี่ยนภาษา</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก {COUNT} วัน}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
@@ -1033,6 +1036,7 @@
 <translation id="496392417432935267">เปิดอยู่ที่อื่น</translation>
 <translation id="4970724460420203313">การใช้งาน Chrome ด้วยบัญชีที่จัดการจะช่วยแยกการท่องเว็บที่เกี่ยวข้องกับองค์กรของคุณ (รวมถึงแท็บ ประวัติการเข้าชม และรหัสผ่าน) ออกจากการท่องเว็บอื่นๆ</translation>
 <translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
+<translation id="4977176874984951085">เปิดเมนูการทำงานของหน้า</translation>
 <translation id="4979397965658815378">ลงชื่อเข้าใช้บัญชี Google เพื่อรับบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ต้องการให้คุณเข้าร่วมกลุ่มแท็บ ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดเข้าร่วมอย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชม.</translation>
+<translation id="5275953427913009986">แท็บที่แนบ {title}</translation>
 <translation id="5282340693022193851">หากต้องการรับการแจ้งเตือนการติดตามราคา ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="528857768909044842">ระบบจะบันทึกกลุ่มแท็บไว้ที่นี่</translation>
 <translation id="5294624619177114121">การแจ้งเตือนบนมือถือ</translation>
@@ -1135,7 +1140,9 @@
 <translation id="5352128922772839949">บันทึกไฟล์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
+<translation id="5364647308446127983">{count,plural, =1{นำเข้าพาสคีย์ {count} รายการไม่ได้}other{นำเข้าพาสคีย์ {count} รายการไม่ได้}}</translation>
 <translation id="5371112366564891538">เพิ่มขนาดข้อความ</translation>
+<translation id="5376135254804080693">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="537853552771686272">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5390458669633674385">{count,plural, =1{ปิดไปแล้ว {count} แท็บ}other{ปิดไปแล้ว {count} แท็บ}}</translation>
 <translation id="5394975111793637642">ซ่อนการ์ดรีวิวสินค้าสำหรับคุณ</translation>
@@ -1191,6 +1198,7 @@
 <translation id="5579012242779565775">ซ่อน "เรื่องรออ่าน"</translation>
 <translation id="5581786858144165447">ถามโหมด AI</translation>
 <translation id="5585019845078534178">การ์ด</translation>
+<translation id="5589976607021609750">รูปภาพที่แนบ</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="559567008082979829">ตั้งค่าให้ระบบลบการดาวน์โหลดของคุณหลังจากผ่านไป 1 เดือน</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
@@ -1872,6 +1880,7 @@
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="8010488806779226127">สำรวจฟีเจอร์ที่จะช่วยให้คุณทำสิ่งต่างๆ ได้มากขึ้นขณะท่องเว็บ</translation>
 <translation id="8011489434346330032">เครื่องมือตรวจสอบเว็บ</translation>
+<translation id="8015826420689927262">ลบไฟล์แนบ</translation>
 <translation id="8017015647846870183">จากเครื่องมือจัดการรหัสผ่านบน Google ซึ่งรวมถึงรหัสผ่านและพาสคีย์</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8023170444051056234">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ของคุณทุกเครื่อง</translation>
@@ -2226,6 +2235,7 @@
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>
+<translation id="965879457362663186">เพิ่มไฟล์แนบ</translation>
 <translation id="966593914872420832">ค้นหาด้วยเสียง</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" />}=1{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" /> และอีก {COUNT} คน}other{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" /> และอีก {COUNT} คน}}</translation>
 <translation id="973493300226275298">ติดตามราคาของผลิตภัณฑ์ในร้านค้าออนไลน์ต่างๆ คุณจะได้รับการแจ้งเตือนเมื่อราคาลดลง</translation>

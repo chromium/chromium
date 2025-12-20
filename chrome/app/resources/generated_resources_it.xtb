@@ -1735,6 +1735,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2157457598652721267">Usa i caratteri "/" e "-" per selezionare il tasto sinistro del mouse o quello destro. Usa il carattere "*" per selezionare entrambi.</translation>
 <translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
+<translation id="2157632422749995237">In seguito, Wallet può inviarti notifiche sui tuoi eventi</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> insieme a Gemini</translation>
 <translation id="2158103060812356265">Confronta facilmente prodotti simili</translation>
 <translation id="2158249272743343757">Elimina dati personalizzazione…</translation>
@@ -2430,6 +2431,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2633212996805280240">Rimuovere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> non è stato in grado di completare l'installazione ma continuerà a essere eseguito dall'immagine disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accedi alle tue tessere, come biglietti per un evento e carte fedeltà, dal tuo dispositivo</translation>
 <translation id="2634199532920451708">Cronologia di stampa</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Non ti avvisa in caso di siti privati, come l'Intranet della tua azienda</translation>
@@ -4390,6 +4392,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="394984172568887996">Importati da IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> per rendere più sicuro il download dei file</translation>
 <translation id="3950479158728806902">Crea automaticamente una passkey per accedere più velocemente</translation>
+<translation id="3950755269510650933">Gestisci le informazioni che Gemini può utilizzare per personalizzare la tua esperienza</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3950841222883198950">Digitazione vocale</translation>
 <translation id="3953834000574892725">Account personali</translation>
@@ -4419,6 +4422,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
+<translation id="3971355433478412726">Istruzioni per Gemini</translation>
 <translation id="3971764089670057203">Impronte registrate con questo token di sicurezza</translation>
 <translation id="3973005893595042880">L'utente non è consentito</translation>
 <translation id="3973660817924297510">Verifica delle password (<ph name="CHECKED_PASSWORDS" /> di <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4707,6 +4711,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4178220097446335546">Per rimuovere questo abbonamento e le relative reti associate, vai alla pagina dell'abbonamento Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Lingue</translation>
+<translation id="4182182457914031017">Per poterti offrire suggerimenti e migliorare questa funzionalità, l'URL e i contenuti completi della pagina del sito che visiti vengono condivisi con Google</translation>
 <translation id="4182339886482390129">Navigazione sicura avanzata ti protegge in modo più efficace da siti web, download ed estensioni pericolosi.</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> riconoscerà la marca e il modello del tuo token di sicurezza</translation>
@@ -5827,6 +5832,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvare in una cartella solo su questo dispositivo?</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
+<translation id="4959581970694896608">Personalizza il modo in cui Gemini ti risponde</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
@@ -8976,6 +8982,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Caricamento da:</translation>
 <translation id="7177659256878428843">Converti un gruppo di schede in una cartella di preferiti</translation>
+<translation id="7180569503618416775">Wallet può proporre di salvare informazioni dalle pagine che visualizzi, come i biglietti che acquisti</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7180865173735832675">Personalizza</translation>
 <translation id="7181117767881540376">&amp;Nascondi barra dei preferiti</translation>
@@ -10336,6 +10343,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8084429490152575036">Impostazioni APN rete mobile</translation>
 <translation id="8084510406207562688">Ripristina tutt&amp;e le schede</translation>
 <translation id="8084628902026812045">Questo sito non usa una connessione sicura e il file potrebbe essere stato manomesso</translation>
+<translation id="808488435221187916">Le tue informazioni sono disponibili in Google Wallet su qualsiasi dispositivo su cui è stato eseguito l'accesso</translation>
 <translation id="8086015605808120405">Configurazione di <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Questa scheda sta condividendo il tuo schermo</translation>
 <translation id="8086610718778464681">Impossibile eseguire il backup delle app e dei file di Linux</translation>

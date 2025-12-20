@@ -1737,6 +1737,7 @@
 <translation id="2157457598652721267">Օգտագործեք «/» և «-» ստեղները՝ մկնիկի աջ կամ ձախ կոճակն ընտրելու համար։ Օգտագործեք «*» ստեղնը՝ երկու կոճակներն ընտրելու համար։</translation>
 <translation id="2157474325782140681">Լրացուցիչ գործառույթների համար օգտագործեք այս Chromebook-ի համար նախատեսված Dell դոկ-կայան:</translation>
 <translation id="215753907730220065">Ելնել լիաէկրան ռեժիմից</translation>
+<translation id="2157632422749995237">Հետագայում Wallet-ը կարող է ձեզ ծանուցումներ ուղարկել ձեր միջոցառումների մասին</translation>
 <translation id="2157779167749714207">Gemini-ն արդեն ներառված է ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="2158103060812356265">Հեշտությամբ համեմատեք նմանատիպ ապրանքները</translation>
 <translation id="2158249272743343757">Ջնջել անհատականացման տվյալները...</translation>
@@ -2430,6 +2431,7 @@
 <translation id="2633212996805280240">Հեռացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />-ը չավարտեց տեղադրումը, բայց կշարունակի աշխատեցնել այն իր սկավառակի պատկերից:</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Սարքում բացել քարտերը, օրինակ՝ միջոցառումների տոմսերը և մշտական հաճախորդի քարտերը</translation>
 <translation id="2634199532920451708">Տպման պատմություն</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Չի նախազգուշացնում ձեզ վտանգի մասին մասնավոր կայքերում, ինչպիսին է ձեր ընկերության ինտրանետը</translation>
@@ -4390,6 +4392,7 @@
 <translation id="394984172568887996">IE-ից ներմուծված</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />՝ ֆայլերի ներբեռնումն ավելի անվտանգ դարձնելու համար</translation>
 <translation id="3950479158728806902">Ավտոմատ կերպով ստեղծեք մուտքի բանալի՝ ավելի արագ մուտք գործելու համար</translation>
+<translation id="3950755269510650933">Կառավարեք տեղեկությունները, որոնք Gemini-ը կարող է օգտագործել ձեր աշխատանքն անհատականացնելու համար</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3950841222883198950">Ձայնային մուտքագրում</translation>
 <translation id="3953834000574892725">Իմ հաշիվները</translation>
@@ -4419,6 +4422,7 @@
 <translation id="3968739731834770921">Կանա</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
+<translation id="3971355433478412726">Ցուցումներ Gemini-ի համար</translation>
 <translation id="3971764089670057203">Այս անվտանգության բանալու մատնահետքերը</translation>
 <translation id="3973005893595042880">Օգտատերն արգելված է</translation>
 <translation id="3973660817924297510">Գաղտնաբառերը ստուգվում են (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4707,6 +4711,7 @@
 <translation id="4178220097446335546">Այս բաժանորդագրությունը և դրա հետ կապված ցանցերը մոռանալու համար անցեք Passpoint բաժանորդագրության էջ և հեռացրեք բաժանորդագրությունը։</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Լեզուներ</translation>
+<translation id="4182182457914031017">Առաջարկներ տրամադրելու և այս գործառույթը բարելավելու նպատակով ձեր այցելած կայքի URL-ն ու ամբողջ բովանդակությունը տրամադրվում են Google-ին</translation>
 <translation id="4182339886482390129">Բարելավված Ապահով դիտարկումն օգնում է պաշտպանվել վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից</translation>
 <translation id="4184803915913850597">HID սարք (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> կայքին հայտնի կդառնա անվտանգության ձեր բանալու արտադրողի և մոդելի անվանումը</translation>
@@ -5829,6 +5834,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Պահե՞լ այս սարքի պանակում</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
+<translation id="4959581970694896608">Անհատականացրեք Gemini-ի պատասխանները</translation>
 <translation id="4960020053211143927">Չի աջակցվում որոշ հավելվածների կողմից</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
@@ -8981,6 +8987,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> ցանցի կարգավորում</translation>
 <translation id="7175353351958621980">Բեռնված է հետևյալ ուղուց՝</translation>
 <translation id="7177659256878428843">Ներդիրների խումբը վերածեք էջանիշների պանակի</translation>
+<translation id="7180569503618416775">Wallet-ը կարող է առաջարկել տեղեկություններ պահել ձեր դիտած էջերից, օրինակ՝ ձեր գնած տոմսերը</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7180865173735832675">Հարմարեցնել</translation>
 <translation id="7181117767881540376">&amp;Թաքցնել էջանիշների գոտին</translation>
@@ -10340,6 +10347,7 @@
 <translation id="8084429490152575036">Բջջային APN-ի կարգավորումներ</translation>
 <translation id="8084510406207562688">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="8084628902026812045">Այս կայքը չի օգտագործում անվտանգ կապ, ուստի ֆայլում, հնարավոր է, չարտոնված գործողություններ են կատարվել</translation>
+<translation id="808488435221187916">Ձեր տեղեկությունները հասանելի են Google Wallet-ում՝ ցանկացած սարքում, որում մտել եք հաշիվ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> տպիչի կարգավորում…</translation>
 <translation id="8086121155774250556">Այս ներդիրը ցուցադրում է ձեր էկրանը</translation>
 <translation id="8086610718778464681">Չհաջողվեց պահուստավորել Լինուքսի հավելվածներն ու ֆայլերը</translation>

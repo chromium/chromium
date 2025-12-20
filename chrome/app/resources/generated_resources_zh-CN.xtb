@@ -1728,6 +1728,7 @@
 <translation id="2157457598652721267">按下“/”和“-”键表示选择鼠标左键和右键。按下“*”键表示同时选择左右键。</translation>
 <translation id="2157474325782140681">要获得更多功能，请使用由戴尔专为这款 Chromebook 设计的基座。</translation>
 <translation id="215753907730220065">退出全屏模式</translation>
+<translation id="2157632422749995237">之后，Google 钱包会向您发送有关活动的通知</translation>
 <translation id="2157779167749714207">您的 <ph name="DEVICE_TYPE" /> 内置了 Gemini</translation>
 <translation id="2158103060812356265">轻松比较相似商品</translation>
 <translation id="2158249272743343757">删除个性化数据…</translation>
@@ -2422,6 +2423,7 @@
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />无法完成安装，但是会通过其磁盘映像继续运行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">从设备上访问您的凭证，例如活动门票和会员卡</translation>
 <translation id="2634199532920451708">打印记录</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">在您访问私密网站（例如公司内网）时不发出警告</translation>
@@ -4379,6 +4381,7 @@
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950479158728806902">自动创建通行密钥，登录更迅速</translation>
+<translation id="3950755269510650933">管理 Gemini 可以使用哪些信息为您提供个性化体验</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3950841222883198950">语音输入</translation>
 <translation id="3953834000574892725">我的账号</translation>
@@ -4408,6 +4411,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">正在计算...</translation>
+<translation id="3971355433478412726">向 Gemini 提供的指令</translation>
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973005893595042880">不允许此用户运行虚拟机</translation>
 <translation id="3973660817924297510">正在检查密码 (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4696,6 +4700,7 @@
 <translation id="4178220097446335546">若要忘记此订阅及关联的网络，请前往 Passpoint 订阅页面以移除相应订阅。</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
+<translation id="4182182457914031017">为了提供建议和改进此功能，系统会将您访问的网站的网址和完整网页内容分享给 Google</translation>
 <translation id="4182339886482390129">“增强型安全浏览”功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4184803915913850597">HID 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> 将了解安全密钥的品牌和型号</translation>
@@ -5816,6 +5821,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
+<translation id="4959581970694896608">自定义 Gemini 的回答方式</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投屏</translation>
@@ -8964,6 +8970,7 @@
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7175353351958621980">加载来源：</translation>
 <translation id="7177659256878428843">将标签页分组转换为书签文件夹</translation>
+<translation id="7180569503618416775">Google 钱包会询问您是否保存正在查看的网页中的信息，例如购买的票券</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7181117767881540376">隐藏书签栏(&amp;H)</translation>
@@ -10324,6 +10331,7 @@
 <translation id="8084429490152575036">移动网络 APN 设置</translation>
 <translation id="8084510406207562688">恢复所有标签页(&amp;E)</translation>
 <translation id="8084628902026812045">此网站使用的不是安全连接，该文件可能已被篡改</translation>
+<translation id="808488435221187916">您可以在任何已登录账号的设备上通过 Google 钱包查看您的信息</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此标签页正在共享屏幕</translation>
 <translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
@@ -11961,7 +11969,7 @@
 <translation id="9173063514323762371">隐藏书签栏(&amp;H)</translation>
 <translation id="917350715406657904">您已达到您家长为“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9174401638287877180">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
-<translation id="9174854240439014335">支持在窗口左右边缘触发分屏拖放操作</translation>
+<translation id="9174854240439014335">支持在窗口左右边缘触发拆分视图拖放操作</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已连接蓝牙设备</translation>
 <translation id="9177859716483578738">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />。</translation>
 <translation id="9178061802301856367">删除登录数据</translation>

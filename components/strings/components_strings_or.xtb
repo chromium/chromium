@@ -2978,6 +2978,7 @@
 <translation id="5826507051599432481">ସାଧାରଣ ନାମ (CN)</translation>
 <translation id="5830698870816298009">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">ଏହି କ୍ରୟକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ ପେମେଣ୍ଟ ପଦ୍ଧତି ବାଛନ୍ତୁ।</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5832976493438355584">ଲକ୍ ଅଛି</translation>
 <translation id="5837220895135257862">ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ <ph name="CLOUD_PROVIDER" />ରେ ସ୍ପେସ ଖାଲି କରନ୍ତୁ</translation>
@@ -3538,7 +3539,7 @@
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6706678697074905703">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହି IBANକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="6707388108229299854">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଏହି ଠିକଣା ପାଇବା ପାଇଁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="6709133671862442373">News</translation>
+<translation id="6709133671862442373">ନ୍ୟୁଜ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
 <translation id="671076103358959139">ନାମାଙ୍କିତ ଟୋକନ୍:</translation>
@@ -4258,6 +4259,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ଏକ ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="784623644169604270">କୌଣସି ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ନାହିଁ</translation>
+<translation id="7853222852810008596">ଏହି ମୁଦ୍ରାରେ ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="785476343534277563">କଲେଜ ସ୍ପୋର୍ଟ୍ସ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />ରେ ଥିବା ଆପଣଙ୍କ ନୂଆ ମିଆଦ ଶେଷ ହେବାର ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ</translation>

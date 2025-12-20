@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> แท็บ - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
 <translation id="504456571576643789">สิ่งที่ควรพิจารณา</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{เลือกหน้าต่าง <ph name="WINDOW_COUNT_ONE" /> รายการไว้}other{เลือกหน้าต่าง <ph name="WINDOW_COUNT_NORMAL" /> รายการไว้}}</translation>
 <translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="506254248375231072">ไม่มีแท็บ</translation>
 <translation id="5075939510584558547">บันทึกโดยไม่เข้ารหัส</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">เหลือ 1 วัน</translation>
 <translation id="8192765420340770300">Bottom Sheet การลงชื่อเข้าใช้เปิดแบบเต็มหน้า</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />อุปกรณ์ของคุณ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">ล้างคำค้นหา</translation>
 <translation id="820568752112382238">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUMBER_OF_OTHER_MEMBERS" /> คน}other{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUMBER_OF_OTHER_MEMBERS" /> คน}}</translation>
 <translation id="8209050860603202033">เปิดรูปภาพ</translation>

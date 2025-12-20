@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ}one{# ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ}other{# ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="3668816008081204991">ಓದುವ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3670030362669914947">ಸಂಖ್ಯೆ</translation>
+<translation id="3672283986707092811">ಎಲ್ಲವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3679163990085797665">ಓದಿರುವುದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="368329460027487650">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಸೈನ್ ಇನ್ ಮಾಡಲು ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="3695446226812920698">ಹೇಗೆ ಎಂಬುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
 <translation id="4375772272517383391">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
+<translation id="4380677808580146413">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4389019817280890563">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 ದಿನದ ನಂತರ}one{{COUNT} ದಿನಗಳ ನಂತರ}other{{COUNT} ದಿನಗಳ ನಂತರ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ಫೈಲ್‌ ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="536067926684072644">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} ಪಾಸ್‌ಕೀಯನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}one{{count} ಪಾಸ್‌ಕೀಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}other{{count} ಪಾಸ್‌ಕೀಗಳನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}}</translation>
 <translation id="5371112366564891538">ಪಠ್ಯದ ಗಾತ್ರವನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
+<translation id="5376135254804080693">ಎಲ್ಲಾ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="537853552771686272">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ಮುಚ್ಚಲಾಗಿದೆ}one{{count} ಮುಚ್ಚಲಾಗಿದೆ}other{{count} ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="5394975111793637642">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಾಗಿ ಉತ್ಪನ್ನದ ವಿಮರ್ಶೆಗಳನ್ನು ಮರೆಮಾಡಿ</translation>

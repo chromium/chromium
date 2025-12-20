@@ -1736,6 +1736,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2157457598652721267">Folosește „/” și „-” pentru a selecta butonul stâng sau drept al mouse-ului. Folosește „*” pentru a le selecta pe ambele.</translation>
 <translation id="2157474325782140681">Pentru a beneficia de mai multe funcții, folosește o stație de andocare Dell proiectată să funcționeze cu acest Chromebook.</translation>
 <translation id="215753907730220065">Ieși din ecranul complet</translation>
+<translation id="2157632422749995237">Ulterior, Portofelul îți poate trimite notificări despre evenimentele tale.</translation>
 <translation id="2157779167749714207">Dispozitivul <ph name="DEVICE_TYPE" /> este livrat cu Gemini</translation>
 <translation id="2158103060812356265">Compară ușor produse similare</translation>
 <translation id="2158249272743343757">Șterge datele de personalizare...</translation>
@@ -2431,6 +2432,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2633212996805280240">Eliminați „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nu a putut finaliza instalarea, dar va continua să ruleze de pe imaginea de pe disc.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accesează permisele, cum ar fi biletele la evenimente și cardurile de fidelitate, de pe dispozitiv.</translation>
 <translation id="2634199532920451708">Istoricul printărilor</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Nu te avertizează cu privire la site-urile private, cum ar fi rețeaua intranet a companiei tale</translation>
@@ -4390,6 +4392,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="394984172568887996">Importate din IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pentru descărcarea mai sigură a fișierelor</translation>
 <translation id="3950479158728806902">Creează automat o cheie de acces pentru a te conecta mai rapid</translation>
+<translation id="3950755269510650933">Gestionează informațiile pe care Gemini le poate folosi pentru a-ți personaliza experiența.</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3950841222883198950">Tastare vocală</translation>
 <translation id="3953834000574892725">Conturile mele</translation>
@@ -4419,6 +4422,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Se calculează...</translation>
+<translation id="3971355433478412726">Instrucțiuni pentru Gemini</translation>
 <translation id="3971764089670057203">Amprentele digitale ale cheii de securitate</translation>
 <translation id="3973005893595042880">Utilizatorul nu este permis</translation>
 <translation id="3973660817924297510">Se verifică parolele (<ph name="CHECKED_PASSWORDS" /> din <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4707,6 +4711,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4178220097446335546">Pentru a șterge abonamentul și rețelele asociate, accesează pagina abonamentului Passpoint pentru a-l elimina.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Limbi</translation>
+<translation id="4182182457914031017">Pentru a oferi sugestii și a îmbunătăți această funcție, adresa URL și conținutul complet al paginii site-ului pe care îl accesezi sunt trimise la Google.</translation>
 <translation id="4182339886482390129">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor, descărcărilor și extensiilor periculoase</translation>
 <translation id="4184803915913850597">Dispozitiv HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> va afla marca și modelul cheii de securitate</translation>
@@ -5827,6 +5832,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvezi într-un dosar numai pe acest dispozitiv?</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
+<translation id="4959581970694896608">Personalizează modul în care îți răspunde Gemini</translation>
 <translation id="4960020053211143927">Nu este acceptată de unele aplicații</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
@@ -8980,6 +8986,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7175037578838465313">Configurează <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Încărcată de la:</translation>
 <translation id="7177659256878428843">Convertește grupul de file în dosar de marcaje</translation>
+<translation id="7180569503618416775">Portofelul poate oferi opțiunea de a salva informații din paginile pe care le vezi, cum ar fi biletele pe care le cumperi.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7180865173735832675">Personalizează</translation>
 <translation id="7181117767881540376">&amp;Ascunde bara de marcaje</translation>
@@ -10340,6 +10347,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8084429490152575036">Setări APN pentru rețele mobile</translation>
 <translation id="8084510406207562688">R&amp;estabilește toate filele</translation>
 <translation id="8084628902026812045">Acest site nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
+<translation id="808488435221187916">Informațiile tale sunt disponibile în Portofelul Google pe orice dispozitiv conectat.</translation>
 <translation id="8086015605808120405">Se configurează <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Această filă permite accesul la ecranul tău</translation>
 <translation id="8086610718778464681">Nu se poate face backup pentru aplicațiile și fișierele Linux</translation>

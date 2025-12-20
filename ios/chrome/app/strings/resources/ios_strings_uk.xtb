@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Вибрано 1}one{Вибрано #}few{Вибрано #}many{Вибрано #}other{Вибрано #}}</translation>
 <translation id="3668816008081204991">Список читання приховано</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3672283986707092811">Вибрати все</translation>
 <translation id="3679163990085797665">Видалити прочитані</translation>
 <translation id="368329460027487650">Ви вийшли. Натисніть, щоб переглянути параметри входу.</translation>
 <translation id="3695446226812920698">Докладніше</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Відображувана назва</translation>
 <translation id="4375772272517383391">Закрити всі вкладки</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Вибрати</translation>
 <translation id="4389019817280890563">Натисніть, щоб змінити мову.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Через 1 день}one{Через {COUNT} день}few{Через {COUNT} дні}many{Через {COUNT} днів}other{Через {COUNT} дня}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Зберегти файл</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="536067926684072644">Показати закладки</translation>
+<translation id="5364647308446127983">{count,plural, =1{Не вдалось імпортувати {count} ключ доступу}one{Не вдалось імпортувати {count} ключ доступу}few{Не вдалось імпортувати {count} ключі доступу}many{Не вдалось імпортувати {count} ключів доступу}other{Не вдалось імпортувати {count} ключа доступу}}</translation>
 <translation id="5371112366564891538">Збільшити розмір тексту</translation>
+<translation id="5376135254804080693">Скасувати вибір</translation>
 <translation id="537853552771686272">Керуйте темами й сайтами, які вас цікавлять</translation>
 <translation id="5390458669633674385">{count,plural, =1{Закрито {count} вкладку}one{Закрито {count} вкладку}few{Закрито {count} вкладки}many{Закрито {count} вкладок}other{Закрито {count} вкладки}}</translation>
 <translation id="5394975111793637642">Сховати картку "Вибрані відгуки про товари"</translation>

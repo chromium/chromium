@@ -2981,6 +2981,7 @@
 <translation id="5826507051599432481">Често име (CN)</translation>
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="5831217499016131155">Google Паричник</translation>
+<translation id="5831259154333754661">Изберете друг начин на плаќање за да го завршите купувањево.</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5832976493438355584">Заклучено</translation>
 <translation id="5837220895135257862">Пред да се обидете повторно, ослободете простор во <ph name="CLOUD_PROVIDER" /></translation>
@@ -4262,6 +4263,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="784623644169604270">Нема неодамнешна активност</translation>
+<translation id="7853222852810008596">„Платете подоцна“ не е достапна во оваа валута</translation>
 <translation id="785476343534277563">Академски спортови</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Внесете ги новиот датум на истекување и CVC на <ph name="SIDE_OF_CARD" /></translation>

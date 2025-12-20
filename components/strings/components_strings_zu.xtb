@@ -2978,6 +2978,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5826507051599432481">Igama eljwayelekile (CN)</translation>
 <translation id="5830698870816298009">ukusetshenziswa nokuhanjiswa kwekhamera</translation>
 <translation id="5831217499016131155">I-Google Wallet</translation>
+<translation id="5831259154333754661">Khetha enye indlela yokukhokha ukuze uqedele lokhu kuthenga.</translation>
 <translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5832976493438355584">Ikhiyiwe</translation>
 <translation id="5837220895135257862">Khulula isikhala ku-<ph name="CLOUD_PROVIDER" /> ngaphambi kokuba uphinde uzame</translation>
@@ -4259,6 +4260,7 @@ Imininingwane engeziwe:
 <translation id="7844689747373518809">{COUNT,plural, =0{Lutho}=1{1 uhlelo lokusebenza (<ph name="EXAMPLE_APP_1" />)}=2{2 izinhlelo zokusebenza (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# izinhlelo zokusebenza (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# izinhlelo zokusebenza (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Kube nephutha. Zama futhi.</translation>
 <translation id="784623644169604270">Awukho umsebenzi wakamuva</translation>
+<translation id="7853222852810008596">Ukukhokha kamuva akutholakali ngalolu hlobo lwemali</translation>
 <translation id="785476343534277563">Ezemidlalo zekolishi</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Faka usuku lwakho olusha yokuphelelwa yisikhathi kanye ne-CVC ku-<ph name="SIDE_OF_CARD" /></translation>

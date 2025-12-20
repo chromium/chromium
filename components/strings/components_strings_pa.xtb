@@ -1552,6 +1552,7 @@
 <translation id="3525130752944427905">10 x 14 ਇੰਚ</translation>
 <translation id="3525435918300186947">ਕੀ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3527181387426738155">ਸੰਗੀਤ ਅਤੇ ਆਡੀਓ</translation>
+<translation id="3527624163937328588">ਨੱਥੀ ਫ਼ਾਈਲ ਹਟਾਓ</translation>
 <translation id="3528171143076753409">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਘੱਟੋ-ਘੱਟ 1 ਆਈਟਮ}=1{1 ਆਈਟਮ (ਅਤੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਹੋਰ)}other{ # ਆਈਟਮਾਂ (ਅਤੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਹੋਰ)}}</translation>
 <translation id="3531366304259615706">ਸਕ੍ਰੀਨ ਲਾਕ ਵਰਤੋ</translation>
@@ -1608,6 +1609,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, ਆਪਣੀਆਂ Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="3603507503523709">ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3605082766859363473">AI ਮੋਡ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="3605899229568538311">5 x 5 ਇੰਚ</translation>
 <translation id="3606917451836803637">ਟੀਵੀ ਸ਼ੋਅ ਅਤੇ ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="3608932978122581043">ਦਿਸ਼ਾਮਾਨ ਫ਼ੀਡ ਕਰੋ</translation>
@@ -1942,6 +1944,7 @@
 <translation id="411918202192379658">ਆਟੋਫਿਲ ਬਿਹਤਰ ਬਣ ਗਿਆ ਹੈ</translation>
 <translation id="4121428309786185360">ਨੂੰ ਮਿਆਦ ਪੁੱਗਦੀ ਹੈ</translation>
 <translation id="4123572138124678573">ਹੇਠਾਂ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
+<translation id="4125597496726375563">'ਚਿੱਤਰ ਬਣਾਓ' ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="412601465078863288">ਅੱਪਲੋਡ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="4127317221386336246">ਕੱਪੜਿਆਂ ਦੀਆਂ ਐਕਸੈਸਰੀਆਂ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ਹੋਰ}one{# ਹੋਰ}other{# ਹੋਰ}}</translation>
@@ -3659,6 +3662,7 @@
 <translation id="6917795328362592458">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। ਆਪਣੇ ਖਾਤਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Password Manager ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="6917873303492266709">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ, ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸਹਿਯੋਗ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ ਅਤੇ 'Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6921197121276419421">ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
+<translation id="6922905531092220751">ਚਿੱਤਰ ਵਾਲੀ ਨੱਥੀ ਫ਼ਾਈਲ ਹਟਾਓ</translation>
 <translation id="69238565902785824">ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਲਿੰਕ ਰੱਖਣ ਨਾਲ ਤੁਹਾਨੂੰ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ, ਪਰ ਤੁਸੀਂ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> 'ਤੇ ਜਾ ਕੇ ਇਸਨੂੰ ਅਣਲਿੰਕ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6924013822850225188">ਚੁਣੋ ਕਿ ਕੀ ਤੁਹਾਨੂੰ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਆਪਣੇ ਕਾਰਡ ਦੇ ਲਾਭ ਦਿਸਦੇ ਹਨ ਜਾਂ ਨਹੀਂ (ਬੈਂਕ ਦੇ ਨਿਯਮ ਲਾਗੂ ਹਨ)</translation>
 <translation id="6924933062125062950">ਪਛਾਣ ਕਾਰਡ ਮਿਟਾਓ</translation>

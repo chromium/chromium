@@ -1746,6 +1746,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2157457598652721267">Gamitin ang “/” at “-” para piliin ang kaliwa o kanang button ng mouse. Gamitin ang “*” para piliin ang parehong button.</translation>
 <translation id="2157474325782140681">Para makakuha ng karagdagang feature, gumamit ng istasyon ng pag-dock ng Dell na idinisenyo para gumana sa Chromebook na ito.</translation>
 <translation id="215753907730220065">Umalis sa Full Screen</translation>
+<translation id="2157632422749995237">Sa ibang pagkakataon, puwede kang padalhan ng Wallet ng mga notification tungkol sa iyong mga event</translation>
 <translation id="2157779167749714207">May kasamang Gemini ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">Paghambingin ang magkakatulad na produkto nang walang kahirap-hirap</translation>
 <translation id="2158249272743343757">I-delete ang data ng pag-personalize...</translation>
@@ -2444,6 +2445,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2633212996805280240">Alisin ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">Hindi makumpleto ng <ph name="PRODUCT_NAME" /> ang pag-install, ngunit patuloy na gagana mula sa larawan ng disk nito.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">I-access ang iyong mga pass, tulad ng mga ticket ng event at loyalty card, mula sa device mo</translation>
 <translation id="2634199532920451708">History ng pag-print</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Hindi ka binabalaan para sa mga pribadong site, gaya ng intranet ng iyong kumpanya</translation>
@@ -4404,6 +4406,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="394984172568887996">Nag-import mula sa IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para gawing mas ligtas ang pag-download ng mga file</translation>
 <translation id="3950479158728806902">Awtomatikong gumawa ng passkey para mas mabilis na makapag-sign in</translation>
+<translation id="3950755269510650933">Pamahalaan ang impormasyong puwedeng gamitin ng Gemini para i-personalize ang iyong experience</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">Aking mga account</translation>
@@ -4433,6 +4436,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
+<translation id="3971355433478412726">Mga Tagubilin para sa Gemini</translation>
 <translation id="3971764089670057203">Mga fingerprint sa security key na ito</translation>
 <translation id="3973005893595042880">Hindi pinapayagan ang user</translation>
 <translation id="3973660817924297510">Sinusuri ang mga password (<ph name="CHECKED_PASSWORDS" /> sa <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4721,6 +4725,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4178220097446335546">Para kalimutan ang subscription na ito at ang mga nauugnay na network nito, pumunta sa page ng subscription ng Passpoint para alisin ang subscription.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
+<translation id="4182182457914031017">Para makapag-alok ng mga suhestyon at mapahusay ang feature na ito, shine-share sa Google ang URL at content ng buong page ng site na binibisita mo</translation>
 <translation id="4182339886482390129">Marami pang ginagawa ang Pinahusay na Ligtas na Pag-browse para maprotektahan ka laban sa mga mapanganib na website, download, at extension</translation>
 <translation id="4184803915913850597">HID device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">Malalaman ng <ph name="WEBSITE" /> ang manufacturer at modelo ng iyong security key</translation>
@@ -5842,6 +5847,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">I-save lang sa folder sa device na ito?</translation>
 <translation id="4959262764292427323">Sine-save ang mga password sa iyong Google Account para magamit mo ang mga ito sa anumang device</translation>
+<translation id="4959581970694896608">I-customize kung paano sumasagot sa iyo ang Gemini</translation>
 <translation id="4960020053211143927">Hindi sinusuportahan ng ilang app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">I-cast ang screen</translation>
@@ -8996,6 +9002,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7175037578838465313">I-configure ang <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Nag-load mula sa:</translation>
 <translation id="7177659256878428843">I-convert ang grupo ng tab sa folder ng bookmark</translation>
+<translation id="7180569503618416775">Puwedeng mag-alok ang Wallet na i-save ang impormasyon mula sa mga page na tinitingnan mo, tulad ng mga ticket na binibili mo</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7180865173735832675">I-customize</translation>
 <translation id="7181117767881540376">&amp;Itago ang bookmarks bar</translation>
@@ -10356,6 +10363,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8084429490152575036">Mga setting ng Cellular APN</translation>
 <translation id="8084510406207562688">I-restore ang lahat ng tab</translation>
 <translation id="8084628902026812045">Hindi gumagamit ng secure na koneksyon ang site na ito at posibleng na-tamper ang file</translation>
+<translation id="808488435221187916">Available ang iyong impormasyon sa Google Wallet sa anumang naka-sign in na device</translation>
 <translation id="8086015605808120405">Kino-configure ang <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Shine-share ng tab na ito ang iyong screen</translation>
 <translation id="8086610718778464681">Hindi ma-back up ang mga app at file ng Linux</translation>

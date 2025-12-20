@@ -1740,6 +1740,7 @@
 <translation id="2157457598652721267">لاختيار زر الماوس الأيسر أو الأيمن، يجب استخدام مفتاحَي "/" و"-"، أو استخدام مفتاح "*" لاختيار كليهما.</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
+<translation id="2157632422749995237">‏يمكن أن ترسل إليك "محفظة Google" إشعارات حول أحداثك لاحقًا</translation>
 <translation id="2157779167749714207">‏‫Gemini ضمن <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">قارِن المنتجات المتشابهة بسهولة</translation>
 <translation id="2158249272743343757">حذف بيانات التخصيص...</translation>
@@ -2435,6 +2436,7 @@
 <translation id="2633212996805280240">هل تريد إزالة "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="263325223718984101">تعذر على <ph name="PRODUCT_NAME" /> إكمال التثبيت، ولكن ستتم متابعة تشغيله من صورته على القرص.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">يمكنك الوصول إلى بطاقاتك، مثل تذاكر حضور الفعاليات وبطاقات الولاء، من جهازك</translation>
 <translation id="2634199532920451708">سجلّ الطباعة</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">لا يتم تحذيرك بشأن المواقع الإلكترونية الخاصة، مثل شبكة الشركة الداخلية</translation>
@@ -4393,6 +4395,7 @@
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
 <translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
+<translation id="3950755269510650933">‏يمكنك إدارة المعلومات التي يمكن أن يستخدمها Gemini لتخصيص تجربتك</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3950841222883198950">الكتابة بالصوت</translation>
 <translation id="3953834000574892725">الحسابات الخاصة بي</translation>
@@ -4422,6 +4425,7 @@
 <translation id="3968739731834770921">كانا</translation>
 <translation id="3970114302595058915">رقم التعريف</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
+<translation id="3971355433478412726">‏تعليمات استخدام Gemini</translation>
 <translation id="3971764089670057203">بصمات الأصابع المُسجلة في مفتاح الأمان هذا</translation>
 <translation id="3973005893595042880">المستخدم الحالي غير مسموح به.</translation>
 <translation id="3973660817924297510">جارٍ التحقّق من كلمات المرور (<ph name="CHECKED_PASSWORDS" /> من <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4710,6 +4714,7 @@
 <translation id="4178220097446335546">لحذف هذا الاشتراك والشبكات المرتبطة به، انتقِل إلى صفحة اشتراك نقطة المرور لإزالة الاشتراك.</translation>
 <translation id="4181602000363099176">20 ضعفًا</translation>
 <translation id="4181841719683918333">اللغات</translation>
+<translation id="4182182457914031017">‏للحصول على اقتراحات بهدف تحسين هذه الميزة، تتم مشاركة البيانات التالية مع Google: عنوان URL والمحتوى الكامل لصفحة الموقع الإلكتروني التي تتم زيارته</translation>
 <translation id="4182339886482390129">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="4184803915913850597">‏جهاز HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">سيتعرّف <ph name="WEBSITE" /> على العلامة التجارية لمفتاح الأمان وطرازه</translation>
@@ -5831,6 +5836,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">هل تريد حفظ الإشارة المرجعية في مجلد على هذا الجهاز فقط؟</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
+<translation id="4959581970694896608">‏يمكنك تخصيص طريقة استجابة Gemini لطلباتك</translation>
 <translation id="4960020053211143927">هذا الخيار غير متاح في بعض التطبيقات.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
@@ -8992,6 +8998,7 @@
 <translation id="7175037578838465313">إعداد <ph name="NAME" /></translation>
 <translation id="7175353351958621980">تم التحميل من:</translation>
 <translation id="7177659256878428843">تحويل مجموعة علامات التبويب إلى مجلد إشارات مرجعية</translation>
+<translation id="7180569503618416775">‏يمكن أن تقترح "محفظة Google" حفظ المعلومات من الصفحات التي يتم زيارتها، مثل التذاكر التي تشتريها</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7181117767881540376">إخفاء شريط الإشارات</translation>
@@ -10351,6 +10358,7 @@
 <translation id="8084429490152575036">‏إعدادات اسم نقطة الوصول (APN) لشبكات الجوّال</translation>
 <translation id="8084510406207562688">&amp;استعادة جميع علامات التبويب</translation>
 <translation id="8084628902026812045">لا يستخدم هذا الموقع الإلكتروني اتصالاً آمنًا وربما تمّ التلاعب بالملف.</translation>
+<translation id="808488435221187916">‏تتوفّر معلوماتك في "محفظة Google" على أي جهاز تم تسجيل الدخول إليه</translation>
 <translation id="8086015605808120405">جارٍ إعداد <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">تشارك علامة التبويب هذه محتوى شاشتك.</translation>
 <translation id="8086610718778464681">‏يتعذَّر الاحتفاظ بنسخة احتياطية من تطبيقات وملفات نظام التشغيل Linux</translation>

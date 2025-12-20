@@ -1746,6 +1746,7 @@
 <translation id="2157457598652721267">왼쪽 또는 오른쪽 마우스 버튼을 선택하려면 '/' 및 '-' 키를 사용하세요. 둘 다 선택하려면 '*' 키를 사용하세요.</translation>
 <translation id="2157474325782140681">추가 기능을 사용하려면 이 Chromebook과 호환되는 Dell 도킹 스테이션을 사용하세요.</translation>
 <translation id="215753907730220065">전체화면 종료</translation>
+<translation id="2157632422749995237">나중에 월렛에서 이벤트에 대한 알림을 보낼 수 있습니다</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" />의 경우 Gemini가 탑재되어 출시됩니다</translation>
 <translation id="2158103060812356265">비슷한 제품을 간편하게 비교하세요</translation>
 <translation id="2158249272743343757">맞춤설정 데이터 삭제…</translation>
@@ -2445,6 +2446,7 @@
 <translation id="2633212996805280240">'<ph name="EXTENSION_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />에서 설치를 완료하지 못했지만 디스크 이미지에서 계속 실행됩니다.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">기기에서 이벤트 티켓, 포인트 카드와 같은 패스에 액세스하세요</translation>
 <translation id="2634199532920451708">인쇄 기록</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">회사 인트라넷과 같은 비공개 사이트에 대해 경고를 표시하지 않습니다</translation>
@@ -4405,6 +4407,7 @@
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">패스키를 자동으로 생성하여 더 빠르게 로그인</translation>
+<translation id="3950755269510650933">Gemini가 사용자 환경을 맞춤설정하는 데 사용되는 정보 관리</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3950841222883198950">음성 입력</translation>
 <translation id="3953834000574892725">내 계정</translation>
@@ -4434,6 +4437,7 @@
 <translation id="3968739731834770921">가나</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="3971355433478412726">Gemini 요청사항</translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973005893595042880">허용되지 않은 사용자입니다.</translation>
 <translation id="3973660817924297510">비밀번호 확인 중(<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4720,6 +4724,7 @@
 <translation id="4178220097446335546">이 구독 및 연결된 네트워크를 삭제하려면 Passpoint 구독 페이지로 이동하여 구독을 삭제하세요</translation>
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
+<translation id="4182182457914031017">추천을 제공하고 이 기능을 개선하기 위해 방문한 사이트의 URL 및 전체 페이지 콘텐츠가 Google과 공유됩니다</translation>
 <translation id="4182339886482390129">향상된 세이프 브라우징은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하는 추가 기능을 제공합니다.</translation>
 <translation id="4184803915913850597">HID 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" />에서 보안 키 제조업체와 모델을 확인합니다</translation>
@@ -5842,6 +5847,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
+<translation id="4959581970694896608">Gemini의 대답 방식 맞춤설정</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">화면 전송</translation>
@@ -8994,6 +9000,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7175353351958621980">로드 위치:</translation>
 <translation id="7177659256878428843">탭 그룹을 북마크 폴더로 변환</translation>
+<translation id="7180569503618416775">월렛에서 보고 있는 페이지의 정보(예: 구매한 티켓)를 저장할지 묻는 메시지를 표시할 수 있습니다</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7181117767881540376">북마크바 숨기기</translation>
@@ -10354,6 +10361,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8084429490152575036">셀룰러 APN 설정</translation>
 <translation id="8084510406207562688">모든 탭 복원(&amp;E)</translation>
 <translation id="8084628902026812045">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 수 있습니다.</translation>
+<translation id="808488435221187916">로그인된 모든 기기의 Google 월렛에서 내 정보를 확인할 수 있습니다</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086121155774250556">이 탭에서 화면을 공유하는 중입니다</translation>
 <translation id="8086610718778464681">Linux 앱 및 파일을 백업할 수 없음</translation>

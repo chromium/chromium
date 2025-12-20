@@ -1745,6 +1745,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2157457598652721267">Gebruik “/” en “-” om linker- of regtermuisknoppie te kies. Gebruik “*” om albei te kies.</translation>
 <translation id="2157474325782140681">Gebruik 'n Dell-dokstasie wat ontwerp is om saam met hierdie Chromebook te gebruik om bykomende kenmerke te kry.</translation>
 <translation id="215753907730220065">Gaan by Volskerm uit</translation>
+<translation id="2157632422749995237">Wallet kan later vir jou kennisgewings oor jou geleenthede stuur</translation>
 <translation id="2157779167749714207">Gemini is reeds op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158103060812356265">Vergelyk maklik soortgelyke produkte</translation>
 <translation id="2158249272743343757">Vee personaliseringdata uit …</translation>
@@ -2443,6 +2444,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2633212996805280240">Verwyder "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> kon nie installering voltooi nie, maar sal steeds van sy skyfweergawe af werk.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Kry vanaf jou toestel toegang tot jou passe, soos geleentheidkaartjies en lojaliteitskaarte</translation>
 <translation id="2634199532920451708">Drukgeskiedenis</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Waarsku jou nie oor privaat werwe soos jou maatskappy se intranet nie</translation>
@@ -4403,6 +4405,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="394984172568887996">Van IE af ingevoer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> om die aflaai van lêers veiliger te maak</translation>
 <translation id="3950479158728806902">Skep outomaties ’n toegangsleutel om vinniger aan te meld</translation>
+<translation id="3950755269510650933">Bestuur die inligting wat Gemini kan gebruik om jou ervaring te personaliseer</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3950841222883198950">Steminvoer</translation>
 <translation id="3953834000574892725">My rekeninge</translation>
@@ -4432,6 +4435,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
+<translation id="3971355433478412726">Instruksies vir Gemini</translation>
 <translation id="3971764089670057203">Vingerafdrukke op hierdie sekuriteitsleutel</translation>
 <translation id="3973005893595042880">Gebruiker word nie toegelaat nie</translation>
 <translation id="3973660817924297510">Gaan tans wagwoorde na (<ph name="CHECKED_PASSWORDS" /> van <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -4720,6 +4724,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4178220097446335546">Gaan na die Passpoint-intekeningbladsy om die intekening te verwyder as jy hierdie intekening en sy geassosieerde netwerke wil vergeet.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Tale</translation>
+<translation id="4182182457914031017">Die URL en volledige bladsyinhoud van die werf wat jy besoek, word met Google gedeel om voorstelle te maak en hierdie kenmerk beter te maak</translation>
 <translation id="4182339886482390129">Verbeterde Veiligblaai doen meer om jou teen gevaarlike webwerwe, aflaaie en uitbreidings te beskerm</translation>
 <translation id="4184803915913850597">HID-toestel (<ph name="VENDOR_ID" /><ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> sal uitvind wat die maak en model van jou sekuriteitsleutel is</translation>
@@ -5841,6 +5846,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Stoor net in 'n vouer op hierdie toestel?</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
+<translation id="4959581970694896608">Pasmaak hoe Gemini jou antwoord</translation>
 <translation id="4960020053211143927">Word nie deur sommige apps gesteun nie</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
@@ -8993,6 +8999,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7175037578838465313">Stel <ph name="NAME" /> op</translation>
 <translation id="7175353351958621980">Gelaai vanaf:</translation>
 <translation id="7177659256878428843">Skakel oortjiegroep om in boekmerkvouer</translation>
+<translation id="7180569503618416775">Wallet kan aanbied om inligting te stoor vanaf bladsye wat jy bekyk, soos kaartjies wat jy koop</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7180865173735832675">Pasmaak</translation>
 <translation id="7181117767881540376">&amp;Versteek boekmerkbalk</translation>
@@ -10352,6 +10359,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8084429490152575036">Sellulêre APN-instellings</translation>
 <translation id="8084510406207562688">Stel alle oortjies terug</translation>
 <translation id="8084628902026812045">Hierdie werf gebruik nie ’n veilige verbinding nie en daar is moontlik met die lêer gepeuter</translation>
+<translation id="808488435221187916">Jou inligting is in Google Wallet beskikbaar op enige aangemelde toestel</translation>
 <translation id="8086015605808120405">Stel <ph name="PRINTER_NAME" /> tans op …</translation>
 <translation id="8086121155774250556">Hierdie oortjie deel tans jou skerm</translation>
 <translation id="8086610718778464681">Kan nie Linux-programme en -lêers opdateer nie</translation>

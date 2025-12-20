@@ -1748,6 +1748,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2157457598652721267">Uporabite »/« in »-«, če želite izbrati levi ali desni gumb miške. Uporabite »*«, če želite izbrati oba.</translation>
 <translation id="2157474325782140681">Če želite dodatne funkcije, uporabite priklopno postajo Dell, zasnovano za uporabo s tem Chromebookom.</translation>
 <translation id="215753907730220065">Izhod iz celozaslonskega načina</translation>
+<translation id="2157632422749995237">Denarnica vam lahko pozneje pošilja obvestila o dogodkih</translation>
 <translation id="2157779167749714207">Z napravo <ph name="DEVICE_TYPE" /> dobite Gemini</translation>
 <translation id="2158103060812356265">Preprosta primerjava podobnih izdelkov</translation>
 <translation id="2158249272743343757">Izbriši podatke osebnega prilagajanja …</translation>
@@ -2446,6 +2447,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2633212996805280240">Želite odstraniti »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ni mogel končati namestitve, a se bo še vedno izvajal s posnetka diska.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Dostopajte do kartic, kot so vstopnice za dogodke in kartice zvestobe, v napravi</translation>
 <translation id="2634199532920451708">Zgodovina tiskanja</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Brez prikaza opozorila za zasebna spletna mesta, kot je intranet vašega podjetja</translation>
@@ -4406,6 +4408,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="394984172568887996">Uvoženo iz IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> za varnejši prenos datotek</translation>
 <translation id="3950479158728806902">Samodejno ustvarjanje ključa za dostop za hitrejšo prijavo</translation>
+<translation id="3950755269510650933">Upravljajte podatke, ki jih Gemini lahko uporablja za osebno prilagajanje izkušnje</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3950841222883198950">Glasovno tipkanje</translation>
 <translation id="3953834000574892725">Moji računi</translation>
@@ -4435,6 +4438,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
+<translation id="3971355433478412726">Navodila za Geminija</translation>
 <translation id="3971764089670057203">Prstni odtisi v tem varnostnem ključu</translation>
 <translation id="3973005893595042880">Uporabnik ni dovoljen.</translation>
 <translation id="3973660817924297510">Preverjanje gesel (<ph name="CHECKED_PASSWORDS" /> od <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -4723,6 +4727,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4178220097446335546">Če želite pozabiti to naročnino in povezana omrežja, naročnino odstranite na strani za naročnine s protokolom Passpoint.</translation>
 <translation id="4181602000363099176">20 x</translation>
 <translation id="4181841719683918333">Jeziki</translation>
+<translation id="4182182457914031017">Zaradi zagotavljanja predlogov in izboljšanja te funkcije se URL in celotna vsebina strani spletnega mesta, ki ga obiščete, delita z Googlom</translation>
 <translation id="4182339886482390129">Izboljšano varno brskanje vas še bolje varuje pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="4184803915913850597">Naprava HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">Spletno mesto <ph name="WEBSITE" /> bo izvedelo znamko in model varnostnega ključa</translation>
@@ -5844,6 +5849,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite shraniti v mapo samo v tej napravi?</translation>
 <translation id="4959262764292427323">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi</translation>
+<translation id="4959581970694896608">Prilagodite, kako vam Gemini odgovarja</translation>
 <translation id="4960020053211143927">Nekatere aplikacije ne podpirajo tega</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Predvajanje zaslona</translation>
@@ -9004,6 +9010,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7175037578838465313">Konfiguriranje omrežja <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Naloženo iz:</translation>
 <translation id="7177659256878428843">Pretvori skupino zavihkov v mapo z zaznamki</translation>
+<translation id="7180569503618416775">Denarnica lahko ponudi shranjevanje podatkov s strani, ki si jih ogledujete, kot so vstopnice, ki jih kupite</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7181117767881540376">&amp;Skrij vrstico z zaznamki</translation>
@@ -10364,6 +10371,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8084429490152575036">Nastavitve APN-ja pri mobilnem omrežju</translation>
 <translation id="8084510406207562688">O&amp;bnovi vse zavihke</translation>
 <translation id="8084628902026812045">To spletno mesto ne uporablja varne povezave in v datoteko so morda posegali</translation>
+<translation id="808488435221187916">Vaši podatki so na voljo v Google Denarnici v kateri koli napravi, v kateri ste prijavljeni</translation>
 <translation id="8086015605808120405">Konfiguriranje tiskalnika <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Ta zavihek souporablja vaš zaslon</translation>
 <translation id="8086610718778464681">Aplikacij in datotek za Linux ni mogoče varnostno kopirati</translation>

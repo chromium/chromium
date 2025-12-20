@@ -2455,6 +2455,7 @@
 <translation id="2646132387794831258">გსურთ თქვენი Google ანგარიშის საქაღალდეში შენახვა?</translation>
 <translation id="264897126871533291">პროტანომალია</translation>
 <translation id="2649045351178520408">Base64-დაშიფრული ASCII, სერტიფიკატების ჯაჭვი</translation>
+<translation id="2649331484502514724">დაცული DNS</translation>
 <translation id="2649508632465204949">დამეხმარე ახალი უნარის ათვისებაში</translation>
 <translation id="2651259505411913186">დიახ, შეინახე ჩემი მონაცემები სკოლის მონაცემებისგან დამოუკიდებლად</translation>
 <translation id="265156376773362237">სტანდარტული წინაწარი ჩატვირთვა</translation>
@@ -3385,6 +3386,7 @@
 <translation id="329838636886466101">აღდგენა</translation>
 <translation id="3298789223962368867">შეყვანილია არასწორი URL.</translation>
 <translation id="32991397311664836">მოწყობილობები:</translation>
+<translation id="330140779027048024">ყოველთვის გამოყენება არჩეულ DNS HTTPS პროვაიდერზე</translation>
 <translation id="3301554464236215299">ამ ფაილის ჩამოტვირთვა არ ხდება ხოლმე — შესაძლოა, ის სახიფათო იყოს</translation>
 <translation id="3301996560342889673">დასინქრონდეს ისტორია?</translation>
 <translation id="33022249435934718">GDI მარკერები</translation>
@@ -4392,6 +4394,7 @@
 <translation id="394984172568887996">IE-დან იმპორტირებული</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, ფაილების ჩამოტვირთვა უფრო უსაფრთხო რომ იყოს</translation>
 <translation id="3950479158728806902">წვდომის გასაღების ავტომატურად შექმნა სწრაფად შესასვლელად</translation>
+<translation id="3950755269510650933">მართეთ ინფორმაცია, რომლის გამოყენებაც Gemini-ს შეუძლია თქვენი გამოცდილების პერსონალიზებისთვის</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3950841222883198950">ხმოვანი აკრეფა</translation>
 <translation id="3953834000574892725">ჩემი ანგარიშები</translation>
@@ -4421,6 +4424,7 @@
 <translation id="3968739731834770921">კანა</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
+<translation id="3971355433478412726">ინსტრუქციები Gemini-სთვის</translation>
 <translation id="3971764089670057203">თითის ანაბეჭდები უსაფრთხოების ამ გასაღებზე</translation>
 <translation id="3973005893595042880">მომხმარებელი აკრძალულია</translation>
 <translation id="3973660817924297510">მიმდინარეობს პაროლების შემოწმება (<ph name="CHECKED_PASSWORDS" /> / <ph name="TOTAL_PASSWORDS" />-დან)…</translation>
@@ -4741,6 +4745,7 @@
 <translation id="4206144641569145248">უცხოპლანეტელი</translation>
 <translation id="4206323443866416204">გამოხმაურების ანგარიში</translation>
 <translation id="4206585797409671301">დაშვებულია მოთხოვნების ჩვენება</translation>
+<translation id="4207144975205749656">დაშიფრავს ნავიგაციის მოთხოვნებს, რათა იმავე ქსელში მყოფმა თავდამსხმელებმა ვერ დაინახონ თქვენი ტრაფიკი</translation>
 <translation id="4207932031282227921">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშს F6</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />-ში ძიება</translation>
 <translation id="4209092469652827314">დიდი</translation>
@@ -5831,6 +5836,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">გსურთ მხოლოდ ამ მოწყობილობის საქაღალდეში შენახვა?</translation>
 <translation id="4959262764292427323">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
+<translation id="4959581970694896608">მოირგეთ, თუ როგორ გიპასუხებთ Gemini</translation>
 <translation id="4960020053211143927">მხარდაუჭერელია ზოგიერთი აპის მიერ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
@@ -6146,6 +6152,7 @@
 <translation id="5186362203408605578">გამოიყენეთ სხვა მოწყობილობა QR კოდის სკანირების გზით</translation>
 <translation id="5186381005592669696">მოირგეთ, რომელ ენაზე გამოჩნდეს მხარდაჭერილი აპები</translation>
 <translation id="5186788525428341874">შეგიძლიათ, გამოიყენოთ ეს წვდომის გასაღები თქვენს მოწყობილობებში უფრო სწრაფად შესასვლელად. ის შეინახება Google პაროლების მმართველში <ph name="ACCOUNT_NAME" />-ისთვის.</translation>
+<translation id="5186792064936776005">ნაგულისხმევის გამოყენება (თუ ხელმისაწვდომია)</translation>
 <translation id="5187641678926990264">გვერდის &amp;ინსტალაცია აპის სახით...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">გამზიარებელი: <ph name="USER_NAME" /></translation>
@@ -7120,6 +7127,7 @@
 <translation id="5863445608433396414">გამართვის ფუნქციების ჩართვა</translation>
 <translation id="5863515189965725638">IBAN-ის რედაქტირება</translation>
 <translation id="5864195618110239517">ლიმიტირებული კავშირის გამოყენება</translation>
+<translation id="5864624288360677142">ნაგულისხმევის (თუ ხელმისაწვდომია) და Google DNS-ის გამოყენება სათადარიგო ვარიანტად</translation>
 <translation id="5864754048328252126">დატენისას უმოქმედობის შემთხვევაში შესასრულებელი მოქმედება</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> მალე დაპაუზდება</translation>
 <translation id="586567932979200359">თქვენ გაშვებული გაქვთ <ph name="PRODUCT_NAME" /> დისკის გამოსახულებიდან. თუ დააინსტალირებთ მას კომპიუტერში, შეძლებთ მის გაშვებას დისკის გამოსახულების გარეშე და პროგრამა ყოველთვის განახლებული გექნებათ.</translation>
@@ -7570,6 +7578,7 @@
 <translation id="6180550893222597997">წვდომის რომელი გასაღების გამოყენება გსურთ <ph name="APP_NAME" />-ისთვის?</translation>
 <translation id="6181218116951226898">აპები ზოგჯერ აახლებენ თავიანთ ბრენდინგს. განახლებამდე გადახედეთ ყველა ცვლილებას იმაში დასარწმუნებლად, რომ ცვლილებები გაკმაყოფილებთ.</translation>
 <translation id="6181431612547969857">ჩამოტვირთვა დაბლოკილია</translation>
+<translation id="6182100780603067202">ასევე, გააზიარეთ აპლიკაციის აუდიო (მისი ყველა ფანჯრიდან)</translation>
 <translation id="6183369864942961155">ავტომატური ღია/მუქი თემა</translation>
 <translation id="6184099524311454384">მოიძიეთ ჩანართებში</translation>
 <translation id="6185132558746749656">მოწყობილობის მდებარეობა</translation>

@@ -1736,6 +1736,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2157457598652721267">Aby wybrać lewy lub prawy przycisk myszy, użyj klawiszy „/” i „-”. Aby wybrać oba przyciski, naciśnij „*”.</translation>
 <translation id="2157474325782140681">Aby korzystać z większej liczby funkcji, używaj stacji dokującej Dell przeznaczonej do tego Chromebooka.</translation>
 <translation id="215753907730220065">Zamknij pełny ekran</translation>
+<translation id="2157632422749995237">Później Portfel może wysyłać Ci powiadomienia dotyczące tych wydarzeń</translation>
 <translation id="2157779167749714207">Urządzenie <ph name="DEVICE_TYPE" /> jest wyposażone w Gemini</translation>
 <translation id="2158103060812356265">Łatwo porównuj podobne produkty</translation>
 <translation id="2158249272743343757">Usuń dane personalizacji…</translation>
@@ -2416,6 +2417,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2633212996805280240">Usunąć „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="263325223718984101">Nie można ukończyć instalacji produktu <ph name="PRODUCT_NAME" />. Będzie on nadal uruchamiany z obrazu dysku.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Korzystaj z dokumentów, takich jak bilety na wydarzenia i karty lojalnościowe, na urządzeniu</translation>
 <translation id="2634199532920451708">Historia drukowania</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Ostrzeżenia nie będą się wyświetlać w przypadku witryn prywatnych, takich jak intranet Twojej firmy</translation>
@@ -4370,6 +4372,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="394984172568887996">Zaimportowane z IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby zwiększyć bezpieczeństwo pobierania plików</translation>
 <translation id="3950479158728806902">Automatycznie utwórz klucz dostępu, aby szybciej się logować</translation>
+<translation id="3950755269510650933">Zarządzaj informacjami, które Gemini może wykorzystywać, by dostosować działanie do Twoich potrzeb</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3950841222883198950">Pisanie głosowe</translation>
 <translation id="3953834000574892725">Moje konta</translation>
@@ -4399,6 +4402,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3968739731834770921">Tryb znaków kana</translation>
 <translation id="3970114302595058915">Identyfikator</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="3971355433478412726">Instrukcje dla Gemini</translation>
 <translation id="3971764089670057203">Odciski cyfrowe na tym kluczu bezpieczeństwa</translation>
 <translation id="3973005893595042880">Użytkownik nie został dopuszczony</translation>
 <translation id="3973660817924297510">Sprawdzam hasła (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4687,6 +4691,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4178220097446335546">Aby wykasować tę subskrypcję i powiązane z nią sieci, otwórz stronę subskrypcji Passpoint i usuń subskrypcję.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Języki</translation>
+<translation id="4182182457914031017">Firmie Google udostępniany jest adres URL i pełna zawartość odwiedzanej strony – pozwala to na wyświetlanie sugestii i ulepszanie tej funkcji</translation>
 <translation id="4182339886482390129">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
 <translation id="4184803915913850597">Urządzenie HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> odczyta markę i model Twojego klucza bezpieczeństwa</translation>
@@ -5807,6 +5812,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Zapisać w folderze tylko na tym urządzeniu?</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
+<translation id="4959581970694896608">Dostosuj, jak Gemini ma odpowiadać</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
@@ -8959,6 +8965,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7175037578838465313">Skonfiguruj: <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Załadowane z:</translation>
 <translation id="7177659256878428843">Przekształć grupę kart w folder zakładek</translation>
+<translation id="7180569503618416775">Portfel może umożliwiać zapisywanie informacji ze stron, które przeglądasz, np. zakupionych biletów.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7181117767881540376">&amp;Ukryj pasek zakładek</translation>
@@ -10318,6 +10325,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8084429490152575036">Ustawienia APN sieci komórkowej</translation>
 <translation id="8084510406207562688">&amp;Przywróć wszystkie karty</translation>
 <translation id="8084628902026812045">Ta witryna nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
+<translation id="808488435221187916">Twoje informacje są dostępne w Portfelu Google na każdym urządzeniu, na którym się zalogujesz</translation>
 <translation id="8086015605808120405">Konfiguruję: <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Ta karta udostępnia Twój ekran</translation>
 <translation id="8086610718778464681">Nie można utworzyć kopii zapasowej aplikacji i plików Linuksa</translation>

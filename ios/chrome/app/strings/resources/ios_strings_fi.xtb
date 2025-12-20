@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 valittu}other{# valittu}}</translation>
 <translation id="3668816008081204991">Lukulista on piilotettu</translation>
 <translation id="3670030362669914947">Numero</translation>
+<translation id="3672283986707092811">Valitse kaikki</translation>
 <translation id="3679163990085797665">Poista luetut</translation>
 <translation id="368329460027487650">Kirjautunut ulos. Avaa kirjautumisvaihtoehdot.</translation>
 <translation id="3695446226812920698">Lisätietoja</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Julkisesti näkyvä nimi</translation>
 <translation id="4375772272517383391">Sulje kaikki välilehdet</translation>
 <translation id="4378154925671717803">Puhelin</translation>
+<translation id="4380677808580146413">Valitse</translation>
 <translation id="4389019817280890563">Vaihda kieltä napauttamalla.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 päivän päästä}other{{COUNT} päivän päästä}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 välilehti}other{# välilehteä}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Tallenna tiedosto</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
 <translation id="536067926684072644">Näytä kirjanmerkit</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} avainkoodin tuonti epäonnistui}other{{count} avainkoodin tuonti epäonnistui}}</translation>
 <translation id="5371112366564891538">Suurenna tekstin kokoa</translation>
+<translation id="5376135254804080693">Poista kaikki valinnat</translation>
 <translation id="537853552771686272">Valitse sinua kiinnostavia aiheita ja sivustoja</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} suljettu}other{{count} suljettu}}</translation>
 <translation id="5394975111793637642">Piilota tuotearvostelut ‑kortti</translation>

@@ -1555,6 +1555,7 @@
 <translation id="3525130752944427905">‏‎10 x 14 انچ</translation>
 <translation id="3525435918300186947">‏MIDI آلات کو کنٹرول اور دوبارہ پروگرام کریں؟</translation>
 <translation id="3527181387426738155">موسیقی اور آڈیو</translation>
+<translation id="3527624163937328588">منسلکہ ہٹائیں</translation>
 <translation id="3528171143076753409">سرور کا سرٹیفکیٹ بھروسہ مند نہیں ہے۔</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{مطابقت پذیر آلات پر کم از کم 1 آئٹم}=1{1 آئٹم (اور مطابقت پذیر آلات پر مزید)}other{# آئٹمز (اور مطابقت پذیر آلات پر مزید)}}</translation>
 <translation id="3531366304259615706">اسکرین لاک استعمال کریں</translation>
@@ -1611,6 +1612,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏Google کی رازداری کی ترتیبات کا نظم کریں بٹن، اپنی Google اکاؤنٹ کی رازداری کی ترتیبات ملاحظہ کرنے کیلئے فعال کریں</translation>
 <translation id="3603507503523709">ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کیا گیا</translation>
+<translation id="3605082766859363473">‏‫AI وضع منتخب کی گئی</translation>
 <translation id="3605899229568538311">‏‎5 x 5 انچ</translation>
 <translation id="3606917451836803637">‏TV شوز اور پروگرامز</translation>
 <translation id="3608932978122581043">سمت بندی فیڈ کریں</translation>
@@ -1946,6 +1948,7 @@
 <translation id="411918202192379658">آٹو فل اب بہتر ہو گئی ہے</translation>
 <translation id="4121428309786185360">میعاد کا اختتام</translation>
 <translation id="4123572138124678573">نیچے تین سوراخ</translation>
+<translation id="4125597496726375563">منتخب کردہ تصویر تخلیق کریں</translation>
 <translation id="412601465078863288">اپ لوڈ کرنے کا وقت ختم ہو گیا</translation>
 <translation id="4127317221386336246">ملبوسات کے لوازمات</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
@@ -2982,6 +2985,7 @@
 <translation id="5826507051599432481">‏عام نام (CN)</translation>
 <translation id="5830698870816298009">کیمرے کا استعمال اور نقل و حرکت</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">اس خریداری کو مکمل کرنے کے لیے ادائیگی کا دوسرا طریقہ منتخب کریں۔</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5832976493438355584">مقفل</translation>
 <translation id="5837220895135257862">دوبارہ کوشش کرنے سے پہلے <ph name="CLOUD_PROVIDER" /> میں جگہ خالی کریں</translation>
@@ -3664,6 +3668,7 @@
 <translation id="6917795328362592458">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="6917873303492266709">‏ٹیب گروپس کا اشتراک کرنے، اس میں شامل ہونے اور تعاون کرنے کے لیے، ترتیبات کھولیں اور Chrome کو سائن ان کرنے کی اجازت دیں کو آن کریں</translation>
 <translation id="6921197121276419421">ویب ایپس کو انسٹال کرنے کی اجازت ہے</translation>
+<translation id="6922905531092220751">تصویری منسلکہ ہٹائیں</translation>
 <translation id="69238565902785824">اپنا اکاؤنٹ لنک کردہ رکھنا آپ کو فوری ادائیگی کرنے میں مدد دیتا ہے <ph name="BNPL_ISSUER_NAME" />،لیکن آپ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> پر جا کر لنک ختم کر سکتے ہیں</translation>
 <translation id="6924013822850225188">اس بات کا انتخاب کریں کہ آپ کو چیک آؤٹ کے وقت آپ کے کارڈ کے فوائد دکھائی دیں یا نہیں (بینک کی شرائط لاگو ہوتی ہیں)</translation>
 <translation id="6924933062125062950">شناختی کارڈ حذف کریں</translation>
@@ -4264,6 +4269,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{کوئی نہیں}=1{1 ایپ (<ph name="EXAMPLE_APP_1" />)}=2{2 ایپس (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ایپس (<ph name="EXAMPLE_APP_1" />، <ph name="EXAMPLE_APP_2" />، <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="784623644169604270">کوئی حالیہ سرگرمی نہیں ہے</translation>
+<translation id="7853222852810008596">اس کرنسی میں بعد میں ادائیگی کریں دستیاب نہیں ہے</translation>
 <translation id="785476343534277563">کالج کے کھیل</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">‏اپنی نئی تاریخ اختتام اور CVC <ph name="SIDE_OF_CARD" /> پر درج کریں</translation>

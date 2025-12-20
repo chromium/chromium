@@ -4407,6 +4407,7 @@
 <translation id="394984172568887996">IE இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
 <translation id="3949999964543783947">ஃபைல்களைப் பாதுகாப்பாகப் பதிவிறக்க, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">விரைவாக உள்நுழைய கடவுச்சாவியைத் தானாக உருவாக்கு</translation>
+<translation id="3950755269510650933">உங்கள் அனுபவத்தைப் பிரத்தியேகமாக்க Gemini பயன்படுத்தக்கூடிய தகவல்களை நிர்வகிக்கலாம்</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
 <translation id="3950841222883198950">வாய்ஸ் டைப்பிங்</translation>
 <translation id="3953834000574892725">என் கணக்குகள்</translation>
@@ -4436,6 +4437,7 @@
 <translation id="3968739731834770921">கனா</translation>
 <translation id="3970114302595058915">ஐடி</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
+<translation id="3971355433478412726">Geminiக்கான வழிமுறைகள்</translation>
 <translation id="3971764089670057203">இந்தப் பாதுகாப்பு விசையில் உள்ள கைரேகைகள்</translation>
 <translation id="3973005893595042880">பயனர் அனுமதிக்கப்படவில்லை</translation>
 <translation id="3973660817924297510">(<ph name="CHECKED_PASSWORDS" /> / <ph name="TOTAL_PASSWORDS" />) கடவுச்சொற்களைச் சரிபார்க்கிறது…</translation>
@@ -5847,6 +5849,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">இந்தச் சாதனத்தில் மட்டுமே உள்ள ஃபோல்டரில் சேமிக்கவா?</translation>
 <translation id="4959262764292427323">கடவுச்சொற்களை வேறு சாதனங்களிலும் பயன்படுத்துவதற்காக, அவை உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன</translation>
+<translation id="4959581970694896608">உங்களுக்கு Gemini பதிலளிக்கும் விதத்தைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="4960020053211143927">சில ஆப்ஸில் ஆதரிக்கப்படாது</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">திரையை அலைபரப்பு</translation>

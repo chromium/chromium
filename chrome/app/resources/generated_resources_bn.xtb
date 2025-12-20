@@ -1746,6 +1746,7 @@
 <translation id="2157457598652721267">মাউসের বাঁদিকের অথবা ডানদিকের বোতাম বেছে নিতে “/” এবং “-” ব্যবহার করুন। দুটি বোতাম বেছে নিতে “*” ব্যবহার করুন।</translation>
 <translation id="2157474325782140681">অতিরিক্ত ফিচার পেতে, এই Chromebook-এর সাথে মানানসই একটি Dell-এর ডকিং স্টেশন ব্যবহার করুন।</translation>
 <translation id="215753907730220065">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
+<translation id="2157632422749995237">পরে, Wallet আপনার ইভেন্ট সম্পর্কে বিজ্ঞপ্তি পাঠাতে পারে</translation>
 <translation id="2157779167749714207">আপনার <ph name="DEVICE_TYPE" />-এ Gemini ব্যবহার করার সুবিধা আছে</translation>
 <translation id="2158103060812356265">সহজে অনুরূপ প্রোডাক্টের মধ্যে তুলনা করুন</translation>
 <translation id="2158249272743343757">পছন্দমতো সাজিয়ে নেওয়া সংক্রান্ত ডেটা মুছুন...</translation>
@@ -2444,6 +2445,7 @@
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" সরাবেন?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ইনস্টলেশন সম্পূর্ণ করতে পারেনি, তবে এটির ডিস্ক ছবি থেকে চালনা চলতে থাকবে৷</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">আপনার ডিভাইস থেকে ইভেন্টের টিকিট ও লয়ালটি কার্ডের মতো পাস অ্যাক্সেস করুন</translation>
 <translation id="2634199532920451708">প্রিন্ট করার কাজ সম্পর্কিত ইতিহাস</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">ব্যক্তিগত সাইটের জন্য আপনাকে বিজ্ঞপ্তি দেওয়া হয় না, যেমন আপনার কোম্পানির ইন্ট্রানেট</translation>
@@ -4721,6 +4723,7 @@
 <translation id="4178220097446335546">এই সাবস্ক্রিপশন ও তার সাথে সম্পর্কিত নেটওয়ার্ক ভুলে যেতে, সাবস্ক্রিপশন সরানোর জন্য পাসপয়েন্ট সাবস্ক্রিপশন পৃষ্ঠায় যান।</translation>
 <translation id="4181602000363099176">২০x</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
+<translation id="4182182457914031017">সাজেশন দিতে ও এই ফিচার উন্নত করতে, আপনার দেখা সাইটের URL ও সম্পূর্ণ পৃষ্ঠার কন্টেন্ট Google-এর সাথে শেয়ার করা হয়</translation>
 <translation id="4182339886482390129">ক্ষতিকর ওয়েবসাইট, ডাউনলোড ও এক্সটেনশন থেকে আপনাকে সুরক্ষিত রাখতে, 'উন্নত Safe Browsing' ফিচার আরও অনেক কিছু করে</translation>
 <translation id="4184803915913850597">HID ডিভাইস (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> আপনার নিরাপত্তা কীর মডেল ও প্রস্তুতকারক সম্পর্কে জানতে পারবে</translation>
@@ -8997,6 +9000,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগার করুন</translation>
 <translation id="7175353351958621980">এখান থেকে লোড হয়েছে:</translation>
 <translation id="7177659256878428843">ট্যাব গ্রুপকে বুকমার্ক ফোল্ডারে কনভার্ট করুন</translation>
+<translation id="7180569503618416775">Wallet আপনার দেখা পৃষ্ঠা থেকে তথ্য সেভ করার অফার দিতে পারে, যেমন আপনার কেনা টিকিট</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7181117767881540376">বুকমার্ক বার &amp;লুকান</translation>
@@ -10357,6 +10361,7 @@
 <translation id="8084429490152575036">সেলুলার APN সেটিংস</translation>
 <translation id="8084510406207562688">'সব ট্যাব' রিস্টোর করুন</translation>
 <translation id="8084628902026812045">এই সাইট কোনও নিরাপদ কানেকশন ব্যবহার করছে না এবং ফাইলটি হয়ত বিকৃত করা হয়েছে</translation>
+<translation id="808488435221187916">আপনার তথ্য যেকোনও সাইন-ইন করা ডিভাইসে Google Wallet-এ উপলভ্য</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> কনফিগার করা হচ্ছে...</translation>
 <translation id="8086121155774250556">এই ট্যাবটি আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="8086610718778464681">Linux-এর অ্যাপ ও ফাইল ব্যাক-আপ নেওয়া যায়নি</translation>

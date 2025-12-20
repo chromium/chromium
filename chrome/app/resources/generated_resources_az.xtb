@@ -1735,6 +1735,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2157457598652721267">Sol və ya sağ maus düymələrini seçmək üçün "/" və "-" düymələrindən istifadə edin. Hər ikisini seçmək üçün "*" düyməsindən istifadə edin.</translation>
 <translation id="2157474325782140681">Əlavə funksiyalar əldə etmək məqsədilə bu Chromebook üçün hazırlanmış Dell dok stansiyasını işlədin.</translation>
 <translation id="215753907730220065">Tam Ekrandan Çıxın</translation>
+<translation id="2157632422749995237">Daha sonra Pulqabı sizə tədbirləriniz haqqında bildirişlər göndərə bilər</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> Gemini ilə təqdim edilir</translation>
 <translation id="2158103060812356265">Bənzər məhsulları asanlıqla müqayisə edin</translation>
 <translation id="2158249272743343757">Fərdiləşdirmə datasını silin...</translation>
@@ -2433,6 +2434,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" silinsin?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> quraşdırmanı tamamlaya bilmədi, lakin disk obrazından işləməyə davam edəcək.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Cihazdan tədbir bileti və loyallıq kartları kimi giriş talonlarına daxil olun</translation>
 <translation id="2634199532920451708">Çap tarixçəsi</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Şirkətin intraneti kimi özəl saytlar barədə xəbərdarlıq etmir</translation>
@@ -4393,6 +4395,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="394984172568887996">İnternet Explorer'dən import edildi</translation>
 <translation id="3949999964543783947">Faylları sürətli endirmək üçün <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Daha sürətlə daxil olmaq üçün avtomatik olaraq giriş açarı yaradın</translation>
+<translation id="3950755269510650933">Gemini-ın təcrübənizi fərdiləşdirmək üçün istifadə edə biləcəyi məlumatları idarə edin</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3950841222883198950">Səslə yazma</translation>
 <translation id="3953834000574892725">Hesablarım</translation>
@@ -4422,6 +4425,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
+<translation id="3971355433478412726">Gemini üçün təlimatlar</translation>
 <translation id="3971764089670057203">Bu təhlükəsizlik açarında barmaq izləri</translation>
 <translation id="3973005893595042880">İstifadəçiyə icazə verilmir</translation>
 <translation id="3973660817924297510">Parollar yoxlanır (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4708,6 +4712,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4178220097446335546">Bu abunə və əlaqədar şəbəkələri unutmaq üçün Keçid nöqtəsi abunə səhifəsində abunəni silin.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Dillər</translation>
+<translation id="4182182457914031017">Təkliflər vermək və bu funksiyanı təkmilləşdirmək üçün daxil olduğunuz saytın URL-i və səhifənin bütün kontenti Google ilə paylaşılır</translation>
 <translation id="4182339886482390129">Qabaqcıl Güvənli Baxış təhlükəli veb-sayt, endirmə və artırmalardan qoruyur</translation>
 <translation id="4184803915913850597">HID cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> güvənlik açarınızın marka və modelini öyrənəcək</translation>
@@ -5829,6 +5834,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Yalnız bu cihazdakı qovluqda yadda saxlanılsın?</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
+<translation id="4959581970694896608">Gemini-ın sizə necə cavab verəcəyini fərdiləşdirin</translation>
 <translation id="4960020053211143927">Bəzi tətbiqlər dəstəkləmir</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast ekran</translation>
@@ -8978,6 +8984,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7175037578838465313"><ph name="NAME" /> ünvanını konfiqurasiya edin</translation>
 <translation id="7175353351958621980">Buradan yüklənib:</translation>
 <translation id="7177659256878428843">Tab qrupunu əlfəcin qovluğuna çevirin</translation>
+<translation id="7180569503618416775">Pulqabı baxdığınız səhifələrdəki məlumatları, məsələn, aldığınız biletləri yadda saxlamağı təklif edə bilər</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7181117767881540376">&amp;Əlfəcin panelini gizlədin</translation>
@@ -10337,6 +10344,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8084429490152575036">Mobil APN ayarları</translation>
 <translation id="8084510406207562688">B&amp;ütün tabları bərpa edin</translation>
 <translation id="8084628902026812045">Bu sayt güvənli bağlantı istifadə etmir və fayla müdaxilə edilmiş ola bilər</translation>
+<translation id="808488435221187916">Məlumatlarınız daxil olduğunuz istənilən cihazda Google Pulqabıda əlçatandır</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiqurasiya edilir...</translation>
 <translation id="8086121155774250556">Bu tab ekranı paylaşır</translation>
 <translation id="8086610718778464681">Linux tətbiqləri və fayllarını yedəkləmək mümkün deyil</translation>

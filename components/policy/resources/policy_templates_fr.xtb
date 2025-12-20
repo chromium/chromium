@@ -9178,6 +9178,23 @@ Cette règle ne concerne pas les gestionnaires de mots de passe tiers qui utilis
 
       Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut via un flag de fonctionnalité. Si l'utilisateur active la fonctionnalité avec ce flag, il reste possible de la désactiver à l'aide de cette règle.</translation>
 <translation id="7115684775550072082">Ne conserver les espaces blancs que pour les types MIME texte et XML</translation>
+<translation id="7116098886490965998">Désactivez l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> pour les fournisseurs d'identité listés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_ALL" />, tous les fournisseurs d'identité pris en charge pour l'authentification unique sont désactivés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_MICROSOFT" />, la prise en charge de l'authentification unique pour le fournisseur d'identité cloud Microsoft® dans Chrome sera désactivée.
+
+Si vous ne configurez pas cette règle, tous les fournisseurs d'identité pris en charge par <ph name="PRODUCT_NAME" /> seront activés.
+
+Pour les fournisseurs d'identité activés dans <ph name="PRODUCT_NAME" /> et configurés sur l'appareil par l'administrateur, les utilisateurs qui se connectent une fois via ce fournisseur d'identité, sur n'importe quelle appli compatible avec <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, peuvent être connectés automatiquement aux propriétés Web utilisant ce fournisseur d'identité. Les informations concernant l'authentification de l'utilisateur sont transmises au fournisseur d'identité cloud de l'utilisateur pour chaque événement d'authentification.
+
+Remarques :
+
+<ph name="PRODUCT_NAME" /> ne prend pas en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en mode navigation privée ou Invité.
+
+<ph name="PRODUCT_NAME" /> ne prend en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> que pour les fournisseurs d'identité suivants : Microsoft, Okta.
+
+Cette fonctionnalité est disponible à partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Stockage des données utilisateur locales</translation>
 <translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
 
@@ -12180,6 +12197,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="9206472508136116830">Ne pas autoriser la découverte des partages NetBIOS</translation>
 <translation id="9207596996305971030">Ne pas signaler les événements de connexion/déconnexion</translation>
 <translation id="9210647066889383361">Autoriser les utilisateurs à se connecter à leur appareil avec Smart Lock</translation>
+<translation id="9212598607138782107">Fournisseur d'identité cloud Okta®</translation>
 <translation id="9213751049772256263">Désactiver toutes les variantes</translation>
 <translation id="9217154963008402249">Fréquence des paquets réseau de contrôle</translation>
 <translation id="9220314833408124365">Utiliser une règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>

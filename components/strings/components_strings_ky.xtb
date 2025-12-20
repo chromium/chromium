@@ -2980,6 +2980,7 @@
 <translation id="5826507051599432481">Жалпы ат (ЖА)</translation>
 <translation id="5830698870816298009">камераны колдонуу жана жылдыруу</translation>
 <translation id="5831217499016131155">Google Капчык</translation>
+<translation id="5831259154333754661">Бул сатып алууну аягына чыгаруу үчүн башка төлөм ыкмасын тандаңыз.</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5832976493438355584">Кулпуланган</translation>
 <translation id="5837220895135257862"><ph name="CLOUD_PROVIDER" /> кызматында орун бошотуп, кайталап көрүңүз</translation>
@@ -4261,6 +4262,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Эч бири}=1{1 колдонмо (<ph name="EXAMPLE_APP_1" />)}=2{2 колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ката кетти. Кайра аракет кылыңыз.</translation>
 <translation id="784623644169604270">Жакында эч кандай аракет болгон жок</translation>
+<translation id="7853222852810008596">Бул валютада кийинчерээк төлөөгө болбойт</translation>
 <translation id="785476343534277563">Академиялык спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Жаңы мөөнөтү аяктай турган күндү жана <ph name="SIDE_OF_CARD" /> CVC кодун киргизиңиз</translation>

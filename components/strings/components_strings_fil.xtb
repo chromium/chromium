@@ -2981,6 +2981,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">paggamit at paggalaw ng camera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Pumili ng ibang paraan ng pagbabayad para makumpleto ang pagbiling ito.</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5832976493438355584">Naka-lock</translation>
 <translation id="5837220895135257862">Magbakante ng space sa <ph name="CLOUD_PROVIDER" /> bago subukan ulit</translation>
@@ -4263,6 +4264,7 @@ Mga karagdagang detalye:
 <translation id="7844689747373518809">{COUNT,plural, =0{Wala}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
 <translation id="784623644169604270">Walang kamakailang aktibidad</translation>
+<translation id="7853222852810008596">Hindi available ang pay later sa currency na ito</translation>
 <translation id="785476343534277563">Mga College Sport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Ilagay ang iyong bagong petsa ng pag-expire at CVC sa <ph name="SIDE_OF_CARD" /></translation>

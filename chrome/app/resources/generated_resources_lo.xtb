@@ -1743,6 +1743,7 @@
 <translation id="2157457598652721267">ໃຊ້ປຸ່ມ “/” ແລະ “-” ເພື່ອເລືອກປຸ່ມເມົ້າຊ້າຍ ຫຼື ຂວາ. ໃຊ້ປຸ່ມ “*” ເພື່ອເລືອກທັງສອງປຸ່ມ.</translation>
 <translation id="2157474325782140681">ເພື່ອຮັບຄຸນສົມບັດເພີ່ມເຕີມ, ກະລຸນາໃຊ້ສະຖານີແທ່ນສາກ Dell ທີ່ຖືກອອກແບບມາໃຫ້ໃຊ້ໄດ້ກັບ Chromebook ນີ້.</translation>
 <translation id="215753907730220065">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="2157632422749995237">Wallet ສາມາດສົ່ງການແຈ້ງເຕືອນກ່ຽວກັບກິດຈະກຳຂອງທ່ານໃຫ້ທ່ານໃນພາຍຫຼັງໄດ້</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> ຂອງທ່ານມາພ້ອມກັບ Gemini</translation>
 <translation id="2158103060812356265">ປຽບທຽບຜະລິດຕະພັນທີ່ຄ້າຍຄືກັນໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2158249272743343757">ກຳລັງລຶບຂໍ້ມູນການປັບແຕ່ງເປັນແບບສ່ວນຕົວ...</translation>
@@ -2442,6 +2443,7 @@
 <translation id="2633212996805280240">ເອົາ " <ph name="EXTENSION_NAME" /> " ອອກໄປບໍ?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ບໍ່​ສາ​ມາດຕິດຕັ້ງໄດ້​ສໍາ​ເລັດ​, ແຕ່​ຈະ​ສືບ​ຕໍ່ແລ່ນຈາກຮູບດິສກ໌ຂອງມັນ.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">ເຂົ້າເຖິງບັດຮວມຂອງທ່ານ ເຊັ່ນ: ປີ້ເຂົ້າງານ ແລະ ບັດສະມາຊິກຈາກອຸປະກອນຂອງທ່ານ</translation>
 <translation id="2634199532920451708">ປະຫວັດການພິມ</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">ບໍ່ເຕືອນທ່ານຫາກພົບເວັບໄຊສ່ວນຕົວ ເຊັ່ນ: ອິນທຣາເນັດຂອງບໍລິສັດຂອງທ່ານ</translation>
@@ -4404,6 +4406,7 @@
 <translation id="394984172568887996">ນໍາ​ເຂົ້າ​ຈາກ IE ແລ້ວ</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ເພື່ອດາວໂຫຼດໄຟລ໌ໃຫ້ປອດໄພຫຼາຍຂຶ້ນ</translation>
 <translation id="3950479158728806902">ສ້າງກະແຈຜ່ານໂດຍອັດຕະໂນມັດເພື່ອເຂົ້າສູ່ລະບົບໄດ້ໄວຍິ່ງຂຶ້ນ</translation>
+<translation id="3950755269510650933">ຈັດການຂໍ້ມູນທີ່ Gemini ສາມາດໃຊ້ເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3950841222883198950">ການພິມດ້ວຍສຽງ</translation>
 <translation id="3953834000574892725">ບັນຊີຂອງຂ້ອຍ</translation>
@@ -4433,6 +4436,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
+<translation id="3971355433478412726">ຄຳແນະນຳສຳລັບ Gemini</translation>
 <translation id="3971764089670057203">ລາຍນິ້ວມືໃນກະແຈຄວາມປອດໄພນີ້</translation>
 <translation id="3973005893595042880">ບໍ່ອະນຸຍາດຜູ້ໃຊ້</translation>
 <translation id="3973660817924297510">ກຳລັງກວດລະຫັດຜ່ານ (<ph name="CHECKED_PASSWORDS" /> ລາຍການຈາກທັງໝົດ <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4721,6 +4725,7 @@
 <translation id="4178220097446335546">ເພື່ອລືມການສະໝັກສະມາຊິກນີ້ ແລະ ເຄືອຂ່າຍທີ່ກ່ຽວຂ້ອງຂອງມັນ, ໃຫ້ໄປທີ່ໜ້າການສະໝັກສະມາຊິກ Passpoint ເພື່ອລຶບການສະໝັກສະມາຊິກອອກ.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
+<translation id="4182182457914031017">ເພື່ອສະແດງຄຳແນະນຳ ແລະ ປັບປຸງຄຸນສົມບັດນີ້, ລະບົບຈະແບ່ງປັນ URL ແລະ ເນື້ອຫາໝົດທັງໜ້າຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງກັບ Google</translation>
 <translation id="4182339886482390129">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນເຮັດວຽກຫຼາຍຂຶ້ນເພື່ອປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ອັນຕະລາຍ</translation>
 <translation id="4184803915913850597">ອຸປະກອນ HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> ຈະສຶກສາຍີ່ຫໍ້ ແລະ ຮຸ່ນຂອງກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
@@ -5843,6 +5848,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">ບັນທຶກໃສ່ໂຟນເດີຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນບໍ?</translation>
 <translation id="4959262764292427323">ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ໃນອຸປະກອນຕ່າງໆ</translation>
+<translation id="4959581970694896608">ປັບແຕ່ງວິທີທີ່ Gemini ຕອບກັບທ່ານ</translation>
 <translation id="4960020053211143927">ບາງແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ຄາສທ໌ໜ້າຈໍ</translation>
@@ -8996,6 +9002,7 @@
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7175353351958621980">ໂຫຼດ​ຈາກ​:</translation>
 <translation id="7177659256878428843">ປ່ຽນແປງກຸ່ມແຖບເປັນໂຟນເດີບຸກມາກ</translation>
+<translation id="7180569503618416775">Wallet ສາມາດສະເໜີໃຫ້ບັນທຶກຂໍ້ມູນຈາກໜ້າເວັບທີ່ທ່ານກຳລັງເບິ່ງຢູ່ໄດ້ ເຊັ່ນ: ປີ້ທີ່ທ່ານຊື້</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7181117767881540376">&amp;ເຊື່ອງແຖບບຸກມາກ</translation>
@@ -10354,6 +10361,7 @@
 <translation id="8084429490152575036">ການຕັ້ງຄ່າ APN ເຄືອຂ່າຍມືຖື</translation>
 <translation id="8084510406207562688">ກູ້&amp;ທຸກແຖບຄືນມາ</translation>
 <translation id="8084628902026812045">ເວັບໄຊນີ້ບໍ່ໄດ້ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພ ແລະ ໄຟລ໌ອາດຖືກແກ້ໄຂໄດ້</translation>
+<translation id="808488435221187916">ຂໍ້ມູນຂອງທ່ານຈະພ້ອມນຳໃຊ້ໃນ Google Wallet ຢູ່ອຸປະກອນໃດກໍຕາມທີ່ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8086015605808120405">ກຳລັງກຳນົດຄ່າ <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">ແຖບນີ້ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="8086610718778464681">ບໍ່ສາມາດສຳຮອງຂໍ້ມູນແອັບ ແລະ ໄຟລ໌ Linux ໄດ້</translation>

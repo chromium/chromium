@@ -1732,6 +1732,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2157457598652721267">Usa “/” y “-” para seleccionar los botones izquierdo o derecho del mouse. Usa “*” para seleccionar ambos.</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
+<translation id="2157632422749995237">Luego, la Billetera puede enviarte notificaciones sobre tus eventos</translation>
 <translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158103060812356265">Compara fácilmente productos similares</translation>
 <translation id="2158249272743343757">Borrar datos de personalización…</translation>
@@ -2427,6 +2428,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2633212996805280240">¿Quieres quitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no pudo completar la instalación, pero se continuará ejecutando desde la imagen de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accede a tus pases, como entradas para eventos y tarjetas de lealtad, desde tu dispositivo</translation>
 <translation id="2634199532920451708">Historial de impresiones</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">No te advierte sobre sitios privados, como la intranet de tu empresa</translation>
@@ -2450,6 +2452,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2646132387794831258">¿Quieres guardarlo en una carpeta de tu Cuenta de Google?</translation>
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">Cadena de certificados ASCII con codificación Base64</translation>
+<translation id="2649331484502514724">DNS seguro</translation>
 <translation id="2649508632465204949">Enséñame una nueva habilidad</translation>
 <translation id="2651259505411913186">Sí, mantener mis datos separados de los de la institución educativa</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
@@ -3380,6 +3383,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="329838636886466101">Reparar</translation>
 <translation id="3298789223962368867">Se ingresó un URL no válido.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
+<translation id="330140779027048024">Usar siempre con el proveedor de DNS-over-HTTPS seleccionado</translation>
 <translation id="3301554464236215299">Este archivo no se descarga con frecuencia y podría ser peligroso</translation>
 <translation id="3301996560342889673">¿Quieres sincronizar el historial?</translation>
 <translation id="33022249435934718">Objetos GDI</translation>
@@ -4387,6 +4391,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para que la descarga de archivos sea más segura</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para acceder más rápido</translation>
+<translation id="3950755269510650933">Administra la información que Gemini puede usar para personalizar tu experiencia</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3950841222883198950">Dictado por voz</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
@@ -4416,6 +4421,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucciones para Gemini</translation>
 <translation id="3971764089670057203">Huellas digitales en esta llave de seguridad</translation>
 <translation id="3973005893595042880">El usuario no está habilitado</translation>
 <translation id="3973660817924297510">Verificando contraseñas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4704,6 +4710,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4178220097446335546">Para olvidar esta suscripción y sus redes asociadas, ve a la página de suscripciones de Passpoint y quítala.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4182182457914031017">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página del sitio que visitas se comparten con Google</translation>
 <translation id="4182339886482390129">La Navegación segura mejorada realiza más acciones para protegerte de sitios web, descargas y extensiones peligrosos.</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> verá la marca y el modelo de tu llave de seguridad</translation>
@@ -4735,6 +4742,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4206144641569145248">Alienígena</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4206585797409671301">Puede mostrar solicitudes</translation>
+<translation id="4207144975205749656">Encriptar las solicitudes de navegación para que los atacantes de la misma red no puedan ver tu tráfico</translation>
 <translation id="4207932031282227921">Se solicitó un permiso; para responder, presiona F6</translation>
 <translation id="4208390505124702064">Buscar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
@@ -5825,6 +5833,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">¿Quieres guardarlo en una carpeta solo en este dispositivo?</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas usarlas en cualquier dispositivo</translation>
+<translation id="4959581970694896608">Personaliza cómo te responde Gemini</translation>
 <translation id="4960020053211143927">No es compatible con algunas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
@@ -6140,6 +6149,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5186362203408605578">Escanea el código QR para usar otro dispositivo</translation>
 <translation id="5186381005592669696">Personaliza el idioma de visualización de las apps compatibles</translation>
 <translation id="5186788525428341874">Puedes usar esta llave de acceso para acceder más rápido en tus dispositivos. Se guardará en el Administrador de contraseñas de Google de <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Usar la configuración predeterminada si está disponible</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartido por <ph name="USER_NAME" /></translation>
@@ -7114,6 +7124,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5863445608433396414">Habilitar funciones de depuración</translation>
 <translation id="5863515189965725638">Editar el IBAN</translation>
 <translation id="5864195618110239517">Usar la conexión de uso medido</translation>
+<translation id="5864624288360677142">Usar la configuración predeterminada si está disponible y el DNS de Google como copia de seguridad</translation>
 <translation id="5864754048328252126">Acción de inactividad durante la carga</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
@@ -7564,6 +7575,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6180550893222597997">¿Qué llave de acceso deseas usar para <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">A veces, las apps actualizan su desarrollo de la marca. Revisa todos los cambios para asegurarte de que estás de acuerdo con ellos antes de actualizar.</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
+<translation id="6182100780603067202">Compartir también el audio de la aplicación (de todas sus ventanas)</translation>
 <translation id="6183369864942961155">Tema claro/oscuro automático</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
 <translation id="6185132558746749656">Ubicación del dispositivo</translation>
@@ -8977,6 +8989,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargados desde:</translation>
 <translation id="7177659256878428843">Convierte el grupo de pestañas en una carpeta de favoritos</translation>
+<translation id="7180569503618416775">La Billetera puede guardar información de las páginas que estás viendo, como las entradas que compras</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">&amp;Ocultar la barra de favoritos</translation>
@@ -10337,6 +10350,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8084429490152575036">Configuración del APN de la red móvil</translation>
 <translation id="8084510406207562688">R&amp;establecer todas las pestañas</translation>
 <translation id="8084628902026812045">Este sitio no usa una conexión segura y es posible que el archivo se haya alterado</translation>
+<translation id="808488435221187916">Tu información está disponible en la Billetera de Google en cualquier dispositivo en el que accediste a tu cuenta</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Esta pestaña está compartiendo tu pantalla</translation>
 <translation id="8086610718778464681">No se pudo crear la copia de seguridad de apps y archivos de Linux</translation>

@@ -1554,6 +1554,7 @@
 <translation id="3525130752944427905">10 x 14 ઇંચ</translation>
 <translation id="3525435918300186947">MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરીએ?</translation>
 <translation id="3527181387426738155">મ્યુઝિક અને ઑડિયો</translation>
+<translation id="3527624163937328588">જોડાણ કાઢી નાખો</translation>
 <translation id="3528171143076753409">સર્વરનું પ્રમાણપત્ર વિશ્વસનીય નથી.</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{સિંક કરેલ ઉપકરણો પર ઓછામાં ઓછી 1 આઇટમ}=1{1 આઇટમ (અને સિંક કરેલ ઉપકરણો પર બીજી ઘણી બધી)}one{# આઇટમ (અને સિંક કરેલ ઉપકરણો પર બીજી ઘણી બધી)}other{# આઇટમ (અને સિંક કરેલ ઉપકરણો પર બીજી ઘણી બધી)}}</translation>
 <translation id="3531366304259615706">સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
@@ -1610,6 +1611,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google પ્રાઇવસી સેટિંગ મેનેજ કરો' બટન, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગની મુલાકાત લેવા માટે સક્રિય કરો</translation>
 <translation id="3603507503523709">તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરેલી ઍપ્લિકેશન</translation>
+<translation id="3605082766859363473">AI મોડ પસંદ કર્યો</translation>
 <translation id="3605899229568538311">5 x 5 ઇંચ</translation>
 <translation id="3606917451836803637">ટીવી શો અને પ્રોગ્રામ</translation>
 <translation id="3608932978122581043">ફીડ ઓરિએન્ટેશન</translation>
@@ -1945,6 +1947,7 @@
 <translation id="411918202192379658">ઑટોમૅટિક રીતે ભરવાની સુવિધા હવે બહેતર બની છે</translation>
 <translation id="4121428309786185360">ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="4123572138124678573">નીચેની તરફ ત્રણ કાણાં પાડો</translation>
+<translation id="4125597496726375563">'છબી બનાવો' વિકલ્પ પસંદ કર્યો</translation>
 <translation id="412601465078863288">અપલોડ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="4127317221386336246">વસ્ત્રો સાથે પહેરાતી ઍક્સેસરી</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
@@ -3663,6 +3666,7 @@
 <translation id="6917795328362592458">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Password Manager તમારા સાચવેલા પાસવર્ડ ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="6917873303492266709">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, સેટિંગ ખોલો અને "Chrome સાઇન ઇન"ને મંજૂરી આપો વિકલ્પ ચાલુ કરો</translation>
 <translation id="6921197121276419421">વેબ ઍપ ઇન્સ્ટૉલ કરવાની મંજૂરી છે</translation>
+<translation id="6922905531092220751">ફોટાનું જોડાણ કાઢી નાખો</translation>
 <translation id="69238565902785824">તમારા એકાઉન્ટને લિંક કરેલું રાખવાથી તમને <ph name="BNPL_ISSUER_NAME" /> વડે ઝડપથી ચુકવણી કરવામાં સહાય મળે છે, પરંતુ તમે <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> પર જઈને તેને અનલિંક કરી શકો છો</translation>
 <translation id="6924013822850225188">ચેકઆઉટ વખતે તમને કાર્ડના લાભ દેખાય કે નહીં તે પસંદ કરો (બેંકની શરતો લાગુ થાય છે)</translation>
 <translation id="6924933062125062950">ઓળખ કાર્ડ ડિલીટ કરો</translation>

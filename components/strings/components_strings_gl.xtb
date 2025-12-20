@@ -2981,6 +2981,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5826507051599432481">Nome común (NC)</translation>
 <translation id="5830698870816298009">uso e movemento da cámara</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831259154333754661">Escolle outro método de pago para completar esta compra.</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libera espazo en <ph name="CLOUD_PROVIDER" /> e téntao de novo</translation>
@@ -4262,6 +4263,7 @@ Detalles adicionais:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="784623644169604270">Ningunha actividade recente</translation>
+<translation id="7853222852810008596">A opción de pagar máis tarde non está dispoñible nesta moeda</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introduce a nova data de vencemento e o CVC do <ph name="SIDE_OF_CARD" /></translation>

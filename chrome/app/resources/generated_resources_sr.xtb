@@ -2453,6 +2453,7 @@
 <translation id="2646132387794831258">Желите да сачувате у фолдеру на Google налогу?</translation>
 <translation id="264897126871533291">Протаномалија</translation>
 <translation id="2649045351178520408">ASCII датотека шифрована методом „Base64“, ланац сертификата</translation>
+<translation id="2649331484502514724">Безбедан DNS</translation>
 <translation id="2649508632465204949">Научи ме новој вештини</translation>
 <translation id="2651259505411913186">Да, не обједињуј моје податке са школским профилом</translation>
 <translation id="265156376773362237">Стандардно предучитавање</translation>
@@ -3383,6 +3384,7 @@
 <translation id="329838636886466101">Поправи</translation>
 <translation id="3298789223962368867">Унета је неважећа URL адреса.</translation>
 <translation id="32991397311664836">Уређаји:</translation>
+<translation id="330140779027048024">Увек користи са изабраним добављачем протокола DNS over HTTPS</translation>
 <translation id="3301554464236215299">Овај фајл се не преузима често и можда је опасан</translation>
 <translation id="3301996560342889673">Желите да синхронизујете историју?</translation>
 <translation id="33022249435934718">GDI надимци</translation>
@@ -4390,6 +4392,7 @@
 <translation id="394984172568887996">Увезено из IE прегледача</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> да би преузимање фајлова било безбедније</translation>
 <translation id="3950479158728806902">Аутоматски направи приступни кључ да бисте се брже пријављивали</translation>
+<translation id="3950755269510650933">Управљајте подацима које Gemini може да користи за персонализовање доживљаја</translation>
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3950841222883198950">Унос текста гласом</translation>
 <translation id="3953834000574892725">Моји налози</translation>
@@ -4419,6 +4422,7 @@
 <translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">ИД</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
+<translation id="3971355433478412726">Упутства за Gemini</translation>
 <translation id="3971764089670057203">Отисци прстију на овом безбедносном кључу</translation>
 <translation id="3973005893595042880">Корисник није дозвољен</translation>
 <translation id="3973660817924297510">Лозинке се проверавају (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4739,6 +4743,7 @@
 <translation id="4206144641569145248">Ванземаљац</translation>
 <translation id="4206323443866416204">Извештај са повратним информацијама</translation>
 <translation id="4206585797409671301">Дозвољено је приказивање захтева</translation>
+<translation id="4207144975205749656">Шифрује захтеве за навигацију тако да нападачи на истој мрежи не могу да виде ваш саобраћај</translation>
 <translation id="4207932031282227921">Затражена је дозвола. Притисните F6 да бисте одговорили</translation>
 <translation id="4208390505124702064">Претражи <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Велика</translation>
@@ -5829,6 +5834,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Желите да сачувате у фолдеру само на овом уређају?</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
+<translation id="4959581970694896608">Прилагодите начин на који вам Gemini одговара</translation>
 <translation id="4960020053211143927">Неке апликације не подржавају ово</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Пребацивање екрана</translation>
@@ -6144,6 +6150,7 @@
 <translation id="5186362203408605578">Користите други уређај тако што ћете скенирати QR кôд</translation>
 <translation id="5186381005592669696">Прилагодите језик приказа за подржане апликације</translation>
 <translation id="5186788525428341874">Овај приступни кључ можете да користите да бисте се брже пријављивали на свим уређајима. Чува се у Google менаџеру лозинки за <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Користи подразумевано ако је доступно</translation>
 <translation id="5187641678926990264">&amp;Инсталирај страницу као апликацију…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Дели <ph name="USER_NAME" /></translation>
@@ -7117,6 +7124,7 @@
 <translation id="5863445608433396414">Омогући функције за отклањање грешака</translation>
 <translation id="5863515189965725638">Измените IBAN</translation>
 <translation id="5864195618110239517">Користи везу са ограничењем</translation>
+<translation id="5864624288360677142">Користи подразумевано ако је доступно и Google DNS као резерву</translation>
 <translation id="5864754048328252126">Неактивност током пуњења</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ће се ускоро паузирати</translation>
 <translation id="586567932979200359">Покрећете <ph name="PRODUCT_NAME" /> са диска. Инсталација на рачунар омогућава покретање без диска и редовно ажурирање.</translation>
@@ -7567,6 +7575,7 @@
 <translation id="6180550893222597997">Који приступни кôд желите да користите за апликацију <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Апликације понекад ажурирају своје брендирање. Прегледајте све промене да бисте били сигурни да вам одговарају пре ажурирања.</translation>
 <translation id="6181431612547969857">Преузимање је блокирано</translation>
+<translation id="6182100780603067202">Дели и звук апликације (из свих прозора)</translation>
 <translation id="6183369864942961155">Аутоматска светла/тамна тема</translation>
 <translation id="6184099524311454384">Претражите картице</translation>
 <translation id="6185132558746749656">Локација уређаја</translation>
@@ -9659,7 +9668,7 @@
 <translation id="7642778300616172920">Сакриј осетљив садржај</translation>
 <translation id="7643117827468520640">Прегледајте ове услове</translation>
 <translation id="7644953783774050577">Опозови сав избор</translation>
-<translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
+<translation id="7645176681409127223"><ph name="USER_NAME" /> (власник/ца)</translation>
 <translation id="7645681574855902035">Отказује се прављење резервне копије за Linux</translation>
 <translation id="7646425900255826066">Лозинке можете да чувате помоћу Google менаџера лозинки када сте пријављни у Chrome</translation>
 <translation id="7646499124171960488">Упозорава вас на небезбедне јавне сајтове</translation>

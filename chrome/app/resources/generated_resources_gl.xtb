@@ -1734,6 +1734,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2157457598652721267">Usa as teclas / e - para seleccionar os botóns esquerdo e dereito do rato. Usa a tecla * para seleccionar ambos.</translation>
 <translation id="2157474325782140681">Para gozar de funcións adicionais, utiliza unha base de Dell deseñada para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
+<translation id="2157632422749995237">Máis adiante, Wallet pode enviarche notificacións sobre os teus eventos</translation>
 <translation id="2157779167749714207">O teu dispositivo <ph name="DEVICE_TYPE" /> inclúe Gemini</translation>
 <translation id="2158103060812356265">Compara produtos similares facilmente</translation>
 <translation id="2158249272743343757">Eliminar datos de personalización...</translation>
@@ -2429,6 +2430,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2633212996805280240">Queres eliminar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> non puido completar a instalación, pero continuará executándose desde a súa imaxe de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accede aos teus pases (por exemplo, entradas de eventos e tarxetas de fidelidade) desde o teu dispositivo</translation>
 <translation id="2634199532920451708">Historial de impresión</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Non recibirás avisos dos sitios privados (como a intranet da túa empresa, por exemplo)</translation>
@@ -4392,6 +4394,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar ficheiros de forma máis segura</translation>
 <translation id="3950479158728806902">Crear automaticamente clave de acceso para iniciar sesión máis rápido</translation>
+<translation id="3950755269510650933">Xestiona a información que pode usar Gemini para personalizar a túa experiencia</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3950841222883198950">Escritura por voz</translation>
 <translation id="3953834000574892725">As miñas contas</translation>
@@ -4421,6 +4424,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucións para Gemini</translation>
 <translation id="3971764089670057203">Impresións dixitais nesta chave de seguranza</translation>
 <translation id="3973005893595042880">O usuario non está permitido</translation>
 <translation id="3973660817924297510">Comprobando contrasinais (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4709,6 +4713,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4178220097446335546">Para esquecer esta subscrición e as redes asociadas, vai á páxina de subscrición de Passpoint e quítaa.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4182182457914031017">Para ofrecer suxestións e mellorar esta función, o URL e o contido íntegro da páxina do sitio que visites compártense con Google</translation>
 <translation id="4182339886482390129">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas, sitios web e extensións perigosos</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> aprenderá a marca e o modelo da túa chave de seguranza</translation>
@@ -5830,6 +5835,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Queres gardar este marcador nun cartafol só neste dispositivo?</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
+<translation id="4959581970694896608">Personaliza como che responde Gemini</translation>
 <translation id="4960020053211143927">Algunhas aplicacións non admiten esta opción</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
@@ -8978,6 +8984,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargado desde:</translation>
 <translation id="7177659256878428843">Converte o grupo de pestanas nun cartafol de marcadores</translation>
+<translation id="7180569503618416775">Wallet pode ofrecerche gardar información das páxinas que esteas vendo, como as entradas que compres</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">Ocultar barra de marcadores</translation>
@@ -10337,6 +10344,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8084429490152575036">Configuración do APN da rede móbil</translation>
 <translation id="8084510406207562688">Restaurar todas as pestanas</translation>
 <translation id="8084628902026812045">Este sitio non usa unha conexión segura, polo que o ficheiro podería estar manipulado</translation>
+<translation id="808488435221187916">A túa información está dispoñible en Google Wallet en calquera dispositivo no que inicies sesión</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Esta pestana está compartindo a túa pantalla</translation>
 <translation id="8086610718778464681">Non se puido facer unha copia de seguranza dos ficheiros nin das aplicacións de Linux</translation>

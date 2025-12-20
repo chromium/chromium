@@ -1735,6 +1735,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2157457598652721267">Usa "/" y "-" para seleccionar los botones izquierdo y derecho del ratón. Usa "*" para seleccionar los dos.</translation>
 <translation id="2157474325782140681">Si quieres obtener funciones adicionales, usa una base Dell que se haya diseñado para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
+<translation id="2157632422749995237">Más adelante, Wallet podrá enviarte notificaciones sobre tus eventos</translation>
 <translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158103060812356265">Compara fácilmente productos similares</translation>
 <translation id="2158249272743343757">Eliminar datos de personalización...</translation>
@@ -2431,6 +2432,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2633212996805280240">¿Quitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no ha podido completar la instalación, pero se seguirá ejecutando desde la imagen de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Accede a tus pases, como entradas para eventos y tarjetas de fidelización, desde tu dispositivo</translation>
 <translation id="2634199532920451708">Historial de impresión</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">No te avisa de los sitios privados, como la intranet de tu empresa</translation>
@@ -4390,6 +4392,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="394984172568887996">Importado desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar archivos de forma más segura</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para iniciar sesión más rápido</translation>
+<translation id="3950755269510650933">Gestiona la información que Gemini puede usar para personalizar tu experiencia</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3950841222883198950">Escribir por voz</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
@@ -4419,6 +4422,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucciones para Gemini</translation>
 <translation id="3971764089670057203">Huellas digitales de esta llave de seguridad</translation>
 <translation id="3973005893595042880">El usuario no está permitido</translation>
 <translation id="3973660817924297510">Comprobando contraseñas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -4707,6 +4711,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4178220097446335546">Para olvidar esta suscripción y sus redes asociadas, ve a la página de suscripciones a Passpoint y quita la suscripción.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4182182457914031017">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página que visitas se comparten con Google</translation>
 <translation id="4182339886482390129">Navegación segura mejorada te ofrece más protección frente a sitios web, descargas y extensiones peligrosos</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> conocerá la marca y el modelo de tu llave de seguridad</translation>
@@ -5827,6 +5832,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">¿Guardar en una carpeta solo en este dispositivo?</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo</translation>
+<translation id="4959581970694896608">Personaliza cómo te responde Gemini</translation>
 <translation id="4960020053211143927">No compatible con algunas aplicaciones</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
@@ -8978,6 +8984,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargado desde:</translation>
 <translation id="7177659256878428843">Convertir grupo de pestañas en carpeta de marcadores</translation>
+<translation id="7180569503618416775">Wallet puede ofrecerte guardar información de las páginas que estás viendo, como las entradas que compras</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">&amp;Ocultar barra de marcadores</translation>
@@ -10338,6 +10345,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8084429490152575036">Ajustes de APN móvil</translation>
 <translation id="8084510406207562688">R&amp;estaurar todas las pestañas</translation>
 <translation id="8084628902026812045">Este sitio no usa una conexión segura y es posible que el archivo se haya manipulado</translation>
+<translation id="808488435221187916">Tu información está disponible en Google Wallet en cualquier dispositivo en el que hayas iniciado sesión</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Esta pestaña está compartiendo tu pantalla</translation>
 <translation id="8086610718778464681">No se ha podido crear una copia de seguridad de aplicaciones y archivos de Linux</translation>
