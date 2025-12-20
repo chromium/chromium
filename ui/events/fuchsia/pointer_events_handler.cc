@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/events/event.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
@@ -35,16 +36,14 @@ const int kWheelDelta = 120;
 
 void IssueTouchTraceEvent(const fuchsia_ui_pointer::TouchEvent& event) {
   DCHECK(event.trace_flow_id()) << "API guarantee";
-  TRACE_EVENT_WITH_FLOW0("input", "dispatch_event_to_client",
-                         event.trace_flow_id().value(),
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("input", "dispatch_event_to_client",
+              perfetto::Flow::Global(event.trace_flow_id().value()));
 }
 
 void IssueMouseTraceEvent(const fuchsia_ui_pointer::MouseEvent& event) {
   DCHECK(event.trace_flow_id()) << "API guarantee";
-  TRACE_EVENT_WITH_FLOW0("input", "dispatch_event_to_client",
-                         event.trace_flow_id().value(),
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("input", "dispatch_event_to_client",
+              perfetto::Flow::Global(event.trace_flow_id().value()));
 }
 
 bool HasValidTouchSample(const fuchsia_ui_pointer::TouchEvent& event) {
