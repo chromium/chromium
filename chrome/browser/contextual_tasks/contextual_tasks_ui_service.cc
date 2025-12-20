@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +33,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -566,6 +568,12 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
   }
 
   coordinator->Close();
+
+  ContextualTasksService* task_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          browser->GetProfile());
+  CHECK(task_service);
+  task_service->DisassociateAllTabsFromTask(task_id);
 }
 
 void ContextualTasksUiService::StartTaskUiInSidePanel(

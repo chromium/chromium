@@ -275,6 +275,14 @@ TEST_F(ContextualTasksContextControllerImplTest, DetachUrlFromTask) {
   controller_->DetachUrlFromTask(task_id, url);
 }
 
+TEST_F(ContextualTasksContextControllerImplTest, DisassociateAllTabsFromTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(mock_service_, DisassociateAllTabsFromTask(task_id)).Times(1);
+
+  controller_->DisassociateAllTabsFromTask(task_id);
+}
+
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
