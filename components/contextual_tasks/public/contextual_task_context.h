@@ -13,6 +13,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace url_deduplication {
+class URLDeduplicationHelper;
+}  // namespace url_deduplication
+
 namespace contextual_tasks {
 
 // Enum representing the different sources that can contribute to the context of
@@ -140,6 +144,11 @@ struct ContextualTaskContext {
 
   // Returns a mutable version of the URL attachments for the task.
   std::vector<UrlAttachment>& GetMutableUrlAttachmentsForTesting();
+
+  // Returns true if the given |url| is contained in the context.
+  bool ContainsURL(
+      const GURL& url,
+      url_deduplication::URLDeduplicationHelper* deduplication_helper) const;
 
  private:
   friend class ContextDecorator;
