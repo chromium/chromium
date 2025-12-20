@@ -166,8 +166,7 @@
 - (void)performTransitionAnimationWithCompletion:(ProceduralBlock)completion {
   // The animation is ugly or crashes when the selected cell is not visible.
   TabGridTransitionType transitionType = _transitionType;
-  if (transitionType == TabGridTransitionType::kNormal &&
-      !_tabGridTransitionLayoutProvider.isSelectedCellVisible) {
+  if (transitionType == TabGridTransitionType::kNormal && !_tabGridCellItem) {
     transitionType = TabGridTransitionType::kReducedMotion;
   }
 
