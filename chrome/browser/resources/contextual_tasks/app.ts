@@ -68,6 +68,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   private oauthToken_: string|null = null;
   private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
+  private forcedEmbeddedPageHost =
+      loadTimeData.getString('forcedEmbeddedPageHost');
 
   constructor() {
     super();
@@ -248,6 +250,9 @@ export class ContextualTasksAppElement extends CrLitElement {
           (details): chrome.webRequest.BlockingResponse => {
             const url = new URL(details.url);
             const newUrl = this.addCommonSearchParams(url);
+            if (this.forcedEmbeddedPageHost) {
+              newUrl.host = this.forcedEmbeddedPageHost;
+            }
             if (newUrl.href !== details.url) {
               return {redirectUrl: newUrl.href};
             }

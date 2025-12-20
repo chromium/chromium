@@ -82,6 +82,10 @@ extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 
+// Returns the host that all URLs loaded in the embedded page in the Contextual
+// Tasks WebUi should be routed to.
+extern std::string GetForcedEmbeddedPageHost();
+
 // Returns the domains for the sign in page.
 extern std::vector<std::string> GetContextualTasksSignInDomains();
 
