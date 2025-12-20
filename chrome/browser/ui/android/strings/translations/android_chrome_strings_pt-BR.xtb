@@ -597,7 +597,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3795154175078851242">Copiar imagem com link</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads excluídos</translation>
-<translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
+<translation id="3819183753496523827">Você está off-line. Verifique sua conexão de internet e tente novamente.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">O Lens não está disponível nesta conta.</translation>
 <translation id="38258275871320156">Disponível apenas para janelas pequenas</translation>
@@ -1476,7 +1476,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> guia padrão}one{<ph name="TABS_COUNT_MANY" /> guia padrão}other{<ph name="TABS_COUNT_MANY" /> guias padrão}}</translation>
 <translation id="7603168929588204083">Data inválida</translation>
 <translation id="7605594153474022051">A sincronização não está funcionando</translation>
-<translation id="7612619742409846846">Conectado ao Google como</translation>
+<translation id="7612619742409846846">Conta conectada ao Google como</translation>
 <translation id="7612989789287281429">Fazendo login…</translation>
 <translation id="7619072057915878432">Falha no download do arquivo <ph name="FILE_NAME" /> devido a falhas na rede.</translation>
 <translation id="7626032353295482388">Este é o Google Chrome</translation>
