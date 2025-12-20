@@ -88,7 +88,7 @@
 
   box-shadow: none;
   inset-inline-start: var(--inset-start-indent_);
-  margin-bottom: var(--composebox-margin-bottom);
+  bottom: var(--composebox-margin-bottom);
   position: absolute;
   /* 100% - (24px right indent + left indent), up to max width. */
   width: calc(100% - (24px + var(--inset-start-indent_)));
@@ -165,6 +165,10 @@
 
 #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
   pointer-events: none;
+}
+
+#composebox[show-file-carousel_][expanding_]::part(input-container) {
+  padding-top: var(--carousel-height, 60px);
 }
 
 #composebox::part(icon-container) {
@@ -326,6 +330,7 @@
       + var(--icon-menu-spacing)
       + var(--composebox-last-icon-inline-end));
   position: absolute;
+  top: auto;
   transition: ease-out 100ms;
 }
 

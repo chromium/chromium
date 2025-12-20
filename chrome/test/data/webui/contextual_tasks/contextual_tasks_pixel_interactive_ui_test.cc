@@ -140,5 +140,5 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7204822"));
+                      /*baseline_cl=*/"7247932"));
 }
