@@ -75,9 +75,6 @@ using LensOverlayUrlResponseCallback =
 // Callback type alias for the lens overlay interaction response.
 using LensOverlayInteractionResponseCallback =
     base::RepeatingCallback<void(lens::mojom::TextPtr)>;
-// Callback type alias for the lens overlay suggest inputs response.
-using LensOverlaySuggestInputsCallback =
-    base::RepeatingCallback<void(lens::proto::LensOverlaySuggestInputs)>;
 // Callback type alias for the thumbnail image creation.
 using LensOverlayThumbnailCreatedCallback =
     base::RepeatingCallback<void(const std::string&, const SkBitmap&)>;
@@ -94,7 +91,6 @@ class LensOverlayQueryController {
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlayInteractionResponseCallback interaction_callback,
-      LensOverlaySuggestInputsCallback suggest_inputs_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       UploadProgressCallback page_content_upload_progress_callback,
       variations::VariationsClient* variations_client,
@@ -207,9 +203,7 @@ class LensOverlayQueryController {
   }
 
   // Returns whether the query controller is off.
-  bool IsOff() {
-    return query_controller_state_ == QueryControllerState::kOff;
-  }
+  bool IsOff() { return query_controller_state_ == QueryControllerState::kOff; }
 
   uint64_t gen204_id() const { return gen204_id_; }
 
@@ -251,8 +245,12 @@ class LensOverlayQueryController {
     return request_id_generator_.get();
   }
 
-  lens::proto::LensOverlaySuggestInputs suggest_inputs_for_testing() {
+  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs() const {
     return suggest_inputs_;
+  }
+
+  void SetSuggestInputsReadyCallback(base::RepeatingClosure callback) {
+    suggest_inputs_ready_callback_ = std::move(callback);
   }
 
   size_t total_chunk_progress_for_testing() { return total_chunk_progress_; }
@@ -321,9 +319,8 @@ class LensOverlayQueryController {
   // The callback for interaction requests, including text received.
   LensOverlayInteractionResponseCallback interaction_response_callback_;
 
-  // Suggest inputs callback, used for sending Lens suggest data to the
-  // search box.
-  LensOverlaySuggestInputsCallback suggest_inputs_callback_;
+  // Callback for when the suggest inputs are ready.
+  base::RepeatingClosure suggest_inputs_ready_callback_;
 
   // Callback for when a thumbnail image is created from a region selection.
   LensOverlayThumbnailCreatedCallback thumbnail_created_callback_;

@@ -91,6 +91,37 @@ void LensQueryFlowRouter::MaybeRestartQueryFlow() {
   lens_overlay_query_controller()->MaybeRestartQueryFlow();
 }
 
+std::optional<lens::proto::LensOverlaySuggestInputs>
+LensQueryFlowRouter::GetSuggestInputs() {
+  if (IsOff()) {
+    return std::nullopt;
+  }
+
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    // TODO(mercerd): Add support for Lens Suggest in contextual
+    // tasks.
+    return std::nullopt;
+  }
+
+  return std::make_optional(
+      lens_overlay_query_controller()->GetLensSuggestInputs());
+}
+
+void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
+    base::RepeatingClosure callback) {
+  if (IsOff()) {
+    return;
+  }
+
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    // TODO(mercerd): Add support for Lens Suggest in contextual
+    // tasks.
+    return;
+  }
+  lens_overlay_query_controller()->SetSuggestInputsReadyCallback(
+      std::move(callback));
+}
+
 void LensQueryFlowRouter::SendRegionSearch(
     base::Time query_start_time,
     lens::mojom::CenterRotatedBoxPtr region,

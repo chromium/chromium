@@ -264,7 +264,6 @@ class LensSearchController {
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       lens::UploadProgressCallback page_content_upload_progress_callback,
       variations::VariationsClient* variations_client,
@@ -311,7 +310,8 @@ class LensSearchController {
 
   // The final step for closing the overlay. This is called after the lens
   // overlay has faded out.
-  void OnOverlayHidden(std::optional<lens::LensOverlayDismissalSource> dismissal_source);
+  void OnOverlayHidden(
+      std::optional<lens::LensOverlayDismissalSource> dismissal_source);
 
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.
@@ -350,7 +350,6 @@ class LensSearchController {
   State state() { return state_; }
 
  private:
-
   // Passes the correct callbacks and dependencies to the protected
   // CreateLensQueryController method.
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
@@ -390,11 +389,9 @@ class LensSearchController {
   // request, the response will contain the text container within that image.
   void HandleInteractionResponse(lens::mojom::TextPtr text);
 
-  // Callback used by the query controller to notify the search controller of
-  // the suggest inputs response. This is used to update the searchbox with
-  // the most recent suggest inputs.
-  void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs);
+  // Callback used by the query controller to notify the search controller when
+  // the suggest inputs response is ready.
+  void OnSuggestInputsReady();
 
   // Callback used by the query controller to pass the thumbnail bytes of a
   // visual interaction request to the searchbox and composebox.
@@ -442,6 +439,9 @@ class LensSearchController {
   // session. Note that a trigger does not mean the survey will actually be
   // shown.
   bool hats_triggered_in_session_ = false;
+
+  // Whether the handshake with the Lens backend is complete.
+  bool is_handshake_complete_ = false;
 
   // If the side panel needed to be closed before dismissing Lens, this
   // stores the original dismissal_source so it is properly recorded when the
@@ -491,7 +491,7 @@ class LensSearchController {
   // logic.
   std::unique_ptr<lens::LensOverlayEventHandler> lens_overlay_event_handler_;
 
-    // The overlay controller for the Lens Search feature on this tab.
+  // The overlay controller for the Lens Search feature on this tab.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
 
   // Holds subscriptions for TabInterface callbacks.

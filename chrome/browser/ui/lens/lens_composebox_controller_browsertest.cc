@@ -102,7 +102,8 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
  protected:
   std::unique_ptr<lens::LensSearchContextualizationController>
   CreateLensSearchContextualizationController() override {
-    return std::make_unique<lens::TestLensSearchContextualizationController>(this);
+    return std::make_unique<lens::TestLensSearchContextualizationController>(
+        this);
   }
 
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
@@ -122,7 +123,6 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       lens::UploadProgressCallback upload_progress_callback,
       variations::VariationsClient* variations_client,
@@ -134,9 +134,9 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
     auto fake_query_controller =
         std::make_unique<lens::TestLensOverlayQueryController>(
             full_image_callback, url_callback, interaction_callback,
-            suggest_inputs_callback, thumbnail_created_callback,
-            upload_progress_callback, variations_client, identity_manager,
-            profile, invocation_source, use_dark_mode, gen204_controller);
+            thumbnail_created_callback, upload_progress_callback,
+            variations_client, identity_manager, profile, invocation_source,
+            use_dark_mode, gen204_controller);
 
     // Set up the cluster info to test the search session ID is propagated.
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -849,10 +849,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       [&]() { return overlay_controller->state() == State::kOff; }));
 
   // Verify suggest inputs are cleared.
-  ASSERT_EQ(GetLensComposeboxController()
-                ->GetLensSuggestInputs()
-                .ByteSizeLong(),
-            static_cast<size_t>(0));
+  ASSERT_EQ(
+      GetLensComposeboxController()->GetLensSuggestInputs().ByteSizeLong(),
+      static_cast<size_t>(0));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1045,8 +1044,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*suppress_contextualization=*/true);
 
   // Wait for side panel to be visible.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsResultsSidePanelShowing(); }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
 
   // Wait for the composebox handler to be set.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1117,8 +1116,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*suppress_contextualization=*/true);
 
   // Wait for side panel to be visible.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsResultsSidePanelShowing(); }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
 
   // Wait for the composebox handler to be set.
   ASSERT_TRUE(base::test::RunUntil([&]() {

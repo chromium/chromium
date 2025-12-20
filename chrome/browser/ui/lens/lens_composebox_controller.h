@@ -93,9 +93,6 @@ class LensComposeboxController {
 
   lens::proto::LensOverlaySuggestInputs GetLensSuggestInputs() const;
 
-  void UpdateSuggestInputs(
-      const lens::proto::LensOverlaySuggestInputs& suggest_inputs);
-
   std::optional<base::UnguessableToken> vsc_image_data_id_for_testing() const {
     return vsc_image_data_ ? std::make_optional(vsc_image_data_->id)
                            : std::nullopt;

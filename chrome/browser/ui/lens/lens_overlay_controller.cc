@@ -912,7 +912,7 @@ void LensOverlayController::OpenSidePanelForTesting() {
   MaybeOpenSidePanel();
 }
 
-const lens::proto::LensOverlaySuggestInputs&
+lens::proto::LensOverlaySuggestInputs
 LensOverlayController::GetLensSuggestInputsForTesting() {
   return GetLensSearchboxController()->GetLensSuggestInputs();
 }
@@ -1637,8 +1637,7 @@ void LensOverlayController::MaybeOpenSidePanel() {
     return;
   }
 
-  GetLensOverlaySidePanelCoordinator()
-      ->RegisterEntryAndShow();
+  GetLensOverlaySidePanelCoordinator()->RegisterEntryAndShow();
 }
 
 void LensOverlayController::InitializeOverlay(

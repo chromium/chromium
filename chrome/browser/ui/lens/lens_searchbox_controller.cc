@@ -125,36 +125,6 @@ void LensSearchboxController::SetShowSidePanelSearchboxThumbnail(bool shown) {
   }
 }
 
-void LensSearchboxController::HandleSuggestInputsResponse(
-    lens::proto::LensOverlaySuggestInputs suggest_inputs) {
-  if (!init_data_) {
-    DCHECK(init_data_)
-        << "The initialization data should be set on searchbox startup, which "
-           "should have happened before any suggest inputs were received.";
-    return;
-  }
-
-  // If the handshake was already complete, without the new suggest inputs,
-  // exit early so that LensOverlayController::OnHandshakeComplete() isn't
-  // called multiple times.
-  if (lens_search_controller_->IsHandshakeComplete()) {
-    init_data_->suggest_inputs_ = suggest_inputs;
-    return;
-  }
-
-  // Check if the handshake with the server has been completed with the new
-  // inputs. If so, this is the first time the suggest inputs satisfy the
-  // handshake criteria, so notify the overlay that the handshake is complete.
-  init_data_->suggest_inputs_ = suggest_inputs;
-  if (lens_search_controller_->IsHandshakeComplete()) {
-    // Notify the overlay that it is now safe to query autocomplete.
-    lens_search_controller_->lens_overlay_controller()->OnHandshakeComplete();
-
-    // Send the suggest inputs to any pending callbacks.
-    pending_suggest_inputs_callbacks_.Notify(GetLensSuggestInputs());
-  }
-}
-
 void LensSearchboxController::CloseUI() {
   overlay_searchbox_handler_.reset();
   side_panel_searchbox_handler_.reset();
@@ -193,10 +163,16 @@ LensSearchboxController::GetLensSuggestInputsWhenReady(
 
   // If the handshake is complete, return the Lens suggest inputs immediately.
   if (lens_search_controller_->IsHandshakeComplete()) {
-    std::move(callback).Run(init_data_->suggest_inputs_);
+    std::move(callback).Run(GetLensSuggestInputs());
     return {};
   }
   return pending_suggest_inputs_callbacks_.Add(std::move(callback));
+}
+
+void LensSearchboxController::NotifySuggestInputsReady(
+    lens::proto::LensOverlaySuggestInputs suggest_inputs) {
+  // Send the suggest inputs to any pending callbacks.
+  pending_suggest_inputs_callbacks_.Notify(suggest_inputs);
 }
 
 const GURL& LensSearchboxController::GetPageURL() const {
@@ -239,11 +215,14 @@ std::string& LensSearchboxController::GetThumbnail() {
   return init_data_->thumbnail_uri;
 }
 
-const lens::proto::LensOverlaySuggestInputs&
+lens::proto::LensOverlaySuggestInputs
 LensSearchboxController::GetLensSuggestInputs() const {
-  return init_data_
-             ? init_data_->suggest_inputs_
-             : lens::proto::LensOverlaySuggestInputs().default_instance();
+  auto* query_router = lens_search_controller_->query_router();
+  if (!query_router) {
+    return lens::proto::LensOverlaySuggestInputs();
+  }
+  auto suggest_inputs = query_router->GetSuggestInputs();
+  return suggest_inputs.value_or(lens::proto::LensOverlaySuggestInputs());
 }
 
 void LensSearchboxController::OnTextModified() {
