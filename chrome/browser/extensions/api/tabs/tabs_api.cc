@@ -153,6 +153,44 @@ bool IsValidStateForWindowsCreateFunction(
   NOTREACHED();
 }
 
+// Sets the opener of the given `tab` to `opener`. Returns true on success;
+// on failure, populates `error`.
+bool SetOpenerOfTab(content::WebContents& tab,
+                    content::WebContents& opener,
+                    std::string& error) {
+  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // if the user is dragging tabs.
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  BrowserWindowInterface* opener_browser =
+      browser_window_util::GetBrowserForTabContents(opener);
+  // NOTE: This would be more efficient if there were a
+  // TabListInterface::GetIndexOfWebContents() or similar, since then we could
+  // just check `opener_browser->GetIndexOfWebContents(&tab)` instead of looking
+  // up the tab's browser.
+  BrowserWindowInterface* tab_browser =
+      browser_window_util::GetBrowserForTabContents(tab);
+  if (!opener_browser || opener_browser != tab_browser) {
+    error = "Tab opener must be in the same window as the updated tab.";
+    return false;
+  }
+
+  // TODO(https://crbug.com/371432155): Support this on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  TabStripModel* tab_strip =
+      tab_browser->GetBrowserForMigrationOnly()->tab_strip_model();
+  int tab_index = tab_strip->GetIndexOfWebContents(&tab);
+  CHECK_NE(TabStripModel::kNoTab, tab_index);
+  CHECK_NE(TabStripModel::kNoTab, tab_strip->GetIndexOfWebContents(&opener));
+  tab_strip->SetOpenerOfWebContentsAt(tab_index, &opener);
+#endif
+
+  return true;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
 // Returns the IsolatedWebAppUrlInfo for the given call to windows.create() if
@@ -1940,25 +1978,12 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
       js_callstack());
 #endif
 
-  // TODO(https://crbug.com/371432155): Support this on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-  // Check if we need to set the opener. The tab may have been created in a
-  // different window, so make sure we look at the right tab strip.
   if (opener_tab) {
-    BrowserWindowInterface* opener_browser =
-        browser_window_util::GetBrowserForTabContents(*opener_tab);
-    if (opener_browser) {
-      TabStripModel* const tab_strip =
-          opener_browser->GetBrowserForMigrationOnly()->tab_strip_model();
-      const int new_index = tab_strip->GetIndexOfWebContents(new_contents);
-      // Only set the opener if the opener tab is in the same tab strip as the
-      // new tab.
-      if (new_index != TabStripModel::kNoTab) {
-        tab_strip->SetOpenerOfWebContentsAt(new_index, opener_tab);
-      }
-    }
+    std::string error;
+    SetOpenerOfTab(*new_contents, *opener_tab, error);
+    // Since we've already created the new browser, we ignore the error (if
+    // any).
   }
-#endif
 
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension(), source_context_type(),
@@ -2124,21 +2149,9 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
                                          base::NumberToString(opener_id))));
     }
 
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
-    // if the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    if (!SetOpenerOfTab(*original_contents, *opener_contents, error)) {
+      return RespondNow(Error(std::move(error)));
     }
-
-    // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-    if (tab_strip->GetIndexOfWebContents(opener_contents) ==
-        TabStripModel::kNoTab) {
-      return RespondNow(
-          Error("Tab opener must be in the same window as the updated tab."));
-    }
-    tab_strip->SetOpenerOfWebContentsAt(tab_index, opener_contents);
-#endif
   }
 
   // TODO(https://crbug.com/447211263): Support on desktop android.
