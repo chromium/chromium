@@ -5155,7 +5155,7 @@
       // When checking the shadow tree during invoke(),
       // use the invocationTargetInShadowTree saved before
       // calling the listener.
-      // This was added in M142 and can be removed after M144.
+      // This was added in M142 and can be removed after M147.
       // https://issues.chromium.org/issues/41408360
       name: "TargetInShadowDeterminedBeforeListener",
       status: "stable",
