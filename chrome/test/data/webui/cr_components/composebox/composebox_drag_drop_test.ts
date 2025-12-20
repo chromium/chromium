@@ -88,7 +88,7 @@ class MockDragAndDropHost implements DragAndDropHost {
   getDropTarget() {
     // Return object that has addFiles arrow function.
     return {
-      addFiles: (files: FileList) => {
+      addDroppedFiles: (files: FileList) => {
         this.addDroppedFilesCallCount++;
         this.droppedFiles = files;
       },

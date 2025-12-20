@@ -656,7 +656,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (fileList.length > 0) {
       event.preventDefault();
-      this.$.context.addFiles(fileList);
+      this.$.context.addPastedFiles(fileList);
     }
   }
 

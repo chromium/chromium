@@ -9,10 +9,13 @@ import type {RecentTabChipElement} from 'chrome://resources/cr_components/compos
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('RecentTabChipTest', function() {
   let recentTabChip: RecentTabChipElement;
+  let metrics: MetricsTracker;
 
   const MOCK_TAB_INFO: TabInfo = {
     tabId: 1,
@@ -26,6 +29,7 @@ suite('RecentTabChipTest', function() {
     loadTimeData.overrideValues({
       addTabUploadDelayOnRecentTabChipClick: false,
     });
+    metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     recentTabChip = document.createElement('composebox-recent-tab-chip');
     document.body.appendChild(recentTabChip);
@@ -85,6 +89,12 @@ suite('RecentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.title, event.detail.title);
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
     assertTrue(event.detail.delayUpload);
+    // Assert context added method was context menu.
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.NewTabPage',
+            /* RECENT_TAB_CHIP */ 3));
   });
 
   test('has correct text and title', () => {

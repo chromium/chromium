@@ -813,7 +813,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         e.preventDefault();
         const dataTransfer = new DataTransfer();
         files.forEach(file => dataTransfer.items.add(file));
-        this.$.context.addFiles(dataTransfer.files);
+        this.$.context.addPastedFiles(dataTransfer.files);
         return;
       }
     }

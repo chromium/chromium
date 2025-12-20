@@ -10,6 +10,7 @@ import './icons.html.js';
 import './recent_tab_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -22,6 +23,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
+import {recordContextAdditionMethod} from './common.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
@@ -244,8 +246,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  addFiles(files: FileList|null) {
+  addDroppedFiles(files: FileList|null) {
     this.processFiles_(files);
+    recordContextAdditionMethod(
+        ComposeboxContextAddedMethod.DRAG_AND_DROP, this.composeboxSource_);
+  }
+
+  addPastedFiles(files: FileList|null) {
+    this.processFiles_(files);
+    recordContextAdditionMethod(
+        ComposeboxContextAddedMethod.COPY_PASTE, this.composeboxSource_);
   }
 
   blurEntrypoint() {
@@ -449,6 +459,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
     }
 
+    if (context.attachments) {
+      recordContextAdditionMethod(
+          ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
+    }
+
     switch (context.toolMode) {
       case ToolMode.kDeepSearch:
         this.setInitialMode(ComposeboxMode.DEEP_SEARCH);
@@ -610,6 +625,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const files = input.files;
     this.processFiles_(files);
     input.value = '';
+    recordContextAdditionMethod(
+        ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
   }
 
   protected addFileContext_(filesToUpload: File[]) {
