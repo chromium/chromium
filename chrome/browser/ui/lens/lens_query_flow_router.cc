@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -83,14 +84,24 @@ void LensQueryFlowRouter::StartQueryFlow(
     // Add observer to listen for file upload status changes.
     pending_session_handle_->GetController()->AddObserver(this);
 
-    // Start uploading the current viewport and page content.
-    UploadContextualInputData(
-        pending_session_handle_.get(),
-        CreateContextualInputData(screenshot, page_url, page_title,
-                                  std::move(significant_region_boxes),
-                                  underlying_page_contents,
-                                  primary_content_type, pdf_current_page,
-                                  ui_scale_factor, invocation_time));
+    // If permissions have been granted, start uploading the current viewport
+    // and page content. If not, store as a callback to be run later.
+    auto upload_task =
+        base::BindOnce(&LensQueryFlowRouter::UploadContextualInputData,
+                       weak_factory_.GetWeakPtr(),
+                       CreateContextualInputData(
+                           screenshot, page_url, page_title,
+                           std::move(significant_region_boxes),
+                           underlying_page_contents, primary_content_type,
+                           pdf_current_page, ui_scale_factor, invocation_time));
+
+    if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+        !lens::DidUserGrantLensOverlayNeededPermissions(
+            profile()->GetPrefs())) {
+      pending_upload_request_ = std::move(upload_task);
+    } else {
+      std::move(upload_task).Run();
+    }
     return;
   }
 
@@ -100,7 +111,17 @@ void LensQueryFlowRouter::StartQueryFlow(
       ui_scale_factor, invocation_time);
 }
 
+void LensQueryFlowRouter::MaybeResumeQueryFlow() {
+  if (contextual_tasks::GetEnableLensInContextualTasks() &&
+      pending_upload_request_) {
+    std::move(pending_upload_request_).Run();
+  }
+}
+
 void LensQueryFlowRouter::MaybeRestartQueryFlow() {
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    return;
+  }
   lens_overlay_query_controller()->MaybeRestartQueryFlow();
 }
 
@@ -307,9 +328,9 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     // Upload the page context when creating a session handle.
     if (auto* controller =
             TabContextualizationController::From(tab_interface())) {
-      controller->GetPageContext(base::BindOnce(
-          &LensQueryFlowRouter::UploadContextualInputData,
-          weak_factory_.GetWeakPtr(), pending_session_handle_.get()));
+      controller->GetPageContext(
+          base::BindOnce(&LensQueryFlowRouter::UploadContextualInputData,
+                         weak_factory_.GetWeakPtr()));
     }
     return;
   }
@@ -332,9 +353,9 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
 }
 
 void LensQueryFlowRouter::UploadContextualInputData(
-    contextual_search::ContextualSearchSessionHandle* session_handle,
     std::unique_ptr<lens::ContextualInputData> contextual_input_data) {
-  session_handle->AddTabContext(
+  auto* session_handle = GetContextualSearchSessionHandle();
+  GetContextualSearchSessionHandle()->AddTabContext(
       sessions::SessionTabHelper::IdForTab(web_contents()).id(),
       base::BindOnce(&LensQueryFlowRouter::OnFinishedAddingTabContext,
                      weak_factory_.GetWeakPtr(), session_handle,
