@@ -52,6 +52,7 @@ source_set("on_device_translation") {
     "//components/on_device_translation:public",
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service:on_device_translation_service",
+    "//components/permissions",
     "//components/prefs",
     "//components/update_client",
     "//content/public/browser",

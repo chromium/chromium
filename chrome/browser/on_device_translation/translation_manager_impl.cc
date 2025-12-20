@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ai/ai_crx_component.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
@@ -23,6 +22,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
+#include "components/permissions/permissions_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/features.h"
@@ -160,7 +160,8 @@ bool TranslationManagerImpl::AccessedFromValidStoragePartition() {
 }
 
 base::Value TranslationManagerImpl::GetInitializedTranslationsValue() {
-  return HostContentSettingsMapFactory::GetForProfile(browser_context())
+  return permissions::PermissionsClient::Get()
+      ->GetSettingsMap(browser_context())
       ->GetWebsiteSetting(origin_.GetURL(), origin_.GetURL(),
                           ContentSettingsType::INITIALIZED_TRANSLATIONS,
                           /*info=*/nullptr);
@@ -187,7 +188,8 @@ bool TranslationManagerImpl::HasInitializedTranslator(
 
 void TranslationManagerImpl::SetTranslatorInitializedContentSetting(
     base::Value initialized_translations) {
-  HostContentSettingsMapFactory::GetForProfile(browser_context())
+  permissions::PermissionsClient::Get()
+      ->GetSettingsMap(browser_context())
       ->SetWebsiteSettingDefaultScope(
           origin_.GetURL(), origin_.GetURL(),
           ContentSettingsType::INITIALIZED_TRANSLATIONS,
