@@ -68,6 +68,8 @@ public class ListMenuItemViewBinder {
             }
         } else if (propertyKey == ListMenuItemProperties.CONTENT_DESCRIPTION) {
             textView.setContentDescription(model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
+        } else if (propertyKey == ListMenuItemProperties.TOOLTIP) {
+            view.setTooltipText(model.get(ListMenuItemProperties.TOOLTIP));
         } else if (propertyKey == ListMenuItemProperties.START_ICON_ID
                 || propertyKey == ListMenuItemProperties.END_ICON_ID) {
             int id = model.get((ReadableIntPropertyKey) propertyKey);

@@ -157,6 +157,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.TITLE,
                 mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
+        mAllBookmarksButtonModel.set(
+                BookmarkBarButtonProperties.TOOLTIP,
+                mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
 
         mItemsModel = itemsModel;
 
@@ -711,6 +714,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                 mActivity.getString(
                                         R.string.bookmark_bar_folder_content_description,
                                         bookmarkItem.getTitle()))
+                        .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
@@ -773,6 +777,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.SUBTITLE, bookmarkItem.getUrl().getSpec())
+                        .with(
+                                ListMenuItemProperties.TOOLTIP,
+                                bookmarkItem.getTitle() + "\n" + bookmarkItem.getUrl().getSpec())
                         .with(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
@@ -1043,6 +1050,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                                 item.getTitle())
                                         : null)
                         .with(BookmarkBarButtonProperties.TITLE, item.getTitle())
+                        .with(
+                                BookmarkBarButtonProperties.TOOLTIP,
+                                item.isFolder()
+                                        ? item.getTitle()
+                                        : item.getTitle() + "\n" + item.getUrl().getSpec())
                         .with(BookmarkBarButtonProperties.BOOKMARK_ITEM, item)
                         .with(BookmarkBarButtonProperties.TEXT_APPEARANCE_ID, textStyleRes)
                         .with(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID, backgroundResId);
