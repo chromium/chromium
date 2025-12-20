@@ -161,6 +161,7 @@ public class NtpThemeCoordinator {
                                     mCallbackController.makeCancelable(
                                             onChromeColorSelectedCallback));
                 }
+                mNtpChromeColorsCoordinator.prepareToShow();
                 mBottomSheetDelegate.showBottomSheet(CHROME_COLORS);
             }
 

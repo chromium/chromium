@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,8 +22,6 @@ import android.widget.ImageView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.junit.Before;
@@ -59,7 +58,7 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
     @Mock private NtpChromeColorGridRecyclerView mRecyclerView;
     @Mock private FrameLayout mRecyclerViewContainer;
     @Mock private LayoutManager mLayoutManager;
-    @Mock private Adapter<RecyclerView.ViewHolder> mAdapter;
+    @Mock private NtpChromeColorsAdapter mAdapter;
     @Mock private GradientDrawable mGradientDrawable;
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private TextWatcher mTextWatcher;
@@ -219,5 +218,18 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
         verify(mConstraintSet).constrainedWidth(eq(id), eq(true));
         verify(mConstraintSet).constrainMaxWidth(eq(id), eq(maxWidthPx));
         verify(mConstraintSet).applyTo(eq(mConstraintLayout));
+    }
+
+    @Test
+    public void testSetHighlightedItemIndex() {
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER, mAdapter);
+
+        int index = 0;
+        mModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, index);
+        verify(mAdapter).setSelectedPosition(eq(index));
+
+        // Verifies the setSelectedPosition() will be called again for the same index value.
+        mModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, index);
+        verify(mAdapter, times(2)).setSelectedPosition(eq(index));
     }
 }

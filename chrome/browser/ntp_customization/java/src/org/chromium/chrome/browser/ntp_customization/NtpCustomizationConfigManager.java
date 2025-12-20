@@ -325,7 +325,7 @@ public class NtpCustomizationConfigManager {
         mOriginalBitmap = bitmap;
         mBackgroundImageInfo = backgroundImageInfo;
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
-        NtpCustomizationUtils.resetCustomizedColors();
+        cleanupChromeColors();
 
         notifyBackgroundImageChanged(
                 bitmap, backgroundImageInfo, fromInitialization, oldBackgroundImageType);
@@ -542,11 +542,16 @@ public class NtpCustomizationConfigManager {
         mOriginalBitmap = null;
     }
 
+    private void cleanupChromeColors() {
+        mNtpThemeColorInfo = null;
+        NtpCustomizationUtils.resetCustomizedColors();
+    }
+
     private void cleanupOnBackgroundTypeChanged(@NtpBackgroundImageType int oldType) {
         if (oldType == mBackgroundImageType) return;
 
         switch (oldType) {
-            case CHROME_COLOR -> NtpCustomizationUtils.resetCustomizedColors();
+            case CHROME_COLOR -> cleanupChromeColors();
             case IMAGE_FROM_DISK, THEME_COLLECTION -> cleanupBackgroundImage();
         }
     }

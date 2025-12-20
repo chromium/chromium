@@ -360,6 +360,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // Test case for resetting to the default color.
         mNtpCustomizationConfigManager.onBackgroundReset();
         assertEquals(defaultColor, mNtpCustomizationConfigManager.getBackgroundColor(mContext));
+        assertNull(mNtpCustomizationConfigManager.getNtpThemeColorInfo());
 
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertFalse(prefsManager.contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));

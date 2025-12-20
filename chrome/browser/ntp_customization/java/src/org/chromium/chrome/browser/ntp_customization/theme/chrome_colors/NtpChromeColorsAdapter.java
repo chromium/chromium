@@ -9,12 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.List;
@@ -42,9 +42,8 @@ public class NtpChromeColorsAdapter
         mSelectedPosition = selectedPosition;
     }
 
-    @NonNull
     @Override
-    public ColorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view =
                 LayoutInflater.from(mContext)
                         .inflate(
@@ -55,25 +54,11 @@ public class NtpChromeColorsAdapter
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
+    public void onBindViewHolder(ColorViewHolder holder, int position) {
         NtpThemeColorInfo colorInfo = mColorInfoList.get(position);
         View.OnClickListener clickListener =
                 v -> {
-                    mOnClickCallback.onResult(colorInfo);
-                    int newPosition = holder.getBindingAdapterPosition();
-
-                    if (mSelectedPosition == newPosition) {
-                        return;
-                    }
-
-                    // Notify the adapter to un-draw its selection.
-                    if (mSelectedPosition != RecyclerView.NO_POSITION) {
-                        notifyItemChanged(mSelectedPosition);
-                    }
-
-                    // Notify the adapter to draw the new selection.
-                    mSelectedPosition = newPosition;
-                    notifyItemChanged(newPosition);
+                    setSelectedPositionImpl(holder.getBindingAdapterPosition(), colorInfo);
                 };
 
         holder.bind(colorInfo, clickListener, mSelectedPosition);
@@ -89,6 +74,52 @@ public class NtpChromeColorsAdapter
         return mColorInfoList.size();
     }
 
+    /**
+     * Selects the given position.
+     *
+     * @param position The position of the newly selected item
+     */
+    void setSelectedPosition(int position) {
+        NtpThemeColorInfo colorInfo = null;
+
+        if (position > RecyclerView.NO_POSITION && position < mColorInfoList.size()) {
+            colorInfo = mColorInfoList.get(position);
+        } else {
+            // If the position is invalid, set to RecyclerView.NO_POSITION.
+            position = RecyclerView.NO_POSITION;
+        }
+
+        setSelectedPositionImpl(position, colorInfo);
+    }
+
+    /**
+     * Called when an new position is selected. It highlights the new position and removes the
+     * highlight of the previously selected position if applied.
+     *
+     * @param newPosition The newly selected position
+     * @param colorInfo The corresponding colorInfo of the newly selected position
+     */
+    private void setSelectedPositionImpl(int newPosition, @Nullable NtpThemeColorInfo colorInfo) {
+        if (colorInfo != null) {
+            mOnClickCallback.onResult(colorInfo);
+        }
+
+        if (mSelectedPosition == newPosition) {
+            return;
+        }
+
+        // Notify the adapter to un-draw its selection.
+        if (mSelectedPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(mSelectedPosition);
+        }
+
+        // Notify the adapter to draw the new selection.
+        mSelectedPosition = newPosition;
+        if (newPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(newPosition);
+        }
+    }
+
     Callback<NtpThemeColorInfo> getOnItemClickedCallbackForTesting() {
         return mOnClickCallback;
     }
@@ -97,9 +128,13 @@ public class NtpChromeColorsAdapter
         return mColorInfoList;
     }
 
+    int getSelectedPositionForTesting() {
+        return mSelectedPosition;
+    }
+
     /** ColorViewHolder that holds references to the views for a single color item. */
     public static class ColorViewHolder extends RecyclerView.ViewHolder {
-        public ColorViewHolder(@NonNull View itemView) {
+        public ColorViewHolder(View itemView) {
             super(itemView);
         }
 

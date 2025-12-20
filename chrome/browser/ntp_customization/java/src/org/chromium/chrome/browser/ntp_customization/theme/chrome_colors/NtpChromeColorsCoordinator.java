@@ -52,9 +52,16 @@ public class NtpChromeColorsCoordinator {
     private final int mItemWidth;
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
+
+    // The color info when the Chrome color bottom sheet is created. We compare it with the newly
+    // selected one to see if recreate() is necessary when the bottom sheet is closed. This color
+    // info should never been changed after creation.
     private final @Nullable NtpThemeColorInfo mPrimaryColorInfo;
     private boolean mIsDailyRefreshToggled;
     private boolean mIsDailyRefreshEnabled;
+
+    private @Nullable NtpChromeColorsAdapter mNtpChromeColorsAdapter;
+
     private @Nullable NtpThemeColorInfo mLastClickedColorInfo;
     private @Nullable @ColorInt Integer mTypedBackgroundColor;
     private @Nullable @ColorInt Integer mTypedPrimaryColor;
@@ -92,10 +99,6 @@ public class NtpChromeColorsCoordinator {
         mPropertyModel.set(
                 NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER,
                 this::handleLearnMoreClick);
-        mIsDailyRefreshEnabled =
-                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference();
-        mPropertyModel.set(
-                NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, mIsDailyRefreshEnabled);
         mPropertyModel.set(
                 NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 this::onDailyRefreshSwitchToggled);
@@ -113,32 +116,61 @@ public class NtpChromeColorsCoordinator {
                         .getDimensionPixelSize(
                                 R.dimen.ntp_customization_chrome_colors_grid_spacing);
 
-        mPrimaryColorInfo = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
-        buildRecyclerView();
-        setRecyclerViewMaxWidth();
-    }
-
-    private void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {
-        mIsDailyRefreshToggled = true;
-        mIsDailyRefreshEnabled = isChecked;
-        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
-    }
-
-    private void buildRecyclerView() {
         mPropertyModel.set(
                 NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER,
                 new GridLayoutManager(mContext, 1));
         mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, mItemWidth);
         mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_SPACING, mSpacing);
 
+        mPrimaryColorInfo = NtpCustomizationConfigManager.getInstance().getNtpThemeColorInfo();
+        setRecyclerViewMaxWidth();
+    }
+
+    /**
+     * Called before showing the bottom sheet. This method will update the highlighted item of the
+     * color list, as well as the state of the daily refresh toggle.
+     */
+    public void prepareToShow() {
+        NtpThemeColorInfo currentColorInfo =
+                NtpCustomizationConfigManager.getInstance().getNtpThemeColorInfo();
+
+        // Initializes the state of the daily refresh toggle.
+        mIsDailyRefreshEnabled =
+                NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
+                                == NtpBackgroundImageType.CHROME_COLOR
+                        && NtpCustomizationUtils
+                                .getIsChromeColorDailyRefreshEnabledFromSharedPreference();
+        mPropertyModel.set(
+                NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, mIsDailyRefreshEnabled);
+
+        // Initializes the state of the color list recyclerview.
         int primaryColorIndex =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
-                        mContext, mChromeColorsList, mPrimaryColorInfo);
-        NtpChromeColorsAdapter adapter =
-                new NtpChromeColorsAdapter(
-                        mContext, mChromeColorsList, this::onItemClicked, primaryColorIndex);
+                        mContext, mChromeColorsList, currentColorInfo);
+        if (mNtpChromeColorsAdapter == null) {
+            mNtpChromeColorsAdapter =
+                    new NtpChromeColorsAdapter(
+                            mContext, mChromeColorsList, this::onItemClicked, primaryColorIndex);
+            mPropertyModel.set(
+                    NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER, mNtpChromeColorsAdapter);
+        }
+        // Sets the highlighted color item if user has chosen a customized color theme.
+        mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, primaryColorIndex);
+    }
 
-        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER, adapter);
+    @VisibleForTesting
+    void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {
+        mIsDailyRefreshToggled = true;
+        mIsDailyRefreshEnabled = isChecked;
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
+
+        if (isChecked
+                && NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
+                        != NtpBackgroundImageType.CHROME_COLOR) {
+            // If the current background type isn't Chrome color and user turns on daily refresh,
+            // highlights the first color info.
+            mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 0);
+        }
     }
 
     private void setRecyclerViewMaxWidth() {
@@ -285,5 +317,13 @@ public class NtpChromeColorsCoordinator {
 
     public PropertyModel getPropertyModelForTesting() {
         return mPropertyModel;
+    }
+
+    public boolean getIsDailyRefreshEnabledForTesting() {
+        return mIsDailyRefreshEnabled;
+    }
+
+    public boolean getIsDailyRefreshToggledForTesting() {
+        return mIsDailyRefreshToggled;
     }
 }

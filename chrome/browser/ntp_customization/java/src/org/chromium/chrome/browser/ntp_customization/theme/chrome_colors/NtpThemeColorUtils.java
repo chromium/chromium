@@ -84,7 +84,9 @@ public class NtpThemeColorUtils {
             Context context,
             List<NtpThemeColorInfo> chromeColorsList,
             @Nullable NtpThemeColorInfo primaryColorInfo) {
-        if (!chromeColorsList.isEmpty()) return RecyclerView.NO_POSITION;
+        if (!chromeColorsList.isEmpty()) {
+            return findMatchedIndex(context, chromeColorsList, primaryColorInfo);
+        }
 
         boolean hasPrimaryColor = primaryColorInfo != null;
         int primaryColorIndex = RecyclerView.NO_POSITION;
@@ -112,6 +114,28 @@ public class NtpThemeColorUtils {
         }
 
         return primaryColorIndex;
+    }
+
+    /**
+     * If the primaryColorInfo matches any color info in the list, returns its index. Otherwise
+     * returns RecyclerView.NO_POSITION.
+     *
+     * @param context The application context.
+     * @param chromeColorsList The chrome colors list which has been build.
+     * @param primaryColorInfo The current color info to match.
+     */
+    private static int findMatchedIndex(
+            Context context,
+            List<NtpThemeColorInfo> chromeColorsList,
+            @Nullable NtpThemeColorInfo primaryColorInfo) {
+        if (primaryColorInfo == null) return RecyclerView.NO_POSITION;
+
+        for (int i = 0; i < chromeColorsList.size(); i++) {
+            if (isPrimaryColorMatched(context, primaryColorInfo, chromeColorsList.get(i))) {
+                return i;
+            }
+        }
+        return RecyclerView.NO_POSITION;
     }
 
     /**
@@ -225,12 +249,7 @@ public class NtpThemeColorUtils {
      */
     public static List<NtpThemeColorInfo> createThemeColorListForTesting(Context context) {
         List<NtpThemeColorInfo> colorList = new ArrayList<>();
-        colorList.add(
-                createNtpThemeColorInfo(
-                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA));
-        colorList.add(
-                createNtpThemeColorInfo(
-                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE));
+        NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(context, colorList, null);
         return colorList;
     }
 }

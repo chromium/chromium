@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.PRIMARY_COLOR_CIRCLE_VIEW_COLOR;
@@ -106,6 +107,12 @@ public class NtpChromeColorsLayoutViewBinder {
                     view.findViewById(R.id.chrome_colors_switch_button);
             dailyRefreshSwitch.setOnCheckedChangeListener(
                     model.get(DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
+        } else if (propertyKey == HIGHLIGHTED_ITEM_INDEX) {
+            var adapter = model.get(RECYCLER_VIEW_ADAPTER);
+            if (adapter != null
+                    && adapter instanceof NtpChromeColorsAdapter ntpChromeColorsAdapter) {
+                ntpChromeColorsAdapter.setSelectedPosition(model.get(HIGHLIGHTED_ITEM_INDEX));
+            }
         }
     }
 

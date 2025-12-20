@@ -52,15 +52,6 @@ public class NtpThemeColorUtilsUnitTest {
     }
 
     @Test
-    public void testCreateThemeColorList() {
-        List<NtpThemeColorInfo> colorList =
-                NtpThemeColorUtils.createThemeColorListForTesting(mContext);
-        assertEquals(2, colorList.size());
-        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, colorList.get(0).id);
-        assertEquals(NtpThemeColorId.NTP_COLORS_BLUE, colorList.get(1).id);
-    }
-
-    @Test
     public void testCreateNtpThemeColorInfo() {
         NtpThemeColorInfo lightBlueInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
@@ -121,16 +112,23 @@ public class NtpThemeColorUtilsUnitTest {
     public void testInitColorsListAndFindPrimaryColorIndex_colorListNotEmpty() {
         List<NtpThemeColorInfo> colorList =
                 NtpThemeColorUtils.createThemeColorListForTesting(mContext);
-        colorList.remove(1);
-        int originalSize = 1;
+        int originalSize = NtpThemeColorId.NUM_ENTRIES - 1;
         assertEquals(originalSize, colorList.size());
         NtpThemeColorInfo primaryColor =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
+        // Verifies the colorList remains unchanged, and the index of the matched info is returned.
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
                         mContext, colorList, primaryColor);
+        assertEquals(originalSize, colorList.size());
+        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA - 1, index);
+
+        // Tests the case when the given color info is null.
+        index =
+                NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
+                        mContext, colorList, null);
         assertEquals(originalSize, colorList.size());
         assertEquals(RecyclerView.NO_POSITION, index);
     }
