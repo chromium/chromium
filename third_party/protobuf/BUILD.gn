@@ -30,6 +30,7 @@ config("protobuf_config_internal") {
     cflags = [
       # For src/google/protobuf/map.cc:
       "-Wno-deprecated-this-capture",
+
       # For src/google/protobuf/generated_message_reflection.cc
       "-Wno-unused-lambda-capture",
     ]
@@ -168,6 +169,10 @@ static_library("protobuf_full") {
       # The proto_extras plugin generates code that some of the above fuzzers
       # use, and thus needs to know the full types.
       "//components/proto_extras:protobuf_full_support",
+
+      # The proto_extras plugin uses a custom option, which must be defined in a
+      # full protobuf. This is only used in the plugin binary.
+      "//components/proto_extras:proto_extras_options_proto",
 
       # Sync requires descriptors for testing.
       "//components/sync:sync_full_proto_unittests",

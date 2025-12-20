@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import "google/protobuf/descriptor.proto";
+
+package proto_extras;
+
+message ProtoExtrasMessageOptions {
+  optional bool has_custom_serialization = 1;
+}
+
+extend google.protobuf.MessageOptions {
+  optional ProtoExtrasMessageOptions proto_extras_options = 85240;
+}

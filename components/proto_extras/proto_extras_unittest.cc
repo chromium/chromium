@@ -790,5 +790,16 @@ TEST(ProtoExtrasProto2ToValueTest, TestEditionMessage) {
   })!"));
 }
 
+TEST(ProtoExtrasProto2ToValueTest, TestCustomSerialization) {
+  CustomSerializedMessage message;
+  EXPECT_EQ(ToValue(message), base::Value("custom serialized"));
+
+  CustomSerializedMessageEmbedder embedder;
+  embedder.mutable_message()->set_int_field(3);
+  EXPECT_EQ(ToValue(embedder), base::test::ParseJson(R"!({
+    "message": "custom serialized"
+  })!"));
+}
+
 }  // namespace
 }  // namespace proto_extras

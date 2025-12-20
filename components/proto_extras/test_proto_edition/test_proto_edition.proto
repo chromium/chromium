@@ -8,6 +8,18 @@ option optimize_for = LITE_RUNTIME;
 
 package proto_extras;
 
+import option "components/proto_extras/proto_extras_options.proto";
+
 message TestMessageEdition {
   string text = 1;
+}
+
+message CustomSerializedMessage {
+  option (proto_extras_options).has_custom_serialization = true;
+
+  int32 int_field = 1;
+}
+
+message CustomSerializedMessageEmbedder {
+  CustomSerializedMessage message = 1;
 }

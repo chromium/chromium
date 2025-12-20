@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/proto_extras/proto_extras_options.pb.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/code_generator.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/helpers.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/names.h"
@@ -151,6 +152,24 @@ void CreateToValueSerializationDefinitions(
     const Descriptor& message,
     Printer* printer,
     const ProtoExtrasGeneratorOptions& options) {
+  printer->Emit({{"message_type", ClassName(&message)}},
+                R"(
+void MaybeToValue(const std::optional<$message_type$>& opt_message,
+                    std::string_view name,
+                    base::DictValue& output_dictionary) {
+  if (!opt_message.has_value()) {
+    return;
+  }
+  output_dictionary.Set(name, ToValue(*opt_message));
+}
+)");
+
+  if (message.options()
+          .GetExtension(proto_extras::proto_extras_options)
+          .has_custom_serialization()) {
+    return;
+  }
+
   printer->Emit(
       {{"message_type", ClassName(&message)},
        {"to_value_fields",
@@ -225,16 +244,7 @@ base::Value ToValue(const $message_type$& message) {
   ::proto_extras::SerializeUnknownFields(message, dict);
   $to_value_fields$
   return base::Value(std::move(dict));
-}
-void MaybeToValue(const std::optional<$message_type$>& opt_message,
-                    std::string_view name,
-                    base::DictValue& output_dictionary) {
-  if (!opt_message.has_value()) {
-    return;
-  }
-  output_dictionary.Set(name, ToValue(*opt_message));
-}
-)");
+})");
 }
 
 void CreateOstreamDefinition(const Descriptor& message,

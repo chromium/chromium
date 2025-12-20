@@ -22,6 +22,12 @@
 #   passed in `output_dictionary` with the given `name`.
 # - Include via <name>.to_value.h.
 # - Disable via `omit_to_value_serialization` (default is false)
+# - Individual messages can opt in to custom serialization by adding the
+#   line: `option (proto_extras_options).has_custom_serialization =
+#   true;` and providing an implementation of the `ToValue` method as a
+#   dependency in `custom_serialization_deps`. Using this
+#   option requires adding `:proto_extras_options` to your
+#   `proto_deps`.
 # - Caveats:
 #   - Integer types in the proto that are not compatible with base::Value are
 #     serialized as strings (e.g. uint64_t).
@@ -94,8 +100,7 @@ template("proto_extras") {
     _generate_to_value = false
   }
   _generate_ostream = true
-  if (defined(invoker.omit_stream_operators) &&
-      invoker.omit_stream_operators) {
+  if (defined(invoker.omit_stream_operators) && invoker.omit_stream_operators) {
     _generate_ostream = false
   }
   _generate_equality = true
@@ -110,6 +115,10 @@ template("proto_extras") {
   _proto_in_dir = "//"
   if (defined(invoker.proto_in_dir)) {
     _proto_in_dir = invoker.proto_in_dir
+  }
+  _custom_serialization_deps = []
+  if (defined(invoker.custom_serialization_deps)) {
+    _custom_serialization_deps = invoker.custom_serialization_deps
   }
 
   assert(
@@ -139,7 +148,8 @@ template("proto_extras") {
                                "sources",
                                "visibility",
                              ])
-      link_deps = [ "//components/proto_extras:proto_extras_lib" ]
+      link_deps = [ "//components/proto_extras:proto_extras_lib" ] +
+                  _custom_serialization_deps
       if (_protobuf_full_support) {
         link_deps += [ "//components/proto_extras:protobuf_full_support" ]
       }
@@ -298,7 +308,7 @@ template("proto_test_extras") {
         false,
         "The `deps` field is set, but the `extras_deps` field is not set. " +
         "Protobuf depependencies need to have a corresponding proto_extras " +
-        " target so the generated matchers can use the `Serialize()` call.")
+        "target so the generated matchers can use the `Serialize()` call.")
   }
   proto_library("${target_name}") {
     testonly = true
