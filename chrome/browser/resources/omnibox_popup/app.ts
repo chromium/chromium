@@ -258,6 +258,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     const {tabs} = await this.pageHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
   }
+
+  protected onLensSearchChipClicked_() {
+    this.pageHandler_.openLensSearch();
+  }
 }
 
 declare global {

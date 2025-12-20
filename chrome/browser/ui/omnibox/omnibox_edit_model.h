@@ -261,6 +261,9 @@ class OmniboxEditModel {
   // Returns true if the popup is open and is in in AI-Mode.
   bool PopupInAiMode() const;
 
+  // Opens the Lens search UI using a synthetic autocomplete match.
+  void OpenLensSearch();
+
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.

@@ -125,6 +125,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override {}
+  void OpenLensSearch() override {}
 
   // Stores `callback` to be run when the page remote is bound and ready to
   // receive calls. Runs `callback` immediately if the remote is already bound.

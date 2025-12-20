@@ -48,6 +48,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                        bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
   void ShowContextMenu(const gfx::Point& point) override;
+  void OpenLensSearch() override;
 
   void OnShow();
 

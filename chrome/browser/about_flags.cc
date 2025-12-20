@@ -864,38 +864,44 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
     {"AddContextButtonVariant", "none"},
     {"ShowCreateImageTool", "true"},
     {"ShowToolsAndModels", "true"},
-    {"ShowVoiceSearchInSteadyComposebox","true"},
-    {"ShowVoiceSearchInExpandedComposebox","true"},
+    {"ShowVoiceSearchInSteadyComposebox", "true"},
+    {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowLensSearchChip", "true"},
         {"ShowToolsAndModels", "true"},
-        {"ShowVoiceSearchInSteadyComposebox","true"},
-        {"ShowVoiceSearchInExpandedComposebox","true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowLensSearchChip", "true"},
         {"ShowToolsAndModels", "true"},
-        {"ShowVoiceSearchInSteadyComposebox","true"},
-        {"ShowVoiceSearchInExpandedComposebox","true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
         {"ShowCreateImageTool", "true"},
+        {"ShowLensSearchChip", "true"},
         {"ShowToolsAndModels", "true"},
-        {"ShowVoiceSearchInSteadyComposebox","true"},
-        {"ShowVoiceSearchInExpandedComposebox","true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowLensSearchChip", "true"},
         {"ShowToolsAndModels", "true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
         {"MaxNumFiles", "5"},
 };
 const FeatureEntry::FeatureParam

@@ -195,6 +195,10 @@ void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
   }
 }
 
+void WebuiOmniboxHandler::OpenLensSearch() {
+  edit_model()->OpenLensSearch();
+}
+
 void WebuiOmniboxHandler::OnShow() {
   // Ignore the call until the page remote is bound and ready to receive calls.
   if (!IsRemoteBound()) {
