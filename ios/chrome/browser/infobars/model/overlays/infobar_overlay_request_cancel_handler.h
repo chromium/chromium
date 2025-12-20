@@ -54,7 +54,7 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
         scoped_observation_{this};
   };
 
-  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
+  raw_ptr<InfoBarIOS> infobar_ = nullptr;
   RemovalObserver removal_observer_;
 };
 
