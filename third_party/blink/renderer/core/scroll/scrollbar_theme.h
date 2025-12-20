@@ -95,8 +95,6 @@ class CORE_EXPORT ScrollbarTheme {
   // parameter on Mac.
   virtual bool BlinkControlsOverlayVisibility() const { return true; }
 
-  virtual bool InvalidateOnMouseEnterExit() const { return false; }
-
   // Returns parts of the scrollbar which must be repainted following a change
   // in the thumb position, given scroll positions before and after.
   virtual ScrollbarPart PartsToInvalidateOnThumbPositionChange(

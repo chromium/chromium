@@ -359,12 +359,11 @@ void Scrollbar::SetHoveredPart(ScrollbarPart part) {
   if (part == hovered_part_)
     return;
 
-  if (((hovered_part_ == kNoPart || part == kNoPart) &&
-       GetTheme().InvalidateOnMouseEnterExit())
-      // When there's a pressed part, we don't draw a hovered state, so there's
-      // no reason to invalidate.
-      || pressed_part_ == kNoPart)
+  // When there's a pressed part, we don't draw a hovered state, so there's no
+  // reason to invalidate.
+  if (pressed_part_ == kNoPart) {
     SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(hovered_part_ | part));
+  }
 
   hovered_part_ = part;
 }
