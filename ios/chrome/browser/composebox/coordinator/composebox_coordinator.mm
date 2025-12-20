@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_animator.h"
 #import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_presentation_controller.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -261,9 +262,17 @@
 }
 
 - (ComposeboxTheme*)createTheme {
+  BOOL isNTP = NO;
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (activeWebState && IsVisibleURLNewTabPage(activeWebState)) {
+    isNTP = YES;
+  }
+
   return [[ComposeboxTheme alloc]
       initWithInputPlatePosition:[self inputPlatePositionPreference]
-                       incognito:self.isOffTheRecord];
+                       incognito:self.isOffTheRecord
+                           isNTP:isNTP];
 }
 
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {
@@ -298,6 +307,10 @@
 
 - (UIView*)popupViewForAnimation {
   return _viewController.omniboxPopupContainer;
+}
+
+- (UIView*)incognitoViewForAnimation {
+  return _viewController.incognitoView;
 }
 
 - (void)setComposeboxMode:(ComposeboxMode)mode {

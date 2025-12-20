@@ -276,6 +276,16 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   return self;
 }
 
+- (UIEdgeInsets)intrinsicContentVisualInsets {
+  [self layoutIfNeeded];
+  [_containerView layoutIfNeeded];
+  [_stackView layoutIfNeeded];
+  CGFloat topInset = _stackView.frame.origin.y;
+  CGFloat botInset = _containerView.frame.size.height -
+                     _stackView.frame.origin.y - _stackView.frame.size.height;
+  return UIEdgeInsetsMake(topInset, 0, botInset, 0);
+}
+
 #pragma mark - UIView overrides
 
 - (void)didMoveToSuperview {

@@ -18,6 +18,12 @@
 // Whether the theme is associated with an incognito session.
 @property(nonatomic, readonly) BOOL incognito;
 
+// Whether the composebox is based on an NTP.
+@property(nonatomic, readonly) BOOL isNTP;
+
+// Whether to show the incognito view when there are no suggestions available.
+@property(nonatomic, readonly) BOOL useIncognitoViewFallback;
+
 // Convenience check for input plate position top.
 @property(nonatomic, readonly) BOOL isTopInputPlate;
 
@@ -60,7 +66,8 @@
 // Creates a newc instance with the given configuration
 - (instancetype)initWithInputPlatePosition:
                     (ComposeboxInputPlatePosition)position
-                                 incognito:(BOOL)incognito;
+                                 incognito:(BOOL)incognito
+                                     isNTP:(BOOL)isNTP;
 
 @end
 
