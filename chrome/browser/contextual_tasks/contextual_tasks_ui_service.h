@@ -178,7 +178,7 @@ class ContextualTasksUiService : public KeyedService {
 
   // Return whether there is a user is either signed into the browser or has
   // an account tied to the provided URL.
-  virtual bool IsSignedInToWebOrBrowser(const GURL& url);
+  virtual bool IsSignedInToBrowser(const GURL& url);
 
  private:
   // Focus an existing tab based on the provided URL if it exists. The URLs must

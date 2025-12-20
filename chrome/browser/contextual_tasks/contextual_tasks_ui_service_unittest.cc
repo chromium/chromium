@@ -80,7 +80,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                ContextualTasksUI* webui_controller),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
-  MOCK_METHOD(bool, IsSignedInToWebOrBrowser, (const GURL& url), (override));
+  MOCK_METHOD(bool, IsSignedInToBrowser, (const GURL& url), (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -121,7 +121,7 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
-    ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
+    ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
         .WillByDefault(Return(true));
 
     ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
@@ -274,6 +274,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   task_environment()->RunUntilIdle();
 }
 
+// Verifies the happy path. The AI page is intercepted when the user is signed
+// in to Chrome and the web identity matches.
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   GURL ai_url(kAiPageUrl);
   GURL tab_url(kTestUrl);
@@ -359,6 +361,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
 
   ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
       .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
+      .WillByDefault(Return(true));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -374,29 +378,27 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
   task_environment()->RunUntilIdle();
 }
 
-// If the user is signed out of the browser, an account mismatch shouldn't
-// prevent AI navigations from being intercepted.
-TEST_F(ContextualTasksUiServiceTest,
-       AiPageNotIntercepted_AccountMismatch_SignedOut) {
+// Test for identity case: Browser Identity: Signed out.
+// This covers cases where the user is signed out of Chrome, regardless of
+// web identity.
+TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
   GURL ai_url(kAiPageUrl);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL());
 
-  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
+  ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
       .WillByDefault(Return(false));
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
-  run_loop.Run();
+  task_environment()->RunUntilIdle();
 }
 
 // If the search results page is navigated to while viewing the UI in a tab,
