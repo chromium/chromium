@@ -1360,6 +1360,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-listbox-childfocus.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaListboxOptionRedundancy) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-listbox-option-redundancy.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaListItem) {
   RunAriaTest(FILE_PATH_LITERAL("aria-listitem.html"));
 }

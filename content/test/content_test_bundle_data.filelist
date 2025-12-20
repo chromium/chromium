@@ -1103,6 +1103,8 @@ data/accessibility/aria/aria-listbox-expected-auralinux.txt
 data/accessibility/aria/aria-listbox-expected-blink.txt
 data/accessibility/aria/aria-listbox-expected-mac.txt
 data/accessibility/aria/aria-listbox-expected-win.txt
+data/accessibility/aria/aria-listbox-option-redundancy-expected-android.txt
+data/accessibility/aria/aria-listbox-option-redundancy.html
 data/accessibility/aria/aria-listbox.html
 data/accessibility/aria/aria-listitem-expected-android-assist-data.txt
 data/accessibility/aria/aria-listitem-expected-android-external.txt

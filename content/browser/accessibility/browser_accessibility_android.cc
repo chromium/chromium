@@ -538,13 +538,13 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     }
   }
 
-  // Allows users to select options in a listbox with touch interaction.
-  if (GetRole() == ax::mojom::Role::kListBoxOption) {
-    return true;
-  }
-
   while (parent) {
-    if (ui::IsControl(parent->GetRole()) && !IsFocusable()) {
+    // Generally, if a parent is a control (like a combobox) and the child isn't
+    // focusable, the child is hidden to reduce clutter.
+    // However, an exception is made for kListBoxOption so it remains exposed
+    // for touch interaction.
+    if (ui::IsControl(parent->GetRole()) && !IsFocusable() &&
+        GetRole() != ax::mojom::Role::kListBoxOption) {
       return false;
     }
 
