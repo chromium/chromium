@@ -22,7 +22,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
-  RunTest("contextual_tasks/contextual_tasks_browsertest.js", "mocha.run();");
+  RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
