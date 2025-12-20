@@ -1210,7 +1210,7 @@
     Pay later not available in this currency
   </message>
   <message name="IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user to choose another payment method due to the selected currency is not supported yet.">
-    Choose another payment method to complete this purchase.
+    Choose another payment method to complete this purchase
   </message>
 
   <!-- Credit card benefits-related strings -->
