@@ -51,18 +51,18 @@ class ExtensionFunctionDispatcher {
    public:
     // Returns the WindowController associated with this delegate, or NULL if no
     // window is associated with the delegate.
-    virtual WindowController* GetExtensionWindowController() const;
+    virtual WindowController* GetExtensionWindowController();
 
     // Asks the delegate for any relevant WebContents associated with this
     // context. For example, the WebContents in which an infobar or
     // chrome-extension://<id> URL are being shown. Callers must check for a
     // NULL return value (as in the case of a background page).
-    virtual content::WebContents* GetAssociatedWebContents() const;
+    virtual content::WebContents* GetAssociatedWebContents();
 
     // If the associated web contents is not null, returns that. Otherwise,
     // returns the next most relevant visible web contents. Callers must check
     // for a NULL return value (as in the case of a background page).
-    virtual content::WebContents* GetVisibleWebContents() const;
+    virtual content::WebContents* GetVisibleWebContents();
 
    protected:
     virtual ~Delegate() {}
@@ -96,9 +96,9 @@ class ExtensionFunctionDispatcher {
   // See the Delegate class for documentation on these methods.
   // TODO(devlin): None of these belong here. We should kill
   // ExtensionFunctionDispatcher::Delegate.
-  WindowController* GetExtensionWindowController() const;
-  content::WebContents* GetAssociatedWebContents() const;
-  content::WebContents* GetVisibleWebContents() const;
+  WindowController* GetExtensionWindowController();
+  content::WebContents* GetAssociatedWebContents();
+  content::WebContents* GetVisibleWebContents();
 
   // The BrowserContext that this dispatcher is associated with.
   content::BrowserContext* browser_context() { return browser_context_; }

@@ -123,8 +123,7 @@ ExtensionWebContentsObserver::ExtensionWebContentsObserver(
 ExtensionWebContentsObserver::~ExtensionWebContentsObserver() {
 }
 
-content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents()
-    const {
+content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents() {
   DCHECK(initialized_);
   return web_contents();
 }

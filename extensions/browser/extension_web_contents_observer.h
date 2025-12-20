@@ -129,7 +129,7 @@ class ExtensionWebContentsObserver
       content::WebContents* web_contents);
 
   // ExtensionFunctionDispatcher::Delegate overrides.
-  content::WebContents* GetAssociatedWebContents() const override;
+  content::WebContents* GetAssociatedWebContents() override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

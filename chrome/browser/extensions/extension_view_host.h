@@ -59,7 +59,7 @@ class ExtensionViewHost
 
     // Returns the WindowController associated with this ExtensionViewHost, or
     // nullptr if no window is associated with the delegate.
-    virtual WindowController* GetExtensionWindowController() const = 0;
+    virtual WindowController* GetExtensionWindowController() = 0;
 
    protected:
     Delegate();
@@ -116,8 +116,8 @@ class ExtensionViewHost
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
 
   // extensions::ExtensionFunctionDispatcher::Delegate
-  WindowController* GetExtensionWindowController() const override;
-  content::WebContents* GetVisibleWebContents() const override;
+  WindowController* GetExtensionWindowController() override;
+  content::WebContents* GetVisibleWebContents() override;
 
   // ExtensionHostRegistry::Observer:
   void OnExtensionHostDocumentElementAvailable(

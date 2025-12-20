@@ -1382,7 +1382,7 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
   // download if it's invalid. This indicates the owning WebContents has
   // been destroyed, so we can't proceed. Additionally, there may not be
   // a visible WebContents, which also means we can't proceed.
-  const ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
+  ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
   content::WebContents* web_contents =
       extension_dispatcher ? extension_dispatcher->GetVisibleWebContents()
                            : nullptr;
@@ -1729,7 +1729,7 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   float scale = 1.0;
   // We have a WeakPtr to the ExtensionFunctionDispatcher, so validate it
   // before attempting to use it.
-  const ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
+  ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
   EXTENSION_FUNCTION_VALIDATE(extension_dispatcher);
   content::WebContents* web_contents =
       extension_dispatcher->GetVisibleWebContents();

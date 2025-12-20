@@ -149,17 +149,17 @@ class ScopedRequestParamsCrashKeys {
 }  // namespace
 
 WindowController*
-ExtensionFunctionDispatcher::Delegate::GetExtensionWindowController() const {
+ExtensionFunctionDispatcher::Delegate::GetExtensionWindowController() {
   return nullptr;
 }
 
 content::WebContents*
-ExtensionFunctionDispatcher::Delegate::GetAssociatedWebContents() const {
+ExtensionFunctionDispatcher::Delegate::GetAssociatedWebContents() {
   return nullptr;
 }
 
 content::WebContents*
-ExtensionFunctionDispatcher::Delegate::GetVisibleWebContents() const {
+ExtensionFunctionDispatcher::Delegate::GetVisibleWebContents() {
   return GetAssociatedWebContents();
 }
 
@@ -517,18 +517,15 @@ void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
   }
 }
 
-WindowController*
-ExtensionFunctionDispatcher::GetExtensionWindowController() const {
+WindowController* ExtensionFunctionDispatcher::GetExtensionWindowController() {
   return delegate_ ? delegate_->GetExtensionWindowController() : nullptr;
 }
 
-content::WebContents*
-ExtensionFunctionDispatcher::GetAssociatedWebContents() const {
+content::WebContents* ExtensionFunctionDispatcher::GetAssociatedWebContents() {
   return delegate_ ? delegate_->GetAssociatedWebContents() : nullptr;
 }
 
-content::WebContents*
-ExtensionFunctionDispatcher::GetVisibleWebContents() const {
+content::WebContents* ExtensionFunctionDispatcher::GetVisibleWebContents() {
   return delegate_ ? delegate_->GetVisibleWebContents() : nullptr;
 }
 

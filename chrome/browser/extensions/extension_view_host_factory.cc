@@ -67,7 +67,7 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
     return browser_->OpenEyeDropper(frame, listener);
   }
 
-  WindowController* GetExtensionWindowController() const override {
+  WindowController* GetExtensionWindowController() override {
     return BrowserExtensionWindowController::From(browser_);
   }
 
@@ -118,7 +118,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
     return browser->OpenEyeDropper(frame, listener);
   }
 
-  WindowController* GetExtensionWindowController() const override {
+  WindowController* GetExtensionWindowController() override {
     Browser* browser = FindBrowser();
     if (browser == nullptr) {
       return nullptr;
@@ -175,7 +175,7 @@ class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
     return nullptr;
   }
 
-  WindowController* GetExtensionWindowController() const override {
+  WindowController* GetExtensionWindowController() override {
     // TODO(cbrug.com/385987224): Implement this method for Android.
     NOTIMPLEMENTED();
     return nullptr;

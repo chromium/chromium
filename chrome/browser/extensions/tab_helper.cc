@@ -228,11 +228,11 @@ void TabHelper::WebContentsDestroyed() {
   reload_required_ = false;
 }
 
-WindowController* TabHelper::GetExtensionWindowController() const {
+WindowController* TabHelper::GetExtensionWindowController() {
   return ExtensionTabUtil::GetWindowControllerOfTab(web_contents());
 }
 
-WebContents* TabHelper::GetAssociatedWebContents() const {
+WebContents* TabHelper::GetAssociatedWebContents() {
   return web_contents();
 }
 
