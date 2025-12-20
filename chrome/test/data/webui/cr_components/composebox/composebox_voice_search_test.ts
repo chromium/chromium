@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
 
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
@@ -15,6 +16,7 @@ import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
 import {assertStyle, installMock} from './composebox_test_utils.js';
 
 // Returns a promise that resolves when CSS style has transitioned.
@@ -196,11 +198,12 @@ suite('Composebox voice search', () => {
     Object.assign(result.results[0]![0]!, {transcript: 'hello world'});
 
     const finalResultEventPromise = new Promise((resolve) => {
-      composeboxElement.addEventListener(
-          'voice-search-final-result', (e: Event) => {
-            const customEvent = e as CustomEvent<string>;
-            resolve(customEvent.detail);
-          }, {once: true});
+      composeboxElement.addEventListener('voice-search-action', (e: Event) => {
+        const customEvent = e as CustomEvent<{value: VoiceSearchAction}>;
+        if (customEvent.detail.value === VoiceSearchAction.QUERY_SUBMITTED) {
+          resolve(customEvent.detail.value);
+        }
+      }, {once: true});
     });
     const showPromise =
         getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
@@ -209,7 +212,7 @@ suite('Composebox voice search', () => {
     mockSpeechRecognition.onresult!(result);
     await microtasksFinished();
     const finalResult = await finalResultEventPromise;
-    assertEquals('hello world', finalResult);
+    assertEquals(VoiceSearchAction.QUERY_SUBMITTED, finalResult);
     await showPromise;
 
     // The composebox should navigate with the text after `onEnd` is called.

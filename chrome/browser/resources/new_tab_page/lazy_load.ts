@@ -25,7 +25,7 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+export {ComposeboxElement, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 export {ContextualEntrypointAndCarouselElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 export {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';

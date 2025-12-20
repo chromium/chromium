@@ -85,7 +85,7 @@ enum State {
  * persisted to logs. Entries should not be renumbered, removed or reused.
  */
 export enum Action {
-  ACTIVATE_SEARCH_BOX = 0,
+  ACTIVATE = 0,
   ACTIVATE_KEYBOARD = 1,
   CLOSE_OVERLAY = 2,
   QUERY_SUBMITTED = 3,

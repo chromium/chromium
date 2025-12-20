@@ -17,11 +17,12 @@ import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customi
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
@@ -896,7 +897,21 @@ export class AppElement extends AppElementBase {
 
   protected onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
-    recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
+    recordVoiceAction(VoiceAction.ACTIVATE);
+  }
+
+  protected onComposeVoiceSearchAction_(
+      e: CustomEvent<{value: ComposeVoiceSearchAction}>) {
+    switch (e.detail.value) {
+      case ComposeVoiceSearchAction.ACTIVATE:
+        recordVoiceAction(VoiceAction.ACTIVATE);
+        break;
+      case ComposeVoiceSearchAction.QUERY_SUBMITTED:
+        recordVoiceAction(VoiceAction.QUERY_SUBMITTED);
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   protected onOpenLensSearch_() {
