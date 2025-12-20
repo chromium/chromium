@@ -42,13 +42,16 @@ const ConstraintSpace& ConstraintSpace::CloneForBlockInInlineIfNeeded(
     // If all following lines are empty, which in turn makes it the last
     // *non-empty* inflow child, `RelayoutForTextBoxTrimEnd()` should run the
     // layout again with `ShouldForceTextBoxTrimEnd()` set.
-    space = *this;
+    space.emplace(*this);
+    DCHECK(space->rare_data_);
+    RareData* rare_data = MakeGarbageCollected<RareData>(*space->rare_data_);
     if (ShouldForceTextBoxTrimEnd()) {
-      space->SetShouldForceTextBoxTrimEnd(false);
+      rare_data->should_force_text_box_trim_end = false;
     } else {
-      space->EnsureRareData()->should_text_box_trim_node_end = false;
-      space->EnsureRareData()->should_text_box_trim_fragmentainer_end = false;
+      rare_data->should_text_box_trim_node_end = false;
+      rare_data->should_text_box_trim_fragmentainer_end = false;
     }
+    space->rare_data_ = rare_data;
     return *space;
   } else {
     DCHECK(!ShouldForceTextBoxTrimEnd());

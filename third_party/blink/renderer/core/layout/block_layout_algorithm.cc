@@ -2484,7 +2484,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     // already be past the relevant floats.
     child_data->is_pushed_by_floats = layout_result->IsPushedByFloats();
 
-    ConstraintSpace new_child_space = CreateConstraintSpaceForChild(
+    const ConstraintSpace new_child_space = CreateConstraintSpaceForChild(
         child, child_break_token, *child_data, ChildAvailableSize(),
         /* is_new_fc */ false, child_bfc_block_offset);
     layout_result =
@@ -2505,10 +2505,10 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       DCHECK(child_data->is_pushed_by_floats ||
              !layout_result->IsPushedByFloats());
 
-      new_child_space = CreateConstraintSpaceForChild(
+      const ConstraintSpace final_child_space = CreateConstraintSpaceForChild(
           child, child_break_token, *child_data, ChildAvailableSize(),
           /* is_new_fc */ false, child_bfc_block_offset);
-      layout_result = LayoutInflow(new_child_space, child_break_token,
+      layout_result = LayoutInflow(final_child_space, child_break_token,
                                    early_break_, column_spanner_path_, &child,
                                    inline_child_layout_context);
     }

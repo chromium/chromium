@@ -240,7 +240,7 @@ class CORE_EXPORT LayoutAlgorithm {
     DCHECK(!breakpoint || relayout_type == kRelayoutForEarlyBreak);
     DCHECK(!additional_early_breaks || relayout_type == kRelayoutForEarlyBreak);
 
-    ConstraintSpace new_space = GetConstraintSpace();
+    std::optional<const ConstraintSpace> new_space;
     RelayoutMode new_relayout_mode = relayout_mode_ | relayout_type;
     if (new_relayout_mode & kRelayoutWithoutFragmentation) {
       // We'll relayout with a special cloned constraint space that disables
@@ -250,12 +250,13 @@ class CORE_EXPORT LayoutAlgorithm {
       // be the right thing, since, as far as input is concerned, this node is
       // meant to perform block fragmentation (and it may already have produced
       // multiple fragments, but this one will be the last).
-      new_space = new_space.CloneWithoutFragmentation();
+      new_space.emplace(GetConstraintSpace().CloneWithoutFragmentation());
     }
 
     LayoutAlgorithmParams params(
-        Node(), container_builder_.InitialFragmentGeometry(), new_space,
-        GetBreakToken(), breakpoint, additional_early_breaks);
+        Node(), container_builder_.InitialFragmentGeometry(),
+        new_space ? new_space.value() : GetConstraintSpace(), GetBreakToken(),
+        breakpoint, additional_early_breaks);
 
     Algorithm relayout_algorithm(params);
     relayout_algorithm.relayout_mode_ = new_relayout_mode;

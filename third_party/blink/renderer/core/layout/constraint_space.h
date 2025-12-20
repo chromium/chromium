@@ -113,9 +113,7 @@ class CORE_EXPORT ConstraintSpace final {
         percentage_size_(other.percentage_size_),
         bfc_offset_(other.bfc_offset_),
         exclusion_space_(other.exclusion_space_),
-        rare_data_(other.rare_data_
-                       ? MakeGarbageCollected<RareData>(*other.rare_data_)
-                       : nullptr),
+        rare_data_(other.rare_data_),
         bitfields_(other.bitfields_) {}
   ConstraintSpace(ConstraintSpace&& other)
       : available_size_(other.available_size_),
@@ -127,34 +125,8 @@ class CORE_EXPORT ConstraintSpace final {
     other.rare_data_ = nullptr;
   }
 
-  ConstraintSpace& operator=(const ConstraintSpace& other) {
-    available_size_ = other.available_size_;
-    percentage_size_ = other.percentage_size_;
-    bfc_offset_ = other.bfc_offset_;
-    exclusion_space_ = other.exclusion_space_;
-    rare_data_ = other.rare_data_
-                     ? MakeGarbageCollected<RareData>(*other.rare_data_)
-                     : nullptr;
-    bitfields_ = other.bitfields_;
-    return *this;
-  }
-  ConstraintSpace& operator=(ConstraintSpace&& other) {
-    available_size_ = other.available_size_;
-    percentage_size_ = other.percentage_size_;
-    bfc_offset_ = other.bfc_offset_;
-    exclusion_space_ = std::move(other.exclusion_space_);
-    rare_data_ = std::move(other.rare_data_);
-    other.rare_data_ = nullptr;
-    bitfields_ = other.bitfields_;
-    return *this;
-  }
-
-  ConstraintSpace CloneWithoutFragmentation() const {
-    DCHECK(HasBlockFragmentation());
-    ConstraintSpace copy = *this;
-    copy.DisableFurtherFragmentation();
-    return copy;
-  }
+  ConstraintSpace& operator=(const ConstraintSpace& other) = delete;
+  ConstraintSpace& operator=(ConstraintSpace&& other) = delete;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(exclusion_space_);
@@ -165,6 +137,18 @@ class CORE_EXPORT ConstraintSpace final {
   // in `space`, modifies it, and returns it. Otherwise returns `*this`.
   const ConstraintSpace& CloneForBlockInInlineIfNeeded(
       std::optional<ConstraintSpace>& space) const;
+
+  const ConstraintSpace CloneWithoutFragmentation() const {
+    DCHECK(HasBlockFragmentation());
+    ConstraintSpace copy(*this);
+    DCHECK(copy.rare_data_);
+
+    RareData* rare_data = MakeGarbageCollected<RareData>(*copy.rare_data_);
+    rare_data->block_direction_fragmentation_type = kFragmentNone;
+    rare_data->is_block_fragmentation_forced_off = true;
+    copy.rare_data_ = rare_data;
+    return copy;
+  }
 
   const ExclusionSpace& GetExclusionSpace() const { return exclusion_space_; }
 
@@ -824,7 +808,8 @@ class CORE_EXPORT ConstraintSpace final {
   void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
                            const wtf_size_t row_index) {
     DCHECK(rare_data_);
-    rare_data_->ReplaceTableRowData(table_data, row_index);
+    const_cast<RareData*>(rare_data_.Get())
+        ->ReplaceTableRowData(table_data, row_index);
   }
 
   String ToString() const;
@@ -1224,7 +1209,7 @@ class CORE_EXPORT ConstraintSpace final {
       table_row_data_.row_index = row_index;
     }
 
-    const TableConstraintSpaceData* TableData() {
+    const TableConstraintSpaceData* TableData() const {
       if (GetDataUnionType() == DataUnionType::kTableRowData)
         return table_row_data_.table_data.get();
       if (GetDataUnionType() == DataUnionType::kTableSectionData)
@@ -1609,37 +1594,12 @@ class CORE_EXPORT ConstraintSpace final {
         percentage_size_(kIndefiniteSize, kIndefiniteSize),
         bitfields_(writing_direction) {}
 
-  RareData* EnsureRareData() {
-    if (!rare_data_) {
-      rare_data_ = MakeGarbageCollected<RareData>();
-    }
-
-    return rare_data_;
-  }
-
-  void DisableFurtherFragmentation() {
-    if (!HasBlockFragmentation()) {
-      return;
-    }
-    DCHECK(rare_data_);
-    rare_data_->block_direction_fragmentation_type = kFragmentNone;
-    rare_data_->is_block_fragmentation_forced_off = true;
-  }
-
-  void DisableMonolithicOverflowPropagation() {
-    EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
-  }
-
-  void SetShouldForceTextBoxTrimEnd(bool value = true) {
-    EnsureRareData()->should_force_text_box_trim_end = value;
-  }
-
   LogicalSize available_size_;
   LogicalSize percentage_size_;
   BfcOffset bfc_offset_;
 
   ExclusionSpace exclusion_space_;
-  Member<RareData> rare_data_;
+  Member<const RareData> rare_data_;
   Bitfields bitfields_;
 };
 
