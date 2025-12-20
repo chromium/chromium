@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ai/ai_crx_component.h"
-#include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
@@ -22,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -324,8 +324,8 @@ void TranslationManagerImpl::CreateTranslator(
 
   if (options->observer_remote) {
     base::flat_set<std::string> component_ids = {
-        component_updater::TranslateKitComponentInstallerPolicy::
-            GetExtensionId()};
+        crx_file::id_util::GenerateIdFromHash(
+            component_updater::kTranslateKitPublicKeySHA256)};
     std::set<LanguagePackKey> language_pack_keys =
         CalculateRequiredLanguagePacks(source_language, target_language);
 

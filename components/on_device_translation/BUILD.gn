@@ -8,6 +8,8 @@ assert(enable_on_device_translation)
 
 source_set("on_device_translation") {
   sources = [
+    "constants.cc",
+    "constants.h",
     "features.cc",
     "features.h",
   ]
