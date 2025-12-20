@@ -41,8 +41,8 @@ class WindowController;
 // This class should also implement ExtensionFunctionDispatcher::Delegate.
 //
 // Note that a single ExtensionFunctionDispatcher does *not* correspond to a
-// single RVH, a single extension, or a single URL. This is by design so that
-// we can gracefully handle cases like WebContents, where the RVH, extension,
+// single RFH, a single extension, or a single URL. This is by design so that
+// we can gracefully handle cases like WebContents, where the RFH, extension,
 // and URL can all change over the lifetime of the tab. Instead, these items
 // are all passed into each request.
 class ExtensionFunctionDispatcher {
@@ -82,7 +82,7 @@ class ExtensionFunctionDispatcher {
                 mojom::LocalFrameHost::RequestCallback callback);
 
   // Message handlers.
-  // Dispatches a request for service woker and the response is sent to the
+  // Dispatches a request for service worker and the response is sent to the
   // corresponding render process in an ExtensionMsg_ResponseWorker message.
   void DispatchForServiceWorker(
       mojom::RequestParamsPtr params,
