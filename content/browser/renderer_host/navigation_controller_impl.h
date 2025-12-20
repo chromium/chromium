@@ -550,6 +550,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
                            SetSkipOnBackForwardDoNotSkipForGoToOffset);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           GetIndexForGoBackForwardWithSkipping);
 
   // Defines possible actions that are returned by
   // DetermineActionForHistoryNavigation().
@@ -927,6 +929,30 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // This does not account for skippable entries or the history manipulation
   // intervention.
   int GetIndexForOffset(int offset);
+
+  // Helper for `GetIndexForGoBack()` and `CanGoToOffsetWithSkipping()`.
+  // Scans backwards starting from `from_index` - 1 to find the first entry that
+  // should not be skipped on the back/forward UI. Returns nullopt if no such
+  // entry exists.
+  std::optional<int> GetIndexForGoBackWithSkipping(int from_index);
+
+  // Helper for `GetIndexForGoForward()` and `CanGoToOffsetWithSkipping()`.
+  // Scans forwards starting from `from_index` + 1 to find the first entry that
+  // should not be skipped on the back/forward UI. Returns nullopt if no such
+  // entry exists.
+  std::optional<int> GetIndexForGoForwardWithSkipping(int from_index);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Helper used by CanGoToOffsetWithSkipping()` and GoToOffsetWithSkipping().
+  //
+  // Returns the index of the entry at the specified `offset` from the current
+  // entry, skipping entries that are marked to be skipped on back/forward UI
+  // (e.g., due to the history manipulation intervention).
+  //
+  // Returns std::nullopt if the offset cannot be traversed (e.g., if there are
+  // not enough non-skippable entries).
+  std::optional<int> GetIndexForOffsetWithSkipping(int offset);
+#endif
 
   // History Manipulation intervention:
   // The previous document that started this navigation needs to be skipped in

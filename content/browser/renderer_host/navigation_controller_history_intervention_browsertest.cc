@@ -1359,6 +1359,68 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Tests the helper logic for GetIndexForGoBackWithSkipping and
+// GetIndexForGoForwardWithSkipping.
+//
+// Establishes a history chain: [url_0_ok, url_1_skip, url_2_skip, url_3_ok,
+// url_4_skip, url_5_skip, url_6_ok*]. Then verifies that passing any index
+// within that range resolves to the correct non-skippable target in the
+// specified direction.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       GetIndexForGoBackForwardWithSkipping) {
+  GURL url_0(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_1(embedded_test_server()->GetURL("/title2.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title3.html"));
+  GURL url_3(embedded_test_server()->GetURL("/title4.html"));
+  GURL url_4(embedded_test_server()->GetURL("/simple_page.html"));
+  GURL url_5(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  GURL url_6(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_2.html"));
+
+  // Setup the history chain.
+  EXPECT_TRUE(NavigateToURL(shell(), url_0));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url_2));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url_3));
+  EXPECT_TRUE(NavigateToURL(shell(), url_4));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url_5));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url_6));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Verify state: [url_0_ok, url_1_skip, url_2_skip, url_3_ok, url_4_skip,
+  // url_5_skip, url_6_ok*].
+  ASSERT_EQ(7, controller.GetEntryCount());
+  ASSERT_EQ(6, controller.GetCurrentEntryIndex());
+  EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(5)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(6)->should_skip_on_back_forward_ui());
+
+  // Test backward helper.
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(6));
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(5));
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(4));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(3));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(2));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(1));
+  EXPECT_FALSE(controller.GetIndexForGoBackWithSkipping(0).has_value());
+
+  // Test forward helper.
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(0));
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(1));
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(2));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(3));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(4));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(5));
+  EXPECT_FALSE(controller.GetIndexForGoForwardWithSkipping(6).has_value());
+}
+
 // Tests that the navigation entry that is marked as skippable on back/forward
 // button does not get skipped for GoToOffset calls.
 // This covers actions in the following scenario:

@@ -1208,7 +1208,14 @@ int NavigationControllerImpl::GetIndexForOffset(int offset) {
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoBack() {
-  for (int index = GetIndexForOffset(-1); index >= 0; index--) {
+  return GetIndexForGoBackWithSkipping(GetCurrentEntryIndex());
+}
+
+std::optional<int> NavigationControllerImpl::GetIndexForGoBackWithSkipping(
+    int from_index) {
+  // Start searching one step behind the provided index for the first entry that
+  // shouldn't be skipped by the history manipulation intervention.
+  for (int index = from_index - 1; index >= 0; index--) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       return index;
     }
@@ -1241,7 +1248,14 @@ bool NavigationControllerImpl::ShouldEnableBackButton() {
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
-  for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
+  return GetIndexForGoForwardWithSkipping(GetCurrentEntryIndex());
+}
+
+std::optional<int> NavigationControllerImpl::GetIndexForGoForwardWithSkipping(
+    int from_index) {
+  // Start searching one step ahead the provided index for the first entry that
+  // shouldn't be skipped by the history manipulation intervention.
+  for (int index = from_index + 1; index < GetEntryCount(); index++) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       return index;
     }
@@ -1280,22 +1294,49 @@ bool NavigationControllerImpl::CanGoToOffset(int offset) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
+  return GetIndexForOffsetWithSkipping(offset).has_value();
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<int> NavigationControllerImpl::GetIndexForOffsetWithSkipping(
+    int offset) {
+  int current_scan_index = GetCurrentEntryIndex();
+
   if (offset == 0) {
-    return true;
+    return current_scan_index;
   }
-  int increment = offset > 0 ? 1 : -1;
-  int non_skippable_entries = 0;
-  for (int index = GetIndexForOffset(increment);
-       index >= 0 && index < GetEntryCount(); index += increment) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      non_skippable_entries++;
+
+  int steps = std::abs(offset);
+
+  // Note on time complexity:
+  //
+  // This algorithm is O(N) (where N is the number of entries) despite the
+  // nested loop structure.
+  //
+  // The outer loop runs 'steps' times. However, 'current_scan_index' is updated
+  // at the end of each iteration. The inner scanning functions
+  // (GetIndexForGoBackWithSkipping / GetIndexForGoForwardWithSkipping) start
+  // scanning strictly adjacent to the passed input index and never backtrack.
+  // This ensures that each entry in the navigation list is visited at most
+  // once.
+  for (int i = 0; i < steps; ++i) {
+    std::optional<int> next_index;
+
+    if (offset < 0) {
+      next_index = GetIndexForGoBackWithSkipping(current_scan_index);
+    } else {
+      next_index = GetIndexForGoForwardWithSkipping(current_scan_index);
     }
 
-    if (non_skippable_entries == std::abs(offset)) {
-      return true;
+    if (!next_index.has_value()) {
+      return std::nullopt;
     }
+
+    current_scan_index = next_index.value();
   }
-  return false;
+
+  return current_scan_index;
 }
 #endif
 
@@ -1412,32 +1453,14 @@ NavigationControllerImpl::GoToIndexAndReturnAllRequests(int index) {
 
 #if BUILDFLAG(IS_ANDROID)
 void NavigationControllerImpl::GoToOffsetWithSkipping(int offset) {
+  std::optional<int> target_index = GetIndexForOffsetWithSkipping(offset);
+
   // Note: This is actually reached in unit tests.
-  if (!CanGoToOffsetWithSkipping(offset)) {
+  if (!target_index.has_value()) {
     return;
   }
 
-  if (offset == 0) {
-    GoToIndex(GetIndexForOffset(offset));
-    return;
-  }
-  int increment = offset > 0 ? 1 : -1;
-  // Find the offset without counting skippable entries.
-  int target_index = GetIndexForOffset(increment);
-  int non_skippable_entries = 0;
-  for (int index = target_index; index >= 0 && index < GetEntryCount();
-       index += increment) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      non_skippable_entries++;
-    }
-
-    if (non_skippable_entries == std::abs(offset)) {
-      target_index = index;
-      break;
-    }
-  }
-
-  GoToIndex(target_index);
+  GoToIndex(target_index.value());
 }
 #endif
 
