@@ -35,7 +35,10 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             description:
               "Download spell checker dictionary for Quick Answers feature. "
               "The downloaded dictionaries are used to generate intents for "
-              "selected text."
+              "selected text. Note that Quick Answers work as part of Help "
+              "Me Read on eligible devices/users. Also those condition "
+              "checks is done as async operation. A dictionary download can "
+              "happen during the short period."
             trigger: "Eligible for Quick Answers feature"
             data:
               "The spell checking language identifier. No user identifier is "
@@ -49,7 +52,7 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             user_data {
               type: OTHER
             }
-            last_reviewed: "2023-06-30"
+            last_reviewed: "2025-12-05"
           }
           policy {
             cookies_allowed: NO
