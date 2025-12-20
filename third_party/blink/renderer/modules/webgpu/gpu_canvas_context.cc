@@ -927,8 +927,9 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
   std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access =
       dst_client_si->BeginWebGPUTextureAccess(
-          webgpu, sync_token, device_->GetHandle(), wgpu::TextureDescriptor(),
-          static_cast<uint64_t>(usage), gpu::webgpu::WEBGPU_MAILBOX_NONE);
+          webgpu, sync_token, device_->GetHandle(),
+          wgpu::TextureDescriptor{.usage = usage}, 0,
+          gpu::webgpu::WEBGPU_MAILBOX_NONE);
   wgpu::TexelCopyTextureInfo source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,
