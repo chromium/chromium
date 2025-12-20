@@ -328,6 +328,7 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/page_insights.icon",
         "google_chrome/page_insights_color.icon",
         "google_chrome/pen_spark.icon",
+        "google_chrome/v8_off.icon",
       ]
     }
   }
