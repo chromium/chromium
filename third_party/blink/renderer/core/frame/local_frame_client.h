@@ -248,6 +248,11 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveSoftNavigation(
       SoftNavigationMetricsForReporting metrics) {}
 
+  // A new largest contentful paint candidate relating to the most recent
+  // soft navigation was observed. Also see DidObserveSoftNavigation().
+  virtual void DidObserveSoftLargestContentfulPaint(
+      const LargestContentfulPaintDetailsForReporting& lcp) {}
+
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }

@@ -497,17 +497,15 @@ void SoftNavigationHeuristics::UpdateSoftLcpCandidateForContext(
   LocalFrame* frame = window_->GetFrame();
   // We should not be running paint timing callbacks for detached frames.
   CHECK(frame);
-  auto* loader = frame->Loader().GetDocumentLoader();
-  // This should only be null if the frame was detached.
-  CHECK(loader);
+  LocalFrameClient* frame_client = frame->Client();
+  CHECK(frame_client);
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
-  soft_navigation_lcp_details_for_metrics_ =
+  LargestContentfulPaintDetailsForReporting lcp =
       performance->timingForReporting()
           ->PopulateLargestContentfulPaintDetailsForReporting(
               context->LatestLcpDetailsForUkm());
-
-  loader->DidChangePerformanceTiming();
+  frame_client->DidObserveSoftLargestContentfulPaint(lcp);
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(

@@ -292,15 +292,13 @@ void PageTimingMetricsSender::Update(
   EnsureSendTimer(send_urgently);
 }
 
-void PageTimingMetricsSender::UpdateSoftNavigationMetrics(
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
-  if (soft_navigation_metrics_->Equals(*soft_navigation_metrics)) {
-    return;
-  }
-
-  soft_navigation_metrics_ = std::move(soft_navigation_metrics);
-
-  EnsureSendTimer(true);
+void PageTimingMetricsSender::DidObserveSoftLargestContentfulPaint(
+    mojom::LargestContentfulPaintTimingPtr lcp) {
+  soft_navigation_metrics_->largest_contentful_paint = std::move(lcp);
+  // Until we introduce multiple pending soft lcps, send this urgently
+  // because the next arriving soft navigation will clear
+  // soft_navigation_metrics_.largest_contentful_paint.
+  EnsureSendTimer(/*urgent=*/true);
 }
 
 void PageTimingMetricsSender::SendCustomUserTimingMark(

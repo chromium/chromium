@@ -117,8 +117,14 @@ class PageTimingMetricsSender {
     return soft_navigation_metrics_->Clone();
   }
 
-  void UpdateSoftNavigationMetrics(
-      mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
+  // Returns the start time of the current soft navigation, relative to
+  // (hard) navigation start.
+  base::TimeDelta GetSoftNavigationStartTime() {
+    return soft_navigation_metrics_->start_time;
+  }
+
+  void DidObserveSoftLargestContentfulPaint(
+      mojom::LargestContentfulPaintTimingPtr lcp);
 
   void SendCustomUserTimingMark(mojom::CustomUserTimingMarkPtr custom_timing);
 

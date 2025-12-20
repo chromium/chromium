@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
-#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
@@ -240,16 +239,6 @@ PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
       paint_timing_detector->LargestContentfulPaintDetailsForMetrics();
 
   return PopulateLargestContentfulPaintDetailsForReporting(timing);
-}
-
-LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
-    SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
-  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
-  if (!heuristics) {
-    return {};
-  }
-
-  return heuristics->SoftNavigationLargestContentfulPaintDetailsForMetrics();
 }
 
 uint64_t PerformanceTimingForReporting::FirstEligibleToPaint() const {
@@ -498,14 +487,6 @@ PaintTimingDetector* PerformanceTimingForReporting::GetPaintTimingDetector()
   if (!DomWindow())
     return nullptr;
   return &DomWindow()->GetFrame()->View()->GetPaintTimingDetector();
-}
-
-SoftNavigationHeuristics*
-PerformanceTimingForReporting::GetSoftNavigationHeuristics() const {
-  if (!DomWindow()) {
-    return nullptr;
-  }
-  return DomWindow()->GetSoftNavigationHeuristics();
 }
 
 std::optional<base::TimeDelta>

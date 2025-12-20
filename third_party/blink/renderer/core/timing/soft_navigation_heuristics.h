@@ -110,11 +110,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
-  const LargestContentfulPaintDetailsForReporting&
-  SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
-    return soft_navigation_lcp_details_for_metrics_;
-  }
-
   // Returns an `EventScope` suitable for navigation. Used for navigations not
   // yet associated with an event.
   EventScope CreateNavigationEventScope() {
@@ -232,10 +227,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // which should happen before the tracker is destroyed, since its lifetime is
   // tied to the lifetime of the isolate/main thread.
   scheduler::TaskAttributionTracker* task_attribution_tracker_;
-
-  // The soft navigation LCP details reported to metrics (UKM).
-  LargestContentfulPaintDetailsForReporting
-      soft_navigation_lcp_details_for_metrics_;
 };
 
 }  // namespace blink

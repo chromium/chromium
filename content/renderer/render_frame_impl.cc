@@ -4680,6 +4680,13 @@ void RenderFrameImpl::DidObserveSoftNavigation(
   }
 }
 
+void RenderFrameImpl::DidObserveSoftLargestContentfulPaint(
+    const blink::LargestContentfulPaintDetailsForReporting& lcp) {
+  for (auto& observer : observers_) {
+    observer.DidObserveSoftLargestContentfulPaint(lcp);
+  }
+}
+
 void RenderFrameImpl::DidObserveLayoutShift(double score,
                                             bool after_input_or_scroll) {
   for (auto& observer : observers_)

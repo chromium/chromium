@@ -601,6 +601,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::UseCounterFeature& feature) override;
   void DidObserveSoftNavigation(
       blink::SoftNavigationMetricsForReporting metrics) override;
+  void DidObserveSoftLargestContentfulPaint(
+      const blink::LargestContentfulPaintDetailsForReporting& lcp) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int world_id) override;

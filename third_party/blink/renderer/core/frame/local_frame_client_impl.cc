@@ -911,6 +911,11 @@ void LocalFrameClientImpl::DidObserveSoftNavigation(
   }
 }
 
+void LocalFrameClientImpl::DidObserveSoftLargestContentfulPaint(
+    const LargestContentfulPaintDetailsForReporting& lcp) {
+  web_frame_->Client()->DidObserveSoftLargestContentfulPaint(lcp);
+}
+
 void LocalFrameClientImpl::DidObserveLayoutShift(double score,
                                                  bool after_input_or_scroll) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {

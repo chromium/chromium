@@ -63,6 +63,8 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       const blink::UseCounterFeature& feature) override;
   void DidObserveSoftNavigation(
       blink::SoftNavigationMetricsForReporting metrics) override;
+  void DidObserveSoftLargestContentfulPaint(
+      const blink::LargestContentfulPaintDetailsForReporting& lcp) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,
@@ -135,8 +137,11 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
 
   void SendMetrics();
   void OnMetricsSenderCreated();
+
+  // Start of the (hard) navigation, as seen by PerformanceMetricsForReporting,
+  // in seconds since the Unix Epoch.
+  virtual double GetNavigationStart() const;
   virtual Timing GetTiming() const;
-  virtual mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() const;
   virtual mojom::CustomUserTimingMarkPtr GetCustomUserTimingMark() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
