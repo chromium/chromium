@@ -297,8 +297,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   bool is_nav_to_ai = IsAiUrl(url_params.url);
 
-  // Don't intercept URLs to AI if they're not for the primary account.
-  if (is_nav_to_ai && !IsUrlForPrimaryAccount(url_params.url)) {
+  // Don't intercept URLs to AI if they're not for the primary account, unless
+  // the user isn't signed in.
+  if (is_nav_to_ai && (IsSignedInToWebOrBrowser(url_params.url) &&
+                       !IsUrlForPrimaryAccount(url_params.url))) {
     return false;
   }
 
@@ -404,6 +406,17 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
 bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
   return contextual_tasks::IsUrlForPrimaryAccount(identity_manager_, url);
+}
+
+bool ContextualTasksUiService::IsSignedInToWebOrBrowser(const GURL& url) {
+  if (!identity_manager_) {
+    return false;
+  }
+
+  return IsUserSignedInToWeb(identity_manager_, url) ||
+         !identity_manager_
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .IsEmpty();
 }
 
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(

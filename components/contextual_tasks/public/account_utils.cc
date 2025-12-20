@@ -82,4 +82,14 @@ bool IsUrlForPrimaryAccount(signin::IdentityManager* identity_manager,
   return primary_account.gaia == account_from_url->gaia_id;
 }
 
+bool IsUserSignedInToWeb(signin::IdentityManager* identity_manager,
+                         const GURL& url) {
+  std::optional<gaia::ListedAccount> account_from_url =
+      GetAccountFromCookieJar(identity_manager, url);
+  if (!account_from_url.has_value()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace contextual_tasks
