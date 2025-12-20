@@ -502,6 +502,33 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
   }
 }
 
+// TODO(405219902): Port test to desktop Android when we have support for
+// creating a tab group from native code.
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetGroupById) {
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_TRUE(NavigateToURLInNewTab(GURL("about:blank")));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  int raw_group_id = ExtensionTabUtil::GetGroupId(group_id);
+
+  WindowController* window = nullptr;
+  tab_groups::TabGroupId found_id = tab_groups::TabGroupId::CreateEmpty();
+  const tab_groups::TabGroupVisualData* visual_data = nullptr;
+  std::string error;
+  bool found = ExtensionTabUtil::GetGroupById(
+      raw_group_id, profile(),
+      /*include_incognito=*/true, &window, &found_id, &visual_data, &error);
+
+  EXPECT_TRUE(found);
+  EXPECT_TRUE(window);
+  EXPECT_EQ(group_id, found_id);
+  EXPECT_TRUE(visual_data);
+  EXPECT_TRUE(error.empty());
+}
+
 class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
  public:
   SharedTabGroupExtensionsTabUtilTest() {

@@ -94,6 +94,7 @@ class TestTabModel : public TabModel {
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;
   bool ContainsTabGroup(tab_groups::TabGroupId group_id) override;
+  std::vector<tab_groups::TabGroupId> ListTabGroups() override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;
@@ -209,6 +210,7 @@ class OwningTestTabModel : public TabModel {
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;
   bool ContainsTabGroup(tab_groups::TabGroupId group_id) override;
+  std::vector<tab_groups::TabGroupId> ListTabGroups() override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;

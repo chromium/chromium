@@ -193,6 +193,14 @@ bool TabListBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
   return tab_strip_->group_model()->ContainsTabGroup(group_id);
 }
 
+std::vector<tab_groups::TabGroupId> TabListBridge::ListTabGroups() {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return {};
+  }
+  return tab_strip_->group_model()->ListTabGroups();
+}
+
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {

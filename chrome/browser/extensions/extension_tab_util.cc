@@ -94,9 +94,7 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
 
 // This enum is used for counting schemes used via a navigation triggered by
@@ -795,7 +793,6 @@ int ExtensionTabUtil::GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
   return -1;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::GetGroupById(
     int group_id,
@@ -827,16 +824,24 @@ bool ExtensionTabUtil::GetGroupById(
         target_window->profile() != incognito_profile) {
       continue;
     }
-    Browser* target_browser = target_window->GetBrowser();
+    BrowserWindowInterface* target_browser =
+        target_window->GetBrowserWindowInterface();
     if (!target_browser) {
       continue;
     }
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/405219902): Android does not have SupportsTabGroups() yet.
+    TabStripModel* target_tab_strip =
+        target_browser->GetBrowserForMigrationOnly()->tab_strip_model();
     if (!target_tab_strip->SupportsTabGroups()) {
       continue;
     }
-    for (tab_groups::TabGroupId target_group :
-         target_tab_strip->group_model()->ListTabGroups()) {
+#endif
+    TabListInterface* tab_list = TabListInterface::From(target_browser);
+    if (!tab_list) {
+      continue;
+    }
+    for (tab_groups::TabGroupId target_group : tab_list->ListTabGroups()) {
       if (ExtensionTabUtil::GetGroupId(target_group) == group_id) {
         if (out_window) {
           *out_window = target_window;
@@ -844,11 +849,14 @@ bool ExtensionTabUtil::GetGroupById(
         if (id) {
           *id = target_group;
         }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        // TODO(crbug.com/405219902): Android does not support visual data yet.
         if (visual_data) {
           *visual_data = target_tab_strip->group_model()
                              ->GetTabGroup(target_group)
                              ->visual_data();
         }
+#endif
         return true;
       }
     }
@@ -859,7 +867,6 @@ bool ExtensionTabUtil::GetGroupById(
 
   return false;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tab_groups::TabGroup ExtensionTabUtil::CreateTabGroupObject(

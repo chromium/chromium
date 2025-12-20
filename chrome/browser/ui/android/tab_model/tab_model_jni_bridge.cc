@@ -584,6 +584,12 @@ bool TabModelJniBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
   return Java_TabModelJniBridge_containsTabGroup(env, jobj, group_id.token());
 }
 
+std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
+  // TODO(405219902): Implement JNI.
+  NOTIMPLEMENTED();
+  return {};
+}
+
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {

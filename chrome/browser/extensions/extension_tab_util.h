@@ -217,10 +217,10 @@ class ExtensionTabUtil {
   // Gets the window ID that the group belongs to.
   static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
   // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
   // within the function if so.
+  // TODO(crbug.com/405219902): Visual data is not yet supported on Android.
   static bool GetGroupById(int group_id,
                            content::BrowserContext* browser_context,
                            bool include_incognito,
@@ -228,7 +228,6 @@ class ExtensionTabUtil {
                            tab_groups::TabGroupId* id,
                            const tab_groups::TabGroupVisualData** visual_data,
                            std::string* error);
-#endif
 
   // Returns whether the group is shared or not.
   static bool GetSharedStateOfGroup(const tab_groups::TabGroupId& id);
