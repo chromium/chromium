@@ -1505,7 +1505,7 @@
 <translation id="2002109485265116295">即時</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的數據服務，請先連上 Wi-Fi 網路</translation>
 <translation id="200321182559008924">妥善整理分頁</translation>
-<translation id="2003596238737586336">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。這項設定是由系統管理員管理。</translation>
+<translation id="2003596238737586336">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。這項設定是由管理員管理。</translation>
 <translation id="2004413981947727241">在任何裝置都能使用你的密碼</translation>
 <translation id="2006638907958895361">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="2007404777272201486">回報問題...</translation>
@@ -3768,7 +3768,7 @@
 <translation id="3568431410312984116">允許「幫我寫」功能自動開啟</translation>
 <translation id="3569382839528428029">你想讓 <ph name="APP_NAME" /> 共用你的畫面嗎？</translation>
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。</translation>
-<translation id="3569617221227793022">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。這項設定是由系統管理員管理。</translation>
+<translation id="3569617221227793022">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。這項設定是由管理員管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可以檢視下列檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> 項擴充功能已關閉</translation>
@@ -10153,7 +10153,7 @@
 <translation id="7985528042147759910">要允許外接配件存取記憶體嗎？</translation>
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7986764869610100215">這樣做會持續與訪客共用 USB 裝置。裝置與訪客共用後，會自動嘗試連線至該訪客。如果手動中斷裝置連線，就會停用這項持續性設定；如果完全停用這項功能，系統會重設所有持續性設定。確定嗎？</translation>
-<translation id="798779949890829624">這項設定是由系統管理員管理</translation>
+<translation id="798779949890829624">這項設定是由管理員管理</translation>
 <translation id="7987814697832569482">一律透過這個 VPN 建立連線</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
 <translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>
@@ -10565,7 +10565,7 @@
 <translation id="8263149565724023141">相關應用程式</translation>
 <translation id="8263228331881858381">密碼金鑰已儲存</translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
-<translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
+<translation id="8264024885325823677">這項設定是由管理員管理。</translation>
 <translation id="8264195025773092348">只顯示支援的裝置。中斷連線之前，原生應用程式將無法再使用 USB 裝置。</translation>
 <translation id="8265018477030547118">僅儲存到這部裝置</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>

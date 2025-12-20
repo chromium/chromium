@@ -449,7 +449,7 @@
 <translation id="4594543368593301662">Prikazuju se rezultati za: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filter je resetovan.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> se kopira u folder <ph name="FOLDER_NAME" /></translation>
-<translation id="4631887759990505102">Izvođač</translation>
+<translation id="4631887759990505102">Izvođač/ica</translation>
 <translation id="4635373743001040938">Ponestalo je memorijskog prostora. Sinhronizacija fajlova je isključena.</translation>
 <translation id="4642769377300286600">Instalira se profil za mobilne uređaje, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češki sa Qwerty tastaturom</translation>
@@ -635,7 +635,7 @@
 <translation id="5845721951356578987">Medicinska sestra</translation>
 <translation id="5858478190805449225">Ušteda baterije je uključena. Probajte ponovo kada isključite Uštedu baterije.</translation>
 <translation id="5860491529813859533">Uključi</translation>
-<translation id="5861477046012235702">Gejmer</translation>
+<translation id="5861477046012235702">Gejmer/ka</translation>
 <translation id="5864471791310927901">Pronalaženje DHCP-a nije uspelo</translation>
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="5911887972742538906">Došlo je do greške tokom instaliranja Linux aplikacije.</translation>

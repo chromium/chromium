@@ -12592,34 +12592,6 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 <translation id="9088191250434406767">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan menelusuri dengan kameranya menggunakan <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran saat penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>
-<translation id="9089059535778570773">Jika kebijakan ini diberlakukan, pemilihan proxy yang digunakan browser akan ditentukan oleh URL tujuan dan kondisi lain. Kebijakan ini akan diprioritaskan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan manual oleh pengguna jika ada proxy yang dipilih.
-
-Jika kebijakan ini tidak diberlakukan, kebijakan proxy lain atau setelan pengguna tidak akan terpengaruh.
-
-Saat browser perlu memutuskan proxy yang akan digunakan, entri dalam kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri memenuhi semua poin berikut:
-  * Setidaknya satu pola URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> cocok.
-  * Tidak satu pun pola URL di <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> cocok.
-  * Jika <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ditentukan dan merupakan daftar yang tidak kosong, semua kondisi yang diwakili oleh entrinya akan terpenuhi.
-Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Pola URL yang didukung oleh <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> didokumentasikan di https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sesuai dengan nilai string file PAC seperti:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Atau, penentu proxy yang menyerupai URL dapat digunakan langsung untuk menentukan proxy, misalnya:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-Entri pertama yang dapat dijangkau dalam daftar akan digunakan sebagai proxy. Entri yang tidak valid dalam daftar akan diabaikan.
-
-Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantiannya dapat digunakan untuk menentukan proxy yang akan digunakan. Jika kolom tersebut tidak berisi kondisi apa pun, entrinya akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
-
-Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> yang disediakan dapat menghasilkan alamat IP. DNS tersebut harus berisi host (misalnya example.com) dan, secara opsional, skema atau port (misalnya https://example.com, example.com:123, https://example.com:123). Jika <ph name="PROXY_OVERRIDE_RULES_RESULT" /> bernilai "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", maka kondisinya dianggap terpenuhi. Jika nilainya adalah <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, maka kondisinya dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="9095599826504830315">Jangan izinkan Tab Perbandingan Produk.</translation>
 <translation id="9096772739225230999">Jangan laporkan konfigurasi jaringan</translation>
 <translation id="9098409326885953506">Deteksi jendela yang tertutup dan tangguhkan proses menggambarnya</translation>

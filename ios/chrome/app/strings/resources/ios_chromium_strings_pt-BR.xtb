@@ -42,7 +42,7 @@
 <translation id="1811860791247653035">Para acessar a personalização e outros recursos, inclua o Chromium na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">O Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste website.</translation>
 <translation id="1839447949248872139">Abrir links no Chromium por padrão</translation>
-<translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
+<translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps no Chromium</translation>
 <translation id="1867772173333403444">4. Selecione o Chromium</translation>
@@ -110,7 +110,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="3440830787838130530">Compartilhe a cópia de uma senha com o grupo familiar de forma fácil e segura usando o Gerenciador de senhas do Google</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="347967311580159871">Para conferir mais configurações que usam dados para melhorar sua experiência no Chromium, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
-<translation id="3512168799938877162">Sua senha não foi compartilhada. Verifique sua conexão com a Internet e confira se você fez login no Chromium. Em seguida, tente de novo.</translation>
+<translation id="3512168799938877162">Sua senha não foi compartilhada. Verifique sua conexão com a internet e confira se você fez login no Chromium. Em seguida, tente de novo.</translation>
 <translation id="3529798650269984835">Ative a opção "Bloquear guias anônimas ao fechar o Chromium".</translation>
 <translation id="3541247799006476453">Acesse suas senhas e chaves de acesso com facilidade usando o preenchimento automático do Chromium</translation>
 <translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
@@ -127,7 +127,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="3816686541346279443">O Chromium vai oferecer a opção de salvar sua senha.</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
-<translation id="3833326979834193417">O Chromium executa a Confirmação de segurança todos os dias automaticamente para proteger você de violações de dados, sites perigosos e muito mais. Saiba mais sobre a Confirmação de segurança nas Configurações.</translation>
+<translation id="3833326979834193417">O Chromium executa a Confirmação de segurança todos os dias automaticamente para proteger você de violações de dados, sites perigosos e muito mais. Saiba mais sobre a Confirmação de Segurança nas Configurações.</translation>
 <translation id="3837584850181228767">Dica do Chromium: Navegação Segura com Maior Proteção</translation>
 <translation id="3845223911364528001">Volte ao Chromium para fazer upload do arquivo</translation>
 <translation id="3855938650519180865">Novidades do Chromium</translation>
