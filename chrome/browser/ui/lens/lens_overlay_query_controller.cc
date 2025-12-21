@@ -2398,6 +2398,20 @@ bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
   return !page_content_request_in_progress_ && cluster_info_.has_value();
 }
 
+bool LensOverlayQueryController::IsOff() {
+  return query_controller_state_ == QueryControllerState::kOff;
+}
+
+const lens::proto::LensOverlaySuggestInputs&
+LensOverlayQueryController::GetLensSuggestInputs() const {
+  return suggest_inputs_;
+}
+
+void LensOverlayQueryController::SetSuggestInputsReadyCallback(
+    base::RepeatingClosure callback) {
+  suggest_inputs_ready_callback_ = std::move(callback);
+}
+
 bool LensOverlayQueryController::IsPartialPageContentSubstantial() {
   // If the partial page content is empty, exit early.
   if (partial_content_.empty()) {

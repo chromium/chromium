@@ -46,7 +46,14 @@ LensQueryFlowRouter::LensQueryFlowRouter(
     LensSearchController* lens_search_controller)
     : lens_search_controller_(lens_search_controller) {}
 
-LensQueryFlowRouter::~LensQueryFlowRouter() = default;
+LensQueryFlowRouter::~LensQueryFlowRouter() {
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      session_handle->GetController()->RemoveObserver(this);
+    }
+  }
+}
 
 bool LensQueryFlowRouter::IsOff() const {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
@@ -70,6 +77,10 @@ void LensQueryFlowRouter::StartQueryFlow(
     CHECK(!pending_session_handle_);
     pending_session_handle_ = CreateContextualSearchSessionHandle();
     pending_session_handle_->NotifySessionStarted();
+
+    // Add observer to listen for file upload status changes.
+    pending_session_handle_->GetController()->AddObserver(this);
+
     // Start uploading the current viewport and page content.
     UploadContextualInputData(
         pending_session_handle_.get(),
@@ -98,8 +109,10 @@ LensQueryFlowRouter::GetSuggestInputs() {
   }
 
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
-    // TODO(mercerd): Add support for Lens Suggest in contextual
-    // tasks.
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle) {
+      return session_handle->GetSuggestInputs();
+    }
     return std::nullopt;
   }
 
@@ -109,13 +122,27 @@ LensQueryFlowRouter::GetSuggestInputs() {
 
 void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     base::RepeatingClosure callback) {
+  // If Lens in contextual tasks is enabled, setup a callback to be called when
+  // the file upload status changes, which can then be used to know if the
+  // suggest inputs are ready.
   if (IsOff()) {
     return;
   }
 
+  // Return the callback immediately if the suggest inputs are already ready.
+  if (AreLensSuggestInputsReady(GetSuggestInputs())) {
+    callback.Run();
+  }
+
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
-    // TODO(mercerd): Add support for Lens Suggest in contextual
-    // tasks.
+    suggest_inputs_ready_callback_ = std::move(callback);
+
+    // If the session handle doesn't exist yet, the observer will be added
+    // once it is created.
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      session_handle->GetController()->AddObserver(this);
+    }
     return;
   }
   lens_overlay_query_controller()->SetSuggestInputsReadyCallback(
@@ -210,6 +237,27 @@ LensQueryFlowRouter::CreateContextualSearchSessionHandle() {
 const SkBitmap& LensQueryFlowRouter::GetViewportScreenshot() const {
   return lens_search_controller_->lens_overlay_controller()
       ->initial_screenshot();
+}
+
+void LensQueryFlowRouter::OnFileUploadStatusChanged(
+    const base::UnguessableToken& file_token,
+    lens::MimeType mime_type,
+    contextual_search::FileUploadStatus file_upload_status,
+    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+  const auto& suggest_inputs = GetSuggestInputs();
+  if (!suggest_inputs.has_value()) {
+    return;
+  }
+  if (AreLensSuggestInputsReady(GetSuggestInputs())) {
+    if (suggest_inputs_ready_callback_) {
+      suggest_inputs_ready_callback_.Run();
+    }
+
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      session_handle->GetController()->RemoveObserver(this);
+    }
+  }
 }
 
 void LensQueryFlowRouter::SendInteractionToContextualTasks(

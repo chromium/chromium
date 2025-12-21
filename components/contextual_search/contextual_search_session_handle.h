@@ -54,7 +54,7 @@ class ContextualSearchSessionHandle {
 
   // Returns the ContextualSearchContextController reference held by this
   // handle or nullptr if the session is not valid.
-  ContextualSearchContextController* GetController() const;
+  virtual ContextualSearchContextController* GetController() const;
 
   // Returns the ContextualSearchMetricsRecorder reference held by this handle
   // or nullptr if the session is not valid.
@@ -67,7 +67,8 @@ class ContextualSearchSessionHandle {
   void NotifySessionAbandoned();
 
   // Returns the suggest inputs for the current session.
-  std::optional<lens::proto::LensOverlaySuggestInputs> GetSuggestInputs() const;
+  virtual std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetSuggestInputs() const;
 
   // Adds a file to the context controller and starts the file upload flow.
   void AddFileContext(std::string file_mime_type,
