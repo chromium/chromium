@@ -33,11 +33,13 @@
 class Profile;
 class SkBitmap;
 
-#if !BUILDFLAG(IS_ANDROID)
 namespace contextual_tasks {
+class ContextualTasksService;
+
+#if !BUILDFLAG(IS_ANDROID)
 class ContextualTasksContextService;
-}  // namespace contextual_tasks
 #endif
+}  // namespace contextual_tasks
 
 namespace lens {
 struct ContextualInputData;
@@ -185,6 +187,10 @@ class ContextualSearchboxHandler
   void OnPreviewReceived(GetTabPreviewCallback callback,
                          const SkBitmap& preview_bitmap);
 
+  std::optional<base::Uuid> GetTaskId();
+  void AssociateTabWithTask(const base::UnguessableToken& file_token);
+  void DisassociateTabsFromTask();
+
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
   raw_ptr<content::WebContents> web_contents_;
@@ -195,6 +201,8 @@ class ContextualSearchboxHandler
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
 #endif
+
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
