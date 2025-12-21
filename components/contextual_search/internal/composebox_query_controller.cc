@@ -354,6 +354,7 @@ void ComposeboxQueryController::CreateSearchUrl(
     if (enable_multi_context_input_flow_) {
       std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
           std::make_unique<lens::LensOverlayContextualInputs>();
+      const FileInfo* last_active_file = nullptr;
       bool has_image_upload = false;
       size_t num_valid_files = 0;
       for (const auto& file_token : search_url_request_info->file_tokens) {
@@ -377,6 +378,7 @@ void ComposeboxQueryController::CreateSearchUrl(
                 *file_info->viewport_request_id_);
             has_image_upload = true;
           }
+          last_active_file = file_info;
         }
       }
 
@@ -385,12 +387,10 @@ void ComposeboxQueryController::CreateSearchUrl(
         // TODO(crbug.com/462509148): Determine how to support interaction
         // requests for multi-context input flow.
         if (search_url_request_info->lens_overlay_selection_type.has_value()) {
-          auto* last_file =
-              GetMutableFileInfo(search_url_request_info->file_tokens.back());
           SendInteractionRequest(
               request_id_generator_.GetNextRequestId(
                   lens::RequestIdUpdateMode::kInteractionRequest,
-                  last_file->request_id.media_type()),
+                  last_active_file->request_id.media_type()),
               search_url_request_info->query_text,
               search_url_request_info->image_crop,
               search_url_request_info->client_logs,
@@ -402,7 +402,7 @@ void ComposeboxQueryController::CreateSearchUrl(
 
           auto search_url_request_id = request_id_generator_.GetNextRequestId(
               lens::RequestIdUpdateMode::kSearchUrl,
-              last_file->request_id.media_type());
+              last_active_file->request_id.media_type());
           std::string serialized_request_id;
           CHECK(
               search_url_request_id->SerializeToString(&serialized_request_id));
@@ -415,7 +415,7 @@ void ComposeboxQueryController::CreateSearchUrl(
         }
 
         AddEncodedVisualSearchInteractionLogDataParam(
-            search_url_request_info->query_text,
+            last_active_file, search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
         // Get the encoded visual search interaction log data.
@@ -440,8 +440,7 @@ void ComposeboxQueryController::CreateSearchUrl(
       // Use the last file uploaded to determine `vit` param.
       // TODO(crbug.com/446972028): Remove this once multi-context input flow is
       // fully supported.
-      auto* last_file =
-          GetMutableFileInfo(search_url_request_info->file_tokens.back());
+      auto* last_file = active_files_.rbegin()->second.get();
       if (last_file && IsValidFileUploadStatusForMultimodalRequest(
                            last_file->upload_status)) {
         // Trigger the interaction request if needed.
@@ -462,7 +461,7 @@ void ComposeboxQueryController::CreateSearchUrl(
         // the interaction request if needed, so that interaction metadata
         // is included.
         AddEncodedVisualSearchInteractionLogDataParam(
-            search_url_request_info->query_text,
+            last_file, search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
         bool should_send_lns_surface =
@@ -1548,14 +1547,12 @@ ComposeboxQueryController::GetMutableFileInfo(
 }
 
 void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
+    const FileInfo* file_info,
     const std::optional<std::string>& query_text,
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
     std::map<std::string, std::string>& url_params_map) {
-  if (active_files_.empty()) {
-    return;
-  }
-  const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
-  if (!IsValidFileUploadStatusForMultimodalRequest(last_file->upload_status)) {
+  if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
+                          file_info->upload_status)) {
     return;
   }
 
@@ -1584,7 +1581,7 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
         query_text.value());
   }
 
-  switch (last_file->mime_type) {
+  switch (file_info->mime_type) {
     case lens::MimeType::kPdf:
       interaction_data.set_interaction_type(
           lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
@@ -1601,7 +1598,7 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
       NOTREACHED();
   }
 
-  auto media_type = last_file->request_id.media_type();
+  auto media_type = file_info->request_id.media_type();
   bool use_full_region =
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
