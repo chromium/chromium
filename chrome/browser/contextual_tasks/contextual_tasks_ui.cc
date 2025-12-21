@@ -449,7 +449,22 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   if (IsShownInTab()) {
     display_mode_msg->mutable_payload()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_TAB);
+    if (previous_web_ui_state_ != WebUIState::kShownInTab) {
+      previous_web_ui_state_ = WebUIState::kShownInTab;
+      if (composebox_handler_) {
+        composebox_handler_->UpdateSuggestedTabContext(nullptr);
+      }
+    }
   } else {
+    if (previous_web_ui_state_ != WebUIState::kShownInSidePanel &&
+        GetBrowser()) {
+      // The WebUI starts showing in the side panel, show the auto suggested
+      // chip if possible.
+      previous_web_ui_state_ = WebUIState::kShownInSidePanel;
+      // TODO(https://crbug.com/467696560): Get the correct upload status of the
+      // current tab.
+      OnActiveTabContextStatusChanged(TabContextStatus::kNotUploaded);
+    }
     display_mode_msg->mutable_payload()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
   }
@@ -463,6 +478,10 @@ void ContextualTasksUI::DisableActiveTabContextSuggestion() {
 
 void ContextualTasksUI::OnActiveTabContextStatusChanged(
     TabContextStatus status) {
+  if (!GetBrowser()) {
+    return;
+  }
+
   if (!composebox_handler_) {
     return;
   }
