@@ -805,14 +805,14 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
 }
 
 void OmniboxEditModel::OpenLensSearch() {
-  AutocompleteController* controller = autocomplete_controller();
-  scoped_refptr<ContextualSearchProvider> provider =
-      new ContextualSearchProvider(controller->autocomplete_provider_client(),
-                                   controller);
-  OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-            provider->CreateLensEntrypointMatch(controller->input()),
-            WindowOpenDisposition::CURRENT_TAB, GURL(), std::u16string(),
-            base::TimeTicks::Now());
+  if (auto* provider =
+          autocomplete_controller()->contextual_search_provider()) {
+    OpenMatch(
+        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+        provider->CreateLensEntrypointMatch(autocomplete_controller()->input()),
+        WindowOpenDisposition::CURRENT_TAB, GURL(), std::u16string(),
+        base::TimeTicks::Now());
+  }
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
