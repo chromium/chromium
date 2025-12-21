@@ -2109,7 +2109,7 @@
 <translation id="7982789257301363584">網路</translation>
 <translation id="7982878511129296052">關閉中...</translation>
 <translation id="7984197416080286869">指紋辨識失敗的次數過多</translation>
-<translation id="798779949890829624">這項設定是由系統管理員管理</translation>
+<translation id="798779949890829624">這項設定是由管理員管理</translation>
 <translation id="7989206653429884947">經常開啟</translation>
 <translation id="799296642788192631">你可以固定重要檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
 <translation id="7994370417837006925">多帳戶登入</translation>
@@ -2162,7 +2162,7 @@
 <translation id="8149413265954228307">顯示藍牙設定。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">按下 Ctrl + W 即可關閉。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自動完成</translation>
-<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由系統管理員管理。</translation>
+<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由管理員管理。</translation>
 <translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">內容</translation>

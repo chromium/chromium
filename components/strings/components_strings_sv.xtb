@@ -515,7 +515,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1822995137827688764">Fastighetsutveckling</translation>
 <translation id="1823768272150895732">Teckensnitt</translation>
 <translation id="1824402189105105503">Åttonde rullen</translation>
-<translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1826516787628120939">Betalkonto</translation>
 <translation id="1832730227369924598">Synkronisering av skrivbord</translation>
 <translation id="1834452765064623979">Byggnad och underhåll</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -2341,7 +2341,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4822493756793346865">Normalpriset baseras på butiker på webben under de senaste 90 dagarna.</translation>
 <translation id="4822922322149719535">Granska felloggen</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> behöver åtkomst till enhetens <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Visa alternativ för att betala senare i kassan</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa ett nytt Google-kalkylark</translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
 <translation id="4827283332383516812">Radera kort</translation>

@@ -2336,7 +2336,6 @@
 <translation id="4822493756793346865">సాధారణ ధరలు గత 90 రోజులలో వెబ్ అంతటా ఉన్న స్టోర్‌లపై ఆధారపడి ఉంటాయి.</translation>
 <translation id="4822922322149719535">ఎర్రర్ లాగ్‌ను రివ్యూ చేయండి</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" />‌కు, మీ పరికరంలోని <ph name="PERMISSION" /> అనుమతి అవసరం</translation>
-<translation id="4825311006392962663">చెక్ అవుట్ చేసే సమయంలో, తర్వాత పేమెంట్ చేసే ఆప్షన్‌లను చూడండి</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
 <translation id="4827283332383516812">కార్డ్‌ను తొలగించండి</translation>
@@ -2553,7 +2552,7 @@
 <translation id="5164928537947209380">ఈ ప్రయోగాత్మక AI టూల్ ఎల్లప్పుడూ సరైనది కాదు. దీన్ని మెరుగుపరచడానికి, మీ కంటెంట్ Googleకి పంపబడుతుంది.
     <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">మీరు మీ సంస్థ ఖాతాకు యాక్సెస్‌ను కోల్పోవచ్చు. లేదా గుర్తింపు స‌మాచారం చౌర్యానికి గురికావచ్చు. మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ను మార్చాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
-<translation id="5171045022955879922">URLను వెతకండి లేదా టైప్ చేయండి</translation>
+<translation id="5171045022955879922">సెర్చ్ చేయండి లేదా URLను టైప్ చేయండి</translation>
 <translation id="5172758083709347301">మెషీన్</translation>
 <translation id="5177076414499237632">ఈ పేజీ సోర్స్ &amp; టాపిక్ గురించి తెలుసుకోండి</translation>
 <translation id="5179490652562926740">పేమెంట్ వెరిఫికేషన్ సెట్టింగ్‌లు సేవ్ అయ్యాయి</translation>
