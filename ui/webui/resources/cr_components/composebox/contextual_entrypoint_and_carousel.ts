@@ -658,6 +658,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.addedTabsIds_ = new Map(
             [...this.addedTabsIds_.entries(), [e.detail.id, file.uuid]]);
         if (e.detail.replaceAutoActiveTabToken) {
+          if (this.automaticActiveTabChipToken_) {
+            this.onDeleteFile_(new CustomEvent('deleteTabContext', {
+              detail: {
+                uuid: this.automaticActiveTabChipToken_,
+              },
+            }));
+          }
           this.automaticActiveTabChipToken_ = file.uuid;
         }
       },
