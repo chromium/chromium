@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/base32/base32.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/url_util.h"
