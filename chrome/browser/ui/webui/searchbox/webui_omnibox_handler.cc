@@ -99,8 +99,17 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
 
+// TODO(crbug.com/469098088): Use something other than
+//   `AutocompleteController::Observer::OnStart()` to reduce the IPC overhead
+//   due to the fact that `AutocompleteController::Start()` gets invoked on
+//   *every* keystroke in the Omnibox.
 void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
                                   const AutocompleteInput& input) {
+  // Ignore the call until the page remote is bound and ready to receive calls.
+  if (!IsRemoteBound()) {
+    return;
+  }
+
   const AutocompleteProviderClient* client =
       autocomplete_controller()->autocomplete_provider_client();
   page_->UpdateLensSearchEligibility(
