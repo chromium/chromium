@@ -132,6 +132,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
+  // Returns whether the provided URL is to a contextual tasks WebUI page.
+  bool IsContextualTasksUrl(const GURL& url);
+
   // Returns whether the provided URL is for the search results page.
   bool IsSearchResultsPage(const GURL& url);
 

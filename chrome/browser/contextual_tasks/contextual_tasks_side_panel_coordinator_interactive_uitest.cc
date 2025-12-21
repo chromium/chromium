@@ -753,6 +753,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_EQ(task1->GetTaskId(), task2->GetTaskId());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       NavigateToContextualTasksPageHidesSidePanel) {
+  SetUpTasks();
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+
+  // Show side panel.
+  coordinator->Show();
+  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+  // Navigate to a contextual tasks URL closes the side panel.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+}
+
 class TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest
     : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
  public:

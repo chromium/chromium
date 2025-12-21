@@ -40,6 +40,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
@@ -289,6 +290,12 @@ void ContextualTasksSidePanelCoordinator::DidFinishNavigation(
 
 void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
+  // Hide side panel if contextual tasks pages is loaded on tab.
+  GURL url = page.GetMainDocument().GetLastCommittedURL();
+  if (ui_service_->IsContextualTasksUrl(url)) {
+    Hide();
+  }
+
   UpdateContextualTaskUI();
 }
 
