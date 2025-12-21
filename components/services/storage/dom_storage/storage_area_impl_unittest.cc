@@ -178,7 +178,7 @@ class StorageAreaImplTest : public testing::Test,
     StorageAreaImpl::Options options =
         GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE);
     storage_area_ = std::make_unique<StorageAreaImpl>(
-        db_.get(), test_map_locator_, &delegate_, options);
+        db_.get(), test_prefix_, test_map_locator_, &delegate_, options);
 
     SetDatabaseEntry(test_prefix_ + test_key1_, test_value1_);
     SetDatabaseEntry(test_prefix_ + test_key2_, test_value2_);
@@ -466,8 +466,9 @@ TEST_F(StorageAreaImplTest, NoDataCallsOnMapLoaded) {
       GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE);
   // Load an area that has no data inside, so the result will be empty and the
   // migration code is triggered.
-  auto area = std::make_unique<StorageAreaImpl>(
-      database(), cloned_map_locator2_, delegate(), options);
+  auto area = std::make_unique<StorageAreaImpl>(database(), test_copy_prefix2_,
+                                                cloned_map_locator2_,
+                                                delegate(), options);
   std::vector<blink::mojom::KeyValuePtr> data;
   EXPECT_TRUE(test::GetAllSync(area.get(), &data));
   EXPECT_TRUE(data.empty());
@@ -847,7 +848,7 @@ TEST_F(StorageAreaImplTest, SetOnlyKeysWithoutDatabase) {
   std::vector<uint8_t> value = ToBytes("foo");
   MockDelegate delegate;
   StorageAreaImpl storage_area(
-      nullptr, test_map_locator_, &delegate,
+      nullptr, test_prefix_, test_map_locator_, &delegate,
       GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE));
   mojo::Remote<blink::mojom::StorageArea> storage_area_remote;
   storage_area.Bind(storage_area_remote.BindNewPipeAndPassReceiver());
@@ -1185,8 +1186,8 @@ TEST_P(StorageAreaImplCacheModeTest, PrefixForking) {
     BarrierBuilder barrier(loop.QuitClosure());
 
     // Create fork 1.
-    fork1 = storage_area_impl()->ForkToNewMap(cloned_map_locator1_,
-                                              &fork1_delegate, options);
+    fork1 = storage_area_impl()->ForkToNewPrefix(
+        test_copy_prefix1_, cloned_map_locator1_, &fork1_delegate, options);
 
     // Do a put on fork 1 and create fork 2.
     // Note - these are 'skipping' the mojo layer, which is why the fork isn't
@@ -1194,7 +1195,8 @@ TEST_P(StorageAreaImplCacheModeTest, PrefixForking) {
     fork1->Put(test_key2_bytes_, ToBytes(value4), test_value2_bytes_,
                test_source_,
                MakeSuccessCallback(barrier.AddClosure(), &put_success1));
-    fork2 = fork1->ForkToNewMap(cloned_map_locator2_, &fork2_delegate, options);
+    fork2 = fork1->ForkToNewPrefix(test_copy_prefix2_, cloned_map_locator2_,
+                                   &fork2_delegate, options);
     fork1->Put(test_key2_bytes_, ToBytes(value5), ToBytes(value4), test_source_,
                MakeSuccessCallback(barrier.AddClosure(), &put_success2));
 
@@ -1202,8 +1204,8 @@ TEST_P(StorageAreaImplCacheModeTest, PrefixForking) {
     storage_area_impl()->Put(
         test_key1_bytes_, ToBytes(value3), test_value1_bytes_, test_source_,
         MakeSuccessCallback(barrier.AddClosure(), &put_success3));
-    fork3 = storage_area_impl()->ForkToNewMap(
-        cloned_map_locator3_, &fork3_delegate,
+    fork3 = storage_area_impl()->ForkToNewPrefix(
+        test_copy_prefix3_, cloned_map_locator3_, &fork3_delegate,
         GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE));
   }
   loop.Run();
@@ -1248,9 +1250,9 @@ TEST_P(StorageAreaImplCacheModeTest, PrefixForkAfterLoad) {
 
   // Execute the fork.
   MockDelegate fork1_delegate;
-  std::unique_ptr<StorageAreaImpl> fork1 =
-      storage_area_impl()->ForkToNewMap(cloned_map_locator1_, &fork1_delegate,
-                                        GetDefaultTestingOptions(GetParam()));
+  std::unique_ptr<StorageAreaImpl> fork1 = storage_area_impl()->ForkToNewPrefix(
+      test_copy_prefix1_, cloned_map_locator1_, &fork1_delegate,
+      GetDefaultTestingOptions(GetParam()));
 
   // Check our forked state.
   EXPECT_EQ(kValue, GetSyncStrUsingGetAll(fork1.get(), test_key1_));
@@ -1292,7 +1294,8 @@ TEST_F(StorageAreaImplTest, PrefixForkingPseudoFuzzer) {
     for (int64_t i = 0; i < kTotalAreas; i++) {
       FuzzState& state = states[i];
       if (!areas[i]) {
-        areas[i] = storage_area_impl()->ForkToNewMap(
+        areas[i] = storage_area_impl()->ForkToNewPrefix(
+            SessionStorageLevelDB::GetMapPrefix(next_map_id),
             GenerateMapLocator(next_map_id), &delegates[i],
             GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE));
         ++next_map_id;
@@ -1301,7 +1304,8 @@ TEST_F(StorageAreaImplTest, PrefixForkingPseudoFuzzer) {
       if ((i % 5 == 0 || i % 6 == 0) && forks + 1 < kTotalAreas) {
         forks++;
         states[forks] = state;
-        areas[forks] = areas[i]->ForkToNewMap(
+        areas[forks] = areas[i]->ForkToNewPrefix(
+            SessionStorageLevelDB::GetMapPrefix(next_map_id),
             GenerateMapLocator(next_map_id), &delegates[forks],
             GetDefaultTestingOptions(CacheMode::KEYS_AND_VALUES));
         ++next_map_id;
@@ -1345,9 +1349,10 @@ TEST_F(StorageAreaImplTest, PrefixForkingPseudoFuzzer) {
                                     : CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
         forks++;
         states[forks] = state;
-        areas[forks] = areas[i]->ForkToNewMap(GenerateMapLocator(next_map_id),
-                                              &delegates[forks],
-                                              GetDefaultTestingOptions(mode));
+        areas[forks] = areas[i]->ForkToNewPrefix(
+            SessionStorageLevelDB::GetMapPrefix(next_map_id),
+            GenerateMapLocator(next_map_id), &delegates[forks],
+            GetDefaultTestingOptions(mode));
         ++next_map_id;
       }
       if (i % 3 == 0) {
@@ -1399,11 +1404,9 @@ TEST_F(StorageAreaImplTest, PrefixForkingPseudoFuzzer) {
   for (size_t i = 0; i < kTotalAreas; ++i) {
     FuzzState& state = states[i];
 
-    int64_t map_id = areas[i]->map_locator_->map_id().value();
-    std::string key1 =
-        ToString(SessionStorageLevelDB::GetMapPrefix(map_id)) + kKey1;
-    std::string key2 =
-        ToString(SessionStorageLevelDB::GetMapPrefix(map_id)) + kKey2;
+    std::vector<uint8_t> prefix = areas[i]->prefix();
+    std::string key1 = ToString(prefix) + kKey1;
+    std::string key2 = ToString(prefix) + kKey2;
     EXPECT_EQ(!!state.val1, HasDatabaseEntry(key1));
     if (state.val1)
       EXPECT_EQ(ToString(state.val1.value()), GetDatabaseEntry(key1));
@@ -1426,7 +1429,8 @@ TEST_P(StorageAreaImplCacheModeTest, EmptyMapIgnoresDisk) {
   StorageAreaImpl::Options options =
       GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE);
   auto empty_storage_area = std::make_unique<StorageAreaImpl>(
-      database(), cloned_map_locator1_, delegate(), options);
+      database(), test_copy_prefix1_, cloned_map_locator1_, delegate(),
+      options);
   empty_storage_area->InitializeAsEmpty();
 
   // Check the forked state, which should be empty.
@@ -1444,14 +1448,15 @@ TEST_P(StorageAreaImplCacheModeTest, ForkFromEmptyMap) {
   StorageAreaImpl::Options options =
       GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE);
   auto empty_storage_area = std::make_unique<StorageAreaImpl>(
-      database(), cloned_map_locator1_, delegate(), options);
+      database(), test_copy_prefix1_, cloned_map_locator1_, delegate(),
+      options);
   empty_storage_area->InitializeAsEmpty();
 
   // Execute the fork, which should shortcut disk and just be empty.
   MockDelegate fork1_delegate;
-  std::unique_ptr<StorageAreaImpl> fork =
-      empty_storage_area->ForkToNewMap(cloned_map_locator1_, &fork1_delegate,
-                                       GetDefaultTestingOptions(GetParam()));
+  std::unique_ptr<StorageAreaImpl> fork = empty_storage_area->ForkToNewPrefix(
+      test_copy_prefix1_, cloned_map_locator1_, &fork1_delegate,
+      GetDefaultTestingOptions(GetParam()));
 
   // Check the forked state, which should be empty.
   EXPECT_EQ("", GetSyncStrUsingGetAll(fork.get(), test_key1_));

@@ -169,8 +169,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   std::vector<base::OnceClosure> on_database_opened_callbacks_;
 
-  // Maps between a StorageKey and its view of the map's key/value pairs in the
-  // database.
+  // Maps between a StorageKey and its prefixed LevelDB view.
   std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
 
   // Counts consecutive commit errors. If this number reaches a threshold, the

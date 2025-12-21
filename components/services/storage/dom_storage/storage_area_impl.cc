@@ -53,10 +53,24 @@ StorageAreaImpl::CommitBatch::~CommitBatch() = default;
 
 StorageAreaImpl::StorageAreaImpl(
     AsyncDomStorageDatabase* database,
+    const std::string& prefix,
     scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
     Delegate* delegate,
     const Options& options)
-    : map_locator_(std::move(map_locator)),
+    : StorageAreaImpl(database,
+                      std::vector<uint8_t>(prefix.begin(), prefix.end()),
+                      map_locator,
+                      delegate,
+                      options) {}
+
+StorageAreaImpl::StorageAreaImpl(
+    AsyncDomStorageDatabase* database,
+    std::vector<uint8_t> prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+    Delegate* delegate,
+    const Options& options)
+    : prefix_(std::move(prefix)),
+      map_locator_(std::move(map_locator)),
       delegate_(delegate),
       database_(database),
       cache_mode_(database ? options.cache_mode : CacheMode::KEYS_AND_VALUES),
@@ -104,12 +118,24 @@ void StorageAreaImpl::Bind(
   }
 }
 
-std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewMap(
-    scoped_refptr<DomStorageDatabase::SharedMapLocator> new_map_locator,
+std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
+    const std::string& new_prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+    Delegate* delegate,
+    const Options& options) {
+  return ForkToNewPrefix(
+      std::vector<uint8_t>(new_prefix.begin(), new_prefix.end()),
+      std::move(map_locator), delegate, options);
+}
+
+std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
+    std::vector<uint8_t> new_prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
     Delegate* delegate,
     const Options& options) {
   auto forked_area = std::make_unique<StorageAreaImpl>(
-      database_, std::move(new_map_locator), delegate, options);
+      database_, std::move(new_prefix), std::move(map_locator), delegate,
+      options);
   // If the source map is empty, don't bother hitting disk.
   if (IsMapLoadedAndEmpty()) {
     forked_area->InitializeAsEmpty();
@@ -252,8 +278,8 @@ void StorageAreaImpl::Put(
         // sent to clients will not contain old value. This is okay since
         // currently the only observer to these notification is the client
         // itself.
-        DVLOG(1) << "Storage area with MapLocator "
-                 << map_locator_->ToDebugString()
+        DVLOG(1) << "Storage area with prefix "
+                 << std::string(prefix_.begin(), prefix_.end())
                  << ": past value has length of " << found->second << ", but:";
         if (client_old_value) {
           DVLOG(1) << "Given past value has incorrect length of "
@@ -367,9 +393,9 @@ void StorageAreaImpl::Delete(
       // then we still let the change go through. But the notification sent to
       // clients will not contain old value. This is okay since currently the
       // only observer to these notification is the client itself.
-      DVLOG(1) << "Storage area with map locator "
-               << map_locator_->ToDebugString() << ": past value has length of "
-               << found->second << ", but:";
+      DVLOG(1) << "Storage area with prefix "
+               << std::string(prefix_.begin(), prefix_.end())
+               << ": past value has length of " << found->second << ", but:";
       if (client_old_value) {
         DVLOG(1) << "Given past value has incorrect length of "
                  << client_old_value.value().size();

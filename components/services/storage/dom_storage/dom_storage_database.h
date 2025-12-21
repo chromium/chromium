@@ -109,11 +109,6 @@ class DomStorageDatabase {
 
     MapLocator Clone() const;
 
-    // For debug logging.  Returns all members in the following string format:
-    // "sessions_ids:<session_ids_[0]>:<session_ids_[1]>:...<session_ids_[N]>,
-    // storage_key:<storage_key_>, map_id: <map_id_>".
-    std::string ToDebugString() const;
-
    private:
     MapLocator();
 
