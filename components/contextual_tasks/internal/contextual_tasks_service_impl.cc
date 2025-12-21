@@ -152,6 +152,10 @@ MergeUrlResourcesResult MergeUrlResources(
   return result;
 }
 
+void RecordNumberOfActiveTasks(int count) {
+  base::UmaHistogramCounts100("ContextualTasks.ActiveTasksCount", count);
+}
+
 }  // namespace
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
@@ -161,8 +165,11 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     AimEligibilityService* aim_eligibility_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    bool supports_ephemeral_only)
+    bool supports_ephemeral_only,
+    base::RepeatingCallback<size_t()> get_active_task_count_callback)
     : composite_context_decorator_(std::move(composite_context_decorator)),
+      get_active_task_count_callback_(
+          std::move(get_active_task_count_callback)),
       aim_eligibility_service_(aim_eligibility_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
@@ -205,12 +212,22 @@ bool ContextualTasksServiceImpl::IsInitialized() {
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {
+  // Note that we are adding 1 to the number of active tasks because the
+  // histogram is recorded before the task is created, but it's not
+  // immediately reflected in the active tasks count.
+  RecordNumberOfActiveTasks(get_active_task_count_callback_.Run() + 1);
+
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id, supports_ephemeral_only_);
   return AddTaskAndNotify(std::move(task));
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTaskFromUrl(const GURL& url) {
+  // Note that we are adding 1 to the number of active tasks because the
+  // histogram is recorded before the task is created, but it's not
+  // immediately reflected in the active tasks count.
+  RecordNumberOfActiveTasks(get_active_task_count_callback_.Run() + 1);
+
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   bool is_ephemeral = supports_ephemeral_only_ ||
                       !IsUrlForPrimaryAccount(identity_manager_, url);

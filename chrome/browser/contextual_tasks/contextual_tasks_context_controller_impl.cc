@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -17,64 +16,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/core/session_id.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace contextual_tasks {
 
-namespace {
-
-size_t GetNumberOfActiveTasks(Profile* profile) {
-  size_t number_of_active_tasks = 0;
-#if !BUILDFLAG(IS_ANDROID)
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [profile, &number_of_active_tasks](BrowserWindowInterface* browser) {
-        if (browser->GetProfile() != profile) {
-          return true;
-        }
-
-        // Check how many tasks are cached in the side panel.
-        if (auto* coordinator =
-                ContextualTasksSidePanelCoordinator::From(browser)) {
-          number_of_active_tasks += coordinator->GetNumberOfActiveTasks();
-        }
-
-        // Check how many tasks are open in a full tab.
-        TabStripModel* tab_strip_model = browser->GetTabStripModel();
-        if (tab_strip_model) {
-          for (int i = 0; i < tab_strip_model->count(); ++i) {
-            if (auto* web_contents = tab_strip_model->GetWebContentsAt(i)) {
-              if (web_contents->GetLastCommittedURL().scheme() ==
-                      content::kChromeUIScheme &&
-                  web_contents->GetLastCommittedURL().host() ==
-                      chrome::kChromeUIContextualTasksHost) {
-                number_of_active_tasks++;
-              }
-            }
-          }
-        }
-
-        return true;
-      });
-#endif  // !BUILDFLAG(IS_ANDROID)
-  return number_of_active_tasks;
-}
-
-void RecordNumberOfActiveTasks(Profile* profile) {
-  // Note that we are adding 1 to the number of active tasks because the
-  // histogram is recorded before the task is created, but it's not immediately
-  // reflected in the active tasks count.
-  base::UmaHistogramCounts100("ContextualTasks.ActiveTasksCount",
-                              GetNumberOfActiveTasks(profile) + 1);
-}
-
-}  // namespace
 
 ContextualTasksContextControllerImpl::ContextualTasksContextControllerImpl(
     Profile* profile,
@@ -94,13 +37,11 @@ bool ContextualTasksContextControllerImpl::IsInitialized() {
 }
 
 ContextualTask ContextualTasksContextControllerImpl::CreateTask() {
-  RecordNumberOfActiveTasks(profile_);
   return service_->CreateTask();
 }
 
 ContextualTask ContextualTasksContextControllerImpl::CreateTaskFromUrl(
     const GURL& url) {
-  RecordNumberOfActiveTasks(profile_);
   return service_->CreateTaskFromUrl(url);
 }
 
