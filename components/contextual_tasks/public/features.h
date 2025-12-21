@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
 
+// Force the application locale to US and the gl query parameter to us.
+BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -100,6 +103,9 @@ extern bool GetEnableLensInContextualTasks();
 // a temporary workaround since the server is not yet ready to adapt the side
 // panel UI unless the gsc=2 param is set.
 extern bool ShouldForceGscInTabMode();
+
+// Returns whether the country code should be forced to US.
+extern bool ShouldForceCountryCodeUS();
 
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();

@@ -193,11 +193,19 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
   if (contextual_tasks::ShouldForceGscInTabMode()) {
     is_side_panel = true;
   }
-  auto params = lens::GetCommonSearchParametersMap(
-      /*country_code=*/g_browser_process->GetFeatures()
-          ->application_locale_storage()
-          ->Get(),
-      is_dark_mode, is_side_panel);
+
+  std::string country_code =
+      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    country_code = "US";
+  }
+
+  auto params = lens::GetCommonSearchParametersMap(country_code, is_dark_mode,
+                                                   is_side_panel);
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    params["gl"] = "us";
+  }
   std::move(callback).Run(
       base::flat_map<std::string, std::string>(params.begin(), params.end()));
 }
