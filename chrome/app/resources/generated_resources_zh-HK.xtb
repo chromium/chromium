@@ -2468,6 +2468,7 @@
 <translation id="2646132387794831258">要將資料夾儲存至 Google 帳戶嗎？</translation>
 <translation id="264897126871533291">紅色弱視</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
+<translation id="2649331484502514724">安全 DNS</translation>
 <translation id="2649508632465204949">教我新技巧</translation>
 <translation id="2651259505411913186">是，分開儲存個人和學校資料</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
@@ -3395,6 +3396,7 @@
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">輸入的網址無效。</translation>
 <translation id="32991397311664836">裝置：</translation>
+<translation id="330140779027048024">一律使用所選的 DNS over HTTPS 供應商</translation>
 <translation id="3301554464236215299">此檔案不是常見的下載項目，可能含有危險內容</translation>
 <translation id="3301996560342889673">要同步記錄嗎？</translation>
 <translation id="33022249435934718">GDI 控制代碼</translation>
@@ -4750,6 +4752,7 @@
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見反映報告</translation>
 <translation id="4206585797409671301">允許咗顯示要求</translation>
+<translation id="4207144975205749656">將導覽要求加密，讓位於同一網絡的攻擊者無法看到你的流量</translation>
 <translation id="4207932031282227921">要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
@@ -6155,6 +6158,7 @@
 <translation id="5186362203408605578">掃瞄 QR 碼以使用其他裝置</translation>
 <translation id="5186381005592669696">自訂支援應用程式的顯示語言</translation>
 <translation id="5186788525428341874">你可在所有裝置上使用此密鑰快速登入。系統會將密碼儲存至 <ph name="ACCOUNT_NAME" /> 的「Google 密碼管理工具」。</translation>
+<translation id="5186792064936776005">使用預設值 (如有)</translation>
 <translation id="5187641678926990264">將網頁作為應用程式安裝…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">分享者：<ph name="USER_NAME" /></translation>
@@ -7126,6 +7130,7 @@
 <translation id="5863445608433396414">啟用偵錯功能</translation>
 <translation id="5863515189965725638">編輯 IBAN</translation>
 <translation id="5864195618110239517">使用按用量收費的連線</translation>
+<translation id="5864624288360677142">使用預設值 (如有)，並以 Google DNS 作為備用</translation>
 <translation id="5864754048328252126">叉緊電時嘅閒置動作</translation>
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">您正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。如直接在電腦上安裝程式，以後無需透過磁碟映像即可直接執行，並且能隨時使用最新的版本。</translation>
@@ -7575,6 +7580,7 @@
 <translation id="6180550893222597997">您要在 <ph name="APP_NAME" /> 上使用哪一個密鑰？</translation>
 <translation id="6181218116951226898">應用程式有時會更新品牌身分。請先查看所有變更，確保沒有問題再更新。</translation>
 <translation id="6181431612547969857">下載被封鎖</translation>
+<translation id="6182100780603067202">同時分享應用程式音訊 (來自其所有視窗)</translation>
 <translation id="6183369864942961155">自動切換淺色/深色主題背景</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
 <translation id="6185132558746749656">裝置位置</translation>

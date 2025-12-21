@@ -4241,6 +4241,7 @@ Quer pará-lo?</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Abra numa &amp;janela de navegação anónima</translation>
 <translation id="3848688783623004960">Abrir na vista dividida</translation>
+<translation id="3849517590329855428">Reduzir tudo</translation>
 <translation id="3850172593216628215">As atualizações de segurança terminaram. Poupe 50 $ ou mais num novo Chromebook.</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3850989673553106152">A palavra-passe foi alterada</translation>
@@ -7246,6 +7247,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5945363896952315544">A sua chave de segurança não pode armazenar mais impressões digitais. Para adicionar uma nova, elimine primeiro uma impressão digital existente.</translation>
 <translation id="5946591249682680882">ID do relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Clicar duas vezes com o rato</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{Não foi possível analisar 1 evento e este não é apresentado}other{Não foi possível analisar # eventos e estes não são apresentados}}</translation>
 <translation id="5948476936444935795">Cancelar importação</translation>
 <translation id="5948536763493709626">Ligue um teclado ou um rato, ou continue a configuração através do seu ecrã tátil. Se estiver a utilizar dispositivos Bluetooth, certifique-se de que estão preparados para sincronizar.</translation>
 <translation id="5949795028157144515">Modo de programador desativado. Algumas extensões foram desativadas.</translation>
@@ -8638,6 +8640,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6914812290245989348">Não ver avisos antes de aceder a sites inseguros</translation>
 <translation id="6916590542764765824">Gerir extensões</translation>
 <translation id="6916676294509106572">Calendário do Outlook oculto</translation>
+<translation id="6916818963747321523">Expandir tudo</translation>
 <translation id="6917873303492266709">Para partilhar, aderir e colaborar em grupos de separadores, abra as definições e ative a opção Permitir início de sessão no Chrome</translation>
 <translation id="6918677045355889289">Atualização do ChromeOS necessária</translation>
 <translation id="6918733588290914545">Configuração rápida com o telemóvel Android</translation>
@@ -9188,6 +9191,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7312040805247765153">Não é possível instalar a app</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7313539585802573958">Cores da luz do teclado</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Não foi possível datar 1 evento e este não é apresentado}other{Não foi possível datar # eventos e estes não são apresentados}}</translation>
 <translation id="7314865262803554456">Não vai receber uma notificação quando a gravação começar.</translation>
 <translation id="7314989823816739632">Romântico</translation>
 <translation id="7317342082064136423">Valide a sua conta</translation>
