@@ -157,6 +157,7 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      tabSuggestions: {type: Array},
       errorScrimVisible_: {type: Boolean},
       contextFilesSize_: {
         type: Number,
@@ -189,6 +190,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
+  accessor tabSuggestions: TabInfo[] = [];
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until

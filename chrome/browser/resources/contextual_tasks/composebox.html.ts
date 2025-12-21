@@ -23,6 +23,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       lens-button-disabled_$="${false}"
       entrypoint-name="ContextualTasks"
       searchbox-layout-mode="TallBottomContext"
+      .tabSuggestions="${this.tabSuggestions_}"
     >
     </cr-composebox>
   </div>
