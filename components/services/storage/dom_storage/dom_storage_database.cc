@@ -6,6 +6,9 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
@@ -101,6 +104,14 @@ DomStorageDatabase::MapLocator DomStorageDatabase::MapLocator::Clone() const {
   clone.storage_key_ = storage_key_;
   clone.map_id_ = map_id_;
   return clone;
+}
+
+std::string DomStorageDatabase::MapLocator::ToDebugString() const {
+  std::string sessions = base::JoinString(session_ids_, /*separator=*/":");
+  std::string map_id = map_id_ ? base::NumberToString(*map_id_) : "null";
+
+  return base::StringPrintf("sessions_ids:%s, storage_key:%s, map_id:%s",
+                            sessions, storage_key_.GetDebugString(), map_id);
 }
 
 DomStorageDatabase::MapLocator::MapLocator() = default;
