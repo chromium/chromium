@@ -2392,6 +2392,120 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(udm_value_24, kMultimodalUdmQueryParameterValue);
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       InteractionQuerySubmittedWithMultiContextFlow) {
+  // Act: Create controller with multi-context flow enabled.
+  CreateController(/*send_lns_surface=*/false,
+                   /*suppress_lns_surface_param_if_no_image=*/true,
+                   /*enable_multi_context_input_flow=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+  search_url_request_info->image_crop = lens::ImageCrop();
+  search_url_request_info->image_crop->mutable_zoomed_crop()
+      ->mutable_crop()
+      ->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_zoom(1);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_parent_height(
+      25);
+  search_url_request_info->file_tokens.push_back(file_token);
+
+  search_url_request_info->client_logs = lens::LensOverlayClientLogs();
+
+  // Runloop for when the interaction request is sent.
+  base::RunLoop run_loop;
+  controller().AddEndpointFetcherCreatedCallback(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Check that an interaction request was created.
+  run_loop.Run();
+  auto interaction_request = controller().last_sent_interaction_request();
+  ASSERT_TRUE(interaction_request.has_value());
+  EXPECT_TRUE(interaction_request->has_interaction_request());
+
+  // Check that the vsint is populated correctly.
+  auto vsint = GetVsintFromUrl(search_url);
+  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
+  EXPECT_TRUE(vsint.log_data().is_parent_query());
+  EXPECT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  EXPECT_TRUE(vsint.has_zoomed_crop());
+  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
+  EXPECT_EQ(vsint.zoomed_crop().parent_height(), 25);
+  EXPECT_EQ(vsint.zoomed_crop().crop().coordinate_type(),
+            lens::CoordinateType::NORMALIZED);
+
+  // Assert: Lens request id is added to queries using multi-context flow IF
+  // interaction is present.
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+  EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
+            DecodeRequestIdFromVsrid(vsrid_value).media_type());
+
+  // Assert: Visual input type is NOT added for multi-context flow.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kVisualInputTypeParameterKey, &vit_value));
+
+  // Assert: Gsession id is added to multimodal queries.
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kSessionIdQueryParameterKey, &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string cud_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the udm value is set to 24 (multimodal search).
+  std::string udm_value_24;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kSearchModeQueryParameterKey, &udm_value_24));
+  EXPECT_EQ(udm_value_24, kMultimodalUdmQueryParameterValue);
+
+  // Check that the contextual inputs param contains the request ids.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(search_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+  EXPECT_THAT(contextual_inputs.inputs(1).request_id(),
+              EqualsProto(interaction_request->interaction_request()
+                              .request_context()
+                              .request_id()));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   // Act: Start the session.
