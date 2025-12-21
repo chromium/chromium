@@ -315,6 +315,10 @@ bool IOSWebViewPaymentsAutofillClient::IsMandatoryReauthEnabled() {
   return false;
 }
 
+bool IOSWebViewPaymentsAutofillClient::IsUsingCustomCardIconEnabled() const {
+  return false;
+}
+
 void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,

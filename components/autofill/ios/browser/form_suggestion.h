@@ -69,6 +69,9 @@ enum class SuggestionIconType {
 // otherwise.
 @property(copy, readonly, nonatomic) UIImage* icon;
 
+// Indicates whether the suggestion has a custom card art image.
+@property(assign, readonly, nonatomic) BOOL hasCustomCardArtImage;
+
 // Denotes the suggestion type.
 @property(assign, readonly, nonatomic) autofill::SuggestionType type;
 
@@ -104,6 +107,19 @@ enum class SuggestionIconType {
 // knowing which provider to use for filling the suggestion. Must be set before
 // the suggestion is filled when kStatelessFormSuggestionController is enabled.
 @property(nonatomic, weak) id<FormSuggestionProvider> provider;
+
+// Returns FormSuggestion (immutable) with given values.
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                            minorValue:(NSString*)minorValue
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(UIImage*)icon
+                 hasCustomCardArtImage:(BOOL)hasCustomCardArtImage
+                                  type:(autofill::SuggestionType)type
+                               payload:(autofill::Suggestion::Payload)payload
+           fieldByFieldFillingTypeUsed:
+               (autofill::FieldType)fieldByFieldFillingTypeUsed
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
