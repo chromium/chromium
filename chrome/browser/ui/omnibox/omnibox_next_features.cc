@@ -265,7 +265,7 @@ const base::FeatureParam<bool> kSendLnsSurfaceParam(
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxImageSuggestions",
-    false);
+    true);
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxTypedSuggest",

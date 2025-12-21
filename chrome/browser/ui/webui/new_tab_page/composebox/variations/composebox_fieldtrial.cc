@@ -245,7 +245,7 @@ const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &kNtpComposebox,
     "ShowComposeboxImageSuggestions",
-    false);
+    true);
 
 const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
     &kNtpComposebox,
