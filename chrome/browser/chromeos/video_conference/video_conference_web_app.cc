@@ -38,7 +38,15 @@ VideoConferenceWebApp::~VideoConferenceWebApp() = default;
 
 void VideoConferenceWebApp::ActivateApp() {
   auto& web_contents = GetWebContents();
-  web_contents.GetDelegate()->ActivateContents(&web_contents);
+  auto* web_contents_delegate = web_contents.GetDelegate();
+  // Delegate could be null in the case of glic when the instance is closed but
+  // still running in the background. See crbug.com/468982418 for details.
+  // TODO(crbug.com/468982418): Remove this after figuring out the proper way to
+  // handle.
+  if (!web_contents_delegate) {
+    return;
+  }
+  web_contents_delegate->ActivateContents(&web_contents);
 }
 
 void VideoConferenceWebApp::SetCapturingStatus(VideoConferenceMediaType device,
