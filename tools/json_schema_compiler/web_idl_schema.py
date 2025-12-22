@@ -548,6 +548,8 @@ class FunctionReturn(TypedProperty):
   """Handles processing for function return values."""
 
   def Process(self) -> dict:
+    if self.type_node.GetProperty('NULLABLE'):
+      self.properties['optional'] = True
     # If the descriptions use the 'Returns' key, we use that to extract a
     # description to add to the return properties.
     if self.descriptions and 'Returns' in self.descriptions:

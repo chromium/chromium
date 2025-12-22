@@ -33,9 +33,10 @@ interface TestWebIdl {
   static undefined takesEnum(EnumType enumArgument);
 
   static ExampleType returnsCustomType();
+  static ExampleType? returnsNullableCustomType();
   static undefined takesCustomType(ExampleType customTypeArgument);
   static undefined takesOptionalCustomType(
-  optional ExampleType optionalCustomTypeArgument);
+      optional ExampleType optionalCustomTypeArgument);
 
   static Promise<DOMString> stringPromiseReturn();
   static Promise<DOMString?> nullablePromiseReturn();

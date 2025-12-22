@@ -186,6 +186,12 @@ class WebIdlSchemaTest(unittest.TestCase):
     }, getFunctionReturn(schema, 'returnsCustomType'))
     self.assertEqual(
         {
+            'name': 'returnsNullableCustomType',
+            'optional': True,
+            '$ref': 'ExampleType'
+        }, getFunctionReturn(schema, 'returnsNullableCustomType'))
+    self.assertEqual(
+        {
             'name': 'returnsDOMStringSequence',
             'type': 'array',
             'items': {
