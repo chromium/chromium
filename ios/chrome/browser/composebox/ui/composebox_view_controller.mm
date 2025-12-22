@@ -43,7 +43,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kCloseButtonSize
-                          weight:UIImageSymbolWeightRegular
+                          weight:UIImageSymbolWeightLight
                            scale:UIImageSymbolScaleMedium];
 
   return SymbolWithPalette(DefaultSymbolWithConfiguration(
