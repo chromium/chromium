@@ -126,6 +126,9 @@ crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ R
 
 # Win11 / Qualcomm Snapdragon X Elite
 crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
 
 # Win 11 / GTX 1660 timeouts
 crbug.com/465497423 [ win11 nvidia-0x2184 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
