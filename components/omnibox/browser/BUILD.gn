@@ -255,6 +255,7 @@ static_library("browser") {
     "open_tab_provider.h",
     "page_classification_functions.cc",
     "page_classification_functions.h",
+    "prewarm_trigger.h",
     "provider_state_service.cc",
     "provider_state_service.h",
     "recently_closed_tabs_provider.cc",

@@ -431,7 +431,7 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 
 PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     GURL& prewarm_url) {
-  if (search_prewarm_handle_) {
+  if (search_prewarm_handle_ || HasSearchResultPagePrerendered()) {
     return PrewarmDecision::kAlreadyExists;
   }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {

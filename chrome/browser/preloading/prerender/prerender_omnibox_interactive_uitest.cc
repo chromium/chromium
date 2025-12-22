@@ -1030,8 +1030,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxReferrerChainUIBrowserTest,
   EXPECT_FALSE(nav_event->initiator_outermost_main_frame_id);
 }
 
-class PrewarmOmniboxUIBrowserTest : public PrerenderOmniboxUIBrowserTest {
+class PrewarmOmniboxUIBrowserTest
+    : public PrerenderOmniboxUIBrowserTest,
+      public ::testing::WithParamInterface<
+          test::ScopedPrewarmFeatureList::PrewarmState> {
  public:
+  PrewarmOmniboxUIBrowserTest() : scoped_prewarm_feature_list_(GetParam()) {}
+
   void StopPrewarm() {
     auto* manager = PrerenderManager::FromWebContents(GetActiveWebContents());
     if (manager) {
@@ -1039,23 +1044,33 @@ class PrewarmOmniboxUIBrowserTest : public PrerenderOmniboxUIBrowserTest {
     }
   }
 
-  void InitiatePrewarm() {
+  void TriggerZeroSuggestionPrewarm() {
     OmniboxController* omnibox_controller =
         browser()->window()->GetLocationBar()->GetOmniboxController();
     ASSERT_TRUE(omnibox_controller);
     omnibox_controller->StartZeroSuggestPrefetch();
   }
 
+  void TriggerUserInteractionPrewarm() {
+    OmniboxController* omnibox_controller =
+        browser()->window()->GetLocationBar()->GetOmniboxController();
+    ASSERT_TRUE(omnibox_controller);
+    omnibox_controller->OnResultChanged(
+        omnibox_controller->autocomplete_controller(), true);
+  }
+
+  bool ZeroSuggestionTriggerEnabled() {
+    return GetParam() == test::ScopedPrewarmFeatureList::PrewarmState::
+                             kEnabledWithDefaultTrigger;
+  }
+
  private:
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::
-          kEnabledWithDefaultTrigger};
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
 };
 
 // Basic scenario for the interactive_ui_tests to trigger the prewarm feature
 // from the omnibox.
-IN_PROC_BROWSER_TEST_F(PrewarmOmniboxUIBrowserTest,
-                       StartPrewarmOnZeroSuggestPrefetch) {
+IN_PROC_BROWSER_TEST_P(PrewarmOmniboxUIBrowserTest, StartPrewarmOnTrigger) {
   // Add a new tab to make it possible to close the tab to flush metrics.
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
   ASSERT_TRUE(AddTabAtIndex(0, embedded_test_server()->GetURL("/empty.html"),
@@ -1077,8 +1092,14 @@ IN_PROC_BROWSER_TEST_F(PrewarmOmniboxUIBrowserTest,
   // Trigger prewarm from the Omnibox.
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
-  InitiatePrewarm();
-  registry_observer.WaitForTrigger(prewarm_url);
+  TriggerZeroSuggestionPrewarm();
+  if (ZeroSuggestionTriggerEnabled()) {
+    registry_observer.WaitForTrigger(prewarm_url);
+  } else {
+    EXPECT_TRUE(registry_observer.GetTriggeredUrls().empty());
+    TriggerUserInteractionPrewarm();
+    registry_observer.WaitForTrigger(prewarm_url);
+  }
 
   // Close the WebContents that hosted the prewarm page to flush metrics.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -1090,5 +1111,13 @@ IN_PROC_BROWSER_TEST_F(PrewarmOmniboxUIBrowserTest,
       "PrewarmDefaultSearchEngine",
       /*kPrimaryMainFrameRendererProcessKilled*/ 57, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrewarmOmniboxUIBrowserTest,
+    ::testing::Values(test::ScopedPrewarmFeatureList::PrewarmState::
+                          kEnabledWithDefaultTrigger,
+                      test::ScopedPrewarmFeatureList::PrewarmState::
+                          kEnabledWithInterationTrigger));
 
 }  // namespace

@@ -14,6 +14,11 @@ BASE_FEATURE_PARAM(bool,
                    "zero_suggest_trigger",
                    false);
 BASE_FEATURE_PARAM(bool,
+                   kPrewarmUserInteractionTrigger,
+                   &kPrewarm,
+                   "user_interaction_trigger",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kForceEnableWithDevTools,
                    &kPrewarm,
                    "force_enable_with_devtools",

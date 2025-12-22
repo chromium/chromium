@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -27,6 +28,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/prewarm_trigger.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -89,7 +91,10 @@ void OmniboxController::StopAutocomplete(bool clear_result) const {
 
 void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
-  client_->MaybePrewarmForDefaultSearchEngine();
+  if (base::FeatureList::IsEnabled(features::kPrewarm) &&
+      features::kPrewarmZeroSuggestTrigger.Get()) {
+    client_->MaybePrewarmForDefaultSearchEngine(PrewarmTrigger::kZeroSuggest);
+  }
 
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
@@ -113,6 +118,15 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
                                         bool default_match_changed) {
   TRACE_EVENT0("omnibox", "OmniboxController::OnResultChanged");
   DCHECK(controller == autocomplete_controller_.get());
+
+  // OnResultChanged will be also called upon the first user interaction
+  // with the omnibox to show a new result.
+  if (base::FeatureList::IsEnabled(features::kPrewarm) &&
+      features::kPrewarmUserInteractionTrigger.Get()) {
+    client_->MaybePrewarmForDefaultSearchEngine(
+        PrewarmTrigger::kUserInteraction);
+  }
+
   const bool popup_was_open = IsPopupOpen();
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know

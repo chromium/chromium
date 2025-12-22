@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
+#include "components/omnibox/browser/prewarm_trigger.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -334,7 +335,7 @@ class OmniboxClient {
 
   // Optionally warm-up for the default search engine so that we can navigate to
   // the search result page effectively.
-  virtual void MaybePrewarmForDefaultSearchEngine() {}
+  virtual void MaybePrewarmForDefaultSearchEngine(PrewarmTrigger trigger) {}
 
   // Whether WebUi Omnibox's aim popup is enabled and the user is eligible to
   // use it.

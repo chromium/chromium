@@ -894,12 +894,15 @@ ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
   return std::nullopt;
 }
 
-void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine() {
-  if (!features::kPrewarmZeroSuggestTrigger.Get()) {
-    // TODO(https://crbug.com/423465927): Consider to add a TriggerPlace enum
-    // argument for this method on adding another triggers, and gate triggers
-    // per the enum.
-    return;
+void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine(
+    PrewarmTrigger trigger) {
+  switch (trigger) {
+    case PrewarmTrigger::kZeroSuggest:
+      CHECK(features::kPrewarmZeroSuggestTrigger.Get());
+      break;
+    case PrewarmTrigger::kUserInteraction:
+      CHECK(features::kPrewarmUserInteractionTrigger.Get());
+      break;
   }
 
   auto* prerender_manager = PrerenderManager::GetOrCreateForWebContents(

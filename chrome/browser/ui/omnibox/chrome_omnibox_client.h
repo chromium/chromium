@@ -133,7 +133,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   bool IsAimPopupEnabled() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
-  void MaybePrewarmForDefaultSearchEngine() override;
+  void MaybePrewarmForDefaultSearchEngine(PrewarmTrigger trigger) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // Update shortcuts when a navigation succeeds.
