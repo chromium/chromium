@@ -11,7 +11,10 @@ mojom("mojo_bindings") {
   disable_variants = true
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  deps = [ "//ui/gfx/geometry/mojom" ]
+  deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 
   sources = [ "actor_overlay.mojom" ]
   webui_module_path = "/"

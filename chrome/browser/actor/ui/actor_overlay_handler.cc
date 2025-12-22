@@ -5,9 +5,15 @@
 #include "chrome/browser/actor/ui/actor_overlay_handler.h"
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/color/color_provider.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace actor::ui {
 
@@ -16,8 +22,17 @@ ActorOverlayHandler::ActorOverlayHandler(
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver,
     content::WebContents* web_contents)
     : web_contents_(web_contents),
+      theme_service_(ThemeServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       page_(std::move(page)),
-      receiver_{this, std::move(receiver)} {}
+      receiver_{this, std::move(receiver)} {
+  native_theme_observation_.Observe(
+      ::ui::NativeTheme::GetInstanceForNativeUi());
+  theme_service_observation_.Observe(theme_service_);
+
+  // Trigger the initial theme color.
+  OnThemeChanged();
+}
 
 ActorOverlayHandler::~ActorOverlayHandler() = default;
 
@@ -54,6 +69,22 @@ void ActorOverlayHandler::SetBorderGlowVisibility(bool is_visible) {
 void ActorOverlayHandler::MoveCursorTo(const gfx::Point& point,
                                        base::OnceClosure callback) {
   page_->MoveCursorTo(point, std::move(callback));
+}
+
+void ActorOverlayHandler::OnNativeThemeUpdated(
+    ::ui::NativeTheme* observed_theme) {
+  OnThemeChanged();
+}
+
+void ActorOverlayHandler::OnThemeChanged() {
+  if (base::FeatureList::IsEnabled(features::kActorUiThemed)) {
+    auto theme = mojom::Theme::New();
+    theme->border_color =
+        web_contents_->GetColorProvider().GetColor(kColorActorUiOverlayBorder);
+    theme->border_glow_color = web_contents_->GetColorProvider().GetColor(
+        kColorActorUiOverlayBorderGlow);
+    page_->SetTheme(std::move(theme));
+  }
 }
 
 }  // namespace actor::ui

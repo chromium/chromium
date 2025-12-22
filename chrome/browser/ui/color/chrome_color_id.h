@@ -28,6 +28,8 @@
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Actor UI colors.*/ \
   E_CPONLY(kColorActorUiHandoffButtonBorder) \
+  E_CPONLY(kColorActorUiOverlayBorder) \
+  E_CPONLY(kColorActorUiOverlayBorderGlow) \
   /* Content settings activity indicators popup dialog colors */ \
   E_CPONLY(kColorActivityIndicatorForeground) \
   E_CPONLY(kColorActivityIndicatorSubtitleForeground) \

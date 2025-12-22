@@ -5,6 +5,7 @@
 module actor.ui.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Factory ensures that the Page and PageHandler interfaces are always created
@@ -26,6 +27,13 @@ interface ActorOverlayPageHandler {
   GetCurrentBorderGlowVisibility() => (bool is_visible);
 };
 
+struct Theme {
+  // Color of the border around the overlay.
+  skia.mojom.SkColor border_color;
+  // Color of the border glow around the overlay.
+  skia.mojom.SkColor border_glow_color;
+};
+
 // Browser -> Renderer
 interface ActorOverlayPage {
   // Notifies the webui if the scrim background should be visible. This is based
@@ -34,6 +42,9 @@ interface ActorOverlayPage {
 
   // Notifies the webui if the border glow should be visible.
   SetBorderGlowVisibility(bool is_visible);
+
+  // Sets the current theme.
+  SetTheme(Theme theme);
 
   // Notifies WebUI to move the magic cursor to a passed in gfx.mojom.Point
   // object.

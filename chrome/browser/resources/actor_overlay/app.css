@@ -44,7 +44,7 @@
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  background: #3186FF;
+  background: var(--actor-border-color, #1B6EF3);
   mask-image:
     linear-gradient(white, white),
     url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6px' ry='6px' fill='white'/></svg>");
@@ -65,8 +65,8 @@
   inset: 0;
   box-sizing: border-box;
   box-shadow:
-    inset 0 0 35px 12px #3186FF;
-  animation: pulse-opacity 6000ms infinite;
+    inset 0 0 35px 12px var(--actor-border-glow-color, #4C8DF6);
+  animation: pulse-opacity 4000ms infinite;
   pointer-events: none;
   z-index: 10;
 }
