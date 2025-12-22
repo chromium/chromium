@@ -1652,26 +1652,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             http_server_.GetURL("/"));
 }
 
-class ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate
-    : public ManifestUpdateManagerBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kWebAppManifestPolicyAppIdentityUpdate, GetParam());
-  }
+using ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate =
+    ManifestUpdateManagerBrowserTest;
 
-  bool ExpectUpdateAllowed() {
-    return base::FeatureList::IsEnabled(
-        features::kWebAppManifestPolicyAppIdentityUpdate);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
-                       CheckDoesApplyIconURLChangeForPolicyAppsWithFlag) {
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
+                       IconUrlChange) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -1684,41 +1669,23 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
   webapps::AppId app_id = InstallPolicyApp();
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-
-  if (ExpectUpdateAllowed()) {
-    // The icon should have updated (because the flag is enabled).
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-              ManifestUpdateResult::kAppUpdated);
-    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                        ManifestUpdateResult::kAppUpdated, 1);
-    ConfirmShortcutColors(
-        app_id, {{{32, kAll}, kAnotherInstallableIconTopLeftColor},
-                 {{48, kAll}, kAnotherInstallableIconTopLeftColor},
-                 {{64, kWin}, kAnotherInstallableIconTopLeftColor},
-                 {{96, kWin}, kAnotherInstallableIconTopLeftColor},
-                 {{128, kAll}, kAnotherInstallableIconTopLeftColor},
-                 {{256, kAll}, kAnotherInstallableIconTopLeftColor},
-                 {{512, kNotWin}, kAnotherInstallableIconTopLeftColor}});
-  } else {
-    // The icon should not have updated.
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-              ManifestUpdateResult::kAppUpToDate);
-    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                        ManifestUpdateResult::kAppUpdated, 0);
-    ConfirmShortcutColors(app_id,
-                          {{{32, kAll}, kInstallableIconTopLeftColor},
-                           {{48, kAll}, kInstallableIconTopLeftColor},
-                           {{64, kWin}, kInstallableIconTopLeftColor},
-                           {{96, kWin}, kInstallableIconTopLeftColor},
-                           {{128, kAll}, kInstallableIconTopLeftColor},
-                           {{256, kAll}, kInstallableIconTopLeftColor}});
-  }
+  // The icon should have updated.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  ConfirmShortcutColors(
+      app_id, {{{32, kAll}, kAnotherInstallableIconTopLeftColor},
+               {{48, kAll}, kAnotherInstallableIconTopLeftColor},
+               {{64, kWin}, kAnotherInstallableIconTopLeftColor},
+               {{96, kWin}, kAnotherInstallableIconTopLeftColor},
+               {{128, kAll}, kAnotherInstallableIconTopLeftColor},
+               {{256, kAll}, kAnotherInstallableIconTopLeftColor},
+               {{512, kNotWin}, kAnotherInstallableIconTopLeftColor}});
 }
 
-// This test ensures app name cannot be changed for policy apps (without a flag
-// allowing it).
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
-                       CheckNameUpdatesForPolicyApps) {
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
+                       AppNameChange) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "$1",
@@ -1733,29 +1700,17 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
 
   OverrideManifest(kManifestTemplate,
                    {"Different app name", kInstallableIconList});
-
-  if (ExpectUpdateAllowed()) {
-    // Name should have updated (because the flag is enabled).
     EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
               ManifestUpdateResult::kAppUpdated);
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 1);
     EXPECT_EQ(GetProvider().registrar_unsafe().GetAppShortName(app_id),
               "Different app name");
-  } else {
-    // Name should not have updated (because the flag is missing).
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-              ManifestUpdateResult::kAppUpToDate);
-    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                        ManifestUpdateResult::kAppUpdated, 0);
-    EXPECT_EQ(GetProvider().registrar_unsafe().GetAppShortName(app_id),
-              "Test app name");
-  }
 }
 
 // This test ensures app icon url can always be changed for Kiosk apps.
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
-                       CheckDoesApplyIconURLChangeForKioskAppsIgnoringFlag) {
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       IconUrlChangeKioskApps) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -1785,7 +1740,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
 }
 
 // This test ensures app name can always be changed for Kiosk apps.
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckNameUpdatesForKioskApps) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -1810,10 +1765,6 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppShortName(app_id),
             "Different app name");
 }
-
-INSTANTIATE_TEST_SUITE_P(PolicyAppParameterizedTest,
-                         ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
-                         ::testing::Values(true, false));
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsDisplayChange) {
@@ -4881,20 +4832,19 @@ enum AppIdTestParam {
   kTypePolicyApp = 1 << 3,
   kTypeKioskApp = 1 << 4,
   kWithFlagNone = 1 << 5,
-  kWithFlagPolicyAppIdentity = 1 << 6,
-  kWithFlagAppIdDialogForIcon = 1 << 7,
-  kActionUpdateTitle = 1 << 8,
-  kActionUpdateTitleAndLauncherIcon = 1 << 9,
-  kActionUpdateLauncherIcon = 1 << 10,
-  kActionUpdateInstallIcon = 1 << 11,
-  kActionUpdateLauncherAndInstallIcon = 1 << 12,
-  kActionUpdateUnimportantIcon = 1 << 13,
-  kActionRemoveLauncherIcon = 1 << 14,
-  kActionRemoveInstallIcon = 1 << 15,
-  kActionRemoveUnimportantIcon = 1 << 16,
-  kActionSwitchFromLauncher = 1 << 17,
-  kActionSwitchToLauncher = 1 << 18,
-  kWithFlagTrustedIconsEnabled = 1 << 19,
+  kWithFlagAppIdDialogForIcon = 1 << 6,
+  kActionUpdateTitle = 1 << 7,
+  kActionUpdateTitleAndLauncherIcon = 1 << 8,
+  kActionUpdateLauncherIcon = 1 << 9,
+  kActionUpdateInstallIcon = 1 << 10,
+  kActionUpdateLauncherAndInstallIcon = 1 << 11,
+  kActionUpdateUnimportantIcon = 1 << 12,
+  kActionRemoveLauncherIcon = 1 << 13,
+  kActionRemoveInstallIcon = 1 << 14,
+  kActionRemoveUnimportantIcon = 1 << 15,
+  kActionSwitchFromLauncher = 1 << 16,
+  kActionSwitchToLauncher = 1 << 17,
+  kWithFlagTrustedIconsEnabled = 1 << 18,
 };
 
 // TODO(crbug.com/403253129): Deprecate this test once predictable app updating
@@ -4911,13 +4861,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
       enabled_features.push_back(features::kPwaUpdateDialogForIcon);
     } else {
       disabled_features.push_back(features::kPwaUpdateDialogForIcon);
-    }
-    if (IsPolicyAppIdentityOverrideEnabled()) {
-      enabled_features.push_back(
-          features::kWebAppManifestPolicyAppIdentityUpdate);
-    } else {
-      disabled_features.push_back(
-          features::kWebAppManifestPolicyAppIdentityUpdate);
     }
     if (IsTrustedIconsEnabled()) {
       enabled_features.push_back(features::kWebAppUsePrimaryIcon);
@@ -4944,9 +4887,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   bool IsAppIdentityUpdateDialogForIconEnabled() const {
     return std::get<2>(GetParam()) &
            AppIdTestParam::kWithFlagAppIdDialogForIcon;
-  }
-  bool IsPolicyAppIdentityOverrideEnabled() const {
-    return std::get<2>(GetParam()) & AppIdTestParam::kWithFlagPolicyAppIdentity;
   }
 
   bool TitleUpdate() const {
@@ -5019,13 +4959,13 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   // of an app to change. It should mirror exactly the expectations we have of
   // the implementation and be simple to read for easy verification.
   bool ExpectTitleUpdate() const {
-    if (!TitleUpdate())
+    if (!TitleUpdate()) {
       return false;  // Titles should not update without a request to update.
+    }
 
-    if (IsDefaultApp() || IsKioskApp())
+    if (IsDefaultApp() || IsKioskApp() || IsPolicyApp()) {
       return true;
-    if (IsPolicyApp())
-      return IsPolicyAppIdentityOverrideEnabled();
+    }
 
     return true;  // App Identity Updates for names have launched.
   }
@@ -5038,12 +4978,9 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   }
 
   bool IconUpdatesAllowed() const {
-    if (!IdentityIconUpdate() || IsDefaultApp() || IsKioskApp()) {
+    if (!IdentityIconUpdate() || IsDefaultApp() || IsKioskApp() ||
+        IsPolicyApp()) {
       return true;
-    }
-
-    if (IsPolicyApp()) {
-      return IsPolicyAppIdentityOverrideEnabled();
     }
 
     // User-installed apps don't get title updates unless App Id dialog is
@@ -5095,8 +5032,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     result += "Flags_";
     if (flags & AppIdTestParam::kWithFlagNone)
       result += "None_";
-    if (flags & AppIdTestParam::kWithFlagPolicyAppIdentity)
-      result += "PolicyCanUpdate_";
     if (flags & AppIdTestParam::kWithFlagAppIdDialogForIcon)
       result += "WithAppIdDlgForIcon_";
     if (flags & AppIdTestParam::kWithFlagTrustedIconsEnabled) {
@@ -5519,9 +5454,6 @@ INSTANTIATE_TEST_SUITE_P(
                         AppIdTestParam::kTypeWebApp),
         testing::Values(AppIdTestParam::kWithFlagNone,
                         AppIdTestParam::kWithFlagAppIdDialogForIcon,
-                        AppIdTestParam::kWithFlagPolicyAppIdentity,
-                        AppIdTestParam::kWithFlagPolicyAppIdentity |
-                            AppIdTestParam::kWithFlagAppIdDialogForIcon,
                         AppIdTestParam::kWithFlagTrustedIconsEnabled)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 

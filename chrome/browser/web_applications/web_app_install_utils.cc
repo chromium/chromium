@@ -841,23 +841,6 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
   }
 }
 
-bool CanWebAppUpdateIdentity(const WebApp* web_app) {
-  if (web_app->IsPolicyInstalledApp() &&
-      base::FeatureList::IsEnabled(
-          features::kWebAppManifestPolicyAppIdentityUpdate)) {
-    return true;
-  }
-
-  // WebAppChromeOsData::oem_installed is not included in this statement as
-  // we would like to keep WebAppManagement::kOem and
-  // WebAppChromeOsData::oem_installed separate.
-  // WebAppChromeOsData::oem_installed will be migrated to
-  // WebAppManagement::kOem eventually.
-  return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp() ||
-         web_app->GetSources().HasAny(
-             {WebAppManagement::kOem, WebAppManagement::kApsDefault});
-}
-
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info) {
   if (install_params.user_display_mode.has_value())

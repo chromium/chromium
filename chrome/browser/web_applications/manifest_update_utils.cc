@@ -166,21 +166,7 @@ std::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
 }
 
 bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
-  if (web_app.IsPolicyInstalledApp() &&
-      base::FeatureList::IsEnabled(
-          features::kWebAppManifestPolicyAppIdentityUpdate)) {
-    return true;
-  }
-  if (web_app.scope().SchemeIs(content::kChromeUIScheme)) {
-    return true;
-  }
-
-  // The `!web_app.IsPolicyInstalledApp()` hack is to ensure that the "existing"
-  // manifest update process only works for policy installed apps if
-  // `kWebAppManifestPolicyAppIdentityUpdate` is enabled, for browser tests.
-  // Once predictable app updating lands, this code will be removed (since that
-  // feature flag is enabled by default anyway).
-  return !web_app.IsPolicyInstalledApp() &&
+  return web_app.scope().SchemeIs(content::kChromeUIScheme) ||
          web_app.WasInstalledByTrustedSources();
 }
 
