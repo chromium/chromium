@@ -893,12 +893,6 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
         {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
-        {"AddContextButtonVariant", "below_results"},
-        {"ShowRecentTabChip", "true"},
-        {"MaxNumFiles", "5"},
-};
-const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonDragAndDrop[] = {
         {"AddContextButtonVariant", "below_results"},
         {"EnableContextDragAndDrop", "true"},
@@ -917,9 +911,6 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button inline (Variant 3)",
      kWebUIOmniboxAimPopupAddContextButtonInline,
      std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
-    {"- \"Add Context\" Button below results, 5 File Limit",
-     kWebUIOmniboxAimPopupAddContextButtonMultiFile,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonMultiFile), nullptr},
     {"- \"Add Context\" Button enable drag and drop",
      kWebUIOmniboxAimPopupAddContextButtonDragAndDrop,
      std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr}};
@@ -1635,7 +1626,6 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
 
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFile[] = {
-        {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
@@ -1643,7 +1633,6 @@ const FeatureEntry::FeatureParam
 };
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFileNoViewport[] = {
-        {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
@@ -1652,7 +1641,6 @@ const FeatureEntry::FeatureParam
 };
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews[] = {
-        {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
@@ -1671,7 +1659,6 @@ const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowComposeboxTypedSuggest", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
-    {"MaxNumFiles", "5"},
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxZps", "true"},
@@ -1707,7 +1694,6 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
         {"ShowSubmit", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"MaxNumFiles", "10"},
     {"ShowContextMenu", "true"},
     {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
@@ -1719,7 +1705,6 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"EnableEphemeralContextMenuDescription", "true"}};
 const FeatureEntry::FeatureParam
     kComposeboxNextForRealboxNextWithContextIdMigration[] = {
-        {"MaxNumFiles", "10"},
         {"ShowContextMenu", "true"},
         {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},

@@ -265,7 +265,7 @@ const base::FeatureParam<bool> kEnableViewportImages(
     true);
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
-                                           1);
+                                           10);
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxImageSuggestions",
