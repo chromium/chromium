@@ -105,6 +105,19 @@ bool ActuationEnabledForManagedUser(Profile& profile,
          glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
 }
 
+bool HasUrlAllowlist(Profile& profile) {
+  PrefService* pref_service = profile.GetPrefs();
+  CHECK(pref_service);
+  const std::string_view allowlist_pref_path =
+      glic::prefs::kGlicActuationOnWebAllowedForURLs;
+  if (!pref_service->HasPrefPath(allowlist_pref_path)) {
+    return false;
+  }
+  const base::Value::List& allowlist =
+      pref_service->GetList(allowlist_pref_path);
+  return !allowlist.empty();
+}
+
 // Returns true if !is_enterprise_account_data_protected &&
 // !AccountInfo::IsManaged().
 bool IsAccountEligibleForActuation(Profile& profile,
@@ -170,7 +183,13 @@ bool IsAccountEligibleForActuation(Profile& profile,
 }  // namespace
 
 ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
-    : service_(service), journal_(service.GetJournal().GetSafeRef()) {
+    : service_(service),
+#if BUILDFLAG(ENABLE_GLIC)
+      url_blocklist_manager_(service.GetProfile()->GetPrefs(),
+                             glic::prefs::kGlicActuationOnWebBlockedForURLs,
+                             glic::prefs::kGlicActuationOnWebAllowedForURLs),
+#endif  // BUILDFLAG(ENABLE_GLIC)
+      journal_(service.GetJournal().GetSafeRef()) {
   InitActionBlocklist(service.GetProfile());
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -188,6 +207,9 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
   // Listens to policy changes.
   pref_change_registrar_.Add(
       glic::prefs::kGlicActuationOnWeb,
+      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  url_blocklist_subscription_ = url_blocklist_manager_.AddObserver(
       base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   // Listens to user status changes.
@@ -250,8 +272,12 @@ void ActorPolicyChecker::MayActOnTab(
                                   MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
-  ::actor::MayActOnTab(tab, journal, task_id, confirmed_origins,
-                       std::move(callback));
+  // SafeRef as enterprise policy checks are performed synchronously.
+  ::actor::MayActOnTab(
+      tab, journal, task_id, confirmed_origins,
+      base::BindOnce(&ActorPolicyChecker::EvaluateEnterprisePolicyForUrl,
+                     weak_ptr_factory_.GetSafeRef()),
+      std::move(callback));
 }
 
 void ActorPolicyChecker::MayActOnUrl(const GURL& url,
@@ -271,21 +297,30 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                   MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
-  ::actor::MayActOnUrl(url, allow_insecure_http, profile, journal, task_id,
-                       std::move(callback));
+  // SafeRef as enterprise policy checks are performed synchronously.
+  ::actor::MayActOnUrl(
+      url, allow_insecure_http, profile, journal, task_id,
+      base::BindOnce(&ActorPolicyChecker::EvaluateEnterprisePolicyForUrl,
+                     weak_ptr_factory_.GetSafeRef()),
+      std::move(callback));
+}
+
+bool ActorPolicyChecker::can_act_on_web() const {
+  return can_act_on_web_for_testing_ || can_act_on_web_ != CanActOutcome::kNo;
 }
 
 void ActorPolicyChecker::OnPrefOrAccountChanged() {
   auto old_value = can_act_on_web_;
   can_act_on_web_ = ComputeActOnWebCapability();
   if (old_value != can_act_on_web_) {
-    service_->OnActOnWebCapabilityChanged(can_act_on_web_);
+    service_->OnActOnWebCapabilityChanged(can_act_on_web());
   }
 }
 
-bool ActorPolicyChecker::ComputeActOnWebCapability() {
+ActorPolicyChecker::CanActOutcome
+ActorPolicyChecker::ComputeActOnWebCapability() {
 #if !BUILDFLAG(ENABLE_GLIC)
-  return true;
+  return CanActOutcome::kYes;
 #else
   bool policy_exemption = features::kGlicActorPolicyControlExemption.Get();
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
@@ -293,9 +328,18 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
   CHECK(profile);
   bool is_browser_managed = IsBrowserManaged(*profile);
   bool actuation_enabled_for_managed_user = false;
+  bool actuation_enabled_by_allowlist_only = false;
   if (is_browser_managed) {
     actuation_enabled_for_managed_user =
         ActuationEnabledForManagedUser(*profile, *journal_);
+    if (!actuation_enabled_for_managed_user) {
+      // If actuation in general is blocked by policy, but there is a non-empty
+      // allow list, then we need `can_act_on_web()` to be true so we can
+      // attempt actuation up until the point where we evaluate a URL for its
+      // inclusion in the allow list. If it's not explicitly allowed by the
+      // list, then we perform the blocking there.
+      actuation_enabled_by_allowlist_only = HasUrlAllowlist(*profile);
+    }
   }
   bool account_eligible_for_actuation =
       IsAccountEligibleForActuation(*profile, *journal_);
@@ -311,17 +355,60 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
                base::ToString(account_eligible_for_actuation))
           .Add("actuation_enabled_for_managed_user",
                base::ToString(actuation_enabled_for_managed_user))
+          .Add("actuation_enabled_by_allowlist_only",
+               base::ToString(actuation_enabled_by_allowlist_only))
           .Build());
 
   if (is_likely_dogfood_client || policy_exemption) {
-    return true;
+    return CanActOutcome::kYes;
   }
   if (account_eligible_for_actuation_for_testing_) [[unlikely]] {
     account_eligible_for_actuation = true;
   }
-  return (!is_browser_managed || actuation_enabled_for_managed_user) &&
-         account_eligible_for_actuation;
+  if (!account_eligible_for_actuation) {
+    return CanActOutcome::kNo;
+  }
+
+  if (!is_browser_managed || actuation_enabled_for_managed_user) {
+    return CanActOutcome::kYes;
+  }
+  if (actuation_enabled_by_allowlist_only) {
+    return CanActOutcome::kByAllowlistOnly;
+  }
+  return CanActOutcome::kNo;
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
+
+EnterprisePolicyBlockReason ActorPolicyChecker::EvaluateEnterprisePolicyForUrl(
+    const GURL& url) const {
+#if !BUILDFLAG(ENABLE_GLIC)
+  return EnterprisePolicyBlockReason::kNotBlocked;
+#else
+  const policy::URLBlocklist::URLBlocklistState state =
+      url_blocklist_manager_.GetURLBlocklistState(url);
+  if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return EnterprisePolicyBlockReason::kExplicitlyBlocked;
+  }
+  if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
+    return EnterprisePolicyBlockReason::kExplicitlyAllowed;
+  }
+
+  // If the general policy is set to disable acting, then if the url is not in
+  // the allow list, we block.
+  if (can_act_on_web_ == CanActOutcome::kByAllowlistOnly) {
+    return EnterprisePolicyBlockReason::kExplicitlyBlocked;
+  }
+
+  return EnterprisePolicyBlockReason::kNotBlocked;
+#endif  // !BUILDFLAG(ENABLE_GLIC)
+}
+
+#if BUILDFLAG(ENABLE_GLIC)
+base::CallbackListSubscription
+ActorPolicyChecker::AddUrlListsUpdateObserverForTesting(
+    base::RepeatingClosure callback) {
+  return url_blocklist_manager_.AddObserver(std::move(callback));
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace actor

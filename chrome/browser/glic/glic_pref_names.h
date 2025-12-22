@@ -119,6 +119,13 @@ enum class GlicActuationOnWebPolicyState {
 // This perf is only applicable to enterprise accounts.
 inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
 
+// List prefs for allow/blocklists of URLs for more granular control than
+// `kGlicActuationOnWeb`.
+inline constexpr char kGlicActuationOnWebAllowedForURLs[] =
+    "glic.actuation_on_web_allowed_for_urls";
+inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
+    "glic.actuation_on_web_blocked_for_urls";
+
 // Boolean pref for the user enabled actuation on web setting.
 inline constexpr char kGlicUserEnabledActuationOnWeb[] =
     "glic.user_enabled_actuation_on_web";

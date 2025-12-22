@@ -1418,6 +1418,8 @@ policies:
   1417: StaticStorageQuotaEnabled
   1418: SaaSReportDomainUrlsForBrowser
   1419: SaaSReportDomainUrlsForProfile
+  1420: GeminiActOnWebAllowedForURLs
+  1421: GeminiActOnWebBlockedForURLs
 
 atomic_groups:
   1: Homepage

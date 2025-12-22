@@ -2352,6 +2352,8 @@ chromium-metrics-reviews@google.com.
   <int value="1417" label="StaticStorageQuotaEnabled"/>
   <int value="1418" label="SaaSReportDomainUrlsForBrowser"/>
   <int value="1419" label="SaaSReportDomainUrlsForProfile"/>
+  <int value="1420" label="GeminiActOnWebAllowedForURLs"/>
+  <int value="1421" label="GeminiActOnWebBlockedForURLs"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

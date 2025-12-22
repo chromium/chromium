@@ -3531,6 +3531,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<GeminiActOnWebSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies))));
+  handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
+      key::kGeminiActOnWebAllowedForURLs,
+      glic::prefs::kGlicActuationOnWebAllowedForURLs));
+  handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
+      key::kGeminiActOnWebBlockedForURLs,
+      glic::prefs::kGlicActuationOnWebBlockedForURLs));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(

@@ -311,6 +311,19 @@ void ExecutionEngine::LogNavigationGating(
 ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     const GURL& source_url,
     const GURL& destination_url) const {
+  // If enterprise policy allows the destination, do not gate.
+  // Note that it is not necessary to have an equivalent check for the
+  // enterprise policy blocklist, as we would already have blocked the
+  // navigation before reaching this gating logic.
+  const EnterprisePolicyBlockReason enterprise_reason =
+      ActorKeyedService::Get(profile_)
+          ->GetPolicyChecker()
+          .EvaluateEnterprisePolicyForUrl(destination_url);
+  if (enterprise_reason == EnterprisePolicyBlockReason::kExplicitlyAllowed) {
+    return GatingDecision::kAllowByStaticList;
+  }
+  DCHECK_NE(enterprise_reason, EnterprisePolicyBlockReason::kExplicitlyBlocked);
+
   url::Origin destination_origin = url::Origin::Create(destination_url);
   const SafetyListManager& safety_list_manager =
       *SafetyListManager::GetInstance();
@@ -730,6 +743,7 @@ void ExecutionEngine::OnMayActOnTabDecision(
     case MayActOnUrlBlockReason::kTabIsErrorDocument:
     case MayActOnUrlBlockReason::kUrlNotInAllowlist:
     case MayActOnUrlBlockReason::kWrongScheme:
+    case MayActOnUrlBlockReason::kEnterprisePolicy:
       DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/false);
   }
 }

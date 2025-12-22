@@ -12,10 +12,16 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor/task_id.h"
+#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "base/callback_list.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#endif
 
 class GURL;
 class Profile;
@@ -70,25 +76,44 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
     account_eligible_for_actuation_for_testing_ = enabled;
   }
 
-  bool can_act_on_web() const {
-    return can_act_on_web_for_testing_ || can_act_on_web_;
-  }
+#if BUILDFLAG(ENABLE_GLIC)
+  // Allows tests to synchronize on allow/blocklist updates.
+  base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
+      base::RepeatingClosure callback);
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+  bool can_act_on_web() const;
+
+  EnterprisePolicyBlockReason EvaluateEnterprisePolicyForUrl(
+      const GURL& url) const;
 
  private:
   void OnPrefOrAccountChanged();
 
-  bool ComputeActOnWebCapability();
+  enum class CanActOutcome {
+    kYes,
+    kNo,
+    kByAllowlistOnly,
+  };
+
+  CanActOutcome ComputeActOnWebCapability();
 
   // Owns `this`.
   base::raw_ref<ActorKeyedService> service_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  bool can_act_on_web_ = true;
+  CanActOutcome can_act_on_web_ = CanActOutcome::kYes;
 
   bool can_act_on_web_for_testing_ = false;
 
   bool account_eligible_for_actuation_for_testing_ = false;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Stores enterprise allowlist/blocklist policies for specific URLs.
+  policy::URLBlocklistManager url_blocklist_manager_;
+  base::CallbackListSubscription url_blocklist_subscription_;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   base::SafeRef<AggregatedJournal> journal_;
 

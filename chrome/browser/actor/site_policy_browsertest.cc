@@ -99,9 +99,11 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
 
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->profile());
+    auto enterprise_policy_eval_url = base::BindOnce(
+        [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
                 actor_service->GetJournal(), TaskId(), ConfirmedOriginSet(),
-                allowed.GetCallback());
+                std::move(enterprise_policy_eval_url), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,
@@ -174,9 +176,11 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
 
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
   auto* actor_service = ActorKeyedService::Get(browser()->profile());
+  auto enterprise_policy_eval_url = base::BindOnce(
+      [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
   MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
               actor_service->GetJournal(), TaskId(), ConfirmedOriginSet(),
-              allowed.GetCallback());
+              std::move(enterprise_policy_eval_url), allowed.GetCallback());
   EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }
 

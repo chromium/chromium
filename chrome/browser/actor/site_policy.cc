@@ -143,6 +143,7 @@ void MayActOnUrlInternal(
     bool allow_insecure_http,
     Profile* profile,
     base::optional_ref<const ConfirmedOriginSet> confirmed_origins,
+    EnterprisePolicyCallback enterprise_policy_eval_url,
     std::unique_ptr<DecisionWrapper> decision_wrapper) {
   if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
       url.IsAboutBlank()) {
@@ -225,6 +226,20 @@ void MayActOnUrlInternal(
     }
   }
 
+  const EnterprisePolicyBlockReason enterprise_reason =
+      std::move(enterprise_policy_eval_url).Run(url);
+  switch (enterprise_reason) {
+    case EnterprisePolicyBlockReason::kNotBlocked:
+      break;
+    case EnterprisePolicyBlockReason::kExplicitlyAllowed:
+      decision_wrapper->Accept();
+      return;
+    case EnterprisePolicyBlockReason::kExplicitlyBlocked:
+      decision_wrapper->Reject("Enterprise policy block",
+                               MayActOnUrlBlockReason::kEnterprisePolicy);
+      return;
+  }
+
   auto* lookalike_service = LookalikeUrlServiceFactory::GetForProfile(profile);
   LookalikeUrlService::LookalikeUrlCheckResult lookalike_result =
       lookalike_service->CheckUrlForLookalikes(
@@ -298,6 +313,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const ConfirmedOriginSet& confirmed_origins,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
@@ -329,7 +345,8 @@ void MayActOnTab(const tabs::TabInterface& tab,
   MayActOnUrlInternal(
       url, /*allow_insecure_http=*/false,
       Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-      confirmed_origins, std::move(decision_wrapper));
+      confirmed_origins, std::move(enterprise_policy_eval_url),
+      std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
@@ -337,11 +354,13 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback) {
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
   MayActOnUrlInternal(url, allow_insecure_http, profile, std::nullopt,
+                      std::move(enterprise_policy_eval_url),
                       std::move(decision_wrapper));
 }
 

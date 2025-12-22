@@ -237,6 +237,7 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
       case MayActOnUrlBlockReason::kTabIsErrorDocument:
       case MayActOnUrlBlockReason::kUrlNotInAllowlist:
       case MayActOnUrlBlockReason::kWrongScheme:
+      case MayActOnUrlBlockReason::kEnterprisePolicy:
         tool_failure_code =
             mojom::ActionResultCode::kTriggeredNavigationBlocked;
         break;

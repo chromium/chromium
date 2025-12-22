@@ -64,6 +64,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kGlicActuationOnWeb,
       std::to_underlying(GetGlicActuationOnWebPolicyState()));
 
+  registry->RegisterListPref(prefs::kGlicActuationOnWebAllowedForURLs);
+  registry->RegisterListPref(prefs::kGlicActuationOnWebBlockedForURLs);
+
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
 }
 

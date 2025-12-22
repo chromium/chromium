@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base_switches.h"
+#include "base/containers/to_value_list.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -263,16 +264,75 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
 
   void UpdateGeminiActOnWebPolicy(
       std::optional<glic::prefs::GlicActuationOnWebPolicyState> value) {
+    UpdateGeminiActOnWebAndUrlPolicies(value, /*url_allowlist=*/{},
+                                       /*url_blocklist=*/{},
+                                       /*await_list_update=*/false);
+  }
+
+  void UpdateGeminiActOnWebAndUrlPolicies(
+      std::optional<glic::prefs::GlicActuationOnWebPolicyState> value,
+      const std::vector<std::string>& url_allowlist,
+      const std::vector<std::string>& url_blocklist,
+      bool await_list_update) {
+    auto* actor_service = ActorKeyedService::Get(browser()->profile());
+    ActorPolicyChecker& policy_checker = actor_service->GetPolicyChecker();
+
     policy::PolicyMap policies;
     std::optional<base::Value> value_to_set;
     if (value.has_value()) {
       value_to_set = base::Value(std::to_underlying(*value));
     }
+    std::optional<base::Value> allow_list_value =
+        base::Value(base::ToValueList(url_allowlist));
+    std::optional<base::Value> block_list_value =
+        base::Value(base::ToValueList(url_blocklist));
     policies.Set(policy::key::kGeminiActOnWebSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
                  std::move(value_to_set), nullptr);
+    policies.Set(policy::key::kGeminiActOnWebAllowedForURLs,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 std::move(allow_list_value), nullptr);
+    policies.Set(policy::key::kGeminiActOnWebBlockedForURLs,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 std::move(block_list_value), nullptr);
+    base::test::TestFuture<void> on_url_lists_updated;
+    base::CallbackListSubscription list_update_subscription =
+        policy_checker.AddUrlListsUpdateObserverForTesting(
+            on_url_lists_updated.GetRepeatingCallback());
     policy_provider_.UpdateChromePolicy(policies);
+
+    if (await_list_update) {
+      EXPECT_TRUE(on_url_lists_updated.Wait());
+    }
+  }
+
+  struct PolicyCheckResult {
+    MayActOnUrlBlockReason may_act_on_url_block_reason;
+    bool can_act_on_web;
+  };
+  void TestPolicyCombination(
+      glic::prefs::GlicActuationOnWebPolicyState actuation_policy,
+      const std::vector<std::string>& url_allowlist,
+      const std::vector<std::string>& url_blocklist,
+      const GURL& url_to_check,
+      PolicyCheckResult expected_result) {
+    UpdateGeminiActOnWebAndUrlPolicies(actuation_policy, url_allowlist,
+                                       url_blocklist,
+                                       /*await_list_update=*/true);
+
+    auto* actor_service = ActorKeyedService::Get(browser()->profile());
+    ActorPolicyChecker& policy_checker = actor_service->GetPolicyChecker();
+
+    EXPECT_EQ(expected_result.can_act_on_web, policy_checker.can_act_on_web());
+
+    base::test::TestFuture<MayActOnUrlBlockReason> allowed;
+    policy_checker.MayActOnUrl(
+        url_to_check, /*allow_insecure_http=*/true, browser()->profile(),
+        actor_service->GetJournal(), TaskId(123), allowed.GetCallback());
+    EXPECT_EQ(expected_result.may_act_on_url_block_reason, allowed.Get());
   }
 
  private:
@@ -321,6 +381,215 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
   auto null_task_id =
       ActorKeyedService::Get(browser()->profile())->CreateTask();
   EXPECT_EQ(null_task_id, TaskId());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       BlocklistUrl) {
+  TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+                        /*url_allowlist=*/{},
+                        /*url_blocklist=*/{"example.com"},
+                        GURL("https://example.com"),
+                        {
+                            .may_act_on_url_block_reason =
+                                MayActOnUrlBlockReason::kEnterprisePolicy,
+                            .can_act_on_web = true,
+                        });
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       AllowlistUrl) {
+  // Despite the general policy being disabled, `can_act_on_web` needs to be
+  // true, since we need to allow actions at least to the point of checking
+  // whether the URL is in the allowlist.
+  TestPolicyCombination(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+      /*url_allowlist=*/{"example.com"},
+      /*url_blocklist=*/{}, GURL("https://example.com"),
+      {
+          .may_act_on_url_block_reason = MayActOnUrlBlockReason::kAllowed,
+          .can_act_on_web = true,
+      });
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       NonMatchingAllowlistUrl) {
+  // Since we need to check against the allow list, `can_act_on_web` is true,
+  // but since the URL wasn't in the allow list, we apply the general policy to
+  // disable acting.
+  TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+                        /*url_allowlist=*/{"a.com"},
+                        /*url_blocklist=*/{}, GURL("https://example.com"),
+                        {
+                            .may_act_on_url_block_reason =
+                                MayActOnUrlBlockReason::kEnterprisePolicy,
+                            .can_act_on_web = true,
+                        });
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       AllowWhenMatchingBothLists) {
+  TestPolicyCombination(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{"example.com"},
+      /*url_blocklist=*/{"example.com"}, GURL("https://example.com"),
+      {
+          .may_act_on_url_block_reason = MayActOnUrlBlockReason::kAllowed,
+          .can_act_on_web = true,
+      });
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       UrlListUpdates) {
+  TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+                        /*url_allowlist=*/{},
+                        /*url_blocklist=*/{}, GURL("https://example.com"),
+                        {
+                            .may_act_on_url_block_reason =
+                                MayActOnUrlBlockReason::kActuactionDisabled,
+                            .can_act_on_web = false,
+                        });
+  TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+                        /*url_allowlist=*/{"a.com"},
+                        /*url_blocklist=*/{}, GURL("https://example.com"),
+                        {
+                            .may_act_on_url_block_reason =
+                                MayActOnUrlBlockReason::kEnterprisePolicy,
+                            .can_act_on_web = true,
+                        });
+  TestPolicyCombination(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+      /*url_allowlist=*/{"example.com"},
+      /*url_blocklist=*/{}, GURL("https://example.com"),
+      {
+          .may_act_on_url_block_reason = MayActOnUrlBlockReason::kAllowed,
+          .can_act_on_web = true,
+      });
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       BlocklistAppliesToAction) {
+  UpdateGeminiActOnWebAndUrlPolicies(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{},
+      /*url_blocklist=*/{"bar.com"},
+      /*await_list_update=*/true);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  const GURL url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/two_clicks.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  task_id_ = CreateNewTask();
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#button1");
+  ASSERT_TRUE(button_id.has_value());
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*web_contents()->GetPrimaryMainFrame(), *button_id);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       AllowlistAppliesToAction) {
+  UpdateGeminiActOnWebAndUrlPolicies(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{"bar.com"},
+      /*url_blocklist=*/{},
+      /*await_list_update=*/true);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  const GURL url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/two_clicks.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  task_id_ = CreateNewTask();
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#button1");
+  ASSERT_TRUE(button_id.has_value());
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*web_contents()->GetPrimaryMainFrame(), *button_id);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click), result.GetCallback());
+  ExpectOkResult(result);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       BlocklistAppliesToNavigation) {
+  UpdateGeminiActOnWebAndUrlPolicies(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{},
+      /*url_blocklist=*/{"bar.com"},
+      /*await_list_update=*/true);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(cross_origin_url.spec())}));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
+
+  task_id_ = CreateNewTask();
+
+  std::optional<int> link_id =
+      GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
+  ASSERT_TRUE(link_id.has_value());
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*web_contents()->GetPrimaryMainFrame(), *link_id);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
+                       AllowlistAppliesToNavigation) {
+  // The test opt guide blocklist is set up to block the following host. We
+  // allow it by enterprise policy. The enterprise policy should take
+  // precedence.
+  UpdateGeminiActOnWebAndUrlPolicies(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
+      /*url_allowlist=*/{"blocked.example.com"},
+      /*url_blocklist=*/{},
+      /*await_list_update=*/true);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  const GURL cross_origin_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(cross_origin_url.spec())}));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
+
+  task_id_ = CreateNewTask();
+
+  std::optional<int> link_id =
+      GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
+  ASSERT_TRUE(link_id.has_value());
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*web_contents()->GetPrimaryMainFrame(), *link_id);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click), result.GetCallback());
+  ExpectOkResult(result);
 }
 
 // Makes sure that on policy-managed clients, when the default pref is

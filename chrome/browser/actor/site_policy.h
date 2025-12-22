@@ -36,6 +36,7 @@ enum class MayActOnUrlBlockReason {
   kTabIsErrorDocument,
   kUrlNotInAllowlist,
   kWrongScheme,
+  kEnterprisePolicy,
 };
 
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
@@ -53,6 +54,20 @@ using AllowedOriginSet = base::StrongAlias<class AllowedOriginSetTag,
 using ConfirmedOriginSet = base::StrongAlias<class ConfirmedOriginSetTag,
                                              absl::flat_hash_set<url::Origin>>;
 
+enum class EnterprisePolicyBlockReason {
+  // Enterprise policy did not explicitly block a URL, but it also did not
+  // explicitly allow it, so the regular safety checks should still be done.
+  kNotBlocked,
+  // Enterprise policy explicitly allowed a URL. Some additional safety checks
+  // are not done.
+  kExplicitlyAllowed,
+  // Enterprise policy explicitly blocked a URL.
+  kExplicitlyBlocked,
+};
+
+using EnterprisePolicyCallback =
+    base::OnceCallback<EnterprisePolicyBlockReason(const GURL&)>;
+
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
 // allowed.
@@ -62,11 +77,14 @@ using ConfirmedOriginSet = base::StrongAlias<class ConfirmedOriginSetTag,
 // task starts. However, any future URLs the actor navigates to should undergo
 // blocklist checks in `MayActOnUrl` or
 // `ShouldBlockNavigationUrlForOriginGating`.
+// `enterprise_policy_eval_url` returns the evaluation of the URL based on
+// enterprise policy allow/blocklists.
 // Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const ConfirmedOriginSet& confirmed_origins,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback);
 
 // Like MayActOnTab, but considers a URL on its own.
@@ -79,6 +97,7 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback);
 
 // Checks if navigation to `url` should be blocked using
