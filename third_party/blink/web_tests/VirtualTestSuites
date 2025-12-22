@@ -1464,7 +1464,6 @@
   {
     "prefix": "fsa-incognito",
     "owners": [
-      "asully@chromium.org",
       "chrome-owp-storage@google.com"
     ],
     "platforms": [
@@ -5338,7 +5337,6 @@
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
-      "asully@chromium.org",
       "kbr@chromium.org",
       "phillis@chromium.org",
       "reillyg@chromium.org"
@@ -5608,7 +5606,6 @@
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
-      "asully@chromium.org",
       "kbr@chromium.org",
       "phillis@chromium.org",
       "reillyg@chromium.org"
@@ -5880,7 +5877,6 @@
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
-      "asully@chromium.org",
       "kbr@chromium.org",
       "phillis@chromium.org",
       "reillyg@chromium.org"

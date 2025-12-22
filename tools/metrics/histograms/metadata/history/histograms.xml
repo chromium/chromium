@@ -1393,7 +1393,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
     expires_after="2026-05-03">
   <owner>sophiechang@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <component>1456716</component>
   <summary>
     The exact database error encountered when initializing the database, if
