@@ -715,14 +715,8 @@ ExtensionsMenuViewModel::GetExtensionSiteAccessOptionsState(
   Profile* profile = browser_->GetProfile();
   auto* permissions_manager = PermissionsManager::Get(profile);
 
-  // TODO(crbug.com/456285449): If there is an action controller, then the
-  // extension should be enabled. We should retrieve the extension from the
-  // extension action view model, but here we are getting the toolbar action
-  // view model interface. For that we either need to (a) pass the action view
-  // controller instead or (b) add the extension getter method to toolbar action
-  // view controller.
-  scoped_refptr<const extensions::Extension> extension =
-      GetExtension(*profile, extension_id);
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  const extensions::Extension* extension = action_model->GetExtension();
   CHECK(extension);
   content::WebContents* web_contents = GetActiveWebContents();
   const GURL& url = web_contents->GetLastCommittedURL();
@@ -789,14 +783,8 @@ ExtensionsMenuViewModel::MenuItemState
 ExtensionsMenuViewModel::GetMenuItemState(
     const extensions::ExtensionId& extension_id) {
   Profile* profile = browser_->GetProfile();
-  // TODO(crbug.com/456285449): If there is an action controller, then the
-  // extension should be enabled. We should retrieve the extension from the
-  // extension action view model, but here we are getting the toolbar action
-  // view model interface. For that we either need to (a) pass the action view
-  // controller instead or (b) add the extension getter method to toolbar action
-  // view controller.
-  scoped_refptr<const extensions::Extension> extension =
-      GetExtension(*profile, extension_id);
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  const extensions::Extension* extension = action_model->GetExtension();
   CHECK(extension);
   content::WebContents* web_contents = GetActiveWebContents();
 
