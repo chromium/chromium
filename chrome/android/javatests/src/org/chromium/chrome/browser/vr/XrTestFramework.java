@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.vr;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -77,7 +78,7 @@ public abstract class XrTestFramework {
     public static final String[] NATIVE_URLS_OF_INTEREST = {
         UrlConstants.BOOKMARKS_FOLDER_URL + "3",
         UrlConstants.BOOKMARKS_UNCATEGORIZED_URL,
-        UrlConstants.BOOKMARKS_NATIVE_URL,
+        getOriginalNativeBookmarksUrl(),
         UrlConstants.DOWNLOADS_URL,
         getOriginalNativeHistoryUrl(),
         getOriginalNativeNtpUrl(),

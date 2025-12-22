@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
@@ -26,7 +28,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 
 import java.util.Map;
@@ -170,8 +171,8 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public static String getHelpContextIdFromUrl(Context context, String url, boolean isIncognito) {
         if (TextUtils.isEmpty(url)) {
             return context.getString(R.string.help_context_general);
-        } else if (url.startsWith(UrlConstants.BOOKMARKS_NATIVE_URL)
-                || url.startsWith(UrlConstants.BOOKMARKS_URL)) {
+        } else if (url.startsWith(getOriginalNativeBookmarksUrl())
+                || url.startsWith(getOriginalNonNativeBookmarksUrl())) {
             return context.getString(R.string.help_context_bookmarks);
         } else if (url.equals(getOriginalNativeHistoryUrl())
                 || url.equals(getOriginalNonNativeHistoryUrl())) {

@@ -51,7 +51,7 @@ public class UrlConstantResolver {
 
     /** Returns the potentially overridden URL for the bookmarks page. */
     public String getBookmarksPageUrl() {
-        return getUrlOverrideIfPresent(UrlConstants.BOOKMARKS_NATIVE_URL);
+        return getUrlOverrideIfPresent(getOriginalNativeBookmarksUrl());
     }
 
     /** Returns the potentially overridden URL for the history page. */

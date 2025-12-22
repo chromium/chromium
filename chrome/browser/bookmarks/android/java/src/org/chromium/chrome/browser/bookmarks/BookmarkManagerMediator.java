@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
@@ -60,7 +62,6 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -965,9 +966,9 @@ class BookmarkManagerMediator
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 boolean replaceLastUrl =
-                        TextUtils.equals(mNativePage.getUrl(), UrlConstants.BOOKMARKS_URL)
+                        TextUtils.equals(mNativePage.getUrl(), getOriginalNonNativeBookmarksUrl())
                                 || TextUtils.equals(
-                                        mNativePage.getUrl(), UrlConstants.BOOKMARKS_NATIVE_URL);
+                                        mNativePage.getUrl(), getOriginalNativeBookmarksUrl());
                 mNativePage.onStateChange(state.mUrl, replaceLastUrl);
             }
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {

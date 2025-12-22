@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+
 import android.net.Uri;
 
 import org.junit.Before;
@@ -78,8 +80,7 @@ public class BookmarkUiStateTest {
     @Test
     public void testCreateStateFromUrl() {
         BookmarkUiState rootFolderState =
-                BookmarkUiState.createStateFromUrl(
-                        UrlConstants.BOOKMARKS_NATIVE_URL, mBookmarkModel);
+                BookmarkUiState.createStateFromUrl(getOriginalNativeBookmarksUrl(), mBookmarkModel);
         assertEquals(rootFolderState, BookmarkUiState.createFolderState(mRoot, mBookmarkModel));
 
         BookmarkUiState invalidFolderState =

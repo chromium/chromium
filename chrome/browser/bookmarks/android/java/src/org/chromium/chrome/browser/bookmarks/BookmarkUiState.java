@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 
 import android.net.Uri;
 import android.text.TextUtils;
@@ -76,7 +77,7 @@ public class BookmarkUiState {
         String url = uri.toString();
 
         BookmarkUiState tempState = null;
-        if (url.equals(UrlConstants.BOOKMARKS_NATIVE_URL)) {
+        if (url.equals(getOriginalNativeBookmarksUrl())) {
             assumeNonNull(bookmarkModel.getDefaultFolderViewLocation());
             return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         } else if (url.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {

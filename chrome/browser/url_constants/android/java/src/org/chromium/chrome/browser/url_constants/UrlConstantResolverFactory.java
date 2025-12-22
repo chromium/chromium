@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.url_constants;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
@@ -16,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /**
@@ -83,10 +84,10 @@ public class UrlConstantResolverFactory {
                                 ? getOriginalNonNativeNtpUrl()
                                 : null);
         resolver.registerOverride(
-                UrlConstants.BOOKMARKS_NATIVE_URL,
+                getOriginalNativeBookmarksUrl(),
                 () ->
                         ExtensionsUrlOverrideRegistry.getBookmarksPageOverrideEnabled()
-                                ? UrlConstants.BOOKMARKS_URL
+                                ? getOriginalNonNativeBookmarksUrl()
                                 : null);
         resolver.registerOverride(
                 getOriginalNativeHistoryUrl(),
@@ -108,10 +109,10 @@ public class UrlConstantResolverFactory {
                                 ? getOriginalNonNativeNtpUrl()
                                 : null);
         resolver.registerOverride(
-                UrlConstants.BOOKMARKS_NATIVE_URL,
+                getOriginalNativeBookmarksUrl(),
                 () ->
                         ExtensionsUrlOverrideRegistry.getIncognitoBookmarksPageOverrideEnabled()
-                                ? UrlConstants.BOOKMARKS_URL
+                                ? getOriginalNonNativeBookmarksUrl()
                                 : null);
         return resolver;
     }

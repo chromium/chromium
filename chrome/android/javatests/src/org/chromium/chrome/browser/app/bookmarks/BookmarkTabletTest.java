@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -81,7 +82,7 @@ public class BookmarkTabletTest {
     private void openBookmarkManager() throws InterruptedException {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
         mItemsContainer =
                 mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
         mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
@@ -169,7 +170,7 @@ public class BookmarkTabletTest {
                                 }
                             });
                 });
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
         assertEquals(0, callbackHelper.getCallCount());
     }

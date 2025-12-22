@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
@@ -103,8 +104,7 @@ public class BookmarkOpenerTest {
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
 
         if (pageStation.getActivity().isTablet()) {
-            pageStation =
-                    pageStation.loadWebPageProgrammatically(UrlConstants.BOOKMARKS_NATIVE_URL);
+            pageStation = pageStation.loadWebPageProgrammatically(getOriginalNativeBookmarksUrl());
             mItemsContainer =
                     pageStation.getActivity().findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.

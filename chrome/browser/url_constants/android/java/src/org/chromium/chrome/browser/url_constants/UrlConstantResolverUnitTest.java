@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.url_constants;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -18,7 +19,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlConstantResolver}. */
@@ -44,7 +44,7 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetBookmarksPageUrl_NoOverride() {
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), mResolver.getBookmarksPageUrl());
     }
 
     @Test
@@ -66,14 +66,14 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetBookmarksPageUrl_WithOverrideEnabled() {
-        mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeBookmarksUrl(), () -> OVERRIDE_URL);
         assertEquals(OVERRIDE_URL, mResolver.getBookmarksPageUrl());
     }
 
     @Test
     public void testGetBookmarksPageUrl_WithOverrideDisabled() {
-        mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> null);
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
+        mResolver.registerOverride(getOriginalNativeBookmarksUrl(), () -> null);
+        assertEquals(getOriginalNativeBookmarksUrl(), mResolver.getBookmarksPageUrl());
     }
 
     @Test
@@ -92,10 +92,10 @@ public class UrlConstantResolverUnitTest {
     @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
     public void testAllOverridesEnabled_FeatureDisabled() {
         mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> OVERRIDE_URL);
-        mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeBookmarksUrl(), () -> OVERRIDE_URL);
         mResolver.registerOverride(getOriginalNativeHistoryUrl(), () -> OVERRIDE_URL);
         assertEquals(getOriginalNativeNtpUrl(), mResolver.getNtpUrl());
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), mResolver.getBookmarksPageUrl());
         assertEquals(getOriginalNativeHistoryUrl(), mResolver.getHistoryPageUrl());
     }
 

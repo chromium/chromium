@@ -9,8 +9,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
@@ -28,7 +30,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlConstantResolverFactory}. */
@@ -107,7 +108,7 @@ public class UrlConstantResolverFactoryUnitTest {
     public void testOriginalResolver_FeatureDisabled() {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
         assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
 
@@ -127,10 +128,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(true);
-        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNonNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(false);
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
     }
 
     @Test
@@ -162,10 +163,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(true);
-        assertEquals(UrlConstants.BOOKMARKS_URL, resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNonNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
-        assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
     }
 
     @Test
