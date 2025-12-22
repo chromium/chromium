@@ -591,9 +591,19 @@ bool TabModelJniBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
 }
 
 std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
-  // TODO(405219902): Implement JNI.
-  NOTIMPLEMENTED();
-  return {};
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::vector<base::Token> group_id_tokens =
+      Java_TabModelJniBridge_listTabGroups(env, jobj);
+
+  // NOTE: Order is not guaranteed by the underlying API, but TabListInterface
+  // requires returning a <vector> and not a <set>.
+  std::vector<tab_groups::TabGroupId> group_ids;
+  group_ids.reserve(group_id_tokens.size());
+  for (base::Token token : group_id_tokens) {
+    group_ids.push_back(tab_groups::TabGroupId::FromRawToken(token));
+  }
+  return group_ids;
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(

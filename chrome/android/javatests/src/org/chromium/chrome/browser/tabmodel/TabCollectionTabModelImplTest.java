@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -3786,6 +3788,35 @@ public class TabCollectionTabModelImplTest {
 
                     // Valid group id returns true.
                     assertTrue(mCollectionModel.containsTabGroup(tabGroupId));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testListTabGroups() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.listTabGroups().isEmpty());
+
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId0 = tab0.getTabGroupId();
+                    assertNotNull(groupId0);
+
+                    List<Token> groupIds = mCollectionModel.listTabGroups();
+                    assertEquals("Should be 1 group.", 1, groupIds.size());
+                    assertThat(groupIds).containsExactly(groupId0);
+
+                    mCollectionModel.createSingleTabGroup(tab1);
+                    Token groupId1 = tab1.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    groupIds = mCollectionModel.listTabGroups();
+                    assertEquals("Should be 2 groups.", 2, groupIds.size());
+                    // Order is not guaranteed by the underlying API.
+                    assertThat(groupIds).containsExactly(groupId0, groupId1);
                 });
     }
 }
