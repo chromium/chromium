@@ -156,7 +156,9 @@ void VpnServiceForExtensionAsh::DestroyAllConfigurations() {
   std::vector<std::string> to_be_destroyed;
   for (const auto& [key, configuration] :
        controller_->key_to_configuration_map_) {
-    to_be_destroyed.push_back(configuration->configuration_name());
+    if (configuration->extension_id() == extension_id()) {
+      to_be_destroyed.push_back(configuration->configuration_name());
+    }
   }
   for (const auto& configuration_name : to_be_destroyed) {
     DestroyConfiguration(configuration_name, base::DoNothing());
