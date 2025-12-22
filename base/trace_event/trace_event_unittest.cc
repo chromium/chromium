@@ -160,14 +160,12 @@ class TraceEventTestFixture : public testing::Test {
     TraceLog::ResetForTesting();
     TraceLog* tracelog = TraceLog::GetInstance();
     ASSERT_TRUE(tracelog);
-    ASSERT_FALSE(tracelog->IsEnabled());
+    ASSERT_FALSE(base::TrackEvent::IsEnabled());
     trace_buffer_.SetOutputCallback(json_output_.GetCallback());
     num_flush_callbacks_ = 0;
   }
   void TearDown() override {
-    if (TraceLog::GetInstance()) {
-      EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    }
+    EXPECT_FALSE(base::TrackEvent::IsEnabled());
     PlatformThread::SetName(old_thread_name_);
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
@@ -1156,14 +1154,14 @@ TEST_F(TraceEventTestFixture, TraceEnableDisable) {
   TraceLog* trace_log = TraceLog::GetInstance();
   TraceConfig tc_inc_all("*", "");
   trace_log->SetEnabled(tc_inc_all);
-  EXPECT_TRUE(trace_log->IsEnabled());
+  EXPECT_TRUE(base::TrackEvent::IsEnabled());
   trace_log->SetDisabled();
-  EXPECT_FALSE(trace_log->IsEnabled());
+  EXPECT_FALSE(base::TrackEvent::IsEnabled());
 
   trace_log->SetEnabled(tc_inc_all);
-  EXPECT_TRUE(trace_log->IsEnabled());
+  EXPECT_TRUE(base::TrackEvent::IsEnabled());
   trace_log->SetDisabled();
-  EXPECT_FALSE(trace_log->IsEnabled());
+  EXPECT_FALSE(base::TrackEvent::IsEnabled());
 }
 
 TEST_F(TraceEventTestFixture, TraceWithDefaultCategoryFilters) {

@@ -40,9 +40,8 @@ namespace trace_event {
 
 class JsonStringOutputWriter;
 
-class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
+class BASE_EXPORT TraceLog {
  public:
-
   static TraceLog* GetInstance();
 
   TraceLog(const TraceLog&) = delete;
@@ -60,24 +59,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   // Disables tracing for all categories.
   void SetDisabled();
-
-  // Returns true if TraceLog is enabled (i.e. there's an active tracing
-  // session).
-  bool IsEnabled() {
-    // We don't rely on TrackEvent::IsEnabled() because it can be true before
-    // TraceLog has processed its TrackEventSessionObserver callbacks.
-    // For example, the code
-    // if (TrackEvent::IsEnabled()) {
-    //   auto config = TraceLog::GetCurrentTrackEventDataSourceConfig();
-    //   ...
-    // }
-    // can fail in a situation when TrackEvent::IsEnabled() is already true, but
-    // TraceLog::OnSetup() hasn't been called yet, so we don't know the config.
-    // Instead, we make sure that both OnSetup() and OnStart() have been called
-    // by tracking the number of active sessions that TraceLog has seen.
-    AutoLock lock(track_event_lock_);
-    return active_track_event_sessions_ > 0;
-  }
 
   void SetArgumentFilterPredicate(
       const ArgumentFilterPredicate& argument_filter_predicate);
@@ -113,18 +94,14 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   void SetProcessID(ProcessId process_id);
 
-  void SetEnabledImpl(const TraceConfig& trace_config,
-                      const perfetto::TraceConfig& perfetto_config);
-
-  // perfetto::TrackEventSessionObserver implementation.
-  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
-  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
-
  private:
   friend class base::NoDestructor<TraceLog>;
 
   TraceLog();
-  ~TraceLog() override;
+  ~TraceLog();
+
+  void SetEnabledImpl(const TraceConfig& trace_config,
+                      const perfetto::TraceConfig& perfetto_config);
 
   void SetDisabledWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -146,8 +123,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
-  int active_track_event_sessions_ = 0;
-  mutable Lock track_event_lock_;
 #if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
       trace_processor_;

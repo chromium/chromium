@@ -74,7 +74,7 @@ MULTIPROCESS_TEST_MAIN(InitFromLaunchParameters) {
 
   // Simulate launching with the serialized parameters.
   EXPECT_TRUE(IsTracingInitialized());
-  EXPECT_TRUE(base::trace_event::TraceLog::GetInstance()->IsEnabled());
+  EXPECT_TRUE(base::TrackEvent::IsEnabled());
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA)
 
   auto* command_line = base::CommandLine::ForCurrentProcess();

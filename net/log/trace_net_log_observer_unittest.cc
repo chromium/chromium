@@ -111,13 +111,13 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
   TraceNetLogObserverTest() {
     TraceLog* tracelog = TraceLog::GetInstance();
     DCHECK(tracelog);
-    DCHECK(!tracelog->IsEnabled());
+    DCHECK(!base::TrackEvent::IsEnabled());
     trace_buffer_.SetOutputCallback(json_output_.GetCallback());
     trace_net_log_observer_ = std::make_unique<TraceNetLogObserver>();
   }
 
   ~TraceNetLogObserverTest() override {
-    DCHECK(!TraceLog::GetInstance()->IsEnabled());
+    DCHECK(!base::TrackEvent::IsEnabled());
   }
 
   void OnTraceDataCollected(

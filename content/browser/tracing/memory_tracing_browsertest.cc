@@ -123,7 +123,7 @@ class MemoryTracingTest : public ContentBrowserTest {
 
   void EnableMemoryTracing() {
     // Re-enabling tracing could crash these tests https://crbug.com/657628 .
-    if (base::trace_event::TraceLog::GetInstance()->IsEnabled()) {
+    if (base::TrackEvent::IsEnabled()) {
       FAIL() << "Tracing seems to be already enabled. "
                 "Very likely this is because the startup tracing file "
                 "has been leaked from a previous test.";

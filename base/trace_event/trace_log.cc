@@ -349,13 +349,10 @@ void TraceLog::ResetForTesting() {
 
 TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
   SetProcessID(GetCurrentProcId());
-  TrackEvent::AddSessionObserver(this);
   g_trace_log_for_testing = this;
 }
 
-TraceLog::~TraceLog() {
-  TrackEvent::RemoveSessionObserver(this);
-}
+TraceLog::~TraceLog() = default;
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
@@ -636,30 +633,6 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
 
 void TraceLog::SetProcessID(ProcessId process_id) {
   process_id_ = process_id;
-}
-
-void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
-  {
-    AutoLock lock(track_event_lock_);
-    ++active_track_event_sessions_;
-    // Legacy observers don't support multiple tracing sessions. So we only
-    // notify them about the first one.
-    if (active_track_event_sessions_ > 1) {
-      return;
-    }
-  }
-}
-
-void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
-  {
-    AutoLock lock(track_event_lock_);
-    --active_track_event_sessions_;
-    // Legacy observers don't support multiple tracing sessions. So we only
-    // notify them when the last one stopped.
-    if (active_track_event_sessions_ > 0) {
-      return;
-    }
-  }
 }
 
 }  // namespace base::trace_event

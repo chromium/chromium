@@ -983,13 +983,13 @@ void TraceAnalyzer::ParseMetadata() {
 // |TraceAnalyzer| from the result.
 
 void Start(const std::string& category_filter_string) {
-  DCHECK(!base::trace_event::TraceLog::GetInstance()->IsEnabled());
+  DCHECK(!base::TrackEvent::IsEnabled());
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(category_filter_string, ""));
 }
 
 std::unique_ptr<TraceAnalyzer> Stop() {
-  DCHECK(base::trace_event::TraceLog::GetInstance()->IsEnabled());
+  DCHECK(base::TrackEvent::IsEnabled());
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
 
   base::trace_event::TraceResultBuffer buffer;
