@@ -368,6 +368,8 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     MaybeDetachWebContentsFromWebView(it->second->web_contents.get());
   }
   task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
+  // Updates the automated chip if needed.
+  UpdateContextualTaskUI();
 }
 
 contextual_search::ContextualSearchSessionHandle*

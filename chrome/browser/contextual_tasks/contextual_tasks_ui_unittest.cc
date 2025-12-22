@@ -113,6 +113,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                const base::Uuid& task_id,
                bool is_shown_in_tab),
               (override));
+  MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
 };
 
 }  // namespace
@@ -524,7 +525,55 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   EXPECT_EQ(delegate.GetTaskId(), task_id);
   EXPECT_EQ(delegate.GetThreadId(), thread_id);
   EXPECT_EQ(delegate.GetThreadTurnId(), turn_id2);
+  observer.reset();
+}
 
+TEST_F(ContextualTasksUiTest, OnTaskChangedCalledForDefaultUrl) {
+  MockTaskInfoDelegate delegate;
+  GURL default_url("https://google.com/search?q=default");
+  ON_CALL(*service_for_nav_, GetDefaultAiPageUrl)
+      .WillByDefault(Return(default_url));
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      context_controller_.get(), &delegate);
+
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, base::Uuid(), false))
+      .Times(1);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(default_url);
+  observer->DidFinishNavigation(nav_handle.get());
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, NoActionWhenUrlUnchanged) {
+  MockTaskInfoDelegate delegate;
+  GURL url(kAiPageUrl);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      context_controller_.get(), &delegate);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
+  EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
+      .Times(0);
+  observer->DidFinishNavigation(nav_handle.get());
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, NoActionForNonAiUrl) {
+  MockTaskInfoDelegate delegate;
+  GURL non_ai_url("https://example.com");
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      context_controller_.get(), &delegate);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
+  EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
+      .Times(0);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(non_ai_url);
+  observer->DidFinishNavigation(nav_handle.get());
   observer.reset();
 }
 
