@@ -261,7 +261,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
         ContextualSearchServiceFactory::GetForProfile(profile);
     auto contextual_session_handle = contextual_search_service->CreateSession(
         ntp_composebox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kNewTabPage);
+        contextual_search::ContextualSearchSource::kContextualTasks);
     contextual_search_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
   }
