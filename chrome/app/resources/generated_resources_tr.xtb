@@ -2117,7 +2117,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2428939361789119025">Kablosuz bağlantıyı kapat</translation>
 <translation id="2431027948063157455">Google Asistan yüklenemedi, lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="243179355394256322">Kuruluşunuz, cihaz kaydını yalnızca yetkili kullanıcılarla sınırlıyor. Bu kullanıcının cihaz kaydetme yetkisi yok. Lütfen kullanıcının, Yönetici konsolunun Kullanıcılar bölümünde "Google Meet hardware cihazlarını kaydetme" yönetici ayrıcalıklarına sahip olduğundan emin olun.</translation>
-<translation id="2431896368788252518">Kişiye özel bağlam bilgilerinizi görüntüleyin ve yönetin</translation>
 <translation id="243275146591958220">İndirmeyi iptal et</translation>
 <translation id="2433237965825924228">Yalıtılmış web uygulamaları, kimlik doğrulama cihazlarını ve bu cihazların erişebildiği akıllı kartları kontrol eder. Akıllı kartlar genellikle kimliğinizi doğrulamak için kullanılan tanımlayıcılar içerir.</translation>
 <translation id="2433452467737464329">Sayfayı otomatik olarak yenilemek için URL'ye bir sorgu parametresi ekleyin: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4375,6 +4374,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="394984172568887996">IE'den Aktarıldı</translation>
 <translation id="3949999964543783947">Dosyaları daha güvenli bir şekilde indirmek için <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Daha hızlı oturum açmak için otomatik olarak geçiş anahtarı oluşturun</translation>
+<translation id="3950755269510650933">Gemini'ın deneyiminizi kişiselleştirmek için kullanabileceği bilgileri yönetin</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3950841222883198950">Sesle yazma</translation>
 <translation id="3953834000574892725">Hesaplarım</translation>
@@ -4404,6 +4404,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Kimlik</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
+<translation id="3971355433478412726">Gemini için talimatlar</translation>
 <translation id="3971764089670057203">Bu güvenlik anahtarındaki parmak izleri</translation>
 <translation id="3973005893595042880">Kullanıcıya izin verilmiyor</translation>
 <translation id="3973660817924297510">Şifreler kontrol ediliyor (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5809,6 +5810,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Yalnızca bu cihazdaki bir klasöre kaydedilsin mi?</translation>
 <translation id="4959262764292427323">Şifreler Google Hesabınıza kaydedildiğinden bunları herhangi bir cihazda kullanabilirsiniz</translation>
+<translation id="4959581970694896608">Gemini'ın size nasıl yanıt vereceğini özelleştirin</translation>
 <translation id="4960020053211143927">Bazı uygulamalar tarafından desteklenmiyor</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>

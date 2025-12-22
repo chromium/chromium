@@ -2121,7 +2121,6 @@
 <translation id="2428939361789119025">WiFi අක්‍රිය කරන්න</translation>
 <translation id="2431027948063157455">Google සහායක පූරණය කළ නොහැකි විය, ඔබේ ජාල සබැඳුම පරීක්ෂා කර යළි උත්සාහ කරන්න.</translation>
 <translation id="243179355394256322">ඔබගේ සංවිධානය උපාංග ලියාපදිංචිය අනුමැතියලත් පරිශීලකයින්ට පමණක් සීමා කරයි. මෙම පරිශීලකයා උපාංග ලියාපදිංචි කිරීමට අනුමැතිය ලබා නැත. පරිශීලකයාට පරිපාලක කොන්සෝලයේ පරිශීලකයින්ගේ කොටසේ "Google Meet දෘඪාංග ලියාපදිංචි කරන්න" පරිපාලක වරප්‍රසාදය ඇති බවට කරුණාකර සහතික කර ගන්න.</translation>
-<translation id="2431896368788252518">ඔබේ පුද්ගලික සන්දර්භය බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="243275146591958220">බාගැනීම අවලංගු කරන්න</translation>
 <translation id="2433237965825924228">හුදකලා වෙබ් යෙදුම් ඒවාට ප්‍රවේශ විය හැකි සත්‍යාපන උපාංග සහ ස්මාර්ට් කාඩ්පත් පාලනය කරයි. ස්මාර්ට් කාඩ්පත්වල සාමාන්‍යයෙන් ඔබව සත්‍යාපනය කිරීමට භාවිත කරන හැඳුනුම්කාරක අඩංගු වේ.</translation>
 <translation id="2433452467737464329">පිටුව ඉබේම නැවුම් කිරීමට URL තුළ විමසුමක් එක් කෙරේ: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4380,6 +4379,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="394984172568887996">IE වෙතින් ආයාත කෙරිණි</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ගොනු බා ගැනීම ඉතා ආරක්‍ෂිත කිරීමට</translation>
 <translation id="3950479158728806902">වේගයෙන් පුරනය වීමට ස්වයංක්‍රීයව මුරයතුරක් සාදන්න</translation>
+<translation id="3950755269510650933">Gemini හට ඔබේ අත්දැකීම පුද්ගලායනය කිරීමට භාවිත කළ හැකි තොරතුරු කළමනාකරණය කරන්න</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3950841222883198950">හඬ ටයිප් කිරීම</translation>
 <translation id="3953834000574892725">මගේ ගිණුම්</translation>
@@ -4409,6 +4409,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
+<translation id="3971355433478412726">Gemini සඳහා උපදෙස්</translation>
 <translation id="3971764089670057203">මෙම ආරක්‍ෂක යතුරේ ඇඟිලි සලකුණු</translation>
 <translation id="3973005893595042880">පරිශීලකයාට ඉඩ නොදේ</translation>
 <translation id="3973660817924297510">මුරපද පරීක්‍ෂා කෙරේ (<ph name="TOTAL_PASSWORDS" /> න් <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5814,6 +5815,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">මෙම උපාංගයෙහි පමණක් ෆෝල්ඩරයකට සුරකින්න ද?</translation>
 <translation id="4959262764292427323">මුරපද ඔබගේ Google ගිණුමේ සුරක්ෂිත කර ඇති අතර, එනිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිතා කළ හැකිය</translation>
+<translation id="4959581970694896608">Gemini ඔබට ප්‍රතිචාර දක්වන ආකාරය අභිරුචිකරණය කරන්න</translation>
 <translation id="4960020053211143927">සමහර යෙදුම් මගින් සහාය නොදක්වයි</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">තිරය විකාශය කරන්න</translation>

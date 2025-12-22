@@ -2120,7 +2120,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2428939361789119025">Desactivar Wi‑Fi</translation>
 <translation id="2431027948063157455">No se ha podido cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="243179355394256322">Tu organización solo permite el registro de dispositivos a los usuarios autorizados. Este usuario no tiene autorización para registrar dispositivos. Asegúrate de que el usuario tiene el privilegio de administrador "Registrar hardware de Google Meet" en la sección Usuarios de la consola de administración.</translation>
-<translation id="2431896368788252518">Ver y gestionar tu contexto personal</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433237965825924228">Las aplicaciones web aisladas controlan los dispositivos de autenticación y las tarjetas inteligentes a los que tienen acceso. Las tarjetas inteligentes suelen contener identificadores que se usan para autenticarte.</translation>
 <translation id="2433452467737464329">Añade un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4379,6 +4378,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="394984172568887996">Importado desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar archivos de forma más segura</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para iniciar sesión más rápido</translation>
+<translation id="3950755269510650933">Gestiona la información que Gemini puede usar para personalizar tu experiencia</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3950841222883198950">Escribir por voz</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
@@ -4408,6 +4408,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucciones para Gemini</translation>
 <translation id="3971764089670057203">Huellas digitales de esta llave de seguridad</translation>
 <translation id="3973005893595042880">El usuario no está permitido</translation>
 <translation id="3973660817924297510">Comprobando contraseñas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5812,6 +5813,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">¿Guardar en una carpeta solo en este dispositivo?</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo</translation>
+<translation id="4959581970694896608">Personaliza cómo te responde Gemini</translation>
 <translation id="4960020053211143927">No compatible con algunas aplicaciones</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>

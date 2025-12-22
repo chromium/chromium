@@ -2131,7 +2131,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2428939361789119025">Isključite WiFi</translation>
 <translation id="2431027948063157455">Nije moguće učitati Google Asistenta. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="243179355394256322">Vaša organizacija je ograničila prijavu uređaja samo na odobrene korisnike. Ovom korisniku nije odobreno da prijavljuje uređaje. Provjerite ima li korisnik administratorsku privilegiju "Prijava hardvera za Google Meet" u odjeljku Korisnici administratorske konzole.</translation>
-<translation id="2431896368788252518">Pregledajte lični kontekst i upravljajte njime</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
 <translation id="2433237965825924228">Izolirane web aplikacije upravljaju uređajima za autentifikaciju i pametnim karticama kojima mogu pristupati. Pametne kartice obično sadržavaju identifikatore koji se koriste za autentifikaciju.</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da automatski osvježite stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4391,6 +4390,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="394984172568887996">Uvezeno iz IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> za sigurnije preuzimanje fajlova</translation>
 <translation id="3950479158728806902">Automatski kreiraj pristupni ključ radi brže prijave</translation>
+<translation id="3950755269510650933">Upravljajte informacijama koje Gemini može koristiti da personalizira vaše iskustvo</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3950841222883198950">Pisanje govorom</translation>
 <translation id="3953834000574892725">Moji računi</translation>
@@ -4420,6 +4420,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Računanje…</translation>
+<translation id="3971355433478412726">Uputstva za Gemini</translation>
 <translation id="3971764089670057203">Otisci prsta na ovom sigurnosnom ključu</translation>
 <translation id="3973005893595042880">Korisnik nije dozvoljen</translation>
 <translation id="3973660817924297510">Provjeravanje lozinki (<ph name="CHECKED_PASSWORDS" /> od <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5825,6 +5826,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Sačuvati u folder samo na ovom uređaju?</translation>
 <translation id="4959262764292427323">Lozinke se pohranjuju na vaš Google račun da ih možete koristiti na bilo kojem uređaju</translation>
+<translation id="4959581970694896608">Prilagodite način na koji Gemini odgovara</translation>
 <translation id="4960020053211143927">Određene aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emitiraj ekran</translation>

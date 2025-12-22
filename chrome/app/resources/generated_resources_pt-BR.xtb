@@ -2133,7 +2133,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2428939361789119025">Desativar o Wi-Fi</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Google Assistente. Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="243179355394256322">Sua organização limita o registro de dispositivos apenas a usuários autorizados. Este usuário não tem autorização para registrar dispositivos. Confira se ele tem o privilégio de administrador "Registrar hardware do Google Meet" na seção "Usuários" do Admin Console.</translation>
-<translation id="2431896368788252518">Veja e gerencie seu contexto pessoal</translation>
 <translation id="243275146591958220">Cancelar download</translation>
 <translation id="2433237965825924228">Os apps isolados da Web controlam os dispositivos de autenticação e os cartões inteligentes acessíveis a eles. Em geral, os cartões inteligentes contêm identificadores usados para autenticar seu acesso.</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4393,6 +4392,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar o download de arquivos mais seguro</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para fazer login mais rápido</translation>
+<translation id="3950755269510650933">Gerencie as informações que o Gemini pode usar para personalizar sua experiência</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3950841222883198950">Digitação por voz</translation>
 <translation id="3953834000574892725">Minhas contas</translation>
@@ -4422,6 +4422,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Código</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instruções para o Gemini</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O usuário não é permitido</translation>
 <translation id="3973660817924297510">Verificando senhas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5827,6 +5828,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvar em uma pasta apenas neste dispositivo?</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
+<translation id="4959581970694896608">Personalizar as respostas do Gemini</translation>
 <translation id="4960020053211143927">Indisponível em alguns apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir tela</translation>

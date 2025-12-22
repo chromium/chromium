@@ -2117,7 +2117,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2428939361789119025">Çaktivizo Wi-Fi</translation>
 <translation id="2431027948063157455">"Asistenti i Google" nuk ishte në gjendje të ngarkohej, kontrollo lidhjen e rrjetit provo sërish.</translation>
 <translation id="243179355394256322">Organizata jote e kufizon regjistrimin e pajisjes vetëm për përdoruesit e autorizuar. Ky përdorues nuk është i autorizuar për të regjistruar pajisje. Sigurohu që përdoruesi të ketë privilegjin e administratorit "Regjistro harduerin e Google Meet" në seksionin "Përdoruesit" të panelit të administratorit.</translation>
-<translation id="2431896368788252518">Shiko dhe menaxho kontekstin personal</translation>
 <translation id="243275146591958220">Anulo shkarkimin</translation>
 <translation id="2433237965825924228">Aplikacionet e izoluara të uebit kontrollojnë pajisjet e vërtetimit dhe kartat inteligjente të qasshme për to. Kartat inteligjente zakonisht përfshijnë identifikues që përdoren për të të vërtetuar.</translation>
 <translation id="2433452467737464329">Shto një parametër pyetjeje në URL për të rifreskuar automatikisht faqen: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4377,6 +4376,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="394984172568887996">U importua nga IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> për të shkarkuar më shpejt skedarët</translation>
 <translation id="3950479158728806902">Krijo automatikisht një çelës kalimi për t'u identifikuar më shpejt</translation>
+<translation id="3950755269510650933">Menaxho informacionet që Gemini mund të përdorë për të personalizuar përvojën tënde</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3950841222883198950">Shkrimi me zë</translation>
 <translation id="3953834000574892725">Llogaritë e mia</translation>
@@ -4406,6 +4406,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
+<translation id="3971355433478412726">Udhëzimet për Gemini</translation>
 <translation id="3971764089670057203">Gjurmët e gishtave në këtë çelës sigurie</translation>
 <translation id="3973005893595042880">Përdoruesi nuk lejohet</translation>
 <translation id="3973660817924297510">Po kontrollon fjalëkalimet (<ph name="CHECKED_PASSWORDS" /> nga <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5810,6 +5811,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Të ruhet te një dosje vetëm në këtë pajisje?</translation>
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
+<translation id="4959581970694896608">Personalizo mënyrën se si të përgjigjet Gemini</translation>
 <translation id="4960020053211143927">Nuk mbështetet nga disa aplikacione</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>

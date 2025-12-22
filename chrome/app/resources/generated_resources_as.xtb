@@ -2130,7 +2130,6 @@
 <translation id="2428939361789119025">ৱাই-ফাই অফ কৰক</translation>
 <translation id="2431027948063157455">Google Assistant ল’ড কৰিব পৰা নগ’ল, অনুগ্ৰহ কৰি আপোনাৰ নেটৱর্ক সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="243179355394256322">আপোনাৰ প্ৰতিষ্ঠানে ডিভাইচৰ পঞ্জীয়ন কেৱল কৰ্তৃত্ব থকা ব্যৱহাৰকাৰীৰ মাজত সীমিত কৰিছে। এই ব্যৱহাৰকাৰী গৰাকীৰ ডিভাইচ পঞ্জীয়ন কৰিবলৈ কৰ্তৃত্ব নাই। অনুগ্ৰহ কৰি প্ৰশাসকৰ কনছ’লৰ ব্যৱহাৰকাৰীৰ শাখাটোত ব্যৱহাৰকাৰী গৰাকীৰ "Google Meetৰ হাৰ্ডৱেৰ পঞ্জীয়ন কৰক" প্ৰশাসকীয় বিশেষ সুবিধা থকাটো নিশ্চিত কৰক।</translation>
-<translation id="2431896368788252518">আপোনাৰ ব্যক্তিগত প্ৰসংগ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="243275146591958220">ডাউনল’ড বাতিল কৰক</translation>
 <translation id="2433237965825924228">পোনপটীয়াকৈ বিতৰণ কৰা ৱেব এপে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ ডিভাইচসমূহ আৰু সেইসমূহত এক্সেছ কৰিব পৰা স্মাৰ্ট কাৰ্ডসমূহ নিয়ন্ত্ৰণ কৰে। স্মাৰ্ট কাৰ্ডসমূহত আপোনাৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ কৰিবলৈ সাধাৰণতে চিনাক্তকাৰী থাকে।</translation>
 <translation id="2433452467737464329">পৃষ্ঠাটো স্বয়ংক্ৰিয়ভাৱে ৰিফ্রে’শ্ব কৰিবলৈ URLত সন্ধানৰ এটা পৰম যোগ কৰক: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4389,6 +4388,7 @@
 <translation id="394984172568887996">IEৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="3949999964543783947">ফাইল আৰু দ্ৰুতভাৱে ডাউনল'ড কৰিবলৈ <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">দ্ৰুতভাৱে ছাইন ইন কৰিবলৈ স্বয়ংক্ৰিয়ভাৱে পাছকী সৃষ্টি কৰক</translation>
+<translation id="3950755269510650933">Geminiএ আপোনাৰ অভিজ্ঞতা ব্যক্তিগতকৰণ কৰিবলৈ ব্যৱহাৰ কৰিব পৰা তথ্য পৰিচালনা কৰক</translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="3950841222883198950">ভইচ টাইপিং</translation>
 <translation id="3953834000574892725">মোৰ একাউণ্টসমূহ</translation>
@@ -4418,6 +4418,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
+<translation id="3971355433478412726">Geminiৰ বাবে নিৰ্দেশাৱলী</translation>
 <translation id="3971764089670057203">এই সুৰক্ষা চাবিটোত থকা ফিংগাৰপ্ৰিণ্টসমূহ</translation>
 <translation id="3973005893595042880">ব্যৱহাৰকাৰীক অনুমতি দিয়া হোৱা নাই</translation>
 <translation id="3973660817924297510">পাছৱর্ডসমূহ পৰীক্ষা কৰি থকা হৈছে (<ph name="TOTAL_PASSWORDS" /> টাৰ ভিতৰত <ph name="CHECKED_PASSWORDS" /> টা)…</translation>
@@ -5823,6 +5824,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">কেৱল এই ডিভাইচটোৰ এটা ফ’ল্ডাৰত ছেভ কৰিবনে?</translation>
 <translation id="4959262764292427323">আপুনি সকলো ডিভাইচতে ব্যৱহাৰ কৰিব পৰাকৈ নিজৰ Google একাউণ্টত পাছৱর্ডসমূহ ছেভ কৰা হয়</translation>
+<translation id="4959581970694896608">Geminiএ আপোনাক কেনেকৈ সঁহাৰি জনাব সেয়া কাষ্টমাইজ কৰক</translation>
 <translation id="4960020053211143927">কিছুমান এপে সমৰ্থন নকৰে</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">স্ক্রীণ কাষ্ট কৰক</translation>

@@ -2135,7 +2135,6 @@
 <translation id="2428939361789119025">Вимкнути Wi-Fi</translation>
 <translation id="2431027948063157455">Не вдалося завантажити Google Асистент. Перевірте з’єднання з мережею та повторіть спробу.</translation>
 <translation id="243179355394256322">Реєструвати пристрої у вашій організації можуть лише користувачі з відповідним дозволом. Цей користувач не має такого дозволу. Право на реєстрацію обладнання для Google Meet можна надати в розділі "Користувачі" в Консолі адміністратора.</translation>
-<translation id="2431896368788252518">Переглядайте свій персональний контекст і керуйте ним</translation>
 <translation id="243275146591958220">Скасувати завантаження</translation>
 <translation id="2433237965825924228">Ізольовані вебдодатки керують пристроями для автентифікації і розумними картками, які вони можуть зчитувати. Зазвичай такі картки містять ідентифікатори, які використовуються для автентифікації.</translation>
 <translation id="2433452467737464329">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4395,6 +4394,7 @@
 <translation id="394984172568887996">Імпортовано із IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, щоб завантажувати файли безпечніше</translation>
 <translation id="3950479158728806902">Автоматично створювати ключі доступу, щоб швидше входити в обліковий запис</translation>
+<translation id="3950755269510650933">Керуйте інформацією, яку Gemini може використовувати для персоналізації</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3950841222883198950">Голосовий ввід</translation>
 <translation id="3953834000574892725">Мої облікові записи</translation>
@@ -4424,6 +4424,7 @@
 <translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">ІДЕНТИФІКАТОР</translation>
 <translation id="397105322502079400">Обчислення...</translation>
+<translation id="3971355433478412726">Вказівки для Gemini</translation>
 <translation id="3971764089670057203">Цифрові відбитки на цьому ключі безпеки</translation>
 <translation id="3973005893595042880">Користувач заборонений</translation>
 <translation id="3973660817924297510">Перевірка паролів (<ph name="CHECKED_PASSWORDS" /> з <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5828,6 +5829,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Зберегти в папці лише на цьому пристрої?</translation>
 <translation id="4959262764292427323">Паролі зберігаються в обліковому записі Google, щоб ви могли користуватися ними на будь-якому пристрої</translation>
+<translation id="4959581970694896608">Налаштуйте, як Gemini має відповідати вам</translation>
 <translation id="4960020053211143927">Не підтримується певними додатками</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Трансляція екрана</translation>

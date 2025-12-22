@@ -2132,7 +2132,6 @@
 <translation id="2428939361789119025">वाय-फाय बंद करा</translation>
 <translation id="2431027948063157455">Google Assistant लोड होऊ शकले नाही, कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="243179355394256322">तुमची संस्था डिव्हाइसची नोंदणी फक्त अधिकृत वापरकर्त्यांपुरती मर्यादित करते. डिव्हाइसची नोंदणी करण्यासाठी हा वापरकर्ता अधिकृत नाही. कृपया ॲडमिन कन्सोलमधील वापरकर्ते विभागामध्ये वापरकर्त्याकडे "Google Meet हार्डवेअरमध्ये नोंदणी करा" हा अ‍ॅडमिनिस्ट्रेटर विशेषाधिकार असल्याची खात्री करा.</translation>
-<translation id="2431896368788252518">तुमचा वैयक्तिक संदर्भ पहा आणि व्यवस्थापित करा</translation>
 <translation id="243275146591958220">डाउनलोड रद्द करा</translation>
 <translation id="2433237965825924228">ऑथेंटिकेशन डिव्हाइस आणि त्यांना अ‍ॅक्सेस करता येणारी स्मार्ट कार्ड यांना आयसोलेटेड वेब ॲप्स नियंत्रित करू शकत नाहीत. स्मार्ट कार्डमध्ये सहसा तुम्हाला ऑथेंटिकेट करण्यासाठी वापरले जाणारे आयडेंटिफायर असतात.</translation>
 <translation id="2433452467737464329">पेज ऑटो-रिफ्रेश करण्यासाठी URL मध्ये क्वेरी पॅरामीटर जोडा: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@
 <translation id="394984172568887996">IE मधून आयातित</translation>
 <translation id="3949999964543783947">फाइल डाउनलोड करणे आणखी सुरक्षित करण्यासाठी <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">जलद साइन इन करण्यासाठी, तुम्ही आपोआप पासकी तयार करा</translation>
+<translation id="3950755269510650933">तुमचा अनुभव पर्सनलाइझ करण्यासाठी Gemini जी माहिती वापरू शकते, ती व्यवस्थापित करा</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3950841222883198950">व्हॉइस टायपिंग</translation>
 <translation id="3953834000574892725">माझी खाती</translation>
@@ -4421,6 +4421,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">आयडी</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
+<translation id="3971355433478412726">Gemini साठी सूचना</translation>
 <translation id="3971764089670057203">या सिक्युरिटी कीवरील फिंगरप्रिंट</translation>
 <translation id="3973005893595042880">वापरकर्त्याला अनुमती नाही</translation>
 <translation id="3973660817924297510">पासवर्ड तपासत आहे (<ph name="TOTAL_PASSWORDS" /> पैकी <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5824,6 +5825,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">फक्त या डिव्हाइसवरील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
+<translation id="4959581970694896608">Gemini तुम्हाला कसा प्रतिसाद देते हे कस्टमाइझ करा</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>

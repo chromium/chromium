@@ -2116,7 +2116,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2428939361789119025">Desactivar Wi-Fi</translation>
 <translation id="2431027948063157455">No se pudo cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="243179355394256322">Tu organización permite inscribir dispositivos solo a usuarios autorizados. Este usuario no está autorizado a inscribir dispositivos. Asegúrate de que el usuario tenga el privilegio de administrador "Inscribir el hardware de Google Meet" en la sección Usuarios de la Consola del administrador.</translation>
-<translation id="2431896368788252518">Consulta y administra tu contexto personal</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433237965825924228">Las apps web aisladas controlan los dispositivos de autenticación y las tarjetas inteligentes a los que tienen acceso. Por lo general, las tarjetas inteligentes contienen identificadores que se usan para autenticarte.</translation>
 <translation id="2433452467737464329">Agrega un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;.</translation>
@@ -4376,6 +4375,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para que la descarga de archivos sea más segura</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para acceder más rápido</translation>
+<translation id="3950755269510650933">Administra la información que Gemini puede usar para personalizar tu experiencia</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3950841222883198950">Dictado por voz</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
@@ -4405,6 +4405,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucciones para Gemini</translation>
 <translation id="3971764089670057203">Huellas digitales en esta llave de seguridad</translation>
 <translation id="3973005893595042880">El usuario no está habilitado</translation>
 <translation id="3973660817924297510">Verificando contraseñas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5810,6 +5811,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">¿Quieres guardarlo en una carpeta solo en este dispositivo?</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas usarlas en cualquier dispositivo</translation>
+<translation id="4959581970694896608">Personaliza cómo te responde Gemini</translation>
 <translation id="4960020053211143927">No es compatible con algunas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>

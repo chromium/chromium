@@ -2129,7 +2129,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2428939361789119025">Zima Wi-Fi</translation>
 <translation id="2431027948063157455">Programu ya Mratibu wa Google haijapakiwa, tafadhali angalia muunganisho wako wa mtandao na ujaribu tena.</translation>
 <translation id="243179355394256322">Shirika lako linaruhusu vifaa visajiliwe na watumiaji walioidhinishwa pekee. Mtumiaji huyu hajaidhinishwa kusajili vifaa. Tafadhali hakikisha kwamba mtumiaji ana mamlaka ya msimamizi ya "Kusajili maunzi ya Google Meet" katika sehemu ya Watumiaji kwenye dashibodi ya Msimamizi.</translation>
-<translation id="2431896368788252518">Angalia na udhibiti muktadha wako binafsi</translation>
 <translation id="243275146591958220">Ghairi upakuaji</translation>
 <translation id="2433237965825924228">Programu za wavuti zilizotengwa hudhibiti vifaa vya uthibitishaji na kadi mahiri zinazoweza kufikia. Kwa kawaida kadi mahiri zina vitambulishi vinavyotumika kukuthibitisha.</translation>
 <translation id="2433452467737464329">Ongeza hoja ya param katika URL ili uonyeshe ukurasa upya kiotomatiki: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4389,6 +4388,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394984172568887996">Zilizoingizwa Kutoka IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ili ufanye shughuli ya kupakua faili iwe salama zaidi</translation>
 <translation id="3950479158728806902">Buni ufunguo wa siri kiotomatiki ili uingie katika akaunti kwa haraka</translation>
+<translation id="3950755269510650933">Dhibiti maelezo ambayo Gemini inaweza kutumia kuwekea mapendeleo hali yako ya utumiaji</translation>
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
 <translation id="3950841222883198950">Andika kwa kutamka</translation>
 <translation id="3953834000574892725">Akaunti zangu</translation>
@@ -4418,6 +4418,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Kitambulisho</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
+<translation id="3971355433478412726">Maagizo ya Gemini</translation>
 <translation id="3971764089670057203">Alama za vidole zilizo kwenye ufunguo huu wa usalama</translation>
 <translation id="3973005893595042880">Mtumiaji huyu haruhusiwi</translation>
 <translation id="3973660817924297510">Inakagua manenosiri (<ph name="CHECKED_PASSWORDS" /> kati ya <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5821,6 +5822,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Ungependa kuhifadhi kwenye folda iliyo katika kifaa hiki pekee?</translation>
 <translation id="4959262764292427323">Manenosiri yanahifadhiwa kwenye Akaunti yako ya Google ili uweze kuyatumia kwenye kifaa chochote</translation>
+<translation id="4959581970694896608">Badilisha upendavyo jinsi Gemini inavyokujibu</translation>
 <translation id="4960020053211143927">Haitumiki kwenye baadhi ya programu</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Tuma skrini</translation>

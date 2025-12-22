@@ -2129,7 +2129,6 @@
 <translation id="2428939361789119025">Wi-Fi-г унтраах</translation>
 <translation id="2431027948063157455">Google Туслахыг ачаалж чадсангүй. Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
 <translation id="243179355394256322">Танай байгууллага төхөөрөмжийн бүртгэлийг зөвхөн зөвшөөрөлтэй хэрэглэгчдээр хязгаарладаг. Энэ хэрэглэгч төхөөрөмж бүртгүүлэх зөвшөөрөлгүй байна. Тухайн хэрэглэгчид Админ консолын Хэрэглэгчийн хэсэгт "Google Meet-н техник хангамжийг бүртгүүлэх" aдминистраторын эрх байгаа эсэхийг шалгана уу.</translation>
-<translation id="2431896368788252518">Хувийн хам сэдвээ харах, удирдах</translation>
 <translation id="243275146591958220">Таталтыг цуцлах</translation>
 <translation id="2433237965825924228">Тусгаарласан веб апп баталгаажуулах төхөөрөмжүүд болон тэдгээрт хандах боломжтой ухаалаг картуудыг хянадаг. Ухаалаг карт ихэвчлэн таныг баталгаажуулахад ашигладаг танигчтай байдаг.</translation>
 <translation id="2433452467737464329">Холбоос руу query param-ыг нэмж, : chrome://network/?refresh=&lt;sec&gt; дахь хуудсын автоматаар сэргээнэ үү.</translation>
@@ -4388,6 +4387,7 @@
 <translation id="394984172568887996">IE-аас импортолж авсан</translation>
 <translation id="3949999964543783947">Файлууд татахыг илүү аюулгүй болгохын тулд <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Илүү хурдан нэвтрэхийн тулд нэвтрэх түлхүүр автоматаар үүсгэх</translation>
+<translation id="3950755269510650933">Gemini-н таны хэрэглээг хувийн болгоход ашиглаж болох мэдээллийг удирдах</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3950841222883198950">Дуу хоолойгоор бичих</translation>
 <translation id="3953834000574892725">Миний бүртгэл</translation>
@@ -4417,6 +4417,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
+<translation id="3971355433478412726">Gemini-н зааварчилгаа</translation>
 <translation id="3971764089670057203">Энэ аюулгүй байдлын түлхүүр дээр байгаа хурууны хээ</translation>
 <translation id="3973005893595042880">Хэрэглэгчийг зөвшөөрдөггүй</translation>
 <translation id="3973660817924297510">Нууц үгийг шалгаж байна (<ph name="TOTAL_PASSWORDS" />-н <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5822,6 +5823,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Зөвхөн энэ төхөөрөмж дээрх фолдерт хадгалах уу?</translation>
 <translation id="4959262764292427323">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно</translation>
+<translation id="4959581970694896608">Gemini танд хэрхэн хариулахыг тусгайлан өөрчлөх</translation>
 <translation id="4960020053211143927">Зарим апп дэмждэггүй</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>

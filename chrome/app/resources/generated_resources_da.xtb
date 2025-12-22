@@ -2134,7 +2134,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistent kunne ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="243179355394256322">Din organisation har sat begrænsninger, så det kun er autoriserede brugere, der kan foretage tilmelding af enheder. Denne bruger er ikke autoriseret til at tilmelde enheder. Sørg for, at brugeren har administratorrettigheden til tilmelding af Google Meet-hardware under sektionen Brugere i Administrationskonsol.</translation>
-<translation id="2431896368788252518">Se og administrer din personlige kontekst</translation>
 <translation id="243275146591958220">Annuller download</translation>
 <translation id="2433237965825924228">Isolerede webapps styrer godkendelsesenheder og chipkort, de har adgang til. Chipkort indeholder normalt id'er, der bruges til at godkende dig.</translation>
 <translation id="2433452467737464329">Tilføj et forespørgselsparameter i webadressen for at opdatere siden automatisk: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4394,6 +4393,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394984172568887996">Importeret fra IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> for at gøre det mere sikkert at downloade filer</translation>
 <translation id="3950479158728806902">Opret automatisk en adgangsnøgle for at logge ind hurtigere</translation>
+<translation id="3950755269510650933">Administrer de oplysninger, som Gemini kan bruge til at tilpasse din brugeroplevelse</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3950841222883198950">Indtaling</translation>
 <translation id="3953834000574892725">Mine konti</translation>
@@ -4423,6 +4423,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Id</translation>
 <translation id="397105322502079400">Beregner...</translation>
+<translation id="3971355433478412726">Instruktioner til Gemini</translation>
 <translation id="3971764089670057203">Fingeraftryk på denne sikkerhedsnøgle</translation>
 <translation id="3973005893595042880">Brugeren er ikke tilladt</translation>
 <translation id="3973660817924297510">Tjekker adgangskoder (<ph name="CHECKED_PASSWORDS" /> af <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5828,6 +5829,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du gemme det i en mappe, der kun er på denne enhed?</translation>
 <translation id="4959262764292427323">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed</translation>
+<translation id="4959581970694896608">Bestem selv, hvordan Gemini skal svare dig</translation>
 <translation id="4960020053211143927">Understøttes ikke af visse apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast skærm</translation>

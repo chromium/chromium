@@ -2129,7 +2129,6 @@
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
 <translation id="2431027948063157455">‏«دستیار Google» بارگیری نشد. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="243179355394256322">‏سازمانتان ثبت‌نام دستگاه را به «فقط کاربران مجاز» محدود می‌کند. این کاربر مجاز نیست دستگاه‌ها را ثبت‌نام کند. لطفاً مطمئن شوید کاربر امتیاز سرپرستی «ثبت‌نام کردن Google Meet hardware» را در بخش «کاربران» از «کنسول سرپرست» داشته باشد.</translation>
-<translation id="2431896368788252518">«بافت شخصی» خود را مشاهده و مدیریت کنید</translation>
 <translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2433237965825924228">برنامه‌های وب مجزا دستگاه‌های اصالت‌سنجی و کارت‌های هوشمند دردسترس آن‌ها را کنترل می‌کنند. کارت‌های هوشمند معمولاً حاوی شناسه‌هایی برای اصالت‌سنجی شما هستند.</translation>
 <translation id="2433452467737464329">‏برای بازآوری خودکار صفحه، یک پارامتر جستجو به نشانی وب اضافه کنید: chrome://network/?refresh=&lt;sec&gt;‎</translation>
@@ -4389,6 +4388,7 @@
 <translation id="394984172568887996">‏وارد شده از IE</translation>
 <translation id="3949999964543783947">برای ایمن‌تر کردن بارگیری فایل‌ها، <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">ایجاد خودکار گذرکلید برای ورود سریع‌تر به سیستم</translation>
+<translation id="3950755269510650933">‏مدیریت کردن اطلاعاتی که Gemini می‌تواند برای شخصی‌سازی کردن تجربه شما استفاده کند</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3950841222883198950">تایپ صوتی</translation>
 <translation id="3953834000574892725">حساب‌های من</translation>
@@ -4418,6 +4418,7 @@
 <translation id="3968739731834770921">کانا</translation>
 <translation id="3970114302595058915">شناسه</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
+<translation id="3971355433478412726">‏دستورالعمل‌های مربوط به Gemini</translation>
 <translation id="3971764089670057203">اثر انگشت‌ها در این کلید امنیتی</translation>
 <translation id="3973005893595042880">کاربر مجاز نیست</translation>
 <translation id="3973660817924297510">درحال بررسی کردن گذرواژه‌ها (<ph name="CHECKED_PASSWORDS" /> از <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5823,6 +5824,7 @@
 <translation id="4956847150856741762">۱</translation>
 <translation id="4958009531430054995">در پوشه‌ای که فقط در این دستگاه است ذخیره شود؟</translation>
 <translation id="4959262764292427323">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید</translation>
+<translation id="4959581970694896608">‏سفارشی‌سازی کردن نحوه پاسخ دادن Gemini به شما</translation>
 <translation id="4960020053211143927">برخی برنامه‌ها از آن پشتیبانی نمی‌کنند</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>

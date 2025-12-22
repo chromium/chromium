@@ -2133,7 +2133,6 @@
 <translation id="2428939361789119025">वाई-फ़ाई बंद करें</translation>
 <translation id="2431027948063157455">Google Assistant को लोड नहीं किया जा सका, कृपया अपना नेटवर्क कनेक्शन जांच लें और फिर से कोशिश करें.</translation>
 <translation id="243179355394256322">आपके संगठन के मुताबिक, वे उपयोगकर्ता ही डिवाइस का नाम दर्ज कर सकते हैं जिन्हें ऐसा करने की अनुमति है. इस उपयोगकर्ता को डिवाइसों के नाम दर्ज करने की अनुमति नहीं है. कृपया पक्का करें कि उपयोगकर्ता के पास, Admin console के उपयोगकर्ता सेक्शन में "Google Meet हार्डवेयर का नाम दर्ज करें" का खास अधिकार है.</translation>
-<translation id="2431896368788252518">निजी संदर्भ देखें और मैनेज करें</translation>
 <translation id="243275146591958220">डाउनलोड रद्द करें</translation>
 <translation id="2433237965825924228">आइसोलेटेड वेब ऐप्लिकेशन, पुष्टि करने के लिए इस्तेमाल किए जाने वाले डिवाइस और उनके सभी स्मार्ट कार्ड को कंट्रोल करते हैं. आम तौर पर, स्मार्ट कार्ड में आपकी पहचान की पुष्टि करने के लिए आइडेंटिफ़ायर होते हैं.</translation>
 <translation id="2433452467737464329">पेज को अपने आप रीफ्रेश करने के लिए URL में क्वेरी पैरामीटर जोड़ें: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@
 <translation id="394984172568887996">IE से आयात किया गया</translation>
 <translation id="3949999964543783947">सुरक्षित तरीके से फ़ाइलें डाउनलोड करने के लिए, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">तेज़ी से साइन इन करने के लिए, अपने-आप पासकी बनने की सुविधा चालू करें</translation>
+<translation id="3950755269510650933">उस जानकारी को मैनेज करें जिसे Gemini आपको मनमुताबिक़ अनुभव देने में इस्तेमाल कर सकता है</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
@@ -4421,6 +4421,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">आईडी</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
+<translation id="3971355433478412726">Gemini के लिए निर्देश</translation>
 <translation id="3971764089670057203">इस सुरक्षा कुंजी के लिए दर्ज किए गए फ़िंगरप्रिंट</translation>
 <translation id="3973005893595042880">उपयोगकर्ता को वीएम चलाने की अनुमति नहीं है</translation>
 <translation id="3973660817924297510">पासवर्ड की जांच की जा रही है (<ph name="TOTAL_PASSWORDS" /> में से <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5825,6 +5826,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">क्या आपको बुकमार्क सिर्फ़ इस डिवाइस के फ़ोल्डर में सेव करना है?</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
+<translation id="4959581970694896608">यह तय करें कि Gemini आपको किस तरह से जवाब दे</translation>
 <translation id="4960020053211143927">कुछ ऐप्लिकेशन पर काम नहीं करती</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>

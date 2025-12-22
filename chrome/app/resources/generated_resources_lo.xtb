@@ -2131,7 +2131,6 @@
 <translation id="2428939361789119025">ປິດ Wi-Fi</translation>
 <translation id="2431027948063157455">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໂຫຼດໄດ້, ກະລຸນາກວດເບິ່ງການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ ແລ້ວລອງໃໝ່.</translation>
 <translation id="243179355394256322">ອົງການຂອງທ່ານຈຳກັດການລົງທະບຽນອຸປະກອນໃຫ້ຜູ້ໃຊ້ທີ່ໄດ້ຮັບການມອບສິດເທົ່ານັ້ນ ຜູ້ໃຊ້ນີ້ບໍ່ໄດ້ຮັບການມອບສິດໃຫ້ລົງທະບຽນອຸປະກອນ. ກະລຸນາກວດສອບວ່າຜູ້ໃຊ້ດັ່ງກ່າວມີສິດຜູ້ເບິ່ງແຍງລະບົບໃນການ "ລົງທະບຽນຮາດແວ Google Meet" ໃນພາກສ່ວນຜູ້ໃຊ້ຂອງຄອນໂຊຜູ້ເບິ່ງແຍງ.</translation>
-<translation id="2431896368788252518">ເບິ່ງ ແລະ ຈັດການບໍລິບົດສ່ວນຕົວຂອງທ່ານ</translation>
 <translation id="243275146591958220">ຍົກເລີກການດາວໂຫຼດ</translation>
 <translation id="2433237965825924228">ເວັບແອັບທີ່ແຍກໄວ້ຈະຄວບຄຸມອຸປະກອນການພິສູດຢືນຢັນ ແລະ ບັດອັດສະລິຍະທີ່ອຸປະກອນດັ່ງກ່າວສາມາດເຂົ້າເຖິງໄດ້. ໂດຍປົກກະຕິແລ້ວບັດອັດສະລິຍະຈະມີຕົວລະບຸທີ່ໃຊ້ເພື່ອພິສູດຢືນຢັນຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="2433452467737464329">ເພີ່ມພາຣາມີເຕີການສອບຖາມຢູ່ໃນ URL ເພື່ອຣີເຟຣຊໜ້າຄືນອັນຕະໂນມັດ: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4391,6 +4390,7 @@
 <translation id="394984172568887996">ນໍາ​ເຂົ້າ​ຈາກ IE ແລ້ວ</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ເພື່ອດາວໂຫຼດໄຟລ໌ໃຫ້ປອດໄພຫຼາຍຂຶ້ນ</translation>
 <translation id="3950479158728806902">ສ້າງກະແຈຜ່ານໂດຍອັດຕະໂນມັດເພື່ອເຂົ້າສູ່ລະບົບໄດ້ໄວຍິ່ງຂຶ້ນ</translation>
+<translation id="3950755269510650933">ຈັດການຂໍ້ມູນທີ່ Gemini ສາມາດໃຊ້ເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3950841222883198950">ການພິມດ້ວຍສຽງ</translation>
 <translation id="3953834000574892725">ບັນຊີຂອງຂ້ອຍ</translation>
@@ -4420,6 +4420,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
+<translation id="3971355433478412726">ຄຳແນະນຳສຳລັບ Gemini</translation>
 <translation id="3971764089670057203">ລາຍນິ້ວມືໃນກະແຈຄວາມປອດໄພນີ້</translation>
 <translation id="3973005893595042880">ບໍ່ອະນຸຍາດຜູ້ໃຊ້</translation>
 <translation id="3973660817924297510">ກຳລັງກວດລະຫັດຜ່ານ (<ph name="CHECKED_PASSWORDS" /> ລາຍການຈາກທັງໝົດ <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5825,6 +5826,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">ບັນທຶກໃສ່ໂຟນເດີຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນບໍ?</translation>
 <translation id="4959262764292427323">ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ໃນອຸປະກອນຕ່າງໆ</translation>
+<translation id="4959581970694896608">ປັບແຕ່ງວິທີທີ່ Gemini ຕອບກັບທ່ານ</translation>
 <translation id="4960020053211143927">ບາງແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ຄາສທ໌ໜ້າຈໍ</translation>

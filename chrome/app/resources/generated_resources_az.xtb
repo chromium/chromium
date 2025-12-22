@@ -2122,7 +2122,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2428939361789119025">Wi-Fi şəbəkəsini deaktiv edin</translation>
 <translation id="2431027948063157455">Google Assistent yüklənmədi. Şəbəkə bağlantısını yoxlayın və yenidən cəhd edin.</translation>
 <translation id="243179355394256322">Təşkilatınız cihaz qeydiyyatını yalnız səlahiyyətli istifadəçilərlə məhdudlaşdırır. Bu istifadəçinin cihazları qeydiyyata almasına icazə verilmir. İstifadəçinin Admin konsolunun İstifadəçilər bölməsində "Google Meet avadanlığını qeydiyyatdan keçir" administrator imtiyazına sahib olduğuna əmin olun.</translation>
-<translation id="2431896368788252518">Şəxsi kontekstinizə baxın və idarə edin</translation>
 <translation id="243275146591958220">Endirməni ləğv edin</translation>
 <translation id="2433237965825924228">İzolyasiya edilmiş veb-tətbiqlər doğrulama cihazlarını və onlara əlçatan olan smart kartları idarə edir. Smart kartlar adətən sizi doğrulamaq üçün istifadə olunan identifikatorlardan ibarətdir.</translation>
 <translation id="2433452467737464329">Səhifəni avtomatik təzələmək üçün linkdə sorğu parametri əlavə edin: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4382,6 +4381,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="394984172568887996">İnternet Explorer'dən import edildi</translation>
 <translation id="3949999964543783947">Faylları sürətli endirmək üçün <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Daha sürətlə daxil olmaq üçün avtomatik olaraq giriş açarı yaradın</translation>
+<translation id="3950755269510650933">Gemini-ın təcrübənizi fərdiləşdirmək üçün istifadə edə biləcəyi məlumatları idarə edin</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3950841222883198950">Səslə yazma</translation>
 <translation id="3953834000574892725">Hesablarım</translation>
@@ -4411,6 +4411,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
+<translation id="3971355433478412726">Gemini üçün təlimatlar</translation>
 <translation id="3971764089670057203">Bu təhlükəsizlik açarında barmaq izləri</translation>
 <translation id="3973005893595042880">İstifadəçiyə icazə verilmir</translation>
 <translation id="3973660817924297510">Parollar yoxlanır (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5814,6 +5815,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Yalnız bu cihazdakı qovluqda yadda saxlanılsın?</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
+<translation id="4959581970694896608">Gemini-ın sizə necə cavab verəcəyini fərdiləşdirin</translation>
 <translation id="4960020053211143927">Bəzi tətbiqlər dəstəkləmir</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast ekran</translation>

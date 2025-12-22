@@ -2121,7 +2121,6 @@
 <translation id="2428939361789119025">‏WiFi آف کریں</translation>
 <translation id="2431027948063157455">‏Google اسسٹنٹ لوڈ نہیں ہو سکا، براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="243179355394256322">‏آپ کی تنظیم آلہ کے اندراج کو صرف مجاز صارفین تک محدود کرتی ہے۔ یہ صارف آلات کے اندراج کیلئے مجاز نہیں ہے۔ براہ کرم یقینی بنائیں کہ صارف کے پاس منتظم کونسول کے صارفین سیکشن میں "Google Meet ہارڈویئر کا اندراج کریں" کا حق ہے جو کہ صرف منتظم کو حاصل ہوتا ہے۔</translation>
-<translation id="2431896368788252518">اپنے ذاتی سیاق و سباق کو دیکھیں اور نظم کریں</translation>
 <translation id="243275146591958220">ڈاؤن لوڈ منسوخ کریں</translation>
 <translation id="2433237965825924228">عیلحدہ کردہ ویب ایپس توثیق کرنے والے آلات اور اسمارٹ کارڈز کو کنٹرول کرتی ہیں جو ان تک قابل رسائی ہیں۔ اسمارٹ کارڈز میں عام طور پر ایسے شناخت کار ہوتے ہیں جو آپ کی تصدیق کے لیے استعمال ہوتے ہیں۔</translation>
 <translation id="2433452467737464329">‏صفحہ کو خودکار طور پر ریفریش کرنے کیلئے URL میں ایک استفسار پیرامیٹر شامل کریں: chrome://network/?refresh=&lt;sec&gt;‎</translation>
@@ -4379,6 +4378,7 @@
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
 <translation id="3949999964543783947">فائلز ڈاؤن لوڈ کرنا محفوظ تر بنانے کے لیے <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">تیزی سے سائن ان کرنے کے لیے خودکار طور پر ایک پاس کی بنائیں</translation>
+<translation id="3950755269510650933">‏اس معلومات کا نظم کریں جسے Gemini آپ کے تجربے کو ذاتی نوعیت کا بنانے کے لیے استعمال کر سکتا ہے</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3950841222883198950">صوتی ٹائپنگ</translation>
 <translation id="3953834000574892725">میرے اکاؤنٹس</translation>
@@ -4408,6 +4408,7 @@
 <translation id="3968739731834770921">کانا</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
+<translation id="3971355433478412726">‏‫Gemini کے لیے ہدایات</translation>
 <translation id="3971764089670057203">اس سیکیورٹی کلید کے ساتھ مندرج فنگر پرنٹس</translation>
 <translation id="3973005893595042880">‏صارف کو VM چلانے کی اجازت نہیں ہے</translation>
 <translation id="3973660817924297510">(<ph name="TOTAL_PASSWORDS" /> میں سے<ph name="CHECKED_PASSWORDS" />) پاس ورڈز چیک ہو رہے ہیں…</translation>
@@ -5812,6 +5813,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">صرف اس آلے پر کسی فولڈر میں محفوظ کریں؟</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
+<translation id="4959581970694896608">‏‫Gemini کے آپ کو جواب دینے کے طریقے کو حسب ضرورت بنائیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>

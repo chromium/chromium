@@ -2116,7 +2116,6 @@
 <translation id="2428939361789119025">Wi-Fi желісін өшіру</translation>
 <translation id="2431027948063157455">Google Assistant жүктелмеді, желі байланысын тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="243179355394256322">Ұйымда құрылғыларды рұқсат етілген пайдаланушылар ғана тіркей алады. Бұл пайдаланушыда құрылғыларды тіркеу рұқсаты жоқ. Оған Әкімші консолінің "Пайдаланушылар" бөлімінде "Google Meet жабдығын тіркеу" әкімші құқығының берілгенін тексеріңіз.</translation>
-<translation id="2431896368788252518">Жеке контексті көріңіз және басқарыңыз.</translation>
 <translation id="243275146591958220">Жүктеп алудан бас тарту</translation>
 <translation id="2433237965825924228">Оқшау веб-қолданбалар аутентификация құрылғыларын және олар кіре алатын смарт карталарды басқарады. Смарт карталар әдетте сізді аутентификациялау үшін қолданылатын идентификаторларды қамтиды.</translation>
 <translation id="2433452467737464329">Келесі бетті автоматты түрде жаңарту үшін URL сілтемесіндегі сұрау параметрін қосыңыз: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4374,6 +4373,7 @@
 <translation id="394984172568887996">IE браузерінен импортталған</translation>
 <translation id="3949999964543783947">Файлдарды жүктеп алуды қауіпсіз ету үшін <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Тезірек кіру үшін кіру кілтін автоматты түрде жасау</translation>
+<translation id="3950755269510650933">Gemini қызметтерді жекелендіру үшін пайдалана алатын ақпаратты басқару</translation>
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3950841222883198950">Дауыспен теру</translation>
 <translation id="3953834000574892725">Аккаунттарым</translation>
@@ -4403,6 +4403,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
+<translation id="3971355433478412726">Gemini-ға арналған нұсқаулар</translation>
 <translation id="3971764089670057203">Осы қауіпсіздік кілтіндегі саусақ іздері</translation>
 <translation id="3973005893595042880">Пайдаланушыға рұқсат берілмеген.</translation>
 <translation id="3973660817924297510">Құпия сөздерді (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />) тексеру…</translation>
@@ -5807,6 +5808,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Тек осы құрылғыдағы қалтаға сақтау қажет пе?</translation>
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
+<translation id="4959581970694896608">Gemini-дың сізге қалай жауап беретінін бейімдеу</translation>
 <translation id="4960020053211143927">Кейбір қолданбаларда қолдау көрсетілмейді</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>

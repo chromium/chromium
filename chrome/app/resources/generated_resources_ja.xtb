@@ -2115,7 +2115,6 @@
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
-<translation id="2431896368788252518">パーソナライズ設定を表示して管理します</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2433237965825924228">独立したウェブアプリは、認証デバイスと、そのデバイスで読み取り可能なスマートカードを制御できます。通常、スマートカードには、ユーザーの認証に使用する識別子が含まれます。</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4371,6 +4370,7 @@
 <translation id="394984172568887996">IE ブックマーク</translation>
 <translation id="3949999964543783947">ファイルのダウンロードの安全性を高めるために <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">パスキーを自動作成してすばやくログイン</translation>
+<translation id="3950755269510650933">Gemini がエクスペリエンスをカスタマイズするために使用できる情報を管理します</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3950841222883198950">音声入力</translation>
 <translation id="3953834000574892725">マイ アカウント</translation>
@@ -4400,6 +4400,7 @@
 <translation id="3968739731834770921">かな</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算しています...</translation>
+<translation id="3971355433478412726">Gemini への指示</translation>
 <translation id="3971764089670057203">このセキュリティ キーのフィンガープリント</translation>
 <translation id="3973005893595042880">ユーザーは許可されていません</translation>
 <translation id="3973660817924297510">パスワードを確認しています（<ph name="CHECKED_PASSWORDS" /> 件目 / <ph name="TOTAL_PASSWORDS" /> 件中）…</translation>
@@ -5802,6 +5803,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">このデバイスのフォルダにのみ保存しますか？</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
+<translation id="4959581970694896608">Gemini の回答をカスタマイズします</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">画面をキャスト</translation>

@@ -2124,7 +2124,6 @@
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
 <translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
 <translation id="243179355394256322">‏لا تسمح مؤسستك بتسجيل الأجهزة إلا للمستخدمين المصرّح لهم. هذا المستخدم غير مصرح له بتسجيل الأجهزة. يُرجى التأكّد من أنّ المستخدم لديه امتياز المشرف "تسجيل جهاز Google Meet" في قسم المستخدمين ضِمن وحدة تحكُّم المشرف.</translation>
-<translation id="2431896368788252518">عرض سياقك الذكي وإدارته</translation>
 <translation id="243275146591958220">إلغاء التنزيل</translation>
 <translation id="2433237965825924228">تتحكّم "تطبيقات الويب المعزولة" في أجهزة المصادقة والبطاقات الذكية المتاحة لها. وتحتوي البطاقات الذكية عادةً على معرّفات تُستخدَم في مصادقتك.</translation>
 <translation id="2433452467737464329">‏إضافة معلمة لطلب البحث في عنوان URL لإعادة تحميل الصفحة تلقائيًا: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4382,6 +4381,7 @@
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
 <translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
+<translation id="3950755269510650933">‏يمكنك إدارة المعلومات التي يمكن أن يستخدمها Gemini لتخصيص تجربتك</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3950841222883198950">الكتابة بالصوت</translation>
 <translation id="3953834000574892725">الحسابات الخاصة بي</translation>
@@ -4411,6 +4411,7 @@
 <translation id="3968739731834770921">كانا</translation>
 <translation id="3970114302595058915">رقم التعريف</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
+<translation id="3971355433478412726">‏تعليمات استخدام Gemini</translation>
 <translation id="3971764089670057203">بصمات الأصابع المُسجلة في مفتاح الأمان هذا</translation>
 <translation id="3973005893595042880">المستخدم الحالي غير مسموح به.</translation>
 <translation id="3973660817924297510">جارٍ التحقّق من كلمات المرور (<ph name="CHECKED_PASSWORDS" /> من <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5816,6 +5817,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">هل تريد حفظ الإشارة المرجعية في مجلد على هذا الجهاز فقط؟</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
+<translation id="4959581970694896608">‏يمكنك تخصيص طريقة استجابة Gemini لطلباتك</translation>
 <translation id="4960020053211143927">هذا الخيار غير متاح في بعض التطبيقات.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>

@@ -2120,7 +2120,6 @@
 <translation id="2428939361789119025">Выключыць Wi-Fi</translation>
 <translation id="2431027948063157455">Не ўдалося загрузіць Памочніка Google. Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
 <translation id="243179355394256322">Рэгістраваць прылады ў арганізацыі могуць толькі аўтарызаваныя карыстальнікі. Гэты карыстальнік не мае дазволу на рэгістрацыю прылад. Праверыць, ці ёсць у карыстальніка права адміністратара на рэгістрацыю апаратнага забеспячэння Google Meet, можна ў раздзеле "Карыстальнікі" кансолі адміністратара.</translation>
-<translation id="2431896368788252518">Праглядайце свой асабісты кантэкст і кіруйце ім</translation>
 <translation id="243275146591958220">Скасаваць спампоўку</translation>
 <translation id="2433237965825924228">Ізаляваныя вэб-праграмы кіруюць прыладамі аўтэнтыфікацыі і разумнымі карткамі, якія выкарыстоўваюцца з імі. На разумных картках звычайна змяшчаюцца ідэнтыфікатары для аўтэнтыфікацыі вашай асобы.</translation>
 <translation id="2433452467737464329">Дадайце параметр запыту ў URL-адрас для аўтаматычнага абнаўлення старонкі: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4378,6 +4377,7 @@
 <translation id="394984172568887996">Імпартаваныя з IE</translation>
 <translation id="3949999964543783947">Для бяспечнага спампоўвання файлаў <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Аўтаматычна ствараць ключ доступу, каб паскорыць уваход</translation>
+<translation id="3950755269510650933">Кіруйце інфармацыяй, якую Gemini можа выкарыстоўваць для персаналізацыі</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3950841222883198950">Галасавы ўвод</translation>
 <translation id="3953834000574892725">Мае ўліковыя запісы</translation>
@@ -4407,6 +4407,7 @@
 <translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">Ідэнтыфікатар</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
+<translation id="3971355433478412726">Інструкцыі для Gemini</translation>
 <translation id="3971764089670057203">Лічбавыя адбіткі на гэтым ключы бяспекі</translation>
 <translation id="3973005893595042880">Карыстальнік не мае дазволу</translation>
 <translation id="3973660817924297510">Праверка пароляў (<ph name="CHECKED_PASSWORDS" /> з <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5812,6 +5813,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Захаваць у папцы толькі на гэтай прыладзе?</translation>
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
+<translation id="4959581970694896608">Наладзіць адказы Gemini</translation>
 <translation id="4960020053211143927">Не падтрымліваецца некаторымі праграмамі</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>

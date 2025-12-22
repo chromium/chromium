@@ -2118,7 +2118,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2428939361789119025">Desactivar wifi</translation>
 <translation id="2431027948063157455">Non se puido cargar o Asistente de Google. Comproba a conexión de rede e volve tentalo.</translation>
 <translation id="243179355394256322">A túa organización só lles permite inscribir dispositivos aos usuarios autorizados. Este usuario non está autorizado para inscribir dispositivos. Comproba que o usuario teña o privilexio de administrador Inscribir hardware de Google Meet, na sección da consola de administración Usuarios.</translation>
-<translation id="2431896368788252518">Mira e xestiona o contexto persoal</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433237965825924228">As aplicacións web illadas controlan os dispositivos de autenticación e as tarxetas intelixentes ás que poden acceder. As tarxetas intelixentes normalmente conteñen identificadores que se utilizan para autenticarte.</translation>
 <translation id="2433452467737464329">Engade un parámetro de consulta no URL para actualizar a páxina automaticamente: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4381,6 +4380,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para descargar ficheiros de forma máis segura</translation>
 <translation id="3950479158728806902">Crear automaticamente clave de acceso para iniciar sesión máis rápido</translation>
+<translation id="3950755269510650933">Xestiona a información que pode usar Gemini para personalizar a túa experiencia</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3950841222883198950">Escritura por voz</translation>
 <translation id="3953834000574892725">As miñas contas</translation>
@@ -4410,6 +4410,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971355433478412726">Instrucións para Gemini</translation>
 <translation id="3971764089670057203">Impresións dixitais nesta chave de seguranza</translation>
 <translation id="3973005893595042880">O usuario non está permitido</translation>
 <translation id="3973660817924297510">Comprobando contrasinais (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5815,6 +5816,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Queres gardar este marcador nun cartafol só neste dispositivo?</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
+<translation id="4959581970694896608">Personaliza como che responde Gemini</translation>
 <translation id="4960020053211143927">Algunhas aplicacións non admiten esta opción</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>

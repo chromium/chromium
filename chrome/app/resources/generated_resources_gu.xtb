@@ -2118,7 +2118,6 @@
 <translation id="2428939361789119025">વાઇ-ફાઇ બંધ કરો</translation>
 <translation id="2431027948063157455">Google Assistant લોડ થવામાં અસમર્થ રહ્યું, કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="243179355394256322">તમારી સંસ્થા ડિવાઇસની નોંધણી માત્ર અધિકૃત વપરાશકર્તાઓ પૂરતી જ મર્યાદિત રાખે છે. આ વપરાશકર્તા ડિવાઇસની નોંધણી કરવા માટે અધિકૃત નથી. કૃપા કરીને ખાતરી કરો કે વપરાશકર્તા વ્યવસ્થાપક કન્સોલના વપરાશકર્તા વિભાગમાં "Google Meet હાર્ડવેરની નોંધણી" કરવા માટે વ્યવસ્થાપકનો વિશેષાધિકાર ધરાવે છે.</translation>
-<translation id="2431896368788252518">તમારો વ્યક્તિગત સંદર્ભ જુઓ અને મેનેજ કરો</translation>
 <translation id="243275146591958220">ડાઉનલોડ રદ કરો</translation>
 <translation id="2433237965825924228">આઇસોલેટેડ વેબ ઍપ પ્રમાણીકરણ ડિવાઇસ અને તેમના માટે ઍક્સેસ કરી શકાતા સ્માર્ટ કાર્ડને નિયંત્રિત કરે છે. સ્માર્ટ કાર્ડમાં સામાન્ય રીતે તમે જ છો તેની ખાતરી કરવા માટે ઉપયોગમાં લેવાતા ઓળખકર્તાઓ હોય છે.</translation>
 <translation id="2433452467737464329">પેજને ઑટો રિફ્રેશ કરવા માટે URLમાં ક્વેરી પરમ ઉમેરો: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4378,6 +4377,7 @@
 <translation id="394984172568887996">IE થી આયાત કરેલ</translation>
 <translation id="3949999964543783947">સલામત રીતે ફાઇલો ડાઉનલોડ કરવા માટે <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">ઝડપથી સાઇન ઇન કરવા માટે ઑટોમૅટિક રીતે પાસકી બનાવો</translation>
+<translation id="3950755269510650933">તમારા અનુભવને મનગમતો બનાવવા માટે Gemini ઉપયોગમાં લઈ શકે તેવી માહિતી મેનેજ કરો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3950841222883198950">વૉઇસ ટાઇપિંગ</translation>
 <translation id="3953834000574892725">મારા એકાઉન્ટ</translation>
@@ -4407,6 +4407,7 @@
 <translation id="3968739731834770921">કાના</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
+<translation id="3971355433478412726">Gemini માટેની સૂચનાઓ</translation>
 <translation id="3971764089670057203">આ સિક્યુરિટી કીમાંના ફિંગરપ્રિન્ટ</translation>
 <translation id="3973005893595042880">વપરાશકર્તા કોઈ મંજૂરી ધરાવતા નથી</translation>
 <translation id="3973660817924297510">પાસવર્ડ ચેક કરી રહ્યાં છીએ (<ph name="TOTAL_PASSWORDS" />માંથી <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5812,6 +5813,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">શું તેને માત્ર આ ડિવાઇસ પર કોઈ ફોલ્ડરમાં સાચવીએ?</translation>
 <translation id="4959262764292427323">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ઉપકરણ પર તેનો ઉપયોગ કરી શકો</translation>
+<translation id="4959581970694896608">Gemini તમને કેવી રીતે જવાબ આપે તે કસ્ટમાઇઝ કરો</translation>
 <translation id="4960020053211143927">અમુક ઍપ દ્વારા સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>

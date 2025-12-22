@@ -2128,7 +2128,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2428939361789119025">Изключване на Wi-Fi</translation>
 <translation id="2431027948063157455">Google Асистент не можа да се зареди. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="243179355394256322">Организацията ви разрешава регистрирането на устройства само от упълномощени потребители. Този потребител не е упълномощен да регистрира устройства. Той трябва да има администраторски права за регистриране на хардуерни устройства за Google Meet в секцията „Потребители“ в конзолата за администратори.</translation>
-<translation id="2431896368788252518">Преглеждайте и управлявайте персоналния си контекст</translation>
 <translation id="243275146591958220">Анулиране на изтеглянето</translation>
 <translation id="2433237965825924228">Изолираните уеб приложения контролират устройствата за удостоверяване и смарткартите, до които имат достъп. Обикновено смарткартите съдържат идентификатори, които служат за удостоверяване на самоличността ви.</translation>
 <translation id="2433452467737464329">За да опресните страницата автоматично, добавете към URL адреса параметър на заявката: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4389,6 +4388,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="394984172568887996">Импортирани от Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, за да направите изтеглянето на файлове по-безопасно</translation>
 <translation id="3950479158728806902">Автоматично създаване на ключ за достъп за по-бързо влизане в профила</translation>
+<translation id="3950755269510650933">Управлявайте информацията, която Gemini може да използва за персонализиране на практическата ви работа</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3950841222883198950">Печатане с глас</translation>
 <translation id="3953834000574892725">Моите профили</translation>
@@ -4418,6 +4418,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
+<translation id="3971355433478412726">Инструкции за Gemini</translation>
 <translation id="3971764089670057203">Отпечатъци, регистрирани на този ключ за сигурност</translation>
 <translation id="3973005893595042880">Потребителят не е разрешен</translation>
 <translation id="3973660817924297510">Паролите се проверяват (<ph name="CHECKED_PASSWORDS" /> от <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5823,6 +5824,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Да се запази ли в папка само на това устройство?</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
+<translation id="4959581970694896608">Персонализиране на начина, по който Gemini ви отговаря</translation>
 <translation id="4960020053211143927">Не се поддържа от някои приложения</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Предаване на екрана</translation>

@@ -2134,7 +2134,6 @@
 <translation id="2428939361789119025">Wi-Fi 사용 중지</translation>
 <translation id="2431027948063157455">Google 어시스턴트를 로드할 수 없습니다. 네트워크 연결 상태를 확인하고 다시 시도해 보세요.</translation>
 <translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
-<translation id="2431896368788252518">개인별 맞춤 AI 보기 및 관리</translation>
 <translation id="243275146591958220">다운로드 취소</translation>
 <translation id="2433237965825924228">분리형 웹 앱은 인증 기기 및 해당 기기에 액세스할 수 있는 스마트 카드를 제어합니다. 보통 스마트 카드에는 사용자를 인증하는 데 사용되는 식별자가 포함됩니다.</translation>
 <translation id="2433452467737464329">URL에 다음 검색어 매개변수를 추가하여 페이지를 자동으로 새로고침: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4394,6 +4393,7 @@
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">패스키를 자동으로 생성하여 더 빠르게 로그인</translation>
+<translation id="3950755269510650933">Gemini가 사용자 환경을 맞춤설정하는 데 사용되는 정보 관리</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3950841222883198950">음성 입력</translation>
 <translation id="3953834000574892725">내 계정</translation>
@@ -4423,6 +4423,7 @@
 <translation id="3968739731834770921">가나</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="3971355433478412726">Gemini 요청사항</translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973005893595042880">허용되지 않은 사용자입니다.</translation>
 <translation id="3973660817924297510">비밀번호 확인 중(<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5827,6 +5828,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
+<translation id="4959581970694896608">Gemini의 대답 방식 맞춤설정</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">화면 전송</translation>

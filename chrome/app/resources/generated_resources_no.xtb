@@ -2126,7 +2126,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2428939361789119025">Slå av wifi</translation>
 <translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontroller nettverkstilkoblingen din, og prøv på nytt.</translation>
 <translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
-<translation id="2431896368788252518">Se og administrer den personlige konteksten din</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
 <translation id="2433237965825924228">Isolerte nettapper kontrollerer autentiseringsenheter og smartkort som er tilgjengelige for dem. Smartkort inneholder vanligvis identifikatorer som brukes til å autentisere deg.</translation>
 <translation id="2433452467737464329">Legg til en søkeparameter i nettadressen for å automatisk laste inn siden på nytt: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4384,6 +4383,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="394984172568887996">Importert fra Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> for å gjøre det tryggere å laste ned filer</translation>
 <translation id="3950479158728806902">Opprett en passnøkkel automatisk for å logge på raskere</translation>
+<translation id="3950755269510650933">Administrer informasjonen som Gemini kan bruke til å tilpasse opplevelsen din</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3950841222883198950">Stemmestyrt skriving</translation>
 <translation id="3953834000574892725">Mine kontoer</translation>
@@ -4413,6 +4413,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Beregner …</translation>
+<translation id="3971355433478412726">Instruksjoner for Gemini</translation>
 <translation id="3971764089670057203">Fingeravtrykk på denne sikkerhetsnøkkelen</translation>
 <translation id="3973005893595042880">Brukeren er ikke tillatt</translation>
 <translation id="3973660817924297510">Sjekker passord (<ph name="CHECKED_PASSWORDS" /> av <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -5817,6 +5818,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du lagre dette i en mappe bare på denne enheten?</translation>
 <translation id="4959262764292427323">Passordene er lagret i Google-kontoen din, slik at du kan bruke dem på alle enheter</translation>
+<translation id="4959581970694896608">Tilpass hvordan Gemini svarer deg</translation>
 <translation id="4960020053211143927">Støttes ikke av enkelte apper</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast skjermen</translation>

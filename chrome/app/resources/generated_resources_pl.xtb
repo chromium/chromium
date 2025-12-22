@@ -2109,7 +2109,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2428939361789119025">Wyłączanie sieci Wi-Fi</translation>
 <translation id="2431027948063157455">Nie udało się załadować Asystenta Google. Spróbuj ponownie.</translation>
 <translation id="243179355394256322">W Twojej organizacji urządzenia mogą rejestrować tylko autoryzowani użytkownicy. Ten użytkownik nie ma takich uprawnień. Przyznaj mu uprawnienia administratora „Rejestrowanie sprzętu do Google Meet” w sekcji Użytkownicy w konsoli administracyjnej.</translation>
-<translation id="2431896368788252518">Wyświetlanie spersonalizowanego kontekstu i zarządzanie nim</translation>
 <translation id="243275146591958220">Anuluj pobieranie</translation>
 <translation id="2433237965825924228">Izolowane aplikacje internetowe sterują urządzeniami uwierzytelniającymi i kartami inteligentnymi, do których mają dostęp. Karty inteligentne zwykle zawierają identyfikatory używane do uwierzytelniania.</translation>
 <translation id="2433452467737464329">Aby strona była odświeżana automatycznie, dodaj parametr zapytania w adresie URL: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4359,6 +4358,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="394984172568887996">Zaimportowane z IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby zwiększyć bezpieczeństwo pobierania plików</translation>
 <translation id="3950479158728806902">Automatycznie utwórz klucz dostępu, aby szybciej się logować</translation>
+<translation id="3950755269510650933">Zarządzaj informacjami, które Gemini może wykorzystywać, by dostosować działanie do Twoich potrzeb</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3950841222883198950">Pisanie głosowe</translation>
 <translation id="3953834000574892725">Moje konta</translation>
@@ -4388,6 +4388,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3968739731834770921">Tryb znaków kana</translation>
 <translation id="3970114302595058915">Identyfikator</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="3971355433478412726">Instrukcje dla Gemini</translation>
 <translation id="3971764089670057203">Odciski cyfrowe na tym kluczu bezpieczeństwa</translation>
 <translation id="3973005893595042880">Użytkownik nie został dopuszczony</translation>
 <translation id="3973660817924297510">Sprawdzam hasła (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5792,6 +5793,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Zapisać w folderze tylko na tym urządzeniu?</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
+<translation id="4959581970694896608">Dostosuj, jak Gemini ma odpowiadać</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>

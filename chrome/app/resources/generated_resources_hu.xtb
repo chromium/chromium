@@ -2131,7 +2131,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2428939361789119025">A Wi-Fi kikapcsolása</translation>
 <translation id="2431027948063157455">A Google Segéd betöltése sikertelen volt. Ellenőrizze a hálózati kapcsolatot, majd próbálja újra.</translation>
 <translation id="243179355394256322">Szervezete csak a jogosult felhasználók számára engedélyezi az eszközregisztrációt. Ez a felhasználó nem jogosult eszközök regisztrációjára. A felhasználónak az „Enroll Google Meet hardware” (Google Meet-hardver regisztrációja) adminisztrátori jogosultsággal kell rendelkeznie a Felügyeleti Konzol Felhasználók szakaszában.</translation>
-<translation id="2431896368788252518">A személyes kontextus megtekintése és kezelése</translation>
 <translation id="243275146591958220">Letöltés megszakítása</translation>
 <translation id="2433237965825924228">Az izolált internetes alkalmazások vezérelhetik a hitelesítési eszközöket és a számukra hozzáférhető intelligens kártyákat Az intelligens kártyák általában olyan azonosítókat tartalmaznak, amelyek az Ön hitelesítésére szolgálnak.</translation>
 <translation id="2433452467737464329">Adjon meg egy lekérdezési paramétert az URL-címben az oldal automatikus frissítéséhez: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4390,6 +4389,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="394984172568887996">Az IE alkalmazásból importálva</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> a fájlok letöltésének biztonságosabbá tétele érdekében</translation>
 <translation id="3950479158728806902">Azonosítókulcs automatikus létrehozása a gyorsabb bejelentkezéshez</translation>
+<translation id="3950755269510650933">Itt kezelheti az információt, melyet a Gemini felhasználhat a felhasználói élmény személyre szabásához</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3950841222883198950">Hangvezérelt írás</translation>
 <translation id="3953834000574892725">Saját fiókok</translation>
@@ -4419,6 +4419,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Azonosító</translation>
 <translation id="397105322502079400">Számítás…</translation>
+<translation id="3971355433478412726">Utasítások a Gemininek</translation>
 <translation id="3971764089670057203">A biztonsági kulcson található ujjlenyomatok</translation>
 <translation id="3973005893595042880">Nem engedélyezett felhasználó</translation>
 <translation id="3973660817924297510">Jelszavak ellenőrzése (<ph name="TOTAL_PASSWORDS" />/<ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5824,6 +5825,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Csak az ezen az eszközön lévő mappába menti a könyvjelzőt?</translation>
 <translation id="4959262764292427323">A jelszavakat Google-fiókjába mentjük, hogy bármelyik eszközén használhassa őket</translation>
+<translation id="4959581970694896608">A Gemini válaszainak személyre szabása</translation>
 <translation id="4960020053211143927">Egyes alkalmazások nem támogatják</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Képernyő átküldése</translation>

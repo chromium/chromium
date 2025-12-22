@@ -2132,7 +2132,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2428939361789119025">Stäng av wifi</translation>
 <translation id="2431027948063157455">Det gick inte att läsa in Google Assistent. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="243179355394256322">Organisationen tillåter endast auktoriserade användare att registrera enheter. Den här användaren har inte behörighet att registrera enheter. Se till att användaren har administratörsbehörigheten Registrera Google Meet-hårdvara i avsnittet Användare i administratörskonsolen.</translation>
-<translation id="2431896368788252518">Se och hantera din personliga kontext</translation>
 <translation id="243275146591958220">Avbryt nedladdning</translation>
 <translation id="2433237965825924228">Isolerade webbappar styr autentiseringsenheter och tillhörande smartkort. Smartkort innehåller vanligtvis identifierare som används för att autentisera dig.</translation>
 <translation id="2433452467737464329">Lägg till en frågeparameter i webbadressen om du vill uppdatera sidan automatiskt: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="394984172568887996">Importerat från IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> gör det säkrare att ladda ned filer</translation>
 <translation id="3950479158728806902">Skapa en nyckel automatiskt för att logga in snabbare</translation>
+<translation id="3950755269510650933">Hantera informationen som Gemini kan använda för att anpassa din upplevelse</translation>
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3950841222883198950">Röstinmatning</translation>
 <translation id="3953834000574892725">Mina konton</translation>
@@ -4421,6 +4421,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Id</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
+<translation id="3971355433478412726">Instruktioner för Gemini</translation>
 <translation id="3971764089670057203">Fingeravtryck på den här säkerhetsnyckeln</translation>
 <translation id="3973005893595042880">Otillåten användare</translation>
 <translation id="3973660817924297510">Kontrollerar lösenord (<ph name="CHECKED_PASSWORDS" /> av <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5826,6 +5827,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vill du spara i en mapp bara på den här enheten?</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
+<translation id="4959581970694896608">Anpassa hur Gemini svarar dig</translation>
 <translation id="4960020053211143927">Stöds inte av vissa appar</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Casta skärmen</translation>

@@ -2119,7 +2119,6 @@
 <translation id="2428939361789119025">ปิด Wi-Fi</translation>
 <translation id="2431027948063157455">โหลด Google Assistant ไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายและลองอีกครั้ง</translation>
 <translation id="243179355394256322">องค์กรของคุณจำกัดการลงทะเบียนอุปกรณ์ไว้สำหรับผู้ใช้ที่ได้รับอนุญาตเท่านั้น ผู้ใช้รายนี้ไม่ได้รับอนุญาตให้ลงทะเบียนอุปกรณ์ โปรดตรวจสอบว่าผู้ใช้มีสิทธิ์ของผู้ดูแลระบบในการ "ลงทะเบียนฮาร์ดแวร์ของ Google Meet" ในส่วน "ผู้ใช้" ของคอนโซลผู้ดูแลระบบ</translation>
-<translation id="2431896368788252518">ดูและจัดการบริบทส่วนตัวของคุณ</translation>
 <translation id="243275146591958220">ยกเลิกการดาวน์โหลด</translation>
 <translation id="2433237965825924228">Isolated Web App จะควบคุมอุปกรณ์ตรวจสอบสิทธิ์และสมาร์ทการ์ดที่อุปกรณ์ดังกล่าวเข้าถึงได้ โดยปกติแล้วสมาร์ทการ์ดจะมีตัวระบุที่ใช้เพื่อตรวจสอบสิทธิ์</translation>
 <translation id="2433452467737464329">เพิ่มพารามิเตอร์ข้อความค้นหาใน URL เพื่อรีเฟรชหน้าอัตโนมัติ: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4377,6 +4376,7 @@
 <translation id="394984172568887996">นำเข้าจาก IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> เพื่อให้ดาวน์โหลดไฟล์ได้อย่างปลอดภัยยิ่งขึ้น</translation>
 <translation id="3950479158728806902">สร้างพาสคีย์โดยอัตโนมัติเพื่อลงชื่อเข้าใช้ได้เร็วขึ้น</translation>
+<translation id="3950755269510650933">จัดการข้อมูลที่ Gemini ใช้เพื่อปรับเปลี่ยนประสบการณ์การใช้งานในแบบของคุณ</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3950841222883198950">การพิมพ์ด้วยเสียง</translation>
 <translation id="3953834000574892725">บัญชีของฉัน</translation>
@@ -4406,6 +4406,7 @@
 <translation id="3968739731834770921">คะนะ</translation>
 <translation id="3970114302595058915">รหัส</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
+<translation id="3971355433478412726">คำสั่งสำหรับ Gemini</translation>
 <translation id="3971764089670057203">ลายนิ้วมือที่ลงทะเบียนในคีย์ความปลอดภัยนี้</translation>
 <translation id="3973005893595042880">ไม่อนุญาตผู้ใช้รายนี้</translation>
 <translation id="3973660817924297510">กำลังตรวจสอบรหัสผ่าน (<ph name="CHECKED_PASSWORDS" /> จาก <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5810,6 +5811,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">บันทึกลงในโฟลเดอร์ในอุปกรณ์นี้เท่านั้นไหม</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
+<translation id="4959581970694896608">ปรับแต่งวิธีที่ Gemini จะโต้ตอบกับคุณ</translation>
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>

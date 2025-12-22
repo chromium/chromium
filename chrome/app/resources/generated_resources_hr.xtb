@@ -2122,7 +2122,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2428939361789119025">Isključite Wi-Fi</translation>
 <translation id="2431027948063157455">Učitavanje Google asistenta nije uspjelo, provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="243179355394256322">Vaša organizacija ograničila je prijavu uređaja samo na ovlaštene korisnike. Korisnik nije ovlašten za prijavu uređaja. Provjerite ima li korisnik administratorsku ovlast Prijavi hardver za Meet u odjeljku Korisnici administratorske konzole.</translation>
-<translation id="2431896368788252518">Pregledajte svoj osobni kontekst i upravljajte njime</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
 <translation id="2433237965825924228">Izolirane web-aplikacije upravljaju uređajima za autentifikaciju i pametnim karticama kojima ti uređaji mogu pristupiti. Pametne kartice obično sadrže identifikatore koji se upotrebljavaju kako bi vas autentificirali.</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da biste automatski osvježili stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4381,6 +4380,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="394984172568887996">Uvezeno iz IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> za sigurnije preuzimanje datoteka</translation>
 <translation id="3950479158728806902">Automatski izradi pristupni ključ za bržu prijavu</translation>
+<translation id="3950755269510650933">Upravljajte podacima koje Gemini može upotrebljavati za personalizaciju vašeg doživljaja</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3950841222883198950">Unos teksta govorom</translation>
 <translation id="3953834000574892725">Moji računi</translation>
@@ -4410,6 +4410,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3968739731834770921">kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
+<translation id="3971355433478412726">Upute za Gemini</translation>
 <translation id="3971764089670057203">Otisci prsta na ovom sigurnosnom ključu</translation>
 <translation id="3973005893595042880">Korisnik nije dopušten</translation>
 <translation id="3973660817924297510">Provjera zaporki (<ph name="CHECKED_PASSWORDS" /> od <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5814,6 +5815,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Spremiti u mapu samo na ovom uređaju?</translation>
 <translation id="4959262764292427323">Zaporke se spremaju na vaš Google račun kako biste ih mogli upotrebljavati na bilo kojem uređaju</translation>
+<translation id="4959581970694896608">Prilagodite način na koji Gemini odgovara na vaše upite</translation>
 <translation id="4960020053211143927">Nije podržano u nekim aplikacijama</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emitiranje zaslona</translation>

@@ -2121,7 +2121,6 @@
 <translation id="2428939361789119025">Անջատել Wi-Fi-ը</translation>
 <translation id="2431027948063157455">Չհաջողվեց բեռնել Google Օգնականը։ Ստուգեք կապն ու նորից փորձեք։</translation>
 <translation id="243179355394256322">Ձեր կազմակերպությունում սարքեր կարող են գրանցել միայն այն օգտատերերը, որոնք ունեն համապատասխան թույլտվություն։ Այս օգտատերը սարքեր գրանցելու թույլտվություն չունի։ Անցեք ադմինիստրատորի վահանակ և «Օգտատերեր» բաժնում տվյալ օգտատիրոջը տվեք ադմինիստրատորի «Գրանցել ծրագրակազմ Google Meet-ի համար» թույլտվություն։</translation>
-<translation id="2431896368788252518">Դիտեք և կառավարեք ձեր անձնական համատեքստը</translation>
 <translation id="243275146591958220">Չեղարկել ներբեռնումը</translation>
 <translation id="2433237965825924228">Մեկուսացված վեբ հավելվածները կառավարում են իսկորոշման սարքերը և դրանց հասանելի խելացի քարտերը։ Խելացի քարտերը սովորաբար պարունակում են ձեզ իսկորոշելու համար օգտագործվող նույնացուցիչներ։</translation>
 <translation id="2433452467737464329">Ավելացրեք URL-ում հարցման հարաչափ էջի ինքնաթարմացման համար՝ chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4377,6 +4376,7 @@
 <translation id="394984172568887996">IE-ից ներմուծված</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />՝ ֆայլերի ներբեռնումն ավելի անվտանգ դարձնելու համար</translation>
 <translation id="3950479158728806902">Ավտոմատ կերպով ստեղծեք մուտքի բանալի՝ ավելի արագ մուտք գործելու համար</translation>
+<translation id="3950755269510650933">Կառավարեք տեղեկությունները, որոնք Gemini-ը կարող է օգտագործել ձեր աշխատանքն անհատականացնելու համար</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3950841222883198950">Ձայնային մուտքագրում</translation>
 <translation id="3953834000574892725">Իմ հաշիվները</translation>
@@ -4406,6 +4406,7 @@
 <translation id="3968739731834770921">Կանա</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
+<translation id="3971355433478412726">Ցուցումներ Gemini-ի համար</translation>
 <translation id="3971764089670057203">Այս անվտանգության բանալու մատնահետքերը</translation>
 <translation id="3973005893595042880">Օգտատերն արգելված է</translation>
 <translation id="3973660817924297510">Գաղտնաբառերը ստուգվում են (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5811,6 +5812,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Պահե՞լ այս սարքի պանակում</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
+<translation id="4959581970694896608">Անհատականացրեք Gemini-ի պատասխանները</translation>
 <translation id="4960020053211143927">Չի աջակցվում որոշ հավելվածների կողմից</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>

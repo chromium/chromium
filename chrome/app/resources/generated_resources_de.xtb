@@ -2116,7 +2116,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2428939361789119025">WLAN deaktivieren</translation>
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfe deine Netzverbindung und versuche es noch einmal.</translation>
 <translation id="243179355394256322">In deiner Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
-<translation id="2431896368788252518">Persönlichen Kontext ansehen und verwalten</translation>
 <translation id="243275146591958220">Download abbrechen</translation>
 <translation id="2433237965825924228">Isolierte Web-Apps können Geräte zur Authentifizierung und für sie zugängliche Smartcards steuern. Smartcards enthalten in der Regel Kennungen, die zur Authentifizierung verwendet werden.</translation>
 <translation id="2433452467737464329">Füge der URL einen Anfrageparameter hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4374,6 +4373,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="394984172568887996">Aus Internet Explorer importiert</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, um das Herunterladen von Dateien sicherer zu machen</translation>
 <translation id="3950479158728806902">Für eine schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
+<translation id="3950755269510650933">Du kannst verwalten, welche Informationen Gemini zur Personalisierung verwenden darf</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3950841222883198950">Spracheingabe</translation>
 <translation id="3953834000574892725">Meine Konten</translation>
@@ -4403,6 +4403,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
+<translation id="3971355433478412726">Anweisungen für Gemini</translation>
 <translation id="3971764089670057203">Fingerabdrücke für diesen Sicherheitsschlüssel</translation>
 <translation id="3973005893595042880">Nutzer nicht zulässig</translation>
 <translation id="3973660817924297510">Passwörter werden geprüft (<ph name="CHECKED_PASSWORDS" /> von <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5807,6 +5808,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">In einem Ordner auf diesem Gerät speichern?</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
+<translation id="4959581970694896608">Antworten von Gemini anpassen</translation>
 <translation id="4960020053211143927">Wird von manchen Apps nicht unterstützt</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>

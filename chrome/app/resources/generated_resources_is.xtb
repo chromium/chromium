@@ -2133,7 +2133,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2428939361789119025">Slökkva á Wi-Fi</translation>
 <translation id="2431027948063157455">Ekki var hægt að hlaða Google hjálparanum. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="243179355394256322">Fyrirtækið takmarkar skráningu tækja við notendur með heimild. Þessi notandi hefur ekki heimild til að skrá tæki. Gakktu úr skugga um að notandinn sé með heimild til að „Skrá Google Meet vélbúnað“ á notandasvæði stjórnborðs stjórnanda.</translation>
-<translation id="2431896368788252518">Skoðaðu og stýrðu persónulega umhverfinu þínu</translation>
 <translation id="243275146591958220">Hætta við niðurhal</translation>
 <translation id="2433237965825924228">Einangruð vefforrit stjórna auðkenningartækum og snjallkortum sem þau hafa aðgang að. Snjallkort innihalda iðulega auðkenni sem eru notuð til að auðkenna þig.</translation>
 <translation id="2433452467737464329">Bættu fyrirspurnarbreytu við vefslóðina til að endurnýja síðuna sjálfkrafa: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4393,6 +4392,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="394984172568887996">Flutt inn úr IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> til að gera niðurhal skráa öruggara</translation>
 <translation id="3950479158728806902">Búa til aðgangslykil sjálfkrafa fyrir fljótlegri innskráningu</translation>
+<translation id="3950755269510650933">Veldu hvaða upplýsingar Gemini má nota til að sérsníða upplifun þína</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3950841222883198950">Raddinnsláttur</translation>
 <translation id="3953834000574892725">Reikningarnir mínir</translation>
@@ -4422,6 +4422,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Auðkenni</translation>
 <translation id="397105322502079400">Reiknar...</translation>
+<translation id="3971355433478412726">Leiðbeiningar fyrir Gemini</translation>
 <translation id="3971764089670057203">Fingraför á þessum öryggislykli</translation>
 <translation id="3973005893595042880">Notandi ekki leyfður</translation>
 <translation id="3973660817924297510">Athugar aðgangsorð (<ph name="CHECKED_PASSWORDS" /> af <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5827,6 +5828,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vista í möppu eingöngu í þessu tæki?</translation>
 <translation id="4959262764292427323">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er</translation>
+<translation id="4959581970694896608">Sérsníddu hvernig Gemini svarar þér</translation>
 <translation id="4960020053211143927">Ekki stutt í tilteknum forritum</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Varpa skjá</translation>

@@ -2120,7 +2120,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google, veuillez vérifier votre connexion réseau et réessayer.</translation>
 <translation id="243179355394256322">Votre organisation limite les inscriptions d'appareils aux utilisateurs autorisés seulement. Cet utilisateur n'est pas autorisé à inscrire des appareils. Veuillez vous assurer que l'utilisateur possède les privilèges d'administrateur « Inscription des appareils Google Meet » dans la section Utilisateurs de la console d'administrateur.</translation>
-<translation id="2431896368788252518">Affichez et gérez votre contexte personnel</translation>
 <translation id="243275146591958220">Annuler le téléchargement</translation>
 <translation id="2433237965825924228">Les applis Web isolées contrôlent les appareils d'authentification et les cartes à puce qui leur sont accessibles. Les cartes à puce contiennent généralement des identifiants utilisés pour vous authentifier.</translation>
 <translation id="2433452467737464329">Ajouter un paramètre de demande dans l'URL pour actualiser automatiquement la page : chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4382,6 +4381,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="394984172568887996">Importés d'Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pour télécharger les fichiers de façon plus sécuritaire</translation>
 <translation id="3950479158728806902">Créer automatiquement une clé d'accès pour vous connecter plus rapidement</translation>
+<translation id="3950755269510650933">Gérez les informations que Gemini peut utiliser pour personnaliser votre expérience</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3950841222883198950">Entrée vocale</translation>
 <translation id="3953834000574892725">Mes comptes</translation>
@@ -4411,6 +4411,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
+<translation id="3971355433478412726">Instructions pour Gemini</translation>
 <translation id="3971764089670057203">Empreintes digitales sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">L'utilisateur n'est pas autorisé</translation>
 <translation id="3973660817924297510">Vérification des mots de passe en cours… (<ph name="CHECKED_PASSWORDS" /> sur <ph name="TOTAL_PASSWORDS" />)</translation>
@@ -5815,6 +5816,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Enregistrer dans un dossier uniquement sur cet appareil?</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
+<translation id="4959581970694896608">Personnalisez la façon dont Gemini vous répond</translation>
 <translation id="4960020053211143927">N'est pas pris en charge par certaines applications</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Diffuser un écran</translation>

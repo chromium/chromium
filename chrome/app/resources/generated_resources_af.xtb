@@ -2132,7 +2132,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2428939361789119025">Skakel Wi-Fi af</translation>
 <translation id="2431027948063157455">Google Assistent kon nie laai nie. Gaan asseblief jou netwerkverbinding na en probeer weer.</translation>
 <translation id="243179355394256322">Jou organisasie beperk toestelinskrywing tot gemagtigde gebruikers. Hierdie gebruiker is nie gemagtig om toestelle in te skryf nie. Maak in die Gebruikers-afdeling van die Adminkonsole seker dat die gebruiker die "Skryf Google Vergader-hardeware in"-administrateursvoorreg het.</translation>
-<translation id="2431896368788252518">Bekyk en bestuur jou persoonlike konteks</translation>
 <translation id="243275146591958220">Kanselleer aflaai</translation>
 <translation id="2433237965825924228">Geïsoleerde webapps beheer stawingtoestelle en slimkaarte wat vir hulle toeganklik is. Slimkaarte bevat gewoonlik identifiseerders wat gebruik word om jou te staaf.</translation>
 <translation id="2433452467737464329">Voeg 'n navraagparameter in URL by om die blad outomaties te herlaai: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="394984172568887996">Van IE af ingevoer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> om die aflaai van lêers veiliger te maak</translation>
 <translation id="3950479158728806902">Skep outomaties ’n toegangsleutel om vinniger aan te meld</translation>
+<translation id="3950755269510650933">Bestuur die inligting wat Gemini kan gebruik om jou ervaring te personaliseer</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3950841222883198950">Steminvoer</translation>
 <translation id="3953834000574892725">My rekeninge</translation>
@@ -4421,6 +4421,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
+<translation id="3971355433478412726">Instruksies vir Gemini</translation>
 <translation id="3971764089670057203">Vingerafdrukke op hierdie sekuriteitsleutel</translation>
 <translation id="3973005893595042880">Gebruiker word nie toegelaat nie</translation>
 <translation id="3973660817924297510">Gaan tans wagwoorde na (<ph name="CHECKED_PASSWORDS" /> van <ph name="TOTAL_PASSWORDS" />) …</translation>
@@ -5826,6 +5827,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Stoor net in 'n vouer op hierdie toestel?</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
+<translation id="4959581970694896608">Pasmaak hoe Gemini jou antwoord</translation>
 <translation id="4960020053211143927">Word nie deur sommige apps gesteun nie</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>

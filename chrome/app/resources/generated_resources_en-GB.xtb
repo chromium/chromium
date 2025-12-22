@@ -2132,7 +2132,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
 <translation id="243179355394256322">Your organisation limits device enrolment to authorised users only. This user is not authorised to enrol devices. Please make sure that the user has the 'Enrol Google Meet hardware' administrator privilege in the Users section of the Admin console.</translation>
-<translation id="2431896368788252518">View and manage your personal context</translation>
 <translation id="243275146591958220">Cancel download</translation>
 <translation id="2433237965825924228">Isolated web apps control authentication devices and smart cards accessible to them. Smart cards usually contain identifiers used to authenticate you.</translation>
 <translation id="2433452467737464329">Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="394984172568887996">Imported From IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> to make downloading files safer</translation>
 <translation id="3950479158728806902">Automatically create a passkey to sign in faster</translation>
+<translation id="3950755269510650933">Manage the information that Gemini can use to personalise your experience</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">My accounts</translation>
@@ -4421,6 +4421,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculating...</translation>
+<translation id="3971355433478412726">Instructions for Gemini</translation>
 <translation id="3971764089670057203">Fingerprints on this security key</translation>
 <translation id="3973005893595042880">User is not allowed</translation>
 <translation id="3973660817924297510">Checking passwords (<ph name="CHECKED_PASSWORDS" /> of <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5826,6 +5827,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Save to a folder only on this device?</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
+<translation id="4959581970694896608">Customise how Gemini responds to you</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast screen</translation>

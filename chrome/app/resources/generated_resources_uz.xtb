@@ -2121,7 +2121,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2428939361789119025">Wi-Fi aloqasini uzish</translation>
 <translation id="2431027948063157455">Google Assistent yuklanmadi, tarmoq sozlamalarini tekshiring va qaytadan urining.</translation>
 <translation id="243179355394256322">Tashkilotingiz qurilmalarini faqatgina vakolatli foydalanuvchilar qayd qilishi mumkin. Bu foydalanuvchi qurilmalarni qayd qilish vakolatiga ega emas. Foydalanuvchi uchun Administrator konsoli orqali foydalanuvchilar boʻlimida ”Google Meet qurilmalarini qayd qilish” vakolati yoqilgan boʻlishi kerak.</translation>
-<translation id="2431896368788252518">Shaxsiy kontekstni koʻrish va boshqarish</translation>
 <translation id="243275146591958220">Yuklab olishni bekor qilish</translation>
 <translation id="2433237965825924228">Izolyatsiyalangan veb-ilovalar autentifikatsiya qurilmalari va ushbu qurilmalarga ulangan smart kartalarni boshqaradi. Smart kartalarda odatda shaxsni tasdiqlovchi identifikatsiya maʼlumotlari saqlanadi.</translation>
 <translation id="2433452467737464329">Sahifa avtomatik yangilanishi uchun URL manzilga so‘rov parametrini qo‘shing: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4379,6 +4378,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="394984172568887996">IE brauzeridan import qilinganlar</translation>
 <translation id="3949999964543783947">Fayllarni xavfsiz yuklab olish uchun <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Tezkor kirish kalitlarini avtomatik yaratish</translation>
+<translation id="3950755269510650933">Gemini tajribangizni moslash uchun ishlatiladigan maʼlumotlarni boshqaring</translation>
 <translation id="3950820424414687140">Kirish</translation>
 <translation id="3950841222883198950">Ovoz bilan yozish</translation>
 <translation id="3953834000574892725">Hisoblarim</translation>
@@ -4408,6 +4408,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
+<translation id="3971355433478412726">Gemini uchun koʻrsatmalar</translation>
 <translation id="3971764089670057203">Bu elektron kalitdagi barmoq izlari</translation>
 <translation id="3973005893595042880">Foydalanuvchiga ruxsat berilmagan</translation>
 <translation id="3973660817924297510">Parollar tekshirilmoqda (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5812,6 +5813,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Jild faqat shu qurilmada saqlansinmi?</translation>
 <translation id="4959262764292427323">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
+<translation id="4959581970694896608">Gemini sizga qanday javob berishini sozlang</translation>
 <translation id="4960020053211143927">Ayrim ilovalarda ishlamaydi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekranni translatsiya qilish</translation>

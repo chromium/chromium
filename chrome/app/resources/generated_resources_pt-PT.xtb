@@ -2119,7 +2119,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2428939361789119025">Desligar o Wi-Fi</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Assistente Google. Verifique a sua ligação à rede e tente novamente.</translation>
 <translation id="243179355394256322">A sua entidade limita a inscrição de dispositivos apenas a utilizadores autorizados. Este utilizador não está autorizado a inscrever dispositivos. Certifique-se de que o utilizador tem o privilégio de administrador "Inscrever hardware Google Meet" na secção Utilizadores da consola do administrador.</translation>
-<translation id="2431896368788252518">Veja e faça a gestão do seu contexto pessoal</translation>
 <translation id="243275146591958220">Cancelar transferência</translation>
 <translation id="2433237965825924228">As apps Web isoladas controlam os dispositivos de autenticação e os cartões inteligentes acessíveis para estas. Normalmente, os cartões inteligentes contêm identificadores usados para a sua autenticação.</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4380,6 +4379,7 @@ Quer pará-lo?</translation>
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar a transferência de ficheiros mais segura</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>
+<translation id="3950755269510650933">Faça a gestão das informações que o Gemini pode usar para personalizar a sua experiência</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3950841222883198950">Digitação por voz</translation>
 <translation id="3953834000574892725">As minhas contas</translation>
@@ -4409,6 +4409,7 @@ Quer pará-lo?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">A calcular...</translation>
+<translation id="3971355433478412726">Instruções para o Gemini</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5814,6 +5815,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Guardar numa pasta apenas neste dispositivo?</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
+<translation id="4959581970694896608">Personalize a forma como o Gemini lhe responde</translation>
 <translation id="4960020053211143927">Não suportado por algumas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>

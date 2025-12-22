@@ -2120,7 +2120,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2428939361789119025">Dezactivează conexiunea Wi-Fi</translation>
 <translation id="2431027948063157455">Asistentul Google nu s-a putut încărca; încearcă din nou.</translation>
 <translation id="243179355394256322">Organizația ta limitează înregistrarea dispozitivelor doar la utilizatorii autorizați. Acest utilizator nu este autorizat să înregistreze dispozitive. Verifică dacă utilizatorul are privilegiul de administrator „Înregistrează hardware Google Meet” în secțiunea Utilizatori din Consola de administrare.</translation>
-<translation id="2431896368788252518">Vezi și gestionează contextul personal</translation>
 <translation id="243275146591958220">Anulează descărcarea</translation>
 <translation id="2433237965825924228">Aplicațiile web izolate controlează dispozitivele de autentificare și cardurile inteligente accesibile pentru acestea. Cardurile inteligente conțin de obicei identificatori folosiți pentru a te autentifica.</translation>
 <translation id="2433452467737464329">Pentru actualizarea automată a paginii: chrome://network/?refresh=&lt;sec&gt;, adăugați un parametru de interogare în adresa URL</translation>
@@ -4379,6 +4378,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="394984172568887996">Importate din IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pentru descărcarea mai sigură a fișierelor</translation>
 <translation id="3950479158728806902">Creează automat o cheie de acces pentru a te conecta mai rapid</translation>
+<translation id="3950755269510650933">Gestionează informațiile pe care Gemini le poate folosi pentru a-ți personaliza experiența.</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3950841222883198950">Tastare vocală</translation>
 <translation id="3953834000574892725">Conturile mele</translation>
@@ -4408,6 +4408,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Se calculează...</translation>
+<translation id="3971355433478412726">Instrucțiuni pentru Gemini</translation>
 <translation id="3971764089670057203">Amprentele digitale ale cheii de securitate</translation>
 <translation id="3973005893595042880">Utilizatorul nu este permis</translation>
 <translation id="3973660817924297510">Se verifică parolele (<ph name="CHECKED_PASSWORDS" /> din <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5812,6 +5813,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvezi într-un dosar numai pe acest dispozitiv?</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
+<translation id="4959581970694896608">Personalizează modul în care îți răspunde Gemini</translation>
 <translation id="4960020053211143927">Nu este acceptată de unele aplicații</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>

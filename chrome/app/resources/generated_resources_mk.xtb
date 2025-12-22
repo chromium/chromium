@@ -2133,7 +2133,6 @@
 <translation id="2428939361789119025">Исклучи Wi-Fi</translation>
 <translation id="2431027948063157455">Не може да се вчита „Помошникот на Google“. Проверете ја вашата мрежна врска и обидете се повторно.</translation>
 <translation id="243179355394256322">Вашата организација го ограничува регистрирањето на уредот само на овластени корисници. Овој корисник не е овластен за регистрирање уреди. Осигурете се дека корисникот ја има администраторската привилегија „Регистрирање хардвер на Google Meet“ во делот „Корисници“ на администраторската конзола.</translation>
-<translation id="2431896368788252518">Прегледајте го и управувајте со личниот контекст</translation>
 <translation id="243275146591958220">Откажи го преземањето</translation>
 <translation id="2433237965825924228">Изолираните веб-апликации ги контролираат уредите за автентикација и паметните картички што им се пристапни. Паметните картички обично содржат идентификатори што се користат за да ве автентицираат.</translation>
 <translation id="2433452467737464329">Додајте параметар на барање во URL за автоматско освежување на страницата: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4393,6 +4392,7 @@
 <translation id="394984172568887996">Увезени од IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> за да го направите преземањето датотеки побезбедно</translation>
 <translation id="3950479158728806902">Создајте криптографски клуч автоматски за да се најавите побрзо</translation>
+<translation id="3950755269510650933">Управувајте со податоците што може да ги користи Gemini за да го персонализира вашето доживување</translation>
 <translation id="3950820424414687140">Најавете се</translation>
 <translation id="3950841222883198950">Гласовно пишување</translation>
 <translation id="3953834000574892725">Мои сметки</translation>
@@ -4422,6 +4422,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
+<translation id="3971355433478412726">Инструкции за Gemini</translation>
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
 <translation id="3973005893595042880">Корисникот не е дозволен</translation>
 <translation id="3973660817924297510">Се проверуваат лозинките (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5827,6 +5828,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Да се зачува во папка само на овој уред?</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
+<translation id="4959581970694896608">Приспособете го начинот на кој ви одговара Gemini</translation>
 <translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>

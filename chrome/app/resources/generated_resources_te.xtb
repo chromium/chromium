@@ -2130,7 +2130,6 @@
 <translation id="2428939361789119025">Wi-Fiను ఆఫ్ చేయండి</translation>
 <translation id="2431027948063157455">Google Assistantను లోడ్ చేయడం సాధ్యపడలేదు, దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేసుకుని మళ్లీ ట్రై చేయండి.</translation>
 <translation id="243179355394256322">మీ సంస్థ అధికారిక యూజర్‌లకు మాత్రమే పరికర నమోదును పరిమితం చేస్తుంది. ఈ యూజర్‌కు పరికరాలను ఎన్‌రోల్ చేసే అధికారం లేదు. దయచేసి అడ్మిన్ కన్సోల్ యూజర్‌ల విభాగంలోని యూజర్ "Google Meet హార్డ్‌వేర్‌ను ఎన్‌రోల్ చేయి" అడ్మినిస్ట్రేటర్ ప్రత్యేక హక్కును కలిగి ఉన్నారని నిర్ధారించుకోండి.</translation>
-<translation id="2431896368788252518">మీ పర్సనల్ కాంటెక్స్ట్‌ను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="243275146591958220">డౌన్‌లోడ్‌ను రద్దు చేయండి</translation>
 <translation id="2433237965825924228">ఐసోలేటెడ్ వెబ్ యాప్‌లు వాటికి యాక్సెస్ చేయగల ప్రామాణీకరణ డివైజ్‌లను, స్మార్ట్ కార్డ్‌లను కంట్రోల్ చేస్తాయి. స్మార్ట్ కార్డులు సాధారణంగా మిమ్మల్ని ప్రామాణీకరించడానికి ఉపయోగించే ఐడెంటిఫయర్‌లను కలిగి ఉంటాయి.</translation>
 <translation id="2433452467737464329">పేజీని స్వీయ రీఫ్రెష్ చేయడానికి URLలో ప్రశ్న పరామితిని జోడించండి: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4390,6 +4389,7 @@
 <translation id="394984172568887996">IE నుండి దిగుమతి చేయబడింది</translation>
 <translation id="3949999964543783947">ఫైల్స్‌ను మరింత సురక్షితంగా డౌన్‌లోడ్ చేయడానికి <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">వేగంగా సైన్ ఇన్ చేయడానికి పాస్-కీని ఆటోమేటిక్‌గా క్రియేట్ చేయండి</translation>
+<translation id="3950755269510650933">మీ ఎక్స్‌పీరియన్స్‌ను వ్యక్తిగతీకరించడానికి Gemini ఉపయోగించగల సమాచారాన్ని మేనేజ్ చేయండి</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3950841222883198950">వాయిస్ టైపింగ్</translation>
 <translation id="3953834000574892725">నా ఖాతాలు</translation>
@@ -4419,6 +4419,7 @@
 <translation id="3968739731834770921">కన</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
+<translation id="3971355433478412726">Geminiకి సంబంధించిన సూచనలు</translation>
 <translation id="3971764089670057203">ఈ సెక్యూరిటీ 'కీ'లో వేలిముద్రలు ఉన్నాయి</translation>
 <translation id="3973005893595042880">యూజర్‌కు అనుమతి లేదు</translation>
 <translation id="3973660817924297510">పాస్‌వర్డ్‌లను చెక్ చేస్తోంది (<ph name="TOTAL_PASSWORDS" />లో <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5824,6 +5825,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">ఈ పరికరంలోని ఫోల్డర్‌లో మాత్రమే సేవ్ చేయాలా?</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
+<translation id="4959581970694896608">Gemini మీకు సమాధానం ఇచ్చే విధానాన్ని అనుకూలంగా మార్చండి</translation>
 <translation id="4960020053211143927">కొన్ని యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">స్క్రీన్ ప్రసారం చేయండి</translation>

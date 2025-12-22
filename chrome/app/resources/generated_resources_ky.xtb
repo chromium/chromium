@@ -2132,7 +2132,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2428939361789119025">Wi-Fi'ды өчүрүү</translation>
 <translation id="2431027948063157455">Google Жардамчы жүктөлбөй койду. Интернет байланышыңызды текшерип туруп, кайталап көрүңүз.</translation>
 <translation id="243179355394256322">Уюмуңуз түзмөктөрдү каттоого уруксаты бар колдонуучуларга гана мүмкүндүк берет. Бул колдонуучунун түзмөктөрдү каттоого уруксаты жок. Администратордун консолунун Колдонуучулар бөлүмүнө өтүп, бул колдонуучунун "Google Meet аппараттык камсыздоо түзмөгүн каттоо" деген артыкчылыктуу администратордук уруксаты бар экенин текшериңиз.</translation>
-<translation id="2431896368788252518">Жеке контекстиңизди көрүп, тескеңиз</translation>
 <translation id="243275146591958220">Жүктөп алууну токтотуу</translation>
 <translation id="2433237965825924228">Обочолонгон веб-колдонмолор аутентификация түзмөктөрүн жана аларга жеткиликтүү болгон акылдуу карталарды көзөмөлдөйт. Акылдуу карталарда адатта аныктыгыңызды текшерүү үчүн колдонулган идентификаторлор болот.</translation>
 <translation id="2433452467737464329">Бетти автожаңылоо үчүн URL'ге сурам параметрлерин кошуңуз: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4392,6 +4391,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="394984172568887996">IE'ден импорттолгон</translation>
 <translation id="3949999964543783947">Файлдарды тезирээк жүктөп алуу үчүн <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Аккаунтка тезирээк кирүү үчүн киргизүүчү ачкычты автоматтык түрдө түзүү</translation>
+<translation id="3950755269510650933">Gemini тажрыйбаңызды жекелештирүү үчүн колдоно турган маалыматты тескеңиз</translation>
 <translation id="3950820424414687140">Кирүү</translation>
 <translation id="3950841222883198950">Айтып терүү</translation>
 <translation id="3953834000574892725">Менин аккаунттарым</translation>
@@ -4421,6 +4421,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
+<translation id="3971355433478412726">Gemini үчүн нускамалар</translation>
 <translation id="3971764089670057203">Бул коопсуздук ачкычы менен катталган манжа издери</translation>
 <translation id="3973005893595042880">Колдонуучуга уруксат жок</translation>
 <translation id="3973660817924297510">Сырсөздөр өзгөртүлүүдө (<ph name="TOTAL_PASSWORDS" /> ичинен <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5826,6 +5827,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Ушул түзмөктөгү папкага гана сакталсынбы?</translation>
 <translation id="4959262764292427323">Бардык түзмөктөрүңүздө колдонуу үчүн сырсөздөр Google аккаунтуңузда сакталат</translation>
+<translation id="4959581970694896608">Gemini'дын жоопторун тууралаңыз</translation>
 <translation id="4960020053211143927">Айрым колдонмолордо иштебейт</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Экранды тышкы экранга чыгаруу</translation>

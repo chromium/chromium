@@ -2117,7 +2117,6 @@
 <translation id="2428939361789119025">ୱାଇ-ଫାଇ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2431027948063157455">Google ଆସିଷ୍ଟାଣ୍ଟ ଲୋଡ୍ କରିବାରେ ବିଫଳ ହୋଇଛି, ଦୟାକରି ଆପଣଙ୍କର ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="243179355394256322">ଆପଣଙ୍କ ସଂସ୍ଥା କେବଳ ଅଧିକାର ଦିଆଯାଇଥିବା ୟୁଜରମାନଙ୍କ ପାଇଁ ଡିଭାଇସ ପଞ୍ଜିକରଣକୁ ସୀମିତ କରିଥାଏ। ଏହି ୟୁଜରଙ୍କୁ ଡିଭାଇସଗୁଡ଼ିକ ପଞ୍ଜିକରଣ କରିବା ପାଇଁ ଅଧିକାର ଦିଆଯାଇନାହିଁ। ଦୟାକରି ୟୁଜରଙ୍କ ପାଖରେ ଆଡମିନ କନସୋଲର ୟୁଜର ବିଭାଗରେ "Google Meet ହାର୍ଡୱେର ପଞ୍ଜିକରଣ" ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ବିଶେଷ ଅଧିକାର ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
-<translation id="2431896368788252518">ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ପ୍ରସଙ୍ଗ ଭ୍ୟୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="243275146591958220">ଡାଉନଲୋଡ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2433237965825924228">Isolated Web Apps ପ୍ରମାଣୀକରଣ ଡିଭାଇସଗୁଡ଼ିକ ଏବଂ ସେଗୁଡ଼ିକରେ ଆକ୍ସେସ କରାଯାଇପାରୁଥିବା ସ୍ମାର୍ଟ କାର୍ଡଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରେ। ସ୍ମାର୍ଟ କାର୍ଡଗୁଡ଼ିକରେ ସାଧାରଣତଃ ଆପଣଙ୍କୁ ଅଥେଣ୍ଟିକେଟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇଥିବା ଚିହ୍ନଟକାରୀ ଥାଏ।</translation>
 <translation id="2433452467737464329">ପୃଷ୍ଠାକୁ ସ୍ୱତଃ-ରିଫ୍ରେଶ୍‌ କରିବାକୁ URLରେ ଏକ କ୍ୱେରୀ ’ପରମ’ ଯୋଗ କରନ୍ତୁ: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4376,6 +4375,7 @@
 <translation id="394984172568887996">IE ରୁ ଆମଦାନି କରାଗଲା</translation>
 <translation id="3949999964543783947">ଫାଇଲ ଡାଉନଲୋଡ କରିବାକୁ ଅଧିକ ସୁରକ୍ଷିତ କରିବା ପାଇଁ <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">ଶୀଘ୍ର ସାଇନ ଇନ କରିବାକୁ ସ୍ୱତଃ ଏକ ପାସକୀ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="3950755269510650933">ଆପଣଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ Gemini ବ୍ୟବହାର କରିପାରୁଥିବା ସୂଚନାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3950841222883198950">ଭଏସ ଟାଇପିଂ</translation>
 <translation id="3953834000574892725">ମୋ ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
@@ -4405,6 +4405,7 @@
 <translation id="3968739731834770921">କାନା</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
+<translation id="3971355433478412726">Gemini ପାଇଁ ନିର୍ଦ୍ଦେଶାବଳୀ</translation>
 <translation id="3971764089670057203">ଏହି ସୁରକ୍ଷା କୀ’ରେ ଥିବା ଟିପଚିହ୍ନଗୁଡ଼ିକ</translation>
 <translation id="3973005893595042880">ୟୁଜରଙ୍କୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="3973660817924297510">ପାସୱାର୍ଡ ଯାଞ୍ଚ କରାଯାଉଛି (<ph name="TOTAL_PASSWORDS" />ଟିରୁ <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -5809,6 +5810,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">କେବଳ ଏହି ଡିଭାଇସରେ ଏକ ଫୋଲ୍ଡରରେ ସେଭ କରିବେ?</translation>
 <translation id="4959262764292427323">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରାଯାଇଛି ତେଣୁ ଆପଣ ସେଗୁଡ଼ିକୁ ଯେକୌଣସି ଡିଭାଇସ୍‌ରେ ବ୍ୟବହାର କରିପାରିବେ</translation>
+<translation id="4959581970694896608">Gemini ଆପଣଙ୍କୁ କିପରି ଉତ୍ତର ଦେବ ତାହା କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="4960020053211143927">କିଛି ଆପ୍ସ ଦ୍ୱାରା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>

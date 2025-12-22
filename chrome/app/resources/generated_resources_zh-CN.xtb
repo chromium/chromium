@@ -2112,7 +2112,6 @@
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
 <translation id="2431027948063157455">无法加载 Google 助理。请检查您的网络连接，然后重试。</translation>
 <translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
-<translation id="2431896368788252518">查看和管理您的个人使用场景</translation>
 <translation id="243275146591958220">取消下载</translation>
 <translation id="2433237965825924228">独立式 Web 应用 (IWA) 会控制身份验证设备以及这些设备可访问的智能卡。智能卡通常包含用于验证您身份的身份信息。</translation>
 <translation id="2433452467737464329">在网址中添加查询参数以便自动刷新网页：chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -4368,6 +4367,7 @@
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950479158728806902">自动创建通行密钥，登录更迅速</translation>
+<translation id="3950755269510650933">管理 Gemini 可以使用哪些信息为您提供个性化体验</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3950841222883198950">语音输入</translation>
 <translation id="3953834000574892725">我的账号</translation>
@@ -4397,6 +4397,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">正在计算...</translation>
+<translation id="3971355433478412726">向 Gemini 提供的指令</translation>
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973005893595042880">不允许此用户运行虚拟机</translation>
 <translation id="3973660817924297510">正在检查密码 (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5801,6 +5802,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
+<translation id="4959581970694896608">自定义 Gemini 的回答方式</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投屏</translation>

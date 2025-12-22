@@ -8641,6 +8641,34 @@ Chính sách này chỉ ảnh hưởng đến chế độ ẩn danh. Để cho p
       Nếu bạn không thiết lập chính sách này, thì chế độ mặc định sẽ là cho phép cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="6640748114867542396">Không cho phép các tiện ích được quản lý sử dụng API Enterprise Hardware Platform</translation>
 <translation id="6641109870010271671">Chứng chỉ TLS mà <ph name="PRODUCT_NAME" /> cần tin cậy khi xác thực máy chủ</translation>
+<translation id="6641851832244467923">Nếu bạn đặt chính sách này, hệ thống sẽ định cấu hình các quy tắc chọn proxy mà trình duyệt sử dụng tuỳ thuộc vào URL của đích đến và các điều kiện khác. Chính sách này sẽ được ưu tiên hơn chế độ cài đặt proxy được thiết lập dựa vào chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />, API tiện ích <ph name="PROXY_SETTINGS_EXTENSION_API" /> hoặc chế độ cài đặt thủ công của người dùng (nếu có).
+
+Nếu bạn không đặt chính sách này, các chính sách proxy khác hoặc chế độ cài đặt của người dùng sẽ không bị ảnh hưởng.
+
+Khi trình duyệt cần xác định proxy nào sẽ được sử dụng, các mục trong chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sẽ được đánh giá theo trình tự cho đến khi một mục đáp ứng tất cả các điểm sau:
+  * Ít nhất một mẫu URL trong <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> trùng khớp.
+  * Không có mẫu URL nào trong <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> trùng khớp.
+  * Nếu bạn chỉ định <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> và đó là một danh sách không trống, thì tất cả các điều kiện được thể hiện bằng các mục trong danh sách đó đều được đáp ứng.
+Giá trị trong <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sẽ được dùng làm proxy cho trường hợp trùng khớp đó. Nếu không tìm thấy kết quả trùng khớp, chế độ cài đặt proxy sẽ chuyển về chế độ cài đặt trong chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Các mẫu URL mà <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> và <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> hỗ trợ được nêu tại https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Các mục trong trường <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> tương ứng với các giá trị dạng chuỗi trong tệp PAC, chẳng hạn như:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Ngoài ra, bạn có thể sử dụng trực tiếp các thông số proxy dạng URL để chỉ định proxy, chẳng hạn như:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+Mục đầu tiên có thể truy cập trong danh sách sẽ được dùng làm proxy. Các mục không hợp lệ trong danh sách sẽ bị bỏ qua.
+
+Trường <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> chứa một danh sách các điều kiện mà tất cả đều phải được đáp ứng thì quy tắc ghi đè tương ứng mới được dùng để xác định proxy nào sẽ được sử dụng. Nếu bạn không đặt trường này, mục này sẽ được sử dụng miễn là có ít nhất một máy chủ lưu trữ trong <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> trùng khớp.
+
+Điều kiện <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> kiểm tra xem <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS được cung cấp có thể phân giải thành một địa chỉ IP hay không. URL này phải chứa một máy chủ lưu trữ (ví dụ: example.com) và có thể chứa một giao thức hoặc một cổng (ví dụ: https://example.com, example.com:123, https://example.com:123). Nếu sử dụng một giao thức bảo mật (ví dụ: https), thì việc tra cứu DNS cũng có thể yêu cầu bản ghi HTTPS (xem RFC 9460 để biết thêm chi tiết). Nếu giá trị của <ph name="PROXY_OVERRIDE_RULES_RESULT" /> là "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", điều kiện sẽ được coi là đã được đáp ứng. Nếu bạn đặt giá trị thành <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, điều kiện sẽ được coi là đã được đáp ứng nếu quá trình phân giải không thành công.</translation>
 <translation id="6641981670621198190">Tắt hỗ trợ dành cho API đồ họa 3D</translation>
 <translation id="6646912445796087001">Bật hoặc tắt nhiều tính năng trên bàn phím ảo. Chính sách này chỉ có hiệu lực khi bạn bật chính sách "VirtualKeyboardEnabled".
 

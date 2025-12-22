@@ -2119,7 +2119,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2428939361789119025">Desactiva la Wi‑Fi</translation>
 <translation id="2431027948063157455">L'Assistent de Google no s'ha pogut carregar. Comprova la connexió de xarxa i tornar-ho a provar.</translation>
 <translation id="243179355394256322">La teva organització limita la inscripció de dispositius només als usuaris autoritzats. Aquest usuari no té autorització per inscriure dispositius. Assegura't que l'usuari tingui el privilegi d'administrador "Inscriure maquinari de Google Meet" a la secció de la consola d'administració Usuaris.</translation>
-<translation id="2431896368788252518">Visualitza i gestiona el teu context personal</translation>
 <translation id="243275146591958220">Cancel·la la baixada</translation>
 <translation id="2433237965825924228">Les aplicacions web aïllades controlen els dispositius d'autenticació i les targetes intel·ligents a què poden accedir. Les targetes intel·ligents solen contenir identificadors que s'utilitzen per autenticar-te.</translation>
 <translation id="2433452467737464329">Afegiu un paràmetre de consulta a l'URL per actualitzar la pàgina automàticament: chrome://network/?refresh=&lt;seg.&gt;</translation>
@@ -4376,6 +4375,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="394984172568887996">Importat d'IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> perquè els fitxers es baixin de manera més segura</translation>
 <translation id="3950479158728806902">Crea una clau d'accés automàticament per iniciar la sessió més ràpidament</translation>
+<translation id="3950755269510650933">Gestiona la informació que Gemini pot utilitzar per personalitzar la teva experiència</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3950841222883198950">Escriptura per veu</translation>
 <translation id="3953834000574892725">Els meus comptes</translation>
@@ -4405,6 +4405,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identificador</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
+<translation id="3971355433478412726">Instruccions per a Gemini</translation>
 <translation id="3971764089670057203">Empremtes digitals d'aquesta clau de seguretat</translation>
 <translation id="3973005893595042880">L'usuari no està permès</translation>
 <translation id="3973660817924297510">S'estan comprovant les contrasenyes (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5809,6 +5810,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vols desar-la en una carpeta només en aquest dispositiu?</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
+<translation id="4959581970694896608">Personalitza com et respon Gemini</translation>
 <translation id="4960020053211143927">No és compatible amb algunes aplicacions</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
