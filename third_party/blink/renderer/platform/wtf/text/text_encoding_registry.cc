@@ -160,6 +160,13 @@ static void BuildBaseTextCodecMaps() {
 
   g_text_codec_map = new TextCodecMap;
   g_text_encoding_name_map = new TextEncodingNameMap;
+  // Set initial capacities of these maps in order to avoid re-hashing.
+  // As of 2025, we register 42 codecs and 228 encoding names with the
+  // bundled ICU.
+  constexpr wtf_size_t kInitialCodecMapCapacity = 42;
+  constexpr wtf_size_t kInitialEncodingMapCapacity = 228;
+  g_text_codec_map->ReserveCapacityForSize(kInitialCodecMapCapacity);
+  g_text_encoding_name_map->ReserveCapacityForSize(kInitialEncodingMapCapacity);
 
   TextCodecLatin1::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecLatin1::RegisterCodecs(AddToTextCodecMap);
