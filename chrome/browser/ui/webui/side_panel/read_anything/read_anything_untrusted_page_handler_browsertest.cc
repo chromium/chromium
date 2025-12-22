@@ -1769,9 +1769,8 @@ class ReadAnythingUntrustedPageHandlerDistillerTest
             {features::kReadAnythingWithReadability}) {}
 };
 
-// TODO(crbug.com/470137716): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
-                       DISABLED_DistillationPopulatesContent) {
+                       DistillationPopulatesContent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
 
