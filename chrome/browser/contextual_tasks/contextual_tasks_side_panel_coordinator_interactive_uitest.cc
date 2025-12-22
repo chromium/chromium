@@ -112,6 +112,14 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
         sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(2)));
 
+    // CachedWebContents are only created when transferring a tab to the side
+    // panel or when calling Show(). Use the test-only method to imitate a
+    // session where the side panel has been created for each of these tasks.
+    ContextualTasksSidePanelCoordinator* coordinator =
+        ContextualTasksSidePanelCoordinator::From(browser());
+    coordinator->CreateCachedWebContentsForTesting(task_id1_, /*is_open=*/true);
+    coordinator->CreateCachedWebContentsForTesting(task_id2_, /*is_open=*/true);
+
     browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   }
 

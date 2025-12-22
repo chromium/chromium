@@ -114,6 +114,8 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   size_t GetNumberOfActiveTasks() const;
 
  private:
+  friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
+
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();
 
@@ -141,9 +143,15 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Create the side panel view.
   std::unique_ptr<views::View> CreateSidePanelView(SidePanelEntryScope& scope);
 
-  // Create side panel contents for active tab. Return nullptr if no thread is
+  // Get the side panel contents for active tab. Return nullptr if no thread is
   // associated with the current tab.
-  content::WebContents* MaybeGetOrCreateSidePanelWebContentsForActiveTab();
+  content::WebContents* GetSidePanelWebContentsForActiveTab();
+
+  // Create a cached WebContents if one does not exist for the current task.
+  void MaybeCreateCachedWebContents();
+
+  // Create a cached WebContents for a task. For tests only.
+  void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open);
 
   // Hide/Unhide the side panel and don't update any task associated with it.
   void Hide();
