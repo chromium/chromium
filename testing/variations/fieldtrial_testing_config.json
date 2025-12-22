@@ -10254,6 +10254,24 @@
             ]
         }
     ],
+    "EnterpriseFileObfuscationArchiveAnalyzer": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseFileObfuscationArchiveAnalyzer"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseFileSystemAccessDeepScan": [
         {
             "platforms": [
