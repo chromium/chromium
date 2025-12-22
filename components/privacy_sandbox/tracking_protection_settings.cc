@@ -4,71 +4,19 @@
 
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
-#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "net/base/features.h"
-#include "url/gurl.h"
 
 namespace privacy_sandbox {
-
-TrackingProtectionSettings::TrackingProtectionSettings(
-    PrefService* pref_service,
-    bool is_incognito)
-    : pref_service_(pref_service) {
-  CHECK(pref_service_);
-
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kTrackingProtection3pcdEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
-          base::Unretained(this)));
-}
-
-TrackingProtectionSettings::~TrackingProtectionSettings() = default;
-
-void TrackingProtectionSettings::Shutdown() {
-  observers_.Clear();
-  pref_change_registrar_.Reset();
-  pref_service_ = nullptr;
-}
-
-bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
-  return base::FeatureList::IsEnabled(
-      content_settings::features::kTrackingProtection3pcd);
-}
-
-void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnTrackingProtection3pcdChanged();
-  }
-}
-
-void TrackingProtectionSettings::AddObserver(
-    TrackingProtectionSettingsObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TrackingProtectionSettings::RemoveObserver(
-    TrackingProtectionSettingsObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
 
 void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
                                 PrefService* prefs) {
@@ -86,9 +34,8 @@ void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
           syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates) {
     return;
   }
-
-  // Hardcoded as using CookieControlsMode creates a circular dependency.
-  const int kBlockThirdParty = 1;
+  const int kBlockThirdParty =
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty);
   bool allowed_3pcs =
       !prefs->GetBoolean(prefs::kBlockAll3pcToggleEnabled) &&
       prefs->GetInteger(prefs::kCookieControlsMode) != kBlockThirdParty;
