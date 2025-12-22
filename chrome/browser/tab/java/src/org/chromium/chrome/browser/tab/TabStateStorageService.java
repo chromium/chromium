@@ -87,6 +87,11 @@ public class TabStateStorageService {
         TabStateStorageServiceJni.get().clearWindow(mNativeTabStateStorageService, windowTag);
     }
 
+    /** Clears all the tabs for a given window from persistent storage. */
+    public void printAll() {
+        TabStateStorageServiceJni.get().printAll(mNativeTabStateStorageService);
+    }
+
     /** Starts a scoped batch of operations. */
     public ScopedStorageBatch createBatch() {
         long batchPtr = TabStateStorageServiceJni.get().createBatch(mNativeTabStateStorageService);
@@ -111,6 +116,8 @@ public class TabStateStorageService {
                 long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
 
         long createBatch(long nativeTabStateStorageServiceAndroid);
+
+        void printAll(long nativeTabStateStorageServiceAndroid);
 
         void commitBatch(long scopedBatchAndroid);
     }

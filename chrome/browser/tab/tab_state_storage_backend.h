@@ -51,6 +51,10 @@ class TabStateStorageBackend {
 
   void ClearWindow(std::string_view window_tag);
 
+#if defined(NDEBUG)
+  void PrintAll();
+#endif
+
  private:
   void OnDBReady(bool success);
   void OnWrite(bool success);

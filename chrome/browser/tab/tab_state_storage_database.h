@@ -106,6 +106,22 @@ class TabStateStorageDatabase {
   // Clears all nodes for a given window from the database.
   void ClearWindow(std::string_view window_tag);
 
+#if defined(NDEBUG)
+  // Dumps the entire state of the database to the log for debugging. Do not use
+  // in production.
+  //
+  // Because `StorageId` tokens are randomly generated and difficult to visually
+  // parse, this method maps them to sequential, temporary integers
+  // (e.g., 1, 2, 3...) for the duration of the dump.
+  //
+  // The output consists of:
+  // 1. A list of all nodes, using the temporary integers for `id` and
+  // `children`.
+  // 2. A legend mapping each temporary integer back to its original `StorageId`
+  // token.
+  void PrintAll();
+#endif
+
  private:
   base::FilePath profile_path_;
   sql::Database db_;

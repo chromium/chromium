@@ -223,6 +223,12 @@ void TabStateStorageService::ClearWindow(std::string_view window_tag) {
   tab_backend_.ClearWindow(window_tag);
 }
 
+#if defined(NDEBUG)
+void TabStateStorageService::PrintAll() {
+  tab_backend_.PrintAll();
+}
+#endif
+
 void TabStateStorageService::OnTabCreated(StorageId storage_id,
                                           const TabInterface* tab) {
   const TabInterface* canonicalized_tab = tab_canonicalizer_.Run(tab);

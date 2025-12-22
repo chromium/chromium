@@ -46,6 +46,8 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void ClearWindow(JNIEnv* env, const std::string& window_tag);
 
+  void PrintAll(JNIEnv* env);
+
   jlong CreateBatch(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

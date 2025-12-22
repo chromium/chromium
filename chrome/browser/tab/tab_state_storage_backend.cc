@@ -114,6 +114,14 @@ void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
                                 std::string(window_tag)));
 }
 
+#if defined(NDEBUG)
+void TabStateStorageBackend::PrintAll() {
+  db_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&TabStateStorageDatabase::PrintAll,
+                                           base::Unretained(database_.get())));
+}
+#endif
+
 void TabStateStorageBackend::OnDBReady(bool success) {}
 
 void TabStateStorageBackend::OnWrite(bool success) {}

@@ -5,20 +5,28 @@
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 #include <memory>
-#include <string_view>
+#include <sstream>
+#include <string>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp//absl/container/flat_hash_map.h"
 
 namespace tabs {
 namespace {
@@ -366,5 +374,67 @@ void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
   delete_statement.BindString(0, window_tag);
   delete_statement.Run();
 }
+
+#if defined(NDEBUG)
+void TabStateStorageDatabase::PrintAll() {
+  static constexpr char kSelectAllNodesSql[] =
+      "SELECT id, window_tag, is_off_the_record, type, children FROM nodes";
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllNodesSql));
+
+  int start_int = 0;
+  absl::flat_hash_map<StorageId, int> storage_id_to_int;
+  std::stringstream ss;
+
+  ss << "Nodes Table Dump:\n";
+  while (select_statement.Step()) {
+    StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
+    if (!storage_id_to_int.contains(id)) {
+      start_int++;
+      storage_id_to_int[id] = start_int;
+    }
+
+    std::string window_tag = select_statement.ColumnString(1);
+    bool is_off_the_record = select_statement.ColumnInt(2);
+    TabStorageType type =
+        static_cast<TabStorageType>(select_statement.ColumnInt(3));
+
+    base::span<const uint8_t> children_unparsed =
+        select_statement.ColumnBlob(4);
+    tabs_pb::Children children;
+    children.ParseFromArray(children_unparsed.data(), children_unparsed.size());
+    std::string children_str;
+
+    if (children.storage_id_size() != 0) {
+      for (int i = 0; i < children.storage_id_size(); i++) {
+        tabs_pb::Token child = children.storage_id().at(i);
+        StorageId child_id = StorageIdFromTokenProto(child);
+
+        if (!storage_id_to_int.contains(child_id)) {
+          start_int++;
+          storage_id_to_int[child_id] = start_int;
+        }
+
+        children_str += base::NumberToString(storage_id_to_int[child_id]);
+        if (i + 1 != children.storage_id_size()) {
+          children_str += ", ";
+        }
+      }
+      children_str = ", children=" + children_str;
+    }
+
+    ss << "Node: id=" << storage_id_to_int[id] << ", window_tag=" << window_tag
+       << ", is_off_the_record=" << is_off_the_record
+       << ", type=" << static_cast<int>(type) << children_str << "\n";
+  }
+
+  ss << "\nInt to Storage Id Map:\n";
+  for (const auto& [storage_id, temp_int] : storage_id_to_int) {
+    ss << "Entry: storage_id=" << storage_id.ToString()
+       << ", temp_int=" << temp_int << "\n";
+  }
+  VLOG(1) << ss.str();
+}
+#endif
 
 }  // namespace tabs

@@ -97,6 +97,12 @@ void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
   tab_state_storage_service_->ClearWindow(window_tag);
 }
 
+void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {
+#if defined(NDEBUG)
+  tab_state_storage_service_->PrintAll();
+#endif
+}
+
 jlong TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
   return reinterpret_cast<jlong>(
       new ScopedBatchAndroid(tab_state_storage_service_->CreateScopedBatch()));

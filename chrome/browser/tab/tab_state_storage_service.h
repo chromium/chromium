@@ -100,6 +100,10 @@ class TabStateStorageService : public KeyedService,
 
   void ClearWindow(std::string_view window_tag);
 
+#if defined(NDEBUG)
+  void PrintAll();
+#endif
+
   // Returns a Java object of the type TabStateStorageService. This is
   // implemented in tab_state_storage_service_android.cc
   static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
