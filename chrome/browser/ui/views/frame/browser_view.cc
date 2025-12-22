@@ -1408,7 +1408,8 @@ void BrowserView::OnProjectsPanelStateChanged(
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
-  if (InitialWebUIManager::From(browser())->ShouldDeferShow()) {
+  if (InitialWebUIManager::From(browser()) &&
+      InitialWebUIManager::From(browser())->ShouldDeferShow()) {
     return;
   }
 
@@ -1711,9 +1712,8 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
         base::Milliseconds(30);
     // Loads are happening, and the animation isn't running, so start it.
     loading_animation_start_ = base::TimeTicks::Now();
-      loading_animation_timer_.Start(
-          FROM_HERE, kAnimationUpdateInterval, this,
-          &BrowserView::LoadingAnimationTimerCallback);
+    loading_animation_timer_.Start(FROM_HERE, kAnimationUpdateInterval, this,
+                                   &BrowserView::LoadingAnimationTimerCallback);
   } else {
     loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS)

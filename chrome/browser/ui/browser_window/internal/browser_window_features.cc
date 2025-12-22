@@ -647,7 +647,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             extension_keybinding_delegate_.get());
   }
 
-  initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
+  if (browser->is_type_normal()) {
+    initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
+  }
 
   // Initialize post-window dependent embedder features last.
   embedder_browser_window_features_->InitPostWindowConstruction(browser);
