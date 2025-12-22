@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<script src='../../resources/testharness.js'></script>
-<script src='../../resources/testharnessreport.js'></script>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/resources/testdriver.js'></script>
+<script src=/resources/testdriver-actions.js></script>
+<script src='/resources/testdriver-vendor.js'></script>
 <script src='../resources/shadow-dom.js'></script>
 <script src='../resources/focus-utils.js'></script>
 
@@ -18,8 +21,6 @@ div.long {
 }
 </style>
 
-<!-- Note: Do not move this test to WPT, as "keyboard focusable scrollers"
-     does not have standard behavior across browsers. -->
 <button id="start">START</button>
 
 <div id="scroller-tabindex" class="scroll" tabindex="0">
