@@ -1023,6 +1023,8 @@ static_library("ui") {
         "android/extensions/extension_keybinding_registry_android.h",
         "android/extensions/extension_util_bridge.cc",
         "android/extensions/extension_util_bridge.h",
+        "android/extensions/extensions_toolbar_bridge.cc",
+        "android/extensions/extensions_toolbar_bridge.h",
         "extensions/icon_with_badge_image_source.cc",
         "extensions/icon_with_badge_image_source.h",
       ]
