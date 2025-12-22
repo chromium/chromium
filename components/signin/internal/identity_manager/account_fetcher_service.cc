@@ -287,18 +287,21 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
   DCHECK(signin_client_);
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
-  std::string picture_url_string = account_info.picture_url;
+  if (!account_info.GetAvatarUrl().has_value()) {
+    return;
+  }
 
-  GURL picture_url(picture_url_string);
+  GURL picture_url(*account_info.GetAvatarUrl());
   if (!picture_url.is_valid()) {
-    DVLOG(1) << "Invalid avatar picture URL: \"" + picture_url_string + "\"";
+    DVLOG(1) << "Invalid avatar picture URL: \"" << *account_info.GetAvatarUrl()
+             << "\"";
     return;
   }
   GURL image_url_with_size(signin::GetAvatarImageURLWithOptions(
       picture_url, signin::kAccountInfoImageSize, true /* no_silhouette */));
 
   if (image_url_with_size.spec() ==
-      account_info.last_downloaded_image_url_with_size) {
+      account_info.GetLastDownloadedAvatarUrlWithSize()) {
     return;
   }
 

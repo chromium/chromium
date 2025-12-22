@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -255,13 +256,13 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   void CheckAccountDetails(AccountKey account_key, const AccountInfo& info) {
-    EXPECT_EQ(AccountKeyToAccountId(account_key), info.account_id);
-    EXPECT_EQ(AccountKeyToGaiaId(account_key), info.gaia);
-    EXPECT_EQ(AccountKeyToEmail(account_key), info.email);
-    EXPECT_EQ(std::string(), info.GetHostedDomain());
-    EXPECT_EQ(AccountKeyToFullName(account_key), info.full_name);
-    EXPECT_EQ(AccountKeyToGivenName(account_key), info.given_name);
-    EXPECT_EQ(AccountKeyToLocale(account_key), info.locale);
+    EXPECT_EQ(info.GetAccountId(), AccountKeyToAccountId(account_key));
+    EXPECT_EQ(info.GetGaiaId(), AccountKeyToGaiaId(account_key));
+    EXPECT_EQ(info.GetEmail(), AccountKeyToEmail(account_key));
+    EXPECT_EQ(info.GetHostedDomain(), std::string());
+    EXPECT_EQ(info.GetFullName(), AccountKeyToFullName(account_key));
+    EXPECT_EQ(info.GetGivenName(), AccountKeyToGivenName(account_key));
+    EXPECT_EQ(info.GetLocale(), AccountKeyToLocale(account_key));
   }
 
   void CheckAccountCapabilities(AccountKey account_key,
@@ -571,7 +572,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_TRUE(account_info.account_image.IsEmpty());
-  EXPECT_TRUE(account_info.last_downloaded_image_url_with_size.empty());
+  EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   ReturnAccountImageFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyAlpha),
@@ -581,7 +582,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_FALSE(account_info.account_image.IsEmpty());
-  EXPECT_EQ(account_info.last_downloaded_image_url_with_size,
+  EXPECT_EQ(account_info.GetLastDownloadedAvatarUrlWithSize(),
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
   histogram_tester.ExpectTotalCount(
       "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
@@ -603,12 +604,12 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_TRUE(account_info.account_image.IsEmpty());
-  EXPECT_TRUE(account_info.last_downloaded_image_url_with_size.empty());
+  EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   ReturnAccountImageFetchFailure(kAccountKeyAlpha);
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_TRUE(account_info.account_image.IsEmpty());
-  EXPECT_TRUE(account_info.last_downloaded_image_url_with_size.empty());
+  EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   histogram_tester.ExpectTotalCount(
       "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -824,7 +825,7 @@ TEST_F(AccountTrackerServiceTest, RefreshAccount_FetchImageSuccess) {
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_FALSE(account_info.account_image.IsEmpty());
-  EXPECT_EQ(account_info.last_downloaded_image_url_with_size,
+  EXPECT_EQ(account_info.GetLastDownloadedAvatarUrlWithSize(),
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
 }
 
@@ -1037,6 +1038,47 @@ TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {
   // that all in-use files are closed.
   ResetAccountTracker();
   ASSERT_TRUE(scoped_user_data_dir.Delete());
+}
+
+TEST_F(AccountTrackerServiceTest, Persistence_LoadAccountImagesFromDiskFails) {
+  // Define a user data directory for the account image storage.
+  base::ScopedTempDir scoped_user_data_dir;
+  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
+
+  // Create a tracker and save to prefs a valid account and an image.
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ReturnAccountImageFetchSuccess(kAccountKeyAlpha);
+
+  AccountInfo info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_EQ(info.GetAccountId(), AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_TRUE(info.GetAvatarImage().has_value());
+  EXPECT_TRUE(info.GetLastDownloadedAvatarUrlWithSize().has_value());
+
+  // Wait until the account image is saved.
+  task_environment_.RunUntilIdle();
+
+  // Delete an avatar image to simulate a read problem for the next tracker.
+  ASSERT_TRUE(base::DeleteFile(
+      scoped_user_data_dir.GetPath()
+          .AppendASCII("Accounts")
+          .AppendASCII("Avatar Images")
+          .AppendASCII(AccountKeyToAccountId(kAccountKeyAlpha).ToString())));
+
+  // Create a new tracker and make sure it loads the accounts.
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+
+  // Wait until the account image is loaded.
+  task_environment_.RunUntilIdle();
+
+  // Verify that the image is empty and the URL has been cleared.
+  info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_EQ(info.GetAccountId(), AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_FALSE(info.GetAvatarImage().has_value());
+  EXPECT_FALSE(info.GetLastDownloadedAvatarUrlWithSize().has_value());
 }
 
 TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {

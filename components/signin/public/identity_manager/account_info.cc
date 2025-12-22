@@ -336,7 +336,6 @@ AccountInfo::Builder& AccountInfo::Builder::SetGivenName(
 
 AccountInfo::Builder& AccountInfo::Builder::SetLastDownloadedAvatarUrlWithSize(
     std::string_view avatar_url_with_size) {
-  CHECK(!avatar_url_with_size.empty());
   account_info_.last_downloaded_image_url_with_size =
       std::string(avatar_url_with_size);
   return *this;
@@ -344,7 +343,6 @@ AccountInfo::Builder& AccountInfo::Builder::SetLastDownloadedAvatarUrlWithSize(
 
 AccountInfo::Builder& AccountInfo::Builder::SetAvatarImage(
     const gfx::Image& avatar_image) {
-  CHECK(!avatar_image.IsEmpty());
   account_info_.account_image = avatar_image;
   return *this;
 }

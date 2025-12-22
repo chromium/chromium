@@ -268,10 +268,13 @@ class AccountInfo::Builder {
   // To keep a value unknown, do not call a corresponding setter.
   Builder& SetFullName(std::string_view full_name);
   Builder& SetGivenName(std::string_view given_name);
+  Builder& SetLocale(std::string_view locale);
+
+  // The following AccountInfo class members can be reset back to the unknown
+  // state by setting an empty value.
   Builder& SetLastDownloadedAvatarUrlWithSize(
       std::string_view avatar_url_with_size);
   Builder& SetAvatarImage(const gfx::Image& avatar_image);
-  Builder& SetLocale(std::string_view locale);
 
   // The following AccountInfo class members have well-defined empty values.
   //

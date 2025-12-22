@@ -309,12 +309,17 @@ void AccountTrackerService::SetAccountImage(
     const CoreAccountId& account_id,
     const std::string& image_url_with_size,
     const gfx::Image& image) {
-  if (!base::Contains(accounts_, account_id)) {
+  auto it = accounts_.find(account_id);
+  if (it == accounts_.end()) {
     return;
   }
-  AccountInfo& account_info = accounts_[account_id];
-  account_info.account_image = image;
-  account_info.last_downloaded_image_url_with_size = image_url_with_size;
+  // Update the avatar image value in `it->second` and save the updated
+  // account info to disk.
+  AccountInfo& account_info = it->second;
+  account_info = AccountInfo::Builder(account_info)
+                     .SetAvatarImage(image)
+                     .SetLastDownloadedAvatarUrlWithSize(image_url_with_size)
+                     .Build();
   SaveAccountImageToDisk(account_id, image, image_url_with_size);
   NotifyAccountUpdated(account_info);
 }
@@ -508,16 +513,35 @@ base::FilePath AccountTrackerService::GetImagePathFor(
 void AccountTrackerService::OnAccountImageLoaded(
     const CoreAccountId& account_id,
     gfx::Image image) {
-  if (base::Contains(accounts_, account_id) &&
-      accounts_[account_id].account_image.IsEmpty()) {
-    AccountInfo& account_info = accounts_[account_id];
-    account_info.account_image = image;
-    if (account_info.account_image.IsEmpty()) {
-      account_info.last_downloaded_image_url_with_size = std::string();
-      OnAccountImageUpdated(account_id, std::string(), true);
-    }
-    NotifyAccountUpdated(account_info);
+  auto it = accounts_.find(account_id);
+  if (it == accounts_.end()) {
+    return;
   }
+
+  AccountInfo& account_info = it->second;
+  if (account_info.GetAvatarImage().has_value()) {
+    // Don't do anything if `account_info` already has an avatar image.
+    return;
+  }
+
+  AccountInfo::Builder update_account_info_builder(account_info);
+  bool should_clear_last_downloaded_avatar_url = false;
+  if (!image.IsEmpty()) {
+    update_account_info_builder.SetAvatarImage(image);
+  } else {
+    // An image failed to load. We want to clear the last downloaded avatar URL
+    // so that an image can be downloaded again.
+    update_account_info_builder.SetLastDownloadedAvatarUrlWithSize("");
+    should_clear_last_downloaded_avatar_url = true;
+  }
+
+  account_info = update_account_info_builder.Build();
+  if (should_clear_last_downloaded_avatar_url) {
+    // Call `OnAccountImageUpdated()` to clear the last downloaded avatar URL.
+    OnAccountImageUpdated(account_id, /*image_url_with_size=*/std::string(),
+                          /*success=*/true);
+  }
+  NotifyAccountUpdated(account_info);
 }
 
 void AccountTrackerService::LoadAccountImagesFromDisk() {
@@ -772,10 +796,12 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
     SaveToPrefs(account_info);
   }
 
-  if (!already_exists && !info.account_image.IsEmpty()) {
-    SetAccountImage(account_info.account_id,
-                    account_info.last_downloaded_image_url_with_size,
-                    info.account_image);
+  if (!already_exists && info.GetAvatarImage().has_value()) {
+    SetAccountImage(
+        account_info.account_id,
+        std::string(
+            account_info.GetLastDownloadedAvatarUrlWithSize().value_or("")),
+        *info.GetAvatarImage());
   }
 
   return info.account_id;
