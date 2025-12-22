@@ -5,18 +5,12 @@
 module ash.ime.mojom;
 
 import "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom";
-import "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 
 struct Status {
   bool success;
   // Reason is usually given for an error response.
   string? reason;
-};
-
-union JapaneseLegacyConfigResponse {
-  string error_reason;
-  JapaneseLegacyConfig response;
 };
 
 union JapaneseDictionaryResponse {
@@ -27,9 +21,6 @@ union JapaneseDictionaryResponse {
 // InputMethodUserDataService is used to manage user data that requires the
 // IME shared library to manage.
 interface InputMethodUserDataService {
-  // Fetches the Japanese legacy config used in the extension JP system.
-  FetchJapaneseLegacyConfig() => (JapaneseLegacyConfigResponse response);
-
   // Fetches the Japanese user dictionaries used by Japanese IME.
   FetchJapaneseDictionary() => (JapaneseDictionaryResponse response);
 

@@ -548,7 +548,6 @@ build_webui("build") {
     "$root_gen_dir/chromeos/ash/components/drivefs/mojom/pinning_manager_types.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom-webui.ts",
-    "$root_gen_dir/chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/meta_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",

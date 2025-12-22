@@ -10,7 +10,6 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
-#include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_legacy_config.pb.h"
 #include "chromeos/ash/services/ime/user_data_c_api_impl.h"
 #include "chromeos/ash/services/ime/user_data_c_api_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,33 +41,6 @@ void SetEntry(JapaneseDictionary::Entry& entry,
   entry.set_value(value);
   entry.set_comment(comment);
   entry.set_pos(pos);
-}
-
-TEST(InputMethodUserDataServiceTest, FetchJapaneseLegacyConfig) {
-  chromeos_input::UserDataRequest request_pb;
-  *request_pb.mutable_fetch_japanese_legacy_config() =
-      chromeos_input::FetchJapaneseLegacyConfigRequest();
-  chromeos_input::UserDataResponse response_pb;
-  response_pb.mutable_status()->set_success(true);
-  response_pb.mutable_fetch_japanese_legacy_config()->set_preedit_method(
-      chromeos_input::PREEDIT_KANA);
-  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
-  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
-      .Times(1)
-      .WillOnce(Return(response_pb));
-
-  InputMethodUserDataServiceImpl service(std::move(c_api));
-  TestFuture<mojom::JapaneseLegacyConfigResponsePtr> config_future;
-  service.FetchJapaneseLegacyConfig(config_future.GetCallback());
-
-  mojom::JapaneseLegacyConfigPtr expected_config =
-      mojom::JapaneseLegacyConfig::New();
-  expected_config->preedit_method =
-      mojom::JapaneseLegacyConfig::PreeditMethod::kKana;
-  mojom::JapaneseLegacyConfigResponsePtr expected =
-      mojom::JapaneseLegacyConfigResponse::NewResponse(
-          std::move(expected_config));
-  EXPECT_TRUE(config_future.Get().Equals(expected));
 }
 
 TEST(InputMethodUserDataServiceTest, FetchJapaneseDictionary) {
