@@ -134,15 +134,11 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   ui::UserDataFactory::ScopedOverride factory_override_;
 };
 
+// TODO(crbug.com/444520866): The order of buttons will be different in
+// verticals tabs so this test will need to be rewritten when we get to that
+// point.
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    // TODO(crbug.com/444520866): The order of buttons will be different in
-    // verticals tabs so this test will need to be rewritten when we get to that
-    // point.
-    GTEST_SKIP();
-  }
-
   auto* tab_strip_region_view =
       views::AsViewClass<HorizontalTabStripRegionView>(
           browser_view()->tab_strip_view());
