@@ -109,6 +109,10 @@ chromium-metrics-reviews@google.com.
   <variant name="MojoHandleTable"/>
   <variant name="MojoLevelDB"/>
   <variant name="MojoMessages"/>
+<!-- The Orderfile variant is never recorded in production but necessary to pass
+       the memory_dump_provider.h check. -->
+
+  <variant name="Orderfile"/>
   <variant name="ParkableImages"/>
   <variant name="ParkableStrings"/>
   <variant name="PartitionAlloc"/>
