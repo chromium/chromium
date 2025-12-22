@@ -48,6 +48,58 @@ void SetMaxFrequencyPerProcessorOverrideForTesting(
   g_max_frequency_per_processor_override = value;
 }
 
+void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
+  TRACE_EVENT("base", __PRETTY_FUNCTION__, "thread_id", thread_id, "can_run",
+              can_run);
+  // Efficiency note: most of the computation here could be done only once using
+  // static local variables, but this makes the code harder to test, and is not
+  // expected to be called often. If it becomes a problem, make it not repeat
+  // mask creation at every call.
+  const std::vector<uint64_t>& max_frequencies =
+      g_max_frequency_per_processor_override
+          ? *g_max_frequency_per_processor_override
+          : SysInfo::MaxFrequencyPerProcessor();
+  if (max_frequencies.empty()) {
+    return;
+  }
+
+  auto sorted = max_frequencies;
+  std::sort(sorted.begin(), sorted.end());
+  uint64_t max_frequency = sorted[sorted.size() - 1];
+  auto last = std::unique(sorted.begin(), sorted.end());
+  ssize_t distinct_count = std::distance(sorted.begin(), last);
+
+  // Don't want to move entirely from big cores on big.LITTLE, only on
+  // little-mid-big designs.
+  if (distinct_count < 3) {
+    return;
+  }
+
+  bool all_cores = can_run;
+  int allowed_cpus_count = 0;
+  cpu_set_t cpu_set;
+  // SAFETY: Here and below, these are macros that we don't control, and hence
+  // we cannot safely replace. However, CPU_ZERO() is safe, and CPU_SET() has a
+  // check internally to not overflow the bitset, which we repeat in the loop to
+  // be clearer.
+  UNSAFE_BUFFERS(CPU_ZERO(&cpu_set));
+  for (size_t i = 0; i < max_frequencies.size(); i++) {
+    if (i < CPU_SETSIZE) {
+      if (all_cores || (max_frequencies[i] < max_frequency)) {
+        allowed_cpus_count++;
+        UNSAFE_BUFFERS(CPU_SET(i, &cpu_set));
+      }
+    }
+  }
+
+  TRACE_EVENT("base", "SetAffinity", "count", max_frequencies.size(), "allowed",
+              allowed_cpus_count);
+  // If the call fails, it's not a correctness issue. However we want to catch
+  // the sandbox returning EPERM.
+  int retval = sched_setaffinity(thread_id.raw(), sizeof(cpu_set), &cpu_set);
+  DPCHECK(!retval);
+}
+
 namespace internal {
 
 // Returns true if the kDisplayCriticalThreadPriority should be boosted.
@@ -102,58 +154,6 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
 
 bool CanSetThreadTypeToRealtimeAudio() {
   return true;
-}
-
-void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
-  TRACE_EVENT("base", __PRETTY_FUNCTION__, "thread_id", thread_id, "can_run",
-              can_run);
-  // Efficiency note: most of the computation here could be done only once using
-  // static local variables, but this makes the code harder to test, and is not
-  // expected to be called often. If it becomes a problem, make it not repeat
-  // mask creation at every call.
-  const std::vector<uint64_t>& max_frequencies =
-      g_max_frequency_per_processor_override
-          ? *g_max_frequency_per_processor_override
-          : SysInfo::MaxFrequencyPerProcessor();
-  if (max_frequencies.empty()) {
-    return;
-  }
-
-  auto sorted = max_frequencies;
-  std::sort(sorted.begin(), sorted.end());
-  uint64_t max_frequency = sorted[sorted.size() - 1];
-  auto last = std::unique(sorted.begin(), sorted.end());
-  ssize_t distinct_count = std::distance(sorted.begin(), last);
-
-  // Don't want to move entirely from big cores on big.LITTLE, only on
-  // little-mid-big designs.
-  if (distinct_count < 3) {
-    return;
-  }
-
-  bool all_cores = can_run;
-  int allowed_cpus_count = 0;
-  cpu_set_t cpu_set;
-  // SAFETY: Here and below, these are macros that we don't control, and hence
-  // we cannot safely replace. However, CPU_ZERO() is safe, and CPU_SET() has a
-  // check internally to not overflow the bitset, which we repeat in the loop to
-  // be clearer.
-  UNSAFE_BUFFERS(CPU_ZERO(&cpu_set));
-  for (size_t i = 0; i < max_frequencies.size(); i++) {
-    if (i < CPU_SETSIZE) {
-      if (all_cores || (max_frequencies[i] < max_frequency)) {
-        allowed_cpus_count++;
-        UNSAFE_BUFFERS(CPU_SET(i, &cpu_set));
-      }
-    }
-  }
-
-  TRACE_EVENT("base", "SetAffinity", "count", max_frequencies.size(), "allowed",
-              allowed_cpus_count);
-  // If the call fails, it's not a correctness issue. However we want to catch
-  // the sandbox returning EPERM.
-  int retval = sched_setaffinity(thread_id.raw(), sizeof(cpu_set), &cpu_set);
-  DPCHECK(!retval);
 }
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,

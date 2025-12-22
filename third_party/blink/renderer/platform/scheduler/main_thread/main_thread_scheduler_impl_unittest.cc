@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -363,9 +364,25 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     SetCurrentUseCaseForTest(use_case);
   }
 
+  UseCase ComputeCurrentUseCase(base::TimeTicks now,
+                                base::TimeDelta* expected_use_case_duration)
+      const override EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_) {
+    if (use_case_override_) {
+      return use_case_override_.value();
+    }
+    return MainThreadSchedulerImpl::ComputeCurrentUseCase(
+        now, expected_use_case_duration);
+  }
+
+  void UpdatePolicyForTesting() { UpdatePolicy(); }
+  const MainThreadOnly& main_thread_only_for_testing() const {
+    return main_thread_only();
+  }
+
   int update_policy_count_;
   Vector<String> use_cases_;
   base::OnceClosure on_microtask_checkpoint_;
+  std::optional<UseCase> use_case_override_;
 };
 
 // Lets gtest print human readable Policy values.
@@ -404,10 +421,17 @@ class MainThreadSchedulerImplTest : public testing::Test {
                 .SetPrioritySettings(CreatePrioritySettings())
                 .Build())));
 
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
+      // Checking early, as the forced update below will reset it.
+      EXPECT_TRUE(scheduler_->main_thread_only_for_testing().affinity_boost);
+    }
+#endif
     EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kNone);
     // Don't count the above policy change.
     scheduler_->update_policy_count_ = 0;
     scheduler_->use_cases_.clear();
+    scheduler_->use_case_override_ = std::nullopt;
     // Used to reset the thread type, since tests can change it.
     thread_type_ = base::PlatformThread::GetCurrentThreadType();
   }
@@ -4489,6 +4513,182 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
             base::ThreadType::kDefault);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MainThreadSchedulerImplAffinityBoostTest
+    : public MainThreadSchedulerImplTest {
+ public:
+  MainThreadSchedulerImplAffinityBoostTest()
+      : MainThreadSchedulerImplTest({kRestrictMainThreadBigCoreAffinity}, {}) {}
+
+ protected:
+  void SetUp() override {
+    MainThreadSchedulerImplTest::SetUp();
+    ThreadAffinityBoost::SetTaskRunnerForTesting(task_runner_.get());
+    ThreadAffinityBoost::SetCanRunOnBigCoreOverrideForTesting(&override_);
+    calls_count_ = 0;
+    can_run_ = false;
+  }
+
+  void TearDown() override {
+    ThreadAffinityBoost::SetCanRunOnBigCoreOverrideForTesting(nullptr);
+    ThreadAffinityBoost::SetTaskRunnerForTesting(nullptr);
+    MainThreadSchedulerImplTest::TearDown();
+  }
+
+  void SetUseCaseAndUpdatePolicy(UseCase use_case) {
+    scheduler_->use_case_override_ = use_case;
+    scheduler_->UpdatePolicyForTesting();
+  }
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
+      base::WrapRefCounted(new base::TestMockTimeTaskRunner(
+          base::TestMockTimeTaskRunner::Type::kStandalone));
+  bool can_run_;
+  size_t calls_count_;
+  ThreadAffinityBoost::SetCanRunOnBigCoreFn override_ =
+      base::BindLambdaForTesting(
+          [&](base::PlatformThreadId thread_id, bool allowed) {
+            calls_count_++;
+            can_run_ = allowed;
+          });
+};
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, Simple) {
+  // Can run on big cores when in a compositor gesture.
+  SetUseCaseAndUpdatePolicy(UseCase::kCompositorGesture);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Synchronously come back when back to kNone.
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, Multiple) {
+  // A single call as long as the use case matches.
+  SetUseCaseAndUpdatePolicy(UseCase::kMainThreadCustomInputHandling);
+  SetUseCaseAndUpdatePolicy(UseCase::kMainThreadGesture);
+  SetUseCaseAndUpdatePolicy(UseCase::kCompositorGesture);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Synchronously come back when back to kNone.
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, Loading) {
+  // Can run on big cores when in a compositor gesture.
+  SetUseCaseAndUpdatePolicy(UseCase::kLoading);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Does not go back synchronously.
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Posted on the task runner.
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, LoadingMultiple) {
+  SetUseCaseAndUpdatePolicy(UseCase::kEarlyLoading);
+  SetUseCaseAndUpdatePolicy(UseCase::kLoading);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Does not go back synchronously.
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  // Posted on the task runner.
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, Stacking) {
+  SetUseCaseAndUpdatePolicy(UseCase::kEarlyLoading);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+
+  // Posted on the task runner.
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  base::TimeDelta delay = task_runner_->NextPendingTaskDelay();
+  // Before the task runs, we get another boost.
+  task_runner_->FastForwardBy(base::Milliseconds(10));
+  SetUseCaseAndUpdatePolicy(UseCase::kLoading);
+  // No new boost call, because one is already active.
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+  // A new task is posted.
+  SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  EXPECT_EQ(2u, task_runner_->GetPendingTaskCount());
+
+  // Run the first task.
+  task_runner_->FastForwardBy(delay - base::Milliseconds(10));
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  // Nothing happens, the next task will reset the boost.
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+
+  task_runner_->FastForwardBy(base::Milliseconds(10));
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest, DidCommitProvisionalLoad) {
+  // Parameters do not matter here.
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+  // The stop boost task is immediately posted.
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+TEST_F(MainThreadSchedulerImplAffinityBoostTest,
+       NultipleDidCommitProvisionalLoad) {
+  // Parameters do not matter here.
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+  // The stop boost task is immediately posted.
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  base::TimeDelta delay = task_runner_->NextPendingTaskDelay();
+
+  task_runner_->FastForwardBy(base::Milliseconds(10));
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  task_runner_->FastForwardBy(base::Milliseconds(10));
+  scheduler_->DidCommitProvisionalLoad(false, false, true);
+  // Each new commit posts a new task.
+  EXPECT_EQ(3u, task_runner_->GetPendingTaskCount());
+  // But calls are deduplicated.
+  EXPECT_EQ(1u, calls_count_);
+
+  task_runner_->FastForwardBy(delay - 2 * base::Milliseconds(10));
+  // Only the last task will remove the boost.
+  EXPECT_EQ(1u, calls_count_);
+  EXPECT_TRUE(can_run_);
+  task_runner_->FastForwardBy(2 * base::Milliseconds(10));
+  EXPECT_EQ(2u, calls_count_);
+  EXPECT_FALSE(can_run_);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler

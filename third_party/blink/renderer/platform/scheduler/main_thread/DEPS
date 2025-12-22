@@ -1,5 +1,6 @@
 include_rules = [
   "+base/cpu_reduction_experiment.h",
+  "+base/task/thread_pool/thread_pool_instance.h",
   "+cc",
   "+components/performance_manager/scenario_api",
   "+components/viz/common",
