@@ -302,11 +302,9 @@ std::string GetDirectLaunchUrlScheme() {
   }
   switch (chrome::GetChannel()) {
     case version_info::Channel::CANARY:
-      return "google-chrome-canary";
     case version_info::Channel::DEV:
-      return "google-chrome-dev";
     case version_info::Channel::BETA:
-      return "google-chrome-beta";
+      return "";
     case version_info::Channel::STABLE:
     case version_info::Channel::UNKNOWN:
       return "google-chrome";

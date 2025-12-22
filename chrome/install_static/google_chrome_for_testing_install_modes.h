@@ -42,7 +42,8 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .browser_prog_id_description =
             L"Chrome for Testing HTML Document",  // Browser ProgID
                                                   // description.
-        .pdf_prog_id_prefix = L"CfTPDF",          // PDF ProgID prefix.
+        .direct_launch_url_scheme = "",   // Empty URL scheme for this mode.
+        .pdf_prog_id_prefix = L"CfTPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome for Testing PDF Document",  // PDF ProgID description.
         .active_setup_guid =
