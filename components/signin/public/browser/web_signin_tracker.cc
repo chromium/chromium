@@ -63,9 +63,10 @@ WebSigninTracker::WebSigninTracker(
 
   signin::AccountsInCookieJarInfo info =
       identity_manager_->GetAccountsInCookieJar();
-  if (info.AreAccountsFresh()) {
-    // Check whether the target primary account is already in cookies.
-    OnAccountsInCookieUpdated(info, GoogleServiceAuthError::AuthErrorNone());
+  if (info.AreAccountsFresh() &&
+      FinishIfRequestedAccountPresentInCookies(info)) {
+    // Already finished successfully - do not call `OnStateChanged`.
+    return;
   }
 
   OnStateChanged(account_reconcilor->GetState());
@@ -76,13 +77,7 @@ WebSigninTracker::~WebSigninTracker() = default;
 void WebSigninTracker::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  for (const auto& account :
-       accounts_in_cookie_jar_info.GetValidSignedInAccounts()) {
-    if (MatchesRequestedAccount(account.id, account.email)) {
-      FinishWithResult(Result::kSuccess);
-      return;
-    }
-  }
+  FinishIfRequestedAccountPresentInCookies(accounts_in_cookie_jar_info);
 }
 
 void WebSigninTracker::OnIdentityManagerShutdown(
@@ -119,6 +114,18 @@ void WebSigninTracker::OnStateChanged(
 
 void WebSigninTracker::OnTimeoutReached() {
   FinishWithResult(Result::kTimeout);
+}
+
+bool WebSigninTracker::FinishIfRequestedAccountPresentInCookies(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
+  for (const auto& account :
+       accounts_in_cookie_jar_info.GetValidSignedInAccounts()) {
+    if (MatchesRequestedAccount(account.id, account.email)) {
+      FinishWithResult(Result::kSuccess);
+      return true;
+    }
+  }
+  return false;
 }
 
 void WebSigninTracker::FinishWithResult(WebSigninTracker::Result result) {

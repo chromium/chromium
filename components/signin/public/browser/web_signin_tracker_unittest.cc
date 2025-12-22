@@ -99,18 +99,29 @@ TEST_F(WebSigninTrackerTest,
 }
 
 TEST_F(WebSigninTrackerTest,
-       DeferredCreationAndCookiesWithSigninAccountShouldTriggerSuccessResult) {
+       FreshCookiesWithSigninAccountShouldTriggerSuccessResult) {
   base::HistogramTester tester;
-  AccountInfo account =
+  AccountInfo account1 =
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
-  identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
-  CookieParamsForTest cookie_params{account.email, account.gaia};
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("test2@gmail.com");
+  identity_test_env_.SetPrimaryAccount(account1.email, GetConsentLevel());
+  // Setting cookies is required to trigger the account reconcilor.
+  CookieParamsForTest cookie_params{account1.email, account1.gaia};
+  identity_test_env_.SetCookieAccounts({cookie_params});
+  // AccountReconcilor errors should have no effect on the result if the account
+  // is already in cookies.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+  // Waiting for the AccountReconcilor token request marks cookies as stale, set
+  // them again to mark cookies fresh and force `WebSigninTracker` to check the
+  // account presence.
   identity_test_env_.SetCookieAccounts({cookie_params});
 
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kSuccess));
   std::unique_ptr<WebSigninTracker> web_signin_bridge =
-      CreateWebSigninTracker(account.account_id, callback.Get());
+      CreateWebSigninTracker(account1.account_id, callback.Get());
 
   tester.ExpectTotalCount("Signin.WebSigninTracker.Latency.Success", 1);
 }

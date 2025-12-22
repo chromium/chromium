@@ -61,6 +61,13 @@ class WebSigninTracker : public IdentityManager::Observer,
 
  private:
   void OnTimeoutReached();
+
+  // Searches for the requested account among valid cookie accounts and calls
+  // `FinishWithResult` if found. Returns whether the requested account was
+  // found.
+  bool FinishIfRequestedAccountPresentInCookies(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
+
   void FinishWithResult(WebSigninTracker::Result result);
   bool MatchesRequestedAccount(const CoreAccountId& account_id,
                                const std::string& account_email);
