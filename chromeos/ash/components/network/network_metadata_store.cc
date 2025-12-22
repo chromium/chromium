@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/network_metadata_store.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -18,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
@@ -591,9 +592,8 @@ void NetworkMetadataStore::SetReportXdrEventsEnabled(bool enabled) {
 void NetworkMetadataStore::SetUserTextMessageSuppressionState(
     const std::string& network_guid,
     const UserTextMessageSuppressionState& state) {
-
   SetPref(network_guid, kUserTextMessageSuppressionState,
-          base::Value(base::to_underlying(state)));
+          base::Value(std::to_underlying(state)));
   CellularNetworkMetricsLogger::LogUserTextMessageSuppressionState(state);
 }
 
@@ -607,10 +607,10 @@ NetworkMetadataStore::GetUserTextMessageSuppressionState(
     return UserTextMessageSuppressionState::kAllow;
   }
 
-  if (base::to_underlying(UserTextMessageSuppressionState::kAllow) ==
+  if (std::to_underlying(UserTextMessageSuppressionState::kAllow) ==
       state_value->GetInt()) {
     return UserTextMessageSuppressionState::kAllow;
-  } else if (base::to_underlying(UserTextMessageSuppressionState::kSuppress) ==
+  } else if (std::to_underlying(UserTextMessageSuppressionState::kSuppress) ==
              state_value->GetInt()) {
     return UserTextMessageSuppressionState::kSuppress;
   }
