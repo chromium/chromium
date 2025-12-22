@@ -770,7 +770,10 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
           : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
 
-  if (controller_->client()->IsAimPopupEnabled()) {
+  bool force_navigation_to_aim =
+      !via_context_menu &&
+      base::FeatureList::IsEnabled(omnibox::kAiModeEntryPointAlwaysNavigates);
+  if (!force_navigation_to_aim && controller_->client()->IsAimPopupEnabled()) {
     // In general, adding a context will always open the AIM popup, while the
     // AIM button will prefer to navigate to the AI page with a query
     // prepopulated.
