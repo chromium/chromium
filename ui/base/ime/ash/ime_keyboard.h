@@ -93,7 +93,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
   virtual void SetSlowKeysDelay(base::TimeDelta delay) = 0;
 
  protected:
-  bool SetCurrentKeyboardLayoutByNameImplBase(const std::string& layout_name);
+  enum class Result { kSuccessNoOp, kSuccessNewlySet };
+  Result SetCurrentKeyboardLayoutByNameImplBase(const std::string& layout_name);
 
  private:
   bool caps_lock_is_enabled_ = false;
