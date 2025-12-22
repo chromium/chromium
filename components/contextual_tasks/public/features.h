@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
+BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
 
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
@@ -76,6 +77,11 @@ extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 
+// The maximum number of times the onboarding tooltip can be shown to the user
+// before it no longer shows up.
+extern const base::FeatureParam<std::string>
+    kContextualTasksOnboardingTooltipHelpUrl;
+
 // Returns if voice search is allowed in expanded composebox.
 extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 
@@ -112,6 +118,9 @@ extern std::string GetContextualTasksUserAgentSuffix();
 
 // Whether the contextual tasks context quality should be logged.
 extern bool ShouldLogContextualTasksContextQuality();
+
+// Returns the help URL for the onboarding tooltip.
+extern std::string GetContextualTasksOnboardingTooltipHelpUrl();
 
 namespace flag_descriptions {
 

@@ -45,6 +45,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -146,12 +147,18 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
        * composeCreateImagePlaceholder are defined by searchbox_handler.cc.
        */
       {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
+      {"onboardingTitle", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE},
+      {"onboardingBody", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION},
+      {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddLocalizedString(
       "lensSearchButtonLabel",
       IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);
 
+  source->AddString(
+      "onboardingLinkUrl",
+      contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl());
   source->AddString(
       "composeboxImageFileTypes",
       contextual_tasks::kContextualTasksNextboxImageFileTypes.Get());
@@ -183,7 +190,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowContextMenuDescription", false);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
-
+  source->AddBoolean(
+      "showOnboardingTooltip",
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksShowOnboardingTooltip));
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(
       "forceHideEllipsis",

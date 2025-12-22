@@ -37,6 +37,10 @@ BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              "ContextualTasksSuggestionsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
+             "ContextualTasksShowOnboardingTooltip",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Forces the country code to be US.
 BASE_FEATURE(kContextualTasksForceCountryCodeUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -114,6 +118,11 @@ const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
     "EnableExpandedComposeboxVoiceSearch",
     true);
 
+const base::FeatureParam<std::string> kContextualTasksOnboardingTooltipHelpUrl(
+    &kContextualTasksShowOnboardingTooltip,
+    "ContextualTasksOnboardingTooltipHelpUrl",
+    "https://support.google.com/chrome?p=AI_tab_share");
+
 bool GetIsExpandedComposeboxVoiceSearchEnabled() {
   return kEnableExpandedComposeboxVoiceSearch.Get();
 }
@@ -188,6 +197,10 @@ bool ShouldLogContextualTasksContextQuality() {
     return false;
   }
   return base::RandDouble() <= kContextualTasksContextLoggingSampleRate.Get();
+}
+
+std::string GetContextualTasksOnboardingTooltipHelpUrl() {
+  return kContextualTasksOnboardingTooltipHelpUrl.Get();
 }
 
 namespace flag_descriptions {

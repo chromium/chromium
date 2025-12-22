@@ -101,17 +101,21 @@
 
 /* Make room for the side AIM menu panel. */
 @media (min-width: 480px) {
-  #composebox {
+  #composeboxContainer {
     /* Google.com uses 96px for indent column, and 5px left padding.
      * Aligns the input text of the composebox with the AIM thread.
      */
-    --inset-start-indent_: 101px;
+    --composebox-start-indent: 101px;
+  }
+
+  #composebox {
+    --inset-start-indent_: var(--composebox-start-indent);
   }
 }
 
 /* W/more space, indent further to match AIM. */
 @media (min-width: 1420px) {
-  #composebox {
+  #composeboxContainer {
     /* At this width, indent column should be 280px + 5px left padding.
      * Google.com AIM has 20 other 36px columns as "inset end space",
      * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
@@ -123,7 +127,11 @@
      * the AIM thread, we do not start growing until flexible
      * indentation space > 280px of minimum left indentation.
      */
-    --inset-start-indent_: max(285px, calc(50% - 570px));
+    --composebox-start-indent: max(285px, calc(50% - 570px));
+  }
+
+  #composebox {
+    --inset-start-indent_: var(--composebox-start-indent);
   }
 }
 

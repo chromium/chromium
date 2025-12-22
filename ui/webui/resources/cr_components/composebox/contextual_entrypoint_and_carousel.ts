@@ -389,6 +389,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return false;
   }
 
+  hasTabFile() {
+    if (this.files_) {
+      for (const file of this.files_.values()) {
+        if (file.type === 'tab') {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   hasDeletableFiles() {
     return Array.from(this.files_.values()).some(file => file.isDeletable);
   }
