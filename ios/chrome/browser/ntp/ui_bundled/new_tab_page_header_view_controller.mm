@@ -569,6 +569,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   // Initially set the constraints of the identity disc.
   [self updateIdentityDiscConstraints];
+
+  if (_hasAccountError) {
+    // updateADPBadgeWithErrorFound was invoked before the view was created.
+    [self.headerView setIdentityDiscErrorBadge];
+  }
 }
 
 // Creates the Home customization menu and adds it to the header view.
