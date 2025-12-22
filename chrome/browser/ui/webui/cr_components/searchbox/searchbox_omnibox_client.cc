@@ -20,13 +20,14 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #endif
 
@@ -156,14 +157,14 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
                              transition, false),
       /*navigation_handle_callback=*/{});
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (AutocompleteMatch::IsSearchType(match.type)) {
     if (auto* telemetry_service =
             safe_browsing::ExtensionTelemetryService::Get(profile_)) {
       telemetry_service->OnOmniboxSearch(match);
     }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 base::WeakPtr<OmniboxClient> SearchboxOmniboxClient::AsWeakPtr() {

@@ -93,6 +93,7 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -122,8 +123,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #endif
 
 namespace {
@@ -830,13 +834,15 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
   extensions::MaybeShowExtensionControlledSearchNotification(
       location_bar_->GetWebContents(), match_type);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (AutocompleteMatch::IsSearchType(match_type)) {
     if (auto* telemetry_service =
             safe_browsing::ExtensionTelemetryService::Get(profile_)) {
       telemetry_service->OnOmniboxSearch(match);
     }
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ChromeOmniboxClient::OnInputInProgress(bool in_progress) {
