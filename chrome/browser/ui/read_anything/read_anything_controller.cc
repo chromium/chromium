@@ -161,10 +161,6 @@ void ReadAnythingController::OnTabBackgrounded(tabs::TabInterface* tab) {
   }
 }
 
-int ReadAnythingController::GetNavCounterForTesting() const {
-  return nav_counter_;
-}
-
 // Returns the SidePanelUI for the active tab if the tab is active and has a
 // browser window interface. Returns nullptr otherwise.
 SidePanelUI* ReadAnythingController::GetSidePanelUI() {
@@ -329,10 +325,9 @@ void ReadAnythingController::SetPresentationState(PresentationState new_state) {
 }
 
 void ReadAnythingController::OnMainPagePrimaryPageChanged() {
-  // TODO(crbug.com/460136558): Implement showing/hiding when this function
-  // gets called. Update tests to check if RM is visible / hidden instead of
-  // nav_counter check.
-  nav_counter_++;
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+  }
 }
 void ReadAnythingController::OnReadAnythingVisibilityChanged(
     content::Visibility visibility) {

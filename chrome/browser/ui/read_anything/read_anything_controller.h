@@ -126,8 +126,6 @@ class ReadAnythingController {
   // tab.
   void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
 
-  int GetNavCounterForTesting() const;
-
   // Returns the current presentation_state_ of the Reading Mode feature. This
   // refers to the current host of the WebUI, but does not guarantee that the
   // feature is necessarily showing by the host.
@@ -179,10 +177,6 @@ class ReadAnythingController {
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
-
-  // TODO(crbug.com/460136558): Used for tests, remove when implementing
-  // OnTabNavigation.
-  int nav_counter_ = 0;
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;

@@ -748,21 +748,34 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        WebContentsObserverPrimaryPageChangedCrossNavigation) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
-
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
 
-  ASSERT_EQ(controller->GetNavCounterForTesting(), 1);
+  // Show Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AssertOverlayVisibility(/*visible=*/true);
 
+  // Navigate to a new page
   GURL url("about:blank");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(controller->GetNavCounterForTesting(), 2);
+  // Verify Immersive UI is closed
+  AssertOverlayVisibility(/*visible=*/false);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
 
+  // Show Immersive UI again
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Navigate to another page
   GURL url2("https://www.example.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-  ASSERT_EQ(controller->GetNavCounterForTesting(), 3);
+  // Verify Immersive UI is closed again
+  AssertOverlayVisibility(/*visible=*/false);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -770,19 +783,25 @@ IN_PROC_BROWSER_TEST_F(
     WebContentsObserverPrimaryPageChangedFragmentNavigation) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
-
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
 
+  // Navigate to initial page
   GURL url("about:blank");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(controller->GetNavCounterForTesting(), 2);
+  // Show Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AssertOverlayVisibility(/*visible=*/true);
 
+  // Perform fragment navigation
   GURL same_doc_url("about:blank#same");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_doc_url));
 
-  ASSERT_EQ(controller->GetNavCounterForTesting(), 2);
+  // Verify Immersive UI is still open (PrimaryPageChanged is not called)
+  AssertOverlayVisibility(/*visible=*/true);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
 }
 
 IN_PROC_BROWSER_TEST_F(
