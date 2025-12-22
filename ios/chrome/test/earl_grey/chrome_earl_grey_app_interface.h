@@ -603,6 +603,10 @@ enum class TipsNotificationType;
 // Returns the value for provided key from NSUserDefaults.
 + (id)userDefaultsObjectForKey:(NSString*)key;
 
+// Creates a `AppGroupCommand` based on the provided text and writes it the
+// shared NSUserDefaults.
++ (void)setAppGroupCommandToSearchText:(NSString*)text;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref. Returns a

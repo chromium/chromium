@@ -827,6 +827,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the object for `key` in NSUserDefault.
 - (id)userDefaultsObjectForKey:(NSString*)key;
 
+// Creates a `AppGroupCommand` based on the provided text and writes it the
+// shared NSUserDefaults.
+- (void)setAppGroupCommandToSearchText:(NSString*)text;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Commit synchronously the pending user prefs write. Waits until the disk write

@@ -1519,6 +1519,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface userDefaultsObjectForKey:key];
 }
 
+- (void)setAppGroupCommandToSearchText:(NSString*)text {
+  return [ChromeEarlGreyAppInterface setAppGroupCommandToSearchText:text];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 - (void)commitPendingUserPrefsWrite {

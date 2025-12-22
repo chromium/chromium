@@ -285,6 +285,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/variations/model:eg_app_support+eg2",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model:eg_app_support+eg2",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:constants",

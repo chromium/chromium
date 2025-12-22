@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/navigation_test_util.h"
@@ -1304,6 +1305,19 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 + (id)userDefaultsObjectForKey:(NSString*)key {
   return [[NSUserDefaults standardUserDefaults] objectForKey:key];
+}
+
++ (void)setAppGroupCommandToSearchText:(NSString*)text {
+  NSDictionary* searchTextCommand = @{
+    @"CommandTime" : [NSDate date],
+    @"SourceApp" : @"testApp",
+    @"Command" : @"searchtext",
+    @"Text" : text,
+  };
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setObject:searchTextCommand
+                     forKey:base::SysUTF8ToNSString(
+                                app_group::kChromeAppGroupCommandPreference)];
 }
 
 #pragma mark - Pref Utilities (EG2)
