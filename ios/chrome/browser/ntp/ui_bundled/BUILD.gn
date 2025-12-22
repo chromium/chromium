@@ -39,6 +39,7 @@ source_set("theme") {
     "//base",
     "//components/sync/protocol",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/color_palette",
     "//skia",
     "//skia:skia_core_public_headers",
     "//third_party/material_color_utilities",
