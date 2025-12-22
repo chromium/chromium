@@ -354,7 +354,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(host->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
+// TODO(crbug.com/470864797): Flaky on linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TouchPopupInteraction DISABLED_TouchPopupInteraction
+#else
+#define MAYBE_TouchPopupInteraction TouchPopupInteraction
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
