@@ -5,6 +5,36 @@
  * @file Data structures for representing a directed graph.
  */
 
+/**
+ * Some classes add noise that are not always relevant (e.g. tests, utils,
+ * feature maps, etc). This list is used to exclude those classes. If any one of
+ * these strings is a substring of the classname, the class will not display on
+ * the visual graph. Compiled as a RegExp for speed, case insensitive.
+ */
+const filterRegex = new RegExp(
+    [
+      'Test',
+      'Util',
+      'JNI',
+      'Log',
+      'ChromeFeature',
+      'ContentFeature',
+      'BuildConfig',
+      'UserData',
+      'CachedFlag',
+      'Constants',
+      'TraceEvent',
+      'Callback',
+      'ObservableSupplier',
+      'OneShotSupplier',
+      'PropertyModel',
+      'DeviceInfo',
+      'MutableFlag',
+      'RecordHistogram',
+      'CommandLine',
+    ].join('|'),
+    'i');
+
 /** Some aspects of the node's state, to help with node visualization. */
 class NodeVisualizationState {
   constructor() {
@@ -214,9 +244,11 @@ class GraphModel {
    * @param {!Set<string>} includedNodeSet The nodes included in the filter.
    * @param {number} inboundDepth The maximum inbound distance.
    * @param {number} outboundDepth The maximum outbound distance.
+   * @param {boolean} excludeNoise Whether to exclude noisy nodes (e.g. test
+   *     classes) from the graph.
    * @return {!D3GraphData} The nodes and edges to visualize.
    */
-  getDataForD3(includedNodeSet, inboundDepth, outboundDepth) {
+  getDataForD3(includedNodeSet, inboundDepth, outboundDepth, excludeNoise) {
     // These will be updated throughout the function and returned at the end.
     const /** !Set<!GraphNode> */ resultNodeSet = new Set();
     const /** !Set<!GraphNode> */ resultEdgeSet = new Set();
@@ -273,6 +305,13 @@ class GraphModel {
                 otherNode.visualizationState.selectedByOutbound = true;
                 otherNode.visualizationState.outboundDepth = curDepth + 1;
               }
+
+              if (excludeNoise) {
+                if (filterRegex.test(otherNode.displayName)) {
+                  continue;
+                }
+              }
+
               nodeQueue.push(otherNode);
               seenNodes.add(otherNode.id);
               resultNodeSet.add(otherNode);

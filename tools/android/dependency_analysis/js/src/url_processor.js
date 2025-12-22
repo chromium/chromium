@@ -25,6 +25,8 @@ const URL_PARAM_KEYS = {
   CURVE_EDGES: 'ce',
   COLOR_ONLY_ON_HOVER: 'cooh',
   EDGE_COLOR: 'ec',
+  EXCLUDE_NOISE: 'ex',
+
   // Class page-specific keys:
   HULL_DISPLAY: 'hd',
 };

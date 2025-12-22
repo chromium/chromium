@@ -45,6 +45,7 @@ const GraphVisualization = {
             this.displaySettingsData.nodeFilterData.getSelectedNodeSet(),
             this.displaySettingsData.inboundDepth,
             this.displaySettingsData.outboundDepth,
+            this.displaySettingsData.excludeNoise,
         );
         this.graphView.registerGetNodeGroup(this.getNodeGroup);
         this.graphView.updateGraphData(d3Data);

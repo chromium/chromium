@@ -155,6 +155,8 @@ class DisplaySettingsData {
     this.colorOnlyOnHover = false;
     /** @public {string} */
     this.graphEdgeColor = GraphEdgeColor.GREY_GRADIENT;
+    /** @public {boolean} */
+    this.excludeNoise = false;
   }
 
   /**
@@ -176,6 +178,7 @@ class DisplaySettingsData {
     urlProcessor.append(URL_PARAM_KEYS.DISPLAY_SETTINGS_PRESET,
         this.displaySettingsPreset);
     urlProcessor.append(URL_PARAM_KEYS.INBOUND_DEPTH, this.inboundDepth);
+    urlProcessor.append(URL_PARAM_KEYS.EXCLUDE_NOISE, this.excludeNoise);
     urlProcessor.append(URL_PARAM_KEYS.OUTBOUND_DEPTH, this.outboundDepth);
     urlProcessor.append(URL_PARAM_KEYS.CURVE_EDGES, this.curveEdges);
     urlProcessor.append(
@@ -200,6 +203,8 @@ class DisplaySettingsData {
         URL_PARAM_KEYS.DISPLAY_SETTINGS_PRESET, this.displaySettingsPreset);
     this.inboundDepth = urlProcessor.getInt(
         URL_PARAM_KEYS.INBOUND_DEPTH, this.inboundDepth);
+    this.excludeNoise =
+        urlProcessor.getBool(URL_PARAM_KEYS.EXCLUDE_NOISE, this.excludeNoise);
     this.outboundDepth = urlProcessor.getInt(
         URL_PARAM_KEYS.OUTBOUND_DEPTH, this.outboundDepth);
     this.curveEdges = urlProcessor.getBool(
