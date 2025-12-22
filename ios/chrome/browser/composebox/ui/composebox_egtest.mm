@@ -88,6 +88,9 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
   // Type some text.
   [[EarlGrey selectElementWithMatcher:ComposeboxMatcher()]
       performAction:grey_typeText(@"test")];
