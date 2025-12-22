@@ -26,7 +26,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace base {
 
@@ -384,11 +383,13 @@ GetPeerValidationPolicyFromEnvironment() {
     }
 
     switch (policy_int) {
-      case to_underlying(MachPortRendezvousPeerValidationPolicy::kNoValidation):
+      case std::to_underlying(
+          MachPortRendezvousPeerValidationPolicy::kNoValidation):
         return MachPortRendezvousPeerValidationPolicy::kNoValidation;
-      case to_underlying(MachPortRendezvousPeerValidationPolicy::kValidateOnly):
+      case std::to_underlying(
+          MachPortRendezvousPeerValidationPolicy::kValidateOnly):
         return MachPortRendezvousPeerValidationPolicy::kValidateOnly;
-      case to_underlying(MachPortRendezvousPeerValidationPolicy::kEnforce):
+      case std::to_underlying(MachPortRendezvousPeerValidationPolicy::kEnforce):
         return MachPortRendezvousPeerValidationPolicy::kEnforce;
       default:
         // An invalid policy or no policy was passed via the environment. Fall

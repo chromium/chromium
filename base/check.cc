@@ -5,6 +5,7 @@
 #include "base/check.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/check_version_internal.h"
@@ -13,7 +14,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 
 namespace logging {
@@ -67,7 +67,7 @@ LogSeverity GetDumpSeverity() {
 
 LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
   if (fatal_milestone != base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
-      base::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
+      std::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
     return LOGGING_FATAL;
   }
   return GetDumpSeverity();
@@ -112,7 +112,7 @@ void MaybeSetFatalMilestoneCrashKey(base::NotFatalUntil fatal_milestone) {
   }
   base::debug::SetCrashKeyString(
       GetFatalMilestoneCrashKey(),
-      base::NumberToString(base::to_underlying(fatal_milestone)));
+      base::NumberToString(std::to_underlying(fatal_milestone)));
 }
 
 void DumpWithoutCrashing(base::debug::CrashKeyString* message_key,

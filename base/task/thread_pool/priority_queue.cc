@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace base::internal {
 
@@ -212,12 +211,12 @@ void PriorityQueue::swap(PriorityQueue& other) {
 }
 
 void PriorityQueue::DecrementNumTaskSourcesForPriority(TaskPriority priority) {
-  DCHECK_GT(num_task_sources_per_priority_[base::to_underlying(priority)], 0U);
-  --num_task_sources_per_priority_[base::to_underlying(priority)];
+  DCHECK_GT(num_task_sources_per_priority_[std::to_underlying(priority)], 0U);
+  --num_task_sources_per_priority_[std::to_underlying(priority)];
 }
 
 void PriorityQueue::IncrementNumTaskSourcesForPriority(TaskPriority priority) {
-  ++num_task_sources_per_priority_[base::to_underlying(priority)];
+  ++num_task_sources_per_priority_[std::to_underlying(priority)];
 }
 
 }  // namespace base::internal
