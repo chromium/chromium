@@ -22,7 +22,7 @@ void ImeKeyboardImpl::SetCurrentKeyboardLayoutByName(
   const ImeKeyboard::Result result =
       ImeKeyboard::SetCurrentKeyboardLayoutByNameImplBase(layout_name);
   if (result == ImeKeyboard::Result::kSuccessNoOp) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
