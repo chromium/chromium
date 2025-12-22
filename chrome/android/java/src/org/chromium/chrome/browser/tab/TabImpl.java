@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -828,7 +829,7 @@ class TabImpl implements Tab {
         // typing chrome://history as well as selecting from the drop down menu.
         String fixedUrlSpec = fixedUrl.getSpec();
         if (UrlConstants.HISTORY_HOST.equals(fixedUrlSpec)
-                || UrlConstants.NATIVE_HISTORY_URL.equals(fixedUrlSpec)) {
+                || getOriginalNativeHistoryUrl().equals(fixedUrlSpec)) {
             RecordUserAction.record("ShowHistory");
         }
 

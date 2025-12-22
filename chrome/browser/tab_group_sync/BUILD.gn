@@ -205,6 +205,7 @@ if (is_android) {
       "//chrome/browser/tab_group_sync:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabwindow:java",
+      "//chrome/browser/url_constants/android:java",
       "//chrome/browser/user_education:java",
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/embedder_support/android:util_java",

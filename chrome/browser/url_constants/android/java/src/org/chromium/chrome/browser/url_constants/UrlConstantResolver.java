@@ -56,7 +56,7 @@ public class UrlConstantResolver {
 
     /** Returns the potentially overridden URL for the history page. */
     public String getHistoryPageUrl() {
-        return getUrlOverrideIfPresent(UrlConstants.NATIVE_HISTORY_URL);
+        return getUrlOverrideIfPresent(getOriginalNativeHistoryUrl());
     }
 
     private String getUrlOverrideIfPresent(String url) {

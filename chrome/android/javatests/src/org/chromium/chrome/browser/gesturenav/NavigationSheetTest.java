@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 import android.widget.ListView;
@@ -166,7 +168,7 @@ public class NavigationSheetTest {
                 history.addEntry(
                         new NavigationEntry(
                                 FULL_HISTORY_ENTRY_INDEX,
-                                new GURL(UrlConstants.NATIVE_HISTORY_URL),
+                                new GURL(getOriginalNativeHistoryUrl()),
                                 GURL.emptyGURL(),
                                 GURL.emptyGURL(),
                                 mActivityTestRule

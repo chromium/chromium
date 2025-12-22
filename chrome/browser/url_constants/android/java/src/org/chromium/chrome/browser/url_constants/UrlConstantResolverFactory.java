@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.url_constants;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
@@ -84,10 +87,10 @@ public class UrlConstantResolverFactory {
                                 ? UrlConstants.BOOKMARKS_URL
                                 : null);
         resolver.registerOverride(
-                UrlConstants.NATIVE_HISTORY_URL,
+                getOriginalNativeHistoryUrl(),
                 () ->
                         ExtensionsUrlOverrideRegistry.getHistoryPageOverrideEnabled()
-                                ? UrlConstants.HISTORY_URL
+                                ? getOriginalNonNativeHistoryUrl()
                                 : null);
         return resolver;
     }

@@ -222,6 +222,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/ui/android/web_app_header:java_resources",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/uid/android:java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/browser/util:java",
     "//chrome/browser/webid:java",
     "//chrome/test:sync_integration_test_support_java",

@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
@@ -25,7 +27,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 
@@ -140,7 +141,8 @@ public class PdfUtilsUnitTest {
     @Test
     public void testIsPdfNavigation_SchemeNotMatch() {
         boolean result =
-                PdfUtils.isPdfNavigation(PdfUtils.encodePdfPageUrl(UrlConstants.HISTORY_URL), null);
+                PdfUtils.isPdfNavigation(
+                        PdfUtils.encodePdfPageUrl(getOriginalNonNativeHistoryUrl()), null);
         Assert.assertFalse(
                 "It is not pdf navigation when the scheme is not one of content/file/http/https.",
                 result);

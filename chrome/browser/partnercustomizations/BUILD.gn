@@ -94,6 +94,7 @@ android_library("unit_device_javatests") {
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/embedder_support/android:util_java",
     "//components/url_formatter/android:url_formatter_java",

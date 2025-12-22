@@ -555,6 +555,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",

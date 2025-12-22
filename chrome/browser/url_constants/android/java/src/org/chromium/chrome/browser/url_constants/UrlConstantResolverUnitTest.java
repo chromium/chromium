@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.url_constants;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +48,7 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetHistoryPageUrl_NoOverride() {
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), mResolver.getHistoryPageUrl());
     }
 
     @Test
@@ -75,14 +77,14 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetHistoryPageUrl_WithOverrideEnabled() {
-        mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeHistoryUrl(), () -> OVERRIDE_URL);
         assertEquals(OVERRIDE_URL, mResolver.getHistoryPageUrl());
     }
 
     @Test
     public void testGetHistoryPageUrl_WithOverrideDisabled() {
-        mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> null);
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
+        mResolver.registerOverride(getOriginalNativeHistoryUrl(), () -> null);
+        assertEquals(getOriginalNativeHistoryUrl(), mResolver.getHistoryPageUrl());
     }
 
     @Test
@@ -90,10 +92,10 @@ public class UrlConstantResolverUnitTest {
     public void testAllOverridesEnabled_FeatureDisabled() {
         mResolver.registerOverride(UrlConstants.NTP_URL, () -> OVERRIDE_URL);
         mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> OVERRIDE_URL);
-        mResolver.registerOverride(UrlConstants.NATIVE_HISTORY_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeHistoryUrl(), () -> OVERRIDE_URL);
         assertEquals(UrlConstants.NTP_URL, mResolver.getNtpUrl());
         assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, mResolver.getHistoryPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), mResolver.getHistoryPageUrl());
     }
 
     @Test

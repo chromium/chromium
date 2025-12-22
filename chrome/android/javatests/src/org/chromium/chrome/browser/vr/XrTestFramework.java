@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.vr;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+
 import android.os.Build;
 import android.view.View;
 
@@ -76,7 +78,7 @@ public abstract class XrTestFramework {
         UrlConstants.BOOKMARKS_UNCATEGORIZED_URL,
         UrlConstants.BOOKMARKS_NATIVE_URL,
         UrlConstants.DOWNLOADS_URL,
-        UrlConstants.NATIVE_HISTORY_URL,
+        getOriginalNativeHistoryUrl(),
         UrlConstants.NTP_URL,
         UrlConstants.RECENT_TABS_URL
     };

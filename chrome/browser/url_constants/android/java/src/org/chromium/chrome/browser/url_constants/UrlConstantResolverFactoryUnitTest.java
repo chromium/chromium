@@ -9,6 +9,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,7 +106,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
         assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
         assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
 
     @Test
@@ -133,10 +136,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
-        assertEquals(UrlConstants.HISTORY_URL, resolver.getHistoryPageUrl());
+        assertEquals(getOriginalNonNativeHistoryUrl(), resolver.getHistoryPageUrl());
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(false);
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
 
     @Test
@@ -169,7 +172,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
-        assertEquals(UrlConstants.NATIVE_HISTORY_URL, resolver.getHistoryPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
 
     @Test

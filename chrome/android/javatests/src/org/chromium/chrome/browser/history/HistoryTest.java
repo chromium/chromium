@@ -17,6 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForViewCheckingState;
@@ -54,7 +56,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -101,8 +102,8 @@ public class HistoryTest {
     }
 
     /**
-     * Check that the favicons for {@link UrlConstants#HISTORY_URL} and for {@link
-     * UrlConstants#NATIVE_HISTORY_URL} are identical.
+     * Check that the favicons for {@link getOriginalNonNativeHistoryUrl()} and for {@link
+     * getOriginalNativeHistoryUrl()} are identical.
      */
     @Test
     @SmallTest
@@ -111,8 +112,8 @@ public class HistoryTest {
 
         FaviconHelper helper = ThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
         // If the returned favicons are non-null Bitmap#sameAs() should be used.
-        assertNull(getFavicon(helper, new GURL(UrlConstants.HISTORY_URL)));
-        assertNull(getFavicon(helper, new GURL(UrlConstants.NATIVE_HISTORY_URL)));
+        assertNull(getFavicon(helper, new GURL(getOriginalNonNativeHistoryUrl())));
+        assertNull(getFavicon(helper, new GURL(getOriginalNativeHistoryUrl())));
     }
 
     public Bitmap getFavicon(FaviconHelper helper, GURL pageUrl) throws TimeoutException {
@@ -144,7 +145,7 @@ public class HistoryTest {
         String testUrl = "/chrome/test/data/android/google.html";
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(testUrl));
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.HISTORY_URL);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
 
         // Verify that the promo is shown.
         onViewWaiting(withId(R.id.signin_promo_view_container));
@@ -185,7 +186,7 @@ public class HistoryTest {
                 });
         mActivityTestRule.startOnBlankPage();
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.HISTORY_URL);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
 
         // Verify that the promo is shown.
         onViewWaiting(withId(R.id.signin_promo_view_container));

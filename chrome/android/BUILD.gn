@@ -1525,6 +1525,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabwindow:java",
       "//chrome/browser/ui/messages/android:java",
+      "//chrome/browser/url_constants/android:java",
       "//chrome/browser/util:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/embedder_support/android:content_view_java",

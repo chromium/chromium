@@ -10,6 +10,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+
 import android.app.Activity;
 import android.view.MenuItem;
 
@@ -35,7 +37,6 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
@@ -69,7 +70,7 @@ public class HistoryPageOnLffTest {
         RegularNewTabPageStation historyPage = tab1Page.openNewTabFast();
 
         // 4. Load chrome://history/ in the newly opened tab.
-        String historyUrl = UrlConstants.HISTORY_URL;
+        String historyUrl = getOriginalNonNativeHistoryUrl();
         WebPageStation historyWebPage =
                 historyPage.loadPageProgrammatically(
                         historyUrl,
