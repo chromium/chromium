@@ -4,10 +4,11 @@
 
 #include "content/renderer/navigation_client.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "content/common/features.h"
 #include "content/common/frame.mojom.h"
@@ -182,24 +183,24 @@ void NavigationClient::SetUpRendererInitiatedNavigation(
 
 void NavigationClient::ResetWithoutCancelling() {
   navigation_client_receiver_.ResetWithReason(
-      base::to_underlying(
+      std::to_underlying(
           mojom::NavigationClientDisconnectReason::kResetForSwap),
       "");
 }
 
 void NavigationClient::ResetForNewNavigation(bool is_duplicate_navigation) {
   navigation_client_receiver_.ResetWithReason(
-      base::to_underlying(is_duplicate_navigation
-                              ? mojom::NavigationClientDisconnectReason::
-                                    kResetForDuplicateNavigation
-                              : mojom::NavigationClientDisconnectReason::
-                                    kResetForNewNavigation),
+      std::to_underlying(is_duplicate_navigation
+                             ? mojom::NavigationClientDisconnectReason::
+                                   kResetForDuplicateNavigation
+                             : mojom::NavigationClientDisconnectReason::
+                                   kResetForNewNavigation),
       "");
 }
 
 void NavigationClient::ResetForAbort() {
   navigation_client_receiver_.ResetWithReason(
-      base::to_underlying(
+      std::to_underlying(
           mojom::NavigationClientDisconnectReason::kResetForAbort),
       "");
 }

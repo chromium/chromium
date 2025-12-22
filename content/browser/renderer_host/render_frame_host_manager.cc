@@ -28,7 +28,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

@@ -12,12 +12,12 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/synchronization/lock.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 #include "content/browser/media/media_internals_cdm_helper.h"
@@ -197,7 +197,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   bool can_update_ = false;
   base::Value::Dict audio_streams_cached_data_;
   std::array<int,
-             base::to_underlying(
+             std::to_underlying(
                  media::AudioLogFactory::AudioComponent::kAudiocomponentMax)>
       owner_ids_ = {};
 };

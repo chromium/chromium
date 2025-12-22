@@ -5,6 +5,7 @@
 #include "content/public/test/prerender_test_util.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -12,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
@@ -333,7 +333,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
     }
     EXPECT_FALSE(waiting_for_activation_)
         << "A prerender was destroyed, with status "
-        << base::to_underlying(final_status)
+        << std::to_underlying(final_status)
         << ", while waiting for activation.";
   }
 
@@ -344,7 +344,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
     EXPECT_FALSE(did_observe_ && !observation_.IsObserving())
         << "A prerender was destroyed, with status "
-        << base::to_underlying(
+        << std::to_underlying(
                last_status_.value_or(PrerenderFinalStatus::kDestroyed))
         << ", before waiting for activation.";
 
@@ -363,7 +363,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
     EXPECT_FALSE(did_observe_ && !observation_.IsObserving())
         << "A prerender was destroyed, with status "
-        << base::to_underlying(
+        << std::to_underlying(
                last_status_.value_or(PrerenderFinalStatus::kDestroyed))
         << ", before waiting for headers.";
 

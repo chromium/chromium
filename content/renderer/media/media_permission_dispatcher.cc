@@ -4,12 +4,13 @@
 
 #include "content/renderer/media/media_permission_dispatcher.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
@@ -32,7 +33,7 @@ blink::mojom::PermissionDescriptorPtr MediaPermissionTypeToPermissionDescriptor(
       descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
       break;
     default:
-      NOTREACHED() << base::to_underlying(type);
+      NOTREACHED() << std::to_underlying(type);
   }
   return descriptor;
 }

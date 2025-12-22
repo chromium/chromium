@@ -25,7 +25,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -182,7 +181,7 @@ void Connection::DisallowInactiveClient(
     return;
   }
 
-  size_t reason_index = base::to_underlying(reason);
+  size_t reason_index = std::to_underlying(reason);
 
   if (client_keep_active_remotes_[reason_index].is_bound()) {
     // Since the keep_active remote is found in client_keep_active_remotes_,

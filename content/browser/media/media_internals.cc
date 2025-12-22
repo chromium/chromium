@@ -302,7 +302,7 @@ void MediaInternals::AudioLogImpl::SetWebContentsTitle() {
 
 std::string MediaInternals::AudioLogImpl::FormatCacheKey() {
   return base::StringPrintf("%d:%d:%d", owner_id_,
-                            base::to_underlying(component_), component_id_);
+                            std::to_underlying(component_), component_id_);
 }
 
 // static
@@ -349,7 +349,7 @@ void MediaInternals::AudioLogImpl::StoreComponentMetadata(
     base::Value::Dict* dict) {
   dict->Set("owner_id", owner_id_);
   dict->Set("component_id", component_id_);
-  dict->Set("component_type", base::to_underlying(component_));
+  dict->Set("component_type", std::to_underlying(component_));
 }
 
 MediaInternals* MediaInternals::GetInstance() {
@@ -640,7 +640,7 @@ MediaInternals::CreateAudioLogImpl(
     int render_frame_id) {
   base::AutoLock auto_lock(lock_);
   return std::make_unique<AudioLogImpl>(
-      owner_ids_[base::to_underlying(component)]++, component, this,
+      owner_ids_[std::to_underlying(component)]++, component, this,
       component_id, render_process_id, render_frame_id);
 }
 
