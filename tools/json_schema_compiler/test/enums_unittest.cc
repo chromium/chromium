@@ -4,9 +4,9 @@
 
 #include "tools/json_schema_compiler/test/enums.h"
 
+#include <utility>
 #include <vector>
 
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/test_util.h"
@@ -31,7 +31,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumTypePopulate) {
 }
 
 TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
-  static_assert(0 == base::to_underlying(enums::Enumeration::kNone));
+  static_assert(0 == std::to_underlying(enums::Enumeration::kNone));
 
   {
     base::Value::List args;
