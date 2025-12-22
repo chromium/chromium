@@ -172,7 +172,6 @@ _CONFIG = [
             'base::TimeDelta',
             'base::TimeTicks',
             'base::to_address',
-            'base::to_underlying',
             'base::Token',
             'base::ToVector',
             'base::ToString',
@@ -381,6 +380,7 @@ _CONFIG = [
             'std::in_place',
             'std::in_place_type',
             'std::monostate',
+            'std::to_underlying',
             'std::variant',
             'std::visit',
 

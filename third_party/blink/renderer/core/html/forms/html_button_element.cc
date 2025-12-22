@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -78,7 +80,7 @@ void HTMLButtonElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 FormControlType HTMLButtonElement::FormControlType() const {
-  return static_cast<mojom::blink::FormControlType>(base::to_underlying(type_));
+  return static_cast<mojom::blink::FormControlType>(std::to_underlying(type_));
 }
 
 const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {

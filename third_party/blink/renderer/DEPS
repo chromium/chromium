@@ -83,7 +83,6 @@ include_rules = [
     "+base/timer/elapsed_timer.h",
     "+base/timer/timer.h",
     "+base/token.h",
-    "+base/types/cxx23_to_underlying.h",
     "+base/types/expected.h",
     "+base/types/expected_macros.h",
     "+base/types/optional_ref.h",

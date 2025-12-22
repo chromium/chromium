@@ -206,8 +206,9 @@ void GPU::OnRequestAdapterCallback(
 
   // wgpu::RequestAdapterStatus is part of the stable API, so is safe to log to histograms.
   // The macro + `to_underlying` converts the enum to an int to calculate the max range.
-  UMA_HISTOGRAM_ENUMERATION("GPU.RequestAdapterStatus.WebGPU", status,
-                            base::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.RequestAdapterStatus.WebGPU", status,
+      std::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
 
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:

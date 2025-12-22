@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
 
-#include "base/types/cxx23_to_underlying.h"
+#include <utility>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,8 +18,8 @@ class AutoSpeculationRulesConfigTest : public ::testing::Test {
  protected:
   void ExpectNoFrameworkSpeculationRules(
       const AutoSpeculationRulesConfig& config) {
-    for (auto i = base::to_underlying(mojom::JavaScriptFramework::kMinValue);
-         i <= base::to_underlying(mojom::JavaScriptFramework::kMaxValue); ++i) {
+    for (auto i = std::to_underlying(mojom::JavaScriptFramework::kMinValue);
+         i <= std::to_underlying(mojom::JavaScriptFramework::kMaxValue); ++i) {
       auto framework = static_cast<mojom::JavaScriptFramework>(i);
       EXPECT_TRUE(config.ForFramework(framework).IsNull());
     }
@@ -71,7 +72,7 @@ TEST_F(AutoSpeculationRulesConfigTest, NonObjectFrameworkToSpeculationRules) {
 }
 
 TEST_F(AutoSpeculationRulesConfigTest, OutOfRangeFramework) {
-  static_assert(base::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
+  static_assert(std::to_underlying(mojom::JavaScriptFramework::kMaxValue) <
                 999);
 
   AutoSpeculationRulesConfig config(R"(
