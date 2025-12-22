@@ -190,6 +190,12 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // to send it to the guest content.
   virtual void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
+  void set_session_handle(
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle) {
+    session_handle_ = std::move(session_handle);
+  }
+
   mojo::Remote<contextual_tasks::mojom::Page>& page() { return page_; }
 
   // Transfers an existing navigation to the page embedded in this WebUI. This

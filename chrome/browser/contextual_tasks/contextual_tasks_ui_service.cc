@@ -703,17 +703,27 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     content::WebContents* web_contents = coordinator->GetActiveWebContents();
     AssociateWebContentsToTask(web_contents, task.GetTaskId());
     if (session_handle) {
-      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
-          ->set_session_handle(std::move(session_handle));
+      if (web_contents->GetWebUI()) {
+        ContextualTasksUI* webui_controller = webui_controller =
+            web_contents->GetWebUI()
+                ->GetController()
+                ->GetAs<ContextualTasksUI>();
+        webui_controller->set_session_handle(std::move(session_handle));
+      } else {
+        // If the WebUI is not yet created, set the session handle on the helper
+        // so it can be transferred when the WebUI is created.
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+            web_contents)
+            ->set_session_handle(std::move(session_handle));
+      }
     }
     return;
   }
 
   // If the side panel contents already exist, get the WebUI controller to
   // load the URL into the already loaded contextual tasks UI.
-  ContextualTasksUI* webui_controller = nullptr;
   if (panel_contents->GetWebUI()) {
-    webui_controller =
+    ContextualTasksUI* webui_controller = webui_controller =
         panel_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
     content::OpenURLParams url_params(
         url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
