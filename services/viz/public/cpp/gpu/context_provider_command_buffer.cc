@@ -250,10 +250,14 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   if (!default_task_runner_) {
     default_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   }
+  if (!reply_task_runner_) {
+    reply_task_runner_ = default_task_runner_;
+  }
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
-      channel_, stream_id_, default_task_runner_, nullptr, buffer_mapper_);
+      channel_, stream_id_, default_task_runner_, reply_task_runner_,
+      buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
       stream_priority_, attributes_.Clone(), active_url_,
       command_buffer_metrics::ContextTypeToString(context_type_));
@@ -282,7 +286,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       // The WebGPUImplementation exposes the WebGPUInterface, as well as the
       // gpu::ContextSupport interface.
       auto webgpu_impl = std::make_unique<gpu::webgpu::WebGPUImplementation>(
-          webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get());
+          webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get(),
+          default_task_runner_ != reply_task_runner_);
       bind_result_ = webgpu_impl->Initialize(memory_limits_);
       if (bind_result_ != gpu::ContextResult::kSuccess) {
         DLOG(ERROR) << "Failed to initialize WebGPUImplementation.";
@@ -483,6 +488,13 @@ void ContextProviderCommandBuffer::SetDefaultTaskRunner(
   DCHECK(!bind_tried_);
   DCHECK(!default_task_runner_);
   default_task_runner_ = std::move(default_task_runner);
+}
+
+void ContextProviderCommandBuffer::SetReplyTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner) {
+  DCHECK(!bind_tried_);
+  DCHECK(!reply_task_runner_);
+  reply_task_runner_ = std::move(reply_task_runner);
 }
 
 base::Lock* ContextProviderCommandBuffer::GetLock() {
