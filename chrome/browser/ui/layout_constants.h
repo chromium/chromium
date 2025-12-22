@@ -189,6 +189,9 @@ enum LayoutConstant {
   // The height of a vertical tab.
   VERTICAL_TAB_HEIGHT,
 
+  // The minimum possible width for a vertical tab.
+  VERTICAL_TAB_MIN_WIDTH,
+
   // The width of the border stroke around pinned tabs in a vertical tab strip.
   VERTICAL_TAB_PINNED_BORDER_THICKNESS,
 

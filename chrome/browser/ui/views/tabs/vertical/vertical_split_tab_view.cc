@@ -21,12 +21,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-// The minimum width of children tabs which is used to calculate when a split
-// tab should line wrap.
-constexpr int kVerticalTabMinWidth = 38;
-}  // namespace
-
 VerticalSplitTabView::VerticalSplitTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
@@ -74,7 +68,8 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   // will share it, otherwise they will be stacked vertically.
   if (!size_bounds.width().is_bounded() ||
       size_bounds.width().value() >=
-          static_cast<int>(kVerticalTabMinWidth * children.size())) {
+          static_cast<int>(GetLayoutConstant(VERTICAL_TAB_MIN_WIDTH) *
+                           children.size())) {
     int x = 0;
     for (auto* child : children) {
       gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());

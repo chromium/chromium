@@ -135,6 +135,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 8;
     case VERTICAL_TAB_HEIGHT:
       return 30;
+    case VERTICAL_TAB_MIN_WIDTH:
+      return 32;
     case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
       return 12;
     case VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE:

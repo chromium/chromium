@@ -17,7 +17,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr int kTabVerticalPadding = 4;
+constexpr int kTabPadding = 4;
 }  // namespace
 
 VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
@@ -50,12 +50,15 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   }
 
   // Child width will be uniform and match the largest child's width.
-  int child_width = 0;
-  for (auto* child : children) {
-    // TODO(corising): look into caching this value and only recomputing if the
-    // children change.
-    child_width = std::max(child_width, child->GetPreferredSize().width());
+  bool contains_split = false;
+  for (const auto& i : collection_node_->children()) {
+    if (i->type() == TabCollectionNode::Type::SPLIT) {
+      contains_split = true;
+    }
   }
+  int child_width =
+      GetLayoutConstant(VERTICAL_TAB_MIN_WIDTH) * (contains_split ? 2 : 1);
+
   // If the width is bounded, calculate how many children can fit on a row.
   // Since all children are allocated the same width this will be the same for
   // every row.
@@ -64,15 +67,15 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
         size_bounds.width().value() -
         GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
 
-    children_on_row = std::min(
-        children_on_row,
-        static_cast<int>(std::floor((available_width - child_width) /
-                                    (child_width + kTabVerticalPadding)) +
-                         1));
+    children_on_row =
+        std::min(children_on_row,
+                 static_cast<int>(std::floor((available_width - child_width) /
+                                             (child_width + kTabPadding)) +
+                                  1));
 
     // Allocate extra space to the tabs.
-    available_width -= (children_on_row * child_width) +
-                       (kTabVerticalPadding * (children_on_row - 1));
+    available_width -=
+        (children_on_row * child_width) + (kTabPadding * (children_on_row - 1));
     child_width += std::floor(available_width / children_on_row);
   }
 
@@ -82,7 +85,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
         gfx::Rect(child->GetPreferredSize(views::SizeBounds(child_width, {})));
     bounds.set_width(child_width);
     if (row_index != 0) {
-      x += kTabVerticalPadding;
+      x += kTabPadding;
     }
     bounds.set_x(x);
     bounds.set_y(y);
@@ -92,7 +95,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     row_index++;
     if (row_index >= children_on_row) {
-      y = total_height + kTabVerticalPadding;
+      y = total_height + kTabPadding;
       row_index = 0;
       x = 0;
     }
