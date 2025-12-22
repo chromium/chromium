@@ -967,7 +967,16 @@ void CompoundImageBacking::MarkForDestruction() {
 }
 
 gfx::GpuMemoryBufferHandle CompoundImageBacking::GetGpuMemoryBufferHandle() {
-  auto& element = GetShmElement();
+  // A GpuMemoryBufferHandle corresponds to the shared memory or native buffer
+  // (like an IOSurface, AHardwareBuffer, or DXGI Handle) that backs the image.
+  //
+  // Per this backing's design:
+  // 1. Any CPU-mappable backing including SharedMemoryImageBacking is always
+  // created only at initialization time and never allocated dynamically during
+  // runtime. Hence it is guaranteed to be at elements_[0].
+  // 2. |elements_| always contains at least one element.
+  CHECK(!elements_.empty());
+  auto& element = elements_[0];
   CHECK(element.backing);
   return element.backing->GetGpuMemoryBufferHandle();
 }
