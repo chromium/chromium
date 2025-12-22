@@ -259,6 +259,10 @@ id<GREYMatcher> LocationViewContainingText(const std::string& text) {
       locationViewContainingText:base::SysUTF8ToNSString(text)];
 }
 
+id<GREYMatcher> LocationViewEmpty() {
+  return [ChromeMatchersAppInterface locationViewEmpty];
+}
+
 id<GREYMatcher> ToolsMenuButton() {
   return [ChromeMatchersAppInterface toolsMenuButton];
 }

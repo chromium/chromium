@@ -7,9 +7,11 @@
 #import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/web/model/lookalike_url_app_interface.h"
 #import "ios/chrome/browser/web/model/lookalike_url_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -35,6 +37,17 @@ const char kLookalikeInNewTab[] = "/lookalike-newtab.html";
 const char kLookalikeContent[] = "Lookalike - Safety warning bypassed";
 // Text that is found on a page that opens a lookalike in a new tab.
 const char kLookalikeInNewTabContent[] = "New tab";
+
+// Makes sure the location view and the focused omnibox don't contain anything.
+void AssertEmptyOmnibox() {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewEmpty()];
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:Omnibox()]
+      assertWithMatcher:OmniboxText("")];
+  [OmniboxEarlGrey defocusOmnibox];
+}
+
 }  // namespace
 
 // Tests lookalike URL blocking.
@@ -107,11 +120,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // Load the lookalike page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_lookalikeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the "Go to" button and verify that the suggested page
   // contents are loaded.
@@ -136,11 +146,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // Load the lookalike page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_lookalikeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the site suggestion link and verify that the suggested page
   // contents are loaded.
@@ -176,11 +183,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_LOOKALIKE_URL_BACK_TO_SAFETY)];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the "Back to safety" button and verify that the safe content
   // is loaded.
@@ -220,11 +224,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_LOOKALIKE_URL_CLOSE_PAGE)];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the "Close" button and verify that the page closes.
   [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
@@ -237,11 +238,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // Load the lookalike page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_lookalikeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the link to ignore the warning, and verify that the page is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
@@ -269,11 +267,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // Load the lookalike page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_lookalikeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the link to ignore the warning, and verify that the page is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
@@ -307,11 +302,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // Load the lookalike URL page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_lookalikeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
-  // Lookalike URL blocking pages should not display URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+  // Lookalike URL blocking pages should not display anything in the omnibox.
+  AssertEmptyOmnibox();
 
   // Tap on the "Go to" button and verify that the suggested page contents
   // are loaded.

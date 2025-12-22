@@ -657,6 +657,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return matcher;
 }
 
++ (id<GREYMatcher>)locationViewEmpty {
+  GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
+      matcherWithMatchesBlock:^BOOL(LocationBarSteadyView* element) {
+        return element.locationLabel.text.length == 0;
+      }
+      descriptionBlock:^void(id<GREYDescription> description) {
+        [description appendText:@"LocationBarSteadyView is empty"];
+      }];
+  return matcher;
+}
+
 + (id<GREYMatcher>)toolsMenuButton {
   return grey_allOf(grey_accessibilityID(kToolbarToolsMenuButtonIdentifier),
                     grey_sufficientlyVisible(), nil);

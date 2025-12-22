@@ -194,6 +194,9 @@
 // view.
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text;
 
+// Returns matcher for the location view being empty.
++ (id<GREYMatcher>)locationViewEmpty;
+
 // Matcher for Tools menu button.
 + (id<GREYMatcher>)toolsMenuButton;
 
