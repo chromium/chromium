@@ -6,6 +6,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
+import("//chrome/common/features.gni")
 
 source_set("toasts") {
   sources = [
@@ -50,7 +51,6 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor/resources:common_resources",
     "//chrome/browser/actor/resources:grit",
-    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs/saved_tab_groups",
@@ -70,6 +70,9 @@ source_set("impl") {
   if (is_chrome_branded) {
     deps +=
         [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
+  }
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 
