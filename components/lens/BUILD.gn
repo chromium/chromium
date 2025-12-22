@@ -81,25 +81,6 @@ static_library("lens") {
     deps += [ "//skia" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
-    sources += [
-      "tab_contextualization_controller.cc",
-      "tab_contextualization_controller.h",
-    ]
-    public_deps += [ "//ui/base/unowned_user_data" ]
-    deps += [
-      "//components/optimization_guide/content/browser:page_context_eligibility",
-      "//content/public/browser",
-    ]
-
-    if (enable_pdf) {
-      public_deps += [
-        "//components/pdf/browser",
-        "//pdf/mojom",
-      ]
-    }
-  }
-
   if (!is_android) {
     deps += [ "//third_party/zstd:compress" ]
   }

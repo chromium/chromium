@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LENS_TAB_CONTEXTUALIZATION_CONTROLLER_H_
-#define COMPONENTS_LENS_TAB_CONTEXTUALIZATION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_CONTEXTUAL_SEARCH_TAB_CONTEXTUALIZATION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_CONTEXTUAL_SEARCH_TAB_CONTEXTUALIZATION_CONTROLLER_H_
 
 #include <memory>
 #include <optional>
@@ -177,4 +177,4 @@ class TabContextualizationController : public content::WebContentsObserver {
 
 }  // namespace lens
 
-#endif  // COMPONENTS_LENS_TAB_CONTEXTUALIZATION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_CONTEXTUAL_SEARCH_TAB_CONTEXTUALIZATION_CONTROLLER_H_

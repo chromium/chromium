@@ -535,6 +535,7 @@ if (!is_android) {
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/cookie_controls",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
