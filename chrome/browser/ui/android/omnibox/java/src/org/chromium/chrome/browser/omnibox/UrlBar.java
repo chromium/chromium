@@ -294,8 +294,14 @@ public class UrlBar extends AutocompleteEditText {
         // come from a software keyboard.
         // - If we pass the event here, it will be emitted twice (once before IME and once after),
         // - if we don't pass the event after IME, soft keyboard navigation will not work.
+        // DPAD and TAB keys are also not passed into the listeners here. This is to prevent those
+        // keys from being consumed too early. Premature consumption of these keys can break certain
+        // IME features, for example, keyboard navigation within the Chinese / Japanese candidate
+        // window.
         return (KeyNavigationUtil.isActionDown(event)
                         && !KeyNavigationUtil.isEnter(event)
+                        && !KeyNavigationUtil.isGoAnyDirection(event)
+                        && !KeyNavigationUtil.isTabNavigation(event)
                         && (mKeyDownListener != null
                                 && mKeyDownListener.onKey(this, keyCode, event)))
                 || super_onKeyPreIme(keyCode, event);
@@ -309,7 +315,9 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return (KeyNavigationUtil.isEnter(event)
+        return ((KeyNavigationUtil.isEnter(event)
+                                || KeyNavigationUtil.isGoAnyDirection(event)
+                                || KeyNavigationUtil.isTabNavigation(event))
                         && (mKeyDownListener != null
                                 && mKeyDownListener.onKey(this, keyCode, event)))
                 || super_onKeyDown(keyCode, event);

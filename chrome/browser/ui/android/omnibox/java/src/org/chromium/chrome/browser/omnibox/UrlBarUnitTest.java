@@ -685,13 +685,13 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    public void keyEvents_nonEnterActionDownKeyHandling() {
+    public void keyEvents_letterActionDownKeyHandling() {
         var keysToCheck =
                 List.of(
                         KeyEvent.KEYCODE_A,
-                        KeyEvent.KEYCODE_TAB,
-                        KeyEvent.KEYCODE_DPAD_UP,
-                        KeyEvent.KEYCODE_DPAD_DOWN);
+                        KeyEvent.KEYCODE_B,
+                        KeyEvent.KEYCODE_C,
+                        KeyEvent.KEYCODE_D);
 
         var listener = mock(View.OnKeyListener.class);
         mUrlBar.setKeyDownListener(listener);
@@ -769,6 +769,51 @@ public class UrlBarUnitTest {
             // Post-IME Key Down: not consumed keys passed to View.
             doReturn(false).when(listener).onKey(any(), anyInt(), any());
             doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertTrue(mUrlBar.onKeyDown(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar).super_onKeyDown(keyCode, event);
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+        }
+    }
+
+    @Test
+    public void keyEvents_tabAndDpadDownActionKeyHandling() {
+        var keysToCheck =
+                List.of(
+                        KeyEvent.KEYCODE_TAB,
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        KeyEvent.KEYCODE_DPAD_DOWN,
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        KeyEvent.KEYCODE_DPAD_RIGHT);
+
+        var listener = mock(View.OnKeyListener.class);
+        mUrlBar.setKeyDownListener(listener);
+
+        for (int keyCode : keysToCheck) {
+            var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
+
+            // Pre-IME Key Down: passed only to IME.
+            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(listener, never()).onKey(any(), anyInt(), any());
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: consumed keys not passed to View.
+            doReturn(true).when(listener).onKey(any(), anyInt(), any());
+            assertTrue(mUrlBar.onKeyDown(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar, never()).super_onKeyDown(anyInt(), any());
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: not consumed keys passed to View.
+            doReturn(false).when(listener).onKey(any(), anyInt(), any());
+            doReturn(true).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
             verify(listener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar).super_onKeyDown(keyCode, event);
