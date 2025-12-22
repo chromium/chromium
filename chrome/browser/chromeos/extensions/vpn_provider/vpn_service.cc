@@ -298,6 +298,11 @@ void VpnService::SendOnPlatformMessageToExtension(
 }
 
 crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
+VpnService::LookupConfiguration(const std::string& service_path) {
+  return base::FindPtrOrNull(service_path_to_configuration_map_, service_path);
+}
+
+crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
 VpnService::LookupConfiguration(const std::string& extension_id,
                                 const std::string& configuration_name) {
   const std::string key = crosapi::VpnServiceForExtensionAsh::GetKey(
@@ -389,9 +394,10 @@ void VpnService::OnVpnExtensionsChanged(
 void VpnService::OnGetShillProperties(
     const std::string& service_path,
     std::optional<base::Value::Dict> configuration_properties) {
-  if (!configuration_properties) {
+  if (!configuration_properties || LookupConfiguration(service_path)) {
     return;
   }
+
   const std::string* vpn_type =
       configuration_properties->FindStringByDottedPath(
           shill::kProviderTypeProperty);
@@ -411,12 +417,9 @@ void VpnService::OnGetShillProperties(
     return;
   }
 
-  auto* service = GetVpnService()->GetVpnServiceForExtension(*extension_id);
-  if (service->HasConfigurationForServicePath(service_path)) {
-    return;
-  }
-  service->CreateConfigurationWithServicePath(*configuration_name,
-                                              service_path);
+  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration =
+      CreateConfigurationInternal(*extension_id, *configuration_name);
+  RegisterConfiguration(configuration, service_path);
 }
 
 void VpnService::DestroyConfiguration(const std::string& extension_id,
@@ -542,10 +545,22 @@ void VpnService::OnCreateConfigurationSuccess(
     crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
     const std::string& service_path,
     const std::string& guid) {
-  GetVpnService()
-      ->GetVpnServiceForExtension(configuration->extension_id())
-      ->OnCreateConfigurationSuccess(std::move(callback), configuration,
-                                     service_path, guid);
+  RegisterConfiguration(configuration, service_path);
+  std::move(callback).Run();
+}
+
+void VpnService::RegisterConfiguration(
+    crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
+    const std::string& service_path) {
+  // Ensure the corresponding VpnServiceForExtensionAsh is created.
+  GetVpnService()->GetVpnServiceForExtension(configuration->extension_id());
+
+  configuration->set_service_path(service_path);
+  auto [_, inserted] =
+      service_path_to_configuration_map_.emplace(service_path, configuration);
+  CHECK(inserted);
+  ash::ShillThirdPartyVpnDriverClient::Get()->AddShillThirdPartyVpnObserver(
+      configuration->object_path(), configuration);
 }
 
 void VpnService::OnCreateConfigurationFailure(

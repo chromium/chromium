@@ -126,9 +126,9 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
 void VpnServiceForExtensionAsh::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
-  VpnConfiguration* configuration =
-      base::FindPtrOrNull(service_path_to_configuration_map_, service_path);
-  if (!configuration) {
+  VpnConfiguration* configuration = base::FindPtrOrNull(
+      controller_->service_path_to_configuration_map_, service_path);
+  if (!configuration || configuration->extension_id() != extension_id()) {
     // Ignore removal of a configuration unknown to VPN service, which means
     // the configuration was created internally by the platform or already
     // removed by the extension.
@@ -147,11 +147,6 @@ VpnServiceForExtensionAsh::GetActiveConfigurationObjectPath() const {
   return std::nullopt;
 }
 
-bool VpnServiceForExtensionAsh::HasConfigurationForServicePath(
-    const std::string& service_path) const {
-  return base::Contains(service_path_to_configuration_map_, service_path);
-}
-
 void VpnServiceForExtensionAsh::DestroyAllConfigurations() {
   std::vector<std::string> to_be_destroyed;
   for (const auto& [key, configuration] :
@@ -163,18 +158,6 @@ void VpnServiceForExtensionAsh::DestroyAllConfigurations() {
   for (const auto& configuration_name : to_be_destroyed) {
     DestroyConfiguration(configuration_name, base::DoNothing());
   }
-}
-
-void VpnServiceForExtensionAsh::CreateConfigurationWithServicePath(
-    const std::string& configuration_name,
-    const std::string& service_path) {
-  DCHECK(!HasConfigurationForServicePath(service_path));
-  VpnConfiguration* configuration = controller_->CreateConfigurationInternal(
-      extension_id(), configuration_name);
-  configuration->set_service_path(service_path);
-  service_path_to_configuration_map_[service_path] = configuration;
-  ash::ShillThirdPartyVpnDriverClient::Get()->AddShillThirdPartyVpnObserver(
-      configuration->object_path(), configuration);
 }
 
 void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
@@ -224,20 +207,8 @@ void VpnServiceForExtensionAsh::DestroyConfigurationInternal(
           configuration->service_path()) {
     ash::ShillThirdPartyVpnDriverClient::Get()
         ->RemoveShillThirdPartyVpnObserver(configuration->object_path());
-    service_path_to_configuration_map_.erase(*service_path);
+    controller_->service_path_to_configuration_map_.erase(*service_path);
   }
-}
-
-void VpnServiceForExtensionAsh::OnCreateConfigurationSuccess(
-    SuccessCallback callback,
-    VpnConfiguration* configuration,
-    const std::string& service_path,
-    const std::string& guid) {
-  configuration->set_service_path(service_path);
-  service_path_to_configuration_map_[service_path] = configuration;
-  ash::ShillThirdPartyVpnDriverClient::Get()->AddShillThirdPartyVpnObserver(
-      configuration->object_path(), configuration);
-  std::move(callback).Run();
 }
 
 void VpnServiceForExtensionAsh::OnCreateConfigurationFailure(

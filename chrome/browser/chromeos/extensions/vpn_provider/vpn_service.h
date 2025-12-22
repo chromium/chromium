@@ -147,6 +147,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
   GetVpnServiceForExtension(const std::string& extension_id);
 
+  // Looks up the configuration identified by the given service path.
+  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
+      const std::string& service_path);
+
   // Looks up the configuration identified by the given name and the extension
   // it belongs to.
   crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
@@ -194,12 +198,25 @@ class VpnService : public extensions::api::VpnServiceInterface,
       const std::string& service_path,
       std::optional<base::Value::Dict> configuration_properties);
 
+  // Sets `configuration`s service path as given and enters it into
+  // `service_path_to_configuration_map_`.
+  void RegisterConfiguration(
+      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
+      const std::string& service_path);
+
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
   using StringToOwnedConfigurationMap = std::map<
       std::string,
       std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
   StringToOwnedConfigurationMap key_to_configuration_map_;
+
+  // Maps shill service path to (unowned) configuration.
+  using StringToConfigurationMap =
+      std::map<std::string,
+               raw_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration,
+                       CtnExperimental>>;
+  StringToConfigurationMap service_path_to_configuration_map_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

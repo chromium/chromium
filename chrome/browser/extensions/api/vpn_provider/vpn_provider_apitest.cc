@@ -221,19 +221,8 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   std::string GetSingleServicePath() {
-    std::vector<std::string> service_paths;
-    for (const auto& [extension_id, service] :
-         GetVpnServiceAsh()->extension_id_to_service_) {
-      const auto& service_path_map =
-          service->service_path_to_configuration_map_;
-      if (service_path_map.empty()) {
-        continue;
-      }
-      DCHECK_EQ(service_path_map.size(), 1U);
-      service_paths.push_back(service_path_map.begin()->first);
-    }
-    EXPECT_EQ(service_paths.size(), 1U);
-    return service_paths[0];
+    EXPECT_EQ(service()->service_path_to_configuration_map_.size(), 1);
+    return service()->service_path_to_configuration_map_.begin()->first;
   }
 
   bool CreateConfigForTest(const std::string& name) {

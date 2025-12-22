@@ -82,12 +82,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   // Otherwise, returns std::nullopt.
   std::optional<std::string> GetActiveConfigurationObjectPath() const;
 
-  bool HasConfigurationForServicePath(const std::string& service_path) const;
-
   void DestroyAllConfigurations();
-
-  void CreateConfigurationWithServicePath(const std::string& configuration_name,
-                                          const std::string& service_path);
 
   void DispatchConfigRemovedEvent(const std::string& configuration_name);
   void DispatchOnPacketReceivedEvent(const std::vector<char>& data);
@@ -97,9 +92,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   friend class chromeos::VpnProviderApiTest;
   friend class chromeos::VpnService;
   friend class TestShillControllerAsh;
-
-  using StringToConfigurationMap =
-      std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
 
   const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
@@ -113,12 +105,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   // Removes configuration from the internal store and destroys it.
   void DestroyConfigurationInternal(VpnConfiguration*);
-
-  // Callback used to indicate that configuration was successfully created.
-  void OnCreateConfigurationSuccess(SuccessCallback,
-                                    VpnConfiguration*,
-                                    const std::string& service_path,
-                                    const std::string& guid);
 
   // Callback used to indicate that configuration creation failed.
   void OnCreateConfigurationFailure(FailureCallback,
@@ -136,9 +122,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   const extensions::ExtensionId extension_id_;
   raw_ptr<chromeos::VpnService> controller_;
-
-  // Maps shill service path to unowned configuration.
-  StringToConfigurationMap service_path_to_configuration_map_;
 
   // Configuration that is currently in use.
   raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
