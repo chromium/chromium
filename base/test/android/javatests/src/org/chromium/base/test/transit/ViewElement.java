@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  * @param <ViewT> the type of the View.
  */
 @NullMarked
-public class ViewElement<ViewT extends View> extends Element<ViewT> {
+public class ViewElement<ViewT extends View> extends Element<ViewT> implements ViewInterface {
     private static final String TAG = "Transit";
 
     /**
@@ -152,11 +152,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return mViewSpec.ancestor(viewClass, viewMatcher);
     }
 
-    /**
-     * Start a Transition by clicking this View.
-     *
-     * <p>Requires the View to be >90% displayed.
-     */
+    @Override
     public TripBuilder clickTo() {
         if (mOptions.mDisplayedPercentageRequired > 90) {
             return performViewActionTo(ViewActions.click());
@@ -165,21 +161,12 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         }
     }
 
-    /** Start a Transition by long pressing this View. */
+    @Override
     public TripBuilder longPressTo() {
         return performViewActionTo(ViewActions.longClick());
     }
 
-    /**
-     * Start a Transition by clicking this View even if partially occluded.
-     *
-     * <p>Does not require the View to be >90% displayed like {@link #clickTo()}.
-     */
-    public TripBuilder clickEvenIfPartiallyOccludedTo() {
-        return performViewActionTo(ForgivingClickAction.forgivingClick());
-    }
-
-    /** Start a Transition by typing |text| into this View char by char. */
+    @Override
     public TripBuilder typeTextTo(String text) {
         return new TripBuilder()
                 .withContext(this)
@@ -192,7 +179,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                                         text));
     }
 
-    /** Start a Transition by performing an Espresso ViewAction on this View. */
+    @Override
     public TripBuilder performViewActionTo(ViewAction action) {
         return new TripBuilder()
                 .withContext(this)
@@ -253,7 +240,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                 .pickUpCarryOn(new ViewSettledCarryOn(activity, this));
     }
 
-    /** Trigger an Espresso ViewAssertion on this View. */
+    @Override
     public void check(ViewAssertion assertion) {
         Root rootMatched = getDisplayedCondition().getRootMatched();
         assert rootMatched != null;
@@ -284,11 +271,8 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return (DisplayedCondition<ViewT>) mEnterCondition;
     }
 
-    /**
-     * @deprecated Use the trigger methods instead, such as {@link #performViewActionTo(ViewAction)}
-     *     and {@link #clickTo()}.
-     */
     @Deprecated
+    @Override
     public ViewInteraction onView() {
         Root rootMatched = getDisplayedCondition().getRootMatched();
         assert rootMatched != null;

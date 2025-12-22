@@ -8,6 +8,10 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
+
 import org.hamcrest.Matcher;
 
 import org.chromium.build.annotations.NullMarked;
@@ -18,7 +22,7 @@ import org.chromium.build.annotations.NullMarked;
  * @param <ViewT> the type of the View.
  */
 @NullMarked
-public class ViewCarryOn<ViewT extends View> extends CarryOn {
+public class ViewCarryOn<ViewT extends View> extends CarryOn implements ViewInterface {
     public final ViewElement<ViewT> viewElement;
 
     /**
@@ -48,5 +52,36 @@ public class ViewCarryOn<ViewT extends View> extends CarryOn {
      */
     public ViewT getView() {
         return viewElement.value();
+    }
+
+    @Override
+    public TripBuilder clickTo() {
+        return viewElement.clickTo();
+    }
+
+    @Override
+    public TripBuilder longPressTo() {
+        return viewElement.longPressTo();
+    }
+
+    @Override
+    public TripBuilder typeTextTo(String text) {
+        return viewElement.typeTextTo(text);
+    }
+
+    @Override
+    public TripBuilder performViewActionTo(ViewAction action) {
+        return viewElement.performViewActionTo(action);
+    }
+
+    @Override
+    public void check(ViewAssertion assertion) {
+        viewElement.check(assertion);
+    }
+
+    @Deprecated
+    @Override
+    public ViewInteraction onView() {
+        return viewElement.onView();
     }
 }

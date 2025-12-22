@@ -7,6 +7,8 @@ package org.chromium.base.test.transit;
 import android.view.View;
 
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,7 +33,8 @@ import java.util.function.Supplier;
  * @param <ViewT> the type of the View.
  */
 @NullMarked
-public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
+public class OptionalViewElement<ViewT extends View> extends Element<ViewT>
+        implements ViewInterface {
     private final ViewSpec<ViewT> mViewSpec;
     private final ViewElement.Options mOptions;
     private final List<ViewCarryOn<ViewT>> mCarryOns = new ArrayList<>();
@@ -81,24 +84,34 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
         mOwner.noopTo().waitFor(absent());
     }
 
+    @Override
+    public void check(ViewAssertion assertion) {
+        waitForView().check(assertion);
+    }
+
+    @Override
     public TripBuilder performViewActionTo(ViewAction action) {
-        return waitForView().viewElement.performViewActionTo(action).withContext(mOwner);
+        return waitForView().performViewActionTo(action).withContext(mOwner);
     }
 
+    @Override
     public TripBuilder clickTo() {
-        return waitForView().viewElement.clickTo().withContext(mOwner);
+        return waitForView().clickTo().withContext(mOwner);
     }
 
+    @Override
     public TripBuilder longPressTo() {
-        return waitForView().viewElement.longPressTo().withContext(mOwner);
+        return waitForView().longPressTo().withContext(mOwner);
     }
 
-    public TripBuilder clickEvenIfPartiallyOccludedTo() {
-        return waitForView().viewElement.clickEvenIfPartiallyOccludedTo().withContext(mOwner);
-    }
-
+    @Override
     public TripBuilder typeTextTo(String text) {
-        return waitForView().viewElement.typeTextTo(text).withContext(mOwner);
+        return waitForView().typeTextTo(text).withContext(mOwner);
+    }
+
+    @Override
+    public ViewInteraction onView() {
+        return waitForView().onView();
     }
 
     /** Create a Condition fulfilled when this OptionalViewElement is present. */

@@ -261,7 +261,7 @@ public class ViewUtils {
         }
         ViewCarryOn<View> viewCarryOn =
                 ViewFinder.waitForView(View.class, viewMatcher, optionsBuilder.build());
-        return viewCarryOn.viewElement.onView();
+        return viewCarryOn.onView();
     }
 
     /**
