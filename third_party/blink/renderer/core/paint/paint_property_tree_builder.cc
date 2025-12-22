@@ -1933,8 +1933,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           style.IsRunningBackdropFilterAnimationOnCompositor();
 
       const auto* parent_effect = context_.current_effect;
-      if (object_.GetNode() &&
-          object_.GetNode()->GetPseudoId() == kPseudoIdViewTransition) {
+      if (object_.IsPseudo(kPseudoIdViewTransition)) {
         parent_effect = ParentForViewTransitionPseudoEffect();
       }
       DCHECK(parent_effect);

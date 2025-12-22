@@ -811,7 +811,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
-    return GetNode() && GetNode()->IsPseudoElement();
+    const Node* node = GetNode();
+    return node && node->IsPseudoElement();
   }
 
   virtual bool IsBoxModelObject() const {
@@ -1048,6 +1049,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsScrollButtonOrMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   inline bool IsInterestHintContent() const;
+  inline bool IsPseudo(PseudoId id) const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
   }
@@ -1517,8 +1519,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsOverscrollContainer() const {
     NOT_DESTROYED();
     return StyleRef().HasOverscrollArea() ||
-           (IsPseudoElement() && To<PseudoElement>(GetNode())->GetPseudoId() ==
-                                     kPseudoIdOverscrollAreaParent);
+           IsPseudo(kPseudoIdOverscrollAreaParent);
   }
 
   bool IsScrollContainer() const {
@@ -4322,6 +4323,12 @@ inline bool LayoutObject::IsInterestHintContent() const {
 inline bool LayoutObject::IsBeforeOrAfterContent() const {
   NOT_DESTROYED();
   return IsBeforeContent() || IsAfterContent();
+}
+
+inline bool LayoutObject::IsPseudo(PseudoId id) const {
+  NOT_DESTROYED();
+  PseudoElement* pseudo = DynamicTo<PseudoElement>(GetNode());
+  return pseudo && pseudo->GetPseudoId() == id;
 }
 
 inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
