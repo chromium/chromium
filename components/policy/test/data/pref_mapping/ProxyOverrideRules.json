@@ -47,6 +47,26 @@
     },
     "policy_pref_mapping_tests": [
       {
+        "policies_settings": {
+          "ProxyOverrideRules": {
+              "source": "platform"
+          }
+        },
+        "policies": {
+          "ProxyOverrideRules": [
+              {
+                  "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+                  "ProxyList": [ "HTTPS proxy.app:443" ]
+              }
+          ]
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "ProxyOverrideRules": 12
         },

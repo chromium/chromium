@@ -323,6 +323,18 @@
   <message name="IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR" desc="The text displayed in the status column when neither a fixed proxy servers or a .pac url are specified.">
     Neither fixed proxy servers nor a .pac script URL are specified.
   </message>
+  <message name="IDS_POLICY_PROXY_UNKNOWN_CONDITION" desc="The text displayed in the status column when a proxy condition uses an unknown value.">
+    "<ph name="PROXY_UNKNOWN_CONDITION">$1<ex>DnsProbe</ex></ph>" is not a known condition type.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_SCHEME_HOST_PORT" desc="The text displayed in the status column when a proxy scheme-host-port triplet has an invalid value.">
+    "<ph name="PROXY_INVALID_SCHEME_HOST_PORT">$1<ex>example.com</ex></ph>" is not a valid value.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_PROXY" desc="The text displayed in the status column when a proxy has an invalid value.">
+    "<ph name="PROXY_INVALID_PROXY">$1<ex>example.com</ex></ph>" is not a valid proxy.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_DESTINATION" desc="The text displayed in the status column when a proxy destination has an invalid value.">
+    "<ph name="PROXY_INVALID_DESTINATION">$1<ex>example.com</ex></ph>" is not a valid destination pattern.
+  </message>
   <message name="IDS_POLICY_DEVELOPER_TOOLS_EXTENSIONS_CONFLICT_MESSAGE" desc="The text displayed in the status column when the value of DeveloperToolsAvailability conflicts with ExtensionDeveloperModeSettings.">
     <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME">$1<ex>ExtensionDeveloperModeSettings</ex></ph> policy is set. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">$2<ex>DeveloperToolsAvailability</ex></ph> will not control the availability of developer mode on extensions page.
   </message>

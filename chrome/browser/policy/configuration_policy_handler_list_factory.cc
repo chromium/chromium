@@ -2848,9 +2848,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<ForceYouTubeSafetyModePolicyHandler>());
   handlers->AddHandler(std::make_unique<HomepageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<proxy_config::ProxyPolicyHandler>());
-  handlers->AddHandler(
+  handlers->AddHandler(std::make_unique<CloudOnlyPolicyChecker>(
       std::make_unique<proxy_config::ProxyOverrideRulesPolicyHandler>(
-          chrome_schema));
+          chrome_schema)));
   handlers->AddHandler(std::make_unique<SecureDnsPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kCertificateTransparencyEnforcementDisabledForUrls,

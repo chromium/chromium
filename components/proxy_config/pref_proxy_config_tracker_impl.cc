@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/proxy_config/proxy_prefs_utils.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
@@ -72,52 +73,30 @@ ValueToDnsCondition(const base::Value& value) {
   // For now "DnsProbe" is always expected, but eventually other types of
   // conditions will be possible.
   const base::Value::Dict& dict = value.GetDict();
-  auto* dns_probe_value = dict.FindDict("DnsProbe");
+  auto* dns_probe_value = dict.FindDict(proxy_config::kKeyDnsProbe);
   if (!dns_probe_value) {
     return std::nullopt;
   }
 
-  const std::string* host_value = dns_probe_value->FindString("Host");
-  const std::string* result_value = dns_probe_value->FindString("Result");
+  const std::string* host_value =
+      dns_probe_value->FindString(proxy_config::kKeyHost);
+  const std::string* result_value =
+      dns_probe_value->FindString(proxy_config::kKeyResult);
   if (!host_value || !result_value ||
-      (*result_value != "resolved" && *result_value != "not_found")) {
+      (*result_value != proxy_config::kResultResolved &&
+       *result_value != proxy_config::kResultNotFound)) {
     return std::nullopt;
   }
 
-  GURL url(*host_value);
-  std::string scheme = url.GetScheme();
-  std::string host = url.GetHost();
-  int port = url.IntPort();
-
-  // If the value used to initialize `url` is missing parts (for example because
-  // it's only a hostname), then try to specify a replacement scheme and/or
-  // port. This gives flexibility to the policy field to only specify certain
-  // values.
-  if (host.empty()) {
-    // This path is reached when only the host is provided (ex. "foo.com").
-    // In this case, `url` will be invalid and see "foo.com" as a scheme, so if
-    // that happens the string is instead parsed as a host:port pair, with HTTP
-    // as the default scheme.
-    scheme = url::kHttpScheme;
-    if (!net::ParseHostAndPort(*host_value, &host, &port)) {
-      return std::nullopt;
-    }
-  }
-  if (scheme.empty()) {
-    scheme = url::kHttpScheme;
-  }
-  if (port == url::PORT_UNSPECIFIED) {
-    port = url::DefaultPortForScheme(scheme);
-  }
-
   net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition dns_probe_condition;
-  dns_probe_condition.host = url::SchemeHostPort(scheme, host, port);
+  dns_probe_condition.host =
+      proxy_config::ProxyOverrideRuleHostFromString(*host_value);
   if (!dns_probe_condition.host.IsValid()) {
     return std::nullopt;
   }
 
   dns_probe_condition.result =
-      *result_value == "resolved"
+      *result_value == proxy_config::kResultResolved
           ? net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved
           : net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound;
   return dns_probe_condition;
@@ -163,7 +142,8 @@ bool AddUrlMatcher(const base::Value::Dict& value,
 // Returns false if an unexpected value was found in the passed `value`.
 bool AddDestinationMatchers(const base::Value::Dict& value,
                             net::ProxyConfig::ProxyOverrideRule& rule) {
-  return AddUrlMatcher(value, rule.destination_matchers, "DestinationMatchers",
+  return AddUrlMatcher(value, rule.destination_matchers,
+                       proxy_config::kKeyDestinationMatchers,
                        /*optional_field=*/false);
 }
 
@@ -171,7 +151,8 @@ bool AddDestinationMatchers(const base::Value::Dict& value,
 bool AddExcludeDestinationMatchers(const base::Value::Dict& value,
                                    net::ProxyConfig::ProxyOverrideRule& rule) {
   return AddUrlMatcher(value, rule.exclude_destination_matchers,
-                       "ExcludeDestinationMatchers", /*optional_field=*/true);
+                       proxy_config::kKeyExcludeDestinationMatchers,
+                       /*optional_field=*/true);
 }
 
 // Returns false if an unexpected value was found in the passed `value`, or if
@@ -187,7 +168,7 @@ bool AddProxyChain(const base::Value::Dict& value,
   //
   // The entries of the list can have the PAC format as above, or a regular URL
   // format of "scheme://host:port".
-  auto* proxy_list_value = value.FindList("ProxyList");
+  auto* proxy_list_value = value.FindList(proxy_config::kKeyProxyList);
   if (!proxy_list_value) {
     return false;
   }
@@ -199,20 +180,8 @@ bool AddProxyChain(const base::Value::Dict& value,
       return false;
     }
 
-    net::ProxyChain chain;
-    GURL url(entry.GetString());
-    if (url.is_valid()) {
-      net::ProxyServer::Scheme scheme =
-          net::GetSchemeFromUriScheme(url.scheme());
-      if (scheme == net::ProxyServer::SCHEME_INVALID) {
-        continue;
-      }
-      chain = net::ProxyChain::FromSchemeHostAndPort(scheme, url.host(),
-                                                     url.port());
-    } else {
-      chain = net::PacResultElementToProxyChain(entry.GetString());
-    }
-
+    net::ProxyChain chain =
+        proxy_config::ProxyOverrideRuleProxyFromString(entry.GetString());
     if (chain.IsValid()) {
       rule.proxy_list.AddProxyChain(std::move(chain));
     }
@@ -240,7 +209,7 @@ bool AddConditions(const base::Value::Dict& value,
   //   ]
   //   ...
   // }
-  auto* conditions_value = value.FindList("Conditions");
+  auto* conditions_value = value.FindList(proxy_config::kKeyConditions);
   if (!conditions_value) {
     // This field is optional, so it being missing isn't considered an error.
     return true;
