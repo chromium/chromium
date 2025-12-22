@@ -68,6 +68,7 @@ source_set("download") {
       "//chrome/app:command_ids",
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
+      "//chrome/browser/picture_in_picture",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/safe_browsing",
