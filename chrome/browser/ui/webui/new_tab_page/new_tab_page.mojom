@@ -255,6 +255,8 @@ interface PageHandler {
   IncrementComposeButtonShownCount();
   // Opens Customize Chrome if eligibility conditions are met.
   MaybeTriggerAutomaticCustomizeChromePromo();
+  // Records that the context menu was clicked.
+  RecordContextMenuClick();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

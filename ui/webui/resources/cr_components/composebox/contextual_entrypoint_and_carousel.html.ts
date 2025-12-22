@@ -9,7 +9,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
-  const showDescription = this.searchboxLayoutMode !== 'Compact' &&
+  const showDescription =
       this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_;
   const toolChipsVisible = this.shouldShowRecentTabChip_ ||
       this.inDeepSearchMode_ || this.inCreateImageMode_;

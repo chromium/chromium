@@ -48,6 +48,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
+        @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
         ?compose-button-enabled="${this.composeButtonEnabled}"
         ?composebox-enabled="${this.composeboxEnabled}"
@@ -67,6 +68,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
               @composebox-initialized="${this.onComposeboxInitialized_}"
               @close-composebox="${this.closeComposebox_}"
               @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+              @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               searchbox-layout-mode="${this.realboxLayoutMode_}">
           </cr-composebox>
