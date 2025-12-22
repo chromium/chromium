@@ -42,7 +42,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     bool is_card_number_field_empty,
-    bool has_timed_out_for_page_load);
+    const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Fetches SuggestionData, used for credit card or cvc field suggestion
 // generation. Fetched data wil be used in
@@ -78,7 +78,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&
         suggestion_data,
-    bool has_timed_out_for_page_load);
+    const payments::AmountExtractionStatus& amount_extraction_status);
 // Fetches SuggestionData, used for standalone CVC fields suggestion generation.
 // Fetched data wil be used in
 // GenerateVirtualCardStandaloneCvcFieldSuggestionsSync.
@@ -101,7 +101,7 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&
         suggestion_data,
-    bool has_timed_out_for_page_load);
+    const payments::AmountExtractionStatus& amount_extraction_status);
 
 }  // namespace autofill
 

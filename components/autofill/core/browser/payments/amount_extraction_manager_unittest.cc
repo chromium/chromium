@@ -629,12 +629,16 @@ TEST_F(AmountExtractionManagerTest, ValidateResponse_UnsupportedCurrency) {
   // Unsupported currency is returned.
   response.set_currency("GBP");
 
+  ASSERT_FALSE(
+      amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
+
   AiAmountExtractionResult::ResultType result =
       amount_extraction_manager_->ValidateAmountExtractionResponse(response);
 
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             AiAmountExtractionResult::Error::kUnsupportedCurrency);
+  EXPECT_TRUE(amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
 }
 
 TEST_F(AmountExtractionManagerTest, ValidateResponse_MissingCurrency) {
@@ -682,12 +686,16 @@ TEST_F(AmountExtractionManagerTest,
   // Unsupported currency is returned.
   response.set_currency("GBP");
 
+  ASSERT_FALSE(
+      amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
+
   AiAmountExtractionResult::ResultType result =
       amount_extraction_manager_->ValidateAmountExtractionResponse(response);
 
   ASSERT_FALSE(result.has_value());
   // Negative amount has higher priority.
   EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kNegativeAmount);
+  EXPECT_TRUE(amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
 }
 
 TEST_F(AmountExtractionManagerTest, ValidateResponse_EmptyResponse) {

@@ -2987,7 +2987,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
           ? card_number_field_value.substr(card_number_field_value.size() - 4)
           : u"",
       card_number_field_value.empty(),
-      GetAmountExtractionManager().HasTimedOutForPageLoad());
+      payments::AmountExtractionStatus{
+          .has_timed_out_for_page_load =
+              GetAmountExtractionManager().HasTimedOutForPageLoad(),
+          .seen_unsupported_currency_for_page_load =
+              GetAmountExtractionManager()
+                  .SeenUnsupportedCurrencyForPageLoad()});
   bool is_virtual_card_standalone_cvc_field =
       std::ranges::any_of(suggestions, [](Suggestion suggestion) {
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;

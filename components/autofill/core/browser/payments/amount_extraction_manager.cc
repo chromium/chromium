@@ -84,6 +84,7 @@ AmountExtractionManager::ValidateAmountExtractionResponse(
   if (!response.has_currency()) {
     error = AiAmountExtractionResult::Error::kMissingCurrency;
   } else if (response.currency() != "USD") {
+    amount_extraction_status_.seen_unsupported_currency_for_page_load = true;
     error = AiAmountExtractionResult::Error::kUnsupportedCurrency;
   }
 
@@ -243,7 +244,11 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
 }
 
 bool AmountExtractionManager::HasTimedOutForPageLoad() const {
-  return has_timed_out_;
+  return amount_extraction_status_.has_timed_out_for_page_load;
+}
+
+bool AmountExtractionManager::SeenUnsupportedCurrencyForPageLoad() const {
+  return amount_extraction_status_.seen_unsupported_currency_for_page_load;
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
@@ -330,7 +335,7 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
-  has_timed_out_ = true;
+  amount_extraction_status_.has_timed_out_for_page_load = true;
   // Once timeout is reached, cancel all the pending function calls.
   weak_ptr_factory_.InvalidateWeakPtrs();
 

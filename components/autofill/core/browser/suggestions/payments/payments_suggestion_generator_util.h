@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -88,10 +89,13 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
 // `has_timed_out_for_page_load` indicates whether the AI amount extraction
 // request timed out. If true, the returned BNPL suggestion is deactivated
 // for the remainder of this page load.
+// `seen_unsupported_currency_for_page_load` indicates whether the AI amount
+// extraction has seen an unsupported currency. If true, the returned BNPL
+// suggestion is deactivated for the remainder of this page load.
 Suggestion CreateBnplSuggestion(
     std::vector<BnplIssuer> bnpl_issuers,
     std::optional<int64_t> extracted_amount_in_micros,
-    bool has_timed_out_for_page_load = false);
+    const payments::AmountExtractionStatus& amount_extraction_status = {});
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
@@ -154,13 +158,16 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
 // `has_timed_out_for_page_load` indicates whether
 // the AI amount extraction request timed out. If true, the returned BNPL
 // suggestion is deactivated for the remainder of this page load.
+// `seen_unsupported_currency_for_page_load` indicates whether the AI amount
+// extraction has seen an unsupported currency. If true, the returned BNPL
+// suggestion is deactivated for the remainder of this page load.
 std::vector<Suggestion> GetCreditCardFooterSuggestions(
     const AutofillClient& client,
     bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    bool has_timed_out_for_page_load);
+    const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.
@@ -214,7 +221,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    bool has_timed_out_for_page_load);
+    const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Exposes `GetBnplPriceLowerBound` in tests.
 std::u16string GetBnplPriceLowerBoundForTest(

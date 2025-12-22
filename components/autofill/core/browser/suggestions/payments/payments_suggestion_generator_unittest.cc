@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
@@ -299,7 +300,7 @@ class PaymentsSuggestionGeneratorTest
 
     return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
-        {suggestion_data}, /*has_timed_out_for_page_load=*/false);
+        {suggestion_data}, payments::AmountExtractionStatus());
   }
 
   std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
@@ -321,7 +322,7 @@ class PaymentsSuggestionGeneratorTest
     return GenerateCreditCardOrCvcFieldSuggestionsSync(
         client, trigger_field, trigger_field_type, should_show_scan_credit_card,
         summary, is_card_number_field_empty, {suggestion_data},
-        /*has_timed_out_for_page_load=*/false);
+        payments::AmountExtractionStatus());
   }
 
  private:
@@ -1354,7 +1355,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
       GetCreditCardFooterSuggestionsForTest(
           autofill_client(), /*should_show_bnpl_suggestion*/ false,
           /*should_show_scan_credit_card=*/true, /*is_autofilled=*/true,
-          /*with_gpay_logo=*/true, /*has_timed_out_for_page_load=*/false);
+          /*with_gpay_logo=*/true, payments::AmountExtractionStatus());
 
   for (size_t index = 0; index < footer_suggestions.size(); index++) {
     EXPECT_TRUE(IsCreditCardFooterSuggestion(footer_suggestions, index));
@@ -2261,17 +2262,41 @@ TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
   EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
 }
 
-TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_DeactivatedStyle) {
+TEST_F(PaymentsSuggestionGeneratorTest,
+       CreateBnplSuggestion_DeactivatedStyle_Timeout) {
   std::vector<BnplIssuer> bnpl_issuers = {
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip)};
   Suggestion suggestion = CreateBnplSuggestion(
       bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000,
-      /*has_timed_out_for_page_load=*/true);
+      payments::AmountExtractionStatus{
+          .has_timed_out_for_page_load = true,
+          .seen_unsupported_currency_for_page_load = false});
 
   EXPECT_THAT(
       suggestion,
       EqualsSuggestion(
-          /*type=*/SuggestionType::kBnplEntry,
+          /*id=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl));
+  EXPECT_EQ(suggestion.acceptability,
+            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       CreateBnplSuggestion_DeactivatedStyle_UnsupportedCurrency) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000,
+      payments::AmountExtractionStatus{
+          .has_timed_out_for_page_load = false,
+          .seen_unsupported_currency_for_page_load = true});
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*id=*/SuggestionType::kBnplEntry,
           /*main_text=*/
           l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
           /*icon=*/Suggestion::Icon::kBnpl));
@@ -2401,8 +2426,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2440,8 +2464,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
@@ -2472,8 +2495,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   ASSERT_GE(suggestions.size(), 0ul);
 }
@@ -2501,8 +2523,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 3ul);
   EXPECT_THAT(suggestions[0],
@@ -2531,8 +2552,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2560,8 +2580,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2580,8 +2599,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2613,8 +2631,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -2646,8 +2663,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,
@@ -3598,8 +3614,7 @@ TEST_F(
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,
@@ -3994,8 +4009,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled() &&
       IsCvcSavingSupported()) {
@@ -4032,7 +4046,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*four_digit_combinations_in_dom=*/{"1113"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       u"1111", /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      payments::AmountExtractionStatus());
   if (!IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
     return;
@@ -4061,8 +4075,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4079,8 +4092,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -4104,8 +4116,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -4139,8 +4150,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
       /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
-      /*is_card_number_field_empty=*/false,
-      /*has_timed_out_for_page_load=*/false);
+      /*is_card_number_field_empty=*/false, payments::AmountExtractionStatus());
 
   EXPECT_THAT(
       suggestions,

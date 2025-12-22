@@ -95,7 +95,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
     bool is_card_number_field_empty,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
 
   std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
@@ -139,7 +139,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       GetCreditCardFooterSuggestions(
           client, should_show_bnpl_suggestion, should_show_scan_credit_card,
           trigger_field.is_autofilled(), display_gpay_logo,
-          has_timed_out_for_page_load),
+          amount_extraction_status),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -172,7 +172,7 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         virtual_card_guid_to_last_four_map,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
 
   const std::vector<SuggestionData>* credit_card_data = base::FindOrNull(
@@ -229,7 +229,7 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
       GetCreditCardFooterSuggestions(
           client, /*should_show_bnpl_suggestion=*/false,
           /*should_show_scan_credit_card=*/false, trigger_field.is_autofilled(),
-          /*with_gpay_logo=*/true, has_timed_out_for_page_load),
+          /*with_gpay_logo=*/true, amount_extraction_status),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -291,7 +291,7 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
     bool is_card_number_field_empty,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
   if (base::FindOrNull(suggestion_data,
                        SuggestionDataSource::kSaveAndFillPromo)) {
@@ -302,7 +302,7 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
         GetCreditCardFooterSuggestions(
             client, /*should_show_bnpl_suggestion=*/false,
             should_show_scan_credit_card, trigger_field.is_autofilled(),
-            display_gpay_logo, has_timed_out_for_page_load),
+            display_gpay_logo, amount_extraction_status),
         std::back_inserter(suggestions));
     return suggestions;
   } else if (base::FindOrNull(suggestion_data,
@@ -320,12 +320,12 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
 
     suggestions = GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
-        suggestion_data, has_timed_out_for_page_load);
+        suggestion_data, amount_extraction_status);
   } else {
     suggestions = GenerateCreditCardOrCvcFieldSuggestionsSync(
         client, trigger_field, trigger_field_type, should_show_scan_credit_card,
         summary, is_card_number_field_empty, suggestion_data,
-        has_timed_out_for_page_load);
+        amount_extraction_status);
   }
 
   return suggestions;
@@ -341,7 +341,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     bool is_card_number_field_empty,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   std::pair<SuggestionDataSource, std::vector<SuggestionData>> suggestion_data =
       FetchCreditCardSuggestionDataSync(
           client, trigger_field, trigger_field_type, summary, is_complete_form,
@@ -350,8 +350,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   return GenerateCreditCardSuggestionsSync(
       client, trigger_field, trigger_field_type, summary,
       should_show_scan_credit_card, four_digit_combinations_in_dom,
-      {suggestion_data}, is_card_number_field_empty,
-      has_timed_out_for_page_load);
+      {suggestion_data}, is_card_number_field_empty, amount_extraction_status);
 }
 
 }  // namespace autofill

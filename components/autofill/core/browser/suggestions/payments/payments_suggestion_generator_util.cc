@@ -764,7 +764,7 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
 Suggestion CreateBnplSuggestion(
     std::vector<BnplIssuer> bnpl_issuers,
     std::optional<int64_t> extracted_amount_in_micros,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
   bnpl_suggestion.main_text = Suggestion::Text(
@@ -844,7 +844,8 @@ Suggestion CreateBnplSuggestion(
   bnpl_suggestion.payload = std::move(payments_payload);
 
   bnpl_suggestion.acceptability =
-      has_timed_out_for_page_load
+      amount_extraction_status.has_timed_out_for_page_load ||
+              amount_extraction_status.seen_unsupported_currency_for_page_load
           ? Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle
           : Suggestion::Acceptability::kAcceptable;
 
@@ -1132,10 +1133,10 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   return GetCreditCardFooterSuggestions(
       client, should_show_bnpl_suggestion, should_show_scan_credit_card,
-      is_autofilled, with_gpay_logo, has_timed_out_for_page_load);
+      is_autofilled, with_gpay_logo, amount_extraction_status);
 }
 
 std::u16string GetBnplPriceLowerBoundForTest(
@@ -1355,7 +1356,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    bool has_timed_out_for_page_load) {
+    const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> footer_suggestions;
 
   // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
@@ -1367,12 +1368,11 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
       footer_suggestions.emplace_back(SuggestionType::kSeparator);
     }
 
-    footer_suggestions.push_back(
-        CreateBnplSuggestion(client.GetPersonalDataManager()
-                                 .payments_data_manager()
-                                 .GetBnplIssuers(),
-                             /*extracted_amount_in_micros=*/std::nullopt,
-                             has_timed_out_for_page_load));
+    footer_suggestions.push_back(CreateBnplSuggestion(
+        client.GetPersonalDataManager()
+            .payments_data_manager()
+            .GetBnplIssuers(),
+        /*extracted_amount_in_micros=*/std::nullopt, amount_extraction_status));
   }
 
   if (should_show_scan_credit_card) {
