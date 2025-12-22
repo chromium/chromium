@@ -109,9 +109,7 @@ public class PageInfoAboutThisSiteTest {
     @Before
     public void setUp() {
         doReturn(true).when(mMockAboutThisSiteJni).isFeatureEnabled();
-        doReturn(R.drawable.ic_info_outline_grey_24dp)
-                .when(mMockAboutThisSiteJni)
-                .getJavaDrawableIconId();
+        doReturn(R.drawable.ic_info_24dp).when(mMockAboutThisSiteJni).getJavaDrawableIconId();
         PageInfoAboutThisSiteControllerJni.setInstanceForTesting(mMockAboutThisSiteJni);
         mTestServerRule.setServerUsesHttps(true);
         mStartingPage =

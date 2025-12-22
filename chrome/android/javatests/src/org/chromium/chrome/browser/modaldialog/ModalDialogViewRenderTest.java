@@ -472,9 +472,7 @@ public class ModalDialogViewRenderTest {
                         sActivity, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);
         final Drawable icon3 =
                 UiUtils.getTintedDrawable(
-                        sActivity,
-                        R.drawable.ic_info_outline_grey_24dp,
-                        R.color.default_icon_color_tint_list);
+                        sActivity, R.drawable.ic_info_24dp, R.color.default_icon_color_tint_list);
 
         final var menuItems = new ArrayList<ModalDialogProperties.ModalDialogMenuItem>();
         menuItems.add(new ModalDialogProperties.ModalDialogMenuItem(icon1, "First menu item"));

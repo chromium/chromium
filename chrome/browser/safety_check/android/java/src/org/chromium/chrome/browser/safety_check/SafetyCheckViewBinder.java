@@ -67,7 +67,7 @@ class SafetyCheckViewBinder {
                 return R.drawable.ic_warning_red_24dp;
             case PasswordsState.NO_PASSWORDS:
             case PasswordsState.ERROR:
-                return R.drawable.ic_info_outline_grey_24dp;
+                return R.drawable.ic_info_24dp;
             default:
                 assert false : "Unknown PasswordsState value.";
         }
@@ -107,7 +107,7 @@ class SafetyCheckViewBinder {
                 return R.drawable.ic_done_blue;
             case SafeBrowsingState.DISABLED:
             case SafeBrowsingState.ERROR:
-                return R.drawable.ic_info_outline_grey_24dp;
+                return R.drawable.ic_info_24dp;
             case SafeBrowsingState.DISABLED_BY_ADMIN:
                 return R.drawable.ic_business;
             default:
@@ -148,7 +148,7 @@ class SafetyCheckViewBinder {
                 return R.drawable.ic_warning_red_24dp;
             case UpdatesState.OFFLINE:
             case UpdatesState.ERROR:
-                return R.drawable.ic_info_outline_grey_24dp;
+                return R.drawable.ic_info_24dp;
             default:
                 assert false : "Unknown UpdatesState value.";
         }
