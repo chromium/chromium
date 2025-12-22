@@ -330,7 +330,8 @@ public class IncognitoReauthControllerImpl
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        // TODO(crbug.com/459921316): Persist incognito reauth state.
+        // TODO(crbug.com/40242374): Incognito does not lock correctly for versions < Android P.
+        outPersistentState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
     }
 
     /** Override from {@link StartStopWithNativeObserver}. */

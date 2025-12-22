@@ -283,6 +283,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 false,
                 backPressManager,
                 null,
+                null,
                 new ObservableSupplierImpl<>(Color.TRANSPARENT),
                 edgeToEdgeManager,
                 /* xrSpaceModeObservableSupplier= */ null,

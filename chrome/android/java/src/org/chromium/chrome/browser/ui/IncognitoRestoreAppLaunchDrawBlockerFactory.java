@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class IncognitoRestoreAppLaunchDrawBlockerFactory {
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<PersistableBundle> mPersistentStateSupplier;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final CipherFactory mCipherFactory;
 
@@ -32,9 +34,11 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      */
     public IncognitoRestoreAppLaunchDrawBlockerFactory(
             Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<PersistableBundle> persistentStateSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mPersistentStateSupplier = persistentStateSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCipherFactory = cipherFactory;
     }
@@ -55,6 +59,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
             Runnable unblockDrawRunnable) {
         return new IncognitoRestoreAppLaunchDrawBlocker(
                 mSavedInstanceStateSupplier,
+                mPersistentStateSupplier,
                 mTabModelSelectorSupplier,
                 intentSupplier,
                 shouldIgnoreIntentSupplier,

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -36,6 +37,9 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
 
     /** A {@link Supplier<Bundle>} for the saved instance state supplier. */
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
+
+    /** A {@link Supplier<PersistableBundle>} for the persistent state supplier. */
+    private final Supplier<PersistableBundle> mPersistentStateSupplier;
 
     /** A supplier of {@link TabModelSelector} instance. */
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -120,6 +124,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     IncognitoRestoreAppLaunchDrawBlocker(
             Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<PersistableBundle> persistedStateSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Intent> intentSupplier,
             Supplier<Boolean> shouldIgnoreIntentSupplier,
@@ -127,6 +132,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
             Runnable unblockDrawRunnable,
             CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mPersistentStateSupplier = persistedStateSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mIntentSupplier = intentSupplier;
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
@@ -157,16 +163,21 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return false;
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE)) return false;
 
-        // A valid saved instance state is needed here.
+        // A valid saved instance state or persistent state is needed here.
         Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
-        if (savedInstanceState == null) return false;
+        PersistableBundle persistentState = mPersistentStateSupplier.get();
+        if (savedInstanceState == null && persistentState == null) return false;
 
         if (!mCipherFactory.restoreFromBundle(savedInstanceState)) return false;
 
         // There were no Incognito tabs before the Activity got destroyed. So we don't need to block
         // draw here.
+        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should be
+        //  discarded after a reboot.
         if (!savedInstanceState.getBoolean(
-                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)) {
+                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)
+                && !persistentState.getBoolean(
+                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)) {
             return false;
         }
 

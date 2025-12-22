@@ -562,8 +562,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      * @return The saved {@link PersistableBundle} for the last persisted state.
      */
     public @Nullable PersistableBundle getPersistentInstanceState() {
-        assert shouldPersistAcrossReboots() || mPersistentInstanceState == null
-                : "Persistent state should be null if the feature is not enabled.";
+        if (!shouldPersistAcrossReboots()) {
+            assert mPersistentInstanceState == null
+                    : "Persistent state should be null if the feature is not enabled.";
+            return null;
+        }
         return mPersistentInstanceState;
     }
 

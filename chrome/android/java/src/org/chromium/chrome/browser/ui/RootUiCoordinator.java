@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.View;
@@ -442,6 +443,7 @@ public class RootUiCoordinator
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
+     * @param persistentState The persisted bundle for the last recorded state.
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
@@ -490,6 +492,7 @@ public class RootUiCoordinator
             boolean initializeUiWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
+            @Nullable PersistableBundle persistentState,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
@@ -551,11 +554,21 @@ public class RootUiCoordinator
 
         setupUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.register(this);
-        mIsIncognitoReauthPendingOnRestore =
+
+        boolean savedIncognitoReauthPending =
                 savedInstanceState != null
                         && savedInstanceState.getBoolean(
                                 IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING,
                                 false);
+        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should be
+        //  discarded after a reboot.
+        boolean persistedIncognitoReauthPending =
+                persistentState != null
+                        && persistentState.getBoolean(
+                                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING,
+                                false);
+        mIsIncognitoReauthPendingOnRestore =
+                savedIncognitoReauthPending || persistedIncognitoReauthPending;
 
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
 
