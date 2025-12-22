@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 
+#include <utility>
+
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/time/clock.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,7 +94,7 @@ bool IsPageTransitionValidForNavigationCapturing(
     default:
       NOTREACHED();
   }
-  if (base::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
+  if (std::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
     // Qualifiers indicate that this navigation was the result of a click on a
     // forward/back button, typing in the URL bar, or client-side redirections.
     // Don't handle any of those types of navigations.

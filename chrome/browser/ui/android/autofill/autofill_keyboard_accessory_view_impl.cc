@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -127,7 +126,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     java_suggestions.push_back(
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
             env, label, sublabel, suggestion.voice_over.value_or(u""),
-            android_icon_id, base::to_underlying(suggestion.type),
+            android_icon_id, std::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr),
             suggestion.iph_metadata.feature
                 ? suggestion.iph_metadata.feature->name

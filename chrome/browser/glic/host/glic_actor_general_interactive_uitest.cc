@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -665,7 +666,7 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
               return state == $1;
             });
           )JS",
-              base::to_underlying(state));
+              std::to_underlying(state));
           ASSERT_TRUE(content::ExecJs(glic_contents, script));
         })));
   }

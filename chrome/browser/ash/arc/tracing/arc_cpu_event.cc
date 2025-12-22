@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_cpu_event.h"
 
+#include <utility>
+
 #include "base/logging.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace arc {
 
@@ -201,7 +202,7 @@ bool LoadAllCpuEvents(const base::Value* value, AllCpuEvents* all_cpu_events) {
 }
 
 std::ostream& operator<<(std::ostream& os, ArcCpuEvent::Type event_type) {
-  return os << base::to_underlying(event_type);
+  return os << std::to_underlying(event_type);
 }
 
 }  // namespace arc

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -1158,7 +1159,7 @@ void BrowserActions::InitializeBrowserActions() {
                   if ((page_action_trigger !=
                        page_actions::kInvalidPageActionTrigger) &&
                       page_action_trigger ==
-                          base::to_underlying(
+                          std::to_underlying(
                               page_actions::PageActionTrigger::kKeyboard)) {
                     via_keyboard = true;
                   }

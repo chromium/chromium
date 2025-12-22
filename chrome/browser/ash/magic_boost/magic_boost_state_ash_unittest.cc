@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -164,14 +164,14 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatus) {
   // The observer class should get an notification when the pref value
   // changes.
   prefs()->SetInteger(ash::prefs::kHMRConsentStatus,
-                      base::to_underlying(HMRConsentStatus::kDeclined));
+                      std::to_underlying(HMRConsentStatus::kDeclined));
 
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_status(),
             HMRConsentStatus::kDeclined);
   EXPECT_EQ(observer()->hmr_consent_status(), HMRConsentStatus::kDeclined);
 
   prefs()->SetInteger(ash::prefs::kHMRConsentStatus,
-                      base::to_underlying(HMRConsentStatus::kApproved));
+                      std::to_underlying(HMRConsentStatus::kApproved));
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_status(),
             HMRConsentStatus::kApproved);
   EXPECT_EQ(observer()->hmr_consent_status(), HMRConsentStatus::kApproved);

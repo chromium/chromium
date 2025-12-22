@@ -78,7 +78,7 @@ namespace updater_policy {
 namespace edm = ::wireless_android_enterprise_devicemanagement;
 
 std::ostream& operator<<(std::ostream& os, edm::UpdateValue value) {
-  os << base::to_underlying(value) << " ";
+  os << std::to_underlying(value) << " ";
   switch (value) {
     case edm::UPDATES_DISABLED:
       return os << "(Disabled)";
@@ -93,7 +93,7 @@ std::ostream& operator<<(std::ostream& os, edm::UpdateValue value) {
 }
 
 std::ostream& operator<<(std::ostream& os, edm::InstallDefaultValue value) {
-  os << base::to_underlying(value) << " ";
+  os << std::to_underlying(value) << " ";
   switch (value) {
     case edm::INSTALL_DEFAULT_DISABLED:
       return os << "(Disabled)";
@@ -106,7 +106,7 @@ std::ostream& operator<<(std::ostream& os, edm::InstallDefaultValue value) {
 }
 
 std::ostream& operator<<(std::ostream& os, edm::InstallValue value) {
-  os << base::to_underlying(value) << " ";
+  os << std::to_underlying(value) << " ";
   switch (value) {
     case edm::INSTALL_DISABLED:
       return os << "(Disabled)";

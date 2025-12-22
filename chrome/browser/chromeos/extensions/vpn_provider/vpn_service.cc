@@ -11,7 +11,6 @@
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -150,14 +149,14 @@ void VpnService::VpnConfiguration::OnPlatformMessage(
             platform_message);
 
   if (platform_message ==
-      base::to_underlying(api_vpn::PlatformMessage::kConnected)) {
+      std::to_underlying(api_vpn::PlatformMessage::kConnected)) {
     vpn_service_->GetVpnService()
         ->GetVpnServiceForExtension(extension_id())
         ->SetActiveConfiguration(this);
   } else if (platform_message ==
-                 base::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
+                 std::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
              platform_message ==
-                 base::to_underlying(api_vpn::PlatformMessage::kError)) {
+                 std::to_underlying(api_vpn::PlatformMessage::kError)) {
     vpn_service_->GetVpnService()
         ->GetVpnServiceForExtension(extension_id())
         ->SetActiveConfiguration(nullptr);
@@ -483,9 +482,9 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
       GetActiveConfigurationObjectPath(extension_id).value(),
       connection_success
-          ? base::to_underlying(
+          ? std::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kConnected)
-          : base::to_underlying(
+          : std::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kFailure),
       std::move(success), std::move(failure));
 }

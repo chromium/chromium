@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -53,7 +52,7 @@ void OnDemandUpdateCompleted(update_client::Error err) {
   VLOG(1) << "On-demand update for the "
              "Iwa Key Distribution Component "
              "finished with result "
-          << base::to_underlying(err);
+          << std::to_underlying(err);
 }
 
 component_updater::OnDemandUpdater::Priority GetOnDemandUpdatePriority() {

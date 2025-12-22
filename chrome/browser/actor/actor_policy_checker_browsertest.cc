@@ -4,10 +4,11 @@
 
 #include "chrome/browser/actor/actor_policy_checker.h"
 
+#include <utility>
+
 #include "base/base_switches.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManagedBrowser,
   // non-managed clients.
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(glic::prefs::kGlicActuationOnWeb,
-                    base::to_underlying(
+                    std::to_underlying(
                         glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
 
   // Non-managed clients always have the capability.
@@ -265,7 +266,7 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
     policy::PolicyMap policies;
     std::optional<base::Value> value_to_set;
     if (value.has_value()) {
-      value_to_set = base::Value(base::to_underlying(*value));
+      value_to_set = base::Value(std::to_underlying(*value));
     }
     policies.Set(policy::key::kGeminiActOnWebSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

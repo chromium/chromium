@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -618,7 +618,7 @@ void ExpectErrorResult(PerformActionsFuture& future,
 }
 
 void PrintTo(const mojom::ActionResultCode& code, std::ostream* os) {
-  *os << base::to_underlying(code);
+  *os << std::to_underlying(code);
 }
 
 void SetUpBlocklist(base::CommandLine* command_line,

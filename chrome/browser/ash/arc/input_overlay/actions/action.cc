@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
@@ -104,7 +104,7 @@ void LogEvent(const ui::Event& event) {
             << ui::KeycodeConverter::DomKeyToKeyString(key_event->GetDomKey())
             << "}. DomCode{"
             << ui::KeycodeConverter::DomCodeToCodeString(key_event->code())
-            << "}. Type{" << base::to_underlying(key_event->type()) << "}. "
+            << "}. Type{" << std::to_underlying(key_event->type()) << "}. "
             << key_event->ToString();
   } else if (event.IsTouchEvent()) {
     const auto* touch_event = event.AsTouchEvent();

@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"

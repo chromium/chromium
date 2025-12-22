@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/grit/components_resources.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -144,7 +145,7 @@ TEST_F(TranslateScriptBrowserTest, ElementLoadSuccess) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 }
 
@@ -157,7 +158,7 @@ TEST_F(TranslateScriptBrowserTest, ElementLoadFailure) {
   EXPECT_FALSE(IsLibReady());
   EXPECT_TRUE(GetError());
   EXPECT_EQ(
-      base::to_underlying(translate::TranslateErrors::INITIALIZATION_ERROR),
+      std::to_underlying(translate::TranslateErrors::INITIALIZATION_ERROR),
       GetErrorCode());
 }
 
@@ -166,13 +167,13 @@ TEST_F(TranslateScriptBrowserTest, TranslateSuccess) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 
   ExecuteScript(kTranslate);
 
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 }
 
@@ -183,14 +184,14 @@ TEST_F(TranslateScriptBrowserTest, TranslateFail) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 
   ExecuteScript(kTranslate);
 
   EXPECT_TRUE(GetError());
   EXPECT_EQ(
-      base::to_underlying(translate::TranslateErrors::UNEXPECTED_SCRIPT_ERROR),
+      std::to_underlying(translate::TranslateErrors::UNEXPECTED_SCRIPT_ERROR),
       GetErrorCode());
 }
 
@@ -202,13 +203,13 @@ TEST_F(TranslateScriptBrowserTest, CallbackGetBooleanError) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 
   ExecuteScript(kTranslate);
 
   EXPECT_TRUE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR),
             GetErrorCode());
 }
 
@@ -221,13 +222,13 @@ TEST_F(TranslateScriptBrowserTest, CallbackGetNumberError1) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 
   ExecuteScript(kTranslate);
 
   EXPECT_TRUE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR),
             GetErrorCode());
 }
 
@@ -240,14 +241,14 @@ TEST_F(TranslateScriptBrowserTest, CallbackGetNumberError2) {
   InjectElementLibrary();
   EXPECT_TRUE(IsLibReady());
   EXPECT_FALSE(GetError());
-  EXPECT_EQ(base::to_underlying(translate::TranslateErrors::NONE),
+  EXPECT_EQ(std::to_underlying(translate::TranslateErrors::NONE),
             GetErrorCode());
 
   ExecuteScript(kTranslate);
 
   EXPECT_TRUE(GetError());
   EXPECT_EQ(
-      base::to_underlying(translate::TranslateErrors::UNSUPPORTED_LANGUAGE),
+      std::to_underlying(translate::TranslateErrors::UNSUPPORTED_LANGUAGE),
       GetErrorCode());
 }
 

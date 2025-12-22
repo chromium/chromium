@@ -10,6 +10,7 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -31,7 +32,6 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
@@ -603,7 +603,7 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
     policies.Set(policy::key::kGeminiActOnWebSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 base::Value(base::to_underlying(value)), nullptr);
+                 base::Value(std::to_underlying(value)), nullptr);
     policy_provider_.UpdateChromePolicy(policies);
   }
 
@@ -3384,16 +3384,16 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   if (GetParam().enable_scroll_to_pdf) {
 #if BUILDFLAG(ENABLE_PDF)
     expected_capabilities.Append(
-        base::to_underlying(mojom::HostCapability::kScrollToPdf));
+        std::to_underlying(mojom::HostCapability::kScrollToPdf));
 #endif
   }
   if (GetParam().trust_first_onboarding_arm1) {
     expected_capabilities.Append(
-        base::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm1));
+        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm1));
   }
   if (GetParam().trust_first_onboarding_arm2) {
     expected_capabilities.Append(
-        base::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
+        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
   }
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }

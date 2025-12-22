@@ -18,7 +18,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -1125,7 +1124,7 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
       [](const autofill::AttributeType& attribute_type) {
         autofill_private::AttributeType private_api_attribute_type;
         private_api_attribute_type.type_name =
-            base::to_underlying(attribute_type.name());
+            std::to_underlying(attribute_type.name());
         private_api_attribute_type.type_name_as_string =
             base::UTF16ToUTF8(attribute_type.GetNameForI18n());
         private_api_attribute_type.data_type = autofill_ai_util::

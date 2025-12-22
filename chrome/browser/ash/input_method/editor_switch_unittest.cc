@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
@@ -652,8 +652,8 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   mock_notifier->SetConnectionType(test_case.network_status);
 
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, test_case.user_pref);
-  profile->GetPrefs()->SetInteger(
-      prefs::kOrcaConsentStatus, base::to_underlying(test_case.consent_status));
+  profile->GetPrefs()->SetInteger(prefs::kOrcaConsentStatus,
+                                  std::to_underlying(test_case.consent_status));
   context.OnTabletModeUpdated(test_case.is_in_tablet_mode);
   context.OnActivateIme(test_case.active_engine_id);
   context.OnInputContextUpdated(
@@ -740,7 +740,7 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile->GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus,
-      base::to_underlying(
+      std::to_underlying(
           chromeos::editor_menu::EditorConsentStatus::kApproved));
   context.OnTabletModeUpdated(false);
   context.OnActivateIme(kUsEngineId);
@@ -772,7 +772,7 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
     profile_->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
     profile_->GetPrefs()->SetInteger(
         prefs::kOrcaConsentStatus,
-        base::to_underlying(
+        std::to_underlying(
             chromeos::editor_menu::EditorConsentStatus::kApproved));
   }
 

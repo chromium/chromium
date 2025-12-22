@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <ios>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 
@@ -31,7 +31,7 @@ AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
     default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
-  os << "(suggestion_type: " << base::to_underlying(field.suggestion_type())
+  os << "(suggestion_type: " << std::to_underlying(field.suggestion_type())
      << ", " << "display text: \"" << field.display_text() << "\", "
      << "text_to_fill: \"" << field.text_to_fill() << "\", "
      << "a11y_description: \"" << field.a11y_description() << "\", " << "id: \""

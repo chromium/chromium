@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -19,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -265,7 +265,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
        NoInstallationWhenDevModePolicyDisabled) {
   pref_service()->SetManagedPref(
       prefs::kDevToolsAvailability,
-      base::Value(base::to_underlying(
+      base::Value(std::to_underlying(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
 
   base::test::RepeatingTestFuture<

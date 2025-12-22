@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -265,8 +267,8 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
 
   // The feature is disabled by enterprise policy.
   constexpr int kPolicyDisabled =
-      base::to_underlying(optimization_guide::model_execution::prefs::
-                              ModelExecutionEnterprisePolicyValue::kDisable);
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable);
   if (pref_service_->GetInteger(
           optimization_guide::prefs::
               kAutomatedPasswordChangeEnterprisePolicyAllowed) ==

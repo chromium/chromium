@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -20,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -196,7 +196,7 @@ bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
     return false;
   }
 
-  if (base::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
+  if (std::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
       0) {
     // Qualifiers indicate that this navigation was the result of a click on a
     // forward/back button, or typing in the URL bar. Don't handle any of those

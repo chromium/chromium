@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
@@ -66,7 +65,7 @@ bool HasUserNavigationBeyondInitial(content::WebContents& web_contents) {
   // user selected default page.
   while (index > 0) {
     content::NavigationEntry* entry = controller.GetEntryAtIndex(index);
-    auto transition = base::to_underlying(entry->GetTransitionType());
+    auto transition = std::to_underlying(entry->GetTransitionType());
     bool automatic = 0 != (transition & (ui::PAGE_TRANSITION_FORWARD_BACK |
                                          ui::PAGE_TRANSITION_HOME_PAGE |
                                          ui::PAGE_TRANSITION_FROM_API |

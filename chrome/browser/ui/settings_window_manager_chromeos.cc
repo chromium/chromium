@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
+#include <utility>
+
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shelf_item.h"
@@ -12,7 +14,6 @@
 #include "ash/wm/window_properties.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -227,7 +228,7 @@ void SettingsWindowManager::ShowOSSettings(
     int64_t display_id) {
   std::string path_with_setting_id =
       base::StrCat({sub_page, std::string("?settingId="),
-                    base::NumberToString(base::to_underlying(setting_id))});
+                    base::NumberToString(std::to_underlying(setting_id))});
 
   ShowOSSettings(profile, path_with_setting_id, display_id);
 }

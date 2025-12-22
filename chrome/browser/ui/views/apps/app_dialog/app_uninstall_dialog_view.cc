@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -425,7 +425,7 @@ void AppUninstallDialogView::InitializeSubAppList(
     auto* sub_app_label =
         box->AddChildView(std::make_unique<views::Label>(sub_app.app_name));
 
-    sub_app_label->SetGroup(base::to_underlying(DialogViewID::SUB_APP_LABEL));
+    sub_app_label->SetGroup(std::to_underlying(DialogViewID::SUB_APP_LABEL));
 
     sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_app_label->SetMultiLine(true);
@@ -434,7 +434,7 @@ void AppUninstallDialogView::InitializeSubAppList(
         box->AddChildView(std::make_unique<views::ImageView>());
     sub_app_icon->SetImage(
         ui::ImageModel::FromImageSkia(sub_app.icon->uncompressed));
-    sub_app_icon->SetGroup(base::to_underlying(DialogViewID::SUB_APP_ICON));
+    sub_app_icon->SetGroup(std::to_underlying(DialogViewID::SUB_APP_ICON));
 
     box->SetBetweenChildSpacing(
         provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL));

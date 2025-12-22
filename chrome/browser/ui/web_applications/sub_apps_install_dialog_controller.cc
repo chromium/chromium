@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -93,7 +93,7 @@ PermissionsExplanation(int num_sub_apps,
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(formatted_string);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  label->SetID(base::to_underlying(
+  label->SetID(std::to_underlying(
       SubAppsInstallDialogController::SubAppsInstallDialogViewID::
           MANAGE_PERMISSIONS_LINK));
 
@@ -162,8 +162,8 @@ class SubAppsListView : public views::ScrollView {
                              kSubAppIconSize, image_info.bitmaps),
                          gfx::Size(kSubAppIconSize, kSubAppIconSize))));
       sub_app_icon->SetGroup(
-          base::to_underlying(SubAppsInstallDialogController::
-                                  SubAppsInstallDialogViewID::SUB_APP_ICON));
+          std::to_underlying(SubAppsInstallDialogController::
+                                 SubAppsInstallDialogViewID::SUB_APP_ICON));
       icon_views_.push_back(sub_app_icon);
 
       // If any masking needs to happen, do it and update the image in the view
@@ -183,8 +183,8 @@ class SubAppsListView : public views::ScrollView {
       sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       sub_app_label->SetMultiLine(true);
       sub_app_label->SetGroup(
-          base::to_underlying(SubAppsInstallDialogController::
-                                  SubAppsInstallDialogViewID::SUB_APP_LABEL));
+          std::to_underlying(SubAppsInstallDialogController::
+                                 SubAppsInstallDialogViewID::SUB_APP_LABEL));
 
       icon_index++;
     }

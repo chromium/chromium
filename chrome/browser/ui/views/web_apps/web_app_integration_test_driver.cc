@@ -496,7 +496,7 @@ std::string GetRelativeSubAppPath(Site sub_app) {
   return sub_app_path;
 }
 std::string GetSiteId(Site site) {
-  return base::NumberToString(base::to_underlying(site));
+  return base::NumberToString(std::to_underlying(site));
 }
 
 web_package::test::Ed25519KeyPair GetKeyPairForSite(Site site) {

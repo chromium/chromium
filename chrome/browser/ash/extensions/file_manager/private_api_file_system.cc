@@ -36,7 +36,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
@@ -186,7 +185,7 @@ ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
       return ash::disks::FormatFileSystemType::kNtfs;
   }
   NOTREACHED() << "Unknown format filesystem "
-               << base::to_underlying(filesystem);
+               << std::to_underlying(filesystem);
 }
 
 std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
@@ -213,7 +212,7 @@ std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
     case api::file_manager_private::IoTaskType::kNone:
       return {};
   }
-  NOTREACHED() << "Unknown I/O task type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown I/O task type " << std::to_underlying(type);
 }
 
 extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
@@ -267,7 +266,7 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
     case api::file_manager_private::PolicyDialogType::kError:
       return policy::FilesDialogType::kError;
   }
-  NOTREACHED() << "Unknown policy dialog type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown policy dialog type " << std::to_underlying(type);
 }
 
 std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
@@ -280,9 +279,9 @@ std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     case api::file_manager_private::PolicyErrorType::kNone:
       return std::nullopt;
     case api::file_manager_private::PolicyErrorType::kDlpWarningTimeout:
-      NOTREACHED() << "Unexpected policy type " << base::to_underlying(type);
+      NOTREACHED() << "Unexpected policy type " << std::to_underlying(type);
   }
-  NOTREACHED() << "Unknown policy error type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown policy error type " << std::to_underlying(type);
 }
 
 // Handles a callback from the LocalImageSearchService. The job of this function
@@ -1172,7 +1171,7 @@ FileManagerPrivateGetDialogCallerFunction::Run() {
     }
     if (caller->component().has_value()) {
       info.Set("component",
-               base::to_underlying(DlpRulesManagerComponentToApiEnum(
+               std::to_underlying(DlpRulesManagerComponentToApiEnum(
                    caller->component().value())));
     }
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/api/tasks/fake_tasks_client.h"
@@ -27,7 +28,6 @@
 #include "ash/test/ash_test_util.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -160,29 +160,29 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   Combobox* GetTasksComboBoxView() const {
     return views::AsViewClass<Combobox>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
+        std::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   views::ScrollView* GetTasksScrollView() const {
     return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+        std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   views::View* GetTasksItemContainerView() const {
     return views::AsViewClass<views::View>(
-        GetTasksView()->GetViewByID(base::to_underlying(
+        GetTasksView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   CounterExpandButton* GetTasksExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
-        GetTasksView()->GetViewByID(base::to_underlying(
+        GetTasksView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::LabelButton* GetAddNewTaskButton() const {
     return views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+        std::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
   }
 
   std::vector<std::string> GetCurrentTaskListItemTitles() const {
@@ -191,7 +191,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
       if (views::View* task_item = views::AsViewClass<views::View>(child)) {
         current_items.push_back(
             base::UTF16ToUTF8(views::AsViewClass<views::Label>(
-                                  task_item->GetViewByID(base::to_underlying(
+                                  task_item->GetViewByID(std::to_underlying(
                                       GlanceablesViewId::kTaskItemTitleLabel)))
                                   ->GetText()));
       }
@@ -209,18 +209,18 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   views::View* GetStudentComboBoxView() const {
     return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
+        std::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   CounterExpandButton* GetStudentExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
-        GetStudentView()->GetViewByID(base::to_underlying(
+        GetStudentView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::View* GetStudentItemContainerView() const {
     return views::AsViewClass<views::View>(
-        GetStudentView()->GetViewByID(base::to_underlying(
+        GetStudentView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
@@ -230,7 +230,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
       if (views::View* assignment = views::AsViewClass<views::View>(child)) {
         assignment_titles.push_back(base::UTF16ToUTF8(
             views::AsViewClass<views::Label>(
-                assignment->GetViewByID(base::to_underlying(
+                assignment->GetViewByID(std::to_underlying(
                     GlanceablesViewId::kClassroomItemCourseWorkTitleLabel)))
                 ->GetText()));
       }
@@ -245,7 +245,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   views::LabelButton* GetStudentFooterSeeAllButton() const {
     return views::AsViewClass<views::LabelButton>(GetStudentView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+        std::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
   }
 
  private:
@@ -522,10 +522,10 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, AddTaskItem) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(pending_task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(pending_task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "edit" mode (the text field is displayed).
     EXPECT_FALSE(title_label);
@@ -551,10 +551,10 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, AddTaskItem) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(pending_task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(pending_task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "view" mode with the expected label
     ASSERT_TRUE(title_label);
@@ -582,10 +582,10 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "view" mode (the label is displayed).
     ASSERT_TRUE(title_label);
@@ -602,10 +602,10 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "edit" mode (the text field is displayed).
     EXPECT_FALSE(title_label);
@@ -627,10 +627,10 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(task_view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "view" mode with the updated label
     ASSERT_TRUE(title_label);
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
   EXPECT_TRUE(GetTasksView());
 
   auto* error_view = views::AsViewClass<ErrorMessageToast>(
-      GetTasksView()->GetViewByID(base::to_underlying(
+      GetTasksView()->GetViewByID(std::to_underlying(
           GlanceablesViewId::kTimeManagementErrorMessageToast)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
@@ -866,8 +866,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
       error_view->GetButtonForTest()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
 
-  EXPECT_FALSE(GetTasksView()->GetViewByID(base::to_underlying(
-      GlanceablesViewId::kTimeManagementErrorMessageToast)));
+  EXPECT_FALSE(GetTasksView()->GetViewByID(
+      std::to_underlying(GlanceablesViewId::kTimeManagementErrorMessageToast)));
   auto* combobox = GetTasksComboBoxView();
   EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
             u"Task List 1 Title");
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, SwitchTaskListsWithError) {
             u"Task List 1 Title");
 
   auto* error_view = views::AsViewClass<ErrorMessageToast>(
-      GetTasksView()->GetViewByID(base::to_underlying(
+      GetTasksView()->GetViewByID(std::to_underlying(
           GlanceablesViewId::kTimeManagementErrorMessageToast)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
   auto* first_task_view_label =
       GetTaskItemView(/*item_index=*/0)
           ->GetViewByID(
-              base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
+              std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
   GetEventGenerator()->MoveMouseTo(
       first_task_view_label->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
   auto* first_task_view_textfield =
       GetTaskItemView(/*item_index=*/0)
           ->GetViewByID(
-              base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+              std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
   ASSERT_TRUE(first_task_view_textfield);
   ASSERT_TRUE(first_task_view_textfield->GetVisible());
 

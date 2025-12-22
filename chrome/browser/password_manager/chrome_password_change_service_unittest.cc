@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -397,9 +399,9 @@ class ChromePasswordChangeServiceAvailabilityTest
         password_manager::features::kImprovedPasswordChangeService,
         GetParam().is_feature_enabled);
     if (GetParam().is_disabled_by_policy) {
-      constexpr int kPolicyDisabled = base::to_underlying(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kDisable);
+      constexpr int kPolicyDisabled =
+          std::to_underlying(optimization_guide::model_execution::prefs::
+                                 ModelExecutionEnterprisePolicyValue::kDisable);
       prefs()->SetInteger(optimization_guide::prefs::
                               kAutomatedPasswordChangeEnterprisePolicyAllowed,
                           kPolicyDisabled);

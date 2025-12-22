@@ -5,6 +5,7 @@
 #include "components/translate/content/renderer/translate_agent.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/base_paths.h"
 #include "base/files/file.h"
@@ -15,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/language_detection/core/constants.h"
@@ -228,7 +228,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateLibNeverReady) {
   EXPECT_CALL(*translate_agent_, GetErrorCode())
       .Times(AtLeast(5))
       .WillRepeatedly(
-          Return(base::to_underlying(translate::TranslateErrors::NONE)));
+          Return(std::to_underlying(translate::TranslateErrors::NONE)));
 
   translate_agent_->TranslatePage("en", "fr", std::string());
   base::RunLoop().RunUntilIdle();
@@ -253,7 +253,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateSuccess) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
-      .WillOnce(Return(base::to_underlying(translate::TranslateErrors::NONE)));
+      .WillOnce(Return(std::to_underlying(translate::TranslateErrors::NONE)));
 
   EXPECT_CALL(*translate_agent_, StartTranslation()).WillOnce(Return(true));
 
@@ -309,7 +309,7 @@ TEST_F(TranslateAgentBrowserTest, TranslateFailure) {
 
   EXPECT_CALL(*translate_agent_, GetErrorCode())
       .WillOnce(Return(
-          base::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR)));
+          std::to_underlying(translate::TranslateErrors::TRANSLATION_ERROR)));
 
   // V8 call for performance monitoring should be ignored.
   EXPECT_CALL(*translate_agent_, ExecuteScriptAndGetDoubleResult(_)).Times(2);

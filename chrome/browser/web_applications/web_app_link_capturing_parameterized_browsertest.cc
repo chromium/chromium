@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -35,7 +36,6 @@
 #include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1592,11 +1592,11 @@ class NavCaptureParameterizedBrowserTest
   }
 
   void PerformTestCleanupForAllFilesIfNeeded() {
-    for (auto display_mode = base::to_underlying(AppUserDisplayMode::kMinValue);
-         display_mode <= base::to_underlying(AppUserDisplayMode::kMaxValue);
+    for (auto display_mode = std::to_underlying(AppUserDisplayMode::kMinValue);
+         display_mode <= std::to_underlying(AppUserDisplayMode::kMaxValue);
          ++display_mode) {
-      for (auto link_capturing = base::to_underlying(LinkCapturing::kMinValue);
-           link_capturing <= base::to_underlying(LinkCapturing::kMaxValue);
+      for (auto link_capturing = std::to_underlying(LinkCapturing::kMinValue);
+           link_capturing <= std::to_underlying(LinkCapturing::kMaxValue);
            ++link_capturing) {
         PerformTestCleanupIfNeeded(
             {static_cast<AppUserDisplayMode>(display_mode),

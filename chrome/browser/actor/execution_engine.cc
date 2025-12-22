@@ -22,7 +22,6 @@
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/actor/actor_features.h"

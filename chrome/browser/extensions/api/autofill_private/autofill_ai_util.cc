@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -88,7 +88,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
 
     const EntityType entity_type = entity_instance.type();
     entity_instance_with_labels.type.type_name =
-        base::to_underlying(entity_type.name());
+        std::to_underlying(entity_type.name());
     entity_instance_with_labels.type.type_name_as_string =
         base::UTF16ToUTF8(entity_type.GetNameForI18n());
     entity_instance_with_labels.type.add_entity_type_string =
@@ -136,7 +136,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
        private_api_entity_instance.attribute_instances) {
     if (private_api_attribute_instance.type.type_name < 0 ||
         private_api_attribute_instance.type.type_name >
-            base::to_underlying(AttributeTypeName::kMaxValue)) {
+            std::to_underlying(AttributeTypeName::kMaxValue)) {
       return std::nullopt;
     }
 
@@ -213,7 +213,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
        entity_instance.attributes()) {
     private_api_attribute_instances.emplace_back();
     private_api_attribute_instances.back().type.type_name =
-        base::to_underlying(attribute_instance.type().name());
+        std::to_underlying(attribute_instance.type().name());
     private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
 
@@ -252,7 +252,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
 
   autofill_private::EntityInstance private_api_entity_instance;
   private_api_entity_instance.type.type_name =
-      base::to_underlying(entity_instance.type().name());
+      std::to_underlying(entity_instance.type().name());
   private_api_entity_instance.type.type_name_as_string =
       base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
   private_api_entity_instance.type.add_entity_type_string =
@@ -292,7 +292,7 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
     const EntityType& entity_type,
     bool supports_wallet_storage) {
   autofill_private::EntityType api_type;
-  api_type.type_name = base::to_underlying(entity_type.name());
+  api_type.type_name = std::to_underlying(entity_type.name());
   api_type.type_name_as_string =
       base::UTF16ToUTF8(entity_type.GetNameForI18n());
   api_type.add_entity_type_string =

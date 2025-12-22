@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -23,7 +24,6 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -809,7 +809,7 @@ class IsolatedWebAppDevToolsTestWithPolicy
   void SetDevToolsAvailability() {
     GetProfileForTest()->GetPrefs()->SetInteger(
         prefs::kDevToolsAvailability,
-        base::to_underlying(
+        std::to_underlying(
             std::get<DeveloperToolsPolicyHandler::Availability>(GetParam())));
   }
   bool AreDevToolsWindowsAllowedByCurrentPolicy() const {

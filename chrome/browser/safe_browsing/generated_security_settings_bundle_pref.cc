@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/profiles/profile.h"

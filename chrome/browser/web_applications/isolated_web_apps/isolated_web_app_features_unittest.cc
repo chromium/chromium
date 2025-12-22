@@ -5,9 +5,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
@@ -32,7 +32,7 @@ class IsolatedWebAppFeaturesTest : public WebAppTest {
       policy::DeveloperToolsPolicyHandler::Availability availability) {
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kDevToolsAvailability,
-        base::Value(base::to_underlying(availability)));
+        base::Value(std::to_underlying(availability)));
   }
 };
 

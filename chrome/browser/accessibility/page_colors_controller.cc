@@ -4,8 +4,9 @@
 
 #include "chrome/browser/accessibility/page_colors_controller.h"
 
+#include <utility>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -43,7 +44,7 @@ PageColorsController::~PageColorsController() = default;
 // static
 void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kRequestedPageColors,
-                                base::to_underlying(PageColors::kNoPreference));
+                                std::to_underlying(PageColors::kNoPreference));
   registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
                                 false);
   registry->RegisterListPref(prefs::kPageColorsBlockList);
@@ -73,7 +74,7 @@ void PageColorsController::MigrateObsoleteProfilePrefs(
         requested_page_colors = PageColors::kNoPreference;
       }
       profile_prefs->SetInteger(prefs::kRequestedPageColors,
-                                base::to_underlying(requested_page_colors));
+                                std::to_underlying(requested_page_colors));
     }
   }
   profile_prefs->ClearPref(kPageColors);
@@ -88,7 +89,7 @@ void PageColorsController::OnNativeThemeUpdated(
 void PageColorsController::SetRequestedPageColors(PageColors page_colors) {
   // Setting the pref will automatically trigger `RecomputePageColors()`.
   profile_prefs_->SetInteger(prefs::kRequestedPageColors,
-                             base::to_underlying(page_colors));
+                             std::to_underlying(page_colors));
 }
 
 void PageColorsController::RecomputePageColors() {
@@ -105,8 +106,7 @@ void PageColorsController::RecomputePageColors() {
   const int pref_value =
       profile_prefs_->GetInteger(prefs::kRequestedPageColors);
   PageColors page_colors =
-      (pref_value < 0 ||
-       pref_value > base::to_underlying(PageColors::kMaxValue))
+      (pref_value < 0 || pref_value > std::to_underlying(PageColors::kMaxValue))
           ? PageColors::kNoPreference
           : static_cast<PageColors>(pref_value);
   if (preferred_contrast != ui::NativeTheme::PreferredContrast::kMore &&

@@ -5,6 +5,7 @@
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -16,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
@@ -137,7 +137,7 @@ void MediaRouterIntegrationBrowserTest::InitTestUi() {
       test_ui_ = std::make_unique<MediaRouterGmcUiForTest>(web_contents);
       break;
     default:
-      NOTREACHED() << base::to_underlying(test_ui_type_);
+      NOTREACHED() << std::to_underlying(test_ui_type_);
   }
 }
 

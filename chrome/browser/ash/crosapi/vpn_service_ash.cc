@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -104,7 +103,7 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
 
   if (active_configuration_ == configuration) {
     configuration->OnPlatformMessage(
-        base::to_underlying(api_vpn::PlatformMessage::kDisconnected));
+        std::to_underlying(api_vpn::PlatformMessage::kDisconnected));
   }
 
   DestroyConfigurationInternal(configuration);
@@ -263,8 +262,7 @@ void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
   if (std::optional<std::string> object_path =
           service->GetActiveConfigurationObjectPath()) {
     ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-        *object_path,
-        base::to_underlying(api_vpn::VpnConnectionState::kFailure),
+        *object_path, std::to_underlying(api_vpn::VpnConnectionState::kFailure),
         base::DoNothing(), base::DoNothing());
   }
 

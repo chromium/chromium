@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -15,7 +16,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -139,7 +139,7 @@ int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {
 void MagicBoostStateAsh::AsyncWriteConsentStatus(
     chromeos::HMRConsentStatus consent_status) {
   pref_change_registrar_->prefs()->SetInteger(
-      ash::prefs::kHMRConsentStatus, base::to_underlying(consent_status));
+      ash::prefs::kHMRConsentStatus, std::to_underlying(consent_status));
 }
 
 void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"

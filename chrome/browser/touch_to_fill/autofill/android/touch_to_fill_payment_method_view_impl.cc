@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -163,7 +164,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
         Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, minor_text,
             suggestion.labels[0][0].value, secondarySubLabel,
-            base::to_underlying(suggestion.type),
+            std::to_underlying(suggestion.type),
             custom_icon_url ? url::GURLAndroid::FromNativeGURL(
                                   env, custom_icon_url->value())
                             : url::GURLAndroid::EmptyGURL(env),

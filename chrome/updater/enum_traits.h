@@ -9,8 +9,7 @@
 #include <optional>
 #include <ostream>
 #include <type_traits>
-
-#include "base/types/cxx23_to_underlying.h"
+#include <utility>
 
 namespace updater {
 
@@ -47,8 +46,8 @@ struct EnumTraits {};
 template <typename T>
   requires(std::is_enum_v<T>)
 constexpr std::optional<T> CheckedCastToEnum(std::underlying_type_t<T> v) {
-  return (base::to_underlying(EnumTraits<T>::first_elem) <= v &&
-          v <= base::to_underlying(EnumTraits<T>::last_elem))
+  return (std::to_underlying(EnumTraits<T>::first_elem) <= v &&
+          v <= std::to_underlying(EnumTraits<T>::last_elem))
              ? std::make_optional(static_cast<T>(v))
              : std::nullopt;
 }
