@@ -477,34 +477,8 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
       browsing_instance_->default_site_instance_group()->AddSiteInstance(this);
       SetSiteInstanceGroup(browsing_instance_->default_site_instance_group());
     } else {
-      RenderProcessHost* rph =
-          RenderProcessHostImpl::GetProcessHostForSiteInstance(
-              this, allocation_context);
-#if !BUILDFLAG(IS_ANDROID)
-      // Initial WebUI SiteInstances must use an initial WebUI process.
-      if (GetContentClient()->browser()->IsInitialWebUIURL(GetSiteURL()) &&
-          !rph->IsForInitialWebUI()) {
-        SCOPED_CRASH_KEY_STRING256("Bug467811037", "site_url",
-                                   GetSiteURL().spec());
-        SCOPED_CRASH_KEY_STRING1024("Bug467811037", "process_lock",
-                                    rph->GetProcessLock().ToString());
-        SCOPED_CRASH_KEY_NUMBER("Bug467811037", "source",
-                                (int)allocation_context.source);
-        SCOPED_CRASH_KEY_NUMBER("Bug467811037", "reuse_policy",
-                                (int)process_reuse_policy());
-        SCOPED_CRASH_KEY_NUMBER("Bug467811037", "assignment",
-                                (int)process_assignment_);
-        SCOPED_CRASH_KEY_BOOL(
-            "Bug467811037", "initialized",
-            static_cast<RenderProcessHostImpl*>(rph)->is_initialized());
-        SCOPED_CRASH_KEY_BOOL("Bug467811037", "ready", rph->IsReady());
-        SCOPED_CRASH_KEY_BOOL("Bug467811037", "initialized_not_dead",
-                              rph->IsInitializedAndNotDead());
-        SCOPED_CRASH_KEY_BOOL("Bug467811037", "unused", rph->IsUnused());
-        base::debug::DumpWithoutCrashing();
-      }
-#endif
-      SetProcessInternal(rph);
+      SetProcessInternal(RenderProcessHostImpl::GetProcessHostForSiteInstance(
+          this, allocation_context));
     }
   }
   DCHECK(site_instance_group_);
