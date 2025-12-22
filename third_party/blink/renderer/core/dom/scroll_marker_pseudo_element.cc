@@ -119,7 +119,7 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
       // originating element and its content are in the tree, when in tabs mode.
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         Element* scroller = ScrollMarkerGroup()->parentElement();
-        cache->RemoveSubtree(scroller);
+        cache->HandleScrollMarkerTabSelectionChanged(scroller);
       }
     }
   }

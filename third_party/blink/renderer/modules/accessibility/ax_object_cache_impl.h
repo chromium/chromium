@@ -388,6 +388,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Called when the scroll offset changes.
   void HandleScrollPositionChanged(LayoutObject*) override;
 
+  void HandleScrollMarkerTabSelectionChanged(Element* scroller) override;
+
   void HandleScrolledToAnchor(const Node* anchor_node) override;
 
   // Invalidates the bounding box, which can be later retrieved by
@@ -460,7 +462,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
 
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
-  void MarkSubtreeDirty(Node*);
+  void MarkSubtreeDirty(Node*) override;
   void NotifySubtreeDirty(AXObject* obj);
 
   // Set the parent of the AXObject associated with |child|. If no parent is

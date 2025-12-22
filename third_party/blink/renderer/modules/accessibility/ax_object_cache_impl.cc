@@ -6678,6 +6678,28 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   }
 }
 
+void AXObjectCacheImpl::HandleScrollMarkerTabSelectionChanged(
+    Element* scroller) {
+  if (!scroller) {
+    return;
+  }
+
+  AXObject* obj = Get(scroller);
+  if (!obj) {
+    // There is no AXObject, so there is no subtree to mark dirty.
+    MarkElementDirty(scroller);
+    return;
+  }
+
+  // Check if the a11y lifecycle allows immediate tree updates (layout is
+  // clean), otherwise defer tree updates.
+  if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
+    MarkAXSubtreeDirtyWithCleanLayout(obj);
+  } else {
+    MarkAXSubtreeDirty(obj);
+  }
+}
+
 const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
   // Disallow a scope transition on the main document (which needs to already be

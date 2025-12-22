@@ -1273,25 +1273,25 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 }
 
 bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
-  Node* node = GetNode();
-  if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
     return false;
   }
-  if (node->IsCarouselPseudoElement()) {
-    // The carousel pseudo-elements should never be ignored.
-    return false;
-  }
-  if (IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
-    return true;
-  }
-  if (!ParentObject()) {
-    return false;
+  if (Node* node = GetNode()) {
+    if (node->IsCarouselPseudoElement()) {
+      // The carousel pseudo-elements should never be ignored.
+      return false;
+    }
+    // Check if this node is the originating element for inactive
+    // ::scroll-marker in tabs mode.
+    if (IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
+      return true;
+    }
   }
   // As soon as one of the ancestors is the originating element for
   // ::scroll-marker in tabs mode, we know this node is inside the originating
   // element for ::scroll-marker in tabs mode, so we just propagate this info
   // down to the children.
-  return ParentObject()->InsideInactiveScrollMarkerTab();
+  return ParentObject() && ParentObject()->InsideInactiveScrollMarkerTab();
 }
 
 bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
@@ -6094,7 +6094,9 @@ void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
     // All added pseudo-element descendants are included in the tree.
     if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
       DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
-      AddChildAndCheckIncluded(ax_child);
+      if (ax_child->IsIncludedInTree()) {
+        AddChildAndCheckIncluded(ax_child);
+      }
     }
     child = child->NextSibling();
   }

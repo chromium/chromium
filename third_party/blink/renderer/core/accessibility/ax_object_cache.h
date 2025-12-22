@@ -189,6 +189,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Called when the scroll offset changes.
   virtual void HandleScrollPositionChanged(LayoutObject*) = 0;
 
+  // Called when a scroll marker tab selection changes, affecting which
+  // content is visible/accessible in a CSS scroll-marker-group tabs mode.
+  virtual void HandleScrollMarkerTabSelectionChanged(Element* scroller) = 0;
+
   virtual void HandleScrolledToAnchor(const Node* anchor_node) = 0;
 
   // Called when a layout object's bounding box may have changed.
@@ -250,6 +254,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void ResetSerializer() = 0;
 
   virtual void MarkElementDirty(const Node*) = 0;
+  virtual void MarkSubtreeDirty(Node*) = 0;
 
   // Returns a vector of the images found in |updates|.
   virtual void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
