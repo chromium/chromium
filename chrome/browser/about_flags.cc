@@ -870,16 +870,9 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchPrefetchWithHoldback), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
-    {"AddContextButtonVariant", "none"},
-    {"ShowVoiceSearchInSteadyComposebox", "true"},
-    {"ShowVoiceSearchInExpandedComposebox", "true"},
-};
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
-        {"ShowVoiceSearchInSteadyComposebox", "true"},
-        {"ShowVoiceSearchInExpandedComposebox", "true"},
         {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
@@ -900,8 +893,6 @@ const FeatureEntry::FeatureParam
 };
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
-    {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonNone), nullptr},
     {"- \"Add Context\" Button below results (Variant 1)",
      kWebUIOmniboxAimPopupAddContextButtonBelowResults,
      std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResults), nullptr},
