@@ -703,7 +703,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   if (@available(iOS 18.0, *)) {
     backgroundConfiguration = [UIBackgroundConfiguration listCellConfiguration];
   }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+#if !defined(__IPHONE_18_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_18_0
   else {
     backgroundConfiguration =
         [UIBackgroundConfiguration listGroupedCellConfiguration];
