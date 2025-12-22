@@ -1,8 +1,8 @@
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 
-import {PolymerElementConstructor} from '../../interfaces';
+import {PolymerElementConstructor} from '../../interfaces.js';
 
-export {PolymerElementConstructor} from '../../interfaces';
+export {PolymerElementConstructor} from '../../interfaces.js';
 
 /** Array of Polymer element classes that have been finalized. */
 export const registrations: PolymerElementConstructor[];

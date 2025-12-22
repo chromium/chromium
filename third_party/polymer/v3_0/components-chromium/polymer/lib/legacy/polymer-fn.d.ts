@@ -21,4 +21,4 @@ export const Polymer: {
   Class: typeof Class;
 }
 
-import {PolymerInit} from '../../interfaces';
+import {PolymerInit} from '../../interfaces.js';

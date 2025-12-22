@@ -862,10 +862,10 @@ interface PropertyEffects extends TemplateStamp, PropertyAccessors, PropertiesCh
   _removeBoundDom(dom: StampedTemplate): void;
 }
 
-import {TemplateInfo} from '../../interfaces';
+import {TemplateInfo} from '../../interfaces.js';
 
-import {NodeInfo} from '../../interfaces';
+import {NodeInfo} from '../../interfaces.js';
 
-import {BindingPart} from '../../interfaces';
+import {BindingPart} from '../../interfaces.js';
 
-import {StampedTemplate} from '../../interfaces';
+import {StampedTemplate} from '../../interfaces.js';

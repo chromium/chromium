@@ -2,6 +2,7 @@
   "name": "chromium-polymer",
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
+  "type": "module",
   "dependencies": {
     "@polymer/iron-a11y-announcer": "3.2.0",
     "@polymer/iron-a11y-keys": "3.0.1",

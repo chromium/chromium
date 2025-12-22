@@ -277,8 +277,8 @@ export {updateStyles};
  */
 declare function updateStyles(props?: object|null): void;
 
-import {TemplateInfo} from '../../interfaces';
+import {TemplateInfo} from '../../interfaces.js';
 
-import {NodeInfo} from '../../interfaces';
+import {NodeInfo} from '../../interfaces.js';
 
-import {StampedTemplate} from '../../interfaces';
+import {StampedTemplate} from '../../interfaces.js';

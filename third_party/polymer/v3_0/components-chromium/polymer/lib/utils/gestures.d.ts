@@ -78,4 +78,4 @@ export {resetMouseCanceller};
  */
 declare function resetMouseCanceller(): void;
 
-import {GestureRecognizer} from '../../interfaces';
+import {GestureRecognizer} from '../../interfaces.js';
