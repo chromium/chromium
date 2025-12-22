@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.url_constants;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -72,13 +74,13 @@ public class UrlConstantResolverFactory {
 
     private static UrlConstantResolver buildOriginalResolver() {
         UrlConstantResolver resolver = new UrlConstantResolver();
-        resolver.registerPreNativeGurl(UrlConstants.NTP_URL, getPreNativeNtpGurlHolder());
+        resolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), getPreNativeNtpGurlHolder());
 
         resolver.registerOverride(
-                UrlConstants.NTP_URL,
+                getOriginalNativeNtpUrl(),
                 () ->
                         ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled()
-                                ? UrlConstants.NTP_NON_NATIVE_URL
+                                ? getOriginalNonNativeNtpUrl()
                                 : null);
         resolver.registerOverride(
                 UrlConstants.BOOKMARKS_NATIVE_URL,
@@ -97,13 +99,13 @@ public class UrlConstantResolverFactory {
 
     private static UrlConstantResolver buildIncognitoResolver() {
         UrlConstantResolver resolver = new UrlConstantResolver();
-        resolver.registerPreNativeGurl(UrlConstants.NTP_URL, getPreNativeNtpGurlHolder());
+        resolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), getPreNativeNtpGurlHolder());
 
         resolver.registerOverride(
-                UrlConstants.NTP_URL,
+                getOriginalNativeNtpUrl(),
                 () ->
                         ExtensionsUrlOverrideRegistry.getIncognitoNtpOverrideEnabled()
-                                ? UrlConstants.NTP_NON_NATIVE_URL
+                                ? getOriginalNonNativeNtpUrl()
                                 : null);
         resolver.registerOverride(
                 UrlConstants.BOOKMARKS_NATIVE_URL,

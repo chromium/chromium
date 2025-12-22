@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -29,7 +31,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -59,7 +60,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
     public void testRecordsHistograms_onAutofocus_phone() {
         HistogramWatcher watcher = createAutoFocusHistogramWatcher();
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         waitForOmniboxFocus();
 
@@ -95,7 +96,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
 
         HistogramWatcher watcher = createManualFocusHistogramWatcher();
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         // Since autofocus was failed, focus omnibox manually.
         ThreadUtils.runOnUiThreadBlocking(
@@ -148,7 +149,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.ALWAYS_ON);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -169,7 +170,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_PREDICTION_WITH_HARDWARE_KEYBOARD);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         firstTabWatcher.pollInstrumentationThreadUntilSatisfied();
 
@@ -179,7 +180,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .NOT_FIRST_TAB_WITH_PREDICTION_WITH_HARDWARE_KEYBOARD);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -199,7 +200,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_PREDICTION);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         firstTabWatcher.pollInstrumentationThreadUntilSatisfied();
 
@@ -209,7 +210,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .NOT_FIRST_TAB_WITH_PREDICTION);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -229,7 +230,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_HARDWARE_KEYBOARD);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         firstTabWatcher.pollInstrumentationThreadUntilSatisfied();
 
@@ -239,7 +240,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .NOT_FIRST_TAB_WITH_HARDWARE_KEYBOARD);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -260,7 +261,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_PREDICTION_WITH_HARDWARE_KEYBOARD);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -275,7 +276,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.NOT_TRIGGERED);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         firstTabWatcher.pollInstrumentationThreadUntilSatisfied();
 
         // Open second tab to trigger autofocus.
@@ -283,7 +284,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.NOT_FIRST_TAB);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -300,7 +301,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_PREDICTION);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -323,7 +324,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_PREDICTION);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -341,7 +342,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome
                                 .WITH_HARDWARE_KEYBOARD);
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         waitForOmniboxFocus();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -357,7 +358,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.NOT_TRIGGERED);
 
         // On first tab autofocus will be failed.
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -374,7 +375,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.NOT_TRIGGERED);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -392,7 +393,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                         IncognitoNtpOmniboxAutofocusTracker.HISTOGRAM_OMNIBOX_AUTOFOCUS_OUTCOME,
                         IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusOutcome.NOT_TRIGGERED);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 

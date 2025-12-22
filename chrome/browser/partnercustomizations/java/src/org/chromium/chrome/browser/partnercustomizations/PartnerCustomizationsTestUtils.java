@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import androidx.annotation.Nullable;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
-import org.chromium.components.embedder_support.util.UrlConstants;
+import androidx.annotation.Nullable;
 
 /** Junit test utils for partner browser customizations. */
 final class PartnerCustomizationsTestUtils {
@@ -31,7 +31,7 @@ final class PartnerCustomizationsTestUtils {
 
         @Override
         public boolean isUrlNtp(@Nullable String url) {
-            return UrlConstants.NTP_URL.equals(url);
+            return getOriginalNativeNtpUrl().equals(url);
         }
 
         @Override

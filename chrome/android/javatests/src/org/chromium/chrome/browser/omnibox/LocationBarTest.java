@@ -16,6 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.View;
@@ -556,7 +558,7 @@ public class LocationBarTest {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
 
         Mockito.reset(mVoiceRecognitionHandler);
 
@@ -790,7 +792,7 @@ public class LocationBarTest {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
@@ -802,7 +804,7 @@ public class LocationBarTest {
         setupSearchEngineLogo(NON_GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
@@ -813,7 +815,7 @@ public class LocationBarTest {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), /* incognito= */ true);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
@@ -823,7 +825,7 @@ public class LocationBarTest {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         mOmnibox.requestFocus();
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
@@ -835,7 +837,7 @@ public class LocationBarTest {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);

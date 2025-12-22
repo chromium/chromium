@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.sStartSurfaceR
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_HOME_SURFACE_UI_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.content.Context;
 import android.content.Intent;
@@ -327,7 +328,7 @@ public class ReturnToChromeUtilUnitTest {
 
         // Verifies that the first found NTP isn't the active NTP Tab.
         Assert.assertEquals(
-                1, TabModelUtils.getTabIndexByUrl(mCurrentTabModel, UrlConstants.NTP_URL));
+                1, TabModelUtils.getTabIndexByUrl(mCurrentTabModel, getOriginalNativeNtpUrl()));
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)

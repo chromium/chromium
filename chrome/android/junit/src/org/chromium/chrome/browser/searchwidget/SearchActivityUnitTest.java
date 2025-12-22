@@ -24,6 +24,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -85,7 +87,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -1077,7 +1078,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void recordNavigationTargetType() {
-        GURL native_url = new GURL(UrlConstants.NTP_URL);
+        GURL native_url = new GURL(getOriginalNativeNtpUrl());
         GURL search_url = new GURL("https://google.com");
         GURL web_url = new GURL("https://abc.xyz");
 

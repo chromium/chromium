@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -106,7 +108,7 @@ class QuickActionSearchWidgetTestUtils {
                     Criteria.checkThat(activityTab, Matchers.notNullValue());
                     Criteria.checkThat(
                             activityTab.getUrl().getSpec(),
-                            Matchers.startsWith(UrlConstants.NTP_URL));
+                            Matchers.startsWith(getOriginalNativeNtpUrl()));
                 });
     }
 }

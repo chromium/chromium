@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.runner.Description;
@@ -22,7 +24,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -45,7 +46,7 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
         // The NotificationPlatformBridge must be overriden prior to the browser process starting.
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
-        startMainActivityWithURL(UrlConstants.NTP_URL);
+        startMainActivityWithURL(getOriginalNativeNtpUrl());
         ModalDialogView.disableButtonTapProtectionForTesting();
     }
 

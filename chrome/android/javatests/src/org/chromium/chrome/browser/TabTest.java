@@ -14,6 +14,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.app.Activity;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -339,7 +341,7 @@ public class TabTest {
     @Feature({"Tab"})
     @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
     public void testFreezeAndAppendPendingNavigation_LiveBackground_NativePage() {
-        String firstUrl = UrlConstants.NTP_URL;
+        String firstUrl = getOriginalNativeNtpUrl();
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(

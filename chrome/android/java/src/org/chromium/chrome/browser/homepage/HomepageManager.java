@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.homepage;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory.getIncognitoResolver;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory.getOriginalResolver;
 
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -465,7 +465,7 @@ public class HomepageManager
             @Override
             public boolean isUrlNtp(@Nullable String url) {
                 return url != null
-                        && (UrlConstants.NTP_URL.equals(url) || UrlUtilities.isNtpUrl(url));
+                        && (getOriginalNativeNtpUrl().equals(url) || UrlUtilities.isNtpUrl(url));
             }
 
             @Override

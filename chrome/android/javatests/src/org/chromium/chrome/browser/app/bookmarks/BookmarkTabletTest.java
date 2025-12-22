@@ -17,6 +17,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -123,7 +125,7 @@ public class BookmarkTabletTest {
                 mBookmarkManagerCoordinator.getBookmarkDelegateForTesting(),
                 mBookmarkModel);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl());
         selectTab(false, bookmarksTab.getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 

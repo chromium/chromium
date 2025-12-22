@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,7 +18,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
@@ -88,7 +89,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
-                UrlConstants.NTP_NON_NATIVE_URL, GURL.deserialize(serializedGurl).getSpec());
+                getOriginalNonNativeNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab");
         partnerBrowserCustomizations.refreshHomepage(delegate);
@@ -97,7 +98,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
-                UrlConstants.NTP_NON_NATIVE_URL, GURL.deserialize(serializedGurl).getSpec());
+                getOriginalNonNativeNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab/path#fragment");
         partnerBrowserCustomizations.refreshHomepage(delegate);
@@ -106,7 +107,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
-                UrlConstants.NTP_NON_NATIVE_URL + "path#fragment",
+                getOriginalNonNativeNtpUrl() + "path#fragment",
                 GURL.deserialize(serializedGurl).getSpec());
     }
 

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -33,7 +35,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -101,7 +102,7 @@ public class TileGroupTest {
     private MvtRemovedSnackbarFacility doTestDismissTileWithContextMenuImpl() {
         RegularNewTabPageStation ntp =
                 mInitialPage.loadPageProgrammatically(
-                        UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+                        getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         MvtsFacility mvts = ntp.focusOnMvts(mSiteSuggestions);
         MvtsTileFacility tile = mvts.ensureTileIsDisplayedAndGet(0);
 
@@ -188,7 +189,7 @@ public class TileGroupTest {
 
         RegularNewTabPageStation ntp =
                 mInitialPage.loadPageProgrammatically(
-                        UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+                        getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         MvtsFacility mvts =
                 ntp.focusOnMvts(
                         mMostVisitedSites.getCombinedSuggestions(),

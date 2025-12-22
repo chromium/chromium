@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.KeyguardManager;
@@ -59,7 +61,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -430,7 +431,7 @@ public class IntentHandlerRobolectricTest {
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
+        assertEquals(intent.getData(), Uri.parse(getOriginalNativeNtpUrl()));
         assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
         assertTrue(IntentHandler.wasIntentSenderChrome(intent));
         assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));

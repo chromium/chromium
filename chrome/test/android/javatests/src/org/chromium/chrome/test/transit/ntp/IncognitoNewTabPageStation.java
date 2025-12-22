@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.view.View;
 
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
 public class IncognitoNewTabPageStation extends CtaPageStation {
@@ -30,7 +30,7 @@ public class IncognitoNewTabPageStation extends CtaPageStation {
     public Element<IncognitoNewTabPage> nativePageElement;
 
     public IncognitoNewTabPageStation(Config config) {
-        super(config.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+        super(config.withIncognito(true).withExpectedUrlSubstring(getOriginalNativeNtpUrl()));
 
         urlBarElement = declareView(URL_BAR);
         iconElement = declareView(withId(R.id.new_tab_incognito_icon));

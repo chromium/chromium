@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.url_constants;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetNtpUrl_NoOverride() {
-        assertEquals(UrlConstants.NTP_URL, mResolver.getNtpUrl());
+        assertEquals(getOriginalNativeNtpUrl(), mResolver.getNtpUrl());
     }
 
     @Test
@@ -53,14 +54,14 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetNtpUrl_WithOverrideEnabled() {
-        mResolver.registerOverride(UrlConstants.NTP_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> OVERRIDE_URL);
         assertEquals(OVERRIDE_URL, mResolver.getNtpUrl());
     }
 
     @Test
     public void testGetNtpUrl_WithOverrideDisabled() {
-        mResolver.registerOverride(UrlConstants.NTP_URL, () -> null);
-        assertEquals(UrlConstants.NTP_URL, mResolver.getNtpUrl());
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> null);
+        assertEquals(getOriginalNativeNtpUrl(), mResolver.getNtpUrl());
     }
 
     @Test
@@ -90,10 +91,10 @@ public class UrlConstantResolverUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
     public void testAllOverridesEnabled_FeatureDisabled() {
-        mResolver.registerOverride(UrlConstants.NTP_URL, () -> OVERRIDE_URL);
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> OVERRIDE_URL);
         mResolver.registerOverride(UrlConstants.BOOKMARKS_NATIVE_URL, () -> OVERRIDE_URL);
         mResolver.registerOverride(getOriginalNativeHistoryUrl(), () -> OVERRIDE_URL);
-        assertEquals(UrlConstants.NTP_URL, mResolver.getNtpUrl());
+        assertEquals(getOriginalNativeNtpUrl(), mResolver.getNtpUrl());
         assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, mResolver.getBookmarksPageUrl());
         assertEquals(getOriginalNativeHistoryUrl(), mResolver.getHistoryPageUrl());
     }
@@ -101,7 +102,7 @@ public class UrlConstantResolverUnitTest {
     @Test
     public void testGetNtpGurl_NoOverride() {
         PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
-        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
+        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
 
         assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
     }
@@ -109,8 +110,8 @@ public class UrlConstantResolverUnitTest {
     @Test
     public void testGetNtpGurl_WithOverride() {
         PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
-        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
-        mResolver.registerOverride(UrlConstants.NTP_URL, () -> "some_override");
+        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> "some_override");
 
         assertEquals(mNtpGurl, mResolver.getNtpGurl());
     }
@@ -118,8 +119,8 @@ public class UrlConstantResolverUnitTest {
     @Test
     public void testGetNtpGurl_NullGurlOverride() {
         PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, null);
-        mResolver.registerPreNativeGurl(UrlConstants.NTP_URL, holder);
-        mResolver.registerOverride(UrlConstants.NTP_URL, () -> "some_override");
+        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> "some_override");
 
         assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
     }

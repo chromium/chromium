@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -19,7 +21,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
@@ -38,9 +39,9 @@ import java.util.List;
 @NullMarked
 public final class TabGroupSyncUtils {
     // The URL written to sync when the local URL isn't in a syncable format, i.e. HTTP or HTTPS.
-    public static final GURL UNSAVEABLE_URL_OVERRIDE = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+    public static final GURL UNSAVEABLE_URL_OVERRIDE = new GURL(getOriginalNonNativeNtpUrl());
     public static final String UNSAVEABLE_TAB_TITLE = "Unsavable tab";
-    public static final GURL NTP_URL = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+    public static final GURL NTP_URL = new GURL(getOriginalNonNativeNtpUrl());
     public static final String NEW_TAB_TITLE = "New tab";
 
     /**

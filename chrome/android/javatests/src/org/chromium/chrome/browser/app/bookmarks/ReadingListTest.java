@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -409,7 +410,7 @@ public class ReadingListTest {
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeNtpUrl(), /* incognito= */ true);
 
         openBookmarkManager();
         openRootFolder();

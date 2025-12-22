@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.homepage;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +30,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -230,7 +231,7 @@ public class HomepageManagerTest {
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
         UrlConstantResolverFactory.resetResolvers();
 
-        GURL nonNativeNtp = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+        GURL nonNativeNtp = new GURL(getOriginalNonNativeNtpUrl());
         GURL incognitoNtp = UrlConstantResolverFactory.getIncognitoResolver().getNtpGurl();
 
         Assert.assertEquals(
@@ -255,7 +256,7 @@ public class HomepageManagerTest {
         UrlConstantResolverFactory.resetResolvers();
 
         GURL originalNtp = UrlConstantResolverFactory.getOriginalResolver().getNtpGurl();
-        GURL nonNativeNtp = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+        GURL nonNativeNtp = new GURL(getOriginalNonNativeNtpUrl());
 
         Assert.assertEquals(
                 "Regular homepage should be the native NTP URL.",
@@ -279,7 +280,7 @@ public class HomepageManagerTest {
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
         UrlConstantResolverFactory.resetResolvers();
 
-        GURL nonNativeNtp = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+        GURL nonNativeNtp = new GURL(getOriginalNonNativeNtpUrl());
 
         Assert.assertEquals(
                 "Regular homepage should be the non-native NTP URL.",
@@ -296,7 +297,7 @@ public class HomepageManagerTest {
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
         UrlConstantResolverFactory.resetResolvers();
 
-        GURL nonNativeNtp = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+        GURL nonNativeNtp = new GURL(getOriginalNonNativeNtpUrl());
         Assert.assertEquals(
                 "getNtpUrl should return non-native NTP when overridden.",
                 nonNativeNtp,
@@ -433,7 +434,7 @@ public class HomepageManagerTest {
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
         UrlConstantResolverFactory.resetResolvers();
 
-        GURL nonNativeNtp = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
+        GURL nonNativeNtp = new GURL(getOriginalNonNativeNtpUrl());
         GURL nativeNtp = UrlConstantResolverFactory.getOriginalResolver().getNtpGurl();
         Assert.assertNotEquals(
                 "getNtpUrl should return native NTP when override is disabled by feature.",

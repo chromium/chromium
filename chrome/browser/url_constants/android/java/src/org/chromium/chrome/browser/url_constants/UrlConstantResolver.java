@@ -46,7 +46,7 @@ public class UrlConstantResolver {
 
     /** Returns the potentially overridden URL for the New Tab Page. */
     public String getNtpUrl() {
-        return getUrlOverrideIfPresent(UrlConstants.NTP_URL);
+        return getUrlOverrideIfPresent(getOriginalNativeNtpUrl());
     }
 
     /** Returns the potentially overridden URL for the bookmarks page. */
@@ -117,7 +117,7 @@ public class UrlConstantResolver {
      * completion since a hardcoded, serialized string is used.
      */
     public GURL getNtpGurl() {
-        GURL ntpGurl = getPreNativeGurl(UrlConstants.NTP_URL);
+        GURL ntpGurl = getPreNativeGurl(getOriginalNativeNtpUrl());
         assert ntpGurl != null;
         return ntpGurl;
     }

@@ -10,7 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -104,7 +106,7 @@ public class UrlConstantResolverFactoryUnitTest {
     @DisableFeatures({ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING})
     public void testOriginalResolver_FeatureDisabled() {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
-        assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
         assertEquals(UrlConstants.BOOKMARKS_NATIVE_URL, resolver.getBookmarksPageUrl());
         assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
@@ -114,10 +116,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
-        assertEquals(UrlConstants.NTP_NON_NATIVE_URL, resolver.getNtpUrl());
+        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(false);
-        assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
     }
 
     @Test
@@ -148,10 +150,10 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
-        assertEquals(UrlConstants.NTP_NON_NATIVE_URL, resolver.getNtpUrl());
+        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(false);
-        assertEquals(UrlConstants.NTP_URL, resolver.getNtpUrl());
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
     }
 
     @Test

@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.ContextThemeWrapper;
@@ -126,7 +128,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -1637,7 +1638,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void readerModeEntryPointEnabled_chromePage() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
+        when(mTab.getUrl()).thenReturn(new GURL(getOriginalNativeNtpUrl()));
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
@@ -1751,7 +1752,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION})
     public void testCustomizeNewTabPageOption() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1767,7 +1768,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_available() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1785,7 +1786,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenNotNtp() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1803,7 +1804,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenFeedDisabled() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1821,7 +1822,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenFeedHidden() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1839,7 +1840,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenReadAloudNotAvailable() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());

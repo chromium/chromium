@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.gesturenav;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.graphics.Bitmap;
@@ -961,7 +962,7 @@ public class NavigationTransitionsTest {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
 
         CallbackHelper callbackHelper = new CallbackHelper();
 
@@ -1037,7 +1038,7 @@ public class NavigationTransitionsTest {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         // 1. Load NTP.
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         // 2. Load url1.
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
@@ -1053,9 +1054,9 @@ public class NavigationTransitionsTest {
                 });
 
         // 3. Swipe back to the NTP.
-        performNavigationTransition(UrlConstants.NTP_URL, BackEventCompat.EDGE_LEFT);
+        performNavigationTransition(getOriginalNativeNtpUrl(), BackEventCompat.EDGE_LEFT);
         waitForTransitionFinished();
-        Assert.assertEquals(UrlConstants.NTP_URL, getCurrentUrl());
+        Assert.assertEquals(getOriginalNativeNtpUrl(), getCurrentUrl());
 
         Assert.assertNotNull(
                 "The favicon bitmap in the fallback ux of a native page should not be null.",

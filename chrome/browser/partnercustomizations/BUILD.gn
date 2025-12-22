@@ -124,6 +124,7 @@ robolectric_library("junit") {
     "//base/test:test_support_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -139,6 +140,7 @@ android_library("junit_test_utils_java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsTestUtils.java" ]
   deps = [
     ":helper_java",
+    "//chrome/browser/url_constants/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

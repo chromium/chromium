@@ -15,6 +15,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -80,7 +82,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -498,7 +499,7 @@ public class SearchActivityTest {
                                             mActivityTestRule.getActivity(), IntentOrigin.HUB);
                             client.requestOmniboxForResult(
                                     client.newIntentBuilder()
-                                            .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
+                                            .setPageUrl(new GURL(getOriginalNonNativeNtpUrl()))
                                             .setIncognito(true)
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build());
@@ -540,7 +541,7 @@ public class SearchActivityTest {
                                             mActivityTestRule.getActivity(), IntentOrigin.HUB);
                             client.requestOmniboxForResult(
                                     client.newIntentBuilder()
-                                            .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
+                                            .setPageUrl(new GURL(getOriginalNonNativeNtpUrl()))
                                             .setIncognito(true)
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build());
