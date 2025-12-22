@@ -404,12 +404,6 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(
   return [identitiesOnDevice firstObject];
 }
 
-id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile) {
-  return GetDefaultIdentityOnDevice(
-      IdentityManagerFactory::GetForProfile(profile),
-      ChromeAccountManagerServiceFactory::GetForProfile(profile));
-}
-
 ProfileSignoutRequest::ProfileSignoutRequest(
     signin_metrics::ProfileSignout source)
     : source_(source),

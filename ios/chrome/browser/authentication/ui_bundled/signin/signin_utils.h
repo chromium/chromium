@@ -136,8 +136,6 @@ NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(ProfileIOS* profile);
 id<SystemIdentity> GetDefaultIdentityOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService);
-// Convenience version that grabs the required services from the `profile`.
-id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
 
 // Switch profile if needed in all windows then sign out from the current
 // profile, but switches to personal profile in all. This also skips
