@@ -22,7 +22,8 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 
 import java.util.function.DoubleConsumer;
 
@@ -88,7 +89,9 @@ public class BookmarkPane extends PaneBase {
                             // TODO(crbug.com/427776544): make bookmark pane support edge to edge.
                             /* edgeToEdgePadAdjusterGenerator= */ null,
                             /* backPressManager= */ null);
-            mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+            UrlConstantResolver resolver =
+                    UrlConstantResolverFactory.getForProfile(originalProfile);
+            mBookmarkManager.updateForUrl(resolver.getBookmarksPageUrl());
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {
             destroyManagerAndRemoveView();

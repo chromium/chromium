@@ -32,9 +32,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 
 @NullMarked
@@ -94,11 +94,12 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     }
 
     @Override
-    public String getLastUsedUrl() {
+    public String getLastUsedUrl(Profile profile) {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(profile);
         return ChromeSharedPreferences.getInstance()
                 .readString(
                         ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL,
-                        UrlConstants.BOOKMARKS_NATIVE_URL);
+                        resolver.getBookmarksPageUrl());
     }
 
     private void showBookmarkManagerOnPhone(Activity activity, String url, Profile profile) {
@@ -146,17 +147,18 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     // Returns the first URL to load.
     private String getFirstUrlToLoad(@Nullable BookmarkId folderId, Profile profile) {
         String url;
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(profile);
         if (isBookmarksPageOverridden(profile.isIncognitoBranded())) {
-            url = UrlConstantResolverFactory.getForProfile(profile).getBookmarksPageUrl();
+            url = resolver.getBookmarksPageUrl();
         } else if (folderId == null) {
             // Load most recently visited bookmark folder.
-            url = getLastUsedUrl();
+            url = getLastUsedUrl(profile);
         } else {
             // Load a specific folder.
             url = BookmarkUiState.createFolderUrl(folderId).toString();
         }
 
-        return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_NATIVE_URL : url;
+        return TextUtils.isEmpty(url) ? resolver.getNtpUrl() : url;
     }
 
     private Intent getEditActivityIntent(Context context, Profile profile, BookmarkId bookmarkId) {

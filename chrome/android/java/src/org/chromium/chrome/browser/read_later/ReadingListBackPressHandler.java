@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -81,12 +82,13 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     private void setupLastUsedState(BookmarkModel bookmarkModel) {
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {
+                    Profile profile = mActivityTabProvider.get().getProfile();
                     // Note: there's a slight (but unlikely) chance the the user changed the last
                     // used url prior
                     // to tracking it here.
                     BookmarkUiState lastUsedState =
                             BookmarkUiState.createStateFromUrl(
-                                    mBookmarkManagerOpenerSupplier.get().getLastUsedUrl(),
+                                    mBookmarkManagerOpenerSupplier.get().getLastUsedUrl(profile),
                                     bookmarkModel);
                     mLastUsedParent = lastUsedState.getFolder();
                 });

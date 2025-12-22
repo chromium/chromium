@@ -8,7 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
@@ -45,10 +46,11 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
                         .getDirectedNavigationHistory(forward, MAXIMUM_HISTORY_ITEMS);
         assert history != null;
         if (!isOffTheRecord) {
+            UrlConstantResolver resolver = UrlConstantResolverFactory.getOriginalResolver();
             history.addEntry(
                     new NavigationEntry(
                             FULL_HISTORY_ENTRY_INDEX,
-                            new GURL(UrlConstants.NATIVE_HISTORY_URL),
+                            new GURL(resolver.getHistoryPageUrl()),
                             GURL.emptyGURL(),
                             GURL.emptyGURL(),
                             mFullHistoryMenu,
