@@ -15,7 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -78,12 +77,12 @@ namespace {
 // `kGoogleChromeScheme` feature is enabled. Returns true if the prefix was
 // stripped.
 bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  return false;
-#else
+  const std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
+  if (scheme.empty()) {
+    return false;  // Direct launch not supported.
+  }
   const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(
-      base::StrCat({shell_integration::GetDirectLaunchUrlScheme(),
-                    url::kStandardSchemeSeparator}));
+      base::StrCat({scheme, url::kStandardSchemeSeparator}));
   // Note: we enabled the feature flag condition later
   // we want to activate the experiment when it is relevant for better
   // stats collection. We plan to remove this flag once we establish it works
@@ -95,7 +94,6 @@ bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
     return true;
   }
   return false;
-#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.

@@ -496,6 +496,15 @@ void GetShellIntegrationEntries(
         UNSAFE_TODO(ShellUtil::kPotentialProtocolAssociations[i]),
         html_prog_id));
   }
+
+  // Add the direct launch URL scheme if one is defined for this mode.
+  const char* direct_launch_scheme =
+      install_static::GetDirectLaunchUrlScheme();
+  if (direct_launch_scheme && *direct_launch_scheme) {
+    entries->push_back(std::make_unique<RegistryEntry>(
+        capabilities + L"\\URLAssociations",
+        base::ASCIIToWide(direct_launch_scheme), html_prog_id));
+  }
 }
 
 // Gets the registry entries to register an application as a handler for a
@@ -2610,4 +2619,24 @@ bool ShellUtil::AddRegistryEntries(
     return false;
   }
   return true;
+}
+
+void ShellUtil::AddChromeUriSchemeWorkItems(const base::FilePath& chrome_exe,
+                                            const std::wstring& suffix,
+                                            WorkItemList* list) {
+  const char* scheme = install_static::GetDirectLaunchUrlScheme();
+  if (!scheme || *scheme == '\0') {
+    return;
+  }
+  const HKEY root = install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
+                                                      : HKEY_CURRENT_USER;
+  const std::wstring chrome_open = GetChromeShellOpenCmd(chrome_exe);
+  const std::wstring chrome_icon =
+      FormatIconLocation(chrome_exe, install_static::GetAppIconResourceIndex());
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+  GetXPStyleUserProtocolEntries(base::ASCIIToWide(scheme), chrome_icon,
+                                chrome_open, &entries);
+  for (const auto& entry : entries) {
+    entry->AddToWorkItemList(root, list);
+  }
 }

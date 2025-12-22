@@ -49,6 +49,24 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
+      "exists": "required",
+      "values": {
+        "URL Protocol": {
+          "type": "SZ",
+          "data": ""
+        }
+      }
+    },
+    "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME\\shell\\open\\command": {
+      "exists": "required",
+      "values": {
+        "": {
+          "type": "SZ",
+          "data": "\"$LOCAL_APPDATA\\$CHROME_DIR\\Application\\chrome.exe\" --single-argument %1"
+        }
+      }
+    },
     "HKEY_CURRENT_USER\\$BINARIES_UPDATE_REGISTRY_SUBKEY": {
       "exists": "forbidden",
       "wow_key": "KEY_WOW64_32KEY"

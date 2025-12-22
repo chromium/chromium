@@ -599,6 +599,11 @@ class ShellUtil {
     base::flat_map<std::wstring, std::wstring> associations;
   };
 
+  // Adds work items to `list` to register the `google-chrome://` URI scheme.
+  static void AddChromeUriSchemeWorkItems(const base::FilePath& chrome_exe,
+                                          const std::wstring& suffix,
+                                          WorkItemList* list);
+
   // This method declares to Windows that Chrome is capable of handling the
   // given protocols, either directly in a tab or indirectly through a web app.
   // This function will call the RegisterChromeBrowser function

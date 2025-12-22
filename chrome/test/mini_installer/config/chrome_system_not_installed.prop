@@ -30,12 +30,6 @@
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_HTML_PROG_ID": {
       "exists": "forbidden"
     },
-    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_SHORT_NAME": {
-      "exists": "forbidden"
-    },
-    "HKEY_LOCAL_MACHINE\\Software\\Clients\\StartMenuInternet\\$CHROME_SHORT_NAME": {
-      "exists": "forbidden"
-    },
     "HKEY_LOCAL_MACHINE\\Software\\RegisteredApplications": {
       "exists": "optional",
       "values": {
@@ -58,6 +52,9 @@
       "exists": "forbidden"
     },
     "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\$CHROME_ELEVATION_SERVICE_NAME": {
+      "exists": "forbidden"
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
       "exists": "forbidden"
     }
   }

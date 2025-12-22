@@ -287,6 +287,8 @@ class VariableExpander:
                 'ChromeDev',
                 'CHROME_SHORT_NAME_SXS':
                 'ChromeCanary',
+                'CHROME_DIRECT_LAUNCH_SCHEME':
+                'google-chrome',
                 'CHROME_UPDATE_REGISTRY_SUBKEY_BETA':
                 ('Software\\Google\\Update\\Clients\\'
                  '{8237E44A-0054-442C-B6B6-EA0509993955}'),
@@ -365,6 +367,8 @@ class VariableExpander:
                 'Software\\Chromium',
                 'CHROME_CLIENT_STATE_KEY':
                 'Software\\Chromium',
+                'CHROME_DIRECT_LAUNCH_SCHEME':
+                'chromium',
                 'CHROME_TOAST_ACTIVATOR_CLSID':
                 ('{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}'),
                 'CHROME_ELEVATOR_CLSID':
