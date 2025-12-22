@@ -8,9 +8,11 @@
 
 #import "base/functional/bind.h"
 #import "base/json/values_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/clock.h"
 #import "base/time/time.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -19,6 +21,7 @@
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_device_info/fake_device_info_sync_service.h"
 #import "components/sync_device_info/fake_device_info_tracker.h"
+#import "components/sync_preferences/features.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -44,6 +47,11 @@
 class CrossPlatformPromosServiceTest : public PlatformTest {
  public:
   CrossPlatformPromosServiceTest() {
+    feature_list_.InitWithFeatures(
+        {sync_preferences::features::kEnableCrossDevicePrefTracker,
+         kMobilePromoOnDesktopRecordActiveDays, kMobilePromoOnDesktop},
+        {});
+
     TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
@@ -116,6 +124,7 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
   std::unique_ptr<CrossPlatformPromosService> service_;
   std::unique_ptr<TestBrowser> browser_;
   std::string local_device_guid_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that foregrounding the app records a new active day.

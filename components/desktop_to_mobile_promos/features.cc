@@ -9,6 +9,9 @@
 
 BASE_FEATURE(kMobilePromoOnDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMobilePromoOnDesktopRecordActiveDays,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kMobilePromoOnDesktopPromoTypeParam[] =
     "mobile_promo_on_desktop_promo_type";
 const char kMobilePromoOnDesktopNotificationParam[] =
@@ -18,6 +21,14 @@ bool MobilePromoOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(
              sync_preferences::features::kEnableCrossDevicePrefTracker) &&
          base::FeatureList::IsEnabled(kMobilePromoOnDesktop);
+}
+
+bool IsMobilePromoOnDesktopRecordActiveDaysEnabled() {
+  if (!base::FeatureList::IsEnabled(
+          sync_preferences::features::kEnableCrossDevicePrefTracker)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kMobilePromoOnDesktopRecordActiveDays);
 }
 
 bool MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType type) {

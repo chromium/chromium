@@ -536,7 +536,8 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   enterprise_idle::IdleServiceFactory::GetForProfile(profile)
       ->OnApplicationWillEnterForeground();
 
-  if (MobilePromoOnDesktopEnabled()) {
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled() ||
+      MobilePromoOnDesktopEnabled()) {
     CrossPlatformPromosServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
   }
@@ -769,7 +770,8 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   DCHECK(_state.profile);
   enterprise_idle::IdleServiceFactory::GetForProfile(_state.profile)
       ->OnApplicationWillEnterForeground();
-  if (MobilePromoOnDesktopEnabled()) {
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled() ||
+      MobilePromoOnDesktopEnabled()) {
     CrossPlatformPromosServiceFactory::GetForProfile(_state.profile)
         ->OnApplicationWillEnterForeground();
   }

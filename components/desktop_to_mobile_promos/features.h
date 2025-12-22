@@ -19,6 +19,9 @@ enum class MobilePromoOnDesktopPromoType {
 // If this feature is enabled, show mobile promo on desktop.
 BASE_DECLARE_FEATURE(kMobilePromoOnDesktop);
 
+// If this feature is enabled, collect data for the mobile promo on desktop.
+BASE_DECLARE_FEATURE(kMobilePromoOnDesktopRecordActiveDays);
+
 // Parameter of `kMobilePromoOnDesktop` for promo type.
 extern const char kMobilePromoOnDesktopPromoTypeParam[];
 // Parameter of `kMobilePromoOnDesktop` for showing the iOS push notification.
@@ -26,6 +29,10 @@ extern const char kMobilePromoOnDesktopNotificationParam[];
 
 // Returns true if the `kMobilePromoOnDesktop` feature is enabled.
 bool MobilePromoOnDesktopEnabled();
+
+// Returns true if the `kMobilePromoOnDesktopRecordActiveDays` feature is
+// enabled.
+bool IsMobilePromoOnDesktopRecordActiveDaysEnabled();
 
 // Returns whether the given promo type is enabled for feature
 // `kMobilePromoOnDesktop`. If the promo type parameter for the feature is not

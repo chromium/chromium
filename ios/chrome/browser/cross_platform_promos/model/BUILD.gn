@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/sync_preferences:features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

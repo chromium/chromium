@@ -673,6 +673,9 @@ extern const char kMigrateIOSKeychainAccessibilityDescription[];
 extern const char kMobilePromoOnDesktopName[];
 extern const char kMobilePromoOnDesktopDescription[];
 
+extern const char kMobilePromoOnDesktopRecordActiveDaysName[];
+extern const char kMobilePromoOnDesktopRecordActiveDaysDescription[];
+
 extern const char kMostVisitedTilesCustomizationName[];
 extern const char kMostVisitedTilesCustomizationDescription[];
 
