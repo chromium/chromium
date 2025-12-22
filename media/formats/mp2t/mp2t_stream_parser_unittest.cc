@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -24,7 +25,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "crypto/openssl_util.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -273,7 +273,7 @@ class Mp2tStreamParserTest : public testing::Test {
       } else {
         // Unexpected track type.
         LOG(ERROR) << "Unexpected track type "
-                   << base::to_underlying(track->type());
+                   << std::to_underlying(track->type());
         EXPECT_TRUE(false);
       }
     }

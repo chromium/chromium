@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_util.h"
@@ -69,7 +68,7 @@ std::unique_ptr<media::VideoEncoder> CreateSoftwareEncoder(VideoCodec codec) {
       return std::make_unique<media::Av1VideoEncoder>();
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
-      NOTREACHED() << "Unhandled codec. value=" << base::to_underlying(codec);
+      NOTREACHED() << "Unhandled codec. value=" << std::to_underlying(codec);
   }
 }
 
@@ -87,7 +86,7 @@ VideoCodecProfile ToProfile(VideoCodec codec) {
     case VideoCodec::kAV1:
       return AV1PROFILE_PROFILE_MAIN;
     default:
-      NOTREACHED() << "Unhandled codec. value=" << base::to_underlying(codec);
+      NOTREACHED() << "Unhandled codec. value=" << std::to_underlying(codec);
   }
 }
 

@@ -15,7 +15,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -183,7 +182,7 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ != State::kStateUninitialized &&
          state_ != State::kStateInitializing)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   // No two reads in the flight at any time.
   DCHECK(!read_cb_);
   // No read during resetting or stopping process.
@@ -387,7 +386,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == State::kStateInitializing ||
          state_ == State::kStateReinitializingDecoder)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
 
   if (state_ == State::kStateInitializing) {
     DCHECK(init_cb_);
@@ -530,7 +529,7 @@ void DecoderStream<StreamType>::DecodeInternal(
   FUNCTION_DVLOG(3);
   DCHECK(state_ == State::kStateNormal ||
          state_ == State::kStateFlushingDecoder)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   DCHECK_LT(pending_decode_requests_, GetMaxDecodeRequests());
   DCHECK(!reset_cb_);
   DCHECK(buffer);
@@ -578,7 +577,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
       << ": " << static_cast<int>(status.code());
   DCHECK(state_ == State::kStateNormal ||
          state_ == State::kStateFlushingDecoder || state_ == State::kStateError)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   DCHECK_GT(pending_decode_requests_, 0);
 
   --pending_decode_requests_;
@@ -691,7 +690,7 @@ void DecoderStream<StreamType>::OnDecodeOutputReady(
   DCHECK(output);
   DCHECK(state_ == State::kStateNormal ||
          state_ == State::kStateFlushingDecoder || state_ == State::kStateError)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
 
   if (state_ == State::kStateError) {
     DCHECK(!read_cb_);
@@ -798,7 +797,7 @@ void DecoderStream<StreamType>::OnBuffersReady(
     DCHECK(state_ == State::kStateError ||
            state_ == State::kStateReinitializingDecoder ||
            state_ == State::kStateNormal)
-        << base::to_underlying(state_);
+        << std::to_underlying(state_);
   }
   pending_demuxer_read_ = false;
 
@@ -1024,7 +1023,7 @@ void DecoderStream<StreamType>::ResetDecoder() {
   DCHECK(state_ == State::kStateNormal ||
          state_ == State::kStateFlushingDecoder ||
          state_ == State::kStateError || state_ == State::kStateEndOfStream)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   DCHECK(reset_cb_);
 
   decoder_->Reset(base::BindOnce(&DecoderStream<StreamType>::OnDecoderReset,
@@ -1038,7 +1037,7 @@ void DecoderStream<StreamType>::OnDecoderReset() {
   DCHECK(state_ == State::kStateNormal ||
          state_ == State::kStateFlushingDecoder ||
          state_ == State::kStateError || state_ == State::kStateEndOfStream)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   // If Reset() was called during pending read, read callback should be fired
   // before the reset callback is fired.
   DCHECK(!read_cb_);
@@ -1079,7 +1078,7 @@ void DecoderStream<StreamType>::MaybePrepareAnotherOutput() {
          state_ == State::kStateFlushingDecoder ||
          state_ == State::kStateEndOfStream ||
          state_ == State::kStateReinitializingDecoder)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
 
   // If there's nothing to prepare or a prepare is underway, we're done.
   if (!prepare_cb_ || unprepared_outputs_.empty() || preparing_output_)
@@ -1113,7 +1112,7 @@ void DecoderStream<StreamType>::OnPreparedOutputReady(
          state_ == State::kStateFlushingDecoder ||
          state_ == State::kStateEndOfStream ||
          state_ == State::kStateReinitializingDecoder)
-      << base::to_underlying(state_);
+      << std::to_underlying(state_);
   DCHECK(!reset_cb_);
   DCHECK(!unprepared_outputs_.empty());
   DCHECK(preparing_output_);
