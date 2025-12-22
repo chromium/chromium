@@ -299,6 +299,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="IndexedDB.BackendDuration.WriteBlobs.{IndexedDBBackingStoreType}"
+    units="ms" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the total elapsed time between the start of a transaction commit in the
+    backend (browser process), which is when blob writing begins, and when the
+    blobs are reported as successfully written. Not logged for transactions that
+    do not write blobs.
+  </summary>
+</histogram>
+
+<histogram
     name="IndexedDB.BackendDuration.{Operation}.{IndexedDBBackingStoreType}"
     units="ms" expires_after="2026-10-01">
   <owner>leimy@chromium.org</owner>
@@ -313,8 +328,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Operation">
     <variant name="AdvanceCursor"/>
+    <variant name="BeginTransaction"/>
     <variant name="ChangeDatabaseVersion"/>
     <variant name="ClearObjectStore"/>
+    <variant name="CommitTransaction"/>
     <variant name="ContinueCursor"/>
     <variant name="CountRecords"/>
     <variant name="CreateDatabase"/>

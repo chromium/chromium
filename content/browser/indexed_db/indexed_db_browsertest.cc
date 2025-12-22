@@ -975,6 +975,9 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, BlobHistograms) {
                                0 /*Status::Type::kOk*/, 1);
   histograms.ExpectBucketCount("IndexedDB.BackingStore.ReadBlob.OnDisk",
                                0 /*net::Error::OK*/, 1);
+  histograms.ExpectTotalCount("IndexedDB.BackendDuration.WriteBlobs.OnDisk", 1);
+  histograms.ExpectTotalCount(
+      "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 3);
 }
 
 // Regression test for crbug.com/330868483

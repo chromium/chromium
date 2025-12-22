@@ -2610,9 +2610,13 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
     histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.ChangeDatabaseVersion.OnDisk", 1);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.CreateObjectStore.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 1);
   }
 
   // Create a transaction and commit it without issuing any request.
@@ -2640,6 +2644,10 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 0);
   }
 
   // Create another transaction and issue some requests.
@@ -2681,7 +2689,11 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
     histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.PutRecord.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 1);
   }
 }
 

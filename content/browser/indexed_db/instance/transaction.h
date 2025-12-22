@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <tuple>
 
@@ -267,7 +268,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  void BlobWriteComplete(Status result);
+  void BlobWriteComplete(base::TimeTicks start_time, Status result);
   void CloseOpenCursors();
   Status CommitPhaseTwo();
   void TimeoutFired();
@@ -294,6 +295,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // backing store transaction.
   PartitionedLockHolder locks_receiver_;
   bool is_commit_pending_ = false;
+  // This accumulates the duration of synchronous work done by the backing store
+  // for transaction commit (phase one + phase two).
+  base::TimeDelta commit_synchronous_duration_;
 
   // We are owned by the connection object, but during force closes sometimes
   // there are issues if there is a pending OpenRequest. So use a WeakPtr.

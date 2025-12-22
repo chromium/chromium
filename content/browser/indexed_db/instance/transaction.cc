@@ -811,7 +811,7 @@ bool Transaction::CreateExternalObjects(
   return true;
 }
 
-void Transaction::BlobWriteComplete(Status result) {
+void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
   TRACE_EVENT0("IndexedDB", "Transaction::BlobWriteComplete");
   if (state_ == FINISHED) {  // aborted
     return;
@@ -832,6 +832,9 @@ void Transaction::BlobWriteComplete(Status result) {
     return;
   }
 
+  LogDuration(base::TimeTicks::Now() - start_time,
+              "IndexedDB.BackendDuration.WriteBlobs",
+              bucket_context_->in_memory());
   ScheduleTask(
       /*operation_name_for_metrics=*/{},
       base::IgnoreArgs<Transaction*>(base::BindOnce(
@@ -882,15 +885,15 @@ Status Transaction::DoPendingCommit() {
     return CommitPhaseTwo();
   }
 
-  // CommitPhaseOne will call the callback synchronously if there are no blobs
-  // to write.
+  // CommitPhaseOne will not call the callback if there are no blobs to write.
+  base::ElapsedTimer timer;
   ASSIGN_OR_RETURN(
       bool async_work_in_progress,
       LOG_RESULT(
           backing_store_transaction_->CommitPhaseOne(
               /*blob_write_callback=*/
               base::BindOnce(&Transaction::BlobWriteComplete,
-                             ptr_factory_.GetWeakPtr()),
+                             ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
               // This callback is only used by SQLite. The LevelDB version of
               // this code lives in `BackingStore::Transaction::WriteNewBlobs`.
               /*serialize_fsa_handle=*/
@@ -919,6 +922,7 @@ Status Transaction::DoPendingCommit() {
                   ptr_factory_.GetWeakPtr())),
           "IndexedDB.BackingStore.CommitPhaseOne",
           bucket_context_->in_memory()));
+  commit_synchronous_duration_ = timer.Elapsed();
   if (async_work_in_progress) {
     return Status::OK();
   }
@@ -942,9 +946,17 @@ Status Transaction::CommitPhaseTwo() {
   if (!used_) {
     committed = true;
   } else {
+    base::ElapsedTimer timer;
     s = LogStatus(backing_store_transaction_->CommitPhaseTwo(),
                   "IndexedDB.BackingStore.CommitPhaseTwo",
                   bucket_context_->in_memory());
+    commit_synchronous_duration_ += timer.Elapsed();
+
+    if (s.ok()) {
+      LogDuration(commit_synchronous_duration_,
+                  "IndexedDB.BackendDuration.CommitTransaction",
+                  bucket_context_->in_memory());
+    }
 
     // This measurement includes the time it takes to commit to the backing
     // store (i.e. LevelDB), not just the blobs.
@@ -1044,10 +1056,13 @@ Status Transaction::RunTasks() {
   }
 
   if (!backing_store_transaction_begun_) {
+    base::ElapsedTimer timer;
     IDB_RETURN_IF_ERROR(LogStatus(
         backing_store_transaction_->Begin(std::move(locks_receiver_.locks)),
         "IndexedDB.BackingStore.BeginTransaction",
         bucket_context_->in_memory()));
+    LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.BeginTransaction",
+                bucket_context_->in_memory());
     backing_store_transaction_begun_ = true;
   }
 
