@@ -641,8 +641,8 @@ void ExtensionActionViewModel::TriggerPopup(PopupShowAction show_action,
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
 
   std::unique_ptr<extensions::ExtensionViewHost> host =
-      extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
-                                                            browser_);
+      extensions::ExtensionViewHostFactory::CreatePopupHost(
+          *extension_, popup_url, browser_);
   // Creating a host should never fail in this case, since the extension is
   // valid and has a valid popup URL.
   CHECK(host);

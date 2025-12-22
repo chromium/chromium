@@ -28,7 +28,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
 
   // Popup hosts are created with the correct type and profile.
   std::unique_ptr<ExtensionViewHost> host =
-      ExtensionViewHostFactory::CreatePopupHost(extension->url(), browser());
+      ExtensionViewHostFactory::CreatePopupHost(*extension, extension->url(),
+                                                browser());
   EXPECT_EQ(extension.get(), host->extension());
   EXPECT_EQ(browser_context, host->browser_context());
   EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());

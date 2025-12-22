@@ -225,16 +225,6 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
                   "view unless it has been enabled for incognito.";
 }
 
-// Returns the extension associated with |url| in |profile|. Returns NULL if
-// the extension does not exist.
-const Extension* GetExtensionForUrl(Profile* profile, const GURL& url) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
-  if (!registry)
-    return nullptr;
-  std::string extension_id = url.GetHost();
-  return registry->enabled_extensions().GetByID(extension_id);
-}
-
 std::unique_ptr<ExtensionViewHost> CreateExtensionViewHost(
     const Extension& extension,
     const GURL& url,
@@ -252,38 +242,25 @@ std::unique_ptr<ExtensionViewHost> CreateExtensionViewHost(
                                     std::move(delegate));
 }
 
-// Creates and initializes an ExtensionViewHost for the extension with |url|.
-std::unique_ptr<ExtensionViewHost> CreateViewHost(
-    const GURL& url,
-    Profile* profile,
-    extensions::mojom::ViewType view_type,
-    std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
-  CHECK(profile);
-
-  const Extension* extension = GetExtensionForUrl(profile, url);
-  if (!extension) {
-    return nullptr;
-  }
-
-  return CreateExtensionViewHost(*extension, url, profile, view_type,
-                                 std::move(delegate));
-}
-
 }  // namespace
 
 // static
 std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
+    const Extension& extension,
     const GURL& url,
     BrowserWindowInterface* browser) {
   DCHECK(browser);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(
       browser->GetBrowserForMigrationOnly());
 #else   // BUILDFLAG(ENABLE_EXTENSIONS)
   auto delegate = std::make_unique<ExtensionViewHostDelegateAndroid>();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  return CreateViewHost(url, browser->GetProfile(),
-                        mojom::ViewType::kExtensionPopup, std::move(delegate));
+
+  return CreateExtensionViewHost(extension, url, browser->GetProfile(),
+                                 mojom::ViewType::kExtensionPopup,
+                                 std::move(delegate));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
