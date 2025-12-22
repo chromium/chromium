@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
@@ -72,10 +71,10 @@ void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
                                                   base::Time::Now());
 }
 
-#define ASSERT_ENUM_EQUAL(Name, Name2)                                     \
-  static_assert(base::to_underlying(extensions::AppLaunchSource::Name) ==  \
-                    base::to_underlying(app_runtime::LaunchSource::Name2), \
-                "The value of extensions::" #Name                          \
+#define ASSERT_ENUM_EQUAL(Name, Name2)                                    \
+  static_assert(std::to_underlying(extensions::AppLaunchSource::Name) ==  \
+                    std::to_underlying(app_runtime::LaunchSource::Name2), \
+                "The value of extensions::" #Name                         \
                 " and app_runtime::LAUNCH_" #Name2 " should be the same");
 
 app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
@@ -108,8 +107,8 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
   // kSourceReparenting not having a corresponding entry in
   // app_runtime::LaunchSource.
   static_assert(
-      base::to_underlying(extensions::AppLaunchSource::kMaxValue) ==
-          base::to_underlying(app_runtime::LaunchSource::kMaxValue) + 3,
+      std::to_underlying(extensions::AppLaunchSource::kMaxValue) ==
+          std::to_underlying(app_runtime::LaunchSource::kMaxValue) + 3,
       "");
 
   switch (source) {
@@ -153,8 +152,8 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
     case AppLaunchSource::kSourceAppHomePage:
     case AppLaunchSource::kSourceFocusMode:
     case AppLaunchSource::kSourceSparky:
-      return static_cast<app_runtime::LaunchSource>(
-          base::to_underlying(source) - 3);
+      return static_cast<app_runtime::LaunchSource>(std::to_underlying(source) -
+                                                    3);
   }
 }
 

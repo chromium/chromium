@@ -18,7 +18,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -197,7 +196,7 @@ device::BluetoothGattCharacteristic::Properties GetBluetoothProperties(
       device::BluetoothGattCharacteristic::PROPERTY_NONE;
 
   static_assert(
-      base::to_underlying(apibtle::CharacteristicProperty::kMaxValue) == 14,
+      std::to_underlying(apibtle::CharacteristicProperty::kMaxValue) == 14,
       "Update required if the number of characteristic properties changes.");
 
   if (HasProperty(api_properties,
@@ -283,7 +282,7 @@ device::BluetoothGattCharacteristic::Permissions GetBluetoothPermissions(
       device::BluetoothGattCharacteristic::PERMISSION_NONE;
 
   static_assert(
-      base::to_underlying(apibtle::DescriptorPermission::kMaxValue) == 6,
+      std::to_underlying(apibtle::DescriptorPermission::kMaxValue) == 6,
       "Update required if the number of descriptor permissions changes.");
 
   if (HasPermission(api_permissions, apibtle::DescriptorPermission::kRead)) {

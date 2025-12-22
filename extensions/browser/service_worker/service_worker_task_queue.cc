@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/timer/timer.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1010,7 +1009,7 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   if (!success) {
     LOG(ERROR) << "Failed to unregister service worker for extension id: "
                << extension_id
-               << " error status was: " << base::to_underlying(status);
+               << " error status was: " << std::to_underlying(status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
         status);
