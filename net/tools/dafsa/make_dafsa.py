@@ -442,27 +442,30 @@ def encode(dafsa: DAFSA) -> Sequence[int]:
   return output
 
 
-def to_cxx(data: Sequence[int]) -> str:
+def to_cxx(data: Sequence[int], namespace: str) -> str:
   """Generates C++ code from a list of encoded bytes."""
   text = '/* This file is generated. DO NOT EDIT!\n\n'
   text += 'The byte array encodes effective tld names. See make_dafsa.py for'
   text += ' documentation.'
   text += '*/\n\n'
+  text += f"namespace {namespace} {{\n"
   text += 'const unsigned char kDafsa[%s] = {\n' % len(data)
   for i in range(0, len(data), 12):
     text += '  '
     text += ', '.join('0x%02x' % byte for byte in data[i:i + 12])
     text += ',\n'
   text += '};\n'
+  text += f"}}  // namespace {namespace}\n"
+
   return text
 
 
-def words_to_cxx(words: Iterable[str]) -> str:
+def words_to_cxx(words: Iterable[str], namespace: str) -> str:
   """Generates C++ code from a word list"""
   dafsa = to_dafsa(words)
   for fun in (reverse, join_suffixes, reverse, join_suffixes, join_labels):
     dafsa = fun(dafsa)
-  return to_cxx(encode(dafsa))
+  return to_cxx(encode(dafsa), namespace)
 
 
 def parse_gperf(infile: Iterable[str], reverse: bool) -> Iterable[str]:
@@ -494,8 +497,14 @@ def main() -> int:
                       default=sys.stdin)
   parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
                       default=sys.stdout)
+  parser.add_argument(
+      '--namespace',
+      action='store',
+      required=True,
+      help='the C++ namespace in which to place the generated buffer')
   args = parser.parse_args()
-  args.outfile.write(words_to_cxx(parse_gperf(args.infile, args.reverse)))
+  args.outfile.write(
+      words_to_cxx(parse_gperf(args.infile, args.reverse), args.namespace))
   return 0
 
 

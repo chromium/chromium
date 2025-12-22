@@ -2,18 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-action_foreach("common_words_dafsa") {
-  script = "//net/tools/dafsa/make_dafsa.py"
-  sources = [
-    "data/common_words.gperf",
-    "data/common_words_test.gperf",
-  ]
-  outputs = [ "${target_gen_dir}/{{source_name_part}}-inc.cc" ]
-  args = [
-    "{{source}}",
-    rebase_path("${target_gen_dir}/{{source_name_part}}-inc.cc",
-                root_build_dir),
-  ]
+_gperf_files = [
+  {
+    source = "data/common_words.gperf"
+    namespace = "url_formatter::common_words"
+  },
+  {
+    source = "data/common_words_test.gperf"
+    namespace = "test"
+  },
+]
+
+_generated_targets = []
+
+foreach(_item, _gperf_files) {
+  _source = _item.source
+  _source_name = get_path_info(_item.source, "name")
+  _target_name = "generate_" + _source_name + "_dafsa"
+
+  action(_target_name) {
+    script = "//net/tools/dafsa/make_dafsa.py"
+    sources = [ _item.source ]
+
+    outputs = [ "${target_gen_dir}/${_source_name}-inc.cc" ]
+    args = [
+      "--namespace=${_item.namespace}",
+      rebase_path(_item.source, root_build_dir),
+      rebase_path("${target_gen_dir}/${_source_name}-inc.cc", root_build_dir),
+    ]
+  }
+
+  _generated_targets += [ ":${_target_name}" ]
+}
+
+group("common_words_dafsa") {
+  public_deps = _generated_targets
 }
 
 source_set("common") {

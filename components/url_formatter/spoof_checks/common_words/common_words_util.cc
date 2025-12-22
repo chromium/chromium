@@ -8,13 +8,12 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "components/url_formatter/spoof_checks/common_words/common_words-inc.cc"
 #include "net/base/lookup_string_in_fixed_set.h"
 
 namespace url_formatter::common_words {
 
 namespace {
-
-#include "components/url_formatter/spoof_checks/common_words/common_words-inc.cc"
 
 base::span<const uint8_t> g_dafsa_params = kDafsa;
 
