@@ -22,16 +22,16 @@
   }
 </script>
 <div class="tests">
-  <div id="elm1" style="background:if(navigation(r1):lime; else:red);"></div>
-  <div id="elm2" style="background:if(navigation(r2):red; else:lime);"></div>
-  <div id="elm3" style="background:if(not navigation(r3):red; else:lime);"></div>
+  <div id="elm1" style="background:if(navigation(at:r1):lime; else:red);"></div>
+  <div id="elm2" style="background:if(navigation(at:r2):red; else:lime);"></div>
+  <div id="elm3" style="background:if(not navigation(at:r3):red; else:lime);"></div>
   <div id="elm4" style="background:if(navigation(at:r1):lime; else:red);"></div>
   <div id="elm5" style="background:if(navigation(not (at:r2)):lime; else:red);"></div>
-  <div id="elm6" style="background:if(navigation((r2) or (r3)):lime; else:red);"></div>
-  <div id="elm7" style="background:if(navigation(url-pattern('*route*')):lime; else:red);"></div>
-  <div id="elm8" style="background:if(navigation(url-pattern('should-not-match')):red; else:lime);"></div>
-  <div id="elm9" style="background:if(navigation((url-pattern('should-not-match')) or (r3)):lime; else:red);"></div>
-  <div id="elm10" style="background:if(navigation((url-pattern('should-not-match')) or (url-pattern('*route*'))):lime; else:red);"></div>
+  <div id="elm6" style="background:if(navigation((at:r2) or (at:r3)):lime; else:red);"></div>
+  <div id="elm7" style="background:if(navigation(at:url-pattern('*route*')):lime; else:red);"></div>
+  <div id="elm8" style="background:if(navigation(at:url-pattern('should-not-match')):red; else:lime);"></div>
+  <div id="elm9" style="background:if(navigation((at:url-pattern('should-not-match')) or (at:r3)):lime; else:red);"></div>
+  <div id="elm10" style="background:if(navigation((at:url-pattern('should-not-match')) or (at:url-pattern('*route*'))):lime; else:red);"></div>
 </div>
 
 <script src="/resources/testharness.js"></script>

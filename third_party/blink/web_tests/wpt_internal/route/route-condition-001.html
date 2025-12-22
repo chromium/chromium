@@ -23,22 +23,22 @@
 </script>
 <style>
   /* These should match. */
-  @navigation (r1) or (r2) {
+  @navigation (at: r1) or (at: r2) {
     #match1 {
       height: 7px;
     }
   }
-  @navigation (r2) or (r1) {
+  @navigation (at: r2) or (at: r1) {
     #match2 {
       height: 7px;
     }
   }
-  @navigation (url-pattern("*route*")) and (r3) {
+  @navigation (at: url-pattern("*route*")) and (at: r3) {
     #match3 {
       height: 7px;
     }
   }
-  @navigation not (r2) {
+  @navigation not (at: r2) {
     #match4 {
       height: 7px;
     }
@@ -63,35 +63,35 @@
       height: 7px;
     }
   }
-  @navigation ((r2) and (r1)) or (r3) {
+  @navigation ((at: r2) and (at: r1)) or (at: r3) {
     #match9 {
       height: 7px;
     }
   }
-  @navigation (not (r1)) or (r2) or (r3) {
+  @navigation (not (at: r1)) or (at: r2) or (at: r3) {
     #match10 {
       height: 7px;
     }
   }
-  @navigation (r1) and (not (r2)) and (r3) {
+  @navigation (at: r1) and (not (at: r2)) and (at: r3) {
     #match11 {
       height: 7px;
     }
   }
-  @navigation (r1) and (not (r2)) and (r3) and (not (from: r1)) and (not (to: r1)) and (not (from: r2)) and (not (to: r2)) and (not (from: r3)) and (not (to: r3)) {
+  @navigation (at: r1) and (not (at: r2)) and (at: r3) and (not (from: r1)) and (not (to: r1)) and (not (from: r2)) and (not (to: r2)) and (not (from: r3)) and (not (to: r3)) {
     #match12 {
       height: 7px;
     }
   }
 
-  @navigation ((r1) and (r2) and (r3) and (from: r1) and (to: r1) and (from: r2) and (to: r2) and (from: r3) and (to: r3)) or (at: url-pattern("*route*")) {
+  @navigation ((at: r1) and (at: r2) and (at: r3) and (from: r1) and (to: r1) and (from: r2) and (to: r2) and (from: r3) and (to: r3)) or (at: url-pattern("*route*")) {
     #match13 {
       height: 7px;
     }
   }
 
   /* These should not match. */
-  @navigation (r2) and (r1) {
+  @navigation (at: r2) and (at: r1) {
     #nomatch1 {
       height: 13px;
     }
@@ -111,7 +111,7 @@
       height: 13px;
     }
   }
-  @navigation (r1) and (r2) and (r3) {
+  @navigation (at: r1) and (at: r2) and (at: r3) {
     #nomatch5 {
       height: 13px;
     }

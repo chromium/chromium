@@ -511,7 +511,7 @@ TEST_F(StyleRuleTest, NavigationRule) {
   };
 
   const NavigationTestExpression* navigation_test =
-      GetNavigationTest("@navigation (pun_ruined) {}");
+      GetNavigationTest("@navigation (at: pun_ruined) {}");
   ASSERT_TRUE(navigation_test);
   EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");
   EXPECT_EQ(navigation_test->GetPreposition(), NavigationPreposition::kAt);

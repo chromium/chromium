@@ -69,48 +69,37 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
 // <route-name> = <dashed-ident>
 NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
                                               const Document& document) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return nullptr;
+  }
+  AtomicString ident(stream.ConsumeIncludingWhitespace().Value().ToString());
+  if (stream.Peek().GetType() != kColonToken) {
+    return nullptr;
+  }
+  NavigationPreposition preposition;
+  if (ident == "at") {
+    preposition = NavigationPreposition::kAt;
+  } else if (ident == "from") {
+    preposition = NavigationPreposition::kFrom;
+  } else if (ident == "to") {
+    preposition = NavigationPreposition::kTo;
+  } else {
+    return nullptr;
+  }
+  stream.ConsumeIncludingWhitespace();
+
   AtomicString route_name;
-  auto preposition = NavigationPreposition::kAt;
   URLPatternParseResult url_pattern_result;
-
-  bool header_valid = [&]() {
-    if (stream.Peek().GetType() == kIdentToken) {
-      AtomicString first_string(
-          stream.ConsumeIncludingWhitespace().Value().ToString());
-      if (stream.Peek().GetType() == kColonToken) {
-        if (first_string == "at") {
-          preposition = NavigationPreposition::kAt;
-        } else if (first_string == "from") {
-          preposition = NavigationPreposition::kFrom;
-        } else if (first_string == "to") {
-          preposition = NavigationPreposition::kTo;
-        } else {
-          return false;
-        }
-        stream.ConsumeIncludingWhitespace();
-        if (stream.Peek().GetType() == kIdentToken) {
-          route_name = AtomicString(
-              stream.ConsumeIncludingWhitespace().Value().ToString());
-        } else {
-          url_pattern_result = ParseURLPattern(stream, document);
-          if (!url_pattern_result.IsSuccess()) {
-            return false;
-          }
-        }
-        return stream.AtEnd();
-      }
-      if (stream.AtEnd()) {
-        route_name = first_string;
-        return true;
-      }
-    } else {
-      url_pattern_result = ParseURLPattern(stream, document);
-      return url_pattern_result.IsSuccess() && stream.AtEnd();
+  if (stream.Peek().GetType() == kIdentToken) {
+    route_name =
+        AtomicString(stream.ConsumeIncludingWhitespace().Value().ToString());
+  } else {
+    url_pattern_result = ParseURLPattern(stream, document);
+    if (!url_pattern_result.IsSuccess()) {
+      return nullptr;
     }
-    return false;
-  }();
-
-  if (!header_valid) {
+  }
+  if (!stream.AtEnd()) {
     return nullptr;
   }
 
