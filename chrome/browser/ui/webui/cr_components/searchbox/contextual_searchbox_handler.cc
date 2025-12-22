@@ -735,6 +735,11 @@ void ContextualSearchboxHandler::OpenUrl(
       new_contextual_session_handle = contextual_session_service->GetSession(
           contextual_session_handle->session_id());
 
+  // TODO(crbug.com/470404040): Determine what to do with the return
+  // value of this call, or move this call to a different location.
+  new_contextual_session_handle->CheckSearchContentSharingSettings(
+      profile_->GetPrefs());
+
   auto navigation_handle_callback = base::BindOnce(
       [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
              handle,

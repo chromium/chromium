@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -149,14 +150,11 @@ class ContextualSearchboxHandlerTest
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
 
-    service_ = std::make_unique<contextual_search::ContextualSearchService>(
-        /*identity_manager=*/nullptr, url_loader_factory(),
-        template_url_service(), fake_variations_client(),
-        version_info::Channel::UNKNOWN, "en-US");
+    service_ = ContextualSearchServiceFactory::GetForProfile(profile());
     contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
     // Check the search content sharing settings to notify the session handle
-    // that the client is properly checking the pref value.
+    // that the policy has been checked.
     contextual_session_handle_->CheckSearchContentSharingSettings(
         profile()->GetPrefs());
 
@@ -198,7 +196,7 @@ class ContextualSearchboxHandlerTest
     query_controller_ = nullptr;
     metrics_recorder_ = nullptr;
     handler_.reset();
-    service_.reset();
+    service_ = nullptr;
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -211,7 +209,7 @@ class ContextualSearchboxHandlerTest
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
-  std::unique_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
 };
 

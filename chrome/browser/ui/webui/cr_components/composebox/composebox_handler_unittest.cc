@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -88,8 +89,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   ~ComposeboxHandlerTest() override = default;
 
   void SetUp() override {
-    ContextualSearchboxHandlerTestHarness::SetUp();
-
+    ASSERT_NO_FATAL_FAILURE(ContextualSearchboxHandlerTestHarness::SetUp());
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
     query_controller_config_params->send_lns_surface = false;
@@ -98,17 +98,15 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
-        fake_variations_client(), std::move(query_controller_config_params));
+        /*variations_client=*/nullptr,
+        std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
 
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
     metrics_recorder_ = metrics_recorder_ptr.get();
 
-    service_ = std::make_unique<contextual_search::ContextualSearchService>(
-        /*identity_manager=*/nullptr, url_loader_factory(),
-        template_url_service(), fake_variations_client(),
-        version_info::Channel::UNKNOWN, "en-US");
+    service_ = ContextualSearchServiceFactory::GetForProfile(profile());
     contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
     // Check the search content sharing settings to notify the session handle
@@ -151,7 +149,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     query_controller_ = nullptr;
     metrics_recorder_ = nullptr;
     handler_.reset();
-    service_.reset();
+    contextual_session_handle_.reset();
+    // Service is owned by the profile, so we don't need to reset it here,
+    // but we should clear the pointer.
+    service_ = nullptr;
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -179,7 +180,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
-  std::unique_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
