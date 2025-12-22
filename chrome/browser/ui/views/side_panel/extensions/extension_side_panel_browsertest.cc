@@ -1909,6 +1909,42 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension2_key));
 }
 
+// Tests calling `sidePanel.open()` with `kCurrentWindowId` opens the side panel
+// in the current window.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_CurrentWindow) {
+  const Extension* extension = LoadSidePanelExtension();
+  ASSERT_TRUE(extension);
+
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  // Open a second browser window.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(second_browser);
+
+  SidePanelUI* const first_side_panel_ui =
+      browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* const second_side_panel_ui =
+      second_browser->GetFeatures().side_panel_ui();
+
+  EXPECT_FALSE(
+      first_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_FALSE(
+      second_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+
+  // Run `sidePanel.open()` with `kCurrentWindowId`.
+  // Since this test runs the function manually with no specific window,
+  // `WINDOW_ID_CURRENT` should fall back to the foremost one.
+  RunOpenPanelForWindow(*extension, extension_misc::kCurrentWindowId);
+
+  EXPECT_FALSE(
+      first_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_TRUE(
+      second_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+}
+
 // Tests that extension context menus show the "(Open / Close) side panel" menu
 // item when appropriate, and that the menu item toggles the global side panel.
 IN_PROC_BROWSER_TEST_F(
