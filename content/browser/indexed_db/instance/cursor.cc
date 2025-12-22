@@ -53,17 +53,24 @@ DatabaseError CreateError(blink::mojom::IDBException code,
   return DatabaseError(code, message);
 }
 
+// This should only arise with a rogue or buggy renderer.
+blink::mojom::IDBCursorResultPtr CreateInvalidArgumentErrorResult() {
+  DatabaseError error(blink::mojom::IDBException::kUnknownError,
+                      "Invalid argument(s) to a cursor operation");
+  return blink::mojom::IDBCursorResult::NewErrorResult(
+      blink::mojom::IDBError::New(error.code(), error.message()));
+}
 }  // namespace
 
 // static
 Cursor* Cursor::CreateAndBind(
     std::unique_ptr<BackingStore::Cursor> cursor,
-    indexed_db::CursorType cursor_type,
+    Type type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<Transaction> transaction,
     mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote) {
   auto instance = base::WrapUnique(
-      new Cursor(std::move(cursor), cursor_type, task_type, transaction));
+      new Cursor(std::move(cursor), std::move(type), task_type, transaction));
   Cursor* instance_ptr = instance.get();
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(instance), pending_remote.InitWithNewEndpointAndPassReceiver());
@@ -71,12 +78,12 @@ Cursor* Cursor::CreateAndBind(
 }
 
 Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
-               indexed_db::CursorType cursor_type,
+               Type type,
                blink::mojom::IDBTaskType task_type,
                base::WeakPtr<Transaction> transaction)
     : bucket_locator_(transaction->bucket_context()->bucket_locator()),
+      type_(std::move(type)),
       task_type_(task_type),
-      cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
       cursor_(std::move(cursor)) {
   TRACE_EVENT_BEGIN("IndexedDB", "Cursor::open",
@@ -91,6 +98,12 @@ Cursor::~Cursor() {
 void Cursor::Advance(uint32_t count,
                      blink::mojom::IDBCursor::AdvanceCallback callback) {
   TRACE_EVENT0("IndexedDB", "Cursor::Advance");
+
+  if (count == 0) {
+    std::move(callback).Run(CreateInvalidArgumentErrorResult());
+    receiver_.ReportBadMessage("Invalid count");
+    return;
+  }
 
   if (!transaction_) {
     Close();
@@ -168,6 +181,16 @@ void Cursor::Continue(IndexedDBKey key,
                       IndexedDBKey primary_key,
                       blink::mojom::IDBCursor::ContinueCallback callback) {
   TRACE_EVENT0("IndexedDB", "Cursor::Continue");
+
+  if ((type_.source == Type::Source::kObjectStore ||
+       type_.direction == blink::mojom::IDBCursorDirection::NextNoDuplicate ||
+       type_.direction == blink::mojom::IDBCursorDirection::PrevNoDuplicate) &&
+      primary_key.IsValid()) {
+    std::move(callback).Run(CreateInvalidArgumentErrorResult());
+    receiver_.ReportBadMessage("Primary key not allowed");
+    return;
+  }
+
   if (!transaction_) {
     Close();
   }
@@ -319,17 +342,11 @@ Status Cursor::PrefetchIterationOperation(
     found_keys.emplace_back(cursor_->GetKey().Clone());
     found_primary_keys.emplace_back(cursor_->GetPrimaryKey().Clone());
 
-    switch (cursor_type_) {
-      case indexed_db::CursorType::kKeyOnly:
-        found_values.push_back(IndexedDBValue());
-        break;
-      case indexed_db::CursorType::kKeyAndValue: {
-        found_values.push_back(std::move(cursor_->GetValue()));
-        size_estimate += found_values.back().SizeEstimate();
-        break;
-      }
-      default:
-        NOTREACHED();
+    if (type_.key_only) {
+      found_values.emplace_back();
+    } else {
+      found_values.emplace_back(std::move(cursor_->GetValue()));
+      size_estimate += found_values.back().SizeEstimate();
     }
     size_estimate += cursor_->GetKey().size_estimate();
     size_estimate += cursor_->GetPrimaryKey().size_estimate();
