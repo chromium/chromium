@@ -8,6 +8,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
@@ -18,7 +19,9 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -28,6 +31,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -47,6 +52,12 @@ BWGPageContextComputationStateFromPageContextWrapperError(
       return ios::provider::BWGPageContextComputationState::kError;
   }
 }
+
+// The offset for the Gemini overlay when fullscreen mode is enabled. Fullscreen
+// mode is enabled when the fullscreen progress value is 0. A negative value
+// will bring the overlay towards the bottom of the viewport while a positive
+// value will do the reverse.
+CGFloat kOverlayFullscreenOffset = -100;
 
 }  // namespace
 
@@ -69,6 +80,13 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.suggestionHandler = gemini_suggestion_handler_;
+  }
+
+  // Ensures a `FullscreenController` is created.
+  if (IsGeminiCopresenceEnabled()) {
+    FullscreenController::CreateForBrowser(browser_);
+    fullscreen_controller_ = FullscreenController::FromBrowser(browser_);
+    fullscreen_controller_->AddObserver(this);
   }
 }
 
@@ -132,7 +150,20 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
-void BwgBrowserAgent::UpdateGeminiOverlayOffset(CGFloat offset) {
+#pragma mark - FullscreenControllerObserver
+
+void BwgBrowserAgent::FullscreenProgressUpdated(
+    FullscreenController* controller,
+    CGFloat progress) {
+  CGFloat fullyExpandedBottomToolbarHeight =
+      fullscreen_controller_->GetMaxViewportInsets().bottom;
+  CGFloat offset = fullyExpandedBottomToolbarHeight +
+                   kOverlayFullscreenOffset * (1.0 - progress);
+
+  // When fullscreen mode is disabled (progress == 1), the offset will be a
+  // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
+  // fullscreen mode is enabled (progress == 0), the offset will be a negative
+  // value, `kOverlayFullscreenOffset`.
   ios::provider::UpdateOverlayOffset(offset);
 }
 

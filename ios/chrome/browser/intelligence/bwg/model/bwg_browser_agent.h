@@ -9,6 +9,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/types/expected.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 class Browser;
@@ -34,7 +36,8 @@ class PageContext;
 
 // A browser agent responsible for presenting the BWG overlay and managing
 // its protocol handlers.
-class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
+class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
+                        FullscreenControllerObserver {
  public:
   BwgBrowserAgent(const BwgBrowserAgent&) = delete;
   BwgBrowserAgent& operator=(const BwgBrowserAgent&) = delete;
@@ -73,9 +76,6 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                      PageContextWrapperError> expected_page_context);
 
-  // Updates Gemini overlay offset.
-  void UpdateGeminiOverlayOffset(CGFloat offset);
-
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
@@ -102,6 +102,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
   // at that time.
   void SetSessionCommandHandlers();
 
+  // FullscreenControllerObserver:
+  void FullscreenProgressUpdated(FullscreenController* controller,
+                                 CGFloat progress) override;
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -116,6 +120,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
 
   // Handler for Gemini suggestion chips.
   __strong GeminiSuggestionHandler* gemini_suggestion_handler_ = nullptr;
+
+  // Reference to fullscreen controller. Used to observe fullscreen progress
+  // updates related to the Gemini overlay.
+  raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
