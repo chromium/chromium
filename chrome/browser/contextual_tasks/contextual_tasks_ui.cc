@@ -240,6 +240,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // is made to the URL.
   source->AddString("forcedEmbeddedPageHost",
                     contextual_tasks::GetForcedEmbeddedPageHost());
+  source->AddString(
+      "contextualTasksSignInDomains",
+      base::JoinString(contextual_tasks::GetContextualTasksSignInDomains(),
+                       ","));
 
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
