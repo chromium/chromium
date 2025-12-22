@@ -374,53 +374,6 @@ TEST(CreateSettingsFromPrefsTest, AutocorrectIsNotSupportedForNonLatin) {
   ASSERT_FALSE(IsAutocorrectSupported("zh-t-i0-pinyin"));
 }
 
-TEST(InputMethodSettingsTest,
-     SetLanguageInputMethodSpecificSettingExistingEngine) {
-  base::Value::Dict dict;
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field1"}), "DEFAULT");
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field2"}), "DEFAULT");
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field3"}), "DEFAULT");
-  TestingPrefServiceSimple prefs;
-  RegisterTestingPrefs(prefs, dict);
-
-  base::Value::Dict new_prefs;
-  new_prefs.Set("field2", "CHANGED");
-  SetLanguageInputMethodSpecificSetting(prefs, kZhuyinEngineId, new_prefs);
-
-  const base::Value* prefs_val =
-      prefs.GetUserPref(::prefs::kLanguageInputMethodSpecificSettings);
-
-  base::Value::Dict expected;
-  expected.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field1"}),
-                           "DEFAULT");
-  expected.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field2"}),
-                           "CHANGED");
-  expected.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field3"}),
-                           "DEFAULT");
-
-  EXPECT_EQ(*prefs_val->GetIfDict(), expected);
-}
-
-TEST(InputMethodSettingsTest, SetLanguageInputMethodSpecificSettingNewEngine) {
-  base::Value::Dict dict;
-  dict.SetByDottedPath("existing-engine.field1", "DEFAULT");
-  TestingPrefServiceSimple prefs;
-  RegisterTestingPrefs(prefs, dict);
-
-  base::Value::Dict new_prefs;
-  new_prefs.Set("field1", "NEW");
-  SetLanguageInputMethodSpecificSetting(prefs, "brand-new-engine", new_prefs);
-
-  const base::Value* prefs_val =
-      prefs.GetUserPref(::prefs::kLanguageInputMethodSpecificSettings);
-
-  base::Value::Dict expected;
-  expected.SetByDottedPath("existing-engine.field1", "DEFAULT");
-  expected.SetByDottedPath("brand-new-engine.field1", "NEW");
-
-  EXPECT_EQ(*prefs_val->GetIfDict(), expected);
-}
-
 }  // namespace
 }  // namespace input_method
 }  // namespace ash

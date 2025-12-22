@@ -90,20 +90,11 @@ inline constexpr std::string_view kJpPrefShiftKeyModeStyleAlphanumeric =
 inline constexpr std::string_view kJpPrefShiftKeyModeStyleKatakana = "Katakana";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts:JpOptionValues)
 
-// Pref key and values related to the "source of truth" for the options data.
-// These are not accessible via the OsSettings app and is only used as a way
-// to detect when configuration data needs to be copied over from one source to
-// another.
+// Obsolete CrOS-Prefs key. Entry with this key was previously persisted to
+// CrOS-Prefs for internal use by the now terminated Mozc-to-CrOS-Prefs data
+// migration; it was never accessible via CrOS Settings app.
 inline constexpr std::string_view kJpPrefMetadataOptionsSource =
     "Metadata-OptionsSource";
-// This is the special "legacy" configuration file that is used directly by the
-// extension on disk to set configurations.
-inline constexpr std::string_view kJpPrefMetadataOptionsSourceLegacyConfig1Db =
-    "LegacyConfig1Db";
-// In SystemPK Japanese, the source of truth is the chromeos PrefService like
-// the rest of the IMEs.
-inline constexpr std::string_view kJpPrefMetadataOptionsSourcePrefService =
-    "PrefService";
 
 // All the enums below correspond to UMA histograms enum values.
 // LINT.IfChange(jp_settings_hist_enums)

@@ -15,12 +15,6 @@ ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id);
 
-// Adds or replaces the settings in the values map while notifying the
-// PrefService of changes.
-void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
-                                           const std::string& engine_id,
-                                           const base::Value::Dict& values);
-
 // Returns true if Autocorrect is supported for a given engine id.
 bool IsAutocorrectSupported(const std::string& engine_id);
 

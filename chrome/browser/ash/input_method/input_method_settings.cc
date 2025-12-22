@@ -423,25 +423,6 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   return nullptr;
 }
 
-void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
-                                           const std::string& engine_id,
-                                           const base::Value::Dict& values) {
-  // This creates a dictionary where any changes to the dictionary will notify
-  // the prefs service (and its observers).
-  ScopedDictPrefUpdate update(&prefs,
-                              ::prefs::kLanguageInputMethodSpecificSettings);
-
-  // The "update" dictionary contains nested dictionaries of engine_id -> Dict.
-  // This partial dictionary contains all the new updated files set up in the
-  // same schema so it can be merged.
-  base::Value::Dict partial_dict;
-  partial_dict.Set(engine_id, values.Clone());
-
-  // Does a nested dictionary merge to the "update" dictionary. This does not
-  // modify any existing values that are not inside the partial_dict.
-  update->Merge(std::move(partial_dict));
-}
-
 bool IsAutocorrectSupported(const std::string& engine_id) {
   static constexpr auto kEnabledInputMethods =
       base::MakeFixedFlatSet<std::string_view>({
