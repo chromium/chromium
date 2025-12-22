@@ -74,6 +74,12 @@ void ScrollToSwitchToTabElement(const GURL& url) {
       assertWithMatcher:grey_interactable()];
 }
 
+// Long URL webpage.
+
+const char kLongURLPage[] = "This is a webpage with a long URL";
+const char kLongURLTitle[] = "Long URL title";
+const char kLongURL[] = "/thisisaverylongURLforawebpage.html";
+
 // Web page 1.
 const char kPage1[] = "This is the first page";
 const char kPage1Title[] = "Title 1";
@@ -95,6 +101,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
+
+  if (request.relative_url == kLongURL) {
+    http_response->set_content(
+        "<html><head><title>" + std::string(kLongURLTitle) +
+        "</title></head><body>" + std::string(kLongURLPage) + "</body></html>");
+    return std::move(http_response);
+  }
 
   if (request.relative_url == kPage1URL) {
     http_response->set_content(
@@ -641,21 +654,21 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL _URL1 = self.testServer->GetURL(kPage1URL);
+  GURL URL = self.testServer->GetURL(kLongURL);
 
-  [ChromeEarlGrey loadURL:_URL1];
-  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kLongURLPage];
 
   // Focus omnibox from Web.
   [ChromeEarlGreyUI focusOmnibox];
 
   // Typing the title of page1.
-  [ChromeEarlGreyUI replaceTextInOmnibox:[NSString cr_fromString:kPage1Title]];
+  [ChromeEarlGreyUI
+      replaceTextInOmnibox:[NSString cr_fromString:kLongURLTitle]];
 
   // Wait for suggestions to show.
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:PopupRowWithUrlMatcher(
-                                                       _URL1)];
+      waitForSufficientlyVisibleElementWithMatcher:PopupRowWithUrlMatcher(URL)];
 
   // The omnibox popup may update multiple times.  Don't downArrow until this
   // is done.
