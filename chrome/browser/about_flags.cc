@@ -11205,10 +11205,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
 #endif
 
-    {"language-detection-api", flag_descriptions::kLanguageDetectionAPIName,
-     flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
-
     {"lens-aim-suggestions", flag_descriptions::kLensAimSuggestionsName,
      flag_descriptions::kLensAimSuggestionsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensAimSuggestions,

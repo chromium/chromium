@@ -2563,11 +2563,6 @@ inline constexpr char
         "Enables page annotation logic to source related searches data from "
         "prefetched ZPS responses";
 
-inline constexpr char kLanguageDetectionAPIName[] =
-    "Language detection web platform API";
-inline constexpr char kLanguageDetectionAPIDescription[] =
-    "When enabled, JS can use the web platform's language detection API";
-
 inline constexpr char kLensOverlayName[] = "Lens overlay";
 inline constexpr char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";

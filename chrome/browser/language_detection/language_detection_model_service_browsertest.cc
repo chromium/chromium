@@ -185,12 +185,6 @@ class LanguageDetectionModelServiceBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LanguageDetectionAPI");
-  }
-
   std::string EvalJsCatchingError(Browser* browser, std::string_view script) {
     return EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                   base::StringPrintf(R"(

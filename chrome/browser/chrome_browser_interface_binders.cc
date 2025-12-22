@@ -467,17 +467,6 @@ void PopulateChromeFrameBinders(
 
   map->Add<optimization_guide::mojom::ModelBroker>(&BindModelBroker);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kLanguageDetectionAPI)) {
-    // When the feature is enabled, the driver is bound by
-    // browser_interface_binders.cc to make it available to JS execution
-    // contexts. When the feature is disabled, we bind it here for Chrome's
-    // page-translation feature.
-    //
-    // TODO(https://crbug.com/354069716): Remove this when the flag is removed.
-    map->Add<language_detection::mojom::ContentLanguageDetectionDriver>(
-        &translate::BindContentLanguageDetectionDriver);
-  }
-
   map->Add<blink::mojom::CredentialManager>(&BindCredentialManager);
 
   map->Add<chrome::mojom::OpenSearchDescriptionDocumentHandler>(

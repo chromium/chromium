@@ -6506,11 +6506,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "language-detection-api",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "language-packs-in-settings",
     "owners": ["mlcui@google.com", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
     "expiry_milestone": 126
