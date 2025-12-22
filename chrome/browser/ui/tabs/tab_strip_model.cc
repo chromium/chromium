@@ -2004,6 +2004,8 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
   // changes.
   AddToSplitImpl(split_id, indices, indices[0], visual_data,
                  SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+
+  CompleteModelUpdateTransaction();
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
@@ -2129,6 +2131,8 @@ void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
 
   RemoveSplitImpl(split_id,
                   SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+
+  CompleteModelUpdateTransaction();
 }
 
 // Returns the ID of the group that is focused. If no group is focused,
