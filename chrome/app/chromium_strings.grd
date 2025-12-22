@@ -2114,7 +2114,7 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_NON_BLOCKING_DESCRIPTION"
           desc="Text that is shown in the Lens non-blocking privacy notice, giving examples of what Lens can do and informing users what information will be sent to Google. Includes placeholder for learn more link.">
-          When you open Image Search, the page title, URL, and content, including PDFs, will be sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+          When you open Image Search, the page title, URL, and content, including PDFs, will automatically be sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to the server. Includes placeholder for learn more link.">
