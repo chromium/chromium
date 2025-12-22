@@ -53,10 +53,8 @@ struct TestAccount {
 };
 
 constexpr TestAccount kNonEnterpriseAccount = {"foo@testbar.com", ""};
-#if !BUILDFLAG(IS_CHROMEOS)
 constexpr TestAccount kEnterpriseAccount = {"foo@testenterprise.com",
                                             "testenterprise.com"};
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
@@ -112,7 +110,7 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        std::string(account->email), signin::ConsentLevel::kSync);
+        std::string(account->email), signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_model_execution_features(true);
@@ -444,8 +442,6 @@ class ActorPolicyCheckerBrowserTestWithManagedAccount
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Note: sign-out from enterprise account is not allowed in ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
                        CapabilityUpdatedForAccount) {
   // No account is signed in, thus no capability.
@@ -460,6 +456,8 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
                    ->GetPolicyChecker()
                    .can_act_on_web());
 
+// Note: sign-out from enterprise account is not allowed in ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   ClearPrimaryAccount();
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
@@ -470,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
                   .can_act_on_web());
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
                        GlicUserStatusChanged) {
@@ -498,8 +496,6 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
 using ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy =
     ActorPolicyCheckerBrowserTestManagedBrowser;
 
-// Note: sign-out from enterprise account is not allowed in ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy,
     CapabilityUpdatedForAccount) {
@@ -509,6 +505,8 @@ IN_PROC_BROWSER_TEST_F(
                    ->GetPolicyChecker()
                    .can_act_on_web());
 
+// Note: sign-out from enterprise account is not allowed in ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   ClearPrimaryAccount();
   // No capability because the policy is disabled.
   SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
@@ -521,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
                   .can_act_on_web());
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
 
 }  // namespace actor
