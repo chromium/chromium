@@ -21,7 +21,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
@@ -146,7 +145,7 @@ void IFaceProxy::Method(
   const size_t estimated_payload_size =
     0;
   mojo::Message message(
-      base::to_underlying(messages::IFace::kMethod), kFlags, estimated_payload_size);
+      std::to_underlying(messages::IFace::kMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFace_Method_Params_Data> params(
           message);
@@ -263,7 +262,7 @@ void IFace_Method_ProxyToResponder::Run(
   const size_t estimated_payload_size =
     0;
   mojo::Message message(
-      base::to_underlying(messages::IFace::kMethod), kFlags, estimated_payload_size);
+      std::to_underlying(messages::IFace::kMethod), kFlags, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::IFace_Method_ResponseParams_Data> params(
           message);

@@ -17,7 +17,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -1832,8 +1831,8 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
         // InterfaceEndpointClient requires this flag if sending a message with
         // a responder.
         Message::kFlagExpectsResponse | GetParam();
-    Message message(base::to_underlying(mojom::messages::NoSync::kMethod),
-                    flags, 0, 0, nullptr);
+    Message message(std::to_underlying(mojom::messages::NoSync::kMethod), flags,
+                    0, 0, nullptr);
     ::mojo::internal::MessageFragment<
         mojom::internal::NoSync_Method_Params_Data>
         params(message);
@@ -1848,7 +1847,7 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
         // InterfaceEndpointClient requires this flag if sending a message with
         // a responder.
         Message::kFlagExpectsResponse | GetParam();
-    Message message(base::to_underlying(mojom::messages::OneSync::kMethod),
+    Message message(std::to_underlying(mojom::messages::OneSync::kMethod),
                     flags, 0, 0, nullptr);
     ::mojo::internal::MessageFragment<
         mojom::internal::NoSync_Method_Params_Data>
