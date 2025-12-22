@@ -990,10 +990,16 @@ void AIPageContentAgent::GetAIPageContent(
   // notifications and the layout is likely clean.
   const bool can_do_sync_extraction = !view || !view->LifecycleUpdatePending();
 
+  // TODO(b/467336183): Remove VLOGs once resolved.
   if (can_do_sync_extraction || NeedsSyncExtraction(*options)) {
+    VLOG(1) << "GetAIPageContent SYNC MainFrame: "
+            << GetSupplementable()->IsInMainFrame();
     GetAIPageContentSync(std::move(options), std::move(callback), start_time);
+    VLOG(1) << "GetAIPageContent SYNC DONE";
     return;
   }
+
+  VLOG(1) << "GetAIPageContent ASYNC";
 
   EnsureLifecycleObserverRegistered();
 
