@@ -126,9 +126,9 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
                              glic::mojom::InvocationSource::kActorTaskIcon);
     }
   }
-  // Regardless of tab navigation, remove the row and close the bubble when
+  // Regardless of tab navigation, process the row and close the bubble when
   // done.
-  icon_manager->RemoveRowFromTaskListBubble(task_id);
+  icon_manager->ProcessRowInTaskListBubble(task_id);
   if (bubble_widget_) {
     bubble_widget_->Close();
   }

@@ -24,6 +24,10 @@ namespace tabs {
 struct ActorTaskListBubbleRowState {
   actor::TaskId task_id;
   std::string title;
+  // If this row requires processing. A row is only processed when it has been
+  // clicked on by the user. If the row does not need user attention it will not
+  // require processing.
+  bool requires_processing;
 };
 
 class GlicActorTaskIconManager : public KeyedService {
@@ -70,10 +74,9 @@ class GlicActorTaskIconManager : public KeyedService {
     return actor_task_list_bubble_rows_;
   }
 
-  // Callback to remove a row from the task list bubble when it is clicked.
-  // A task row should be visible in the bubble until clicked on by the user.
-  // The nudge should be visible until all task rows have been clicked on.
-  void RemoveRowFromTaskListBubble(actor::TaskId task_id);
+  // Callback to process a row in the task list bubble when it is clicked.
+  // The nudge should be visible until all task rows have been processed.
+  void ProcessRowInTaskListBubble(actor::TaskId task_id);
 
   // KeyedService:
   void Shutdown() override;

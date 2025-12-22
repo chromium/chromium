@@ -9,9 +9,12 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 
 namespace {
-bool ShouldDisplayInTaskListBubble(actor::ActorTask::State state) {
+// TODO(crbug.com/469817191): Add failed and finished states here as well to be
+// processed.
+bool RequiresTaskProcessing(actor::ActorTask::State state) {
   return state == actor::ActorTask::State::kPausedByActor ||
          state == actor::ActorTask::State::kWaitingOnUser;
 }
@@ -40,7 +43,8 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
           ->RegisterActorTaskStateChange(base::BindRepeating(
               &GlicActorTaskIconManager::OnActorTaskStateUpdate,
               base::Unretained(this))));
-  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
+  // TODO(crbug.com/469817191): Stopped tasks should also be added to the
+  // popover.
   callback_subscriptions_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
@@ -55,7 +59,7 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   UpdateTaskNudge();
 }
 
-// TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
+// TODO(crbug.com/469817191): Stopped tasks should also be added to the popover.
 void GlicActorTaskIconManager::OnActorTaskStopped(
     actor::TaskId task_id,
     actor::ActorTask::State final_state,
@@ -67,7 +71,7 @@ void GlicActorTaskIconManager::OnActorTaskStopped(
   }
 }
 
-// TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
+// TODO(crbug.com/469817191): Stopped tasks should also be added to the popover.
 void GlicActorTaskIconManager::ClearStoppedTasks() {
   has_unprocessed_completed_tasks_ = false;
   has_unprocessed_failed_tasks_ = false;
@@ -77,10 +81,7 @@ void GlicActorTaskIconManager::ClearStoppedTasks() {
 void GlicActorTaskIconManager::Shutdown() {}
 
 void GlicActorTaskIconManager::UpdateTaskNudge() {
-  auto active_tasks = actor_service_->GetActiveTasks();
-  // TODO(b/440770955): Replace has_unprocessed_completed_tasks_ with a
-  // snapshot (task title, state and tab handle) of the completed or failed
-  // tasks for the pop-over.
+  // TODO(mjenn): Remove this once kGlicActorUiGlobalTaskIndicator is removed.
   auto paused_or_yielded_actor_tasks =
       actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return (task.GetState() == actor::ActorTask::State::kPausedByActor ||
@@ -91,8 +92,18 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 
   current_actor_task_nudge_state_.task_list_size =
       actor_task_list_bubble_rows_.size();
-  if (!paused_or_yielded_actor_tasks.empty() &&
-      !actor_task_list_bubble_rows_.empty()) {
+
+  // TODO(crbug.com/469817191): Accommodate completed/failed tasks.
+  bool has_unprocessed_tasks = std::any_of(
+      actor_task_list_bubble_rows_.begin(), actor_task_list_bubble_rows_.end(),
+      [](const auto& pair) { return pair.second.requires_processing; });
+
+  bool needs_attention =
+      base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)
+          ? has_unprocessed_tasks
+          : !paused_or_yielded_actor_tasks.empty() &&
+                !actor_task_list_bubble_rows_.empty();
+  if (needs_attention) {
     current_actor_task_nudge_state_.text =
         ActorTaskNudgeState::Text::kNeedsAttention;
   } else {
@@ -106,24 +117,40 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   }
 }
 
-void GlicActorTaskIconManager::RemoveRowFromTaskListBubble(
+void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
     actor::TaskId task_id) {
-  actor_task_list_bubble_rows_.erase(task_id);
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    actor_task_list_bubble_rows_.find(task_id)->second.requires_processing =
+        false;
+  } else {
+    actor_task_list_bubble_rows_.erase(task_id);
+  }
   UpdateTaskNudge();
 }
 
 void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
   if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
-    if (ShouldDisplayInTaskListBubble(task->GetState())) {
+    if (base::FeatureList::IsEnabled(
+            features::kGlicActorUiGlobalTaskIndicator)) {
+      ActorTaskListBubbleRowState task_state = {
+          .task_id = task_id,
+          .title = task->title(),
+          .requires_processing = RequiresTaskProcessing(task->GetState())};
+      actor_task_list_bubble_rows_[task_id] = task_state;
+    } else {
       ActorTaskListBubbleRowState task_state = {.task_id = task_id,
                                                 .title = task->title()};
       actor_task_list_bubble_rows_.insert({task_state.task_id, task_state});
-      task_list_bubble_change_callback_list_.Notify(task_id);
-      return;
     }
+    task_list_bubble_change_callback_list_.Notify(task_id);
+    return;
   }
-  // Stopped ActorTasks will be cleared immediately so can safely remove.
-  actor_task_list_bubble_rows_.erase(task_id);
+  // TODO(crbug.com/470106502): In the new path, we only remove
+  // stopped tasks on a timer. Otherwise they should remain in the popover.
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    actor_task_list_bubble_rows_.erase(task_id);
+  }
 }
 
 base::CallbackListSubscription
