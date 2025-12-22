@@ -327,15 +327,14 @@ class FuseboxViewBinder {
             typeButton.setVisibility(View.GONE);
         }
 
-        boolean isAiModeButtonVisible = isRequestTypeChangeable && !showDedicatedModeButton;
         boolean isCreateImageButtonVisible =
                 isRequestTypeChangeable
                         && model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
-        views.popup.mAiModeButton.setVisibility(isAiModeButtonVisible ? View.VISIBLE : View.GONE);
+        views.popup.mAiModeButton.setVisibility(isRequestTypeChangeable ? View.VISIBLE : View.GONE);
         views.popup.mCreateImageButton.setVisibility(
                 isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
         views.popup.mRequestTypeDivider.setVisibility(
-                isAiModeButtonVisible || isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
+                isRequestTypeChangeable ? View.VISIBLE : View.GONE);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
