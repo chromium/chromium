@@ -116,7 +116,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // std::nullopt if not found.
   std::optional<int64_t> GetContextIdForTab(
       const contextual_tasks::ContextualTaskContext& context,
-      SessionID tab_session_id);
+      const lens::ContextualInputData& page_content_data);
 
   // Called when a tab contextualization has been fetched, to re-upload the
   // tab context.

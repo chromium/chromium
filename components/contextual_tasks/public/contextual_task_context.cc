@@ -136,4 +136,23 @@ bool ContextualTaskContext::ContainsURL(
   return false;
 }
 
+std::vector<const UrlAttachment*>
+ContextualTaskContext::GetMatchingUrlAttachments(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) const {
+  // TODO(crbug.com/470979776): Add unit tests for this function.
+  std::vector<const UrlAttachment*> matching_attachments;
+  visited_url_ranking::URLMergeKey merge_key =
+      visited_url_ranking::ComputeURLMergeKey(url, std::u16string(),
+                                              deduplication_helper);
+  for (const auto& attachment : urls_) {
+    if (visited_url_ranking::ComputeURLMergeKey(
+            attachment.GetURL(), std::u16string(), deduplication_helper) ==
+        merge_key) {
+      matching_attachments.push_back(&attachment);
+    }
+  }
+  return matching_attachments;
+}
+
 }  // namespace contextual_tasks
