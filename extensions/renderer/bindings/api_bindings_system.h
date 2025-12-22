@@ -90,6 +90,9 @@ class APIBindingsSystem {
   void RegisterCustomType(const std::string& type_name,
                           CustomTypeHandler function);
 
+  // Handles any initialization of the context. This should be called before any
+  // APIs or other objects are created.
+  void DidCreateContext(v8::Local<v8::Context> context);
   // Handles any cleanup necessary before releasing the given `context`.
   void WillReleaseContext(v8::Local<v8::Context> context);
 

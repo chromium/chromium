@@ -88,13 +88,13 @@ bool IsContextValid(v8::Local<v8::Context> context) {
   if (!per_context_data)
     return false;
 
-  auto* invalidation_data =
-      static_cast<ContextInvalidationData*>(per_context_data->GetUserData(
-          ContextInvalidationData::kPerContextDataKey));
-  // The context is valid if we've never created invalidation data for it, or if
-  // we have and it hasn't been marked as invalid.
+  auto* invalidation_data = GetPerContextData<ContextInvalidationData>(
+      context, CreatePerContextData::kDontCreateIfMissing);
+
+  // The context is valid as long as the invalidation data is present and not
+  // marked invalid.
   bool is_context_valid =
-      !invalidation_data || invalidation_data->is_context_valid();
+      invalidation_data && invalidation_data->is_context_valid();
 
   if (is_context_valid) {
     // As long as the context is valid, there should be an associated
@@ -116,11 +116,26 @@ bool IsContextValidOrThrowError(v8::Local<v8::Context> context) {
   return false;
 }
 
+void InitializeContext(v8::Local<v8::Context> context) {
+  gin::PerContextData* per_context_data = gin::PerContextData::From(context);
+  CHECK(per_context_data);
+
+  // It would be nice to CHECK() that the invalidation data does *not* yet exist
+  // (since this means we're calling InitializeContext() twice), but a number of
+  // tests do this as part of their setup. It's also fairly harmless.
+  if (per_context_data->GetUserData(
+          ContextInvalidationData::kPerContextDataKey)) {
+    return;
+  }
+
+  per_context_data->SetUserData(ContextInvalidationData::kPerContextDataKey,
+                                std::make_unique<ContextInvalidationData>());
+}
+
 void InvalidateContext(v8::Local<v8::Context> context) {
   ContextInvalidationData* data = GetPerContextData<ContextInvalidationData>(
-      context, CreatePerContextData::kCreateIfMissing);
-  if (!data)
-    return;
+      context, CreatePerContextData::kDontCreateIfMissing);
+  CHECK(data);
 
   data->Invalidate();
 }

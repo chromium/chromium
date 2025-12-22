@@ -155,6 +155,10 @@ void APIBindingsSystem::RegisterCustomType(const std::string& type_name,
   custom_types_[type_name] = std::move(function);
 }
 
+void APIBindingsSystem::DidCreateContext(v8::Local<v8::Context> context) {
+  binding::InitializeContext(context);
+}
+
 void APIBindingsSystem::WillReleaseContext(v8::Local<v8::Context> context) {
   binding::InvalidateContext(context);
   request_handler_.InvalidateContext(context);

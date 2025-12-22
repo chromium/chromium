@@ -487,6 +487,8 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
   DCHECK(per_context_data);
   DCHECK(!per_context_data->GetUserData(kBindingsSystemPerContextKey));
 
+  api_system_.DidCreateContext(v8_context);
+
   auto data = std::make_unique<BindingsSystemPerContextData>(
       weak_factory_.GetWeakPtr());
   per_context_data->SetUserData(kBindingsSystemPerContextKey, std::move(data));

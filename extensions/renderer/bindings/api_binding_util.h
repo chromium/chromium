@@ -30,6 +30,9 @@ bool IsContextValid(v8::Local<v8::Context> context);
 // Same as above, but throws an exception in the `context` if it is invalid.
 bool IsContextValidOrThrowError(v8::Local<v8::Context> context);
 
+// Initializes the given `context`.
+void InitializeContext(v8::Local<v8::Context> context);
+
 // Marks the given `context` as invalid.
 void InvalidateContext(v8::Local<v8::Context> context);
 
