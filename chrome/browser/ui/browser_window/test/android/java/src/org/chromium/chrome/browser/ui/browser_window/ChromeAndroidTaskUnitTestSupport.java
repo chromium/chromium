@@ -234,7 +234,6 @@ public final class ChromeAndroidTaskUnitTestSupport {
 
         var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
-        when(mockApiDelegate.isTaskMoveAllowedOnDisplay(any(), anyInt())).thenReturn(true);
         when(mockApiDelegate.moveTaskToWithPromise(any(), anyInt(), any()))
                 .thenReturn(Promise.fulfilled(Pair.create(-1, new Rect())));
 

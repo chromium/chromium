@@ -216,6 +216,22 @@ final class ChromeAndroidTaskImpl
         return ((ActivityLifecycleDispatcherProvider) activity).getLifecycleDispatcher();
     }
 
+    /** Check whether the task can be moved to another display. */
+    private static boolean isTaskMoveAllowedOnDisplay(Activity activity) {
+        // If and only if all the following are met, the task can be moved to the target display.
+        // 1. app is in desktop windowing mode.
+        // 2. task is not moved to another display
+        // 3. the new task bound is within the range of minimum and maximum bound
+        // The existing code has already handled 2 & 3, and so this function only checks 1
+        return isDesktopWindowingMode(activity);
+    }
+
+    private static boolean isDesktopWindowingMode(Activity activity) {
+        // TODO(crbug.com/467457794): Identify a more reliable alternative for desktop windowing
+        //  mode detection.
+        return activity.isInMultiWindowMode();
+    }
+
     ChromeAndroidTaskImpl(
             @BrowserWindowType int browserWindowType, ActivityScopedObjects activityScopedObjects) {
         mBrowserWindowType = browserWindowType;
@@ -987,12 +1003,6 @@ final class ChromeAndroidTaskImpl
                 : "This Task is neither pending create nor idle.";
     }
 
-    private static boolean isDesktopWindowingMode(Activity activity) {
-        // TODO(crbug.com/467457794): Identify a more reliable alternative for desktop windowing
-        //  mode detection.
-        return activity.isInMultiWindowMode();
-    }
-
     private static boolean isActiveInternal(ActivityWindowAndroid activityWindowAndroid) {
         return activityWindowAndroid.isTopResumedActivity();
     }
@@ -1051,17 +1061,13 @@ final class ChromeAndroidTaskImpl
 
         var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) return;
-        var displayId = display.getDisplayId();
-        ActivityManager activityManager =
-                (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-
-        if (!aconfigFlaggedApiDelegate.isTaskMoveAllowedOnDisplay(activityManager, displayId)) {
+        if (!isTaskMoveAllowedOnDisplay(activity)) {
             Log.w(TAG, "Unable to set bounds: not allowed on display");
             return;
         }
 
         aconfigFlaggedApiDelegate
-                .moveTaskToWithPromise(appTask, displayId, boundsInPx)
+                .moveTaskToWithPromise(appTask, display.getDisplayId(), boundsInPx)
                 .then(
                         (pair) -> {
                             var actions =
