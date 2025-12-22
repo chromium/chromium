@@ -14,7 +14,8 @@ namespace content {
 PrefetchSingleRedirectHop::PrefetchSingleRedirectHop(
     PrefetchContainer& prefetch_container,
     const GURL& url,
-    bool is_isolated_network_context_required)
+    bool is_isolated_network_context_required,
+    perfetto::Flow flow)
     : url_(url),
       is_isolated_network_context_required_(
           is_isolated_network_context_required),
@@ -22,7 +23,8 @@ PrefetchSingleRedirectHop::PrefetchSingleRedirectHop(
           base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                          prefetch_container.GetWeakPtr()),
           base::BindOnce(&PrefetchContainer::OnPrefetchComplete,
-                         prefetch_container.GetWeakPtr()))) {}
+                         prefetch_container.GetWeakPtr()),
+          std::move(flow))) {}
 
 PrefetchSingleRedirectHop::~PrefetchSingleRedirectHop() {
   CHECK(response_reader_);

@@ -26,12 +26,14 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
     OnServiceWorkerStateDeterminedCallback
-        on_service_worker_state_determined_callback)
+        on_service_worker_state_determined_callback,
+    perfetto::Flow flow)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)),
       on_service_worker_state_determined_callback_(
-          std::move(on_service_worker_state_determined_callback)) {}
+          std::move(on_service_worker_state_determined_callback)),
+      flow_(std::move(flow)) {}
 
 void PrefetchStreamingURLLoader::Start(
     PrefetchServiceWorkerState final_service_worker_state,
@@ -107,13 +109,16 @@ PrefetchStreamingURLLoader::CreateAndStart(
     PrefetchServiceWorkerState initial_service_worker_state,
     BrowserContext* browser_context_for_service_worker,
     OnServiceWorkerStateDeterminedCallback
-        on_service_worker_state_determined_callback) {
-  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::CreateAndStart");
+        on_service_worker_state_determined_callback,
+    perfetto::Flow flow) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::CreateAndStart", flow);
+
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           std::move(on_prefetch_response_started_callback),
           std::move(on_prefetch_redirect_callback),
-          std::move(on_service_worker_state_determined_callback));
+          std::move(on_service_worker_state_determined_callback),
+          std::move(flow));
 
   streaming_loader->SetResponseReader(std::move(response_reader));
 
@@ -143,6 +148,9 @@ PrefetchStreamingURLLoader::CreateAndStart(
 
 void PrefetchStreamingURLLoader::SetResponseReader(
     base::WeakPtr<PrefetchResponseReader> response_reader) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::SetResponseReader",
+              flow_);
+
   response_reader_ = std::move(response_reader);
   if (response_reader_) {
     response_reader_->SetStreamingURLLoader(GetWeakPtr());
@@ -150,6 +158,9 @@ void PrefetchStreamingURLLoader::SetResponseReader(
 }
 
 void PrefetchStreamingURLLoader::CancelIfNotServing() {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::CancelIfNotServing",
+              flow_);
+
   if (used_for_serving_) {
     return;
   }
@@ -157,6 +168,10 @@ void PrefetchStreamingURLLoader::CancelIfNotServing() {
 }
 
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
+  TRACE_EVENT("loading",
+              "PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo",
+              flow_);
+
   // If this is going to be deleted while waiting for redirect handling from
   // `PrefetchService`, treat it as a redirect failure.
   if (is_waiting_handle_redirect_from_prefetch_service_) {
@@ -194,6 +209,9 @@ void PrefetchStreamingURLLoader::SetOnDeletionScheduledForTests(
 
 void PrefetchStreamingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::OnReceiveEarlyHints",
+              flow_);
+
   if (response_reader_) {
     response_reader_->OnReceiveEarlyHints(std::move(early_hints));
   }
@@ -203,6 +221,9 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::OnReceiveResponse",
+              flow_);
+
   // Cached metadata is not supported for prefetch.
   cached_metadata.reset();
 
@@ -226,6 +247,9 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::OnReceiveRedirect",
+              flow_);
+
   is_waiting_handle_redirect_from_prefetch_service_ = true;
   CHECK(on_prefetch_redirect_callback_);
   on_prefetch_redirect_callback_.Run(redirect_info, std::move(redirect_head));
@@ -235,6 +259,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
     PrefetchRedirectStatus redirect_status,
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::HandleRedirect", flow_);
+
   if (!is_waiting_handle_redirect_from_prefetch_service_) {
     // The redirect should have already been handled.
     return;

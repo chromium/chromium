@@ -739,7 +739,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
              const network::URLLoaderCompletionStatus& completion_status) {
             on_complete->SetValue(completion_status);
           },
-          &on_complete));
+          &on_complete),
+      perfetto::Flow::ProcessScoped(0));
   ASSERT_TRUE(streaming_loader);
   streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
 

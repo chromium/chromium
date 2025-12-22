@@ -113,7 +113,8 @@ CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
       on_head_received);
 
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>(
-      std::move(on_head_received_callback), std::move(on_complete_callback));
+      std::move(on_head_received_callback), std::move(on_complete_callback),
+      perfetto::Flow::ProcessScoped(0));
   return std::make_tuple(
       response_reader,
       CreateStreamingURLLoaderForTests(
@@ -178,7 +179,8 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
                          : PrefetchServiceWorkerState::kDisallowed,
       /*browser_context_for_service_worker=*/nullptr,
       base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
-                     prefetch_container));
+                     prefetch_container),
+      perfetto::Flow::ProcessScoped(0));
 
   if (prefetch_container) {
     prefetch_container->SetStreamingURLLoader(streaming_loader);

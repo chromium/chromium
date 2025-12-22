@@ -14,6 +14,7 @@
 #include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace ukm::builders {
 class PrefetchProxy_PrefetchedResource;
@@ -54,7 +55,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   PrefetchResponseReader(
       OnPrefetchDeterminedHeadCallback on_determined_head_callback,
       OnPrefetchResponseCompletedCallback
-          on_prefetch_response_completed_callback);
+          on_prefetch_response_completed_callback,
+      perfetto::Flow flow);
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
@@ -255,6 +257,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // - unexpected mojo disconnection cases (See
   //   `PrefetchStreamingURLLoaderTest.UnexpectedUrlLoaderDisconnect`).
   OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
+
+  perfetto::Flow flow_;
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -55,14 +56,16 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       PrefetchServiceWorkerState initial_service_worker_state,
       BrowserContext* browser_context_for_service_worker,
       OnServiceWorkerStateDeterminedCallback
-          on_service_worker_state_determined_callback);
+          on_service_worker_state_determined_callback,
+      perfetto::Flow flow);
 
   // Must be called only from `CreateAndStart()`.
   PrefetchStreamingURLLoader(
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
       OnServiceWorkerStateDeterminedCallback
-          on_service_worker_state_determined_callback);
+          on_service_worker_state_determined_callback,
+      perfetto::Flow flow);
 
   ~PrefetchStreamingURLLoader() override;
 
@@ -180,6 +183,8 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // ServiceWorker controller, indicated by `ServiceWorkerState`.
   OnServiceWorkerStateDeterminedCallback
       on_service_worker_state_determined_callback_;
+
+  perfetto::Flow flow_;
 
   base::WeakPtr<PrefetchResponseReader> response_reader_;
 

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "services/network/public/cpp/loading_params.h"
 
@@ -33,12 +34,14 @@ MojoResult CreateDataPipeForServingData(
 
 PrefetchDataPipeTee::PrefetchDataPipeTee(
     mojo::ScopedDataPipeConsumerHandle source,
-    size_t buffer_limit)
+    size_t buffer_limit,
+    perfetto::Flow flow)
     : source_(std::move(source)),
       source_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                       base::SequencedTaskRunner::GetCurrentDefault()),
       buffer_limit_(buffer_limit),
+      flow_(std::move(flow)),
       target_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
                       base::SequencedTaskRunner::GetCurrentDefault()) {
@@ -57,6 +60,8 @@ PrefetchDataPipeTee::~PrefetchDataPipeTee() {
 }
 
 mojo::ScopedDataPipeConsumerHandle PrefetchDataPipeTee::Clone() {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::Clone", flow_);
+
   ++count_clone_called_;
 
   switch (state_) {
@@ -102,6 +107,8 @@ mojo::ScopedDataPipeConsumerHandle PrefetchDataPipeTee::Clone() {
 
 void PrefetchDataPipeTee::OnReadable(MojoResult result,
                                      const mojo::HandleSignalsState& state) {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::OnReadbable", flow_);
+
   if (pending_writes_) {
     // Reading is blocked while writing to a target is ongoing.
     return;
@@ -191,6 +198,8 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
 
 PrefetchDataPipeTee::ProducerPair PrefetchDataPipeTee::ResetTarget(
     ProducerPair target) {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::ResetTarget", flow_);
+
   auto old_target = std::move(target_);
   target_ = std::move(target);
 
@@ -213,6 +222,8 @@ PrefetchDataPipeTee::ProducerPair PrefetchDataPipeTee::ResetTarget(
 void PrefetchDataPipeTee::OnWriteDataPipeClosed(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::OnWriteDataPipeClosed", flow_);
+
   CHECK(target_.first);
   if (state.peer_closed()) {
     ResetTarget({});
@@ -221,6 +232,8 @@ void PrefetchDataPipeTee::OnWriteDataPipeClosed(
 
 void PrefetchDataPipeTee::WriteData(ProducerPair target,
                                     base::span<const char> data) {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::WriteData", flow_);
+
   CHECK_EQ(target.second.get(), this);
   ++pending_writes_;
   auto* raw_target = target.first.get();
@@ -233,6 +246,8 @@ void PrefetchDataPipeTee::WriteData(ProducerPair target,
 
 void PrefetchDataPipeTee::OnDataWritten(ProducerPair target,
                                         MojoResult result) {
+  TRACE_EVENT("loading", "PrefetchDataPipeTee::OnDataWritten", flow_);
+
   CHECK_GT(pending_writes_, 0u);
   --pending_writes_;
 

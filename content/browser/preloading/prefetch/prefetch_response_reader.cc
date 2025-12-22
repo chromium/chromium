@@ -101,10 +101,12 @@ bool PrefetchResponseReader::MatchesCookieIndices(
 
 PrefetchResponseReader::PrefetchResponseReader(
     OnPrefetchDeterminedHeadCallback on_determined_head_callback,
-    OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback)
+    OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
+    perfetto::Flow flow)
     : on_determined_head_callback_(std::move(on_determined_head_callback)),
       on_prefetch_response_completed_callback_(
-          std::move(on_prefetch_response_completed_callback)) {
+          std::move(on_prefetch_response_completed_callback)),
+      flow_(std::move(flow)) {
   serving_url_loader_receivers_.set_disconnect_handler(base::BindRepeating(
       &PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
@@ -480,7 +482,7 @@ void PrefetchResponseReader::OnReceiveResponse(
 
   head_ = std::move(head);
   body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
-      std::move(body), GetPrefetchDataPipeTeeBodySizeLimit());
+      std::move(body), GetPrefetchDataPipeTeeBodySizeLimit(), flow_);
 
   SetLoadStateAndAddEventToQueue(
       new_load_state,

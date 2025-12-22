@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -38,7 +39,8 @@ class CONTENT_EXPORT PrefetchDataPipeTee final
     : public base::RefCounted<PrefetchDataPipeTee> {
  public:
   explicit PrefetchDataPipeTee(mojo::ScopedDataPipeConsumerHandle source,
-                               size_t buffer_limit);
+                               size_t buffer_limit,
+                               perfetto::Flow flow);
 
   PrefetchDataPipeTee(const PrefetchDataPipeTee&) = delete;
   PrefetchDataPipeTee& operator=(const PrefetchDataPipeTee&) = delete;
@@ -132,6 +134,8 @@ class CONTENT_EXPORT PrefetchDataPipeTee final
 
   // `buffer_.size()` is limited up to `buffer_limit_`.
   const size_t buffer_limit_;
+
+  perfetto::Flow flow_;
 
   // The cloned data pipe while `state_` is `kLoading` or `kSizeExceeded`.
   // In these states, the number of cloned data pipes is at most 1.
