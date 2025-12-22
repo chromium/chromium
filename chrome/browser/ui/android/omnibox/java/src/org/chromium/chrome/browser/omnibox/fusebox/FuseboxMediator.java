@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
@@ -118,19 +119,16 @@ public class FuseboxMediator {
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
-        CharSequence snackbarLimitText = context.getText(R.string.fusebox_max_attachments);
+        // Create the limit reached snackbar
         mAttachmentLimitSnackbar =
-                Snackbar.make(
-                        snackbarLimitText,
-                        null,
-                        Snackbar.TYPE_NOTIFICATION,
+                createStyledSnackbar(
+                        context.getText(R.string.fusebox_max_attachments),
                         Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
-        CharSequence snackbarUploadFailedText = context.getText(R.string.fusebox_upload_failed);
+
+        // Create the upload failed snackbar
         mAttachmentUploadFailedSnackbar =
-                Snackbar.make(
-                        snackbarUploadFailedText,
-                        null,
-                        Snackbar.TYPE_NOTIFICATION,
+                createStyledSnackbar(
+                        context.getText(R.string.fusebox_upload_failed),
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -168,6 +166,22 @@ public class FuseboxMediator {
 
     public void destroy() {
         mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
+    }
+
+    private Snackbar createStyledSnackbar(CharSequence text, int snackbarIdentifier) {
+        Snackbar snackbar =
+                Snackbar.make(text, null, Snackbar.TYPE_NOTIFICATION, snackbarIdentifier);
+        boolean isIncognito = mProfile.isOffTheRecord();
+        snackbar.setBackgroundColor(ChromeColors.getInverseBgColor(mContext, isIncognito));
+
+        int textAppearanceResId =
+                isIncognito
+                        ? org.chromium.components.browser_ui.styles.R.style
+                                .TextAppearance_TextMedium_Primary_Baseline_Dark
+                        : org.chromium.components.browser_ui.styles.R.style
+                                .TextAppearance_TextMedium_Primary_OnInverseSurface;
+        snackbar.setTextAppearance(textAppearanceResId);
+        return snackbar;
     }
 
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
