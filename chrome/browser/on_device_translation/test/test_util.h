@@ -13,8 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
+#include "components/on_device_translation/public/language_pack.h"
 #include "content/public/browser/render_process_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

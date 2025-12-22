@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "components/on_device_translation/public/language_pack.h"
 
 #include <string>
 
@@ -10,7 +10,6 @@
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "components/on_device_translation/public/supported_languages.h"
 
 namespace on_device_translation {
 namespace {

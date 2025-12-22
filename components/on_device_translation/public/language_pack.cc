@@ -1,26 +1,14 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/language_pack_util.h"
-
-#include <string_view>
+#include "components/on_device_translation/public/language_pack.h"
 
 #include "base/check_op.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/strings/strcat.h"
 #include "components/on_device_translation/public/supported_languages.h"
-#include "chrome/browser/on_device_translation/component_manager.h"
 
 namespace on_device_translation {
-
-LanguagePackRequirements::LanguagePackRequirements() = default;
-LanguagePackRequirements::~LanguagePackRequirements() = default;
-LanguagePackRequirements::LanguagePackRequirements(
-    LanguagePackRequirements&&) noexcept = default;
-LanguagePackRequirements& LanguagePackRequirements::operator=(
-    LanguagePackRequirements&&) noexcept = default;
-
 namespace {
 
 constexpr char kPrefNamePrefix[] =
@@ -44,27 +32,19 @@ LanguagePackKey LanguagePackKeyFromNonEnglishSupportedLanguage(
 
 }  // namespace
 
+LanguagePackRequirements::LanguagePackRequirements() = default;
+LanguagePackRequirements::~LanguagePackRequirements() = default;
+LanguagePackRequirements::LanguagePackRequirements(
+    LanguagePackRequirements&&) noexcept = default;
+LanguagePackRequirements& LanguagePackRequirements::operator=(
+    LanguagePackRequirements&&) noexcept = default;
+
 SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
     LanguagePackKey language_pack_key) {
   return static_cast<SupportedLanguage>(
       static_cast<unsigned>(language_pack_key) + 1);
 }
 
-std::string GetComponentPathPrefName(
-    const LanguagePackComponentConfig& config) {
-  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
-                       ToLanguageCode(config.language2),
-                       kComponentPathPrefNameSuffix});
-}
-
-std::string GetRegisteredFlagPrefName(
-    const LanguagePackComponentConfig& config) {
-  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
-                       ToLanguageCode(config.language2),
-                       kRegisteredFlagPrefNameSuffix});
-}
-
-// Returns the config for a language pack component.
 const LanguagePackComponentConfig& GetLanguagePackComponentConfig(
     LanguagePackKey key) {
   return *kLanguagePackComponentConfigMap.at(key);
@@ -93,31 +73,6 @@ std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
   }
   return {LanguagePackKeyFromNonEnglishSupportedLanguage(*source_lang_code),
           LanguagePackKeyFromNonEnglishSupportedLanguage(*target_lang_code)};
-}
-
-LanguagePackRequirements CalculateLanguagePackRequirements(
-    const std::string& source_lang,
-    const std::string& target_lang) {
-  LanguagePackRequirements language_pack_requirements;
-
-  // Calculate required language packs.
-  language_pack_requirements.required_packs =
-      CalculateRequiredLanguagePacks(source_lang, target_lang);
-
-  // Calculate required, not installed language packs.
-  const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
-  std::ranges::set_difference(
-      language_pack_requirements.required_packs, installed_packs,
-      std::back_inserter(
-          language_pack_requirements.required_not_installed_packs));
-
-  // Calculate to be registered language packs.
-  const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
-  std::ranges::set_difference(
-      language_pack_requirements.required_not_installed_packs, registered_packs,
-      std::back_inserter(language_pack_requirements.to_be_registered_packs));
-
-  return language_pack_requirements;
 }
 
 std::string GetPackageInstallDirName(LanguagePackKey language_pack_key) {
@@ -168,6 +123,20 @@ std::string_view GetTargetLanguageCode(LanguagePackKey language_pack_key) {
   const auto [_, target_lang] =
       SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
   return ToLanguageCode(target_lang);
+}
+
+std::string GetComponentPathPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kComponentPathPrefNameSuffix});
+}
+
+std::string GetRegisteredFlagPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kRegisteredFlagPrefNameSuffix});
 }
 
 }  // namespace on_device_translation

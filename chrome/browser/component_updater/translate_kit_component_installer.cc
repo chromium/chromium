@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -33,7 +32,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace component_updater {
-
 namespace {
 
 // The location of the libtranslatekit binary within the installation directory.

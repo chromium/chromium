@@ -18,10 +18,13 @@ source_set("on_device_translation_service") {
     "translate_kit_client.h",
     "translate_kit_structs.h",
   ]
-  deps = [ ":translate_kit_api_proto" ]
+  deps = [
+    ":translate_kit_api_proto",
+    "//components/on_device_translation",
+  ]
+
   public_deps = [
     "//base",
-    "//components/on_device_translation",
     "//components/on_device_translation/public/mojom/",
     "//mojo/public/cpp/bindings",
   ]

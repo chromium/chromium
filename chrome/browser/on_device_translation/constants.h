@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_CONSTANTS_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_CONSTANTS_H_
 
-#include "base/files/file_path.h"
+#include <cstddef>
 
 namespace on_device_translation {
 

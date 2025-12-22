@@ -5,7 +5,7 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 
 #include "base/files/file_path.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "components/on_device_translation/public/language_pack.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace prefs {

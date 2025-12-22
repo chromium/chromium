@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_LANGUAGE_PACK_UTIL_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_LANGUAGE_PACK_UTIL_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_PUBLIC_LANGUAGE_PACK_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_PUBLIC_LANGUAGE_PACK_H_
 
 #include <stdint.h>
 
@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
-#include "components/on_device_translation/public/supported_languages.h"
 #include "base/containers/fixed_flat_set.h"
+#include "components/on_device_translation/public/supported_languages.h"
 
 namespace on_device_translation {
 
@@ -69,7 +69,7 @@ struct LanguagePackComponentConfig {
   const uint8_t public_key_sha[32];
 };
 
-// The return type for `CalculateLanguagePackRequirements`.
+// The return type for `GetLanguagePackRequirements`.
 struct LanguagePackRequirements {
   LanguagePackRequirements();
   ~LanguagePackRequirements();
@@ -82,27 +82,6 @@ struct LanguagePackRequirements {
   std::vector<LanguagePackKey> required_not_installed_packs;
   std::vector<LanguagePackKey> to_be_registered_packs;
 };
-
-// Converts a LanguagePackKey to a SupportedLanguage which is not English part
-// of the language pair. For example, LanguagePackKey::kEnEs will be converted
-// to SupportedLanguage::kEs.
-SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
-    LanguagePackKey language_pack_key);
-
-// Returns the pref name of the fully-qualified path to the installed language
-// pack. This pref is populated only when the language pack component is fully
-// initialized and ready for use.
-//   Eg: "on_device_translation.translate_kit_packages.en_es_path"
-std::string GetComponentPathPrefName(const LanguagePackComponentConfig& config);
-
-// Returns the pref name of the boolean value which indicates whether the
-// language pack component has been registered.
-// This pref is set regardless of whether the component is currently ready for
-// use. For example, the component might be tried to install but not yet
-// initialized.
-//   Eg: "on_device_translation.translate_kit_packages.en_es_registered"
-std::string GetRegisteredFlagPrefName(
-    const LanguagePackComponentConfig& config);
 
 // The config for the TranslateKit en-es language pack.
 inline constexpr LanguagePackComponentConfig kTranslateKitEnEsConfig = {
@@ -489,12 +468,22 @@ static_assert(std::size(kLanguagePackComponentConfigMap) ==
                   static_cast<unsigned>(LanguagePackKey::kMaxValue) + 1,
               "All language packs must be in kLanguagePackComponentConfigMap.");
 
+// Converts a LanguagePackKey to a SupportedLanguage which is not English part
+// of the language pair. For example, LanguagePackKey::kEnEs will be converted
+// to SupportedLanguage::kEs.
+SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
+    LanguagePackKey language_pack_key);
+
 // Returns the config for a language pack component.
 const LanguagePackComponentConfig& GetLanguagePackComponentConfig(
     LanguagePackKey key);
 
 // Calculates the required language packs for a translation from source_lang to
 // target_lang.
+// Note: Currently, this method is implemented assuming that translation between
+// non-English languages is done by first translating to English. This logic
+// needs to be updated when direct translation between non-English languages is
+// supported by the library.
 std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
     const std::string& source_lang,
     const std::string& target_lang);
@@ -526,6 +515,21 @@ std::string_view GetTargetLanguageCode(LanguagePackKey);
 std::vector<std::string> GetPackageInstallSubDirNamesForVerification(
     LanguagePackKey);
 
+// Returns the pref name of the fully-qualified path to the installed language
+// pack. This pref is populated only when the language pack component is fully
+// initialized and ready for use.
+//   Eg: "on_device_translation.translate_kit_packages.en_es_path"
+std::string GetComponentPathPrefName(const LanguagePackComponentConfig& config);
+
+// Returns the pref name of the boolean value which indicates whether the
+// language pack component has been registered.
+// This pref is set regardless of whether the component is currently ready for
+// use. For example, the component might be tried to install but not yet
+// initialized.
+//   Eg: "on_device_translation.translate_kit_packages.en_es_registered"
+std::string GetRegisteredFlagPrefName(
+    const LanguagePackComponentConfig& config);
+
 }  // namespace on_device_translation
 
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_LANGUAGE_PACK_UTIL_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_PUBLIC_LANGUAGE_PACK_H_

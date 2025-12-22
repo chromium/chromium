@@ -7,8 +7,6 @@
 
 #include <string_view>
 
-#include "chrome/browser/on_device_translation/language_pack_util.h"
-
 namespace on_device_translation {
 
 // Record language code for a certain UMA. If the launuage code is not

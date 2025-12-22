@@ -21,21 +21,25 @@ source_set("on_device_translation") {
 
 source_set("public") {
   sources = [
+    "public/language_pack.cc",
+    "public/language_pack.h",
     "public/paths.cc",
     "public/paths.h",
     "public/supported_languages.cc",
     "public/supported_languages.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//components/prefs" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-
-  sources = [ "features_unittest.cc" ]
+  sources = [
+    "features_unittest.cc",
+    "public/language_pack_unittest.cc",
+  ]
   deps = [
     ":on_device_translation",
+    ":public",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

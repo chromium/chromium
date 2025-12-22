@@ -4,9 +4,7 @@
 
 #include "chrome/browser/on_device_translation/constants.h"
 
-#include "base/files/file_path.h"
-#include "base/path_service.h"
-#include "components/component_updater/component_updater_paths.h"
+#include <cstddef>
 
 namespace on_device_translation {
 

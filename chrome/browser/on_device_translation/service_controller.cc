@@ -26,12 +26,12 @@
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/file_operation_proxy_impl.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/service_process_host.h"
@@ -68,6 +68,31 @@ std::string ToString(base::FilePath path) {
 #else
   return path.value();
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+LanguagePackRequirements GetLanguagePackRequirements(
+    const std::string& source_lang,
+    const std::string& target_lang) {
+  LanguagePackRequirements language_pack_requirements;
+
+  // Calculate required language packs.
+  language_pack_requirements.required_packs =
+      CalculateRequiredLanguagePacks(source_lang, target_lang);
+
+  // Calculate required, not installed language packs.
+  const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
+  std::ranges::set_difference(
+      language_pack_requirements.required_packs, installed_packs,
+      std::back_inserter(
+          language_pack_requirements.required_not_installed_packs));
+
+  // Calculate to be registered language packs.
+  const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
+  std::ranges::set_difference(
+      language_pack_requirements.required_not_installed_packs, registered_packs,
+      std::back_inserter(language_pack_requirements.to_be_registered_packs));
+
+  return language_pack_requirements;
 }
 
 // Converts on_device_translation::mojom::CreateTranslatorResult to
@@ -150,7 +175,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   // the installed language packs.
   if (!ComponentManager::GetInstance().HasLanguagePackInfoFromCommandLine()) {
     language_pack_requirements =
-        CalculateLanguagePackRequirements(source_lang, target_lang);
+        GetLanguagePackRequirements(source_lang, target_lang);
     std::vector<LanguagePackKey> to_be_registered_packs =
         language_pack_requirements.to_be_registered_packs;
     if (!to_be_registered_packs.empty()) {
@@ -289,7 +314,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   // Get information on the registration and install status of the language
   // packs required for translation.
   LanguagePackRequirements language_pack_requirements =
-      CalculateLanguagePackRequirements(source_lang, target_lang);
+      GetLanguagePackRequirements(source_lang, target_lang);
 
   if (!service_remote_ && !manager_->CanStartNewService()) {
     // If the service can't be started, returns

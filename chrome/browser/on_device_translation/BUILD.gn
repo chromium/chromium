@@ -16,8 +16,6 @@ source_set("on_device_translation") {
     "component_manager.h",
     "file_operation_proxy_impl.cc",
     "file_operation_proxy_impl.h",
-    "language_pack_util.cc",
-    "language_pack_util.h",
     "pref_names.cc",
     "pref_names.h",
     "service_controller.cc",
@@ -35,7 +33,10 @@ source_set("on_device_translation") {
     "translator.cc",
     "translator.h",
   ]
-  public_deps = [ "//chrome/browser/on_device_translation:constants" ]
+  public_deps = [
+    "//chrome/browser/on_device_translation:constants",
+    "//components/on_device_translation:public",
+  ]
   deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -49,7 +50,6 @@ source_set("on_device_translation") {
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/on_device_translation",
-    "//components/on_device_translation:public",
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service:on_device_translation_service",
     "//components/permissions",
@@ -69,10 +69,7 @@ source_set("constants") {
     "constants.h",
   ]
 
-  deps = [
-    "//base",
-    "//components/component_updater:component_updater_paths",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -81,7 +78,6 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_component_installer_unittest.cc",
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "file_operation_proxy_impl_unittest.cc",
-    "language_pack_util_unittest.cc",
     "translation_manager_util_unittest.cc",
     "translation_metrics_unittest.cc",
   ]
@@ -108,6 +104,7 @@ source_set("test_support") {
     "test/test_util.cc",
     "test/test_util.h",
   ]
+  public_deps = [ "//components/on_device_translation:public" ]
   deps = [
     ":on_device_translation",
     "//base",
@@ -115,7 +112,8 @@ source_set("test_support") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ui",
-    "//components/on_device_translation/service/:test_support",
+    "//components/on_device_translation",
+    "//components/on_device_translation/service:test_support",
     "//content/test:test_support",
   ]
 }
