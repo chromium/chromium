@@ -715,6 +715,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<!-- LINT.IfChange(AssistiveTechPackage) -->
+
+<histogram name="Accessibility.Android.{AssistiveTechPackage}"
+    enum="BooleanEnabled" expires_after="2026-11-01">
+  <owner>davidsegovia@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged if {AssistiveTechPackage} is enabled. Recorded during browser startup
+    or toggled on during user session.
+  </summary>
+  <token key="AssistiveTechPackage">
+    <variant name="AccessibilitySuite" summary="Android Accessibility Suite"/>
+    <variant name="ActionBlocks" summary="Action Blocks Accessibility"/>
+    <variant name="BrailleBack" summary="BrailleBack"/>
+    <variant name="SoundAmplifier" summary="Sound Amplifier"/>
+    <variant name="VoiceAccess" summary="Voice Accces"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc:kAssistiveTechMap) -->
+
 <histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
     enum="AccessibilityAndroidServiceInfoEnum" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>

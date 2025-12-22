@@ -38,6 +38,10 @@ class BrowserAccessibilityStateImplAndroid
       accessibility_state_observation_{this};
 };
 
+// This free function makes testing a lot easier.
+// It should return true if the service_hash belongs to an assistive tech
+// service.
+CONTENT_EXPORT bool RecordAssistiveTechHistogram(uint32_t service_hash);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_ANDROID_H_

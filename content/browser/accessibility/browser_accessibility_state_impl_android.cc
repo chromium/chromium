@@ -5,8 +5,10 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 
 #include <memory>
+#include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -19,15 +21,23 @@ namespace content {
 
 namespace {
 
+// LINT.IfChange(kAssistiveTechMap)
+
 // These are hashes of different accessibility services which are generally used
 // as part of an assistive technology.
-const uint32_t kAssistiveTechPackageHashes[] = {
-    0x349d4b1a,  // Android Accessibility Suite
-    0xa5a469fc,  // Sound Amplifier
-    0xb13e6179,  // Action Blocks Accessibility
-    0xb38ef877,  // Voice Access
-    0xbc2897b4,  // BrailleBack
-};
+//
+// The string values in this map are used to form the names of histograms
+// (e.g., "Accessibility.Android.AccessibilitySuite"). If you change these
+// values, ensure the corresponding histogram definitions are also updated.
+constexpr auto kAssistiveTechMap =
+    base::MakeFixedFlatMap<uint32_t, std::string_view>(
+        {{0x349d4b1a, "AccessibilitySuite"},
+         {0xa5a469fc, "SoundAmplifier"},
+         {0xb13e6179, "ActionBlocks"},
+         {0xb38ef877, "VoiceAccess"},
+         {0xbc2897b4, "BrailleBack"}});
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/histograms.xml:AssistiveTechPackage)
 
 // These are hashes of different "accessibility" services that enable
 // accessibility but are only using it in the context of password management.
@@ -285,7 +295,7 @@ void BrowserAccessibilityStateImplAndroid::
     std::string service_package = service_id.erase(service_id.find("/"));
     uint32_t service_hash = base::PersistentHash(service_package);
 
-    if (base::Contains(kAssistiveTechPackageHashes, service_hash)) {
+    if (RecordAssistiveTechHistogram(service_hash)) {
       has_assistive_tech = true;
     } else if (base::Contains(kPasswordPackageHashes, service_hash)) {
       has_password_manager = true;
@@ -422,6 +432,20 @@ void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {
 
   OnAssistiveTechFound(is_active ? ui::AssistiveTech::kTalkback
                                  : ui::AssistiveTech::kNone);
+}
+
+bool RecordAssistiveTechHistogram(uint32_t service_hash) {
+  const auto it = kAssistiveTechMap.find(service_hash);
+
+  if (it != kAssistiveTechMap.end()) {
+    const std::string histogram_full_name =
+        "Accessibility.Android." + std::string(it->second);
+
+    base::UmaHistogramBoolean(histogram_full_name, true);
+    return true;
+  }
+
+  return false;
 }
 
 // static
