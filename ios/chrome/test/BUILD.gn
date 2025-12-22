@@ -276,7 +276,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/data_sharing/model:unit_tests",
     "//ios/chrome/browser/default_browser/install_attribution/model:unit_tests",
     "//ios/chrome/browser/default_browser/model:unit_tests",
-    "//ios/chrome/browser/default_browser/promo/generic:unit_tests",
+    "//ios/chrome/browser/default_browser/promo/generic/test:unit_tests",
     "//ios/chrome/browser/default_browser/promo/tailored/test:unit_tests",
     "//ios/chrome/browser/default_browser/promo/test:unit_tests",
     "//ios/chrome/browser/device_orientation/ui_bundled:unit_tests",

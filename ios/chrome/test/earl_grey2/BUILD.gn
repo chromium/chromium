@@ -202,7 +202,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/test:eg2_tests",
     "//ios/chrome/browser/contextual_panel/ui:eg2_tests",
     "//ios/chrome/browser/credential_exchange/test:eg2_tests",
-    "//ios/chrome/browser/default_browser/promo/post_restore:eg2_tests",
+    "//ios/chrome/browser/default_browser/promo/post_restore/test:eg2_tests",
     "//ios/chrome/browser/dialogs/ui_bundled:eg2_tests",
     "//ios/chrome/browser/download/ui:eg2_tests",
     "//ios/chrome/browser/drive_file_picker/test:eg2_tests",

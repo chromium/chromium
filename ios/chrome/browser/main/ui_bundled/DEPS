@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/browser_view/ui_bundled",
   "+ios/chrome/browser/crash_report/model/crash_report_helper.h",
   "+ios/chrome/browser/default_browser/model/utils.h",
-  "+ios/chrome/browser/default_browser/promo/post_default_abandonment/features.h",
+  "+ios/chrome/browser/default_browser/promo/post_default_abandonment/public/features.h",
   "+ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
