@@ -84,10 +84,12 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual bool IsSlowKeysEnabled() const = 0;
   virtual void SetSlowKeysDelay(base::TimeDelta delay) = 0;
 
-  // Callback is invoked when the keyboard layout is available and initialized.
+  // Callback is invoked when the keyboard layout is available and initialized,
+  // with boolean |true| if the desired layout specified via |layout_name| has
+  // successfully been set as the current layout, or boolean |false| otherwise.
   virtual void SetCurrentLayoutByName(
       const std::string& layout_name,
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(bool success)> callback) = 0;
   virtual void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
   virtual std::vector<uint64_t> GetKeyboardKeyBits(int id) = 0;

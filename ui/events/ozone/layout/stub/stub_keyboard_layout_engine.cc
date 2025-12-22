@@ -27,8 +27,8 @@ bool StubKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 void StubKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
+    base::OnceCallback<void(bool success)> callback) {
+  std::move(callback).Run(/*success=*/false);
 }
 
 bool StubKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(

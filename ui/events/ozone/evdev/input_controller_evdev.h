@@ -63,8 +63,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void SetSlowKeysEnabled(bool enabled) override;
   bool IsSlowKeysEnabled() const override;
   void SetSlowKeysDelay(base::TimeDelta delay) override;
-  void SetCurrentLayoutByName(const std::string& layout_name,
-                              base::OnceCallback<void(bool)> callback) override;
+  void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool success)> callback) override;
   void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override;
   std::vector<uint64_t> GetKeyboardKeyBits(int id) override;

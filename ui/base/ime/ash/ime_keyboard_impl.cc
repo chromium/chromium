@@ -18,11 +18,11 @@ ImeKeyboardImpl::~ImeKeyboardImpl() = default;
 
 void ImeKeyboardImpl::SetCurrentKeyboardLayoutByName(
     const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool success)> callback) {
   const bool result =
       ImeKeyboard::SetCurrentKeyboardLayoutByNameImplBase(layout_name);
   if (!result) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 

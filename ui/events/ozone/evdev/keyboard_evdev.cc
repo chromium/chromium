@@ -146,7 +146,7 @@ void KeyboardEvdev::SetSlowKeysDelay(base::TimeDelta delay) {
 
 void KeyboardEvdev::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool success)> callback) {
   keyboard_layout_engine_->SetCurrentLayoutByName(layout_name,
                                                   std::move(callback));
   RefreshModifiers();

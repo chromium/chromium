@@ -19,8 +19,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) NoKeyboardLayoutEngine
   // KeyboardLayoutEngine overrides:
   std::string_view GetLayoutName() const override;
   bool CanSetCurrentLayout() const override;
-  void SetCurrentLayoutByName(const std::string& layout_name,
-                              base::OnceCallback<void(bool)> callback) override;
+  void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool success)> callback) override;
   bool SetCurrentLayoutFromBuffer(const char* keymap_string,
                                   size_t size) override;
   bool UsesISOLevel5Shift() const override;
