@@ -17,7 +17,6 @@
 
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_geometry.h"
 #include "remoting/host/linux/gvariant_ref.h"
@@ -203,7 +202,7 @@ void DesktopResizerX11::SetResolutionForOutput(
   // that we have to detach the output from the mode in order to delete the
   // mode and re-create it with the new resolution. The output may also need to
   // be detached from all modes in order to reduce the root window size.
-  HOST_LOG << "Resizing RANDR Output " << base::to_underlying(output) << " to "
+  HOST_LOG << "Resizing RANDR Output " << std::to_underlying(output) << " to "
            << resolution.dimensions().width() << "x"
            << resolution.dimensions().height();
 

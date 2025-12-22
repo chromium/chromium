@@ -5,10 +5,10 @@
 #include "remoting/host/linux/active_display_monitor_x11.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/x/x11_display_util.h"
@@ -147,7 +147,7 @@ void ActiveDisplayMonitorX11::Core::GetAndSendActiveDisplay() {
     // It's not clear if a window-manager would ever move input-focus to a
     // hidden window? It seems safer to not activate a different display if the
     // user can't see the window on it.
-    HOST_LOG << "Focused window " << base::to_underlying(focused_window)
+    HOST_LOG << "Focused window " << std::to_underlying(focused_window)
              << " is hidden, ignoring.";
     return;
   }
@@ -155,7 +155,7 @@ void ActiveDisplayMonitorX11::Core::GetAndSendActiveDisplay() {
   webrtc::ScreenId active_display = GetDisplayForWindow(focused_window);
   if (active_display == webrtc::kInvalidScreenId) {
     LOG(ERROR) << "Failed to determine display for window "
-               << base::to_underlying(focused_window);
+               << std::to_underlying(focused_window);
     return;
   }
 
@@ -165,7 +165,7 @@ void ActiveDisplayMonitorX11::Core::GetAndSendActiveDisplay() {
 
   current_active_display_ = active_display;
   HOST_LOG << "Active display changed to " << active_display
-           << " due to window " << base::to_underlying(focused_window);
+           << " due to window " << std::to_underlying(focused_window);
   callback_.Run(active_display);
 }
 
@@ -188,7 +188,7 @@ x11::Window ActiveDisplayMonitorX11::Core::GetTopLevelWindow(
     auto query_response = connection_->QueryTree({window}).Sync();
     if (!query_response) {
       LOG(ERROR) << "QueryTree failed for window "
-                 << base::to_underlying(window);
+                 << std::to_underlying(window);
       return x11::Window::None;
     }
     if (query_response->parent == x11::Window::None) {
@@ -212,7 +212,7 @@ bool ActiveDisplayMonitorX11::Core::IsWindowVisible(x11::Window window) const {
   auto attributes = connection_->GetWindowAttributes({window}).Sync();
   if (!attributes) {
     LOG(ERROR) << "Failed to get attributes for window "
-               << base::to_underlying(window);
+               << std::to_underlying(window);
     return false;
   }
   return attributes->map_state == x11::MapState::Viewable;
@@ -225,7 +225,7 @@ webrtc::ScreenId ActiveDisplayMonitorX11::Core::GetDisplayForWindow(
   auto geometry = connection_->GetGeometry(window).Sync();
   if (!geometry) {
     LOG(ERROR) << "GetGeometry() failed for window "
-               << base::to_underlying(window);
+               << std::to_underlying(window);
     return result;
   }
 
@@ -249,7 +249,7 @@ webrtc::ScreenId ActiveDisplayMonitorX11::Core::GetDisplayForWindow(
     // that all overlaps have zero area.
     if (area > best_area) {
       // The X11 desktop-capturer uses the `name` atom as the screen ID.
-      result = base::to_underlying(info.name);
+      result = std::to_underlying(info.name);
       best_area = area;
     }
   }
