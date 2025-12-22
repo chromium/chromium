@@ -19,8 +19,8 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <utility>
 
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -54,7 +54,7 @@ void ExpectAnnotationList(const std::vector<AnnotationSnapshot>& list,
   for (const Annotation* expected_annotation : expected_list) {
     const AnnotationSnapshot& annotation = list[index++];
     EXPECT_EQ(annotation.name, expected_annotation->name());
-    EXPECT_EQ(annotation.type, base::to_underlying(expected_annotation->type()));
+    EXPECT_EQ(annotation.type, std::to_underlying(expected_annotation->type()));
     EXPECT_EQ(annotation.value.size(), expected_annotation->size());
     EXPECT_EQ(memcmp(annotation.value.data(),
                      expected_annotation->value(),
