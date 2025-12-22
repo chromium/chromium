@@ -9980,3 +9980,6 @@ crbug.com/469128832 virtual/permission-element/external/wpt/html/semantics/permi
 
 # Gardener 2025-12-19
 crbug.com/470189922 external/wpt/bluetooth/bidi/characteristic/notifications/characteristic-is-removed.https.window.html [ Failure Pass Timeout ]
+
+# Ongoing digital credential flakiness
+crbug.com/457974554 external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Timeout ]
