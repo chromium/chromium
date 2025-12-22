@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,8 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -70,14 +73,24 @@ public class SigninSnackbarControllerTest {
     @Test
     public void testShowUndoSnackbarIfNeeded_resultAborted_snackbarNotShown() {
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity, mProfile, mSnackbarManager, mListener, ABORTED);
+                mActivity,
+                mProfile,
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                mSnackbarManager,
+                mListener,
+                ABORTED);
         verifyNoInteractions(mSnackbarManager);
     }
 
     @Test
     public void testShowUndoSnackbarIfNeeded_resultHistorySyncOnly_snackbarNotShown() {
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity, mProfile, mSnackbarManager, mListener, HISTORY_SYNC_ONLY);
+                mActivity,
+                mProfile,
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                mSnackbarManager,
+                mListener,
+                HISTORY_SYNC_ONLY);
         verifyNoInteractions(mSnackbarManager);
     }
 
@@ -86,7 +99,12 @@ public class SigninSnackbarControllerTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_ONLY);
+                mActivity,
+                mProfile,
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                mSnackbarManager,
+                mListener,
+                SIGN_IN_ONLY);
 
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
@@ -103,7 +121,12 @@ public class SigninSnackbarControllerTest {
         when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
 
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_ONLY);
+                mActivity,
+                mProfile,
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                mSnackbarManager,
+                mListener,
+                SIGN_IN_ONLY);
         clickSnackbarUndoButton();
         verifyNoInteractions(mHistorySyncHelper);
     }
@@ -114,9 +137,35 @@ public class SigninSnackbarControllerTest {
         when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
 
         SigninSnackbarController.showUndoSnackbarIfNeeded(
-                mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_AND_HISTORY_SYNC);
+                mActivity,
+                mProfile,
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                mSnackbarManager,
+                mListener,
+                SIGN_IN_AND_HISTORY_SYNC);
         clickSnackbarUndoButton();
         verify(mHistorySyncHelper).setHistoryAndTabsSync(false);
+    }
+
+    @Test
+    public void testSignOutReasonFromBookmarks() {
+        assertEquals(
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS,
+                SigninSnackbarController.getSignoutReason(SigninAccessPoint.BOOKMARK_MANAGER));
+    }
+
+    @Test
+    public void testSignOutReasonFromNtp() {
+        assertEquals(
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP,
+                SigninSnackbarController.getSignoutReason(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testSignOutReasonFromRecentTabs() {
+        assertEquals(
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS,
+                SigninSnackbarController.getSignoutReason(SigninAccessPoint.RECENT_TABS));
     }
 
     private void clickSnackbarUndoButton() {

@@ -183,8 +183,13 @@ public class SignOutCoordinator {
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         ThreadUtils.assertOnUiThread();
-        if (signOutReason != SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN) {
-            throw new IllegalArgumentException("Unsupported signOutReason: " + signOutReason);
+        switch (signOutReason) {
+            case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS:
+            case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP:
+            case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS:
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid signOutReason: " + signOutReason);
         }
         getSignedInIdentityManager(profile);
         assert snackbarManager != null;

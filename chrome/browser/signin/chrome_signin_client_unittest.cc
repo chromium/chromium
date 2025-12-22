@@ -164,6 +164,11 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kSigninManagerUpdateUPA:
     case signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn:
     case signin_metrics::ProfileSignout::
+        kUserTappedUndoRightAfterSignInFromBookmarks:
+    case signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignInFromNtp:
+    case signin_metrics::ProfileSignout::
+        kUserTappedUndoRightAfterSignInFromRecentTabs:
+    case signin_metrics::ProfileSignout::
         kUserDeclinedHistorySyncAfterDedicatedSignIn:
     case signin_metrics::ProfileSignout::kDeviceLockRemovedOnAutomotive:
     case signin_metrics::ProfileSignout::kRevokeSyncFromSettings:
@@ -268,6 +273,11 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
     signin_metrics::ProfileSignout::kSigninManagerUpdateUPA,
     signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
+    signin_metrics::ProfileSignout::
+        kUserTappedUndoRightAfterSignInFromBookmarks,
+    signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignInFromNtp,
+    signin_metrics::ProfileSignout::
+        kUserTappedUndoRightAfterSignInFromRecentTabs,
     signin_metrics::ProfileSignout::
         kUserDeclinedHistorySyncAfterDedicatedSignIn,
     signin_metrics::ProfileSignout::kDeviceLockRemovedOnAutomotive,

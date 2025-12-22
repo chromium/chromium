@@ -361,15 +361,19 @@ public class SignOutCoordinatorTest {
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
 
         assertUndoSignInWithSnackbarThrows(
-                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class,
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS);
     }
 
     @Test
     @SmallTest
     public void testUndoSignInWithSnackbarThrowsForUnsupportedReasons() {
         for (@SignoutReason int reason = 0; reason <= SignoutReason.MAX_VALUE; reason++) {
-            if (reason == SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN) {
-                continue;
+            switch (reason) {
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS:
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP:
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS:
+                    continue;
             }
             // All other reasons should throw.
             assertUndoSignInWithSnackbarThrows(IllegalArgumentException.class, reason);
@@ -386,7 +390,8 @@ public class SignOutCoordinatorTest {
         doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
 
         assertUndoSignInWithSnackbarThrows(
-                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class,
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS);
     }
 
     private <T extends Throwable> void assertUndoSignInWithSnackbarThrows(
