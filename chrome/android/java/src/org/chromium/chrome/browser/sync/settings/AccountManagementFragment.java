@@ -237,7 +237,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             : R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(
                     preference -> {
-                        if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
+                        if (!isVisible() || !isResumed()) {
+                            return false;
+                        }
+                        if (!getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                            // Primary account might have been signed-out asynchronously already.
                             return false;
                         }
                         SignOutCoordinator.startSignOutFlow(
