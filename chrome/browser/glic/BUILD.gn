@@ -72,6 +72,8 @@ source_set("glic") {
       "glic_hotkey.h",
       "widget/local_hotkey_manager.h",
     ]
+  } else {  # is_android
+    sources += [ "public/widget/glic_side_panel_coordinator_android.h" ]
   }
   public_deps = [
     ":enum",
@@ -282,6 +284,7 @@ source_set("impl") {
       "widget/glic_inactive_floating_ui_android.h",
       "widget/glic_inactive_side_panel_ui_android.cc",
       "widget/glic_inactive_side_panel_ui_android.h",
+      "widget/glic_side_panel_coordinator_android.cc",
       "widget/glic_side_panel_ui_android.cc",
       "widget/glic_side_panel_ui_android.h",
     ]

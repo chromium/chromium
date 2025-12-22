@@ -17,6 +17,7 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 #if BUILDFLAG(ENABLE_GLIC_ANDROID)
+#include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #endif
 
@@ -47,6 +48,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 #if BUILDFLAG(ENABLE_GLIC_ANDROID)
   glic_instance_helper_ =
       GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
+  glic_side_panel_coordinator_ =
+      GetUserDataFactory()
+          .CreateInstance<glic::GlicSidePanelCoordinatorAndroid>(*tab, tab);
 #endif
 }
 

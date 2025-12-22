@@ -20,6 +20,7 @@ class WebContents;
 
 namespace glic {
 class GlicInstanceHelper;
+class GlicSidePanelCoordinator;
 }  // namespace glic
 
 namespace sync_sessions {
@@ -63,6 +64,7 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_GLIC_ANDROID)
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
+  std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
 #endif
 };
 
