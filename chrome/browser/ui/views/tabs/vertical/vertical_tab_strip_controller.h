@@ -8,10 +8,12 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 
 class BrowserView;
 class TabCollectionNode;
+class TabGroup;
 
 namespace tabs {
 class TabInterface;
@@ -46,6 +48,8 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   void ToggleSelected(const tabs::TabInterface* tab_interface);
   void AddSelectionFromAnchorTo(const tabs::TabInterface* tab_interface);
   void ExtendSelectionTo(const tabs::TabInterface* tab_interface);
+  void ToggleTabGroupCollapsedState(const TabGroup* group,
+                                    ToggleTabGroupCollapsedStateOrigin origin);
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();

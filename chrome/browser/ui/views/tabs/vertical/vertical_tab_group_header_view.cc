@@ -6,7 +6,10 @@
 
 #include <numeric>
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -40,13 +43,53 @@ END_METADATA
 }  // namespace
 
 VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data)
+    const tab_groups::TabGroupVisualData* tab_group_visual_data,
+    base::RepeatingCallback<void(ToggleTabGroupCollapsedStateOrigin)>
+        toggle_collapsed_state_callback)
     : group_header_label_(
-          AddChildView(std::make_unique<VerticalTabGroupHeaderLabel>())) {
+          AddChildView(std::make_unique<VerticalTabGroupHeaderLabel>())),
+      toggle_collapsed_state_callback_(
+          std::move(toggle_collapsed_state_callback)) {
+  SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
+
   OnDataChanged(tab_group_visual_data);
 }
 
 VerticalTabGroupHeaderView::~VerticalTabGroupHeaderView() = default;
+
+bool VerticalTabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_SPACE ||
+      event.key_code() == ui::VKEY_RETURN) {
+    toggle_collapsed_state_callback_.Run(
+        ToggleTabGroupCollapsedStateOrigin::kKeyboard);
+    return true;
+  }
+  return false;
+}
+
+bool VerticalTabGroupHeaderView::OnMousePressed(const ui::MouseEvent& event) {
+  // Return true so that we receive subsequent MouseRelease event.
+  return true;
+}
+
+void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
+  bool toggle_collapse =
+      base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
+          ? event.IsRightMouseButton()
+          : event.IsLeftMouseButton();
+  if (toggle_collapse) {
+    toggle_collapsed_state_callback_.Run(
+        ToggleTabGroupCollapsedStateOrigin::kMouse);
+  }
+}
+
+void VerticalTabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->type() == ui::EventType::kGestureTap) {
+    toggle_collapsed_state_callback_.Run(
+        ToggleTabGroupCollapsedStateOrigin::kGesture);
+  }
+  event->SetHandled();
+}
 
 void VerticalTabGroupHeaderView::OnDataChanged(
     const tab_groups::TabGroupVisualData* tab_group_visual_data) {

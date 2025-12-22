@@ -8,9 +8,12 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
@@ -34,12 +37,10 @@ constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kTabLeadingPadding = 10;
 
-const tab_groups::TabGroupVisualData* GetTabGroupVisualDataFromNode(
-    TabCollectionNode* node) {
+const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
   return static_cast<const tabs::TabGroupTabCollection*>(
              std::get<const tabs::TabCollection*>(node->GetNodeData()))
-      ->GetTabGroup()
-      ->visual_data();
+      ->GetTabGroup();
 }
 
 }  // namespace
@@ -47,7 +48,10 @@ const tab_groups::TabGroupVisualData* GetTabGroupVisualDataFromNode(
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
-          GetTabGroupVisualDataFromNode(collection_node_)))),
+          GetTabGroupFromNode(collection_node_)->visual_data(),
+          base::BindRepeating(
+              &VerticalTabGroupView::ToggleTabGroupCollapsedState,
+              base::Unretained(this))))),
       group_line_(AddChildView(std::make_unique<views::View>())) {
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<views::DelegatingLayoutManager>(this)));
@@ -93,8 +97,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
     bounds.set_y(height);
     bounds.set_x(kTabLeadingPadding);
-    // If width is bounded, child views should respect the width constraints and
-    // take up the available width excluding trailing horizontal padding.
+    // If width is bounded, child views should respect the width constraints
+    // and take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
       bounds.set_width(size_bounds.width().value() - kTabLeadingPadding);
     }
@@ -111,7 +115,10 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       group_line_.get(), group_line_->GetVisible(), group_line_bounds);
 
-  layouts.host_size = gfx::Size(width, height);
+  bool is_collapsed =
+      GetTabGroupFromNode(collection_node_)->visual_data()->is_collapsed();
+  layouts.host_size =
+      gfx::Size(width, is_collapsed ? header_bounds.height() : height);
   return layouts;
 }
 
@@ -121,14 +128,33 @@ void VerticalTabGroupView::ResetCollectionNode() {
 
 void VerticalTabGroupView::OnDataChanged() {
   const tab_groups::TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataFromNode(collection_node_);
+      GetTabGroupFromNode(collection_node_)->visual_data();
   group_header_->OnDataChanged(visual_data);
+  // TODO(crbug.com/459824840): Call UpdateChildVisibilityForCollapseState via
+  // some sort of PostOrQueueAction method when collapsing so that children are
+  // set to not visible only after the collapse animation has completed.
+  UpdateChildVisibilityForCollapseState(visual_data->is_collapsed());
   if (GetColorProvider()) {
     SkColor color = GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
         visual_data->color(), GetWidget()->ShouldPaintAsActive()));
     group_line_->SetBackground(views::CreateRoundedRectBackground(
         color, gfx::RoundedCornersF(0, kGroupLineCornerRadius,
                                     kGroupLineCornerRadius, 0)));
+  }
+  InvalidateLayout();
+}
+
+void VerticalTabGroupView::ToggleTabGroupCollapsedState(
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  collection_node_->GetController()->ToggleTabGroupCollapsedState(
+      GetTabGroupFromNode(collection_node_), origin);
+}
+
+void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(
+    bool collapsed) {
+  group_line_->SetVisible(!collapsed);
+  for (auto* child : collection_node_->GetDirectChildren()) {
+    child->SetVisible(!collapsed);
   }
 }
 

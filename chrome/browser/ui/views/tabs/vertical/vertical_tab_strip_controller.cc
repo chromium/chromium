@@ -6,15 +6,19 @@
 
 #include <variant>
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -125,6 +129,70 @@ void VerticalTabStripController::ExtendSelectionTo(
   }
 
   model_->ExtendSelectionTo(tab_index.value());
+}
+
+void VerticalTabStripController::ToggleTabGroupCollapsedState(
+    const TabGroup* group,
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  bool is_currently_collapsed = group->visual_data()->is_collapsed();
+  bool should_toggle_group = true;
+
+  tabs::TabInterface* active_tab = model_->GetActiveTab();
+  if (!is_currently_collapsed && active_tab) {
+    if (active_tab->GetGroup() == group->id()) {
+      // If the active tab is in the group that is toggling to collapse, the
+      // active tab should switch to the next available tab. If there are no
+      // available tabs for the active tab to switch to, a new tab will
+      // be created.
+      const std::optional<int> next_active =
+          model_->GetNextExpandedActiveTab(group->id());
+      if (next_active.has_value()) {
+        model_->ActivateTabAt(
+            next_active.value(),
+            TabStripUserGestureDetails(
+                TabStripUserGestureDetails::GestureType::kOther));
+      } else {
+        // Create a new tab that will automatically be activated
+        should_toggle_group = false;
+        // We intentionally do not call CreateNewTab() here because it
+        // respects the IsNewTabAddsToActiveGroupEnabled() feature, which would
+        // add the new tab to the same group as the currently active tab.
+        // In the "collapse group" scenario, we want the new tab to be created
+        // outside of any group to avoid it being collapsed immediately.
+        model_->delegate()->AddTabAt(GURL(), -1, true);
+      }
+    } else {
+      // If the active tab is not in the group that is toggling to collapse,
+      // reactive the active tab to deselect any other potentially selected
+      // tabs.
+      SelectTab(active_tab,
+                TabStripUserGestureDetails(
+                    TabStripUserGestureDetails::GestureType::kOther));
+    }
+  }
+
+  if (origin != ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
+      should_toggle_group) {
+    model_->ChangeTabGroupVisuals(
+        group->id(),
+        tab_groups::TabGroupVisualData(group->visual_data()->title(),
+                                       group->visual_data()->color(),
+                                       !is_currently_collapsed),
+        true);
+  }
+
+  const bool is_implicit_action =
+      origin == ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
+      origin == ToggleTabGroupCollapsedStateOrigin::kTabsSelected;
+  if (!is_implicit_action) {
+    if (is_currently_collapsed) {
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_TabGroupHeader_Expanded"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
+    }
+  }
 }
 
 bool VerticalTabStripController::IsContextMenuCommandChecked(

@@ -24,6 +24,7 @@ source_set("vertical") {
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views",
     "//components/tabs",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
@@ -81,6 +82,7 @@ source_set("browser_tests") {
   sources = [
     "tab_collection_node_browsertest.cc",
     "vertical_split_tab_view_browsertest.cc",
+    "vertical_tab_group_view_browsertest.cc",
     "vertical_tab_view_browsertest.cc",
   ]
   deps = [
@@ -88,6 +90,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs/tab_strip_api",
@@ -104,6 +107,7 @@ source_set("unit_tests") {
   sources = [ "vertical_tab_strip_top_container_unittest.cc" ]
   deps = [
     ":impl",
+    "//base/test:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/test:test_support",

@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -24,14 +25,21 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   VerticalTabGroupView& operator=(const VerticalTabGroupView&) = delete;
   ~VerticalTabGroupView() override;
 
-  // LayoutDelegate:
+  // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
   void OnDataChanged();
 
+  void ToggleTabGroupCollapsedState(ToggleTabGroupCollapsedStateOrigin origin);
+
+  VerticalTabGroupHeaderView* group_header_for_testing() {
+    return group_header_;
+  }
+
  private:
   void ResetCollectionNode();
+  void UpdateChildVisibilityForCollapseState(bool collapsed);
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
