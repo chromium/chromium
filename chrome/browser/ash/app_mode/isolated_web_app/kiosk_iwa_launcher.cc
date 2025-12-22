@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -40,6 +41,12 @@ KioskIwaLauncher::~KioskIwaLauncher() = default;
 
 void KioskIwaLauncher::Initialize() {
   KioskWebAppLauncherBase::Initialize();
+
+  if (web_app::ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          iwa_data_->web_bundle_id().id())) {
+    NotifyLaunchFailed(KioskAppLaunchError::Error::kIsolatedAppNotAllowed);
+    return;
+  }
   KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
   CHECK_DEREF(profile()->GetExtensionSpecialStoragePolicy())
       .AddOriginWithUnlimitedStorage(iwa_data().origin());

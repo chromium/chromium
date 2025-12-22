@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -75,6 +76,10 @@ KioskIwaManager::KioskIwaManager(PrefService& local_state,
     : KioskAppManagerBase(&local_state, cryptohome_remover) {
   CHECK(!g_kiosk_iwa_manager_instance);  // Only one instance is allowed.
   g_kiosk_iwa_manager_instance = this;
+  runtime_data_changed_subscription_ =
+      web_app::ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+          base::BindRepeating(&KioskIwaManager::OnRuntimeDataChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
   UpdateAppsFromPolicy();
 }
 
@@ -98,6 +103,13 @@ const KioskIwaData* KioskIwaManager::GetApp(const AccountId& account_id) const {
       });
 
   if (iter == isolated_web_apps_.end()) {
+    // Blocklisted apps are not in isolated_web_apps_. We don't want them to be
+    // installed or used, but manager should provide auto-launch app data on
+    // clear demand.
+    if (maybe_blocked_auto_launch_app_ &&
+        maybe_blocked_auto_launch_app_->account_id() == account_id) {
+      return maybe_blocked_auto_launch_app_.get();
+    }
     return nullptr;
   }
   return iter->get();
@@ -113,7 +125,6 @@ void KioskIwaManager::UpdateApp(const AccountId& account_id,
       return;
     }
   }
-  NOTREACHED();
 }
 
 const std::optional<AccountId>& KioskIwaManager::GetAutoLaunchAccountId()
@@ -158,6 +169,7 @@ void KioskIwaManager::UpdateAppsFromPolicy() {
 void KioskIwaManager::Reset() {
   isolated_web_apps_.clear();
   auto_launch_id_.reset();
+  maybe_blocked_auto_launch_app_.reset();
   auto_launched_with_zero_delay_ = false;
 }
 
@@ -213,6 +225,21 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
     return;
   }
 
+  // Blocklisted kiosk apps&accounts are removed from the device, but
+  // the manager always must provide data for its autologin app. This app
+  // cannot be installed nor launched, instead it will show the splash
+  // screen with the error message.
+  // TODO(crbug.com/470341229): Find out if can be refactored as in description
+  if (web_app::ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          new_iwa_data->web_bundle_id().id())) {
+    if (GetAutoLoginIdSetting() == account.account_id) {
+      maybe_blocked_auto_launch_app_ = std::move(new_iwa_data);
+      MaybeSetAutoLaunchInfo(account.account_id,
+                             maybe_blocked_auto_launch_app_->account_id());
+    }
+    return;
+  }
+
   // Check the new app entry against existing apps.
   auto previous_match = previous_apps.find(new_iwa_data->app_id());
   if (previous_match != previous_apps.end()) {
@@ -236,6 +263,10 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
 
   MaybeSetAutoLaunchInfo(account.account_id,
                          isolated_web_apps_.back()->account_id());
+}
+
+void KioskIwaManager::OnRuntimeDataChanged() {
+  UpdateAppsFromPolicy();
 }
 
 }  // namespace ash
