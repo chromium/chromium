@@ -16,6 +16,10 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace passage_embeddings {
 
 // static
@@ -48,6 +52,13 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kFeatureManagementPassageEmbedder)) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // Don't run the experiment for clients with history embeddings enabled.
   if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile)) {
