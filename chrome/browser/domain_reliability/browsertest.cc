@@ -311,12 +311,9 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_loader->DownloadHeadersOnly(
       storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      // TODO(crbug.com/40258809): Can simplify this to `base::DoNothing()` once
-      // the version of DownloadToStringOfUnboundedSizeUntilCrashAndDie() that
-      // takes a BodyAsStringCallbackDeprecated is removed.
-      base::DoNothingAs<void(std::optional<std::string>)>());
+      base::DoNothing());
 
   simple_loader.release();
 }

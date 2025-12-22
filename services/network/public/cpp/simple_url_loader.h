@@ -117,9 +117,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   using BodyAsStringCallback =
       base::OnceCallback<void(std::optional<std::string> response_body)>;
 
-  // Callback used when ignoring the response body. |headers| are the received
-  // HTTP headers, or nullptr if none were received. It is safe to delete the
-  // SimpleURLLoader during the callback.
+  // Callback used when only the response headers are needed and the response
+  // body doesn't need to be stored. `headers` are the received HTTP headers,
+  // or nullptr if none were received.
+  // Note:
+  //  - This is more efficient than `DownloadToString()` if the response body
+  //    is not needed.
+  //  - To determine that a response body was fully downloaded like it would
+  //    have been if `DownloadToString()` had been used, callbacks can check
+  //    that `NetError()` returns `net::OK`.
+  //  - It is safe to delete the SimpleURLLoader during the callback.
   using HeadersOnlyCallback =
       base::OnceCallback<void(scoped_refptr<net::HttpResponseHeaders> headers)>;
 

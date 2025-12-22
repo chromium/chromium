@@ -19,15 +19,18 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/test_completion_callback.h"
+#include "net/http/http_response_headers.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -772,25 +775,20 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::RunLoop run_loop, run_loop2;
+  base::test::TestFuture<void> redirect_future;
   simple_loader->SetOnRedirectCallback(base::BindRepeating(
       [](base::RepeatingClosure notify_log, const GURL& url_before_redirect,
          const net::RedirectInfo& redirect_info,
          const network::mojom::URLResponseHead& response_head,
          std::vector<std::string>* to_be_removed_headers) { notify_log.Run(); },
-      run_loop.QuitClosure()));
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             std::optional<std::string> response_body) {
-            std::move(quit_closure).Run();
-          },
-          run_loop2.QuitClosure()));
+      redirect_future.GetRepeatingCallback()));
+  base::test::TestFuture<scoped_refptr<net::HttpResponseHeaders>> fetch_future;
+  simple_loader->DownloadHeadersOnly(url_loader_factory.get(),
+                                     fetch_future.GetCallback());
 
   // Wait for fetch to get some bytes across. It will not be the entire
   // thing since the post-redirect URL will get blocked by the custom handler.
-  run_loop.Run();
+  EXPECT_TRUE(redirect_future.Wait());
   ASSERT_TRUE(StartThenVerifyNewState(
       base::FilePath(), net::NetLogCaptureMode::kDefault,
       kCaptureModeDefaultString, network_context()));
@@ -816,7 +814,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
             *(event_params->FindString("url")));
 
   block_fetch.Signal();
-  run_loop2.Run();
+  EXPECT_TRUE(fetch_future.Wait());
 }
 
 TEST_F(NetExportFileWriterTest, ReceiveStartWhileInitializing) {

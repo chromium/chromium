@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
@@ -311,9 +312,9 @@ IN_PROC_BROWSER_TEST_F(HangingPacRequestProxyScriptBrowserTest, Shutdown) {
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
   auto url_loader_factory =
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_loader->DownloadHeadersOnly(
       url_loader_factory.get(),
-      base::BindOnce([](std::optional<std::string> body) {
+      base::BindOnce([](scoped_refptr<net::HttpResponseHeaders> headers) {
         ADD_FAILURE() << "This request should never complete.";
       }));
 
