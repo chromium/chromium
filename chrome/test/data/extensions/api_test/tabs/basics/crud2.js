@@ -19,8 +19,8 @@ function clickLink(id) {
   document.querySelector('#' + id).dispatchEvent(clickEvent);
 }
 
-chrome.test.runTests([
 
+const tests = [
   function getFirstWindowId() {
     chrome.windows.getCurrent(pass(function(window) {
       firstWindowId = window.id;
@@ -236,5 +236,34 @@ chrome.test.runTests([
       }));
     }));
   }
+];
 
-]);
+// The following tests don't work on desktop android (yet).
+// TODO(https://crbug.com/371432155): Enable these on desktop android.
+const skipForAndroid = [
+    'getAllInWindow',
+    'getAllInWindowNullArg',
+    'updateSelect',
+    'update',
+    'openerTabId',
+    'testRedirectingToAnotherWindow',
+    'testOpenWindowInEmptyPopup',
+    'testOpenEmptyPopup',
+    'testCreatePopupAndMoveTab',
+    'detectLanguage',
+    'getCurrentWindow',
+];
+
+(async function() {
+  const os = await new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+  const isAndroid = os === 'android';
+  let testsToRun = tests;
+  if (isAndroid) {
+    testsToRun =
+        tests.filter((t) => { return !skipForAndroid.includes(t.name); });
+  }
+
+  chrome.test.runTests(testsToRun);
+})();

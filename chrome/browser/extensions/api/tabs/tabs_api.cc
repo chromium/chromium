@@ -964,9 +964,19 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   // initialized on non-desktop platforms. See documentation on
   // CreateBrowserWindow().
 
-  auto create_nav_params = [&](const GURL& url) {
+  auto create_nav_params = [&](const GURL& url, bool is_first_nav) {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
+
     navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, new windows are created with a single empty tab. As such,
+    // when navigating, we need to navigate that first tab, instead of adding
+    // new ones. Otherwise, we'd end up with one extra tab in the new window.
+    if (is_first_nav) {
+      navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    }
+#endif
     // Ensure that these navigations will not get 'captured' into PWA windows,
     // as this means that `new_window` could be ignored. It may be
     // useful/desired in the future to allow this behavior, but this may require
@@ -1008,8 +1018,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     // extension's ability to figure out which IWAs are installed without the
     // `tabs` permission.
     if (registrar.AppMatches(iwa_id, web_app::WebAppFilter::IsIsolatedApp())) {
-      NavigateParams navigate_params =
-          create_nav_params(registrar.GetAppStartUrl(iwa_id));
+      NavigateParams navigate_params = create_nav_params(
+          registrar.GetAppStartUrl(iwa_id), /*is_first_nav=*/true);
       base::WeakPtr<content::NavigationHandle> handle =
           Navigate(&navigate_params);
       CHECK(handle);
@@ -1022,8 +1032,10 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 #endif
 
   if (!navigated) {
+    bool is_first_nav = true;
     for (const GURL& url : urls_) {
-      NavigateParams navigate_params = create_nav_params(url);
+      NavigateParams navigate_params = create_nav_params(url, is_first_nav);
+      is_first_nav = false;
       Navigate(&navigate_params);
     }
   }
