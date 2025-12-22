@@ -39,6 +39,8 @@ source_set("coordinator") {
     "//components/omnibox/browser:location_bar",
     "//components/omnibox/common",
     "//components/omnibox/composebox/ios",
+    "//components/open_from_clipboard",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
