@@ -455,6 +455,8 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
   alert_indicator_->UpdateAlertIndicatorAnimation();
   alert_indicator_->SetVisible(
       alert_indicator_->showing_alert_state().has_value());
+
+  icon_->SetVisible(!pinned_ || !alert_indicator_->GetVisible());
 }
 
 void VerticalTabView::UpdateCloseButtonVisibility() {
