@@ -73,6 +73,10 @@ export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
     chrome.readingMode.onLetterSpacingChange(event.detail.data);
     this.logger_.logTextSettingsChange(

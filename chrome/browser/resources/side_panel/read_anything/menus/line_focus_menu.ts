@@ -83,6 +83,10 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected restoredLineFocusIndex_(): number {
     return getIndexOfSetting(this.options_, this.settingsPrefs['lineFocus']);
   }

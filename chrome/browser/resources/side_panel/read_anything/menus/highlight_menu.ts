@@ -78,6 +78,10 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected restoredHighlightIndex_(): number {
     return getIndexOfSetting(
         this.options_, this.settingsPrefs['highlightGranularity']);

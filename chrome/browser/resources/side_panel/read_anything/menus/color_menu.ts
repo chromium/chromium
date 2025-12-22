@@ -101,6 +101,10 @@ export class ColorMenuElement extends ColorMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected restoredThemeIndex_(): number {
     return getIndexOfSetting(this.options_, this.settingsPrefs['theme']);
   }

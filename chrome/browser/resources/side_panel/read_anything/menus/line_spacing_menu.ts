@@ -73,6 +73,10 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected restoredLineSpacingIndex_(): number {
     return getIndexOfSetting(this.options_, this.settingsPrefs['lineSpacing']);
   }

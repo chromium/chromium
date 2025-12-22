@@ -64,6 +64,10 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     openMenu(this.$.lazyMenu.get(), anchor);
   }
 
+  close() {
+    this.$.lazyMenu.get().close();
+  }
+
   protected onClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     this.currentSelectedIndex =

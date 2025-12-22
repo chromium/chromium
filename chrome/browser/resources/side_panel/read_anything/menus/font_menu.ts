@@ -76,6 +76,10 @@ export class FontMenuElement extends FontMenuElementBase {
     this.$.menu.open(anchor);
   }
 
+  close() {
+    this.$.menu.close();
+  }
+
   protected currentFontIndex_(): number {
     return getIndexOrDefault(this.options_, chrome.readingMode.fontName);
   }
