@@ -143,6 +143,10 @@ int TestTabModel::GetTabCountNavigatedInTimeWindow(
 void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                                   const base::Time& end_time) {}
 
+void TestTabModel::ActivateTab(tabs::TabHandle tab) {
+  NOTIMPLEMENTED();
+}
+
 tabs::TabInterface* TestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
   return nullptr;
@@ -397,6 +401,10 @@ int OwningTestTabModel::GetTabCountNavigatedInTimeWindow(
 void OwningTestTabModel::CloseTabsNavigatedInTimeWindow(
     const base::Time& begin_time,
     const base::Time& end_time) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::ActivateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 

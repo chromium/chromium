@@ -440,6 +440,12 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
       env, java_object_.get(env), begin_time_ms, end_time_ms);
 }
 
+void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {
+  int index = GetIndexOfTab(tab);
+  CHECK_NE(-1, index);
+  SetActiveIndex(index);
+}
+
 tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url, int index) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);

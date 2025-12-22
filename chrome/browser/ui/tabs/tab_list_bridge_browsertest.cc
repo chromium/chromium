@@ -144,6 +144,28 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveIndex) {
   EXPECT_EQ(1, tab_list_interface->GetActiveIndex());
 }
 
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, ActivateTab) {
+  const GURL url("http://one.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Add a second tab, which should be active (it opens in the foreground).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(2, tab_list_interface->GetTabCount());
+  EXPECT_EQ(1, tab_list_interface->GetActiveIndex());
+
+  // Focus the first tab.
+  tab_list_interface->ActivateTab(tab_list_interface->GetTab(0)->GetHandle());
+  EXPECT_EQ(0, tab_list_interface->GetActiveIndex());
+
+  // (Re)-Focus the second tab.
+  tab_list_interface->ActivateTab(tab_list_interface->GetTab(1)->GetHandle());
+  EXPECT_EQ(1, tab_list_interface->GetActiveIndex());
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTabCount) {
   const GURL url("http://one.example");
 

@@ -56,6 +56,9 @@ class TabListInterface {
   // Returns the `TabInterface` for the currently-active tab.
   virtual tabs::TabInterface* GetActiveTab() = 0;
 
+  // Activates the given `tab`. The `tab` must be present in this tab list.
+  virtual void ActivateTab(tabs::TabHandle tab) = 0;
+
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
   virtual tabs::TabInterface* OpenTab(const GURL& url, int index) = 0;

@@ -82,6 +82,12 @@ tabs::TabInterface* TabListBridge::GetActiveTab() {
   return tab_strip_->GetActiveTab();
 }
 
+void TabListBridge::ActivateTab(tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab);
+  tab_strip_->ActivateTabAt(index);
+}
+
 tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
   // If `index` is specified as `TabStripModel::kNoTab`, then the tab is added
   // to the end of the tab strip.
