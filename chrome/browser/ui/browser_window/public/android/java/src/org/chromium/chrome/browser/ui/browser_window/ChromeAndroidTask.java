@@ -208,12 +208,6 @@ public interface ChromeAndroidTask {
     <T extends ChromeAndroidTaskFeature> void addFeature(
             Class<T> featureClazz, Supplier<@Nullable T> featureSupplier);
 
-    /** Deprecated. Please use {@link #addFeature(Class, Supplier)}. */
-    // TODO(http://crbug.com/434055958): Delete this method after downstream code starts using
-    // addFeature(Class, Supplier).
-    @Deprecated
-    void addFeature(ChromeAndroidTaskFeature feature);
-
     /**
      * Creates the {@link Intent} to open a new window of type {@link BrowserWindowType#NORMAL}.
      *

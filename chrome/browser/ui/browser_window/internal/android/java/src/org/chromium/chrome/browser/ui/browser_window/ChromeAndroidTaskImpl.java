@@ -324,17 +324,6 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public void addFeature(ChromeAndroidTaskFeature feature) {
-        ThreadUtils.assertOnUiThread();
-        assertPendingCreateOrIdle();
-
-        if (!mFeatures.containsKey(feature.getClass())) {
-            mFeatures.put(feature.getClass(), feature);
-            feature.onAddedToTask();
-        }
-    }
-
-    @Override
     public @Nullable Intent createIntentForNormalBrowserWindow(boolean isIncognito) {
         ThreadUtils.assertOnUiThread();
         if (mActivityScopedObjects == null) {
