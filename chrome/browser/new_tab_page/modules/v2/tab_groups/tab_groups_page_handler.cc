@@ -127,11 +127,19 @@ void TabGroupsPageHandler::CreateNewTabGroup() {
 std::vector<const tab_groups::SavedTabGroup*>
 TabGroupsPageHandler::FilterActiveGroup(
     std::vector<const tab_groups::SavedTabGroup*> groups) {
+  auto* bwi = webui::GetBrowserWindowInterface(web_contents_);
+  if (!bwi) {
+    return groups;
+  }
+
+  TabStripModel* tab_strip_model = bwi->GetTabStripModel();
+  if (!tab_strip_model) {
+    // No tab strip in this window type.
+    return groups;
+  }
+
   // Get the group ID of the currently active tab. This can be nullopt if the
   // active tab is not in any group.
-  TabStripModel* tab_strip_model =
-      webui::GetBrowserWindowInterface(web_contents_)->GetTabStripModel();
-  CHECK(tab_strip_model);
   std::optional<tab_groups::TabGroupId> active_group_id =
       tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
 
