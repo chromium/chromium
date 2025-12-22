@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
@@ -69,6 +70,7 @@ class MODULES_EXPORT IDBDatabase final
           callbacks_receiver,
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       int scheduling_priority);
+  ~IDBDatabase() override;
 
   void Trace(Visitor*) const override;
 
@@ -278,6 +280,8 @@ class MODULES_EXPORT IDBDatabase final
   void OnSchedulerLifecycleStateChanged(
       scheduler::SchedulingLifecycleState lifecycle_state);
 
+  void ClearExternalMemory();
+
   IDBDatabaseMetadata metadata_;
   HeapMojoAssociatedRemote<mojom::blink::IDBDatabase> database_remote_;
   Member<IDBTransaction> version_change_transaction_;
@@ -292,6 +296,12 @@ class MODULES_EXPORT IDBDatabase final
 
   HeapMojoAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks, IDBDatabase>
       callbacks_receiver_;
+
+  // Accounts for browser-process memory retained by the
+  // `content::indexed_db::Connection` object kept-alive via `database_remote_`.
+  // This allows V8 to include this external memory cost in its garbage
+  // collection scheduling heuristics.
+  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 }  // namespace blink
