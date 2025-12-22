@@ -245,19 +245,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet does not show after it has been
 // dismissed three consecutive times.
-// TODO(crbug.com/464201277): Test is flaky on devices.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSilenceProactiveBottomSheet testSilenceProactiveBottomSheet
-#else
-#define MAYBE_testSilenceProactiveBottomSheet \
-  FLAKY_testSilenceProactiveBottomSheet
-#endif
-- (void)MAYBE_testSilenceProactiveBottomSheet {
-  // TODO(crbug.com/439743829): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
+- (void)testSilenceProactiveBottomSheet {
   // Dismiss #1
   [self loadSignupPage];
   [self openAndDismissBottomSheet];
