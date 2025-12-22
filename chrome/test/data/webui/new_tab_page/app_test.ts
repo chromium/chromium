@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter as ActionChipsPageCallbackRouter, type TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter as ActionChipsPageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import type {PageRemote as ActionChipsPageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
@@ -1982,6 +1983,7 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('ActionChips', () => {
+    let actionChipsPageRemote: ActionChipsPageRemote;
     suiteSetup(() => {
       loadTimeData.overrideValues({
         ntpNextFeaturesEnabled: true,
@@ -2002,7 +2004,7 @@ suite('NewTabPageAppTest', () => {
         url: {url: 'https://example.com/test'},
         lastActiveTime: {internalValue: BigInt(12345)},
       };
-      const actionChipsPageRemote =
+      actionChipsPageRemote =
           actionChipsCallbackRouter.$.bindNewPipeAndPassRemote();
       actionChipshandler.setResultMapperFor('startActionChipsRetrieval', () => {
         actionChipsPageRemote.onActionChipsChanged([
@@ -2130,5 +2132,45 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, tabId);
       assertEquals(true, delayUpload);
     });
+    test(
+        'Deep dive chip click opens composebox with context and suggestion',
+        async () => {
+          const suggestion = 'Help me with this page';
+          actionChipsPageRemote.onActionChipsChanged([{
+            title: 'Deep dive',
+            suggestion: suggestion,
+            type: ChipType.kDeepDive,
+            tab: {
+              tabId: 1,
+              title: 'Test Title',
+              url: {url: 'https://example.com/test'},
+              lastActiveTime: {internalValue: BigInt(0)},
+            },
+          }]);
+          await microtasksFinished();
+          const actionChipsElement =
+              app.shadowRoot.querySelector('ntp-action-chips');
+          assertTrue(!!actionChipsElement);
+
+          // Setup.
+          const deepDiveChip =
+              actionChipsElement.shadowRoot.getElementById('deep-dive-0');
+          assertTrue(!!deepDiveChip);
+
+          // Act.
+          deepDiveChip.click();
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
+          assertTrue(!!composebox);
+          assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
+          const [tabId, delayUpload] =
+              searchboxHandler.getArgs('addTabContext')[0];
+          assertEquals(1, tabId);
+          assertEquals(true, delayUpload);
+          assertTrue(!!composebox.$.input);
+          assertEquals(suggestion, composebox.$.input.value);
+        });
   });
 });
