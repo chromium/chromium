@@ -39,7 +39,7 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
 
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
-    GetActorKeyedService()->GetPolicyChecker().SetActOnWebForTesting(true);
+    GetActorKeyedService()->GetPolicyChecker().set_act_on_web_for_testing(true);
   }
 
   ActorKeyedService* GetActorKeyedService() {

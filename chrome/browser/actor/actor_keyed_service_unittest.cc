@@ -56,7 +56,7 @@ class ActorKeyedServiceTest : public testing::Test {
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
     auto* actor_service = ActorKeyedService::Get(profile());
     ASSERT_TRUE(actor_service);
-    actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+    actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
     actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   }
 

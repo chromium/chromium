@@ -586,7 +586,7 @@ class SettingsGlicSubPageWebActuationToggleTest : public SettingsBrowserTest {
         glic::prefs::kGlicUserEnabledActuationOnWeb, false);
     actor::ActorKeyedService::Get(browser()->profile())
         ->GetPolicyChecker()
-        .SetActOnWebForTesting(true);
+        .set_act_on_web_for_testing(true);
   }
 
  private:

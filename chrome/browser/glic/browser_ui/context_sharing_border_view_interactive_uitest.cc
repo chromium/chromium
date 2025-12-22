@@ -1000,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
-  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_keyed_service->GetPolicyChecker().set_act_on_web_for_testing(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();
@@ -1064,7 +1064,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
-  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_keyed_service->GetPolicyChecker().set_act_on_web_for_testing(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();

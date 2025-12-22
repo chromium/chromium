@@ -247,8 +247,9 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
                                   /*requires_page_stabilization=*/true)));
     }
 
-    ActorKeyedService::Get(profile())->GetPolicyChecker().SetActOnWebForTesting(
-        true);
+    ActorKeyedService::Get(profile())
+        ->GetPolicyChecker()
+        .set_act_on_web_for_testing(true);
   }
 
   void TearDown() override {

@@ -118,7 +118,7 @@ void ActorToolsTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
 
   auto* actor_service = ActorKeyedService::Get(browser()->profile());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(
       ShouldForceActOnWeb());
   task_id_ = CreateNewTask();
 

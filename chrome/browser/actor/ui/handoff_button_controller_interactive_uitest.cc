@@ -332,7 +332,7 @@ class ActorUiHandoffButtonSplitViewTest
 
   void SetUpOnMainThread() override {
     ActorUiInteractiveBrowserTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().SetActOnWebForTesting(true);
+    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
     // Add a second tab
     ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank?second"),
                               ::ui::PAGE_TRANSITION_TYPED));

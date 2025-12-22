@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(
     ActivatesTabAndRemoveRowOnGlicActorTaskListBubbleRowClick) {
   ASSERT_TRUE(embedded_https_test_server().Start());
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor::ActorTask* task = actor_service->GetTask(task_id);
   actor::ui::StartTask start_task_event(task_id);
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
 
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor::ActorTask* task = actor_service->GetTask(task_id);
 

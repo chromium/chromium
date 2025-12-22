@@ -96,7 +96,7 @@ void GlicActorUiTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   actor::ActorKeyedService::Get(browser()->profile())
       ->GetPolicyChecker()
-      .SetActOnWebForTesting(true);
+      .set_act_on_web_for_testing(true);
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {

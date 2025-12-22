@@ -90,7 +90,7 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  protected:
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().SetActOnWebForTesting(true);
+    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
     // TODO(crbug.com/461825458): Add support for kAttached window mode in test.
     RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
   }

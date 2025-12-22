@@ -24,7 +24,7 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
 
 void ActorUiInteractiveBrowserTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
-  actor_keyed_service()->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
 }
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab() {

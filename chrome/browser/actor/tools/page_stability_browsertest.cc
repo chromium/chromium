@@ -76,7 +76,7 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
                    ->AddActiveTask(std::move(actor_task));
     ActorKeyedService::Get(browser()->profile())
         ->GetPolicyChecker()
-        .SetActOnWebForTesting(true);
+        .set_act_on_web_for_testing(true);
   }
 
   void TearDownOnMainThread() override {

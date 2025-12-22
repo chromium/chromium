@@ -862,8 +862,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->can_act_on_web = false;
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
       if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-        state->can_act_on_web =
-            actor_service->GetPolicyChecker().can_act_on_web();
+        state->can_act_on_web = actor_service->GetPolicyChecker().CanActOnWeb();
       }
     }
     state->enable_activate_tab = base::FeatureList::IsEnabled(

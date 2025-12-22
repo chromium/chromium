@@ -753,7 +753,7 @@ bool IsWebActuationDisabledForEnterprise(Profile* profile) {
     auto* actor_service =
         actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
     if (actor_service) {
-      can_act_on_web = actor_service->GetPolicyChecker().can_act_on_web();
+      can_act_on_web = actor_service->GetPolicyChecker().CanActOnWeb();
     }
   }
   return !can_act_on_web;

@@ -139,7 +139,7 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskListBubble(task_id);
@@ -180,7 +180,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskListBubble(task_id);

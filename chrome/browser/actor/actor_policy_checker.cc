@@ -261,7 +261,7 @@ void ActorPolicyChecker::MayActOnTab(
     TaskId task_id,
     const ConfirmedOriginSet& confirmed_origins,
     DecisionCallbackWithReason callback) {
-  if (!can_act_on_web()) {
+  if (!CanActOnWeb()) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
                 JournalDetailsBuilder()
@@ -287,7 +287,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      TaskId task_id,
                                      DecisionCallbackWithReason callback) {
   // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
-  if (!can_act_on_web()) {
+  if (!CanActOnWeb()) {
     journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")
@@ -305,7 +305,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
       std::move(callback));
 }
 
-bool ActorPolicyChecker::can_act_on_web() const {
+bool ActorPolicyChecker::CanActOnWeb() const {
   return can_act_on_web_for_testing_ || can_act_on_web_ != CanActOutcome::kNo;
 }
 
@@ -313,7 +313,7 @@ void ActorPolicyChecker::OnPrefOrAccountChanged() {
   auto old_value = can_act_on_web_;
   can_act_on_web_ = ComputeActOnWebCapability();
   if (old_value != can_act_on_web_) {
-    service_->OnActOnWebCapabilityChanged(can_act_on_web());
+    service_->OnActOnWebCapabilityChanged(CanActOnWeb());
   }
 }
 
@@ -334,7 +334,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
         ActuationEnabledForManagedUser(*profile, *journal_);
     if (!actuation_enabled_for_managed_user) {
       // If actuation in general is blocked by policy, but there is a non-empty
-      // allow list, then we need `can_act_on_web()` to be true so we can
+      // allow list, then we need `CanActOnWeb()` to be true so we can
       // attempt actuation up until the point where we evaluate a URL for its
       // inclusion in the allow list. If it's not explicitly allowed by the
       // list, then we perform the blocking there.

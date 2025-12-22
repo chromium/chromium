@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManagedBrowser,
                        AlwaysHaveActuationCapability) {
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   // Toggle the pref to kDisabled, but won't change the capability for
   // non-managed clients.
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManagedBrowser,
   // Non-managed clients always have the capability.
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 }
 
 // Tests that exercise the policy checker for managed browser
@@ -326,7 +326,7 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
     auto* actor_service = ActorKeyedService::Get(browser()->profile());
     ActorPolicyChecker& policy_checker = actor_service->GetPolicyChecker();
 
-    EXPECT_EQ(expected_result.can_act_on_web, policy_checker.can_act_on_web());
+    EXPECT_EQ(expected_result.can_act_on_web, policy_checker.CanActOnWeb());
 
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     policy_checker.MayActOnUrl(
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   std::unique_ptr<ToolRequest> action =
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskPaused);
 }
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   auto null_task_id =
       ActorKeyedService::Get(browser()->profile())->CreateTask();
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       /*await_list_update=*/true);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   const GURL url =
       embedded_https_test_server().GetURL("bar.com", "/actor/two_clicks.html");
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       /*await_list_update=*/true);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   const GURL url =
       embedded_https_test_server().GetURL("bar.com", "/actor/two_clicks.html");
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       /*await_list_update=*/true);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
       /*await_list_update=*/true);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   const GURL cross_origin_url = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(
   // If the default pref is kForcedDisabled, the policy value is discarded.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 }
 
 // Makes sure that on policy-managed clients, when the policy is unset, the
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedPolicyNotSet,
   // Policy is unset. Fallback to the default pref value.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 }
 
 // Makes sure that on policy-managed clients, when the default pref is not
@@ -686,14 +686,14 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
 
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 }
 
 // Exercise the policy checker for managed accounts (AccountInfo::IsManaged())
@@ -719,27 +719,27 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   // No account is signed in, thus no capability.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   // Still no capability, because the account is an enterprise account whose
   // domain is managed.
   SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
   ClearPrimaryAccount();
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   // Now the account is not an enterprise account, thus has the capability.
   SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -748,19 +748,19 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   // No account is signed in, thus no capability.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   // Now the account is not an enterprise account, thus has the capability.
   SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 
   // `isEnterpriseAccountDataProtected = true` disables the capability.
   AddUserStatusPref(/*is_enterprise_account_data_protected=*/true);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 }
 
 // Exercise the policy checker for managed accounts (AccountInfo::IsManaged())
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -820,13 +820,13 @@ IN_PROC_BROWSER_TEST_F(
   SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
-                   .can_act_on_web());
+                   .CanActOnWeb());
 
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
-                  .can_act_on_web());
+                  .CanActOnWeb());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
