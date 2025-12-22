@@ -12,17 +12,22 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_process_manager_delegate.h"
-#include "chrome/browser/extensions/chrome_safe_browsing_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 #include "content/public/browser/site_instance.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "ipc/constants.mojom.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/extensions/chrome_safe_browsing_delegate.h"
+#endif
 
 namespace extensions {
 
@@ -32,8 +37,13 @@ void ChromeExtensionsBrowserClient::Init() {
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Full safe browsing is supported so use the Chrome delegate.
   safe_browsing_delegate_ = std::make_unique<ChromeSafeBrowsingDelegate>();
+#else
+  // Safe browsing is not available, use a noop delegate.
+  safe_browsing_delegate_ = std::make_unique<SafeBrowsingDelegate>();
+#endif
 }
 
 ProcessManagerDelegate*
