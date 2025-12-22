@@ -4,9 +4,10 @@
 
 #include "ui/gfx/buffer_format_util.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace gfx {
 
@@ -47,7 +48,7 @@ const char* BufferFormatToString(BufferFormat format) {
     case BufferFormat::P010:
       return "P010";
   }
-  NOTREACHED() << "Invalid BufferFormat: " << base::to_underlying(format);
+  NOTREACHED() << "Invalid BufferFormat: " << std::to_underlying(format);
 }
 
 }  // namespace gfx

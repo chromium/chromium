@@ -4,10 +4,11 @@
 
 #include "ui/events/ozone/evdev/input_injector_evdev.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -47,8 +48,8 @@ class EventObserver {
 
 MATCHER_P4(MatchesMouseEvent, type, button, x, y, "") {
   if (arg->type() != type) {
-    *result_listener << "Expected type: " << base::to_underlying(type)
-                     << " actual: " << base::to_underlying(arg->type()) << " ("
+    *result_listener << "Expected type: " << std::to_underlying(type)
+                     << " actual: " << std::to_underlying(arg->type()) << " ("
                      << arg->GetName() << ")";
     return false;
   }

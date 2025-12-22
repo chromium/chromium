@@ -5,12 +5,12 @@
 #include "ui/android/overscroll_refresh.h"
 
 #include <ostream>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "cc/input/overscroll_behavior.h"
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/android/ui_android_features.h"
@@ -173,7 +173,7 @@ bool OverscrollRefresh::WillHandleScrollUpdate(
   }
 
   NOTREACHED() << "Invalid overscroll state: "
-               << base::to_underlying(scroll_consumption_state_);
+               << std::to_underlying(scroll_consumption_state_);
 }
 
 void OverscrollRefresh::ReleaseWithoutActivation() {

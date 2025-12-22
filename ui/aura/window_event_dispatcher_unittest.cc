@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -729,8 +728,7 @@ std::string EventTypeToString(ui::EventType type) {
 
     default:
       // We should explicitly require each event type.
-      NOTREACHED() << "Received unexpected event: "
-                   << base::to_underlying(type);
+      NOTREACHED() << "Received unexpected event: " << std::to_underlying(type);
   }
 }
 
