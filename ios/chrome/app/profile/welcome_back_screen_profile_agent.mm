@@ -73,10 +73,12 @@ constexpr size_t kMinEligibleFeatures = 2;
 // Welcome Back Promo if all criteria is met. If not, deregister the Welcome
 // Back promo.
 - (void)maybeRegisterPromo {
+  NSDate* lastSessionEndTime =
+      [PreviousSessionInfo sharedInstance].sessionEndTime;
   base::TimeDelta timeSinceActive =
-      base::Time::Now() -
-      base::Time::FromNSDate(
-          [PreviousSessionInfo sharedInstance].sessionEndTime);
+      lastSessionEndTime
+          ? base::Time::Now() - base::Time::FromNSDate(lastSessionEndTime)
+          : base::TimeDelta();
 
   // Mark Autofill feature as used if the Credential Provider Extension is
   // enabled on startup.
