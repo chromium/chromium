@@ -5,9 +5,6 @@ config("anonymous_tokens_config") {
     "overrides",
     "src",
   ]
-
-  # TODO(b/469686658): remove this flag.
-  cflags = [ "-Wno-sign-compare" ]
 }
 
 source_set("anonymous_tokens_public_key_client") {
