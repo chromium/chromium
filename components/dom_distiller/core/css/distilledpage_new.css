@@ -48,7 +48,7 @@ article, h1, h2, h3, p, figure, div, ul, ol, li {
 */
 article > * + *,
 article :is(section, div) > * + * {
-  margin-top: 1.5rem; /* 24dp */
+  margin-top: 1.5rem; /* 24px */
 }
 
 /*
@@ -63,7 +63,7 @@ article h4 + p,
 article h5 + p,
 article h6 + p,
 article :is(ul, ol, figure) * {
-  margin-top: 0.75rem !important; /* 12dp */
+  margin-top: 0.75rem !important; /* 12px */
 }
 
 /* Text rules. */
