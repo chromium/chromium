@@ -104,3 +104,8 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
 OmniboxComposeboxHandler::~OmniboxComposeboxHandler() = default;
 
 void OmniboxComposeboxHandler::HandleFileUpload(bool is_image) {}
+
+std::optional<lens::LensOverlayInvocationSource>
+OmniboxComposeboxHandler::GetInvocationSource() const {
+  return lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
+}

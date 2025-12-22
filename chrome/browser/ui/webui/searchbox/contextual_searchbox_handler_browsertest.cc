@@ -37,6 +37,11 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
 
   ~TestSearchboxHandler() override = default;
 
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override {
+    return std::nullopt;
+  }
+
   void OnThumbnailRemoved() override {}
 };
 

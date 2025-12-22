@@ -88,6 +88,10 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
 
  protected:
+  // ContextualSearchboxHandler:
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override;
+
   ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,

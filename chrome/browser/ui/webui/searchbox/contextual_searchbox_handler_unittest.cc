@@ -36,6 +36,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "content/public/browser/navigation_entry.h"
@@ -89,6 +90,11 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
                                    std::move(get_session_callback)) {}
   ~FakeContextualSearchboxHandler() override = default;
 
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override {
+    return std::nullopt;
+  }
+
   // searchbox::mojom::PageHandler
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,
@@ -103,6 +109,17 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
+  }
+};
+
+class TestContextualSearchboxHandler : public FakeContextualSearchboxHandler {
+ public:
+  using FakeContextualSearchboxHandler::FakeContextualSearchboxHandler;
+  ~TestContextualSearchboxHandler() override = default;
+
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override {
+    return lens::LensOverlayInvocationSource::kOmnibox;
   }
 };
 }  // namespace
@@ -188,14 +205,14 @@ class ContextualSearchboxHandlerTest
  protected:
   testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
   std::unique_ptr<FakeContextualSearchboxHandler> handler_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
 
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
   std::unique_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
-  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-      contextual_session_handle_;
 };
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
@@ -361,6 +378,56 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
               testing::ElementsAre(SessionState::kSessionStarted,
                                    SessionState::kQuerySubmitted,
                                    SessionState::kNavigationOccurred));
+}
+
+TEST_F(ContextualSearchboxHandlerTest, GetInvocationSource) {
+  // Use a new page, since the fixture's is already bound to the handler created
+  // in SetUp(), and we are creating a new handler here.
+  testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;
+
+  // Use TestContextualSearchboxHandler which overrides GetInvocationSource.
+  handler_ = std::make_unique<TestContextualSearchboxHandler>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+      web_contents(),
+      std::make_unique<OmniboxController>(
+          std::make_unique<TestOmniboxClient>()),
+      base::BindLambdaForTesting(
+          [&]() { return contextual_session_handle_.get(); }));
+  handler_->SetPage(local_mock_searchbox_page.BindAndGetRemote());
+
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting(
+          [&](ComposeboxQueryController::QueryControllerState state) {
+            if (state == ComposeboxQueryController::QueryControllerState::
+                             kClusterInfoReceived) {
+              run_loop.Quit();
+            }
+          }));
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), InitializeIfNeeded)
+      .Times(1)
+      .WillOnce(testing::Invoke(&query_controller(),
+                                &MockQueryController::InitializeIfNeededBase));
+
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
+  // Verify that CreateSearchUrl is called with the correct invocation source.
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .WillOnce([&](std::unique_ptr<
+                        ComposeboxQueryController::CreateSearchUrlRequestInfo>
+                        request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+        EXPECT_EQ(request_info->invocation_source,
+                  lens::LensOverlayInvocationSource::kOmnibox);
+        query_controller().CreateSearchUrlBase(std::move(request_info),
+                                               std::move(callback));
+      });
+
+  SubmitQueryAndWaitForNavigation();
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {

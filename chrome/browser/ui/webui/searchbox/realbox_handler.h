@@ -37,6 +37,11 @@ class RealboxHandler : public ContextualSearchboxHandler {
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);
 
+ protected:
+  // ContextualSearchboxHandler:
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override;
+
  private:
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
 };

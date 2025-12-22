@@ -43,7 +43,9 @@ chromium-metrics-reviews@google.com.
   <variant name="HomeworkActionChip"/>
   <variant name="LVFGallery"/>
   <variant name="LVFShutterButton"/>
+  <variant name="NtpContextualQuery"/>
   <variant name="Omnibox"/>
+  <variant name="OmniboxContextualQuery"/>
   <variant name="OmniboxContextualSuggestion"/>
   <variant name="OmniboxPageAction"/>
   <variant name="Toolbar"/>

@@ -94,3 +94,8 @@ RealboxHandler::RealboxHandler(
 }
 
 RealboxHandler::~RealboxHandler() = default;
+
+std::optional<lens::LensOverlayInvocationSource>
+RealboxHandler::GetInvocationSource() const {
+  return lens::LensOverlayInvocationSource::kNtpContextualQuery;
+}

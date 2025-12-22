@@ -70,7 +70,13 @@ enum class LensOverlayInvocationSource {
   // right-clicks on a video frame. Only used on Desktop.
   kContentAreaContextMenuVideo = 15,
 
-  kMaxValue = kContentAreaContextMenuVideo
+  // The compose or real box in the NTP realbox.
+  kNtpContextualQuery = 16,
+
+  // The compose flow in the omnibox.
+  kOmniboxContextualQuery = 17,
+
+  kMaxValue = kOmniboxContextualQuery
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:
