@@ -11,7 +11,7 @@ namespace enterprise_connectors::test {
 FakeFilesRequestHandler::FakeFilesRequestHandler(
     FakeFileUploadCallback fake_file_upload_callback,
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     const std::string& source,
@@ -38,7 +38,7 @@ FakeFilesRequestHandler::~FakeFilesRequestHandler() = default;
 std::unique_ptr<FilesRequestHandler> FakeFilesRequestHandler::Create(
     FakeFileUploadCallback fake_file_upload_callback,
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     const std::string& source,

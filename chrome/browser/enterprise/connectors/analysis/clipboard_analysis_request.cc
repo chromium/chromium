@@ -20,7 +20,7 @@ ClipboardAnalysisRequest::ClipboardAnalysisRequest(
   data_.size = text.size();
 
   // Only remember strings less than the maximum allowed.
-  if (text.size() < safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
+  if (text.size() < BinaryUploadService::kMaxUploadSizeBytes) {
     data_.contents = std::move(text);
     result_ = ScanRequestUploadResult::kSuccess;
   }

@@ -295,8 +295,7 @@ void LocalBinaryUploadService::MaybeCancelRequests(
   SendCancelRequestsIfNeeded();
 }
 
-base::WeakPtr<safe_browsing::BinaryUploadService>
-LocalBinaryUploadService::AsWeakPtr() {
+base::WeakPtr<BinaryUploadService> LocalBinaryUploadService::AsWeakPtr() {
   return factory_.GetWeakPtr();
 }
 

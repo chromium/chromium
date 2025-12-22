@@ -23,7 +23,6 @@
 
 namespace enterprise_connectors {
 
-using ::safe_browsing::BinaryUploadService;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::NotNull;

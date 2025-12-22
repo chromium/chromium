@@ -47,7 +47,6 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
-using safe_browsing::BinaryUploadService;
 using safe_browsing::CloudBinaryUploadService;
 using ::testing::_;
 using ::testing::Mock;

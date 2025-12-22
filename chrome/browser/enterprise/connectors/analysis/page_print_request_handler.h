@@ -31,7 +31,7 @@ class PagePrintRequestHandler : public RequestHandlerBase {
 
   static std::unique_ptr<PagePrintRequestHandler> Create(
       ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       const std::string& printer_name,
@@ -56,7 +56,7 @@ class PagePrintRequestHandler : public RequestHandlerBase {
       std::unique_ptr<PagePrintAnalysisRequest> request);
 
   PagePrintRequestHandler(ContentAnalysisInfo* content_analysis_info,
-                          safe_browsing::BinaryUploadService* upload_service,
+                          BinaryUploadService* upload_service,
                           Profile* profile,
                           GURL url,
                           const std::string& printer_name,
