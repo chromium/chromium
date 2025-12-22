@@ -126,6 +126,8 @@ const MSAL_IFRAME_ORIGIN = 'chrome-untrusted://ntp-microsoft-auth';
 
 export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
     'CustomizeButtonsHandler::kCustomizeChromeButtonElementId';
+export const CONTEXTUAL_ENTRYPOINT_ELEMENT_ID =
+    'NewTabPageUI::kRealboxContextualEntrypointElementId';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
 const realboxCanShowSecondarySideMediaQueryList =
@@ -622,6 +624,12 @@ export class AppElement extends AppElementBase {
 
     if (!this.modulesEnabled_) {
       this.recordBrowserPromoMetrics_();
+    }
+
+    if (this.ntpRealboxNextEnabled_) {
+      this.registerHelpBubble(
+          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
+          ['#searchbox', '#context', '#contextEntrypoint'], {fixed: true});
     }
   }
 

@@ -440,7 +440,7 @@ search-animated-glow {
   border-radius: var(--cr-searchbox-border-radius);
   gap: 16px;
   margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
   padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
