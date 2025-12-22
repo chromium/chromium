@@ -127,7 +127,12 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
     kAndroidOSTransferredANewSequence = 2,
     kMaxValue = kAndroidOSTransferredANewSequence,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason,
+  //   //base/tracing/protos/chrome_track_event.proto:InputOnVizSequenceDroppedReason
+  // )
+
+  void EmitSequenceDroppedReasonTraceEvent(
+      InputOnVizSequenceDroppedReason reason);
 
   void OnStartDroppingSequence(const ui::MotionEventAndroid& event,
                                InputOnVizSequenceDroppedReason reason);

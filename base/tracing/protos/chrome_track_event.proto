@@ -2883,6 +2883,32 @@ message InputTransferHandler {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
   optional TransferInputToVizResult transfer_result = 1;
+
+  // LINT.IfChange(InputOnVizSequenceDroppedReason)
+  enum InputOnVizSequenceDroppedReason {
+    UNKNOWN_BROWSER_DROPPED_REASON = 0;
+    ACTIVE_SEQ_ON_VIZ_ABNORMAL_DOWN_TIME = 1;
+    FAILED_TO_TRANSFER_POTENTIAL_POINTER = 2;
+    ANDROID_OS_TRANSFERRED_A_NEW_SEQUENCE = 3;
+  };
+  // LINT.ThenChange(
+  //     //tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason,
+  //     //content/browser/renderer_host/input/input_transfer_handler_android.h:InputOnVizSequenceDroppedReason
+  // )
+
+  optional InputOnVizSequenceDroppedReason browser_sequence_dropped_reason = 2;
+
+  // LINT.IfChange(VizSequenceDroppedReason)
+  enum VizSequenceDroppedReason {
+    UNKNOWN_VIZ_DROPPED_REASON = 0;
+    OLDER_SEQUENCE_IN_QUEUE = 1;
+  };
+  // LINT.ThenChange(
+  //    //tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason,
+  //    //components/viz/service/input/android_state_transfer_handler.cc:VizSequenceDroppedReason
+  // )
+
+  optional VizSequenceDroppedReason viz_sequence_dropped_reason = 3;
 };
 
 message ResponseInfo {
