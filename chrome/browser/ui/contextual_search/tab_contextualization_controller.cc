@@ -8,6 +8,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/lens/lens_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -157,9 +161,30 @@ void TabContextualizationController::
                      std::move(data)));
 }
 
-// TODO(crbug.com/439597165): Check tab eligibility
-void TabContextualizationController::GetInitialPageContextEligibility(
-    GetApcResultCallback callback) {}
+bool TabContextualizationController::GetInitialPageContextEligibility() {
+  content::WebContents* web_contents = tab_->GetContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* page_content_extraction_service = page_content_annotations::
+      PageContentExtractionServiceFactory::GetForProfile(profile);
+
+  if (!page_content_extraction_service) {
+    return false;
+  }
+
+  std::optional<page_content_annotations::ExtractedPageContentResult>
+      extracted_page_content_result =
+          page_content_extraction_service
+              ->GetExtractedPageContentAndEligibilityForPage(
+                  web_contents->GetPrimaryPage());
+
+  return !extracted_page_content_result ||
+         extracted_page_content_result->is_eligible_for_server_upload;
+}
 
 bool TabContextualizationController::GetCurrentPageContextEligibility() {
   return is_page_context_eligible_;

@@ -120,8 +120,12 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->show_in_current_tab_chip =
         tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
         last_committed_url;
+
+    lens::TabContextualizationController* tab_context_controller =
+        tab->GetTabFeatures()->tab_contextualization_controller();
     tab_data->show_in_previous_tab_chip =
-        !google_util::IsGoogleSearchUrl(last_committed_url);
+        !google_util::IsGoogleSearchUrl(last_committed_url) &&
+        tab_context_controller->GetInitialPageContextEligibility();
     tab_data->last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
                  web_contents->GetLastInteractionTimeTicks());
