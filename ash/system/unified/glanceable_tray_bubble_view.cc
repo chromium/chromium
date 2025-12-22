@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <utility>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -30,7 +31,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +67,7 @@ constexpr int kMarginBetweenGlanceables = 8;
 void SetLastExpandedGlanceables(GlanceablesContext context) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
       prefs::kGlanceablesTimeManagementLastExpandedBubble,
-      base::to_underlying(context));
+      std::to_underlying(context));
 }
 
 GlanceablesContext GetLastExpandedGlanceables() {
@@ -177,7 +177,7 @@ void GlanceableTrayBubbleView::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kGlanceablesTimeManagementLastExpandedBubble,
-      base::to_underlying(GlanceablesContext::kTasks));
+      std::to_underlying(GlanceablesContext::kTasks));
 }
 
 // static

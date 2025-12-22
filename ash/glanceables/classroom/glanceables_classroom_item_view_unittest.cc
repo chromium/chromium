@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
@@ -17,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -32,33 +32,31 @@ class GlanceablesClassroomItemViewTest : public AshTestBase {
   const views::ImageView* GetIconView(
       const GlanceablesClassroomItemView& view) const {
     return views::AsViewClass<views::ImageView>(view.GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomItemIcon)));
+        std::to_underlying(GlanceablesViewId::kClassroomItemIcon)));
   }
 
   const views::Label* GetCourseWorkTitleLabel(
       const GlanceablesClassroomItemView& view) const {
-    return views::AsViewClass<views::Label>(
-        view.GetViewByID(base::to_underlying(
-            GlanceablesViewId::kClassroomItemCourseWorkTitleLabel)));
+    return views::AsViewClass<views::Label>(view.GetViewByID(std::to_underlying(
+        GlanceablesViewId::kClassroomItemCourseWorkTitleLabel)));
   }
 
   const views::Label* GetCourseTitleLabel(
       const GlanceablesClassroomItemView& view) const {
-    return views::AsViewClass<views::Label>(
-        view.GetViewByID(base::to_underlying(
-            GlanceablesViewId::kClassroomItemCourseTitleLabel)));
+    return views::AsViewClass<views::Label>(view.GetViewByID(
+        std::to_underlying(GlanceablesViewId::kClassroomItemCourseTitleLabel)));
   }
 
   const views::Label* GetDueDateLabel(
       const GlanceablesClassroomItemView& view) const {
     return views::AsViewClass<views::Label>(view.GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomItemDueDateLabel)));
+        std::to_underlying(GlanceablesViewId::kClassroomItemDueDateLabel)));
   }
 
   const views::Label* GetDueTimeLabel(
       const GlanceablesClassroomItemView& view) const {
     return views::AsViewClass<views::Label>(view.GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomItemDueTimeLabel)));
+        std::to_underlying(GlanceablesViewId::kClassroomItemDueTimeLabel)));
   }
 };
 

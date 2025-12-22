@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -43,7 +44,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -576,7 +576,7 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   EXPECT_THAT(
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(base::Bucket(
-          base::to_underlying(CloseDialogType::kListviewRestoreButton), 1)));
+          std::to_underlying(CloseDialogType::kListviewRestoreButton), 1)));
 
   // Test clicking the cancel button.
   StartOverviewSession(MakeTestAppIds(1));
@@ -587,9 +587,9 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
           base::Bucket(
-              base::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
+              std::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
           base::Bucket(
-              base::to_underlying(CloseDialogType::kListviewCancelButton), 1)));
+              std::to_underlying(CloseDialogType::kListviewCancelButton), 1)));
 
   // Test exiting the informed restore overview session without clicking any
   // buttons.
@@ -599,10 +599,10 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
       histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
           base::Bucket(
-              base::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
+              std::to_underlying(CloseDialogType::kListviewRestoreButton), 1),
           base::Bucket(
-              base::to_underlying(CloseDialogType::kListviewCancelButton), 1),
-          base::Bucket(base::to_underlying(CloseDialogType::kListviewOther),
+              std::to_underlying(CloseDialogType::kListviewCancelButton), 1),
+          base::Bucket(std::to_underlying(CloseDialogType::kListviewOther),
                        1)));
 
   // Run the same tests but with the screenshot UI.
@@ -615,7 +615,7 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(base::Bucket(
-          base::to_underlying(CloseDialogType::kScreenshotRestoreButton), 1)));
+          std::to_underlying(CloseDialogType::kScreenshotRestoreButton), 1)));
 
   StartOverviewSession(MakeTestAppIdsWithImage(1));
   const views::View* cancel_button2 =
@@ -623,12 +623,12 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
   LeftClickOn(cancel_button2);
   EXPECT_THAT(
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
-      BucketsAre(base::Bucket(base::to_underlying(
-                                  CloseDialogType::kScreenshotRestoreButton),
-                              1),
-                 base::Bucket(base::to_underlying(
-                                  CloseDialogType::kScreenshotCancelButton),
-                              1)));
+      BucketsAre(
+          base::Bucket(
+              std::to_underlying(CloseDialogType::kScreenshotRestoreButton), 1),
+          base::Bucket(
+              std::to_underlying(CloseDialogType::kScreenshotCancelButton),
+              1)));
 
   StartOverviewSession(MakeTestAppIdsWithImage(1));
   Shell::Get()->informed_restore_controller()->MaybeEndInformedRestoreSession();
@@ -636,11 +636,10 @@ TEST_F(InformedRestoreTest, CloseDialogMetrics) {
       histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
       BucketsAre(
           base::Bucket(
-              base::to_underlying(CloseDialogType::kScreenshotRestoreButton),
-              1),
+              std::to_underlying(CloseDialogType::kScreenshotRestoreButton), 1),
           base::Bucket(
-              base::to_underlying(CloseDialogType::kScreenshotCancelButton), 1),
-          base::Bucket(base::to_underlying(CloseDialogType::kScreenshotOther),
+              std::to_underlying(CloseDialogType::kScreenshotCancelButton), 1),
+          base::Bucket(std::to_underlying(CloseDialogType::kScreenshotOther),
                        1)));
 }
 

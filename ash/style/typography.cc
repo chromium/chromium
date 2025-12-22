@@ -7,6 +7,7 @@
 #include <array>
 #include <cstddef>
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
@@ -14,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
@@ -243,7 +243,7 @@ class TypographyProviderImpl : public TypographyProvider {
     // cached `gfx::FontList` instead of constructing a new one, so callers can
     // share font resolution and font metrics.
     std::optional<gfx::FontList>& list =
-        font_list_cache_[base::to_underlying(converted_token)];
+        font_list_cache_[std::to_underlying(converted_token)];
     if (!list.has_value()) {
       const FontInfo& info = LookupInfo(converted_token);
       list.emplace(FontNames(info.family), info.style, info.size, info.weight);
@@ -284,7 +284,7 @@ class TypographyProviderImpl : public TypographyProvider {
   const base::fixed_flat_map<TypographyToken, FontInfo, 41> font_map_;
 
   static constexpr size_t kNumTokens =
-      base::to_underlying(TypographyToken::kMaxValue) + 1;
+      std::to_underlying(TypographyToken::kMaxValue) + 1;
   mutable std::array<std::optional<gfx::FontList>, kNumTokens> font_list_cache_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

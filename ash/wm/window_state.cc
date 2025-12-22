@@ -46,7 +46,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -1179,7 +1178,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
   }
 
   SCOPED_CRASH_KEY_NUMBER("333095196", "state_type",
-                          base::to_underlying(GetStateType()));
+                          std::to_underlying(GetStateType()));
 
   CrossFadeAnimation(window_, std::move(old_layer_owner));
 }

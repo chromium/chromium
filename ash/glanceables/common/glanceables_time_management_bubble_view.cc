@@ -4,6 +4,8 @@
 
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 
+#include <utility>
+
 #include "ash/glanceables/common/glanceables_contents_scroll_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
@@ -14,7 +16,6 @@
 #include "ash/style/typography.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -159,7 +160,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
   header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   header_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderView));
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderView));
   header_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -178,7 +179,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
   CreateComboBoxView();
   combobox_view_->SetTooltipText(params.combobox_tooltip);
@@ -204,8 +205,8 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
 
   expand_button_ = header_container->AddChildView(
       std::make_unique<GlanceablesExpandButton>());
-  expand_button_->SetID(base::to_underlying(
-      GlanceablesViewId::kTimeManagementBubbleExpandButton));
+  expand_button_->SetID(
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleExpandButton));
   expand_button_->SetExpandedStateTooltipStringId(
       params.expand_button_tooltip_id);
   expand_button_->SetCollapsedStateTooltipStringId(
@@ -235,7 +236,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
   items_container_view_ =
       list_view->AddChildView(std::make_unique<views::View>());
   items_container_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
-  items_container_view_->SetID(base::to_underlying(
+  items_container_view_->SetID(std::to_underlying(
       GlanceablesViewId::kTimeManagementBubbleListContainer));
   items_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -246,7 +247,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
           &GlanceablesTimeManagementBubbleView::OnFooterButtonPressed,
           base::Unretained(this))));
   list_footer_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
   list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
   list_footer_view_->SetVisible(false);
   list_footer_view_->SetTitleText(params.footer_title);
@@ -409,7 +410,7 @@ void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
   combobox_view_ = header_view_->AddChildView(
       std::make_unique<Combobox>(combobox_model_.get()));
   combobox_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
   combobox_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -466,7 +467,7 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
   error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(
       std::move(callback), error_message, type));
   error_message_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementErrorMessageToast));
+      std::to_underlying(GlanceablesViewId::kTimeManagementErrorMessageToast));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 

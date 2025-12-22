@@ -6,6 +6,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_battery_view.h"
@@ -24,7 +25,6 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/timer/timer.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -293,7 +293,7 @@ IconButton* GameDashboardContextTestApi::GetToolbarScreenshotButton() {
   CHECK(toolbar_view)
       << "The toolbar must be opened first before retrieving a button from it.";
   return views::AsViewClass<IconButton>(
-      toolbar_view->GetViewByID(base::to_underlying(
+      toolbar_view->GetViewByID(std::to_underlying(
           GameDashboardToolbarView::ToolbarViewId::kScreenshotButton)));
 }
 

@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 
+#include <utility>
+
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -37,7 +39,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           BirchBarContextMenuModel::Type::kExpandedBarMenu)) {
   auto add_hide_suggestion_item = [&]() {
     AddItemWithIcon(
-        base::to_underlying(CommandId::kHideSuggestion),
+        std::to_underlying(CommandId::kHideSuggestion),
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_THIS_SUGGESTION),
         CreateIconForMenuItem(kSystemTrayDoNotDisturbIcon));
   };
@@ -45,28 +47,28 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   switch (chip_type) {
     case BirchSuggestionType::kWeather:
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideWeatherSuggestions),
+          std::to_underlying(CommandId::kHideWeatherSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_WEATHER_SUGGESTION),
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCalendar:
       add_hide_suggestion_item();
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideCalendarSuggestions),
+          std::to_underlying(CommandId::kHideCalendarSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_CALENDAR_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kDrive:
       add_hide_suggestion_item();
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideDriveSuggestions),
+          std::to_underlying(CommandId::kHideDriveSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_DRIVE_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kChromeTab:
       add_hide_suggestion_item();
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideChromeTabSuggestions),
+          std::to_underlying(CommandId::kHideChromeTabSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_CHROME_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
@@ -75,28 +77,28 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       // have in the BirchItem are very generic (e.g. "youtube.com"), so hiding
       // "this" suggestion would hide all media from a given site.
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideMediaSuggestions),
+          std::to_underlying(CommandId::kHideMediaSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS),
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCoral:
       // TODO(zxdan): Localize the strings.
       AddItemWithIcon(
-          base::to_underlying(CommandId::kCoralNewDesk),
+          std::to_underlying(CommandId::kCoralNewDesk),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP),
           CreateIconForMenuItem(kCoralOpenIcon));
       if (features::IsCoralFeatureEnabled() &&
           !display::Screen::Get()->InTabletMode() &&
           !BirchBarController::Get()->is_informed_restore()) {
         AddItemWithIcon(
-            base::to_underlying(CommandId::kCoralSaveForLater),
+            std::to_underlying(CommandId::kCoralSaveForLater),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP),
             CreateIconForMenuItem(kSaveDeskForLaterIcon));
       }
       AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
       AddItemWithIcon(
-          base::to_underlying(CommandId::kHideCoralSuggestions),
+          std::to_underlying(CommandId::kHideCoralSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP),
           CreateIconForMenuItem(kForbidIcon));
       break;
@@ -105,13 +107,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   }
 
   AddSubMenuWithIcon(
-      base::to_underlying(CommandId::kCustomizeSuggestions),
+      std::to_underlying(CommandId::kCustomizeSuggestions),
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS),
       sub_menu_model_.get(), CreateIconForMenuItem(kPencilIcon));
 
   if (chip_type == BirchSuggestionType::kWeather) {
     bool is_celsius = GetPrefService()->GetBoolean(prefs::kBirchUseCelsius);
-    AddItem(base::to_underlying(CommandId::kToggleTemperatureUnits),
+    AddItem(std::to_underlying(CommandId::kToggleTemperatureUnits),
             l10n_util::GetStringUTF16(
                 is_celsius ? IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
@@ -121,7 +123,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   if (chip_type == BirchSuggestionType::kCoral &&
       coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),
+    AddItemWithIcon(std::to_underlying(CommandId::kProvideFeedback),
                     l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
                     CreateIconForMenuItem(kFeedbackIcon));
   }

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/api/tasks/fake_tasks_client.h"
@@ -38,7 +39,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -754,7 +754,7 @@ TEST_P(GlanceablesDateTrayTest, ClickOutsideComboboxMenu) {
   // Click on the combo box to show the assignment types list.
   const auto* combobox = views::AsViewClass<Combobox>(
       GetGlanceableTrayBubble()->GetClassroomStudentView()->GetViewByID(
-          base::to_underlying(
+          std::to_underlying(
               GlanceablesViewId::kTimeManagementBubbleComboBox)));
   LeftClickOn(combobox);
   EXPECT_TRUE(combobox->IsMenuRunning());

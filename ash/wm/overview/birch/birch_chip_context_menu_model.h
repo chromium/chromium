@@ -5,10 +5,11 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_CONTEXT_MENU_MODEL_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_CONTEXT_MENU_MODEL_H_
 
+#include <utility>
+
 #include "ash/ash_export.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ class BirchChipContextMenuModel : public ui::SimpleMenuModel {
     // To avoid conflicting with the command IDs of bar menu, start enum value
     // after the ending value of `BirchBarContextMenuModel`.
     kHideSuggestion =
-        base::to_underlying(BirchBarContextMenuModel::CommandId::kBarMenuEnd) +
+        std::to_underlying(BirchBarContextMenuModel::CommandId::kBarMenuEnd) +
         1,                      // Hide current chip.
     kHideWeatherSuggestions,    // Hide all weather related chips.
     kToggleTemperatureUnits,    // Toggles between F and C.

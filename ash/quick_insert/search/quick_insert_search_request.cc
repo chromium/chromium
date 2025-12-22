@@ -42,7 +42,6 @@
 #include "base/parameter_pack.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -84,7 +83,7 @@ const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
     case QuickInsertSearchSource::kGifs:
       return "Ash.Picker.Search.Gifs.QueryTime";
   }
-  NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
+  NOTREACHED() << "Unexpected search source " << std::to_underlying(source);
 }
 
 [[nodiscard]] std::vector<QuickInsertSearchResult>
@@ -413,14 +412,14 @@ void QuickInsertSearchRequest::HandleLobsterSearchResults(
 void QuickInsertSearchRequest::MarkSearchStarted(
     QuickInsertSearchSource source) {
   CHECK(!SwapSearchStart(source, base::TimeTicks::Now()).has_value())
-      << "search_starts_ enum " << base::to_underlying(source)
+      << "search_starts_ enum " << std::to_underlying(source)
       << " was already set";
 }
 
 void QuickInsertSearchRequest::MarkSearchEnded(QuickInsertSearchSource source) {
   std::optional<base::TimeTicks> start = SwapSearchStart(source, std::nullopt);
   CHECK(start.has_value()) << "search_starts_ enum "
-                           << base::to_underlying(source) << " was not set";
+                           << std::to_underlying(source) << " was not set";
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - *start;
   base::UmaHistogramTimes(SearchSourceToHistogram(source), elapsed);
@@ -429,7 +428,7 @@ void QuickInsertSearchRequest::MarkSearchEnded(QuickInsertSearchSource source) {
 std::optional<base::TimeTicks> QuickInsertSearchRequest::SwapSearchStart(
     QuickInsertSearchSource source,
     std::optional<base::TimeTicks> new_value) {
-  return std::exchange(search_starts_[base::to_underlying(source)],
+  return std::exchange(search_starts_[std::to_underlying(source)],
                        std::move(new_value));
 }
 

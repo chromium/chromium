@@ -8,6 +8,7 @@
 #include <array>
 #include <cstddef>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -76,7 +76,7 @@ class ASH_EXPORT QuickInsertSearchAggregator {
   QuickInsertViewDelegate::SearchResultsCallback current_callback_;
 
   static constexpr size_t kNumSections =
-      base::to_underlying(QuickInsertSectionType::kMaxValue) + 1;
+      std::to_underlying(QuickInsertSectionType::kMaxValue) + 1;
   // Unpublished results that are accumulated before burn-in.
   // Results are only published after burn-in if the `results` vector is not
   // empty.

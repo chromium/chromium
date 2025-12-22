@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -45,7 +44,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED() << "event type:" << base::to_underlying(event->type());
+      NOTREACHED() << "event type:" << std::to_underlying(event->type());
     }
   }
   ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,

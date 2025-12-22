@@ -7,6 +7,7 @@
 #include <climits>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
@@ -38,7 +39,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/calendar/calendar_api_requests.h"
@@ -2061,7 +2061,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
 
   EXPECT_EQ(1U, on_screen_month().size());
   const auto* progress_bar = calendar_view()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kProgressBar));
+      std::to_underlying(GlanceablesViewId::kProgressBar));
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -2082,7 +2082,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibility) {
       calendar_test_utils::kAnimationSettleDownDuration);
 
   const auto* progress_bar = calendar_view()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kProgressBar));
+      std::to_underlying(GlanceablesViewId::kProgressBar));
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -2117,7 +2117,7 @@ TEST_P(CalendarViewAnimationTest,
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_TRUE(
       calendar_view()
-          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetViewByID(std::to_underlying(GlanceablesViewId::kProgressBar))
           ->GetVisible());
 
   // Tests when the screen is locked, the loading bar is invisible.
@@ -2131,7 +2131,7 @@ TEST_P(CalendarViewAnimationTest,
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_FALSE(
       calendar_view()
-          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetViewByID(std::to_underlying(GlanceablesViewId::kProgressBar))
           ->GetVisible());
 
   // Tests when the user starts the login process, the loading bar is invisible.
@@ -2143,7 +2143,7 @@ TEST_P(CalendarViewAnimationTest,
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_FALSE(
       calendar_view()
-          ->GetViewByID(base::to_underlying(GlanceablesViewId::kProgressBar))
+          ->GetViewByID(std::to_underlying(GlanceablesViewId::kProgressBar))
           ->GetVisible());
 }
 
@@ -2180,7 +2180,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForErrorFetchingEvents) {
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
   const auto* progress_bar = calendar_view()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kProgressBar));
+      std::to_underlying(GlanceablesViewId::kProgressBar));
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -2222,7 +2222,7 @@ TEST_P(CalendarViewAnimationTest,
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
   const auto* progress_bar = calendar_view()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kProgressBar));
+      std::to_underlying(GlanceablesViewId::kProgressBar));
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.

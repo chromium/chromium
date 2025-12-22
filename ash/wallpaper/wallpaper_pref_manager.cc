@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -28,7 +29,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -74,7 +74,7 @@ bool SetWallpaperInfo(const AccountId& account_id,
   }
 
   DCHECK(IsAllowedInPrefs(info.type))
-      << "Cannot save WallpaperType=" << base::to_underlying(info.type)
+      << "Cannot save WallpaperType=" << std::to_underlying(info.type)
       << " to prefs";
 
   ScopedDictPrefUpdate wallpaper_update(pref_service, pref_name);

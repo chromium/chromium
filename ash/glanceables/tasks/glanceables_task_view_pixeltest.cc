@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/glanceables/common/glanceables_util.h"
@@ -20,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/gtest_tags.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/image_button.h"
@@ -149,13 +149,13 @@ TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
   if (is_in_edit_state()) {
     const auto* const title_label =
         views::AsViewClass<views::Label>(view()->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     ASSERT_TRUE(title_label);
     LeftClickOn(title_label);
 
     auto* const title_text_field =
         views::AsViewClass<views::Textfield>(view()->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
     ASSERT_TRUE(title_text_field);
     views::TextfieldTestApi(title_text_field).SetCursorLayerOpacity(0.f);
   }

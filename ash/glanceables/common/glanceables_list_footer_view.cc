@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -14,7 +15,6 @@
 #include "ash/style/typography.h"
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +60,7 @@ class SeeAllButton : public views::LabelButton {
     }
 
     SetCallback(std::move(on_see_all_pressed));
-    SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
+    SetID(std::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetImageModel(
         views::Button::STATE_NORMAL,
@@ -90,7 +90,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
   const auto* const typography_provider = TypographyProvider::Get();
   title_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
+          .SetID(std::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
           .SetEnabledColor(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosBody2))

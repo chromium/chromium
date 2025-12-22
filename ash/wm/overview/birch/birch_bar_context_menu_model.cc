@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include <utility>
+
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
@@ -13,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,7 +38,7 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     Type type)
     : ui::SimpleMenuModel(delegate) {
   // Show suggestions option is in both expanded and collapsed menu.
-  AddItem(base::to_underlying(CommandId::kShowSuggestions),
+  AddItem(std::to_underlying(CommandId::kShowSuggestions),
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_SHOW_SUGGESTIONS));
 
   // Expanded menu also has customizing suggestions options.
@@ -45,10 +46,10 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
     if (features::IsCoralFeatureEnabled()) {
-      AddItem(base::to_underlying(CommandId::kCoralSuggestions),
+      AddItem(std::to_underlying(CommandId::kCoralSuggestions),
               l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
-      auto coral_index = GetIndexOfCommandId(
-          base::to_underlying(CommandId::kCoralSuggestions));
+      auto coral_index =
+          GetIndexOfCommandId(std::to_underlying(CommandId::kCoralSuggestions));
       SetEnabledAt(coral_index.value(),
                    BirchCoralProvider::Get()->IsCoralServiceAvailable());
     }
@@ -58,9 +59,9 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
         enabled ? l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_WEATHER)
                 : l10n_util::GetStringUTF16(
                       IDS_ASH_BIRCH_MENU_WEATHER_NOT_AVAILABLE);
-    AddItem(base::to_underlying(CommandId::kWeatherSuggestions), weather_label);
-    auto weather_index = GetIndexOfCommandId(
-        base::to_underlying(CommandId::kWeatherSuggestions));
+    AddItem(std::to_underlying(CommandId::kWeatherSuggestions), weather_label);
+    auto weather_index =
+        GetIndexOfCommandId(std::to_underlying(CommandId::kWeatherSuggestions));
     SetEnabledAt(weather_index.value(), enabled);
     if (!enabled) {
       SetMinorText(weather_index.value(),
@@ -68,16 +69,16 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
                        IDS_ASH_BIRCH_MENU_WEATHER_NOT_AVAILABLE_TOOLTIP));
     }
 
-    AddItem(base::to_underlying(CommandId::kCalendarSuggestions),
+    AddItem(std::to_underlying(CommandId::kCalendarSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_CALENDAR));
-    AddItem(base::to_underlying(CommandId::kDriveSuggestions),
+    AddItem(std::to_underlying(CommandId::kDriveSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_DRIVE));
-    AddItem(base::to_underlying(CommandId::kChromeTabSuggestions),
+    AddItem(std::to_underlying(CommandId::kChromeTabSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_CHROME_BROWSER));
-    AddItem(base::to_underlying(CommandId::kMediaSuggestions),
+    AddItem(std::to_underlying(CommandId::kMediaSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_MEDIA));
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-    AddItemWithIcon(base::to_underlying(CommandId::kReset),
+    AddItemWithIcon(std::to_underlying(CommandId::kReset),
                     l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_RESET),
                     CreateIconForMenuItem(kResetIcon));
   }

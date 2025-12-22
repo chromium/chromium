@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -22,7 +23,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 
 namespace endpoint_fetcher {
@@ -111,7 +111,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   DoneCallback done_callback_;
 
   static constexpr size_t kNumSources =
-      base::to_underlying(QuickInsertSearchSource::kMaxValue) + 1;
+      std::to_underlying(QuickInsertSearchSource::kMaxValue) + 1;
   std::array<std::optional<base::TimeTicks>, kNumSources> search_starts_;
 
   base::WeakPtrFactory<QuickInsertSearchRequest> weak_ptr_factory_{this};

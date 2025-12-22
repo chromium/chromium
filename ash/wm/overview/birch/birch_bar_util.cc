@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_bar_util.h"
 
+#include <utility>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -13,7 +15,6 @@
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/coral_chip_button.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
@@ -88,17 +89,17 @@ std::unique_ptr<views::View> CreateWeatherTemperatureView(
 BirchSuggestionType CommandIdToSuggestionType(int command_id) {
   using CommandId = BirchBarContextMenuModel::CommandId;
   switch (command_id) {
-    case base::to_underlying(CommandId::kCalendarSuggestions):
+    case std::to_underlying(CommandId::kCalendarSuggestions):
       return BirchSuggestionType::kCalendar;
-    case base::to_underlying(CommandId::kWeatherSuggestions):
+    case std::to_underlying(CommandId::kWeatherSuggestions):
       return BirchSuggestionType::kWeather;
-    case base::to_underlying(CommandId::kDriveSuggestions):
+    case std::to_underlying(CommandId::kDriveSuggestions):
       return BirchSuggestionType::kDrive;
-    case base::to_underlying(CommandId::kChromeTabSuggestions):
+    case std::to_underlying(CommandId::kChromeTabSuggestions):
       return BirchSuggestionType::kChromeTab;
-    case base::to_underlying(CommandId::kMediaSuggestions):
+    case std::to_underlying(CommandId::kMediaSuggestions):
       return BirchSuggestionType::kMedia;
-    case base::to_underlying(CommandId::kCoralSuggestions):
+    case std::to_underlying(CommandId::kCoralSuggestions):
       return BirchSuggestionType::kCoral;
     default:
       break;

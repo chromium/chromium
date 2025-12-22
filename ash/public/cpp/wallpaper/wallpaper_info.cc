@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
 
@@ -202,7 +202,7 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
   // Perform special handling of pref values >= kCount before hitting the DCHECK
   // below. This can happen in normal operation when syncing from a newer
   // release to an older one, so should not DCHECK.
-  if (type.value() >= base::to_underlying(WallpaperType::kCount)) {
+  if (type.value() >= std::to_underlying(WallpaperType::kCount)) {
     LOG(WARNING) << "Skipping wallpaper sync due to unrecognized WallpaperType="
                  << type.value()
                  << ". This likely happened due to sync from a newer version "
@@ -212,7 +212,7 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
 
   WallpaperType wallpaper_type = static_cast<WallpaperType>(type.value());
   DCHECK(IsAllowedInPrefs(wallpaper_type))
-      << "Invalid WallpaperType=" << base::to_underlying(wallpaper_type)
+      << "Invalid WallpaperType=" << std::to_underlying(wallpaper_type)
       << " in prefs";
 
   WallpaperInfo info;

@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
@@ -20,7 +21,6 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -142,7 +142,7 @@ class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
 
   views::ScrollView* GetTasksScrollView() const {
     return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+        std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   GlanceablesClassroomStudentView* GetClassroomView() const {
@@ -153,7 +153,7 @@ class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
   views::ScrollView* GetClassroomScrollView() const {
     return views::AsViewClass<views::ScrollView>(
         GetClassroomView()->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+            std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
  private:

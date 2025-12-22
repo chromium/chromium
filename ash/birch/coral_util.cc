@@ -4,12 +4,13 @@
 
 #include "ash/birch/coral_util.h"
 
+#include <utility>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace ash::coral_util {
 
@@ -108,12 +109,12 @@ std::string GroupToString(const coral::mojom::GroupPtr& group) {
 
 bool IsCoralFeedbackAllowedByPolicy(PrefService* pref_service) {
   return pref_service->GetInteger(prefs::kGenAISmartGroupingSettings) ==
-         base::to_underlying(GenAISmartGroupingSettings::kAllowed);
+         std::to_underlying(GenAISmartGroupingSettings::kAllowed);
 }
 
 bool IsCoralAllowedByPolicy(PrefService* pref_service) {
   return pref_service->GetInteger(prefs::kGenAISmartGroupingSettings) !=
-         base::to_underlying(GenAISmartGroupingSettings::kDisabled);
+         std::to_underlying(GenAISmartGroupingSettings::kDisabled);
 }
 
 }  // namespace ash::coral_util

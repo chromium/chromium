@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/common/glanceables_contents_scroll_view.h"
@@ -27,7 +29,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -240,13 +241,13 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
 
   CounterExpandButton* GetTasksExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
-        GetTasksView()->GetViewByID(base::to_underlying(
+        GetTasksView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::ScrollView* GetTasksScrollView() const {
     return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+        std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   GlanceablesClassroomStudentView* GetClassroomView() const {
@@ -256,14 +257,14 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
 
   CounterExpandButton* GetClassroomExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
-        GetClassroomView()->GetViewByID(base::to_underlying(
+        GetClassroomView()->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::ScrollView* GetClassroomScrollView() const {
     return views::AsViewClass<views::ScrollView>(
         GetClassroomView()->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+            std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   GlanceableTrayBubbleView* view() const { return view_; }

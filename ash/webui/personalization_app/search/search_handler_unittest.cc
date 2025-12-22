@@ -28,7 +28,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -73,7 +72,7 @@ bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
 
 std::string SearchConceptIdToString(
     mojom::SearchConceptId search_result_concept) {
-  return base::NumberToString(base::to_underlying(search_result_concept));
+  return base::NumberToString(std::to_underlying(search_result_concept));
 }
 
 class TestSearchResultsObserver : public mojom::SearchResultsObserver {

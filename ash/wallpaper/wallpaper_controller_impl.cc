@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
@@ -71,7 +72,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1151,7 +1151,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(
 
   CHECK(info.type == WallpaperType::kCustomized ||
         info.type == WallpaperType::kPolicy)
-      << " Got unhandled wallpaper type=" << base::to_underlying(info.type);
+      << " Got unhandled wallpaper type=" << std::to_underlying(info.type);
 
   std::string sub_dir = GetCustomWallpaperSubdirForCurrentResolution();
   base::FilePath wallpaper_path =

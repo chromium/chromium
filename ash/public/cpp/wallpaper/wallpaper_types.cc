@@ -5,10 +5,10 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 
 #include <string>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
 
@@ -39,7 +39,7 @@ std::string WallpaperTypeToString(WallpaperType type) {
     case WallpaperType::kSeaPen:
       return "SeaPen";
     case WallpaperType::kCount:
-      NOTREACHED() << " Unhandled type=" << base::to_underlying(type);
+      NOTREACHED() << " Unhandled type=" << std::to_underlying(type);
   }
 }
 
@@ -63,7 +63,7 @@ bool IsAllowedInPrefs(WallpaperType type) {
       return true;
   }
   LOG(ERROR) << __func__
-             << " Unknown wallpaper type: " << base::to_underlying(type);
+             << " Unknown wallpaper type: " << std::to_underlying(type);
   return false;
 }
 
@@ -86,7 +86,7 @@ bool IsWallpaperTypeSyncable(WallpaperType type) {
       return false;
   }
   LOG(WARNING) << __func__
-               << " Unknown wallpaper type: " << base::to_underlying(type);
+               << " Unknown wallpaper type: " << std::to_underlying(type);
   return false;
 }
 

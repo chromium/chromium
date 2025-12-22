@@ -4,6 +4,8 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 
+#include <utility>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -33,7 +35,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -364,7 +365,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
       SCOPED_CRASH_KEY_BOOL("286590216", "going_back_started_1",
                             going_back_started_);
       SCOPED_CRASH_KEY_NUMBER("286590216", "event.type",
-                              base::to_underlying(event->type()));
+                              std::to_underlying(event->type()));
       if (back_gesture_affordance_->IsActivated() ||
           (event->type() == ui::EventType::kScrollFlingStart &&
            event->details().velocity_x() >= kFlingVelocityForGoingBack)) {

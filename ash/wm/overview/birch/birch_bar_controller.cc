@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 
+#include <utility>
+
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
@@ -241,7 +243,7 @@ void BirchBarController::ProvideFeedbackForCoral() {
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
   using CommandId = BirchBarContextMenuModel::CommandId;
   switch (command_id) {
-    case base::to_underlying(CommandId::kShowSuggestions):
+    case std::to_underlying(CommandId::kShowSuggestions):
       // Note that the menu should be dismissed before changing the show
       // suggestions pref which may destroy the chips.
       if (auto* menu_controller = views::MenuController::GetActiveInstance()) {
@@ -255,12 +257,12 @@ void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
 
       SetShowBirchSuggestions(/*show=*/!GetShowBirchSuggestions());
       break;
-    case base::to_underlying(CommandId::kWeatherSuggestions):
-    case base::to_underlying(CommandId::kCalendarSuggestions):
-    case base::to_underlying(CommandId::kDriveSuggestions):
-    case base::to_underlying(CommandId::kChromeTabSuggestions):
-    case base::to_underlying(CommandId::kMediaSuggestions):
-    case base::to_underlying(CommandId::kCoralSuggestions): {
+    case std::to_underlying(CommandId::kWeatherSuggestions):
+    case std::to_underlying(CommandId::kCalendarSuggestions):
+    case std::to_underlying(CommandId::kDriveSuggestions):
+    case std::to_underlying(CommandId::kChromeTabSuggestions):
+    case std::to_underlying(CommandId::kMediaSuggestions):
+    case std::to_underlying(CommandId::kCoralSuggestions): {
       // To avoid UAF, dismiss the menu before changing the pref which
       // would destroy current chips.
       auto* menu_controller = views::MenuController::GetActiveInstance();
@@ -274,7 +276,7 @@ void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
       SetShowSuggestionType(suggestion_type, !current_show_status);
       break;
     }
-    case base::to_underlying(CommandId::kReset): {
+    case std::to_underlying(CommandId::kReset): {
       bool suggestion_pref_changed = false;
       {
         // Holding the data fetch requests to avoid sending multiple requests.

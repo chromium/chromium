@@ -4,6 +4,8 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include <utility>
+
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
@@ -375,7 +377,7 @@ class CoralSavedGroupTest : public CoralControllerTest {
         model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
     if (!save_as_group_item ||
         save_as_group_item->GetCommand() !=
-            base::to_underlying(
+            std::to_underlying(
                 BirchChipContextMenuModel::CommandId::kCoralSaveForLater)) {
       return nullptr;
     }
