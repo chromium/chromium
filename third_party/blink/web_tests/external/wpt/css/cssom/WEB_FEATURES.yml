@@ -28,3 +28,6 @@ features:
 - name: font-variant
   files:
   - font-variant-shorthand-serialization.html
+- name: mutationobserver
+  files:
+  - MutationObserver-style.html

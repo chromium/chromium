@@ -20,3 +20,6 @@ features:
 - name: font-variant-numeric
   files:
   - font-variant-numeric.html
+- name: dominant-baseline
+  files:
+  - dominant-baseline.html
