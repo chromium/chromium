@@ -421,23 +421,13 @@ void ExtensionsMenuDelegateDesktop::UpdateSitePermissionsPage(
   CHECK(web_contents);
 
   extensions::ExtensionId extension_id = site_permissions_page->extension_id();
-  ToolbarActionViewModel* view_model =
-      extensions_container_->GetActionForId(extension_id);
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
 
-  std::u16string extension_name = view_model->GetActionName();
-  ui::ImageModel extension_icon =
-      view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
-  ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
-      extension_site_access_options =
-          menu_model_->GetExtensionSiteAccessOptionsState(extension_id);
-  site_permissions_page->Update(extension_name, extension_icon,
-                                extension_site_access_options);
-
-  ExtensionsMenuViewModel::ControlState show_requests_toggle =
-      menu_model_->GetExtensionShowRequestsToggleState(extension_id);
-  site_permissions_page->UpdateShowRequestsToggle(show_requests_toggle);
+  ExtensionsMenuViewModel::ExtensionSitePermissionsState
+      site_permissions_state = menu_model_->GetExtensionSitePermissionsState(
+          extension_id, gfx::Size(icon_size, icon_size));
+  site_permissions_page->Update(site_permissions_state);
 }
 
 ExtensionsMenuMainPageView*

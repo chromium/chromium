@@ -12,10 +12,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-namespace ui {
-class ImageModel;
-}  // namespace ui
-
 namespace views {
 class ImageView;
 class Label;
@@ -40,11 +36,9 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   ~ExtensionsMenuSitePermissionsPageView() override = default;
 
-  // Updates the page contents with the given parameters.
-  void Update(const std::u16string& extension_name,
-              const ui::ImageModel& extension_icon,
-              ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
-                  site_access_state);
+  // Updates the page contents with the given `site_permissions_state`.
+  void Update(ExtensionsMenuViewModel::ExtensionSitePermissionsState
+                  site_permissions_state);
 
   // Updates `show_requests_toggle_` with the given toggle state.
   void UpdateShowRequestsToggle(

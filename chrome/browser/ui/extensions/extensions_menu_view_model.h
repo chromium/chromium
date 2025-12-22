@@ -142,15 +142,27 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_on = false;
   };
 
-  // Holds the information for an extension's site access in the extension's
+  // Holds the information for an extension's site permissions in the extensions
   // menu. This will be used by the platform delegate as needed.
-  struct ExtensionSiteAccessOptionsState {
+  struct ExtensionSitePermissionsState {
+    ExtensionSitePermissionsState();
+    ExtensionSitePermissionsState(const ExtensionSitePermissionsState&);
+    ExtensionSitePermissionsState& operator=(
+        const ExtensionSitePermissionsState&);
+    ~ExtensionSitePermissionsState();
+
+    // The display name for the extension.
+    std::u16string extension_name;
+    // THe display icon for the extension.
+    ui::ImageModel extension_icon;
     // The state for the 'on click' site access option.
     ControlState on_click_option;
     // The state for the 'on site' site access option.
     ControlState on_site_option;
     // The state for the 'on all sites' site access option.
     ControlState on_all_sites_option;
+    // The state for the 'show requests' toggle.
+    ControlState show_requests_toggle;
   };
 
   // Holds the information for the site settings in the extension's menu. This
@@ -218,11 +230,12 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // `extension_id`.
   bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
 
-  // Returns the site access options state for an extension. This will crash if
-  // called when the user cannot modify the extension site permissions, as this
-  // method would compute invalid values.
-  ExtensionSiteAccessOptionsState GetExtensionSiteAccessOptionsState(
-      const extensions::ExtensionId& extension_id);
+  // Returns the site access permissions state for an extension. This will crash
+  // if called when the user cannot modify the extension site permissions, as
+  // this method would compute invalid values.
+  ExtensionSitePermissionsState GetExtensionSitePermissionsState(
+      const extensions::ExtensionId& extension_id,
+      const gfx::Size& icon_size);
 
   // Returns the show requests toggle state for an extension.
   ControlState GetExtensionShowRequestsToggleState(

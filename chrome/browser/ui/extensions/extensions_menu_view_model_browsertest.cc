@@ -31,6 +31,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/size.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -609,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 // Tests that the extensions menu view model correctly returns the extension's
 // site access options state.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetExtensionSiteAccessOptionsState) {
+                       GetExtensionSitePermissionsState) {
   scoped_refptr<const extensions::Extension> extension_A =
       AddExtensionWithHostPermission("Extension A", "*://a.com/*");
   scoped_refptr<const extensions::Extension> extension_with_all_hosts =
@@ -620,33 +621,33 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // Verify the site access state for an extension with all host permissions
   // granted.
   NavigateTo("example.com");
-  auto site_access_states = menu_model()->GetExtensionSiteAccessOptionsState(
-      extension_with_all_hosts->id());
-  EXPECT_EQ(site_access_states.on_click_option.status,
+  auto site_permissions = menu_model()->GetExtensionSitePermissionsState(
+      extension_with_all_hosts->id(), gfx::Size());
+  EXPECT_EQ(site_permissions.on_click_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_site_option.status,
+  EXPECT_EQ(site_permissions.on_site_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_all_sites_option.status,
+  EXPECT_EQ(site_permissions.on_all_sites_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_FALSE(site_access_states.on_click_option.is_on);
-  EXPECT_FALSE(site_access_states.on_site_option.is_on);
-  EXPECT_TRUE(site_access_states.on_all_sites_option.is_on);
+  EXPECT_FALSE(site_permissions.on_click_option.is_on);
+  EXPECT_FALSE(site_permissions.on_site_option.is_on);
+  EXPECT_TRUE(site_permissions.on_all_sites_option.is_on);
 
   // Verify the site permissions for an extension with only access to the
   // current site. 'on site' is enabled because the user can choose that option,
   // whereas 'on all sites' is not.
   NavigateTo("a.com");
-  site_access_states =
-      menu_model()->GetExtensionSiteAccessOptionsState(extension_A->id());
-  EXPECT_EQ(site_access_states.on_click_option.status,
+  site_permissions = menu_model()->GetExtensionSitePermissionsState(
+      extension_A->id(), gfx::Size());
+  EXPECT_EQ(site_permissions.on_click_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_site_option.status,
+  EXPECT_EQ(site_permissions.on_site_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_all_sites_option.status,
+  EXPECT_EQ(site_permissions.on_all_sites_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_FALSE(site_access_states.on_click_option.is_on);
-  EXPECT_TRUE(site_access_states.on_site_option.is_on);
-  EXPECT_FALSE(site_access_states.on_all_sites_option.is_on);
+  EXPECT_FALSE(site_permissions.on_click_option.is_on);
+  EXPECT_TRUE(site_permissions.on_site_option.is_on);
+  EXPECT_FALSE(site_permissions.on_all_sites_option.is_on);
 
   // Update site access to 'on click'.
   menu_model()->UpdateSiteAccess(extension_A->id(),
@@ -656,30 +657,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // it's requesting access only to the current site. 'on site' is enabled
   // because the user can still choose that option, whereas 'on all sites' is
   // not.
-  site_access_states =
-      menu_model()->GetExtensionSiteAccessOptionsState(extension_A->id());
-  EXPECT_EQ(site_access_states.on_click_option.status,
+  site_permissions = menu_model()->GetExtensionSitePermissionsState(
+      extension_A->id(), gfx::Size());
+  EXPECT_EQ(site_permissions.on_click_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_site_option.status,
+  EXPECT_EQ(site_permissions.on_site_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_all_sites_option.status,
+  EXPECT_EQ(site_permissions.on_all_sites_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_TRUE(site_access_states.on_click_option.is_on);
-  EXPECT_FALSE(site_access_states.on_site_option.is_on);
-  EXPECT_FALSE(site_access_states.on_all_sites_option.is_on);
+  EXPECT_TRUE(site_permissions.on_click_option.is_on);
+  EXPECT_FALSE(site_permissions.on_site_option.is_on);
+  EXPECT_FALSE(site_permissions.on_all_sites_option.is_on);
 
   // Verify the site permissions for an extension with only on click access
-  site_access_states = menu_model()->GetExtensionSiteAccessOptionsState(
-      extension_activeTab->id());
-  EXPECT_EQ(site_access_states.on_click_option.status,
+  site_permissions = menu_model()->GetExtensionSitePermissionsState(
+      extension_activeTab->id(), gfx::Size());
+  EXPECT_EQ(site_permissions.on_click_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(site_access_states.on_site_option.status,
+  EXPECT_EQ(site_permissions.on_site_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(site_access_states.on_all_sites_option.status,
+  EXPECT_EQ(site_permissions.on_all_sites_option.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_TRUE(site_access_states.on_click_option.is_on);
-  EXPECT_FALSE(site_access_states.on_site_option.is_on);
-  EXPECT_FALSE(site_access_states.on_all_sites_option.is_on);
+  EXPECT_TRUE(site_permissions.on_click_option.is_on);
+  EXPECT_FALSE(site_permissions.on_site_option.is_on);
+  EXPECT_FALSE(site_permissions.on_all_sites_option.is_on);
 }
 
 // Tests that the extensions menu view model correctly returns the extension's

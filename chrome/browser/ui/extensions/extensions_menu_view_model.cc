@@ -503,6 +503,17 @@ ExtensionsMenuViewModel::ControlState&
 ExtensionsMenuViewModel::ControlState::operator=(const ControlState&) = default;
 ExtensionsMenuViewModel::ControlState::~ControlState() = default;
 
+ExtensionsMenuViewModel::ExtensionSitePermissionsState::
+    ExtensionSitePermissionsState() = default;
+ExtensionsMenuViewModel::ExtensionSitePermissionsState::
+    ExtensionSitePermissionsState(const ExtensionSitePermissionsState&) =
+        default;
+ExtensionsMenuViewModel::ExtensionSitePermissionsState&
+ExtensionsMenuViewModel::ExtensionSitePermissionsState::operator=(
+    const ExtensionSitePermissionsState&) = default;
+ExtensionsMenuViewModel::ExtensionSitePermissionsState::
+    ~ExtensionSitePermissionsState() = default;
+
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
     Delegate* delegate)
@@ -709,9 +720,10 @@ bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
                                              *toolbar_model_, *web_contents);
 }
 
-ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
-ExtensionsMenuViewModel::GetExtensionSiteAccessOptionsState(
-    const extensions::ExtensionId& extension_id) {
+ExtensionsMenuViewModel::ExtensionSitePermissionsState
+ExtensionsMenuViewModel::GetExtensionSitePermissionsState(
+    const extensions::ExtensionId& extension_id,
+    const gfx::Size& icon_size) {
   Profile* profile = browser_->GetProfile();
   auto* permissions_manager = PermissionsManager::Get(profile);
 
@@ -721,8 +733,8 @@ ExtensionsMenuViewModel::GetExtensionSiteAccessOptionsState(
   content::WebContents* web_contents = GetActiveWebContents();
   const GURL& url = web_contents->GetLastCommittedURL();
 
-  // Extension's site permissions can only be compute when such can be modified
-  // by the user.
+  // Extension's site permissions can only be computed when site access can be
+  // modified by the user.
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
                                             *toolbar_model_, *web_contents));
   auto site_access = permissions_manager->GetUserSiteAccess(*extension, url);
@@ -756,12 +768,17 @@ ExtensionsMenuViewModel::GetExtensionSiteAccessOptionsState(
   on_all_sites_option.is_on =
       site_access == PermissionsManager::UserSiteAccess::kOnAllSites;
 
-  ExtensionSiteAccessOptionsState extension_site_access;
-  extension_site_access.on_click_option = on_click_option;
-  extension_site_access.on_site_option = on_site_option;
-  extension_site_access.on_all_sites_option = on_all_sites_option;
+  ExtensionSitePermissionsState extension_site_permissions;
+  extension_site_permissions.extension_name = action_model->GetActionName();
+  extension_site_permissions.extension_icon =
+      action_model->GetIcon(web_contents, icon_size);
+  extension_site_permissions.on_click_option = on_click_option;
+  extension_site_permissions.on_site_option = on_site_option;
+  extension_site_permissions.on_all_sites_option = on_all_sites_option;
+  extension_site_permissions.show_requests_toggle =
+      GetExtensionShowRequestsToggleState(extension_id);
 
-  return extension_site_access;
+  return extension_site_permissions;
 }
 
 ExtensionsMenuViewModel::ControlState
