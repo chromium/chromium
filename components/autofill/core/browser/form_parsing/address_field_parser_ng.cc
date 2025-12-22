@@ -7,9 +7,9 @@
 #include <initializer_list>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -244,7 +244,7 @@ void AddressFieldParserNG::FieldTypeInformation::InitializeIncompatibilities() {
     for (FieldType c2 : supported_field_types_) {
       // Comparing the underlying integer values of c1 and c2 is a speed
       // optimization to avoid redundant work that would happen due to symmetry.
-      if (base::to_underlying(c1) > base::to_underlying(c2)) {
+      if (std::to_underlying(c1) > std::to_underlying(c2)) {
         continue;
       }
       // Note: Don't inline the following line because two operator[]() calls

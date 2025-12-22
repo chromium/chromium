@@ -33,7 +33,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -275,7 +274,7 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
   void OnFileClosed(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(state_ == State::kClosed || state_ == State::kError)
-        << base::to_underlying(state_);
+        << std::to_underlying(state_);
 
     parser_->Close(base::BindOnce(&SignedWebBundleReaderImpl::OnParserClosed,
                                   weak_ptr_factory_.GetWeakPtr(),
@@ -285,7 +284,7 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
   void OnParserClosed(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(state_ == State::kClosed || state_ == State::kError)
-        << base::to_underlying(state_);
+        << std::to_underlying(state_);
     close_callback_ = std::move(callback);
     ReplyClosedIfNecessary();
   }

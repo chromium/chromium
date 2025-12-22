@@ -11,7 +11,6 @@
 #include "base/functional/function_ref.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_client.h"

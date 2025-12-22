@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 
 #include <optional>
+#include <utility>
 #include <variant>
 
 #include "base/check.h"
@@ -95,16 +96,16 @@ void LogSubmittedFormMetric(mojom::SubmissionSource source,
     kMaxValue = kTotal_Cached
   };
   static_assert(
-      base::to_underlying(SubmittedFormTypeBySource::kMaxValue) + 1 ==
-          3 * (base::to_underlying(mojom::SubmissionSource::kMaxValue) + 2),
+      std::to_underlying(SubmittedFormTypeBySource::kMaxValue) + 1 ==
+          3 * (std::to_underlying(mojom::SubmissionSource::kMaxValue) + 2),
       "SubmittedFormTypeBySource should have three values for each value of "
       "SubmissionSource in addition to three `Total` values");
 
   using underlying_type = std::underlying_type_t<SubmittedFormTypeBySource>;
-  underlying_type source_bucket = base::to_underlying(source) * 3;
+  underlying_type source_bucket = std::to_underlying(source) * 3;
   underlying_type total_bucket =
-      base::to_underlying(SubmittedFormTypeBySource::kTotal_Null);
-  underlying_type offset = base::to_underlying(type);
+      std::to_underlying(SubmittedFormTypeBySource::kTotal_Null);
+  underlying_type offset = std::to_underlying(type);
   base::UmaHistogramEnumeration(
       "Autofill.SubmissionDetection.SubmittedFormType",
       static_cast<SubmittedFormTypeBySource>(source_bucket + offset));

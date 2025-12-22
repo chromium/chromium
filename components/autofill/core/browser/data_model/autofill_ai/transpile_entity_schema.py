@@ -246,16 +246,16 @@ def generate_cpp_functions(schema):
   yield 'bool AttributeType::DisambiguationOrder(const AttributeType& lhs, const AttributeType& rhs) {'
   yield '  constexpr auto rank = [](const AttributeType& a) {'
   yield '    static constexpr auto ranks = [] {'
-  yield '      std::array<int, base::to_underlying(AttributeTypeName::kMaxValue) + 1> ranks{};'
+  yield '      std::array<int, std::to_underlying(AttributeTypeName::kMaxValue) + 1> ranks{};'
   yield '      for (int& rank : ranks) {'
   yield '        rank = std::numeric_limits<int>::max();'
   yield '      }'
   for entity, order in ((entity['name'], entity['disambiguation order']) for entity in schema):
     for rank, attribute in enumerate(order):
-      yield f'      ranks[base::to_underlying({attribute_name(entity, attribute)})] = {rank+1};'
+      yield f'      ranks[std::to_underlying({attribute_name(entity, attribute)})] = {rank+1};'
   yield '      return ranks;'
   yield '    }();'
-  yield '    return ranks[base::to_underlying(a.name())];'
+  yield '    return ranks[std::to_underlying(a.name())];'
   yield '  };'
   yield '  return rank(lhs) < rank(rhs);'
   yield '}'
@@ -284,12 +284,12 @@ def generate_cpp_functions_header(schema, include_guard):
 #include <array>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/country_type.h"

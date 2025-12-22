@@ -18,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -108,7 +107,7 @@ const std::string GetImageTypeString(
       return "ValuableImage";
   }
   NOTREACHED() << "Unhandled AutofillImageFetcherBase::ImageType "
-               << base::to_underlying(image_type);
+               << std::to_underlying(image_type);
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -560,14 +561,14 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
       SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_contains",
                               field_types.contains(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_type",
-                              base::to_underlying(trigger_field_type));
+                              std::to_underlying(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "size_before_filter",
                               size_before_filter);
       SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_value_size",
                               trigger_field.value().size());
       SCOPED_CRASH_KEY_NUMBER(
           "Autofill", "trigger_field_form_ctrl_type",
-          base::to_underlying(trigger_field.form_control_type()));
+          std::to_underlying(trigger_field.form_control_type()));
       base::debug::DumpWithoutCrashing();
     }
   }

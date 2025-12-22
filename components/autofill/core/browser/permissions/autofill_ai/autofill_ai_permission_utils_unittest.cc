@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -40,8 +41,8 @@ using ::testing::Return;
 using ::testing::Values;
 
 constexpr auto kAutofillPredictionSettingsDisable =
-    base::to_underlying(optimization_guide::model_execution::prefs::
-                            ModelExecutionEnterprisePolicyValue::kDisable);
+    std::to_underlying(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kDisable);
 
 std::string GetTestSuffix(
     ::testing::TestParamInfo<AutofillAiAction> param_info) {

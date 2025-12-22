@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <type_traits>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -256,7 +256,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
       .SetOptInStatus(opt_in_status)
       .SetAutofillFilledFieldCount(autofill_filled_field_count)
       .SetAutofillAiFilledFieldCount(autofill_ai_filled_field_count)
-      .SetEntityType(base::to_underlying(entity_type.name()));
+      .SetEntityType(std::to_underlying(entity_type.name()));
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
   }
@@ -313,7 +313,7 @@ void AutofillAiUkmLogger::LogImportPromptResult(
   ukm::builders::AutofillAi_UserPromptMetrics(ukm_source_id)
       .SetFormSessionIdentifier(form_session_id)
       .SetFormSignature(CalculateFormSignature(form).value())
-      .SetEntityType(base::to_underlying(entity_type.name()))
+      .SetEntityType(std::to_underlying(entity_type.name()))
       .SetStorageType(GetStorageType(record_type))
       .SetPromptType(GetPromptType(prompt_type))
       .SetResult(GetUserDecision(close_reason))
@@ -364,9 +364,9 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     mqls_field_event->set_field_rank(field.rank());
     mqls_field_event->set_field_rank_in_signature_group(
         field.rank_in_signature_group());
-    mqls_field_event->set_field_type(base::to_underlying(
+    mqls_field_event->set_field_type(std::to_underlying(
         !field_types.empty() ? *field_types.begin() : UNKNOWN_TYPE));
-    mqls_field_event->set_ai_field_type(base::to_underlying(
+    mqls_field_event->set_ai_field_type(std::to_underlying(
         !ai_field_types.empty() ? *ai_field_types.begin() : UNKNOWN_TYPE));
     for (FieldType field_type : field_types) {
       mqls_field_event->add_field_types(field_type);
@@ -409,7 +409,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
   e.SetFormSessionEventOrder(form_event_order);
   e.SetFieldSignature(HashFieldSignature(field.GetFieldSignature()));
   e.SetFieldSessionIdentifier(field_session_identifier);
-  e.SetFormatStringSource(base::to_underlying(field.format_string_source()));
+  e.SetFormatStringSource(std::to_underlying(field.format_string_source()));
   maybe_set(e, &UkmEvent::SetFieldType, next_field_type());
   maybe_set(e, &UkmEvent::SetFieldType2, next_field_type());
   maybe_set(e, &UkmEvent::SetFieldType3, next_field_type());
@@ -418,8 +418,8 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
   maybe_set(e, &UkmEvent::SetAiFieldType2, next_ai_field_type());
   maybe_set(e, &UkmEvent::SetAiFieldType3, next_ai_field_type());
   maybe_set(e, &UkmEvent::SetAiFieldType4, next_ai_field_type());
-  e.SetEventType(base::to_underlying(event_type));
-  e.SetEntityType(base::to_underlying(entity_type.name()));
+  e.SetEventType(std::to_underlying(event_type));
+  e.SetEntityType(std::to_underlying(entity_type.name()));
   e.Record(client_->GetUkmRecorder());
 }
 

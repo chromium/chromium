@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -32,7 +32,7 @@ void ProfileTokenQualityTestApi::AddObservation(
   quality_->AddObservation(
       field_type,
       ProfileTokenQuality::Observation{
-          .type = base::to_underlying(observation_type), .form_hash = hash});
+          .type = std::to_underlying(observation_type), .form_hash = hash});
 }
 
 std::vector<ProfileTokenQualityTestApi::FormSignatureHash>

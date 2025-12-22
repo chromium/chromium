@@ -1311,7 +1311,7 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << base::UTF16ToUTF8(
                    credit_card.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR))
             << " " << credit_card.bank_name() << " "
-            << base::to_underlying(credit_card.record_type()) << " "
+            << std::to_underlying(credit_card.record_type()) << " "
             << credit_card.usage_history().use_count() << " "
             << credit_card.usage_history().use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
@@ -1321,14 +1321,14 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
                    credit_card.card_issuer())
             << " " << credit_card.issuer_id() << " "
             << credit_card.instrument_id() << " "
-            << base::to_underlying(credit_card.virtual_card_enrollment_state())
+            << std::to_underlying(credit_card.virtual_card_enrollment_state())
             << " " << credit_card.card_art_url().spec() << " "
             << base::UTF16ToUTF8(credit_card.product_description()) << " "
             << credit_card.product_terms_url().spec() << " "
             << credit_card.benefit_source() << " " << credit_card.cvc() << " "
-            << base::to_underlying(
+            << std::to_underlying(
                    credit_card.card_info_retrieval_enrollment_state())
-            << " " << base::to_underlying(credit_card.card_creation_source());
+            << " " << std::to_underlying(credit_card.card_creation_source());
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

@@ -4,6 +4,8 @@
 
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -215,8 +217,7 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
       break;
     }
     default:
-      NOTREACHED() << "Unhandled UiEvent "
-                   << base::to_underlying(ui_event_type);
+      NOTREACHED() << "Unhandled UiEvent " << std::to_underlying(ui_event_type);
   }
 }
 

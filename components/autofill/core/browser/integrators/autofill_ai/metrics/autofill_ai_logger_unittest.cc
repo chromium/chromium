@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 #include <tuple>
+#include <utility>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -15,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -410,12 +410,12 @@ TEST_P(AutofillAiFunnelMetricsTest, Eligibility) {
       GetFunnelHistogram("Eligibility2", /*submitted=*/std::nullopt,
                          /*entity_type=*/std::nullopt,
                          /*record_type=*/std::nullopt),
-      base::to_underlying(entity_type().name()), 1);
+      std::to_underlying(entity_type().name()), 1);
   histogram_tester.ExpectUniqueSample(
       GetFunnelHistogram("Eligibility2", submitted(),
                          /*entity_type=*/std::nullopt,
                          /*record_type=*/std::nullopt),
-      base::to_underlying(entity_type().name()), 1);
+      std::to_underlying(entity_type().name()), 1);
 }
 
 // Tests Autofill.Ai.Funnel.*.ReadinessAfterEligibility.*.
@@ -907,17 +907,17 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
                 UnorderedElementsAreArray(field.Type().GetTypes()));
     EXPECT_THAT(mqls_field_event.ai_field_types(),
                 UnorderedElementsAreArray(field.Type().GetAutofillAiTypes()));
-    EXPECT_EQ(base::to_underlying(mqls_field_event.format_string_source()),
-              base::to_underlying(field.format_string_source()))
+    EXPECT_EQ(std::to_underlying(mqls_field_event.format_string_source()),
+              std::to_underlying(field.format_string_source()))
         << event;
-    EXPECT_EQ(base::to_underlying(mqls_field_event.form_control_type()),
-              base::to_underlying(field.form_control_type()) + 1)
+    EXPECT_EQ(std::to_underlying(mqls_field_event.form_control_type()),
+              std::to_underlying(field.form_control_type()) + 1)
         << event;
-    EXPECT_EQ(base::to_underlying(mqls_field_event.event_type()),
-              base::to_underlying(event_type))
+    EXPECT_EQ(std::to_underlying(mqls_field_event.event_type()),
+              std::to_underlying(event_type))
         << event;
-    EXPECT_EQ(base::to_underlying(mqls_field_event.entity_type()), 1) << event;
-    EXPECT_EQ(base::to_underlying(mqls_field_event.storage_type()), 2) << event;
+    EXPECT_EQ(std::to_underlying(mqls_field_event.entity_type()), 1) << event;
+    EXPECT_EQ(std::to_underlying(mqls_field_event.storage_type()), 2) << event;
   }
 
  private:
@@ -1031,7 +1031,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   EXPECT_FALSE(mqls_key_metrics.perfect_filling());
   EXPECT_EQ(mqls_key_metrics.autofill_filled_field_count(), 2);
   EXPECT_EQ(mqls_key_metrics.autofill_ai_filled_field_count(), 1);
-  EXPECT_EQ(base::to_underlying(mqls_key_metrics.entity_type()), 1);
+  EXPECT_EQ(std::to_underlying(mqls_key_metrics.entity_type()), 1);
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_PerfectFilling) {
@@ -1095,8 +1095,8 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
   autofill_client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-      base::to_underlying(optimization_guide::model_execution::prefs::
-                              ModelExecutionEnterprisePolicyValue::kDisable));
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable));
 
   EntityInstance entity = test::GetPassportEntityInstance();
   std::unique_ptr<FormStructure> form = CreatePassportForm();

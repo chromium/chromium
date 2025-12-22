@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -938,7 +938,7 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
                      IntegritySignatureErrorForTesting::
                          kAdditionalSignatureStackEntryElement}) {
     std::string swbn_file_name =
-        base::NumberToString(base::to_underlying(error)) + "_test.swbn";
+        base::NumberToString(std::to_underlying(error)) + "_test.swbn";
     SCOPED_TRACE(Message() << "Running testcase: "
                            << " " << swbn_file_name);
 

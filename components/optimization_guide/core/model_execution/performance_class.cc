@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,7 +13,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -167,7 +168,7 @@ void UpdatePerformanceClassPref(
   // TODO(crbug.com/437807121): Check performance info before setting prefs.
   local_state->SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
-      base::to_underlying(performance_class));
+      std::to_underlying(performance_class));
   local_state->SetString(
       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
       version_info::GetVersionNumber());

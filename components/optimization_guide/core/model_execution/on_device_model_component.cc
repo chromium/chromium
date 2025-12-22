@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,7 +19,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -99,7 +99,7 @@ GetBestPerformanceHintForDevice(
     }
   }
   for (auto hint : prioritized_hints) {
-    if (supported_hints.contains(base::to_underlying(hint))) {
+    if (supported_hints.contains(std::to_underlying(hint))) {
       return hint;
     }
   }

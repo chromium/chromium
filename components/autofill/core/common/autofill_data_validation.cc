@@ -5,8 +5,8 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 
 #include <algorithm>
+#include <utility>
 
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -35,10 +35,10 @@ bool IsValidOption(const SelectOption& option) {
 bool IsValidFormFieldData(const FormFieldData& field) {
   return IsValidString16(field.label()) && IsValidString16(field.name()) &&
          IsValidString16(field.value()) &&
-         base::to_underlying(field.form_control_type()) >=
-             base::to_underlying(FormControlType::kMinValue) &&
-         base::to_underlying(field.form_control_type()) <=
-             base::to_underlying(FormControlType::kMaxValue) &&
+         std::to_underlying(field.form_control_type()) >=
+             std::to_underlying(FormControlType::kMinValue) &&
+         std::to_underlying(field.form_control_type()) <=
+             std::to_underlying(FormControlType::kMaxValue) &&
          IsValidString(field.autocomplete_attribute()) &&
          IsValidOptionVector(field.options());
 }

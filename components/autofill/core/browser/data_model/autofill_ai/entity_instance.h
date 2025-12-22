@@ -8,13 +8,13 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
@@ -180,7 +180,7 @@ struct AttributeInstance::CompareByType {
 
  private:
   bool lt(AttributeTypeName lhs, AttributeTypeName rhs) const {
-    return base::to_underlying(lhs) < base::to_underlying(rhs);
+    return std::to_underlying(lhs) < std::to_underlying(rhs);
   }
 };
 

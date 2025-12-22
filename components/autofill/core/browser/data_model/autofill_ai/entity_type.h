@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -261,7 +262,7 @@ struct DenseSetTraits<AttributeType> {
     return T(static_cast<N>(x));
   }
   static constexpr UnderlyingType to_underlying(T x) {
-    return base::to_underlying(x.name());
+    return std::to_underlying(x.name());
   }
   static constexpr bool is_valid(T x) { return true; }
 
@@ -422,7 +423,7 @@ struct DenseSetTraits<EntityType> {
     return T(static_cast<N>(x));
   }
   static constexpr UnderlyingType to_underlying(T x) {
-    return base::to_underlying(x.name());
+    return std::to_underlying(x.name());
   }
   static constexpr bool is_valid(T x) { return true; }
 
