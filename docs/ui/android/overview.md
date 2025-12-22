@@ -38,3 +38,17 @@ The following guides introduce MVC in Chrome for Android:
 ## Styles and widgets shared with WebView
 
 Styles and widgets in //ui/android/ may be used by WebView. UI shown in WebView is inflated using the host Activity as the Context, so Chrome's custom theme attributes won't be set and android theme attributes may or may not be set. When creating new styles/widgets or modifying styles/widgets used by WebView, either avoid theme attributes or define a fallback if the theme attribute cannot be resolved.
+
+## Handling activity results
+
+Currently, there are 2 custom tools to catch activity results in Chrome:
+[`IntentRequestTracker`](https://source.chromium.org/chromium/chromium/src/+/main:ui/android/java/src/org/chromium/ui/base/WindowAndroid.java;l=444;drc=f4b1a5f91e14941349a0319b35f71d3efb7350af)
+can be called from a `WindowAndroid` to start an activity. The provided
+callback will be called when the started activity returns a result. One
+known limitation is that the callback is lost if the base activity is
+recreated. The result will be lost if it's received after the base activity
+is recreated.
+[`ActivityResultTracker`](activity_result_tracker.md) using the Android
+[`ActivityResultRegistry`](https://developer.android.com/training/basics/intents/result)
+API is introduced to ensure that the in-flight activities' result is caught
+even after base activity's recreation.

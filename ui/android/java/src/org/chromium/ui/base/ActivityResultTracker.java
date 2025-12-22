@@ -17,6 +17,9 @@ import org.chromium.build.annotations.NullMarked;
  * Manages activity results, ensuring results are not lost if the calling activity is destroyed and
  * recreated by the system while the started activity is in the foreground.
  *
+ * <p>See {@link
+ * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/activity_result_tracker.md}
+ *
  * <p><b>Problem:</b> Chrome primarily uses {@code IntentRequestTracker}, which has a limitation: if
  * the base Activity is killed by the system and recreated (e.g., due to memory pressure), any
  * pending activity result would be lost because the callback in the component is not persisted.
