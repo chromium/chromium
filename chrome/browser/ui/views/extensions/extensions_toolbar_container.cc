@@ -104,7 +104,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)),
       toolbar_view_model_(
-          std::make_unique<ExtensionsToolbarViewModel>(model_)) {
+          std::make_unique<ExtensionsToolbarViewModel>(this, model_)) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarExtensionsContainerElementId);
 
@@ -194,9 +194,13 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
 
   UpdateControlsVisibility();
 
-  CreateActions();
-
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
+
+  if (toolbar_view_model_->AreActionsInitialized()) {
+    // Since we added the observer in this constructor, we missed the observer
+    // call.
+    OnActionsInitialized();
+  }
 }
 
 ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
@@ -224,90 +228,6 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
   // so |anchored_widgets_| should now be empty.
   DCHECK(anchored_widgets_.empty());
   CHECK(!views::WidgetObserver::IsInObserverList());
-}
-
-void ExtensionsToolbarContainer::CreateActions() {
-  DCHECK(icons_.empty());
-  DCHECK(toolbar_view_model_->GetActions().empty());
-
-  // If the model isn't initialized, wait for it.
-  if (!model_->actions_initialized()) {
-    return;
-  }
-
-  for (const auto& action_id : model_->action_ids()) {
-    CreateActionForId(action_id);
-  }
-
-  ReorderAllChildViews();
-  UpdateContainerVisibility();
-}
-
-void ExtensionsToolbarContainer::AddAction(
-    const ToolbarActionsModel::ActionId& action_id) {
-  CreateActionForId(action_id);
-  ReorderAllChildViews();
-
-  // Auto hide mode should not become visible due to extensions being added,
-  // only due to user interaction.
-  if (display_mode_ != DisplayMode::kAutoHide) {
-    UpdateContainerVisibility();
-  }
-
-  UpdateControlsVisibility();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ExtensionsToolbarContainer::RemoveAction(
-    const ToolbarActionsModel::ActionId& action_id) {
-  // The returned pointer ensures that the action outlives the UI element to
-  // perform any cleanup.
-  // TODO(crbug.com/461981075): Remove `toolbar_view_model_` modification from
-  // this file.
-  std::unique_ptr<ToolbarActionViewModel> model =
-      toolbar_view_model_->RemoveAction(action_id);
-
-  // Undo the popout, if necessary. Actions expect to not be popped out while
-  // destroying.
-  if (popped_out_action_ == action_id) {
-    UndoPopOut();
-  }
-
-  RemoveChildViewT(GetViewForId(action_id));
-  icons_.erase(action_id);
-
-  UpdateContainerVisibilityAfterAnimation();
-  UpdateControlsVisibility();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ExtensionsToolbarContainer::UpdateAction(
-    const ToolbarActionsModel::ActionId& action_id) {
-  ToolbarActionViewModel* action = GetActionForId(action_id);
-  if (action) {
-    ToolbarActionView* action_view = GetViewForId(action_id);
-    action_view->UpdateState();
-    // Only update hover card if it's currently showing for action, otherwise it
-    // would mistakenly show the hover card.
-    if (action_hover_card_controller_->IsHoverCardShowingForAction(
-            action_view)) {
-      action_hover_card_controller_->UpdateHoverCard(
-          action_view, ToolbarActionHoverCardUpdateType::kToolbarActionUpdated);
-    }
-  }
-
-  UpdateControlsVisibility();
-}
-
-void ExtensionsToolbarContainer::UpdatePinnedActions() {
-  for (const auto& it : icons_) {
-    UpdateIconVisibility(it.first);
-  }
-  ReorderAllChildViews();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::UpdateExtensionsButton(
@@ -679,17 +599,10 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
   }
 }
 
-void ExtensionsToolbarContainer::CreateActionForId(
+void ExtensionsToolbarContainer::CreateActionViewForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  // TODO(crbug.com/461981075): Remove `toolbar_view_model_` modification from
-  // this file.
-  toolbar_view_model_->AddAction(
-      action_id, browser_,
-      std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
-                                                             this));
-
-  auto icon = std::make_unique<ToolbarActionView>(
-      toolbar_view_model_->GetActions().back().get(), this);
+  auto icon =
+      std::make_unique<ToolbarActionView>(GetActionForId(action_id), this);
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
                    model_->IsActionPinned(action_id));
@@ -810,27 +723,84 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
   return !model_->IsActionForcePinned(*it);
 }
 
+std::unique_ptr<ExtensionActionViewModel>
+ExtensionsToolbarContainer::CreateActionViewModel(
+    const ToolbarActionsModel::ActionId& action_id) {
+  return ExtensionActionViewModel::Create(
+      action_id, browser_,
+      std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
+                                                             this));
+}
+
 void ExtensionsToolbarContainer::OnActionsInitialized() {
-  CreateActions();
+  CHECK(icons_.empty());
+
+  for (const auto& action : toolbar_view_model_->GetActions()) {
+    CreateActionViewForId(action->GetId());
+  }
+
+  ReorderAllChildViews();
+  UpdateContainerVisibility();
 }
 
 void ExtensionsToolbarContainer::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
-  AddAction(action_id);
+  CreateActionViewForId(action_id);
+  ReorderAllChildViews();
+
+  // Auto hide mode should not become visible due to extensions being added,
+  // only due to user interaction.
+  if (display_mode_ != DisplayMode::kAutoHide) {
+    UpdateContainerVisibility();
+  }
+
+  UpdateControlsVisibility();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::OnActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  RemoveAction(action_id);
+  // Undo the popout, if necessary. Actions expect to not be popped out while
+  // destroying.
+  if (popped_out_action_ == action_id) {
+    UndoPopOut();
+  }
+
+  RemoveChildViewT(GetViewForId(action_id));
+  icons_.erase(action_id);
+
+  UpdateContainerVisibilityAfterAnimation();
+  UpdateControlsVisibility();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::OnActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  UpdateAction(action_id);
+  ToolbarActionViewModel* action = GetActionForId(action_id);
+  if (action) {
+    ToolbarActionView* action_view = GetViewForId(action_id);
+    action_view->UpdateState();
+    // Only update hover card if it's currently showing for action, otherwise it
+    // would mistakenly show the hover card.
+    if (action_hover_card_controller_->IsHoverCardShowingForAction(
+            action_view)) {
+      action_hover_card_controller_->UpdateHoverCard(
+          action_view, ToolbarActionHoverCardUpdateType::kToolbarActionUpdated);
+    }
+  }
+
+  UpdateControlsVisibility();
 }
 
 void ExtensionsToolbarContainer::OnPinnedActionsChanged() {
-  UpdatePinnedActions();
+  for (const auto& it : icons_) {
+    UpdateIconVisibility(it.first);
+  }
+  ReorderAllChildViews();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 bool ExtensionsToolbarContainer::GetDropFormats(

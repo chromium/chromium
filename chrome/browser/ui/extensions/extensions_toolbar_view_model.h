@@ -18,6 +18,17 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 // as the single source of truth for the ordering of the list of actions.
 class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
  public:
+  // Delegate used to retrieve platform-specific information.
+  class Delegate {
+   public:
+    // Creates the platform-specific action view model.
+    virtual std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   // Observer used to notify platforms about changes to the model.
   class Observer : public base::CheckedObserver {
    public:
@@ -40,7 +51,8 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
     virtual void OnPinnedActionsChanged() = 0;
   };
 
-  explicit ExtensionsToolbarViewModel(ToolbarActionsModel* actions_model);
+  ExtensionsToolbarViewModel(Delegate* delegate,
+                             ToolbarActionsModel* actions_model);
   ExtensionsToolbarViewModel(const ExtensionsToolbarViewModel&) = delete;
   ExtensionsToolbarViewModel& operator=(ExtensionsToolbarViewModel&) = delete;
   ~ExtensionsToolbarViewModel() override;
@@ -52,18 +64,8 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Adds the action view model corresponding to `action_id` to the list of
-  // actions.
-  void AddAction(
-      const ToolbarActionsModel::ActionId& action_id,
-      BrowserWindowInterface* browser,
-      std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
-
-  // Removes the action view model corresponding to `action_id` from list of
-  // actions. The returning pointer can be used to ensure that the action
-  // outlives the UI element for cleanup.
-  std::unique_ptr<ToolbarActionViewModel> RemoveAction(
-      const ToolbarActionsModel::ActionId& action_id);
+  // Returns whether the actions are initialized.
+  bool AreActionsInitialized();
 
   // ToolbarActionsModel::Observer:
   void OnToolbarModelInitialized() override;
@@ -76,11 +78,17 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   void OnToolbarPinnedActionsChanged() override;
 
  private:
-  const raw_ptr<ToolbarActionsModel> actions_model_;
+  // Creates and appends an action model to `actions_` vector.
+  void AppendActionModel(const ToolbarActionsModel::ActionId& action_id);
 
+  // The delegate to retrieve platform-specific information.
+  const raw_ptr<Delegate> delegate_;
+
+  const raw_ptr<ToolbarActionsModel> actions_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       actions_model_observation_{this};
 
+  // The observers that handles platform-specific UI.
   base::ObserverList<Observer> observers_;
 
   // Actions for all extensions.

@@ -40,6 +40,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ExtensionsContainerViews,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver,
+                                   public ExtensionsToolbarViewModel::Delegate,
                                    public ExtensionsToolbarViewModel::Observer {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
 
@@ -232,6 +233,10 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
+  // ExtensionsToolbarViewModel::Delegate:
+  std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const ToolbarActionsModel::ActionId& action_id) override;
+
   // ExtensionsToolbarViewModel::Observer:
   void OnActionsInitialized() override;
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
@@ -275,7 +280,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void AnchorAndShowWidgetImmediately(MayBeDangling<views::Widget> widget);
 
   // Creates an action and toolbar button for the corresponding ID.
-  void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
+  void CreateActionViewForId(const ToolbarActionsModel::ActionId& action_id);
 
   // Sorts child views to display them in the correct order (pinned actions,
   // popped out actions, other buttons).
