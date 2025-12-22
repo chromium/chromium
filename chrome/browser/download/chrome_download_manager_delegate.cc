@@ -148,7 +148,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
@@ -1053,7 +1053,7 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
 
   // Skip obfuscation for large files if size is known.
   if (static_cast<size_t>(item->GetTotalBytes()) >
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
+      enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
     return false;
   }
 
