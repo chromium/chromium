@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -353,7 +354,9 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        if (!mIsInCct && OmniboxFeatures.sMultilineEditField.isEnabled()) {
+        if (!mIsInCct
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && OmniboxFeatures.sMultilineEditField.isEnabled()) {
             setInputIsMultilineEligible(false);
             if (focused) {
                 setSingleLine(false);
