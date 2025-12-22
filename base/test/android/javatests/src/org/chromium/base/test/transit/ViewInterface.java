@@ -29,6 +29,29 @@ public interface ViewInterface {
     /** Start a Transition by performing an Espresso ViewAction on this View. */
     TripBuilder performViewActionTo(ViewAction action);
 
+    /** Click this View waiting only for the UI Thread to be idle afterwards. */
+    default void click() {
+        clickTo().executeTriggerWithoutTransition();
+    }
+
+    /** Long press this View waiting only for the UI Thread to be idle afterwards. */
+    default void longPress() {
+        longPressTo().executeTriggerWithoutTransition();
+    }
+
+    /** Type text into this View waiting only for the UI Thread to be idle afterwards. */
+    default void typeText(String text) {
+        typeTextTo(text).executeTriggerWithoutTransition();
+    }
+
+    /**
+     * Perform an Espresso ViewAction on this View waiting only for the UI Thread to be idle
+     * afterwards.
+     */
+    default void performViewAction(ViewAction action) {
+        performViewActionTo(action).executeTriggerWithoutTransition();
+    }
+
     /** Trigger an Espresso ViewAssertion on this View. */
     void check(ViewAssertion assertion);
 

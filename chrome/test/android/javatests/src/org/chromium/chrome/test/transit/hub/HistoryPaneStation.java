@@ -138,7 +138,7 @@ public class HistoryPaneStation extends HubBaseStation {
         }
 
         public void typeSearchTerm(String text) {
-            editTextElement.typeTextTo(text).executeTriggerWithoutTransition();
+            editTextElement.typeText(text);
         }
     }
 }
