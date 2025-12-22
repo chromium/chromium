@@ -20,7 +20,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
@@ -54,7 +53,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   PrivacySandboxServiceImpl(
       Profile* profile,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
       content::InterestGroupManager* interest_group_manager,
@@ -341,8 +339,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 
   raw_ptr<Profile> profile_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;

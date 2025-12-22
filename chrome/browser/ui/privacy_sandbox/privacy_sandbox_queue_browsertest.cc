@@ -14,7 +14,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -59,7 +58,6 @@ class TestPrivacySandboxServiceImpl : public PrivacySandboxServiceImpl {
   TestPrivacySandboxServiceImpl(
       Profile* profile,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
       content::InterestGroupManager* interest_group_manager,
@@ -71,7 +69,6 @@ class TestPrivacySandboxServiceImpl : public PrivacySandboxServiceImpl {
       PrivacySandboxCountries* privacy_sandbox_countries)
       : PrivacySandboxServiceImpl(profile,
                                   privacy_sandbox_settings,
-                                  tracking_protection_settings,
                                   cookie_settings,
                                   pref_service,
                                   interest_group_manager,
@@ -102,7 +99,6 @@ std::unique_ptr<KeyedService> BuildPrivacySandboxServiceTest(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TestPrivacySandboxServiceImpl>(
       profile, PrivacySandboxSettingsFactory::GetForProfile(profile),
-      TrackingProtectionSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       GetProfileType(profile),

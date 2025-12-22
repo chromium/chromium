@@ -19,7 +19,6 @@ source_set("prefs") {
     "//chrome/browser/ui/zoom",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
@@ -49,7 +48,6 @@ source_set("impl") {
     "//components/language/core/browser",
     "//components/live_caption:constants",
     "//components/pref_registry",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/proxy_config",
   ]
 

@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
@@ -56,7 +55,6 @@ CookieSettingsFactory::CookieSettingsFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 CookieSettingsFactory::~CookieSettingsFactory() = default;
@@ -106,7 +104,6 @@ CookieSettingsFactory::BuildServiceInstanceFor(
 
   return new content_settings::CookieSettings(
       host_content_settings_map, prefs,
-      TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->IsIncognitoProfile(), compute_fedcm_sharing_permissions,
       tpcd::metadata::ManagerFactory::GetForProfile(profile), extension_scheme);
 }

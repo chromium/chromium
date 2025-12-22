@@ -32,8 +32,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tpcd/metadata/browser/manager.h"
 #include "components/tpcd/metadata/browser/parser.h"
@@ -167,7 +165,6 @@ class CookieSettingsTestBase : public testing::Test {
     cookie_settings_->ShutdownOnUIThread();
     cookie_settings_incognito_->ShutdownOnUIThread();
     settings_map_->ShutdownOnUIThread();
-    tracking_protection_settings_->Shutdown();
   }
 
   void SetUp() override {
@@ -178,9 +175,6 @@ class CookieSettingsTestBase : public testing::Test {
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_, /*is_incognito=*/false);
 
     auto has_fedcm_sharing_permission =
         CookieSettings::NoFedCmSharingPermissionsCallback();
@@ -190,13 +184,11 @@ class CookieSettingsTestBase : public testing::Test {
         test_tpcd_metadata_manager_delegate_);
 
     cookie_settings_ = new CookieSettings(
-        settings_map_.get(), &prefs_, tracking_protection_settings_.get(),
-        false, has_fedcm_sharing_permission, tpcd_metadata_manager_.get(),
-        "chrome-extension");
+        settings_map_.get(), &prefs_, false, has_fedcm_sharing_permission,
+        tpcd_metadata_manager_.get(), "chrome-extension");
     cookie_settings_incognito_ = new CookieSettings(
-        settings_map_.get(), &prefs_, tracking_protection_settings_.get(), true,
-        has_fedcm_sharing_permission, /*tpcd_metadata_manager=*/nullptr,
-        "chrome-extension");
+        settings_map_.get(), &prefs_, true, has_fedcm_sharing_permission,
+        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -238,8 +230,6 @@ class CookieSettingsTestBase : public testing::Test {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<CookieSettings> cookie_settings_;
   scoped_refptr<CookieSettings> cookie_settings_incognito_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 
   const GURL kBlockedSite;
   const GURL kAllowedSite;
@@ -707,10 +697,10 @@ TEST_F(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
 
   // Build new CookieSettings since `cookie_settings_` was created before
   // ForceThirdPartyCookieBlocking was enabled.
-  scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
-      settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
-      CookieSettings::NoFedCmSharingPermissionsCallback(),
-      /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
+  scoped_refptr<CookieSettings> cookie_settings =
+      new CookieSettings(settings_map_.get(), &prefs_, false,
+                         CookieSettings::NoFedCmSharingPermissionsCallback(),
+                         /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
 
   EXPECT_EQ(kSupports3pcBlocking,
             cookie_settings->ShouldBlockThirdPartyCookies());
@@ -1326,7 +1316,7 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAViaFedCM) {
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
 
   cookie_settings_ = new CookieSettings(
-      settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
+      settings_map_.get(), &prefs_, false,
       base::BindLambdaForTesting([&]() -> ContentSettingsForOneType {
         return ContentSettingsForOneType{
             ContentSettingPatternSource(

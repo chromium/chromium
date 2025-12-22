@@ -533,8 +533,6 @@ static_library("ui") {
     "//components/pref_registry",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tracking_protection_prefs",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/profile_metrics",
     "//components/proxy_config",
     "//components/qr_code_generator:bitmap_generator",

@@ -32,8 +32,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -91,19 +89,14 @@ class PrivacySandboxSettingsTest : public testing::Test {
     host_content_settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    tracking_protection_settings_ =
-        std::make_unique<TrackingProtectionSettings>(&prefs_,
-                                                     /*is_incognito=*/false);
     cookie_settings_ = new content_settings::CookieSettings(
-        host_content_settings_map_.get(), &prefs_,
-        tracking_protection_settings_.get(), false,
+        host_content_settings_map_.get(), &prefs_, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
         /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
   }
   ~PrivacySandboxSettingsTest() override {
     cookie_settings()->ShutdownOnUIThread();
     host_content_settings_map()->ShutdownOnUIThread();
-    tracking_protection_settings_->Shutdown();
   }
 
   void SetUp() override {
@@ -189,7 +182,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
   ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxSettingsImpl> privacy_sandbox_settings_;

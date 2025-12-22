@@ -46,7 +46,6 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/search/search.h"
@@ -71,7 +70,6 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1884,8 +1882,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     base::Value::Dict third_party_cookie_controls_dict;
     third_party_cookie_controls_dict.Set(
         "thirdPartyCookieRestrictionEnabled",
-        TrackingProtectionSettingsFactory::GetForProfile(profile())
-            ->IsTrackingProtection3pcdEnabled());
+        base::FeatureList::IsEnabled(
+            content_settings::features::kTrackingProtection3pcd));
 
     third_party_cookie_controls_dict.Set(
         "thirdPartyCookieMetadataEnabled",

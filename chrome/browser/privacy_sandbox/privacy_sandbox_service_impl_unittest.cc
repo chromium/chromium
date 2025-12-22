@@ -33,7 +33,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -62,7 +61,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -519,9 +518,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(profile()).get();
   }
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return TrackingProtectionSettingsFactory::GetForProfile(profile());
-  }
   TestInterestGroupManager* test_interest_group_manager() {
     return &test_interest_group_manager_;
   }
@@ -575,9 +571,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   std::unique_ptr<PrivacySandboxServiceImpl> BuildTestService(
       content::BrowserContext* context) {
     return std::make_unique<PrivacySandboxServiceImpl>(
-        profile(), privacy_sandbox_settings(), tracking_protection_settings(),
-        cookie_settings(), profile()->GetPrefs(), test_interest_group_manager(),
-        GetProfileType(), browsing_data_remover(), host_content_settings_map(),
+        profile(), privacy_sandbox_settings(), cookie_settings(),
+        profile()->GetPrefs(), test_interest_group_manager(), GetProfileType(),
+        browsing_data_remover(), host_content_settings_map(),
         mock_browsing_topics_service(), first_party_sets_policy_service(),
         mock_privacy_sandbox_countries());
   }
@@ -1241,8 +1237,7 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
   ASSERT_DEATH(
       {
         PrivacySandboxServiceImpl(
-            profile(), privacy_sandbox_settings(),
-            /*tracking_protection_settings=*/nullptr, cookie_settings(),
+            profile(), privacy_sandbox_settings(), cookie_settings(),
             profile()->GetPrefs(), test_interest_group_manager(),
             GetProfileType(), browsing_data_remover(),
             host_content_settings_map(), mock_browsing_topics_service(),

@@ -36,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -94,8 +95,7 @@ bool ShouldBlockThirdPartyOrFirstPartyCookies(
 // pre and post 3PCD.
 bool AreAllThirdPartyCookiesBlocked(
     content_settings::CookieSettings* cookie_settings,
-    PrefService* prefs,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings) {
+    PrefService* prefs) {
   // Check if 1PCs are blocked.
   if (cookie_settings->GetDefaultCookieSetting() ==
       ContentSetting::CONTENT_SETTING_BLOCK) {
@@ -396,7 +396,6 @@ PromptType ToPromptType(const std::vector<PrivacySandboxNotice>& notices) {
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     Profile* profile,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     content::InterestGroupManager* interest_group_manager,
@@ -408,7 +407,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     PrivacySandboxCountries* privacy_sandbox_countries)
     : profile_(profile),
       privacy_sandbox_settings_(privacy_sandbox_settings),
-      tracking_protection_settings_(tracking_protection_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       interest_group_manager_(interest_group_manager),
@@ -433,7 +431,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
-  CHECK(tracking_protection_settings_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(queue_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -508,7 +505,6 @@ void PrivacySandboxServiceImpl::Shutdown() {
   interest_group_manager_ = nullptr;
   pref_service_ = nullptr;
   cookie_settings_ = nullptr;
-  tracking_protection_settings_ = nullptr;
   privacy_sandbox_settings_ = nullptr;
   profile_ = nullptr;
 }
@@ -532,8 +528,7 @@ bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
     return true;
   }
 
-  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_,
-                                     tracking_protection_settings_)) {
+  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_)) {
     SetPromptSuppressedReason(
         PromptSuppressedReason::kThirdPartyCookiesBlocked);
     return true;

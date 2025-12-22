@@ -128,7 +128,6 @@ if (use_blink) {
     ]
 
     deps = [
-      ":tracking_protection_settings",
       "//components/browsing_topics/common",
       "//components/keyed_service/core",
       "//components/pref_registry",
@@ -151,7 +150,6 @@ if (use_blink) {
     deps = [
       ":privacy_sandbox_prefs",
       ":privacy_sandbox_survey_service",
-      ":tracking_protection_settings",
       "//components/browsing_topics/common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/browser:cookie_settings",

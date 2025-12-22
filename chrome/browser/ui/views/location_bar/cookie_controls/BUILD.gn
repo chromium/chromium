@@ -70,7 +70,6 @@ source_set("impl") {
       "//components/omnibox/browser",
       "//components/omnibox/browser:vector_icons",
       "//components/privacy_sandbox:features",
-      "//components/privacy_sandbox:tracking_protection_settings",
       "//components/user_education/common",
       "//components/vector_icons",
       "//ui/base",
@@ -94,7 +93,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support_ui",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/strings",
     "//testing/gmock",
     "//testing/gtest",
@@ -121,7 +119,6 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support_ui",
     "//components/content_settings/core/test:test_support",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//testing/gtest",
     "//ui/views:test_support",
     "//url",
@@ -130,7 +127,6 @@ source_set("interactive_ui_tests") {
   if (toolkit_views) {
     sources += [ "cookie_controls_interactive_uitest.cc" ]
     deps += [
-      "//components/privacy_sandbox:tracking_protection_settings",
       "//components/user_education/views",
       "//net:test_support",
     ]

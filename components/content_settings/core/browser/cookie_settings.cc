@@ -30,7 +30,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/tpcd/metadata/browser/manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
@@ -45,13 +44,11 @@ namespace content_settings {
 CookieSettings::CookieSettings(
     HostContentSettingsMap* host_content_settings_map,
     PrefService* prefs,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito,
     ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
     tpcd::metadata::Manager* tpcd_metadata_manager,
     const char* extension_scheme)
-    : tracking_protection_settings_(tracking_protection_settings),
-      host_content_settings_map_(host_content_settings_map),
+    : host_content_settings_map_(host_content_settings_map),
       is_incognito_(is_incognito),
       tpcd_metadata_manager_(tpcd_metadata_manager),
       extension_scheme_(extension_scheme),
@@ -61,12 +58,6 @@ CookieSettings::CookieSettings(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
       compute_fedcm_sharing_permissions_(compute_fedcm_sharing_permissions) {
   content_settings_observation_.Observe(host_content_settings_map_.get());
-  if (tracking_protection_settings_) {
-    tracking_protection_settings_observation_.Observe(
-        tracking_protection_settings_.get());
-    tracking_protection_enabled_for_3pcd_ =
-        tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
-  }
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
   pref_change_registrar_->Add(
@@ -271,8 +262,6 @@ bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
 
 void CookieSettings::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  tracking_protection_settings_ = nullptr;
-  tracking_protection_settings_observation_.Reset();
   pref_change_registrar_.reset();
 }
 
@@ -343,13 +332,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(pref_change_registrar_);
 
-  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    return true;
-  }
-
-  if (tracking_protection_settings_ &&
-      tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // 3PCs are blocked by default post-3PCD.
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+      base::FeatureList::IsEnabled(
+          content_settings::features::kTrackingProtection3pcd)) {
     return true;
   }
 
@@ -405,33 +390,11 @@ void CookieSettings::OnMitigationsEnabledChanged() {
   }
 }
 
-void CookieSettings::OnTrackingProtection3pcdChanged() {
-  DCHECK(pref_change_registrar_);
-
-  bool new_tracking_protection_enabled_for_3pcd =
-      tracking_protection_settings_ &&
-      tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
-  {
-    base::AutoLock auto_lock(lock_);
-    if (tracking_protection_enabled_for_3pcd_ ==
-        new_tracking_protection_enabled_for_3pcd) {
-      return;
-    }
-    tracking_protection_enabled_for_3pcd_ =
-        new_tracking_protection_enabled_for_3pcd;
-  }
-  for (Observer& obs : observers_) {
-    obs.OnTrackingProtectionEnabledFor3pcdChanged(
-        new_tracking_protection_enabled_for_3pcd);
-  }
-  OnCookiePreferencesChanged();
-}
-
 void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (tracking_protection_settings_ &&
-      tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kTrackingProtection3pcd)) {
     OnMitigationsEnabledChanged();
   }
 

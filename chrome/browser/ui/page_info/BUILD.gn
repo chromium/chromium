@@ -92,7 +92,6 @@ source_set("impl") {
     "//components/page_info/core",
     "//components/permissions",
     "//components/prefs",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_state/content",
     "//components/strings:components_strings",

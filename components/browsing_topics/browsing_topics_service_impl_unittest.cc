@@ -29,7 +29,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -211,12 +210,8 @@ class BrowsingTopicsServiceImplTest
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false, /*should_record_metrics=*/false);
-    tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_, /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
-        host_content_settings_map_.get(), &prefs_,
-        tracking_protection_settings_.get(), false,
+        host_content_settings_map_.get(), &prefs_, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
         /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
 
@@ -271,7 +266,6 @@ class BrowsingTopicsServiceImplTest
 
     cookie_settings_->ShutdownOnUIThread();
     host_content_settings_map_->ShutdownOnUIThread();
-    tracking_protection_settings_->Shutdown();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -339,8 +333,6 @@ class BrowsingTopicsServiceImplTest
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
 

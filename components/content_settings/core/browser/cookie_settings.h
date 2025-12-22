@@ -21,8 +21,6 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "net/cookies/cookie_setting_override.h"
 
 class GURL;
@@ -62,7 +60,6 @@ const char kDummyExtensionScheme[] = ":no-extension-scheme:";
 class CookieSettings
     : public CookieSettingsBase,
       public content_settings::Observer,
-      public privacy_sandbox::TrackingProtectionSettingsObserver,
       public RefcountedKeyedService {
  public:
   class Observer : public base::CheckedObserver {
@@ -70,7 +67,6 @@ class CookieSettings
     virtual void OnThirdPartyCookieBlockingChanged(
         bool block_third_party_cookies) {}
     virtual void OnMitigationsEnabledFor3pcdChanged(bool enable) {}
-    virtual void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) {}
     virtual void OnCookieSettingChanged() {}
   };
 
@@ -85,7 +81,6 @@ class CookieSettings
   CookieSettings(
       HostContentSettingsMap* host_content_settings_map,
       PrefService* prefs,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       bool is_incognito,
       ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
       tpcd::metadata::Manager* tpcd_metadata_manager,
@@ -251,9 +246,6 @@ class CookieSettings
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const override;
 
-  // TrackingProtectionSettingsObserver:
-  void OnTrackingProtection3pcdChanged() override;
-
   // Updates the FEDERATED_IDENTITY_SHARING settings.
   void UpdateFedCmSharingPermissions();
 
@@ -271,11 +263,6 @@ class CookieSettings
 
   base::ThreadChecker thread_checker_;
   base::ObserverList<Observer> observers_;
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
-  base::ScopedObservation<privacy_sandbox::TrackingProtectionSettings,
-                          privacy_sandbox::TrackingProtectionSettingsObserver>
-      tracking_protection_settings_observation_{this};
   const scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
@@ -291,7 +278,6 @@ class CookieSettings
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
   bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
-  bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
 
   mutable base::Lock fedcm_sharing_permissions_lock_;
   HostIndexedContentSettings fedcm_sharing_permissions_

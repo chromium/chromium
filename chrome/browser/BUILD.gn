@@ -1219,8 +1219,6 @@ static_library("browser") {
     "privacy_sandbox/profile_bucket_metrics.h",
     "privacy_sandbox/tracking_protection_onboarding_factory.cc",
     "privacy_sandbox/tracking_protection_onboarding_factory.h",
-    "privacy_sandbox/tracking_protection_settings_factory.cc",
-    "privacy_sandbox/tracking_protection_settings_factory.h",
     "process_resource_usage.cc",
     "process_resource_usage.h",
     "process_singleton.h",
@@ -4658,10 +4656,6 @@ static_library("browser") {
       # - c/b/page_info/merchant_trust_service_factory.h
       # - c/b/translate/translate_service.h
       "//chrome/browser/ui/views/location_bar:impl",
-
-      # TODO(crbug.com/434882143): Remove this circular dependency when
-      # c/b/privacy_sandbox/tracking_protection_settings_factory.h gets componentized.
-      "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
       # componentized:

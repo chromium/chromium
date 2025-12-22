@@ -9,7 +9,6 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -65,7 +64,6 @@ FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
-  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 FirstPartySetsPolicyServiceFactory::~FirstPartySetsPolicyServiceFactory() =
