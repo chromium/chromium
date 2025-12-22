@@ -17,10 +17,13 @@ import {BrowserProxyImpl, ClickDispositionFlag} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 
+// go/keep-sorted start
+const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
+const RELOAD_BUTTON_TOOLTIP_RELOAD = 'reloadButtonTooltipReload';
 const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
     'reloadButtonTooltipReloadWithMenu';
-const RELOAD_BUTTON_TOOLTIP_RELOAD = 'reloadButtonTooltipReload';
 const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
+// go/keep-sorted end
 
 const BUTTON_LEFT = 0;
 const BUTTON_MIDDLE = 1;
@@ -75,6 +78,8 @@ export class ReloadButtonAppElement extends CrLitElement {
   protected accessor isLoading_: boolean = false;
   protected accessor tooltip_: string =
       loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
+  protected accName_: string =
+      loadTimeData.getString(RELOAD_BUTTON_ACC_NAME_RELOAD);
   private isLongPressed_: boolean = false;
   private longPressTimer_: number = 0;
   private isMenuEnabled_: boolean = false;

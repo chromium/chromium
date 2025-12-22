@@ -46,9 +46,13 @@ ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
       chrome::kChromeUIReloadButtonHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
+      // go/keep-sorted start
+      {"reloadButtonAccNameReload", IDS_ACCNAME_RELOAD},
       {"reloadButtonTooltipReload", IDS_TOOLTIP_RELOAD},
-      {"reloadButtonTooltipStop", IDS_TOOLTIP_STOP}};
+      {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
+      {"reloadButtonTooltipStop", IDS_TOOLTIP_STOP},
+      // go/keep-sorted end
+  };
   source->AddLocalizedStrings(kStrings);
 
   webui::SetupWebUIDataSource(source, kReloadButtonResources,
