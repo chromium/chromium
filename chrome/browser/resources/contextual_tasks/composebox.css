@@ -85,6 +85,7 @@
   --inset-start-indent_: 20px;
   --text-input-left-spacing: 24px;
   --text-input-top-spacing: 16px;
+  --composebox-context-menu-entrypoint-button-color: var(--color-composebox-voice-lens-button);
 
   box-shadow: none;
   inset-inline-start: var(--inset-start-indent_);
@@ -186,6 +187,10 @@
 
 #composebox::part(upload-container) {
   display: none;
+}
+
+#composebox::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color);
 }
 
 /* Controls cancel and submit buttons. */
