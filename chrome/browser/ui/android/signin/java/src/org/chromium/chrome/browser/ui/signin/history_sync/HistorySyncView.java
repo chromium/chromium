@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
@@ -21,7 +23,7 @@ import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLa
 
 /** View that wraps history sync consent screen and caches references to UI elements. */
 @NullMarked
-public class HistorySyncView extends LinearLayout {
+public class HistorySyncView extends ConstraintLayout {
     private ImageView mAccountImage;
     private TextView mTitle;
     private TextView mSubtitle;

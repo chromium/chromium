@@ -10,18 +10,20 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:padding="24dp">
 
     <ScrollView
         android:id="@+id/sync_consent_scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
         android:fadeScrollbars="false"
         android:fillViewport="true"
-        android:scrollIndicators="bottom">
+        android:scrollIndicators="bottom"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/dual_control_button_bar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -96,27 +98,36 @@ found in the LICENSE file.
     small_screen_button_layout will be made visible from the Java side. -->
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/dual_control_button_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="22dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/small_screen_button_layout" />
 
     <LinearLayout
         android:id="@+id/small_screen_button_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/history_sync_footer">
 
     </LinearLayout>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/history_sync_footer"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-        app:leading="@dimen/text_size_small_leading" />
+        app:leading="@dimen/text_size_small_leading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView>
