@@ -14,10 +14,7 @@ if (media_use_symphonia) {
     crate_root = "symphonia_glue.rs"
     sources = [ "symphonia_glue.rs" ]
     cxx_bindings = [ "symphonia_glue.rs" ]
-    visibility = [
-      ":filters",
-      ":rust_unittests",
-    ]
+    visibility = [ ":filters" ]
     deps = [ "//third_party/rust/symphonia/v0_5:lib" ]
   }
 }
@@ -443,35 +440,8 @@ source_set("unit_tests") {
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
-  # NOTE: if more rust tests that are not gated on Symphonia being enabled are
-  # added to filters, this conditional can be dropped.
-  if (media_use_symphonia) {
-    deps += [ ":rust_unittests" ]
-  }
-
   if (media_use_ffmpeg) {
     # Direct dependency required to inherit config.
     deps += [ "//third_party/ffmpeg" ]
-  }
-}
-
-# Rust unit tests are not allowed to commingle with C++ unit tests inside of a
-# single source set, so are included here separately.
-#
-# NOTE: if more rust tests that are not gated on Symphonia being enabled are
-# added to filters, this conditional can more tightly scoped to Symphonia source
-# files.
-if (media_use_symphonia) {
-  rust_static_library("rust_unittests") {
-    testonly = true
-    is_gtest_unittests = true
-    crate_root = "symphonia_glue_unittest.rs"
-    sources = [ "symphonia_glue_unittest.rs" ]
-    deps = [
-      ":symphonia_glue",
-      "//testing/rust_gtest_interop",
-      "//third_party/rust/num_traits/v0_2:lib",
-      "//third_party/rust/symphonia/v0_5:lib",
-    ]
   }
 }

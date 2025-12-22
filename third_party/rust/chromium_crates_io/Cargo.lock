@@ -179,7 +179,6 @@ dependencies = [
  "libc",
  "llguidance",
  "log",
- "num-traits",
  "png",
  "proc-macro2",
  "prost",
