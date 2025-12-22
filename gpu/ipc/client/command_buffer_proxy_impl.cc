@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -42,10 +43,148 @@
 
 namespace gpu {
 
+// This filter does the following:
+// - handles WebGPU GPU->Client messages on the specified task runner
+// - posts other calls back to the main thread (|proxy_task_runner|)
+class CommandBufferClientMessageFilter
+    : public base::RefCountedDeleteOnSequence<CommandBufferClientMessageFilter>,
+      public mojom::CommandBufferClient {
+ public:
+  CommandBufferClientMessageFilter(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      CommandBufferProxyImpl* proxy,
+      scoped_refptr<base::SequencedTaskRunner> proxy_task_runner = nullptr);
+  CommandBufferClientMessageFilter(const CommandBufferClientMessageFilter&) =
+      delete;
+  CommandBufferClientMessageFilter& operator=(
+      const CommandBufferClientMessageFilter&) = delete;
+
+  void Initialize(mojo::PendingAssociatedReceiver<mojom::CommandBufferClient>
+                      pending_receiver);
+  void Destroy();
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<
+      CommandBufferClientMessageFilter>;
+  friend class base::DeleteHelper<CommandBufferClientMessageFilter>;
+  ~CommandBufferClientMessageFilter() override;
+
+  void OnDisconnect();
+
+  // mojom::CommandBufferClient:
+  void OnConsoleMessage(const std::string& message) override;
+  void OnGpuSwitched() override;
+  void OnDestroyed(gpu::error::ContextLostReason reason,
+                   gpu::error::Error error) override;
+  void OnReturnData(const std::vector<uint8_t>& data) override;
+  void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
+
+  mutable base::Lock proxy_lock_;
+  raw_ptr<CommandBufferProxyImpl> proxy_ GUARDED_BY(proxy_lock_) = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> proxy_task_runner_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  mojo::AssociatedReceiver<mojom::CommandBufferClient> receiver_{this};
+};
+
+CommandBufferClientMessageFilter::CommandBufferClientMessageFilter(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    CommandBufferProxyImpl* proxy,
+    scoped_refptr<base::SequencedTaskRunner> proxy_task_runner)
+    : base::RefCountedDeleteOnSequence<CommandBufferClientMessageFilter>(
+          task_runner),
+      proxy_(proxy),
+      proxy_task_runner_(proxy_task_runner
+                             ? std::move(proxy_task_runner)
+                             : base::SequencedTaskRunner::GetCurrentDefault()),
+      task_runner_(std::move(task_runner)) {}
+
+CommandBufferClientMessageFilter::~CommandBufferClientMessageFilter() {
+  DCHECK(!proxy_);
+}
+
+void CommandBufferClientMessageFilter::Initialize(
+    mojo::PendingAssociatedReceiver<mojom::CommandBufferClient>
+        pending_receiver) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CommandBufferClientMessageFilter::Initialize,
+                       base::RetainedRef(this), std::move(pending_receiver)));
+    return;
+  }
+  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_off_sequence;
+  receiver_.Bind(std::move(pending_receiver), task_runner_);
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &CommandBufferClientMessageFilter::OnDisconnect, base::Unretained(this)));
+}
+
+void CommandBufferClientMessageFilter::Destroy() {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_ = nullptr;
+  }
+}
+
+void CommandBufferClientMessageFilter::OnDisconnect() {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CommandBufferProxyImpl::OnDisconnect,
+                                  proxy_->AsWeakPtr()));
+  }
+}
+
+void CommandBufferClientMessageFilter::OnConsoleMessage(
+    const std::string& message) {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_->OnConsoleMessage(message);
+  }
+}
+
+void CommandBufferClientMessageFilter::OnGpuSwitched() {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_->OnGpuSwitched();
+  }
+}
+
+void CommandBufferClientMessageFilter::OnDestroyed(
+    gpu::error::ContextLostReason reason,
+    gpu::error::Error error) {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CommandBufferProxyImpl::OnDestroyed,
+                                  proxy_->AsWeakPtr(), reason, error));
+  }
+}
+
+void CommandBufferClientMessageFilter::OnReturnData(
+    const std::vector<uint8_t>& data) {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_->OnReturnData(data);
+  }
+}
+
+void CommandBufferClientMessageFilter::OnSignalAck(
+    uint32_t id,
+    const CommandBuffer::State& state) {
+  base::AutoLock auto_lock(proxy_lock_);
+  if (proxy_) {
+    proxy_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CommandBufferProxyImpl::OnSignalAck,
+                                  proxy_->AsWeakPtr(), id, state));
+  }
+}
+
 CommandBufferProxyImpl::CommandBufferProxyImpl(
     scoped_refptr<GpuChannelHost> channel,
     int32_t stream_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> default_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     base::SharedMemoryMapper* transfer_buffer_mapper)
     : channel_(std::move(channel)),
       channel_id_(channel_->channel_id()),
@@ -53,7 +192,14 @@ CommandBufferProxyImpl::CommandBufferProxyImpl(
       stream_id_(stream_id),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel_id_, route_id_)),
-      callback_thread_(std::move(task_runner)),
+      default_task_runner_(std::move(default_task_runner)),
+      client_filter_(
+          (client_task_runner && client_task_runner != default_task_runner_)
+              ? base::MakeRefCounted<CommandBufferClientMessageFilter>(
+                    std::move(client_task_runner),
+                    this,
+                    default_task_runner_)
+              : nullptr),
       transfer_buffer_mapper_(transfer_buffer_mapper) {
   DCHECK(route_id_);
 }
@@ -61,8 +207,15 @@ CommandBufferProxyImpl::CommandBufferProxyImpl(
 CommandBufferProxyImpl::~CommandBufferProxyImpl() {
   for (auto& observer : deletion_observers_)
     observer.OnWillDeleteImpl();
+  if (client_filter_) {
+    client_filter_->Destroy();
+  }
   DisconnectChannel();
   CancelAllQueries();
+}
+
+base::WeakPtr<CommandBufferProxyImpl> CommandBufferProxyImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 ContextResult CommandBufferProxyImpl::Initialize(
@@ -104,6 +257,19 @@ ContextResult CommandBufferProxyImpl::Initialize(
     return ContextResult::kTransientFailure;
   }
 
+  // Setup the CommandBufferClient remote and receivers.
+  mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client_remote;
+  if (!client_filter_) {
+    client_remote =
+        client_receiver_.BindNewEndpointAndPassRemote(default_task_runner_);
+    client_receiver_.set_disconnect_handler(base::BindOnce(
+        &CommandBufferProxyImpl::OnDisconnect, base::Unretained(this)));
+  } else {
+    mojo::PendingAssociatedReceiver<mojom::CommandBufferClient>
+        client_receiver = client_remote.InitWithNewEndpointAndPassReceiver();
+    client_filter_->Initialize(std::move(client_receiver));
+  }
+
   // We're blocking the UI thread, which is generally undesirable.
   // In this case we need to wait for this before we can show any UI /anyway/,
   // so it won't cause additional jank.
@@ -114,8 +280,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
   bool sent = channel->GetGpuChannel().CreateCommandBuffer(
       std::move(params), route_id_, std::move(region),
       command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
-      client_receiver_.BindNewEndpointAndPassRemote(callback_thread_), &result,
-      &capabilities_, &gl_capabilities_);
+      std::move(client_remote), &result, &capabilities_, &gl_capabilities_);
   if (!sent) {
     command_buffer_.reset();
     client_receiver_.reset();
@@ -129,9 +294,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
     DLOG(ERROR) << "Failure processing GpuControl.CreateCommandBuffer.";
     return result;
   }
-
-  client_receiver_.set_disconnect_handler(base::BindOnce(
-      &CommandBufferProxyImpl::OnDisconnect, base::Unretained(this)));
 
   channel_ = std::move(channel);
   return result;
@@ -147,8 +309,9 @@ void CommandBufferProxyImpl::OnDisconnect() {
     // The GPU process might have intentionally been crashed
     // (exit_on_context_lost), so try to find out the original reason.
     TryUpdateStateDontReportError();
-    if (last_state_.error == gpu::error::kLostContext)
+    if (last_state_.error == gpu::error::kLostContext) {
       context_lost_reason = last_state_.context_lost_reason;
+    }
   }
   OnGpuAsyncMessageError(context_lost_reason, gpu::error::kLostContext);
 }
@@ -625,7 +788,7 @@ void CommandBufferProxyImpl::TryUpdateStateThreadSafe() {
   if (last_state_.error == gpu::error::kNoError) {
     shared_state()->Read(&last_state_);
     if (last_state_.error != gpu::error::kNoError) {
-      callback_thread_->PostTask(
+      default_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&CommandBufferProxyImpl::LockAndDisconnectChannel,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -755,7 +918,7 @@ void CommandBufferProxyImpl::DisconnectChannelInFreshCallStack() {
   // Create a fresh call stack to keep the |channel_| alive while we unwind the
   // stack in case things will use it, and give the GpuChannelClient a chance to
   // act fully on the lost context.
-  callback_thread_->PostTask(
+  default_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CommandBufferProxyImpl::LockAndDisconnectChannel,
                      weak_ptr_factory_.GetWeakPtr()));
