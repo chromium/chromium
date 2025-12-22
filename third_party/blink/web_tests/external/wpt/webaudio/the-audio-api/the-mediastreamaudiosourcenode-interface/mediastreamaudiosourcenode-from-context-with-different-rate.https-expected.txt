@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test stopping one MediaStream's tracks silences only its detector (cloned tracks)
+  assert_true: Detector in context with rate 32000 should have no input after operation. expected true got false
+[FAIL] Test stopping one MediaStream's tracks silences all detectors (shared tracks)
+  assert_true: Detector in context with rate 32000 should have no input after operation. expected true got false
+Harness: the test ran to completion.
+
