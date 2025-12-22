@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "890319699e6f265346814d9ef7e0ed31e645bc18",
+    libcxx_revision == "7048ba4f2970006d93059070e64745588043db5d",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -719,6 +719,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__random/uniform_real_distribution.h",
   "//third_party/libc++/src/include/__random/weibull_distribution.h",
   "//third_party/libc++/src/include/__ranges/access.h",
+  "//third_party/libc++/src/include/__ranges/adjacent_transform_view.h",
   "//third_party/libc++/src/include/__ranges/adjacent_view.h",
   "//third_party/libc++/src/include/__ranges/all.h",
   "//third_party/libc++/src/include/__ranges/as_rvalue_view.h",
