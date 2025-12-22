@@ -6,11 +6,11 @@
 #define PDF_PDF_ANNOTATION_AGENT_H_
 
 #include <ostream>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
@@ -75,7 +75,7 @@ class PdfAnnotationAgent : public blink::mojom::AnnotationAgent {
   };
 
   friend std::ostream& operator<<(std::ostream& o, State state) {
-    o << base::to_underlying(state);
+    o << std::to_underlying(state);
     return o;
   }
 
