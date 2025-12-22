@@ -560,6 +560,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7055552182600664515">For å spille av opphavsrettsbeskyttet innhold må nettsteder kanskje bruke en tjeneste for innholdsbeskyttelse. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> er utdatert. Oppdater appen.</translation>
+<translation id="7084115944294706056">Velg adressefeltets plassering</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er valgt. Du finner alternativer oppe på skjermen</translation>
 <translation id="7141896414559753902">Blokkér nettsteder fra å vise forgrunnsvinduer og viderekoblinger (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

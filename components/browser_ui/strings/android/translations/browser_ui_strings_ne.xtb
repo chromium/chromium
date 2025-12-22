@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">कपिराइट लाग्ने सामग्री प्ले गर्न साइटहरूले सामग्री संरक्षण सेवा प्रयोग गर्नु पर्ने हुन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{१ चयन गरियो}other{# चयन गरिए}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' को म्याद सकिएको छ। कृपया यो एप अपडेट गर्नुहोस्।</translation>
+<translation id="7084115944294706056">एड्रेस बार कहाँ राख्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चयन गरिए।  विकल्पहरू स्क्रिनको शीर्षभागको नजिकै उपलब्ध छन्</translation>
 <translation id="7141896414559753902">साइटहरूलाई पपअपहरू देखाउन र रिडिरेक्ट गर्नबाट रोक्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> के.बि.</translation>

@@ -560,6 +560,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7055552182600664515">Als je content wilt afspelen die auteursrechtelijk beschermd is, moet je misschien een contentbeveiligingsservice gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> is verouderd. Update de app.</translation>
+<translation id="7084115944294706056">Positie van adresbalk kiezen</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>
 <translation id="7141896414559753902">Sites niet toestaan pop-ups te bekijken en omleidingen uit te voeren (aanbevolen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

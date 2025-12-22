@@ -311,7 +311,6 @@
 <translation id="4334294535648607276">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="4337324600316876133">คุณจะต้องใช้ macOS 12 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 11</translation>
 <translation id="4343195214584226067">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chrome แล้ว</translation>
-<translation id="4344128547036991536">เมื่อคุณเปิด Google Lens ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยัง Google โดยอัตโนมัติ <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">รวม Chrome ไว้ในกิจกรรมบนเว็บและแอปเพื่อรับการปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="436060642166082913">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
 <translation id="4367027658822022112">คุณสามารถปักหมุด Google Lens เพื่อให้เข้าถึงได้ง่าย โดยการคลิกปุ่ม "ปักหมุด" ที่ด้านบนของแผงด้านข้าง</translation>
@@ -727,7 +726,6 @@
 <translation id="878572486461146056">ข้อผิดพลาดในการติดตั้ง: ผู้ดูแลเครือข่ายของคุณใช้นโยบายระดับกลุ่มซึ่งป้องกันการติดตั้ง: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">ปรับแต่ง Chrome</translation>
 <translation id="8798550110818026746">องค์กรของคุณจะดูและจัดการข้อมูลการท่องเว็บได้ เช่น บุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่าน แต่จะไม่เห็นข้อมูลการท่องเว็บในโปรไฟล์ Chrome อื่นๆ</translation>
-<translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
 <translation id="8821043148920470810">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 7</translation>
 <translation id="8823341990149967727">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="8834965163890861871">Google Chrome กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>

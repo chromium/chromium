@@ -560,6 +560,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7055552182600664515">Norint leisti autorių teisių apsaugotą turinį, svetainėse gali būti reikalinga turinio apsaugos paslauga. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
 <translation id="708014373017851679">„<ph name="APP_NAME" />“ pasenusi. Atnaujinkite programą.</translation>
+<translation id="7084115944294706056">Adreso juostos pozicijos pasirinkimas</translation>
 <translation id="7087918508125750058">Pasirinkta: <ph name="ITEM_COUNT" />. Parinktys pasiekiamos netoli ekrano viršaus</translation>
 <translation id="7141896414559753902">Blokuoti, kad svetainėse nebūtų rodomi iššokantieji langai ir peradresavimai (rekomenduojama)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

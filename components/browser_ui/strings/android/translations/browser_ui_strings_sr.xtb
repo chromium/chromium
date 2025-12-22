@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Да би пуштали садржај заштићен ауторским правима, сајтови ће можда морати да користе услугу заштите садржаја. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Изабрано: 1}one{Изабрано: #}few{Изабрано: #}other{Изабрано: #}}</translation>
 <translation id="708014373017851679">Апликација <ph name="APP_NAME" /> је застарела. Ажурирајте апликацију.</translation>
+<translation id="7084115944294706056">Одаберите место траке за адресу</translation>
 <translation id="7087918508125750058">Изабрали сте <ph name="ITEM_COUNT" />. Опције су доступне при врху екрана</translation>
 <translation id="7141896414559753902">Блокирај приказивање искачућих прозора и преусмеравања на сајтовима (препоручено)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

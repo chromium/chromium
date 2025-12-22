@@ -1680,6 +1680,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2114145607116268663">Tidak dapat menginstal, perlu memulai ulang. Mulai ulang komputer, lalu coba lagi. Kode error adalah <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Muat ulang &amp;Frame</translation>
 <translation id="2114995631896158695">Tidak ada kartu SIM yang dimasukkan</translation>
+<translation id="2115808389282428160">Jangan izinkan situs mengakses aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="2116619964159595185">Situs biasanya terhubung ke perangkat Bluetooth untuk fitur seperti penyiapan atau sinkronisasi beacon hemat energi, pelacak kesehatan atau kebugaran, atau bohlam lampu smart</translation>
 <translation id="2117655453726830283">Slide berikutnya</translation>
 <translation id="211803431539496924">Konfirmasi update keamanan yang diperpanjang?</translation>
@@ -2492,6 +2493,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Menambahkan profil eSIM. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="2663302507110284145">Bahasa</translation>
+<translation id="2665056444046933274">Situs dapat menggunakan fitur ini untuk mengakses aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="2665394472441560184">Tambahkan kata baru</translation>
 <translation id="2665647207431876759">Sudah berakhir</translation>
 <translation id="2665919335226618153">Waduh! Terjadi error saat proses pemformatan.</translation>
@@ -3162,6 +3164,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3118748462829336648">Buka Panel Samping</translation>
 <translation id="3119743309973425629">Kecepatan kedipan kursor teks</translation>
 <translation id="3119948370277171654">Konten/URL apa yang Anda transmisikan?</translation>
+<translation id="3120204271988747891">Situs dapat meminta untuk mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Gagal Membuat Direktori Data</translation>
 <translation id="3122883569442693641">Detail selengkapnya</translation>
@@ -7289,6 +7292,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5969364029958154283">Pelajari lebih lanjut cara mereset setelan</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> dapat melihat file dalam <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Notifikasi pintasan keyboard ditutup</translation>
+<translation id="5970443501603581692">Tidak diizinkan mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="5971037678316050792">Mengontrol penyandingan dan keadaan adaptor Bluetooth</translation>
 <translation id="5971861540200650391">Sembunyikan selama <ph name="MODULE_TITLE" /> jam</translation>
 <translation id="597235323114979258">Lihat tujuan lainnya</translation>
@@ -8634,6 +8638,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6903022061658753260">Data Anda akan disinkronkan di semua browser Chrome tempat Anda mengaktifkan sinkronisasi untuk akun ini. Untuk opsi sinkronisasi ChromeOS, buka <ph name="LINK_BEGIN" />setelan ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Memilih Tidak Ikut</translation>
 <translation id="6903590427234129279">Buka semua (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Diizinkan mengakses aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6903916726032521638">Telusuri <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Terima dari perangkat ini?</translation>
@@ -9147,6 +9152,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7273110280511444812">terakhir dilampirkan pada <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Selalu blokir <ph name="HOST" /> agar tidak mengontrol dan memprogram ulang perangkat MIDI Anda</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hingga baterai penuh</translation>
+<translation id="7275950084263610253">Diizinkan mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="727595954130325265">Beli Sekarang</translation>
 <translation id="727952162645687754">Error download</translation>
 <translation id="7280649757394340890">Setelan suara Text-to-Speech</translation>
@@ -9646,12 +9652,14 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7620616707541471029">Pilih akun untuk melanjutkan</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data lokal jika Anda lupa sandi atau PIN.</translation>
+<translation id="762200934554267613">Situs dapat meminta akses ke aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="7622114377921274169">Mengisi daya.</translation>
 <translation id="7622768823216805500">Situs biasanya menginstal pengelola pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih ke tab yang telah direkam</translation>
 <translation id="7624337243375417909">caps lock nonaktif</translation>
 <translation id="7625568159987162309">Lihat izin dan data yang disimpan di seluruh situs</translation>
 <translation id="7625823789272218216">Tab Baru di Sisi Kiri</translation>
+<translation id="7627749368210392160">Situs dapat menggunakan fitur ini untuk mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Kelas <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Pilih tindakan untuk setiap tombol</translation>
 <translation id="7629206210984165492">Temaram</translation>
@@ -10697,6 +10705,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="831207808878314375">Definisi</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Opsi aplikasi</translation>
+<translation id="8313599942510782709">Tugas Anda masih dalam proses</translation>
 <translation id="8314089908545021657">Hubungkan dengan ponsel baru</translation>
 <translation id="8314381333424235892">Ekstensi tidak ada atau tidak diinstal</translation>
 <translation id="831440797644402910">Tidak dapat membuka folder ini</translation>
@@ -10704,6 +10713,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8315018673856831477">Opsi penghemat memori</translation>
 <translation id="8315514906653279104">Mengaktifkan...</translation>
 <translation id="8316480109537174997">Tampilkan Gemini di area notifikasi dan aktifkan pintasan keyboard</translation>
+<translation id="8317291727028594010">Tidak diizinkan mengakses aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="8317671367883557781">Tambahkan koneksi jaringan</translation>
 <translation id="8317965619823678157">menyalin sandi</translation>
 <translation id="8318266828739827371">Gunakan tampilan layar terpisah untuk melihat area layar yang diperbesar. Gunakan Penelusuran + Ctrl + D untuk mengaktifkan dan menonaktifkan kaca pembesar tersemat.</translation>
@@ -11346,6 +11356,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8745034592125932220">Tidak diizinkan menyimpan data ke perangkat Anda</translation>
 <translation id="8746654918629346731">Anda telah meminta "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Upload 1 file ke situs ini?}other{Upload # file ke situs ini?}}</translation>
+<translation id="8748714929822124637">Jangan izinkan situs mengakses perangkat lain di jaringan lokal Anda</translation>
 <translation id="8748916845823567967">Semua data dan cookie yang disimpan oleh <ph name="SITE" /> akan dihapus.</translation>
 <translation id="8749805710397399240">Tidak dapat mentransmisikan layar Anda. Periksa izin Perekaman Layar di Preferensi Sistem.</translation>
 <translation id="8749826920799243530">Perangkat tidak terdaftar</translation>

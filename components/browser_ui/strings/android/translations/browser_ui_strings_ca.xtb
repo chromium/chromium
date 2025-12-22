@@ -560,6 +560,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7055552182600664515">Per reproduir continguts protegits amb drets d'autor, és possible que els llocs web hagin d'utilitzar un servei de protecció del contingut. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 de seleccionat}other{# de seleccionats}}</translation>
 <translation id="708014373017851679">L'aplicació <ph name="APP_NAME" /> no està actualitzada. Actualitza-la.</translation>
+<translation id="7084115944294706056">Tria la posició de la barra</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

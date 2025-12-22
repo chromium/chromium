@@ -560,6 +560,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7055552182600664515">Para reproducir contido protexido con copyright, é posible que algúns sitios necesiten usar un servizo de protección de contido. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="708014373017851679">A aplicación <ph name="APP_NAME" /> está desactualizada. Actualízaa.</translation>
+<translation id="7084115944294706056">Escolle a posición da barra de enderezos</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hai opcións dispoñibles na parte superior da pantalla</translation>
 <translation id="7141896414559753902">Non permite que os sitios mostren ventás emerxentes nin redireccións (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">کاپی رائٹ کے ذریعے تحفظ یافتہ مواد کو چلانے کیلئے، سائٹس کو مواد کے تحفظ کی سروس کا استعمال کرنے کی ضرورت پڑ سکتی ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' پرانا ہے۔ براہ کرم ایپ کو اپ ڈیٹ کریں۔</translation>
+<translation id="7084115944294706056">ایڈریس بار کی پوزیشن کا انتخاب کریں</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> منتخب ہو گئے۔ اختیارات اسکرین کے اوپری حصہ کے قریب دستیاب ہیں</translation>
 <translation id="7141896414559753902">سائٹس کو پاپ اپس اور ری ڈائریکٹس دکھانے سے مسدود کریں (تجویز کردہ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

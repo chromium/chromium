@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Valitud on 1}other{Valitud on #}}</translation>
 <translation id="3668816008081204991">Lugemisloend on peidetud</translation>
 <translation id="3670030362669914947">Number</translation>
+<translation id="3672283986707092811">Vali kõik</translation>
 <translation id="3679163990085797665">Kustuta loetud</translation>
 <translation id="368329460027487650">Välja logitud. Avab sisselogimise valikud.</translation>
 <translation id="3695446226812920698">Lisateave</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Kuvatav nimi</translation>
 <translation id="4375772272517383391">Sulge kõik vahelehed</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Vali</translation>
 <translation id="4389019817280890563">Puudutage keele muutmiseks.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 päeva pärast}other{{COUNT} päeva pärast}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Faili salvestamine</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} pääsuvõtit ei saanud importida}other{{count} pääsuvõtit ei saanud importida}}</translation>
 <translation id="5371112366564891538">Suurenda teksti</translation>
+<translation id="5376135254804080693">Tühista kõik valikud</translation>
 <translation id="537853552771686272">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} on suletud}other{{count} on suletud}}</translation>
 <translation id="5394975111793637642">Teile mõeldud tootearvustuste kaardi peitmine</translation>

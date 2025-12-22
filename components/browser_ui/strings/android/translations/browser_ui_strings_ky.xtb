@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Автордук укук менен корголгон контентти ойнотуу үчүн сайттар контентти коргоочу кызматты колдонушу керек <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 тандалды}other{# тандалды}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" эскирип калган. Колдонмону жаңыртыңыз.</translation>
+<translation id="7084115944294706056">Дарек тилкесинин ордун тандаңыз</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> тандалды.  Параметрлер экрандын жогору жагында берилген</translation>
 <translation id="7141896414559753902">Сайттарда калкыма терезелерди көрсөтүү менен багыттоолор бөгөттөлсүн (сунушталат)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Кб</translation>

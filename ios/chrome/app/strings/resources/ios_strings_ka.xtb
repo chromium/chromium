@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{არჩეულია 1}other{არჩეულია #}}</translation>
 <translation id="3668816008081204991">საკითხავი სია დამალულია</translation>
 <translation id="3670030362669914947">ნომერი</translation>
+<translation id="3672283986707092811">ყველას არჩევა</translation>
 <translation id="3679163990085797665">წაკითხულის წაშლა</translation>
 <translation id="368329460027487650">გამოსული ხართ. გახსნის შესვლის ვარიანტებს.</translation>
 <translation id="3695446226812920698">შეიტყვეთ როგორ</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">საჩვენებელი სახელი</translation>
 <translation id="4375772272517383391">ყველა ჩანართის დახურვა</translation>
 <translation id="4378154925671717803">ტელეფონი</translation>
+<translation id="4380677808580146413">არჩევა</translation>
 <translation id="4389019817280890563">შეეხეთ ენის შესაცვლელად.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 დღის შემდეგ}other{{COUNT} დღის შემდეგ}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ფაილის შენახვა</translation>
 <translation id="5355191726083956201">გაძლიერებული დაცვა ჩართულია</translation>
 <translation id="536067926684072644">სანიშნეების ჩვენება</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} წვდომის გასაღების იმპორტი ვერ მოხერხდა}other{{count} წვდომის გასაღების იმპორტი ვერ მოხერხდა}}</translation>
 <translation id="5371112366564891538">ტექსტის ზომის გაზრდა</translation>
+<translation id="5376135254804080693">ყველას არჩევის გაუქმება</translation>
 <translation id="537853552771686272">მართეთ თემები და ვებსაიტები, რომლებიც გაინტერესებთ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} დაიხურა}other{{count} დაიხურა}}</translation>
 <translation id="5394975111793637642">ბარათის „პროდუქტის მიმოხილვები თქვენთვის“ დამალვა</translation>

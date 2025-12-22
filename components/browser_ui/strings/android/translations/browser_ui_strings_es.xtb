@@ -560,6 +560,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7055552182600664515">Para reproducir contenido protegido por derechos de autor, es posible que los sitios tengan que usar un servicio de protección de contenido. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> no está actualizada. Actualiza la aplicación.</translation>
+<translation id="7084115944294706056">Elige la posición de la barra</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hay opciones disponibles en la parte superior de la pantalla</translation>
 <translation id="7141896414559753902">Impide que los sitios muestren ventanas emergentes y redirecciones (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

@@ -560,6 +560,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7055552182600664515">Če želite predvajati vsebino, zaščiteno z avtorskimi pravicami, morajo spletna mesta morda uporabiti storitev za zaščito vsebine. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
 <translation id="708014373017851679">Aplikacija »<ph name="APP_NAME" />« je zastarela. Posodobite jo.</translation>
+<translation id="7084115944294706056">Izbira položaja naslovne vrstice</translation>
 <translation id="7087918508125750058">Št. izbranih: <ph name="ITEM_COUNT" />. Možnosti so na voljo na zgornjem delu zaslona.</translation>
 <translation id="7141896414559753902">Preprečevanje, da spletna mesta prikazujejo pojavna okna in preusmeritve (priporočeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

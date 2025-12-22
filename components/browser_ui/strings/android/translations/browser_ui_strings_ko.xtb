@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">저작권으로 보호되는 콘텐츠를 재생하려면 사이트에서 콘텐츠 보호 서비스를 사용해야 할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' 앱이 최신 버전이 아닙니다. 앱을 업데이트하세요.</translation>
+<translation id="7084115944294706056">주소 표시줄 위치 선택</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />개 선택됨. 화면 상단에서 옵션 선택 가능</translation>
 <translation id="7141896414559753902">사이트에서 팝업 및 리디렉션을 표시하지 못하도록 차단(권장)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" />KB</translation>

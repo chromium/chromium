@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">網站可能需要使用內容保護服務，才能播放受著作權保護的內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="708014373017851679">「<ph name="APP_NAME" />」版本過舊，請更新應用程式。</translation>
+<translation id="7084115944294706056">選擇網址列的位置</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

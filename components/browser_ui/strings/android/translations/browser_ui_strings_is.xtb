@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Vefsvæði kunna að nota efnisverndarþjónustu til að spila höfundarréttavarið efni <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valið}one{# valið}other{# valin}}</translation>
 <translation id="708014373017851679">„<ph name="APP_NAME" />“ er úrelt. Uppfærðu forritið.</translation>
+<translation id="7084115944294706056">Veldu stöðu veffangastikunnar</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valin.  Valkostir eru ofarlega á skjánum</translation>
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

@@ -560,6 +560,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7055552182600664515">Autoriõigustega kaitstud sisu esitamiseks peavad saidid võib-olla kasutama sisukaitseteenust. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 on valitud}other{# on valitud}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> on aegunud. Värskendage rakendust.</translation>
+<translation id="7084115944294706056">Aadressiriba asukoha valimine</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> on valitud.  Valikud on saadaval ekraanikuva ülaosas</translation>
 <translation id="7141896414559753902">Blokeeri saitidel hüpikakende ja ümbersuunamiste kuvamine (soovitatav)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

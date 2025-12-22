@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Щоб відтворювати контент, захищений авторським правом, сайтам, можливо, буде потрібно використовувати сервіс захисту контенту. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Вибрано 1}one{Вибрано #}few{Вибрано #}many{Вибрано #}other{Вибрано #}}</translation>
 <translation id="708014373017851679">Додаток <ph name="APP_NAME" /> застарілий. Оновіть додаток.</translation>
+<translation id="7084115944294706056">Як вибрати розташування адресного рядка</translation>
 <translation id="7087918508125750058">Вибрано <ph name="ITEM_COUNT" />. Панель інструментів розташовано вгорі екрана</translation>
 <translation id="7141896414559753902">Блокувати спливаючі вікна та переадресацію на сайтах (рекомендовано)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>

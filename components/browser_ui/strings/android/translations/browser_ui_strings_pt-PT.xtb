@@ -560,6 +560,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7055552182600664515">Para reproduzir conteúdo protegido por direitos de autor, os sites podem ter de usar um serviço de proteção de conteúdo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}other{# selecionados}}</translation>
 <translation id="708014373017851679">A app "<ph name="APP_NAME" />" está desatualizada. Atualize a app.</translation>
+<translation id="7084115944294706056">Escolha a pos. da barra de end.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selecionado(s). Opções disponíveis junto à parte superior do ecrã.</translation>
 <translation id="7141896414559753902">Impedir que os sites apresentem pop-ups e redirecionamentos (recomendado).</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

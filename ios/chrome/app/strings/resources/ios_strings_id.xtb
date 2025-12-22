@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1161663161838091892">Sinkronkan tab dan histori untuk melanjutkan</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kartu kredit}other{{count} kartu kredit}}</translation>
 <translation id="1164891049599601209">Dimasukkan pada situs yang tidak jujur</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1172898394251786223">Bidang berikutnya</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Tab terbuka</translation>
 <translation id="1752547299766512813">Simpan Sandi</translation>
 <translation id="1764070164487214210">Arah</translation>
+<translation id="1764511703783285459">Pengelola sandi lain tidak membagikan sandi atau kunci sandi apa pun</translation>
 <translation id="1767766085187034454">Google Terjemahan</translation>
 <translation id="1771016937398045251">Menu alat</translation>
 <translation id="1772468122139624049">Tidak dapat memuat ulang tab</translation>
@@ -1068,6 +1070,7 @@
 <translation id="508645147179720015">Catatan berisi lebih dari 1.000 karakter</translation>
 <translation id="5087098519049306025">Pemantauan Harga</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Tidak ada yang diimpor</translation>
 <translation id="5113960131843706315">Memuat data Anda…</translation>
 <translation id="5118462200606189584">Tambahkan akun…</translation>
 <translation id="5118764316110575523">Nonaktif</translation>
@@ -1445,6 +1448,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
 <translation id="6410883413783534063">Buka tab untuk mengunjungi halaman yang berbeda secara bersamaan</translation>
 <translation id="6418346271604475326">Menyiapkan PDF</translation>
+<translation id="6420292512900923139">Terjadi masalah saat mengimpor data Anda</translation>
 <translation id="6421038304268477484">Teks terjemahan</translation>
 <translation id="6429213933892582367">Buka Opsi Sandi</translation>
 <translation id="6435236283694032571">Tambahkan ke Daftar Bacaan</translation>
@@ -1483,6 +1487,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6537746030088321027">contoh.com</translation>
 <translation id="6550675742724504774">Opsi</translation>
 <translation id="6550891580932862748">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Setelan Safe Browsing Anda di produk Google lainnya tidak akan terpengaruh.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Urungkan</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>

@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1161663161838091892">Segerakkan tab dan sejarah untuk meneruskan proses</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kad kredit}other{{count} kad kredit}}</translation>
 <translation id="1164891049599601209">Dimasukkan pada tapak penipuan</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1172898394251786223">Medan seterusnya</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1752547299766512813">Simpan K/Laluan</translation>
 <translation id="1764070164487214210">Arah</translation>
+<translation id="1764511703783285459">Pengurus kata laluan yang lain tidak berkongsi sebarang kata laluan atau kunci laluan</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Menu alatan</translation>
 <translation id="1772468122139624049">Tidak dapat memuatkan semula tab</translation>
@@ -688,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="3668816008081204991">Senarai bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nombor</translation>
+<translation id="3672283986707092811">Pilih Semua</translation>
 <translation id="3679163990085797665">Padamkan dibaca</translation>
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3695446226812920698">Ketahui caranya</translation>
@@ -870,6 +873,7 @@
 <translation id="4367971618859387374">Nama paparan</translation>
 <translation id="4375772272517383391">Tutup semua tab</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Pilih</translation>
 <translation id="4389019817280890563">Ketik untuk menukar bahasa.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Selepas sehari}other{Selepas {COUNT} hari}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}other{# tab}}</translation>
@@ -1068,6 +1072,7 @@
 <translation id="508645147179720015">Nota melebihi 1000 aksara</translation>
 <translation id="5087098519049306025">Penjejakan Harga</translation>
 <translation id="5090832849094901128">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Tiada apa-apa yang diimport</translation>
 <translation id="5113960131843706315">Mendapatkan data anda…</translation>
 <translation id="5118462200606189584">Tambahkan akaun…</translation>
 <translation id="5118764316110575523">Mati</translation>
@@ -1138,7 +1143,9 @@
 <translation id="5352128922772839949">Simpan fail</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
 <translation id="536067926684072644">Tunjukkan Penanda Halaman</translation>
+<translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimport {count} kunci laluan}other{Tidak dapat mengimport {count} kunci laluan}}</translation>
 <translation id="5371112366564891538">Besarkan saiz teks</translation>
+<translation id="5376135254804080693">Nyahpilih Semua</translation>
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kad ulasan produk untuk anda</translation>
@@ -1445,6 +1452,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas laman web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
 <translation id="6410883413783534063">Buka tab untuk melawati halaman yang berlainan pada masa yang sama</translation>
 <translation id="6418346271604475326">Menyediakan PDF</translation>
+<translation id="6420292512900923139">Menghadapi masalah semasa mengimport data anda</translation>
 <translation id="6421038304268477484">Teks terjemahan</translation>
 <translation id="6429213933892582367">Buka Pilihan Kata Laluan</translation>
 <translation id="6435236283694032571">Tambahkan pada Senarai Bacaan</translation>
@@ -1483,6 +1491,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Pilihan</translation>
 <translation id="6550891580932862748">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Tetapan Penyemakan Imbas Selamat anda pada produk Google lain tidak akan terjejas.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Buat semula</translation>
 <translation id="6559301491397835130">{count,plural, =1{Penanda halaman disimpan pada "{title}". Penanda halaman ini disimpan pada peranti ini sahaja.}other{Penanda halaman disimpan pada "{title}". Penanda halaman ini disimpan pada peranti ini sahaja.}}</translation>
 <translation id="656065428026159829">Lihat lagi</translation>

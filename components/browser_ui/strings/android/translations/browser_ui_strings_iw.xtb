@@ -561,6 +561,7 @@
 <translation id="7055552182600664515">כדי להפעיל תוכן שמוגן בזכויות יוצרים, יכול להיות שבאתרים יהיה צורך להשתמש בשירות להגנת תוכן. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}one{נבחרו #}two{נבחרו #}other{נבחרו #}}</translation>
 <translation id="708014373017851679">האפליקציה <ph name="APP_NAME" /> לא מעודכנת. צריך לעדכן את האפליקציה.</translation>
+<translation id="7084115944294706056">בחירת מיקום סרגל הכתובות</translation>
 <translation id="7087918508125750058">נבחרו <ph name="ITEM_COUNT" />. האפשרויות מוצגות בחלק העליון של המסך</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

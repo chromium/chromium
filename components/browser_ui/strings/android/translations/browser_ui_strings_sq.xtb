@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Për të luajtur përmbajtjet e mbrojtura nga të drejtat e autorit, sajtet mund të kenë nevojë të përdorin një shërbim të mbrojtjes së përmbajtjeve. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 i zgjedhur}other{# të zgjedhur}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> nuk është përditësuar. Përditëso aplikacionin.</translation>
+<translation id="7084115944294706056">Zgjidh poz. e shiritit të adres.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> të zgjedhura. Opsionet ofrohen pranë kreut të ekranit</translation>
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

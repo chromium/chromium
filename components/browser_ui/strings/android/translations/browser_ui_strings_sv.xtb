@@ -560,6 +560,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7055552182600664515">Webbplatser kan behöva använda en tjänst för innehållsskydd för att spela upp upphovsrättsskyddat innehåll <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 har valts}other{# har valts}}</translation>
 <translation id="708014373017851679"><ph name="APP_NAME" /> är inaktuell. Uppdatera appen.</translation>
+<translation id="7084115944294706056">Välj position för adressfältet</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> har valts. Alternativ finns högt upp på skärmen</translation>
 <translation id="7141896414559753902">Blockera webbplatser från att visa popup-fönster (rekommenderas)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

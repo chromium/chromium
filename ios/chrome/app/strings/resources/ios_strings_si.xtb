@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">කල් ඉකුත් වන මාසය</translation>
 <translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1161663161838091892">ඉදිරියට යාමට පටිති සහ ඉතිහාසය සමමුහුර්ත කරන්න</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} ණය කාඩ්පත}one{ණය කාඩ්පත් {count}}other{ණය කාඩ්පත් {count}}}</translation>
 <translation id="1164891049599601209">රැවටිලි සහිත වෙබ් අඩවිය මත ඇතුළත් කළා</translation>
 <translation id="1165039591588034296">දෝෂයක්</translation>
 <translation id="1172898394251786223">ඊළඟ ක්ෂේත්‍රය</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
 <translation id="1752547299766512813">මුරපද සුරකින්න</translation>
 <translation id="1764070164487214210">දිශා</translation>
+<translation id="1764511703783285459">අනෙක් මුරපද කළමනාකරු කිසිදු මුරපදයක් හෝ මුරයතුරක් බෙදා ගත්තේ නැත</translation>
 <translation id="1767766085187034454">Google පරිවර්තනය</translation>
 <translation id="1771016937398045251">මෙවලම් මෙනුව</translation>
 <translation id="1772468122139624049">පටිති නැවත පූරණය කළ නොහැක</translation>
@@ -1068,6 +1070,7 @@
 <translation id="508645147179720015">සටහන අනුලකුණු 1000කට වඩා වැඩියි</translation>
 <translation id="5087098519049306025">මිල නිරීක්ෂණය</translation>
 <translation id="5090832849094901128">මෙම මුරපදය මැකීම <ph name="WEBSITE" /> හි ඔබගේ ගිණුම මකන්නේ නැත.</translation>
+<translation id="510580293474170715">කිසිවක් ආයාත කර නැත</translation>
 <translation id="5113960131843706315">ඔබේ දේවල් ලබා ගනිමින්…</translation>
 <translation id="5118462200606189584">ගිණුම එක් කරන්න…</translation>
 <translation id="5118764316110575523">අක්‍රිය</translation>
@@ -1445,6 +1448,7 @@
 <translation id="6410390304316730527">ආරක්ෂිත බ්‍රවුස් කිරීම දුෂ්ට මෘදුකාංග ස්ථාපිත කිරීම හෝ මුරපද, දුරකථන අංක, හෝ ණය කාඩ්පත් අංක වැනි පුද්ගලික තොරතුරු හෙළි කිරීම වැනි යම් අනතුරුදායක දේ කිරීමට ඔබට උපාය කළ හැකි ප්‍රහාරකයින්ට එරෙහිව ඔබව ආරක්‍ෂා කරයි. ඔබ එය අක්‍රිය කරන්නේ නම්, නුපුරුදු හෝ අසම්භාවනීය වෙබ් අඩවි බ්‍රවුස් කරන විට පරීක්‍ෂාකාරී වන්න.</translation>
 <translation id="6410883413783534063">එකවර විවිධ පිටුවලට පිවිසීමට ටැබ් විවෘත කරන්න</translation>
 <translation id="6418346271604475326">PDF සූදානම් කිරීම</translation>
+<translation id="6420292512900923139">ඔබේ දත්ත ආයාත කිරීමේ ගැටලුවකි</translation>
 <translation id="6421038304268477484">පරිවර්තිත පෙළ</translation>
 <translation id="6429213933892582367">මුරපද විකල්ප විවෘත කරන්න</translation>
 <translation id="6435236283694032571">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
@@ -1483,6 +1487,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">අභිප්‍රේත</translation>
 <translation id="6550891580932862748">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහිව ඔබව ආරක්ෂා නොකරයි. වෙනත් Google නිෂ්පාදනවල ඔබේ සුරක්ෂිත බ්‍රවුස් කිරීමේ සැකසීම් බලපාන්නේ නැත.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">නැවත කරන්න</translation>
 <translation id="6559301491397835130">{count,plural, =1{පිටුසන "{title}" වෙත සුරකින ලදි. එය සුරැකෙන්නේ මෙම උපාංගයට පමණි.}one{පිටුසන "{title}" වෙත සුරකින ලදි. ඒවා සුරැකෙන්නේ මෙම උපාංගයට පමණි.}other{පිටුසන "{title}" වෙත සුරකින ලදි. ඒවා සුරැකෙන්නේ මෙම උපාංගයට පමණි.}}</translation>
 <translation id="656065428026159829">තවත් බලන්න</translation>

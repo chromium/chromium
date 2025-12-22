@@ -560,6 +560,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7055552182600664515">Da reproduciraju sadržaj zaštićen autorskim pravima, web lokacije će možda trebati koristiti uslugu zaštite sadržaja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 odabrana kartica}one{# odabrana kartica}few{# odabrane kartice}other{# odabranih kartica}}</translation>
 <translation id="708014373017851679">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ažurirajte aplikaciju.</translation>
+<translation id="7084115944294706056">Odaberite položaj trake za adresu</translation>
 <translation id="7087918508125750058">Odabrali ste <ph name="ITEM_COUNT" />.  Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="7141896414559753902">Blokiranje prikazivanja skočnih prozora na web lokacijama i preusmjeravanje (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

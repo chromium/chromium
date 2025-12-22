@@ -2455,6 +2455,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2646132387794831258">Vols desar-la en una carpeta del teu Compte de Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">ASCII codificat en Base64, cadena de certificats</translation>
+<translation id="2649331484502514724">DNS segur</translation>
 <translation id="2649508632465204949">Ensenya'm una habilitat nova</translation>
 <translation id="2651259505411913186">Sí, mantén les meves dades separades de les del centre educatiu</translation>
 <translation id="265156376773362237">Precàrrega estàndard</translation>
@@ -3383,6 +3384,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="329838636886466101">Repara</translation>
 <translation id="3298789223962368867">Heu introduït un URL no vàlid.</translation>
 <translation id="32991397311664836">Dispositius:</translation>
+<translation id="330140779027048024">Utilitza sempre amb el proveïdor de DNS mitjançant HTTPS seleccionat</translation>
 <translation id="3301554464236215299">Aquest fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="3301996560342889673">Vols sincronitzar l'historial?</translation>
 <translation id="33022249435934718">Controls GDI</translation>
@@ -4740,6 +4742,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Informe de suggeriments</translation>
 <translation id="4206585797409671301">Amb permís per mostrar sol·licituds</translation>
+<translation id="4207144975205749656">Encripta les sol·licituds de navegació perquè els atacants de la mateixa xarxa no puguin veure el teu trànsit</translation>
 <translation id="4207932031282227921">S'ha sol·licitat permís, prem F6 per respondre</translation>
 <translation id="4208390505124702064">Cerca a <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Gran</translation>
@@ -6145,6 +6148,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5186362203408605578">Utilitza un altre dispositiu escanejant el codi QR</translation>
 <translation id="5186381005592669696">Personalitza l'idioma de visualització de les aplicacions compatibles</translation>
 <translation id="5186788525428341874">Pots utilitzar aquesta clau d'accés per iniciar la sessió més ràpidament en tots els teus dispositius. Es desarà al gestor de contrasenyes de Google per a <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Utilitza l'opció predeterminada (si està disponible)</translation>
 <translation id="5187641678926990264">Instal·la la pàgina com a aplicació...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartit per <ph name="USER_NAME" /></translation>
@@ -7118,6 +7122,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5863445608433396414">Activa les funcions de depuració</translation>
 <translation id="5863515189965725638">Edita l'IBAN</translation>
 <translation id="5864195618110239517">Fes servir la connexió d'ús mesurat</translation>
+<translation id="5864624288360677142">Utilitza el valor predeterminat (si està disponible) i el DNS de Google com a alternativa</translation>
 <translation id="5864754048328252126">Acció d'inactivitat mentre es carrega</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> aviat es posarà en pausa</translation>
 <translation id="586567932979200359">Esteu executant <ph name="PRODUCT_NAME" /> des de la imatge de disc. Si instal·leu l'aplicació a l'equip, podreu executar-la sense la imatge de disc i es mantindrà actualitzada.</translation>
@@ -7567,6 +7572,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6180550893222597997">Quina clau d'accés vols utilitzar per a <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">De vegades, les aplicacions actualitzen el seu brànding. Revisa tots els canvis per assegurar-te que t'agraden abans de fer l'actualització.</translation>
 <translation id="6181431612547969857">S'ha bloquejat la baixada</translation>
+<translation id="6182100780603067202">Comparteix també l'àudio de l'aplicació (de totes les seves finestres)</translation>
 <translation id="6183369864942961155">Tema clar/fosc automàtic</translation>
 <translation id="6184099524311454384">Cerca pestanyes</translation>
 <translation id="6185132558746749656">Ubicació del dispositiu</translation>

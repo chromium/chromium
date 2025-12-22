@@ -560,6 +560,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7055552182600664515">To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' is out of date. Please update the app.</translation>
+<translation id="7084115944294706056">Choose address bar position</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selected. Options available near top of the screen</translation>
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">著作権で保護されたコンテンツを再生するため、サイトでコンテンツ保護サービスの使用を求める場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="708014373017851679">「<ph name="APP_NAME" />」は最新ではありません。アプリを更新してください。</translation>
+<translation id="7084115944294706056">アドレスバーの位置を選択する</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

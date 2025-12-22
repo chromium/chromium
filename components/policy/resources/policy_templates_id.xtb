@@ -2547,6 +2547,11 @@ Jika kebijakan ini disetel ke 2 - 'Nonaktif', integrasi Google Developer Program
 <translation id="2707733461906745082">Pemisahan Profil</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
+<translation id="2713265653152900248">Jika kebijakan disetel, akses ke URL yang tercantum di mode Samaran akan diberikan sebagai pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Misalnya, menyetel <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan dalam mode Samaran, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> lebih diprioritaskan daripada <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
+
+Jika kebijakan tidak disetel, tidak akan ada pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />.
+
+Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Mulai M121, nilai ini tidak digunakan lagi. Pada M121 dan selanjutnya, nilai akan diperlakukan sebagai EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Selalu kirim metrik ke Google</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
@@ -9143,6 +9148,9 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
 <translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="6881447940489194100">Hash SHA-256 dengan enkode heksadesimal pada data.</translation>
+<translation id="688149562204519323">Jika kebijakan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, pemuatan halaman web yang berisi URL terlarang akan dihentikan di mode Samaran. Administrator dapat menentukan daftar pola URL yang akan diblokir. Jika kebijakan ini tidak disetel, tidak ada URL yang akan diblokir dalam mode Samaran. Hingga 1.000 pengecualian dapat ditentukan di <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Kebijakan ini hanya memengaruhi mode Samaran. Untuk memblokir URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
       Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di atas layar kunci dan membuat catatan dalam konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.

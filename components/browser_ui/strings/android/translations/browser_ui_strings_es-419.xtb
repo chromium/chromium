@@ -560,6 +560,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7055552182600664515">Para reproducir contenido protegido por derechos de autor, es posible que los sitios deban usar un servicio de protección de contenido. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" está desactualizada. Actualiza la app.</translation>
+<translation id="7084115944294706056">Elige la posición de la barra</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

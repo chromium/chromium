@@ -560,6 +560,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7055552182600664515">I chwarae cynnwys sydd wedi'i warchod gan hawlfraint, efallai y bydd angen i wefannau ddefnyddio gwasanaeth diogelu cynnwys. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
 <translation id="708014373017851679">Mae '<ph name="APP_NAME" />' yn hen. Diweddarwch yr ap.</translation>
+<translation id="7084115944294706056">Dewiswch safle'r bar cyfeiriad</translation>
 <translation id="7087918508125750058">Dewiswyd <ph name="ITEM_COUNT" />.  Mae dewisiadau ar gael yn agos at waelod y sgrîn</translation>
 <translation id="7141896414559753902">Rhwystro gwefannau rhag dangos ffenestri naid ac ailgyfeiriadau (argymhellir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

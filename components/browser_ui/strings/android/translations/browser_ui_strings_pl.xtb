@@ -560,6 +560,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7055552182600664515">W przypadku odtwarzania treści chronionych prawem autorskim może być wymagane, aby strony korzystały z usługi ochrony treści. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="708014373017851679">Aplikacja „<ph name="APP_NAME" />” jest nieaktualna. Zaktualizuj ją.</translation>
+<translation id="7084115944294706056">Wybierz pozycję paska adresu</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

@@ -560,6 +560,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7055552182600664515">K přehrávání obsahu chráněného autorskými právy můžou weby potřebovat používat službu ochrany obsahu. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
 <translation id="708014373017851679">Aplikace <ph name="APP_NAME" /> je zastaralá. Aktualizujte ji.</translation>
+<translation id="7084115944294706056">Vyberte si pozici adresního řádku</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>
 <translation id="7141896414559753902">Bránit webům v zobrazování vyskakovacích oken a v přesměrování (doporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

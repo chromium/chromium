@@ -560,6 +560,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7055552182600664515">For at afspille ophavsretligt beskyttet indhold kan det være nødvendigt for websites at benytte en tjeneste til beskyttelse af indhold. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" er forældet. Opdater appen.</translation>
+<translation id="7084115944294706056">Vælg placering for adresselinje</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er markeret. De tilgængelige valgmuligheder er øverst på skærmen</translation>
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

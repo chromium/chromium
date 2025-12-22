@@ -1744,6 +1744,7 @@
 <translation id="2157457598652721267">משתמשים במקשים "/" ו-"-" כדי לבחור את הכפתור השמאלי או הימני בעכבר. משתמשים ב-“*” כדי לבחור את שניהם.</translation>
 <translation id="2157474325782140681">‏כדי להשתמש בתכונות נוספות, יש להשתמש בתחנת עגינה של Dell שתוכננה לפעול עם ה-Chromebook הזה.</translation>
 <translation id="215753907730220065">יציאה ממסך מלא</translation>
+<translation id="2157632422749995237">‏אחר כך, Wallet יוכל לשלוח לך התראות לגבי האירועים שלך</translation>
 <translation id="2157779167749714207">‏מכשיר <ph name="DEVICE_TYPE" /> שלך מגיע עם Gemini</translation>
 <translation id="2158103060812356265">אפשר להשוות בקלות בין מוצרים דומים</translation>
 <translation id="2158249272743343757">מתבצעת מחיקה של נתוני ההתאמה האישית…</translation>
@@ -2442,6 +2443,7 @@
 <translation id="2633212996805280240">להסיר את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> לא הצליח להשלים את ההתקנה, אך ימשיך לפעול מתמונת הדיסק שלו.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">גישה לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות, מהמכשיר</translation>
 <translation id="2634199532920451708">היסטוריית ההדפסה</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">לא מקבלים אזהרה לגבי אתרים פרטיים, כמו האינטראנט של החברה</translation>
@@ -4719,6 +4721,7 @@
 <translation id="4178220097446335546">‏כדי להסיר את המינוי הזה ואת הרשתות שמשויכות אליו, צריך לעבור לדף המינוי ל-Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">שפות</translation>
+<translation id="4182182457914031017">‏כדי לתת לך הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף המלא של האתר שבו ביקרת יישלחו אל Google</translation>
 <translation id="4182339886482390129">הגרסה המשופרת של הגלישה הבטוחה מגינה עליך טוב יותר מפני תוספים, הורדות ואתרים מסוכנים</translation>
 <translation id="4184803915913850597">‏מכשיר HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642">האתר <ph name="WEBSITE" /> ישמור את היצרן והדגם של מפתח האבטחה שלך</translation>
@@ -8997,6 +9000,7 @@
 <translation id="7175037578838465313">הגדרה של <ph name="NAME" /></translation>
 <translation id="7175353351958621980">נטען מתוך:</translation>
 <translation id="7177659256878428843">המרת קבוצת הכרטיסיות לתיקיית סימניות</translation>
+<translation id="7180569503618416775">‏‫Wallet יכול להציע לשמור מידע מדפים שצפית בהם, כמו כרטיסים שרכשת</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7181117767881540376">הסתרת סרגל הסימניות</translation>
@@ -10357,6 +10361,7 @@
 <translation id="8084429490152575036">‏הגדרות APN סלולרי</translation>
 <translation id="8084510406207562688">ש&amp;חזור כל הכרטיסיות</translation>
 <translation id="8084628902026812045">האתר הזה לא משתמש בחיבור מאובטח ויכול להיות שמישהו שינה את הקובץ</translation>
+<translation id="808488435221187916">‏המידע שלך זמין ב-Google Wallet בכל מכשיר שמחובר לחשבון</translation>
 <translation id="8086015605808120405">הגדרת <ph name="PRINTER_NAME" /> מתבצעת...</translation>
 <translation id="8086121155774250556">הכרטיסייה הזו משתפת את המסך שלך</translation>
 <translation id="8086610718778464681">‏לא ניתן לגבות אפליקציות וקבצים מ‑Linux</translation>

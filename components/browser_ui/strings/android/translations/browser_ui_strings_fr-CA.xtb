@@ -560,6 +560,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7055552182600664515">Pour faire jouer du contenu protégé par les droits d'auteur, les sites peuvent devoir utiliser un service de protection du contenu. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="708014373017851679">« <ph name="APP_NAME" /> » n'est pas à jour. Veuillez mettre à jour l'application.</translation>
+<translation id="7084115944294706056">Choisir la position de la barre d'adresse</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres contextuelles et de redirections à partir des sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ko</translation>

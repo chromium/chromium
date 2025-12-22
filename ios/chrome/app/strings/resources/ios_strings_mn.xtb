@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1-ийг сонгосон}other{#-г сонгосон}}</translation>
 <translation id="3668816008081204991">Унших жагсаалтыг нуусан</translation>
 <translation id="3670030362669914947">Тоо</translation>
+<translation id="3672283986707092811">Бүгдийг сонгох</translation>
 <translation id="3679163990085797665">Унших материалыг устгах</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
 <translation id="3695446226812920698">Заавар харах</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Дэлгэцийн нэр</translation>
 <translation id="4375772272517383391">Бүх табыг хаах</translation>
 <translation id="4378154925671717803">Утас</translation>
+<translation id="4380677808580146413">Сонгох</translation>
 <translation id="4389019817280890563">Хэл солихын тулд товшино уу.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 хоногийн дараа}other{{COUNT} хоногийн дараа}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 таб}other{# таб}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Файлыг хадгалах</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="536067926684072644">Хавчуурга харуулах</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} нэвтрэх түлхүүрийг импортолж чадсангүй}other{{count} нэвтрэх түлхүүрийг импортолж чадсангүй}}</translation>
 <translation id="5371112366564891538">Текстийн хэмжээг томруулах</translation>
+<translation id="5376135254804080693">Бүх сонголтыг цуцлах</translation>
 <translation id="537853552771686272">Сонирхдог сэдэв, сайтуудаа удирдана уу</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} табыг хаасан}other{{count} табыг хаасан}}</translation>
 <translation id="5394975111793637642">Танд зориулсан бүтээгдэхүүний шүүмжийн картыг нуух</translation>

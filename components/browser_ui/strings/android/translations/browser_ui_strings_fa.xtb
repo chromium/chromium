@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">برای پخش محتوایی که با حق نشر محافظت می‌شود، ممکن است لازم باشد سایت‌ها از سرویس محافظت محتوا استفاده کنند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
 <translation id="708014373017851679">«<ph name="APP_NAME" />» قدیمی است. لطفاً برنامه را به‌روزرسانی کنید.</translation>
+<translation id="7084115944294706056">انتخاب کردن موقعیت نوار نشانی</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> مورد انتخاب شد.  گزینه‌ها در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>

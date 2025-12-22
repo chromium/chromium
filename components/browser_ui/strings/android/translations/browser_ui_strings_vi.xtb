@@ -559,6 +559,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7055552182600664515">Để phát nội dung được bảo vệ bản quyền, các trang web có thể cần dùng một dịch vụ bảo vệ nội dung <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Đã chọn 1 mục}other{Đã chọn # mục}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" đã lỗi thời. Vui lòng cập nhật ứng dụng.</translation>
+<translation id="7084115944294706056">Chọn vị trí thanh địa chỉ</translation>
 <translation id="7087918508125750058">Đã chọn <ph name="ITEM_COUNT" /> mục. Bạn có thể sử dụng các tùy chọn ở gần đầu màn hình</translation>
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

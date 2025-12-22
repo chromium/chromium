@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Đã chọn 1}other{Đã chọn #}}</translation>
 <translation id="3668816008081204991">Danh sách đọc đang bị ẩn</translation>
 <translation id="3670030362669914947">Số</translation>
+<translation id="3672283986707092811">Chọn tất cả</translation>
 <translation id="3679163990085797665">Xoá mục đã đọc</translation>
 <translation id="368329460027487650">Đã đăng xuất. Mở các tuỳ chọn đăng nhập.</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Tên hiển thị</translation>
 <translation id="4375772272517383391">Đóng tất cả các thẻ</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
+<translation id="4380677808580146413">Chọn</translation>
 <translation id="4389019817280890563">Nhấn để thay đổi ngôn ngữ.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Sau 1 ngày}other{Sau {COUNT} ngày}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Lưu tệp</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="536067926684072644">Hiện dấu trang</translation>
+<translation id="5364647308446127983">{count,plural, =1{Không nhập được {count} khoá truy cập}other{Không nhập được {count} khoá truy cập}}</translation>
 <translation id="5371112366564891538">Tăng kích thước văn bản</translation>
+<translation id="5376135254804080693">Bỏ chọn tất cả</translation>
 <translation id="537853552771686272">Quản lý các chủ đề và trang web mà bạn quan tâm</translation>
 <translation id="5390458669633674385">{count,plural, =1{Đã đóng {count} thẻ}other{Đã đóng {count} thẻ}}</translation>
 <translation id="5394975111793637642">Ẩn thẻ bài đánh giá sản phẩm dành cho bạn</translation>

@@ -114,6 +114,7 @@
 <translation id="1178821169867863726">၁၂ x ၁၆ လက်မ</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1181381397492575884">Chrome သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။ <ph name="LINK" /> အတွက် ဆက်တင်များတွင် ဝင်ကြည့်ပါ။</translation>
+<translation id="1185331130467528132"><ph name="URL" /> သည် သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်ရလိုသည်</translation>
 <translation id="1185343831726846924">ပကတိအသွင်ကတ်ကို ဖွင့်၍မရကြောင်း အတည်ပြုခြင်း</translation>
 <translation id="1186201132766001848">စကားဝှက်များ စစ်ဆေးရန်</translation>
 <translation id="1187430513518041110">မော်တော်ယာဉ်</translation>
@@ -166,6 +167,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲခြင်းမရှိသည့် ဝဘ်ဆိုက်တွင် သင်၏ စကားဝှက်ကို ထည့်ထားပါသည်။ သင့်အကောင့်ကို ကာကွယ်ရန် အခြားအက်ပ်နှင့် ဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်မသုံးပါနှင့်။</translation>
 <translation id="1257553931232494454">ဇူးမ်အဆင့်များ</translation>
+<translation id="1257714792349895570">အိမ်သုံးကွန်ရက်</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များ စီမံရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="1264309058268477500">အရန်</translation>
 <translation id="1264974993859112054">အားကစား</translation>
@@ -1065,6 +1067,7 @@
 <translation id="2690699652723742414">ပြီးခဲ့သော ရက် ၃၀</translation>
 <translation id="2691385045260836588">အမျိုးအစား</translation>
 <translation id="2691924980723297736">ဘေးကင်းလုံခြုံမှုဆိုင်ရာ သတိပေးချက်</translation>
+<translation id="2694088736180584846">နောက်ပြန်ကျော့ ကွန်ရက်</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core သည် သင့်အား ဘရောင်ဇာမူဝါဒ၊ အက်ပ်များ၊ cloud မှ နောက်ဆက်တွဲများကို စီမံခွင့်ပြုသည်</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
 <translation id="2699273987028089219">မီနူးခွဲရနိုင်သည်။ ထပ်ဆောင်းရွေးစရာများသို့ သွားရန် <ph name="SHORTCUT" /> သုံးပါ။</translation>
@@ -1323,6 +1326,7 @@
 <translation id="3122696783148405307">ပြီးခဲ့သော ရက် ၃၀ မှ ရလဒ်များပြပါ</translation>
 <translation id="3126023634486644099">လေဘယ်လ် (အမြဲတမ်း)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> သည် သင်၏ မူရင်းရှာဖွေရေးအင်ဂျင် ဖြစ်သွားပါပြီ</translation>
+<translation id="3134859781443140237">အိမ်သုံးကွန်ရက်</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ရှာရန်</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}}</translation>
 <translation id="3140646734028448730">လုပ်ငန်း ဝန်ဆောင်မှု</translation>
@@ -1393,6 +1397,7 @@
 <translation id="3238395604961564389">လင့်ကို ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="3240791268468473923">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မဖွင့်ထားပါ</translation>
+<translation id="3241320538788585298">နောက်ပြန်ကျော့ ကွန်ရက်</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” လင့်ခ်များကို ပိတ်ထားသည်</translation>
 <translation id="3243650379537999343">ပုံဆွဲရန်</translation>
 <translation id="3248329428895535435">ဤဝဘ်ဆိုက်တွင် မပြပါနှင့်</translation>
@@ -1559,6 +1564,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{စင့်ခ်လုပ်ထားသည့် စက်ပစ္စည်းများပေါ်တွင် အကြောင်းအရာ အနည်းဆုံး ၁ ခု}=1{ ၁ ခု (နှင့် စင့်ခ် လုပ်ထားသည့် စက်ပစ္စည်းများတွင် နောက်ထပ်ရှိသေးသည်)}other{ # ခု (နှင့် စင့်ခ် လုပ်ထားသည့် စက်ပစ္စည်းများတွင် နောက်ထပ်ရှိသေးသည်)}}</translation>
 <translation id="3531366304259615706">ဖန်သားပြင်လော့ခ် သုံးပါ</translation>
 <translation id="3531780078352352885">အလုပ် စာမျက်နှာများ</translation>
+<translation id="3532624859962632484">သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> သည် သင်၏မိုက်ခရိုဖုန်းကို အသုံးပြုလိုသည်</translation>
 <translation id="3533328374079021623">စာတိုက်ပုံး ၅</translation>
 <translation id="3536227077203206203">ဤတစ်ကြိမ်အတွက် ခွင့်ပြုထားသည်</translation>
@@ -1883,6 +1889,7 @@
 <translation id="4030545038933060179">ဖွင့်ထားပါက သင့်လတ်တလော ကြည့်ရှုမှုမှတ်တမ်းပေါ်မူတည်၍ အကြောင်းအရာများစာရင်းကို ဤနေရာတွင်ပြသည်</translation>
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4036753017940930924">မြေကွက်၊ ခြံ</translation>
+<translation id="403724377879219932">သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4039506337798853114">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="4045070493270310437">တဘ်များ ပြန်ဖွင့်ရန်</translation>
 <translation id="4045226534284799755">ထပ်မစမ်းမီ သင့် Microsoft အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -2982,7 +2989,6 @@
 <translation id="5826507051599432481">တူနေသည့် အမည် (CN)</translation>
 <translation id="5830698870816298009">ကင်မရာအသုံးပြုမှုနှင့် ရွေ့လျားမှု</translation>
 <translation id="5831217499016131155">Google ပိုက်ဆံအိတ်</translation>
-<translation id="5831259154333754661">ဤဝယ်ယူမှု ပြီးမြောက်ရန် အခြားငွေပေးချေနည်းလမ်း ရွေးပါ။</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5832976493438355584">သော့ပိတ်ထား</translation>
 <translation id="5837220895135257862">ထပ်မစမ်းမီ <ph name="CLOUD_PROVIDER" /> တွင် နေရာလွတ်ပြုလုပ်ပါ</translation>
@@ -3167,6 +3173,7 @@
 <translation id="6108702513636120202">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="6108849843016142864">တွားသွားသတ္တဝါ၊ ကုန်းနေရေနေသတ္တဝါ</translation>
 <translation id="611018310643025551">သင့်ရှာဖွေမှုများ၊ အကိုက်ညီဆုံးများ၊ သူ၏ စာမျက်နှာအကြောင်းအရာများကို Google သို့ပို့သည်။ ဤဝန်ဆောင်မှု ပိုကောင်းလာစေရန် ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက ၎င်းတို့ကို ကြည့်နိုင်သည်။</translation>
+<translation id="6111759749003439722">ဤစက်ရှိ အခြားအက်ပ်နှင့် ဝန်ဆောင်မှုများကို သုံးခွင့်တောင်းနိုင်သည်</translation>
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
 <translation id="6116500665626559298">သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘သင့်အကောင့်ရှိ ဒေတာကို စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="6117833587752089929">ဓာတ်ပုံ (ဖဲ)</translation>
@@ -4619,6 +4626,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန် ‘တဘ်ခလုတ်’ နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="8433057134996913067">၎င်းသည် သင့်ကို ဝဘ်ဆိုက်အများစုမှ ထွက်စေပါမည်။</translation>
 <translation id="8434840396568290395">အိမ်မွေးတိရစ္ဆာန်</translation>
+<translation id="8435542599425298931"><ph name="URL" /> သည် ဤစက်ရှိ အခြားအက်ပ်နှင့် ဝန်ဆောင်မှုများကို သုံးခွင့်ရလိုသည်</translation>
 <translation id="8436623588884785770">မူဝါဒ ထည့်ရန်</translation>
 <translation id="8437238597147034694">&amp;ရွေ့ရှားမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="8438786541497918448">ကင်မရာနှင့် မိုက်ခရိုဖုန်း အသုံးပြုမလား။</translation>
@@ -4999,6 +5007,7 @@
 <translation id="9090548458280093580">AI ဖြင့် ပံ့ပိုးထားသော သင့်မှတ်တမ်းကို ရှာပါ</translation>
 <translation id="9090993752571911635">အင်တာနက်ဝန်ဆောင်မှုပေးသူများ (ISP များ)</translation>
 <translation id="9093723786115107672">ညအိပ်ဝတ်စုံ</translation>
+<translation id="9094424186948667194">ဤစက်ရှိ အခြားအက်ပ်နှင့် ဝန်ဆောင်မှုများကို သုံးခွင့်</translation>
 <translation id="9094544726794842788">‘လက်မအောက်စိုက်’ ပါက ဤရလဒ်များကို ဘာကြောင့် သင်မနှစ်သက်ကြောင်း အသေးစိတ်တုံ့ပြန်မှု ပေးပို့ရန် ဖောင်ပွင့်လာသည်</translation>
 <translation id="9094809883254050729">နောက်တစ်ကြိမ် အော်တိုဖြည့်သည်။ ကတ်ကိုသိမ်းသောအခါ အသွင်ဝှက်ပါသည်။</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />။ Chrome ကို iOS ဆက်တင်များတွင် စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန် တဘ် နှိပ်ပြီး Enter ခလုတ် နှိပ်ပါ</translation>

@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">कॉपीराइट से सुरक्षित किया गया कॉन्टेंट चलाने के लिए, साइटों को कॉन्टेंट की सुरक्षा से जुड़ी किसी सेवा का इस्तेमाल करना पड़ सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 चुना गया}one{# चुने गए}other{# चुने गए}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' का यह वर्शन पुराना है. कृपया ऐप्लिकेशन अपडेट करें.</translation>
+<translation id="7084115944294706056">पता बार की जगह चुनें</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चुने गए.  विकल्प, स्क्रीन के ऊपरी भाग के पास उपलब्ध हैं</translation>
 <translation id="7141896414559753902">साइटों को पॉप-अप और रीडायरेक्ट दिखाने से रोकें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> केबी</translation>

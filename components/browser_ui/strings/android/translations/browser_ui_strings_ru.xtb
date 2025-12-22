@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Чтобы воспроизводить контент, защищенный авторскими правами, сайтам иногда требуется использовать сервис защиты контента. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбран 1 объект}one{Выбран # объект}few{Выбрано # объекта}many{Выбрано # объектов}other{Выбрано # объекта}}</translation>
 <translation id="708014373017851679">Приложение "<ph name="APP_NAME" />" устарело. Обновите его.</translation>
+<translation id="7084115944294706056">Выберите место адресной строки</translation>
 <translation id="7087918508125750058">Выбрано: <ph name="ITEM_COUNT" />. Меню находится в верхней части экрана.</translation>
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>

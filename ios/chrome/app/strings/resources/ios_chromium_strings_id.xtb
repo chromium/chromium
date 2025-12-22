@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium menjaga keamanan data sensitif Anda dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Petak Tab Chromium.</translation>
 <translation id="16001233025397167">Pemeriksaan Keamanan melindungi Anda dari pelanggaran data, situs yang tidak aman, dan lainnya. Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
+<translation id="1614362805233822594">Anda sudah memiliki sandi atau kunci sandi di Pengelola Sandi untuk situs yang ditampilkan. Pilih akun untuk menyimpan info login yang ditampilkan, dan mengganti info yang ada di Pengelola Sandi.</translation>
 <translation id="1617663976202781617">Data dari sinkronisasi Chromium</translation>
 <translation id="164952285225495380">Paket ini telah dilacak di Chromium.</translation>
+<translation id="1703338211136118534">Sandi berikut tidak diimpor ke Pengelola Sandi karena tidak sesuai dengan persyaratan.</translation>
 <translation id="1707458603865303524">Gunakan Chromium kapan saja dengan mengetuk link di pesan atau aplikasi lainnya.</translation>
 <translation id="1722370509450468186">Sandi akan disimpan di Akun Anda (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Feed kustom yang dibuat untuk Anda</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps di Chromium</translation>
 <translation id="1867772173333403444">4. Pilih Chromium</translation>
 <translation id="1965068424387304464">Tips Chromium: Simpan Sandi</translation>
+<translation id="1992653360331625459">Anda sudah memiliki sandi untuk akun ini di Pengelola Sandi Anda. Jika Anda memilih untuk mengimpor salah satu sandi di bawah ini, sandi tersebut akan menggantikan sandi yang sudah ada.</translation>
 <translation id="2006345422933397527">Chromium tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="2042889939382983733">Lihat Histori Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Beberapa data Chromium Anda belum disimpan di Akun Google Anda.
 
 Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
+<translation id="2334943301233020675">Kunci sandi berikut tidak diimpor ke Pengelola Sandi karena tidak sesuai dengan persyaratan.</translation>
 <translation id="2337722506862731008">Bagikan Chromium</translation>
 <translation id="2340423701577464731">Tambahkan item daftar bacaan ke Chromium</translation>
 <translation id="2374627437126809292">Chromium menggunakan Google Maps untuk memberikan rute dan info lokal di alamat yang terdeteksi.</translation>

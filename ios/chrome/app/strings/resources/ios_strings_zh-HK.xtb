@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{已選取 1 個}other{已選取 # 個}}</translation>
 <translation id="3668816008081204991">閱讀清單已隱藏</translation>
 <translation id="3670030362669914947">號碼</translation>
+<translation id="3672283986707092811">全選</translation>
 <translation id="3679163990085797665">刪除已讀項目</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3695446226812920698">瞭解詳情</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">顯示名稱</translation>
 <translation id="4375772272517383391">關閉所有分頁</translation>
 <translation id="4378154925671717803">電話號碼</translation>
+<translation id="4380677808580146413">選取</translation>
 <translation id="4389019817280890563">輕按即可變更語言。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">儲存檔案</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
 <translation id="536067926684072644">顯示書籤</translation>
+<translation id="5364647308446127983">{count,plural, =1{無法匯入 {count} 個密鑰}other{無法匯入 {count} 個密鑰}}</translation>
 <translation id="5371112366564891538">放大文字</translation>
+<translation id="5376135254804080693">全部取消選取</translation>
 <translation id="537853552771686272">管理感興趣的主題和網站</translation>
 <translation id="5390458669633674385">{count,plural, =1{已關閉 {count} 個}other{已關閉 {count} 個}}</translation>
 <translation id="5394975111793637642">隱藏「為你推薦的產品評論」資訊卡</translation>

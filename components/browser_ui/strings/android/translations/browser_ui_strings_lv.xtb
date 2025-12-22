@@ -560,6 +560,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7055552182600664515">Lai atskaņotu ar autortiesībām aizsargātu saturu, vietnēm var būt nepieciešams satura aizsardzības pakalpojums. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Atlasīts 1 vienums}zero{Atlasīti # vienumi}one{Atlasīts # vienums}other{Atlasīti # vienumi}}</translation>
 <translation id="708014373017851679">Lietotne <ph name="APP_NAME" /> ir novecojusi. Lūdzu, atjauniniet lietotni.</translation>
+<translation id="7084115944294706056">Adreses joslas pozīcijas izvēle</translation>
 <translation id="7087918508125750058">Atlasīti vienumi: <ph name="ITEM_COUNT" />. Opcijas ir pieejamas ekrāna augšdaļā.</translation>
 <translation id="7141896414559753902">Neļaut vietnēm novirzīt un rādīt uznirstošos elementus (ieteicams)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

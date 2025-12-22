@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">За да пуштаат содржини заштитени со авторски права, сајтовите може да треба да користат услуга за заштита на содржините. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избрана е 1}one{Избрана е #}other{Избрани се #}}</translation>
 <translation id="708014373017851679">„<ph name="APP_NAME" />“ е застарена. Ажурирајте ја апликацијата.</translation>
+<translation id="7084115944294706056">Изберете ја позицијата на лентата за адреса</translation>
 <translation id="7087918508125750058">Избрани ставки: <ph name="ITEM_COUNT" />. Достапни се опции во горниот дел од екранот</translation>
 <translation id="7141896414559753902">Блокирај го прикажувањето скокачки прозорци и пренасочувања на сајтовите (се препорачува)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

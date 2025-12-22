@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">Авторлық құқығы қорғалған контентті ойнату үшін сайттарға контентті қорғау қызметін қолдану қажет болуы мүмкін. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 таңдалды}other{# таңдалды}}</translation>
 <translation id="708014373017851679">"<ph name="APP_NAME" />" ескірген. Оны жаңартыңыз.</translation>
+<translation id="7084115944294706056">Мекенжай жолағының орнын таңдау</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> таңдалды. Опциялар экранның жоғарғы жағында тұр</translation>
 <translation id="7141896414559753902">Сайттардың қалқымалы терезе көрсетуіне және бағыттауына тыйым салу (ұсынылады)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>

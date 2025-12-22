@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">ເພື່ອຫຼິ້ນເນື້ອຫາທີ່ໄດ້ຮັບການຄຸ້ມຄອງລິຂະສິດ, ເວັບໄຊອາດຈຳເປັນຕ້ອງໃຊ້ບໍລິການຄຸ້ມຄອງເນື້ອຫາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{ເລືອກ 1 ລາຍການແລ້ວ}other{ເລືອກ # ລາຍການແລ້ວ}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' ເປັນເວີຊັນເກົ່າ. ກະລຸນາອັບເດດແອັບ.</translation>
+<translation id="7084115944294706056">ເລືອກຕຳແໜ່ງຂອງແຖບທີ່ຢູ່</translation>
 <translation id="7087918508125750058">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ.  ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງຂອງໜ້າຈໍ</translation>
 <translation id="7141896414559753902">ບລັອກບໍ່ໃຫ້ເວັບໄຊສະແດງປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ (ແນະນຳ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

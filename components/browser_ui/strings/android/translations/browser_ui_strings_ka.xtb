@@ -560,6 +560,7 @@
 <translation id="7055552182600664515">საავტორო უფლებებით დაცული კონტენტის დასაკრავად ვებსაიტებს შეიძლება კონტენტის დაცვის სერვისის გამოყენება დასჭირდეს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{არჩეულია 1}other{არჩეულია #}}</translation>
 <translation id="708014373017851679">„<ph name="APP_NAME" />“ მოძველდა. გთხოვთ, განაახლოთ აპი.</translation>
+<translation id="7084115944294706056">აირჩიეთ მისამართთა ზოლის პოზიცია</translation>
 <translation id="7087918508125750058">არჩეულია <ph name="ITEM_COUNT" />. ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="7141896414559753902">საიტებისთვის გადამისამართებისა და ამომხტარი ფანჯრების ჩვენების დაბლოკვა (რეკომენდებული)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> კბაიტი</translation>
