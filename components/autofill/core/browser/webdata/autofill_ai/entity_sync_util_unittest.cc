@@ -137,6 +137,53 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Vehicle) {
             specifics.vehicle_registration().vehicle_identification_number());
 }
 
+// Tests that in case of a conflicting name between the vehicle owner field and
+// valuables_metadata, the vehicle owner field is prioritized.
+TEST(EntitySyncUtilTest,
+     CreateEntityInstanceFromSpecifics_Vehicle_ConflictingOwnerMetadata) {
+  sync_pb::AutofillValuableSpecifics specifics = TestVehicleSpecifics();
+  specifics.mutable_vehicle_registration()->set_owner_name("Original Name");
+
+  // Set conflicting metadata.
+  {
+    ChromeValuablesMetadata metadata;
+    ChromeValuablesMetadataEntry& entry = *metadata.add_metadata_entries();
+    entry.set_attribute_type(
+        AttributeType(AttributeTypeName::kVehicleOwner).name_as_string());
+    entry.set_field_type(static_cast<int>(FieldType::NAME_FULL));
+    entry.set_value("Conflicting Name");
+    entry.set_verification_status(
+        static_cast<int>(VerificationStatus::kServerParsed));
+    specifics.mutable_serialized_chrome_valuables_metadata()->set_type_url(
+        base::StrCat({"type.googleapis.com/", metadata.GetTypeName()}));
+    specifics.mutable_serialized_chrome_valuables_metadata()->set_value(
+        metadata.SerializeAsString());
+  };
+
+  std::optional<EntityInstance> vehicle =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(vehicle.has_value());
+  EXPECT_EQ(vehicle->guid().value(), specifics.id());
+  // Validate that the original (not the metadata conflicting) name is used.
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleOwner),
+            specifics.vehicle_registration().owner_name());
+  // Validate other fields.
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleMake),
+            specifics.vehicle_registration().vehicle_make());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleModel),
+            specifics.vehicle_registration().vehicle_model());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleYear),
+            specifics.vehicle_registration().vehicle_year());
+
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehiclePlateNumber),
+            specifics.vehicle_registration().vehicle_license_plate());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehiclePlateState),
+            specifics.vehicle_registration().license_plate_region());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleVin),
+            specifics.vehicle_registration().vehicle_identification_number());
+}
+
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly
 // deserializes the flight reservation entity from its proto representation.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
