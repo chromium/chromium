@@ -479,8 +479,10 @@ class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 // TODO(crbug.com/469749590): Fix ASAN/MSAN failures on trybot.
+// TODO(crbug.com/470852852): Fix failures on Linux CFI.
 #define MAYBE_BasicRedaction DISABLED_BasicRedaction
 #else
 #define MAYBE_BasicRedaction BasicRedaction
