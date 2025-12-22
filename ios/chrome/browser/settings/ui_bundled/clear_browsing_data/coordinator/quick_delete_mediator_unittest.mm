@@ -111,9 +111,6 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
     history_service_ = nil;
 
-    // TODO(crbug.com/468329885): Remove RunUntilIdle and verify test stability.
-    task_environment_.RunUntilIdle();
-
     password_store_->ShutdownOnUIThread();
     password_store_ = nil;
 
