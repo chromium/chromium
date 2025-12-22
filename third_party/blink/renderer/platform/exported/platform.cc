@@ -293,12 +293,15 @@ Platform::CreateSharedOffscreenGraphicsContext3DProvider() {
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-Platform::CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url) {
+Platform::CreateWebGPUGraphicsContext3DProvider(
+    const WebURL& document_url,
+    WebGPUReplyThread reply_thread) {
   return nullptr;
 }
 
 void Platform::CreateWebGPUGraphicsContext3DProviderAsync(
     const blink::WebURL& document_url,
+    WebGPUReplyThread reply_thread,
     base::OnceCallback<
         void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback) {}
 

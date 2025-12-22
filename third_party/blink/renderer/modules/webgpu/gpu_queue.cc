@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -488,7 +489,7 @@ ScriptPromise<IDLUndefined> GPUQueue::onSubmittedWorkDone(
   auto* callback = MakeWGPUOnceCallback(
       resolver->WrapCallbackInScriptScope(BindOnce(&OnWorkDoneCallback)));
 
-  GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowSpontaneous,
+  GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowProcessEvents,
                                   callback->UnboundCallback(),
                                   callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we

@@ -5941,6 +5941,13 @@
       implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
+      // Allows handling of WebGPU related commands from the GPU process to
+      // happen on a separate thread. This is a pre-requisite for emulation of
+      // serialized asynchronous APIs, i.e. mapSync.
+      name: "WebGPUMultithreadDawnWireOnWorkers",
+      status: "experimental",
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },

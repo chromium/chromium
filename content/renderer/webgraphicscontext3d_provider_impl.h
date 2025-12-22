@@ -33,7 +33,8 @@ class WebGraphicsContext3DProviderImpl
       public viz::ContextLostObserver {
  public:
   WebGraphicsContext3DProviderImpl(
-      scoped_refptr<viz::ContextProviderCommandBuffer> provider);
+      scoped_refptr<viz::ContextProviderCommandBuffer> provider,
+      scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner = nullptr);
 
   WebGraphicsContext3DProviderImpl(const WebGraphicsContext3DProviderImpl&) =
       delete;
@@ -66,6 +67,7 @@ class WebGraphicsContext3DProviderImpl
   void OnContextLost() override;
 
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
+  scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner_;
   std::unique_ptr<gpu::GLHelper> gl_helper_;
   base::RepeatingClosure context_lost_callback_;
   base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>

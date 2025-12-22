@@ -19,8 +19,10 @@
 namespace content {
 
 WebGraphicsContext3DProviderImpl::WebGraphicsContext3DProviderImpl(
-    scoped_refptr<viz::ContextProviderCommandBuffer> provider)
-    : provider_(std::move(provider)) {}
+    scoped_refptr<viz::ContextProviderCommandBuffer> provider,
+    scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner)
+    : provider_(std::move(provider)),
+      reply_task_runner_(std::move(reply_task_runner)) {}
 
 WebGraphicsContext3DProviderImpl::~WebGraphicsContext3DProviderImpl() {
   provider_->RemoveObserver(this);
@@ -32,6 +34,9 @@ bool WebGraphicsContext3DProviderImpl::BindToCurrentSequence() {
   // Call AddObserver here instead of in constructor so that it's called on the
   // correct thread.
   provider_->AddObserver(this);
+  if (reply_task_runner_) {
+    provider_->SetReplyTaskRunner(reply_task_runner_);
+  }
   return provider_->BindToCurrentSequence() == gpu::ContextResult::kSuccess;
 }
 

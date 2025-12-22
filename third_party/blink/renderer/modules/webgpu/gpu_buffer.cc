@@ -243,6 +243,13 @@ DOMArrayBuffer* GPUBuffer::getMappedRange(ScriptState* script_state,
 void GPUBuffer::unmap(v8::Isolate* isolate) {
   ResetMappingState(isolate);
   GetHandle().Unmap();
+  if (map_async_future_) {
+    // Since the JS spec's require that the promise be rejected in-line here if
+    // we are mapped, we need to do a quick poll on the future, and call
+    // the callback on it right now.
+    GetInstance().WaitAny(*map_async_future_, 0u);
+  }
+  DCHECK(!map_async_future_);
 }
 
 void GPUBuffer::destroy(v8::Isolate* isolate) {
@@ -254,6 +261,14 @@ void GPUBuffer::destroy(v8::Isolate* isolate) {
   }
 
   GetHandle().Destroy();
+  if (map_async_future_) {
+    // Since the JS spec's require that the promise be rejected in-line here if
+    // we are mapped, we need to do a quick poll on the future, and call
+    // the callback on it right now.
+    GetInstance().WaitAny(*map_async_future_, 0u);
+  }
+  DCHECK(!map_async_future_);
+
   // Destroyed, so it can never be mapped again. Stop tracking.
   device_->adapter()->gpu()->UntrackMappableBuffer(this);
   device_->UntrackMappableBuffer(this);
@@ -312,14 +327,23 @@ ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
   // And send the command, leaving remaining validation to Dawn.
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
+  auto future =
+      GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset,
+                           map_size, wgpu::CallbackMode::AllowProcessEvents,
+                           callback->UnboundCallback(), callback->AsUserdata());
 
-  GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset, map_size,
-                       wgpu::CallbackMode::AllowSpontaneous,
-                       callback->UnboundCallback(), callback->AsUserdata());
+  // Since the JS spec's require that the promise be rejected in-line here for
+  // already mapped cases, we need to do a quick poll on the future, and call
+  // the callback on it if necessary right now. Note that because we haven't
+  // called flush yet, this will only ever trigger the callback if we were
+  // already mapped.
+  if (GetInstance().WaitAny(future, 0u) != wgpu::WaitStatus::Success) {
+    // WebGPU guarantees that promises are resolved in finite time so we
+    // need to ensure commands are flushed.
+    map_async_future_ = future;
+    EnsureFlush(ToEventLoop(script_state));
+  }
 
-  // WebGPU guarantees that promises are resolved in finite time so we
-  // need to ensure commands are flushed.
-  EnsureFlush(ToEventLoop(script_state));
   return promise;
 }
 
@@ -434,6 +458,7 @@ void GPUBuffer::OnMapAsyncCallback(
                                        String::FromUTF8(message));
       break;
   }
+  map_async_future_ = std::nullopt;
 }
 
 DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(v8::Isolate* isolate,

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 
+#include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -328,27 +329,29 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
   return false;
 }
 
-void GPUDevice::OnUncapturedError(const wgpu::Device& device,
+void GPUDevice::OnUncapturedError(const wgpu::Device&,
                                   wgpu::ErrorType errorType,
                                   wgpu::StringView message) {
+  OnUncapturedErrorImpl(errorType, StringFromASCIIAndUTF8(message));
+}
+
+void GPUDevice::OnUncapturedErrorImpl(wgpu::ErrorType errorType,
+                                      const String& message) {
   // Suppress errors once the device is lost.
   if (lost_property_->GetState() == LostProperty::kResolved) {
     return;
   }
 
   DCHECK_NE(errorType, wgpu::ErrorType::NoError);
-  LOG(ERROR) << "GPUDevice: " << std::string_view(message);
+  LOG(ERROR) << "GPUDevice: " << message;
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == wgpu::ErrorType::Validation) {
-    init->setError(MakeGarbageCollected<GPUValidationError>(
-        StringFromASCIIAndUTF8(message)));
+    init->setError(MakeGarbageCollected<GPUValidationError>(message));
   } else if (errorType == wgpu::ErrorType::OutOfMemory) {
-    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(
-        StringFromASCIIAndUTF8(message)));
+    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(message));
   } else if (errorType == wgpu::ErrorType::Internal) {
-    init->setError(MakeGarbageCollected<GPUInternalError>(
-        StringFromASCIIAndUTF8(message)));
+    init->setError(MakeGarbageCollected<GPUInternalError>(message));
   } else {
     return;
   }
@@ -585,9 +588,8 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
                WrapPersistent(this), descriptor->label())));
-
   GetHandle().CreateRenderPipelineAsync(
-      &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+      &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowProcessEvents,
       callback->UnboundCallback(), callback->AsUserdata());
 
   // WebGPU guarantees that promises are resolved in finite time so we need to
@@ -599,23 +601,22 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
 ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
     ScriptState* script_state,
     const GPUComputePipelineDescriptor* descriptor) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<GPUComputePipeline>>(
-          script_state);
-  auto promise = resolver->Promise();
-
   std::string desc_label;
   OwnedProgrammableStage computeStage;
   wgpu::ComputePipelineDescriptor dawn_desc =
       AsDawnType(this, descriptor, &desc_label, &computeStage);
 
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<GPUComputePipeline>>(
+          script_state);
+  auto promise = resolver->Promise();
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
                WrapPersistent(this), descriptor->label())));
-
   GetHandle().CreateComputePipelineAsync(
-      &dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+      &dawn_desc, wgpu::CallbackMode::AllowProcessEvents,
       callback->UnboundCallback(), callback->AsUserdata());
+
   // WebGPU guarantees that promises are resolved in finite time so we need to
   // ensure commands are flushed.
   EnsureFlush(ToEventLoop(script_state));
@@ -666,8 +667,7 @@ ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       BindOnce(&GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
-
-  GetHandle().PopErrorScope(wgpu::CallbackMode::AllowSpontaneous,
+  GetHandle().PopErrorScope(wgpu::CallbackMode::AllowProcessEvents,
                             callback->UnboundCallback(),
                             callback->AsUserdata());
 
@@ -795,18 +795,32 @@ void GPUDevice::UntrackBufferWithMailbox(GPUBuffer* buffer) {
 }
 
 void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
-  // Set the uncaptured error callback first because it's ownership will be
-  // passed to the device lost callback immediately after.
+  ExecutionContext* execution_context = GetExecutionContext();
+
+  // Set the uncaptured error callback first because its ownership will be
+  // passed to the device lost callback immediately after. The uncaptured error
+  // callback happens spontaneously which means it may happen on the IO thread
+  // in some cases (i.e. potentially on workers). To handle this, we check
+  // whether we are being handled off the main thread, if so, we proxy to the
+  // main thread.
   std::unique_ptr<WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>
-      error_callback(BindWGPURepeatingCallback(&GPUDevice::OnUncapturedError,
-                                               WrapWeakPersistent(this)));
+      error_callback;
+  if (IsWebGPUMultithreadedWorker(execution_context)) {
+    error_callback.reset(MakeWGPURepeatingCallback(
+        base::BindPostTask(execution_context->GetTaskRunner(TaskType::kWebGPU),
+                           BindRepeating(&GPUDevice::OnUncapturedError,
+                                         WrapWeakPersistent(this)))));
+  } else {
+    error_callback.reset(MakeWGPURepeatingCallback(BindRepeating(
+        &GPUDevice::OnUncapturedError, WrapWeakPersistent(this))));
+  }
   dawn_desc.SetUncapturedErrorCallback(error_callback->UnboundCallback(),
                                        error_callback->AsUserdata());
 
   auto* lost_callback = MakeWGPUOnceCallback(
       BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
                std::move(error_callback)));
-  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
+  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowProcessEvents,
                                   lost_callback->UnboundCallback(),
                                   lost_callback->AsUserdata());
 }

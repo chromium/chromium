@@ -101,6 +101,7 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   }
 
   uint64_t size_;
+  std::optional<wgpu::Future> map_async_future_;
 
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
   // mapWriteAsync.

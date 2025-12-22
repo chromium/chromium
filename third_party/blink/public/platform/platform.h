@@ -527,12 +527,20 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns a newly allocated and initialized WebGPU context provider,
   // backed by an independent context. Returns null if the context cannot be
-  // created or initialized.
+  // created or initialized. The reply thread dictates which thread should be
+  // the one to process replies from the GPU process.
+  enum class WebGPUReplyThread {
+    kMainThread,
+    kIOThread,
+  };
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url);
+  CreateWebGPUGraphicsContext3DProvider(
+      const WebURL& document_url,
+      WebGPUReplyThread reply_thread = WebGPUReplyThread::kMainThread);
 
   virtual void CreateWebGPUGraphicsContext3DProviderAsync(
       const blink::WebURL& document_url,
+      WebGPUReplyThread reply_thread,
       base::OnceCallback<
           void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback);
 

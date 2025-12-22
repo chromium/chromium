@@ -141,8 +141,7 @@ ScriptPromise<GPUCompilationInfo> GPUShaderModule::getCompilationInfo(
   auto* callback =
       MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(BindOnce(
           &GPUShaderModule::OnCompilationInfoCallback, WrapPersistent(this))));
-
-  GetHandle().GetCompilationInfo(wgpu::CallbackMode::AllowSpontaneous,
+  GetHandle().GetCompilationInfo(wgpu::CallbackMode::AllowProcessEvents,
                                  callback->UnboundCallback(),
                                  callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we

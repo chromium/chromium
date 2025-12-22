@@ -206,6 +206,7 @@ class GPUDevice final : public EventTarget,
   void OnUncapturedError(const wgpu::Device& device,
                          wgpu::ErrorType errorType,
                          wgpu::StringView message);
+  void OnUncapturedErrorImpl(wgpu::ErrorType errorType, const String& message);
   void OnLogging(wgpu::LoggingType loggingType, wgpu::StringView message);
   void OnDeviceLost(
       std::unique_ptr<

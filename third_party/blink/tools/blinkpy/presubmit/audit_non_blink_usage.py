@@ -161,6 +161,7 @@ _CONFIG = [
             'base::span(_with_nul)?_from_cstring',
             'base::Span(OrSize|Reader|Writer)',
             'base::StringPiece',
+            'base::StrongAlias',
             'base::SubstringSetMatcher',
             'base::SysInfo',
             'base::SystemMemoryInfo',
@@ -757,9 +758,6 @@ _CONFIG = [
             'cc::ViewTransitionContentLayer',
             'cc::ViewTransitionRequest',
             'viz::ViewTransitionElementResourceId',
-
-            # base/types/strong_alias.h
-            'base::StrongAlias',
 
             # Common display structs across display <-> Blink.
             'display::ScreenInfo',
