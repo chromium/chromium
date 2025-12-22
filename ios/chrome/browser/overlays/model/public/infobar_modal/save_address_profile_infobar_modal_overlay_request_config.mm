@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -61,7 +62,7 @@ void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
           base::SysUTF16ToNSString(row.first_value),
           base::SysUTF16ToNSString(row.second_value)
         ]
-           forKey:[NSNumber numberWithInt:base::to_underlying(row.type)]];
+           forKey:[NSNumber numberWithInt:std::to_underlying(row.type)]];
   }
 }
 

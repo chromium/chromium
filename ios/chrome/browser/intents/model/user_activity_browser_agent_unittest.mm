@@ -7,6 +7,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import <memory>
+#import <utility>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -755,7 +755,7 @@ TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -794,7 +794,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBookmarks) {
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityBookmarksFailsFirstRun) {
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddBookmarkToChrome];
 
@@ -887,7 +887,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityAddToReadingList) {
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityAddToReadingListFailsFirstRun) {
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
 

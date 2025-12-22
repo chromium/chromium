@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"

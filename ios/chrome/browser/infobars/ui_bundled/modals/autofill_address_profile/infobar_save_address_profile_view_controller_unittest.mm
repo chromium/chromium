@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_view_controller.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -87,7 +88,7 @@ class InfobarSaveAddressProfileViewControllerTest : public PlatformTest {
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+        [NSNumber numberWithInt:std::to_underlying(autofill::NAME_FULL)] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street"
@@ -103,7 +104,7 @@ class InfobarSaveAddressProfileViewControllerTest : public PlatformTest {
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+        [NSNumber numberWithInt:std::to_underlying(autofill::NAME_FULL)] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
@@ -121,7 +122,7 @@ class InfobarSaveAddressProfileViewControllerTest : public PlatformTest {
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+        [NSNumber numberWithInt:std::to_underlying(autofill::NAME_FULL)] :
             @[ @"John H. Doe", @"" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
@@ -139,7 +140,7 @@ class InfobarSaveAddressProfileViewControllerTest : public PlatformTest {
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+        [NSNumber numberWithInt:std::to_underlying(autofill::NAME_FULL)] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",

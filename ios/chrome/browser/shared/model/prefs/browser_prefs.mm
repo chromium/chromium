@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/json/values_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/threading/thread_restrictions.h"
 #import "base/time/time.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -846,7 +847,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register prerender network prediction preferences.
   registry->RegisterIntegerPref(
       prefs::kNetworkPredictionSetting,
-      base::to_underlying(
+      std::to_underlying(
           prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 

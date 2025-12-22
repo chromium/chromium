@@ -8,7 +8,6 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/infobars/core/infobar.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"

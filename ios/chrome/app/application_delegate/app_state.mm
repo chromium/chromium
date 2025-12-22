@@ -9,7 +9,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -164,8 +163,8 @@ BOOL ApplicationIsInBackground() {
   if (newInitStage == AppInitStage::kStart) {
     DCHECK_EQ(_initStage, AppInitStage::kStart);
   } else {
-    DCHECK_EQ(base::to_underlying(newInitStage),
-              base::to_underlying(_initStage) + 1);
+    DCHECK_EQ(std::to_underlying(newInitStage),
+              std::to_underlying(_initStage) + 1);
   }
 
   AppInitStage previousInitStage = _initStage;
@@ -197,7 +196,7 @@ BOOL ApplicationIsInBackground() {
                                        didTransitionFromInitStage:)] &&
       _initStage > AppInitStage::kStart) {
     AppInitStage previousInitStage =
-        static_cast<AppInitStage>(base::to_underlying(_initStage) - 1);
+        static_cast<AppInitStage>(std::to_underlying(_initStage) - 1);
     // Trigger an update on the newly added agent.
     [observer appState:self didTransitionFromInitStage:previousInitStage];
   }
@@ -232,7 +231,7 @@ BOOL ApplicationIsInBackground() {
 - (void)queueTransitionToNextInitStage {
   DCHECK_LT(_initStage, AppInitStage::kFinal);
   AppInitStage nextInitStage =
-      static_cast<AppInitStage>(base::to_underlying(_initStage) + 1);
+      static_cast<AppInitStage>(std::to_underlying(_initStage) + 1);
   [self queueTransitionToInitStage:nextInitStage];
 }
 

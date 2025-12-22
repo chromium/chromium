@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
 
+#import <utility>
+
 #import "base/test/metrics/histogram_tester.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
@@ -32,7 +33,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
         std::move(TestProfileIOS::Builder().SetName(name)));
 
     profile->GetPrefs()->SetInteger(kActivityBucketKey,
-                                    base::to_underlying(bucket));
+                                    std::to_underlying(bucket));
   }
 
  private:
