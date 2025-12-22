@@ -13,9 +13,6 @@ source_set("ui") {
     "quick_delete_view_controller.mm",
     "table_view_pop_up_cell.h",
     "table_view_pop_up_cell.mm",
-    "time_range_selector_table_view_controller+Testing.h",
-    "time_range_selector_table_view_controller.h",
-    "time_range_selector_table_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -43,24 +40,5 @@ source_set("ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ui/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "time_range_selector_table_view_controller_unittest.mm" ]
-  deps = [
-    ":ui",
-    "//base",
-    "//base/test:test_support",
-    "//components/browsing_data/core",
-    "//components/prefs",
-    "//components/sync_preferences:test_support",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/table_view:test_support",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }
