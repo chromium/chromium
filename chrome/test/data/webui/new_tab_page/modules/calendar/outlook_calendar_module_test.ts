@@ -24,6 +24,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
   setup(() => {
     loadTimeData.overrideValues({
       modulesOutlookCalendarTitle: title,
+      hideDismissModules: false,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(

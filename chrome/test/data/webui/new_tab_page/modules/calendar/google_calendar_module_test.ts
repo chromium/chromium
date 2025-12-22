@@ -37,6 +37,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
       modulesGoogleCalendarDismissToastMessage: dismissToast,
       modulesDismissForHoursButtonText: 'Hide for $1 hours',
       calendarModuleDismissHours: dismissTime,
+      hideDismissModules: false,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(

@@ -6,6 +6,7 @@ import {DriveSuggestionHandlerRemote} from 'chrome://new-tab-page/drive_suggesti
 import type {DisableModuleEvent, DismissModuleInstanceEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
 import {driveModuleDescriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -16,6 +17,12 @@ import {installMock} from '../../test_support.js';
 suite('DriveModuleV2', () => {
   let handler: TestMock<DriveSuggestionHandlerRemote>;
   const iconUrl = 'https://example.com/application/vnd.google-apps.spreadsheet';
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      hideDismissModules: false,
+    });
+  });
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

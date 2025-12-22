@@ -23,6 +23,12 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
   let metrics: MetricsTracker;
 
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      hideDismissModules: false,
+    });
+  });
+
   setup(() => {
     handler = installMock(
         PageHandlerRemote,

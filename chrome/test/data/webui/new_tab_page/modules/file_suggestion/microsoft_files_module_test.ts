@@ -23,8 +23,10 @@ suite('MicrosoftFilesModule', () => {
   const modulesMicrosoftFilesName = 'SharePoint and OneDrive files';
 
   setup(() => {
-    loadTimeData.overrideValues(
-        {modulesMicrosoftFilesName: modulesMicrosoftFilesName});
+    loadTimeData.overrideValues({
+      modulesMicrosoftFilesName: modulesMicrosoftFilesName,
+      hideDismissModules: false,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         MicrosoftFilesPageHandlerRemote,

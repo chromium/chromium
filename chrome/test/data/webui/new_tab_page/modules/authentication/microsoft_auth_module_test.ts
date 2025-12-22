@@ -24,8 +24,10 @@ suite('MicrosoftAuthModule', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues(
-        {modulesMicrosoftAuthName: modulesMicrosoftAuthName});
+    loadTimeData.overrideValues({
+      modulesMicrosoftAuthName: modulesMicrosoftAuthName,
+      hideDismissModules: false,
+    });
 
     handler = installMock(
         MicrosoftAuthPageHandlerRemote,

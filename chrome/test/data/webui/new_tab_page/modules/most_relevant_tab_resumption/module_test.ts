@@ -56,6 +56,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       modulesRedesignedEnabled: true,
+      hideDismissModules: false,
     });
   });
 
