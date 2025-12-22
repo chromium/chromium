@@ -25,6 +25,7 @@
 #include "fake_base_tab_strip_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/animation_test_api.h"
 
 class FakeBaseTabStripControllerWithProfile
     : public FakeBaseTabStripController {
@@ -97,6 +98,12 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabSearchContainer> container_before_tab_strip_;
   std::unique_ptr<TabSearchContainer> container_after_tab_strip_;
+
+  // Some of these tests rely on animation being enabled. This forces
+  // animation on even if it's turned off in the OS.
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_{
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)};
 };
 
 TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
