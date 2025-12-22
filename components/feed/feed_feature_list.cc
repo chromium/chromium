@@ -51,8 +51,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
 
 BASE_FEATURE(kFeedNoViewCache, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedShowSignInCommand, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedPerformanceStudy, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyntheticCapabilities,

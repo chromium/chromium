@@ -78,10 +78,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
 
-// When enabled, allow show sign in command to request a user signs in / syncs.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
-
 // When enabled, depending on params selected, enable different
 // performance-oriented features in Feed.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)

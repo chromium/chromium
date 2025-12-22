@@ -197,7 +197,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedNoViewCache,
     &feed::kFeedPerformanceStudy,
     &feed::kFeedRecyclerBinderUnmountOnDetach,
-    &feed::kFeedShowSignInCommand,
     &feed::kFeedSignedOutViewDemotion,
     &feed::kInterestFeedV2,
     &feed::kWebFeedAwareness,
