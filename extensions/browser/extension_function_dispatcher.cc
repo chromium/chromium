@@ -521,10 +521,6 @@ WindowController* ExtensionFunctionDispatcher::GetExtensionWindowController() {
   return delegate_ ? delegate_->GetExtensionWindowController() : nullptr;
 }
 
-content::WebContents* ExtensionFunctionDispatcher::GetAssociatedWebContents() {
-  return delegate_ ? delegate_->GetAssociatedWebContents() : nullptr;
-}
-
 content::WebContents* ExtensionFunctionDispatcher::GetVisibleWebContents() {
   return delegate_ ? delegate_->GetVisibleWebContents() : nullptr;
 }

@@ -97,7 +97,6 @@ class ExtensionFunctionDispatcher {
   // TODO(devlin): None of these belong here. We should kill
   // ExtensionFunctionDispatcher::Delegate.
   WindowController* GetExtensionWindowController();
-  content::WebContents* GetAssociatedWebContents();
   content::WebContents* GetVisibleWebContents();
 
   // The BrowserContext that this dispatcher is associated with.
