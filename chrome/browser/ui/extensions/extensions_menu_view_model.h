@@ -284,6 +284,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Populates the action models in alphabetical order.
   void PopulateActionModels();
 
+  // Returns the extension action view model for the given `extension_id`.
+  ExtensionActionViewModel* GetActionViewModel(
+      const extensions::ExtensionId& extension_id) const;
+
   content::WebContents* GetActiveWebContents();
 
   // The browser window that the extensions menu is in.

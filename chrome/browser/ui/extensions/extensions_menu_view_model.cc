@@ -700,12 +700,9 @@ bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
   content::WebContents* web_contents = GetActiveWebContents();
   Profile* profile = browser_->GetProfile();
-  // TODO(crbug.com/456285449): We should retrieve the extension from the
-  // extension action view model, but here we are getting the toolbar action
-  // view model interface. For that we either need to (a) pass the action view
-  // controller instead or (b) add the extension getter method to toolbar action
-  // view controller.
-  const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  CHECK(action_model);
+  const extensions::Extension* extension = action_model->GetExtension();
   CHECK(extension);
 
   return CanUserCustomizeExtensionSiteAccess(*extension, *profile,
@@ -1114,6 +1111,15 @@ void ExtensionsMenuViewModel::PopulateActionModels() {
   }
 
   std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
+}
+
+ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
+    const extensions::ExtensionId& extension_id) const {
+  auto it =
+      std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
+        return model->GetId() == extension_id;
+      });
+  return it != action_models_.end() ? it->get() : nullptr;
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

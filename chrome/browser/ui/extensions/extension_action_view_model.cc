@@ -548,6 +548,13 @@ bool ExtensionActionViewModel::ExtensionIsValid() const {
   return extension_registry_->enabled_extensions().Contains(extension_->id());
 }
 
+const extensions::Extension* ExtensionActionViewModel::GetExtension() const {
+  if (!ExtensionIsValid()) {
+    return nullptr;
+  }
+  return extension_.get();
+}
+
 bool ExtensionActionViewModel::GetExtensionCommand(
     extensions::Command* command) const {
   DCHECK(command);

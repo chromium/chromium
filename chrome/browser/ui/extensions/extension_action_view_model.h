@@ -49,9 +49,10 @@ class ImageModel;
 // with platform-specific `ExtensionActionPlatformDelegate` to provide extension
 // action business logic across platforms.
 //
-// This class doesn't own the extension or extension action in question. It is
-// safe to call methods after the extension is uninstalled, but they will return
-// undefined values, except GetId().
+// This class shares ownership of the extension (via scoped_refptr) to ensure
+// memory safety, but does not own the extension action. It is safe to call
+// methods after the extension is uninstalled (removed from the registry), but
+// they will typically return empty or default values, except GetId().
 class ExtensionActionViewModel
     : public ToolbarActionViewModel,
       public content::WebContentsObserver,
@@ -129,6 +130,9 @@ class ExtensionActionViewModel
 
   // ExtensionContextMenuModel::PopupDelegate:
   void InspectPopup() override;
+
+  // Returns the extension associated with this model.
+  const extensions::Extension* GetExtension() const;
 
   // Populates |command| with the command associated with |extension|, if one
   // exists. Returns true if |command| was populated.
