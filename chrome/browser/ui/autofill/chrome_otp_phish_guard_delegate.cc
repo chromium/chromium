@@ -6,8 +6,12 @@
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
+#endif
 
 namespace autofill {
 
@@ -20,6 +24,7 @@ ChromeOtpPhishGuardDelegate::~ChromeOtpPhishGuardDelegate() = default;
 void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (auto* client =
           ChromePasswordManagerClient::FromWebContents(&web_contents_.get())) {
     if (safe_browsing::PasswordProtectionService* pps =
@@ -29,6 +34,8 @@ void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
       return;
     }
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
   std::move(callback).Run(false);
 }
 

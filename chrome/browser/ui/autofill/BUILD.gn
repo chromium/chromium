@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 import("//components/compose/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -194,12 +195,15 @@ source_set("impl") {
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/form_parsing",
     "//components/profile_metrics",
-    "//components/safe_browsing/content/browser/password_protection",
     "//components/security_state/content",
     "//components/strings:components_strings_grit",
     "//components/unified_consent",
     "//components/variations/service",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/browser/password_protection" ]
+  }
 
   if (is_android) {
     sources += [
