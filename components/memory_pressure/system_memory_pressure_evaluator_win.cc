@@ -149,93 +149,12 @@ SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   StopObserving();
 }
 
-NTSTATUS SystemMemoryPressureEvaluator::GetSystemMemoryListInformation(
-    SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) {
-  // Also sometimes called SYSTEM_MEMORY_LIST_COMMAND.
-  static constexpr auto SystemMemoryListInformation =
-      static_cast<SYSTEM_INFORMATION_CLASS>(80);
-  return ::NtQuerySystemInformation(SystemMemoryListInformation,
-                                    &memory_list_info, sizeof(memory_list_info),
-                                    /*ReturnLength=*/nullptr);
-}
-
-void SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts() {
-  // This API is undocumented. See ReactOS/PHNT/pinvoke/geoffchappell for
-  // documentation on the call, also see MEMINFO events in ETW (via `tracerpt`),
-  // because they contain this same info. Also see Windows Internals, Chapter 5,
-  // section on `KernelObjects\MemoryPartition0`, because this is the mechanism
-  // by which we're making the query.
-  SYSTEM_MEMORY_LIST_INFORMATION memory_list_information;
-
-  NTSTATUS status = GetSystemMemoryListInformation(memory_list_information);
-  // Record the status for the system call. NtQuerySystemInformation() can
-  // return STATUS_ACCESS_DENIED in the case that
-  // SeProfileSingleProcessPrivilege is not held by the user, but that's fine
-  // since the subset of users which have this permission should still be a
-  // representative sample.
-  if (NT_SUCCESS(status)) {
-    ++total_intervals_recorded_;
-    if (memory_list_information.ZeroPageCount == 0) {
-      ++zero_list_exhausted_interval_count_;
-    }
-    if (memory_list_information.FreePageCount == 0) {
-      ++free_list_exhausted_interval_count_;
-    }
-
-    base::TimeTicks now = base::TimeTicks::Now();
-    if (last_pressured_interval_emission_time_ <= now - base::Seconds(30)) {
-      // Only record the metrics once every 30 seconds.
-      base::UmaHistogramCounts1000(
-          "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
-          "ZeroList",
-          zero_list_exhausted_interval_count_);
-      base::UmaHistogramCounts1000(
-          "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
-          "FreeList",
-          free_list_exhausted_interval_count_);
-      base::UmaHistogramCounts1000(
-          "Memory.SystemMemoryLists.TotalIntervalsRecorded",
-          total_intervals_recorded_);
-      // Record a massively subsampled record of page counts.
-      base::UmaHistogramCustomCounts(
-          "Memory.SystemMemoryLists.FreePageCount",
-          base::saturated_cast<int>(memory_list_information.FreePageCount), 1,
-          500000000, 75);
-      base::UmaHistogramCustomCounts(
-          "Memory.SystemMemoryLists.ZeroPageCount",
-          base::saturated_cast<int>(memory_list_information.ZeroPageCount), 1,
-          500000000, 75);
-      base::UmaHistogramCustomCounts(
-          "Memory.SystemMemoryLists.ModifiedPageCount",
-          base::saturated_cast<int>(memory_list_information.ModifiedPageCount),
-          1, 500000000, 75);
-
-      free_list_exhausted_interval_count_ = 0;
-      zero_list_exhausted_interval_count_ = 0;
-      total_intervals_recorded_ = 0;
-      last_pressured_interval_emission_time_ = now;
-    }
-  } else {
-    base::UmaHistogramSparse("Memory.SystemMemoryLists.QueryFailureStatus",
-                             status);
-
-    // Stop sampling on first error.
-    exhausted_interval_timer_.Stop();
-  }
-}
 
 void SystemMemoryPressureEvaluator::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // base::Unretained is safe in this case because this class owns the
   // timer, and will cancel the timer on destruction.
-  last_pressured_interval_emission_time_ = base::TimeTicks::Now();
-  exhausted_interval_timer_.Start(
-      FROM_HERE, base::Milliseconds(100),
-      base::BindRepeating(
-          &SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts,
-          base::Unretained(this)));
-
   timer_.Start(
       FROM_HERE, kWinMemoryPressurePeriodParam.Get(),
       base::BindRepeating(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
@@ -247,7 +166,6 @@ void SystemMemoryPressureEvaluator::StopObserving() {
 
   // If StartObserving failed, StopObserving will still get called.
   timer_.Stop();
-  exhausted_interval_timer_.Stop();
 }
 
 void SystemMemoryPressureEvaluator::CheckMemoryPressure() {

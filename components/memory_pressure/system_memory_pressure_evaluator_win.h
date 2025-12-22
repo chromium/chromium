@@ -20,17 +20,6 @@ typedef struct _MEMORYSTATUSEX MEMORYSTATUSEX;
 
 namespace memory_pressure::win {
 
-struct SYSTEM_MEMORY_LIST_INFORMATION {
-  uintptr_t ZeroPageCount;
-  uintptr_t FreePageCount;
-  uintptr_t ModifiedPageCount;
-  uintptr_t ModifiedNoWritePageCount;
-  uintptr_t BadPageCount;
-  uintptr_t PageCountByPriority[8];
-  uintptr_t RepurposedPagesByPriority[8];
-  uintptr_t ModifiedPageCountPageFile;
-};
-
 // Windows memory pressure voter that checks the amount of RAM left at a low
 // frequency and applies internal hysteresis.
 class SystemMemoryPressureEvaluator
@@ -38,12 +27,6 @@ class SystemMemoryPressureEvaluator
  public:
   // The memory sampling period, currently 5s.
   static constexpr base::TimeDelta kDefaultPeriod = base::Seconds(5);
-
-  // The memory list sampling period, 100ms. It is a very cheap call, and given
-  // that we are aggregating a high-frequency counter, required for
-  // `Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.*`.
-  static constexpr base::TimeDelta kExhaustedIntervalsPerThirtySecondsPeriod =
-      base::Milliseconds(100);
 
   // Constants governing the polling and hysteresis behaviour of the observer.
   // The time which should pass between 2 successive moderate memory pressure
@@ -107,13 +90,6 @@ class SystemMemoryPressureEvaluator
   // instantiated.
   void CheckMemoryPressure();
 
-  // Checks the size of the system memory lists via
-  // NtQuerySystemInformation(). If this is an "exhausted" interval, (i.e. one
-  // of the major memory lists is exhausted), tally that, and emit this count
-  // every 30 seconds to UMA, as well as the actual current size of the lists as
-  // most recently recorded. Can be called on any thread.
-  void CheckSystemMemoryListPageCounts();
-
   // Calculates the current instantaneous memory pressure level. This does not
   // use any hysteresis and simply returns the result at the current moment. Can
   // be called on any thread.
@@ -123,12 +99,6 @@ class SystemMemoryPressureEvaluator
   // true if the system call succeeds, false otherwise. Can be called on any
   // thread.
   virtual bool GetSystemMemoryStatus(MEMORYSTATUSEX& mem_status);
-
-  // Gets system memory list size. This is virtual as a unittesting hook.
-  // Returns the status of the NtQuerySystemInformation() call. Can be called on
-  // any thread.
-  virtual NTSTATUS GetSystemMemoryListInformation(
-      SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info);
 
   // Records histograms about committed memory based on `mem_status`.
   static void RecordCommitHistograms(const MEMORYSTATUSEX& mem_status);
@@ -141,23 +111,12 @@ class SystemMemoryPressureEvaluator
 
   // A periodic timer to check for memory pressure changes.
   base::RepeatingTimer timer_;
-  // The timer to check the size of system memory lists.
-  base::RepeatingTimer exhausted_interval_timer_;
 
   // To slow down the amount of moderate pressure event calls, this gets used to
   // count the number of events since the last event occurred. This is used by
   // |CheckMemoryPressure| to apply hysteresis on the raw results of
   // |CalculateCurrentPressureLevel|.
   int moderate_pressure_repeat_count_;
-
-  // Though we're querying the memory list size once every 100ms for the purpose
-  // of recording "exhausted" intervals per thirty seconds, we only bump these
-  // counters typically, and record the UMA histograms only once every 30s, and
-  // then we reset these.
-  int zero_list_exhausted_interval_count_ = 0;
-  int free_list_exhausted_interval_count_ = 0;
-  int total_intervals_recorded_ = 0;
-  base::TimeTicks last_pressured_interval_emission_time_;
 
   // Ensures that this object is used from a single sequence.
   SEQUENCE_CHECKER(sequence_checker_);
