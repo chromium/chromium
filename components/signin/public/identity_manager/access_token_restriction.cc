@@ -20,13 +20,6 @@ namespace signin {
 
 namespace {
 
-// Client name for Chrome extensions that require access to Identity APIs.
-const char* const kExtensionsIdentityAPIOAuthConsumerName =
-    "extensions_identity_api";
-
-const char* const kSyncDeviceStatisticsMetricsOAuthConsumerName =
-    "sync_device_statistics_metrics";
-
 // Returns true if `scope` is a Google OAuth2 API scope that do not require user
 // to be signed in to the browser.
 bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
@@ -233,12 +226,9 @@ OAuth2ScopeRestriction GetOAuth2ScopeRestriction(const std::string& scope) {
   return OAuth2ScopeRestriction::kExplicitConsent;
 }
 
-bool IsPrivilegedOAuth2Consumer(const std::string& consumer_name) {
-  // TODO(crbug.com/465716865): Remove
-  // kSyncDeviceStatisticsMetricsOAuthConsumerName once metrics collection is
-  // completed.
-  return consumer_name == kExtensionsIdentityAPIOAuthConsumerName ||
-         consumer_name == kSyncDeviceStatisticsMetricsOAuthConsumerName;
+bool IsPrivilegedOAuth2Consumer(OAuthConsumerId oauth_consumer_id) {
+  return oauth_consumer_id == OAuthConsumerId::kExtensionsIdentityAPI ||
+         oauth_consumer_id == OAuthConsumerId::kSyncDeviceStatisticsMetrics;
 }
 
 }  // namespace signin

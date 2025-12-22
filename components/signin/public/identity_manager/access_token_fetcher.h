@@ -6,7 +6,6 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCESS_TOKEN_FETCHER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -167,37 +166,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                               AccessTokenInfo access_token_info)>;
 
   // Instantiates a fetcher and immediately starts the process of obtaining an
-  // OAuth2 access token for |account_id| and |scopes|. The |callback| is called
-  // once the request completes (successful or not). If the AccessTokenFetcher
-  // is destroyed before the process completes, the callback is not called.
-  AccessTokenFetcher(const CoreAccountId& account_id,
-                     const std::string& oauth_consumer_name,
-                     ProfileOAuth2TokenService* token_service,
-                     PrimaryAccountManager* primary_account_manager,
-                     const ScopeSet& scopes,
-                     TokenCallback callback,
-                     Mode mode,
-                     bool require_sync_consent_for_scope_verification,
-                     Source token_source = Source::kProfile);
-
-  // Instantiates a fetcher and immediately starts the process of obtaining an
-  // OAuth2 access token for |account_id| and |scopes|, allowing clients to pass
-  // a |url_loader_factory| of their choice. The |callback| is called
-  // once the request completes (successful or not). If the AccessTokenFetcher
-  // is destroyed before the process completes, the callback is not called.
-  AccessTokenFetcher(
-      const CoreAccountId& account_id,
-      const std::string& oauth_consumer_name,
-      ProfileOAuth2TokenService* token_service,
-      PrimaryAccountManager* primary_account_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const ScopeSet& scopes,
-      TokenCallback callback,
-      Mode mode,
-      bool require_sync_consent_for_scope_verification,
-      Source token_source = Source::kProfile);
-
-  // Instantiates a fetcher and immediately starts the process of obtaining an
   // OAuth2 access token for |account_id| and |oauth_consumer_id|. The
   // |callback| is called once the request completes (successful or not). If the
   // AccessTokenFetcher is destroyed before the process completes, the callback
@@ -288,9 +256,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
 
-  // TODO(crbug.com/425896213): Convert from std::optional to a regular field
-  // once all clients of this class are migrated to use the new constructor.
-  std::optional<OAuthConsumerId> oauth_consumer_id_;
+  const OAuthConsumerId oauth_consumer_id_;
 };
 
 }  // namespace signin

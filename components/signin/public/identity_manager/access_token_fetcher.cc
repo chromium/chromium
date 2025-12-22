@@ -55,60 +55,6 @@ BASE_FEATURE(kRestrictSignoutAccessTokenFetch,
 
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
-    const std::string& oauth_consumer_name,
-    ProfileOAuth2TokenService* token_service,
-    PrimaryAccountManager* primary_account_manager,
-    const ScopeSet& scopes,
-    TokenCallback callback,
-    Mode mode,
-    bool require_sync_consent_for_scope_verification,
-    Source token_source)
-    : AccessTokenFetcher(account_id,
-                         oauth_consumer_name,
-                         token_service,
-                         primary_account_manager,
-                         /*url_loader_factory=*/nullptr,
-                         scopes,
-                         std::move(callback),
-                         mode,
-                         require_sync_consent_for_scope_verification,
-                         token_source) {}
-
-AccessTokenFetcher::AccessTokenFetcher(
-    const CoreAccountId& account_id,
-    const std::string& oauth_consumer_name,
-    ProfileOAuth2TokenService* token_service,
-    PrimaryAccountManager* primary_account_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const ScopeSet& scopes,
-    TokenCallback callback,
-    Mode mode,
-    bool require_sync_consent_for_scope_verification,
-    Source token_source)
-    : OAuth2AccessTokenManager::Consumer(oauth_consumer_name),
-      account_id_(account_id),
-      token_service_(token_service),
-      primary_account_manager_(primary_account_manager),
-      url_loader_factory_(std::move(url_loader_factory)),
-      scopes_(scopes),
-      callback_(std::move(callback)),
-      mode_(mode),
-      token_source_(token_source),
-      require_sync_consent_for_scope_verification_(
-          require_sync_consent_for_scope_verification) {
-  if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
-    StartAccessTokenRequest();
-    return;
-  }
-
-  // Start observing the IdentityManager. This observer will be removed either
-  // when a refresh token is obtained and an access token request is started or
-  // when this object is destroyed.
-  token_service_observation_.Observe(token_service_.get());
-}
-
-AccessTokenFetcher::AccessTokenFetcher(
-    const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
     const OAuthConsumer& oauth_consumer,
     ProfileOAuth2TokenService* token_service,
@@ -139,17 +85,27 @@ AccessTokenFetcher::AccessTokenFetcher(
     Mode mode,
     bool require_sync_consent_for_scope_verification,
     Source token_source)
-    : AccessTokenFetcher(account_id,
-                         oauth_consumer.GetName(),
-                         token_service,
-                         primary_account_manager,
-                         url_loader_factory,
-                         oauth_consumer.GetScopes(),
-                         std::move(callback),
-                         mode,
-                         require_sync_consent_for_scope_verification,
-                         token_source) {
-  oauth_consumer_id_ = oauth_consumer_id;
+    : OAuth2AccessTokenManager::Consumer(oauth_consumer.GetName()),
+      account_id_(account_id),
+      token_service_(token_service),
+      primary_account_manager_(primary_account_manager),
+      url_loader_factory_(std::move(url_loader_factory)),
+      scopes_(oauth_consumer.GetScopes()),
+      callback_(std::move(callback)),
+      mode_(mode),
+      token_source_(token_source),
+      require_sync_consent_for_scope_verification_(
+          require_sync_consent_for_scope_verification),
+      oauth_consumer_id_(oauth_consumer_id) {
+  if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
+    StartAccessTokenRequest();
+    return;
+  }
+
+  // Start observing the IdentityManager. This observer will be removed either
+  // when a refresh token is obtained and an access token request is started or
+  // when this object is destroyed.
+  token_service_observation_.Observe(token_service_.get());
 }
 
 AccessTokenFetcher::~AccessTokenFetcher() = default;
@@ -162,7 +118,7 @@ void AccessTokenFetcher::VerifyScopeAccess() {
   }
 
   // The consumer has privileged access to all scopes, return early.
-  if (IsPrivilegedOAuth2Consumer(/*consumer_name=*/id())) {
+  if (IsPrivilegedOAuth2Consumer(oauth_consumer_id_)) {
     VLOG(1) << id() << " has access rights to scopes: "
             << base::JoinString(
                    std::vector<std::string>(scopes_.begin(), scopes_.end()),
@@ -291,10 +247,8 @@ void AccessTokenFetcher::OnGetTokenSuccess(
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_deleter(
       std::move(access_token_request_));
 
-  if (oauth_consumer_id_.has_value()) {
-    base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Success",
-                                  oauth_consumer_id_.value());
-  }
+  base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Success",
+                                oauth_consumer_id_);
   RunCallbackAndMaybeDie(
       GoogleServiceAuthError::AuthErrorNone(),
       AccessTokenInfo(token_response.access_token,
@@ -310,13 +264,10 @@ void AccessTokenFetcher::OnGetTokenFailure(
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_deleter(
       std::move(access_token_request_));
 
-  if (oauth_consumer_id_.has_value()) {
-    CHECK(error.state() != GoogleServiceAuthError::NONE);
-    std::string error_str = ErrorToString(error.state());
-    base::UmaHistogramEnumeration(
-        "Signin.AccessTokenFetch.Failure." + error_str,
-        oauth_consumer_id_.value());
-  }
+  CHECK(error.state() != GoogleServiceAuthError::NONE);
+  std::string error_str = ErrorToString(error.state());
+  base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Failure." + error_str,
+                                oauth_consumer_id_);
   RunCallbackAndMaybeDie(error, AccessTokenInfo());
 
   // Potentially dead after the above invocation; nothing to do except return.
