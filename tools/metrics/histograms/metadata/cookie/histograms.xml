@@ -737,17 +737,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Partitioned.AncestorChainBitFeatureEnabled"
-    enum="Boolean" expires_after="2026-05-24">
-  <owner>selya@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    This histogram records if the kAncestorChainBitEnabledInPartitionedCookies
-    feature is enabled or disabled. This metric recorded is each time
-    CookieMonster::OnLoaded is called.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.PartitionedCookieCount" units="cookies"
     expires_after="2026-05-24">
   <owner>dylancutler@google.com</owner>
