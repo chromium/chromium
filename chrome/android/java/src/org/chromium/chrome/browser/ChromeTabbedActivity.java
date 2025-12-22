@@ -2678,11 +2678,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
 
                 if (url == null || url.equals(UrlConstants.NTP_URL)) {
+                    UrlConstantResolver incognitoResolver =
+                            UrlConstantResolverFactory.getIncognitoResolver();
                     if (fromLauncherShortcut) {
                         resultTab =
                                 getTabCreator(true)
                                         .launchUrl(
-                                                UrlConstants.NTP_URL,
+                                                incognitoResolver.getNtpUrl(),
                                                 TabLaunchType.FROM_LAUNCHER_SHORTCUT);
                         recordLauncherShortcutAction(true);
                         reportNewTabShortcutUsed(true);
@@ -2691,13 +2693,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         resultTab =
                                 getTabCreator(true)
                                         .launchUrl(
-                                                UrlConstants.NTP_URL,
+                                                incognitoResolver.getNtpUrl(),
                                                 TabLaunchType.FROM_APP_WIDGET);
                     } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
                         resultTab =
                                 getTabCreator(true)
                                         .launchUrl(
-                                                UrlConstants.NTP_URL,
+                                                incognitoResolver.getNtpUrl(),
                                                 TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB);
                         if (IncognitoTabLauncher.shouldFocusOmnibox(intent)) {
                             // Since the Tab is created in the foreground, its View will gain
@@ -2716,7 +2718,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         resultTab =
                                 getTabCreator(true)
                                         .launchUrl(
-                                                UrlConstants.NTP_URL,
+                                                incognitoResolver.getNtpUrl(),
                                                 TabLaunchType.FROM_CHROME_UI,
                                                 intent,
                                                 mIntentHandlingTimeMs);
@@ -3378,12 +3380,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 this,
                 mLayoutStateProviderSupplier,
                 mBookmarkModelSupplier,
-                () ->
-                        getTabCreator(/* incognito= */ false)
-                                .launchUrl(
-                                        NewTabPageUtils.encodeNtpUrl(
-                                                NewTabPageLaunchOrigin.WEB_FEED),
-                                        TabLaunchType.FROM_CHROME_UI),
+                () -> {
+                    Profile originalProfile =
+                            getProfileProviderSupplier().get().getOriginalProfile();
+                    getTabCreator(/* incognito= */ false)
+                            .launchUrl(
+                                    NewTabPageUtils.encodeNtpUrl(
+                                            originalProfile, NewTabPageLaunchOrigin.WEB_FEED),
+                                    TabLaunchType.FROM_CHROME_UI);
+                },
                 getModalDialogManager(),
                 getSnackbarManager(),
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),

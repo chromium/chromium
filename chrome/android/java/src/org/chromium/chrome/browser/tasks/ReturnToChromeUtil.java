@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.cached_flags.IntCachedFeatureParam;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -263,8 +262,10 @@ public final class ReturnToChromeUtil {
                 homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(lastActiveTab, null);
             }
         } else {
+            UrlConstantResolver resolver =
+                    UrlConstantResolverFactory.getForProfile(currentTabModel.getProfile());
             int indexOfFirstNtp =
-                    TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
+                    TabModelUtils.getTabIndexByUrl(currentTabModel, resolver.getNtpUrl());
             if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
                 Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
                 assert indexOfFirstNtp != index;

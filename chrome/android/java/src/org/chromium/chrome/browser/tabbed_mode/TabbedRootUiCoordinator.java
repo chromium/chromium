@@ -1307,7 +1307,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         .getTabCreator(/* incognito= */ false)
                                         .launchUrl(
                                                 NewTabPageUtils.encodeNtpUrl(
-                                                        NewTabPageLaunchOrigin.WEB_FEED),
+                                                        profile, NewTabPageLaunchOrigin.WEB_FEED),
                                                 TabLaunchType.FROM_CHROME_UI);
                             },
                             mModalDialogManagerSupplier.get(),

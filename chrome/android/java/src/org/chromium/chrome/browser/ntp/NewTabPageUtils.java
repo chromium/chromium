@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.ntp;
 import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Collection of util methods for help launching a NewTabPage. */
@@ -19,8 +21,9 @@ public class NewTabPageUtils {
     /**
      * @return The NTP url encoded with {@link NewTabPageLaunchOrigin} information.
      */
-    public static String encodeNtpUrl(@NewTabPageLaunchOrigin int launchOrigin) {
-        Uri.Builder uriBuilder = Uri.parse(UrlConstants.NTP_URL).buildUpon();
+    public static String encodeNtpUrl(Profile profile, @NewTabPageLaunchOrigin int launchOrigin) {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(profile);
+        Uri.Builder uriBuilder = Uri.parse(resolver.getNtpUrl()).buildUpon();
         switch (launchOrigin) {
             case NewTabPageLaunchOrigin.WEB_FEED:
                 uriBuilder.appendQueryParameter(ORIGIN_PARAMETER_KEY, WEB_FEED_PARAMETER);

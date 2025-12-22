@@ -63,13 +63,14 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -551,7 +552,8 @@ public class NewTabPageLayout extends LinearLayout
     private void onIncognitoButtonClicked(View view) {
         if (!IncognitoUtils.isIncognitoModeEnabled(mProfile)) return;
 
-        mManager.getNativePageHost().loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true);
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        mManager.getNativePageHost().loadUrl(new LoadUrlParams(resolver.getNtpUrl()), true);
     }
 
     private void initializeLayoutChangeListener() {

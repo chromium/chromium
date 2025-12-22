@@ -64,13 +64,14 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -239,9 +240,12 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         /* didCloseCallback= */ null);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.DeleteGroup");
             } else if (menuId == R.id.open_new_tab_in_group) {
+                UrlConstantResolver resolver =
+                        UrlConstantResolverFactory.getForProfile(
+                                tabGroupModelFilter.getTabModel().getProfile());
                 TabGroupUtils.openUrlInGroup(
                         tabGroupModelFilter,
-                        UrlConstants.NTP_URL,
+                        resolver.getNtpUrl(),
                         tabId,
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.NewTabInGroup");
