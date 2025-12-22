@@ -322,6 +322,13 @@ const char kComposeboxAutoattachTabDescription[] =
     "When enabled, the composebox will automatically attach curent tab as "
     "context.";
 
+const char kComposeboxCloseButtonTopAlignName[] =
+    "Align the close button in composebox to the top edge of the view";
+const char kComposeboxCloseButtonTopAlignDescription[] =
+    "If the user preference is set to top, enabling this feature aligns the "
+    "compose box close button with the top edge of the input plate instead of "
+    "centering.";
+
 const char kComposeboxCompactModeName[] = "ComposeboxCompactMode";
 const char kComposeboxCompactModeDescription[] =
     "Enables the compact composebox, adding attachment or enabling AIM will "

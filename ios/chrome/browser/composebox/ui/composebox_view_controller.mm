@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -267,12 +268,17 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
           constraintEqualToAnchor:_closeButton.trailingAnchor
                          constant:0];
       constraintToMargin.priority = UILayoutPriorityRequired - 1;
+
+      CGFloat closeButtonTopMargin = AlignComposeboxCloseButtonToInputPlateTop()
+                                         ? 0
+                                         : kCloseButtonTopMargin;
+
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         _constraintToCloseButton,
         constraintToMargin,
         [_closeButton.topAnchor
             constraintEqualToAnchor:_inputViewController.view.topAnchor
-                           constant:kCloseButtonTopMargin],
+                           constant:closeButtonTopMargin],
         [_omniboxPopupContainer.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor],
         [_omniboxPopupContainer.trailingAnchor

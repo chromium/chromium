@@ -40,6 +40,12 @@ bool ShouldForceUploadFailure() {
   return kForceUploadFailure.Get();
 }
 
+BASE_FEATURE(kComposeboxCloseButtonTopAlign, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool AlignComposeboxCloseButtonToInputPlateTop() {
+  return base::FeatureList::IsEnabled(kComposeboxCloseButtonTopAlign);
+}
+
 BASE_FEATURE(kComposeboxCompactMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComposeboxCompactModeEnabled() {
