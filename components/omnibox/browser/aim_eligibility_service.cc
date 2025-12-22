@@ -232,6 +232,23 @@ bool AimEligibilityService::IsAimAllowedByPolicy(const PrefService* prefs) {
   return prefs->GetInteger(omnibox::kAIModeSettings) == kAiModeAllowedDefault;
 }
 
+// static
+std::string AimEligibilityService::EligibilityResponseSourceToString(
+    EligibilityResponseSource source) {
+  switch (source) {
+    case EligibilityResponseSource::kDefault:
+      return "Default";
+    case EligibilityResponseSource::kPrefs:
+      return "Prefs";
+    case EligibilityResponseSource::kServer:
+      return "Server";
+    case EligibilityResponseSource::kBrowserCache:
+      return "Browser Cache";
+    case EligibilityResponseSource::kUser:
+      return "User";
+  }
+}
+
 AimEligibilityService::AimEligibilityService(
     PrefService& pref_service,
     TemplateURLService* template_url_service,
@@ -277,6 +294,10 @@ bool AimEligibilityService::IsServerEligibilityEnabled() const {
   return base::FeatureList::IsEnabled(omnibox::kAimServerEligibilityEnabled);
 }
 
+bool AimEligibilityService::IsAimAllowedByDse() const {
+  return search::DefaultSearchProviderIsGoogle(template_url_service_);
+}
+
 bool AimEligibilityService::IsAimLocallyEligible() const {
   // Kill switch: If AIM is completely disabled, return false.
   if (!base::FeatureList::IsEnabled(omnibox::kAimEnabled)) {
@@ -284,7 +305,7 @@ bool AimEligibilityService::IsAimLocallyEligible() const {
   }
 
   // Always check Google DSE and Policy requirements.
-  if (!IsAimAllowedByPolicyAndDse()) {
+  if (!IsAimAllowedByDse() || !IsAimAllowedByPolicy(&pref_service_.get())) {
     return false;
   }
 
@@ -327,7 +348,57 @@ bool AimEligibilityService::IsCanvasEligible() const {
   return IsEligibleByServer(most_recent_response_.is_canvas_eligible());
 }
 
+const omnibox::AimEligibilityResponse&
+AimEligibilityService::GetMostRecentResponse() const {
+  return most_recent_response_;
+}
+
+AimEligibilityService::EligibilityResponseSource
+AimEligibilityService::GetMostRecentResponseSource() const {
+  return most_recent_response_source_;
+}
+
+void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
+  if (!initialized_) {
+    return;
+  }
+  StartServerEligibilityRequest(RequestSource::kUser);
+}
+
+bool AimEligibilityService::SetEligibilityResponseForDebugging(
+    const std::string& base64_encoded_response) {
+  if (!initialized_) {
+    return false;
+  }
+  std::string response_string;
+  if (!base::Base64Decode(base64_encoded_response, &response_string)) {
+    return false;
+  }
+  omnibox::AimEligibilityResponse response_proto;
+  if (!ParseResponseString(response_string, &response_proto)) {
+    return false;
+  }
+  UpdateMostRecentResponse(response_proto, EligibilityResponseSource::kUser);
+  return true;
+}
+
 // Private methods -------------------------------------------------------------
+
+// static
+std::string AimEligibilityService::RequestSourceToString(RequestSource source) {
+  switch (source) {
+    case RequestSource::kStartup:
+      return "Startup";
+    case RequestSource::kCookieChange:
+      return "CookieChange";
+    case RequestSource::kPrimaryAccountChange:
+      return "PrimaryAccountChange";
+    case RequestSource::kNetworkChange:
+      return "NetworkChange";
+    case RequestSource::kUser:
+      return "User";
+  }
+}
 
 bool AimEligibilityService::IsEligibleByServer(bool server_eligibility) const {
   if (!IsAimEligible()) {
@@ -634,28 +705,11 @@ void AimEligibilityService::ProcessServerEligibilityResponse(
   LogEligibilityResponse(request_source);
 }
 
-bool AimEligibilityService::IsAimAllowedByPolicyAndDse() const {
-  return search::DefaultSearchProviderIsGoogle(template_url_service_) &&
-         IsAimAllowedByPolicy(&pref_service_.get());
-}
-
 std::string AimEligibilityService::GetHistogramNameSlicedByRequestSource(
     const std::string& histogram_name,
     RequestSource request_source) const {
-  auto request_source_suffix = [](RequestSource request_source) {
-    switch (request_source) {
-      case RequestSource::kStartup:
-        return ".Startup";
-      case RequestSource::kCookieChange:
-        return ".CookieChange";
-      case RequestSource::kPrimaryAccountChange:
-        return ".PrimaryAccountChange";
-      case RequestSource::kNetworkChange:
-        return ".NetworkChange";
-    }
-    return "";
-  };
-  return base::StrCat({histogram_name, request_source_suffix(request_source)});
+  return base::StrCat(
+      {histogram_name, ".", RequestSourceToString(request_source)});
 }
 
 void AimEligibilityService::LogEligibilityRequestPrimaryAccountExists(

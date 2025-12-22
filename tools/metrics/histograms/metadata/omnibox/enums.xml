@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kPrefs"/>
   <int value="2" label="kServer"/>
   <int value="3" label="kBrowserCache"/>
+  <int value="4" label="kUser"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->

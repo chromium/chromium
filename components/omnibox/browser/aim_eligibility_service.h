@@ -62,6 +62,24 @@ class AimEligibilityService
   // Returns true if the AIM is allowed per the policy.
   static bool IsAimAllowedByPolicy(const PrefService* prefs);
 
+  // Tracks the source of `most_recent_response_`.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(EligibilityResponseSource)
+  enum class EligibilityResponseSource {
+    kDefault = 0,
+    kPrefs = 1,
+    kServer = 2,
+    kBrowserCache = 3,
+    kUser = 4,
+    kMaxValue = kUser,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
+
+  // Converts EligibilityResponseSource enum to string.
+  static std::string EligibilityResponseSourceToString(
+      EligibilityResponseSource source);
+
   AimEligibilityService(
       PrefService& pref_service,
       TemplateURLService* template_url_service,
@@ -83,6 +101,10 @@ class AimEligibilityService
   // Checks if server eligibility checking is enabled.
   // Virtual for testing purposes.
   virtual bool IsServerEligibilityEnabled() const;
+
+  // Checks if AIM is allowed by default search engine (Google DSE).
+  // Virtual for testing purposes.
+  virtual bool IsAimAllowedByDse() const;
 
   // Checks if user is locally eligible for AI mode (excludes server checks).
   // Virtual for testing purposes.
@@ -106,6 +128,21 @@ class AimEligibilityService
   // Checks if user is eligible for Canvas in AIM features.
   virtual bool IsCanvasEligible() const;
 
+  // Returns the most recent eligibility response proto.
+  const omnibox::AimEligibilityResponse& GetMostRecentResponse() const;
+
+  // Returns the source of the most recent eligibility response.
+  EligibilityResponseSource GetMostRecentResponseSource() const;
+
+  // NOTE: Following methods are intended for chrome://aim-eligibility-internals
+  // for debugging purposes only:
+  // Triggers a server request to fetch eligibility from the server.
+  void StartServerEligibilityRequestForDebugging();
+  // Sets the eligibility response directly from a base64-encoded string.
+  // Returns true if the response was successfully decoded and saved.
+  bool SetEligibilityResponseForDebugging(
+      const std::string& base64_encoded_response);
+
  protected:
   // Virtual methods for platform-specific country and locale access.
   virtual std::string GetCountryCode() const = 0;
@@ -123,9 +160,13 @@ class AimEligibilityService
     kCookieChange = 1,
     kPrimaryAccountChange = 2,
     kNetworkChange = 3,
-    kMaxValue = kNetworkChange,
+    kUser = 4,
+    kMaxValue = kUser,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
+
+  // Converts RequestSource enum to histogram suffix string.
+  static std::string RequestSourceToString(RequestSource source);
 
   // Tracks the status of the eligibility request.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -140,19 +181,6 @@ class AimEligibilityService
     kMaxValue = kSuccessBrowserCache,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityRequestStatus)
-
-  // Tracks the source of `most_recent_response_`.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(EligibilityResponseSource)
-  enum class EligibilityResponseSource {
-    kDefault = 0,
-    kPrefs = 1,
-    kServer = 2,
-    kBrowserCache = 3,
-    kMaxValue = kBrowserCache,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
 
   // Initializes the service. This isn't inlined in the constructor because
   // initialization may have to be delayed until after `template_url_service_`
@@ -201,9 +229,6 @@ class AimEligibilityService
       EligibilityRequestStatus request_status,
       int num_retries,
       std::optional<std::string> response_string);
-
-  // Returns true if AIM is allowed by policy and Google is the DSE.
-  bool IsAimAllowedByPolicyAndDse() const;
 
   // Returns the given histogram name sliced by the given request source.
   std::string GetHistogramNameSlicedByRequestSource(
