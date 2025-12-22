@@ -300,6 +300,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String BROWSER_CONTROLS_IN_VIZ = "AndroidBrowserControlsInViz";
+    public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";
     public static final String BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT =
             "BrowserControlsRenderDrivenShowConstraint";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
@@ -1288,6 +1289,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
+    public static final MutableFlagWithSafeDefault sBrowserControlsPersistsOnCvh =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_PERSISTS_ON_CVH, true);
     // Default to false. The logic behind the flag is not relevant when native is not initialized.
     public static final MutableFlagWithSafeDefault sBrowserControlsRenderDrivenShowConstraint =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);

@@ -662,6 +662,10 @@ public class CompositorViewHolder extends FrameLayout
             assumeNonNull(getHandler()).removeCallbacks(mSystemUiFullscreenResizeRunnable);
         }
 
+        if (mBrowserControlsManager != null) {
+            mBrowserControlsManager.removeObserver(this);
+        }
+
         setTab(null);
         if (mApplicationBottomInsetSupplier != null) {
             assert mOnViewportInsetsChanged != null;
@@ -1080,13 +1084,18 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Called whenever the host activity is started. */
     public void onStart() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.addObserver(this);
+        if (mBrowserControlsManager != null) {
+            mBrowserControlsManager.addObserver(this);
+        }
         requestRender();
     }
 
     /** Called whenever the host activity is stopped. */
     public void onStop() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.removeObserver(this);
+        if (mBrowserControlsManager != null
+                && !ChromeFeatureList.sBrowserControlsPersistsOnCvh.isEnabled()) {
+            mBrowserControlsManager.removeObserver(this);
+        }
     }
 
     @Override
