@@ -78,12 +78,13 @@
 
 .account-extension {
   align-items: center;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: auto 1fr;
   font-weight: 500;
   gap: 8px;
   height: 36px;
   margin-inline-start: 8px;
+  margin-inline-end: calc(8px + var(--dialog-padding));
 }
 
 .item-icon-container {
@@ -102,6 +103,12 @@
   --item-icon-size: 16px;
   height: var(--item-icon-size);
   width: var(--item-icon-size);
+}
+
+.text-elide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
