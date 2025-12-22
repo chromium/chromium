@@ -4,11 +4,20 @@
 
 source_set("ui") {
   sources = [
+    "assistant_sheet_animator.h",
+    "assistant_sheet_animator.mm",
+    "assistant_sheet_view.h",
+    "assistant_sheet_view.mm",
     "assistant_sheet_view_controller.h",
     "assistant_sheet_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/prototypes/diamond",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }

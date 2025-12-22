@@ -42,3 +42,4 @@ GuideName* const kLocationBarBadgeLargeEntrypointGuide =
     @"kLocationBarBadgeLargeEntrypointGuide";
 GuideName* const kInputAccessoryViewLayoutGuide =
     @"kInputAccessoryViewLayoutGuide";
+GuideName* const kDiamondBottomAppBarGuide = @"kDiamondBottomAppBarGuide";

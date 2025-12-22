@@ -6,13 +6,16 @@ source_set("coordinator") {
   sources = [
     "assistant_sheet_coordinator.h",
     "assistant_sheet_coordinator.mm",
-    "assistant_sheet_mediator.h",
-    "assistant_sheet_mediator.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/prototypes/diamond",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
 }

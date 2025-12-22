@@ -4,27 +4,17 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
 
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
+
 @implementation AssistantSheetViewController
+
+- (void)loadView {
+  self.view = [[AssistantSheetView alloc] init];
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor systemBackgroundColor];
-
-  // Basic setup for now
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.text = @"WIP. Hi, how can I help?";
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
-  titleLabel.textAlignment = NSTextAlignmentCenter;
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self.view addSubview:titleLabel];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    [titleLabel.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
-  ]];
-
-  // TODO(crbug.com/469050167): Implement UI logic.
+  // TODO(crbug.com/469050167): Implement.
 }
 
 @end

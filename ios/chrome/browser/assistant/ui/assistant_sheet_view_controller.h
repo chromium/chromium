@@ -10,6 +10,13 @@
 // View Controller for the Assistant Sheet.
 @interface AssistantSheetViewController : UIViewController
 
+// The view to anchor to. If nil, falls back to the bottom of the parent view.
+@property(nonatomic, weak) UIView* anchorView;
+
+// Whether to anchor to the bottom of the view (YES) or the top (NO).
+// Defaults to NO.
+@property(nonatomic, assign) BOOL anchorToBottom;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_SHEET_VIEW_CONTROLLER_H_

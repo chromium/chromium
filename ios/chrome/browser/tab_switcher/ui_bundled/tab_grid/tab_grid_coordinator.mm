@@ -933,9 +933,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK(IsDiamondPrototypeEnabled());
 
   if (IsAssistantSheetEnabled()) {
-    _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:self.regularBrowser];
+    if (!_assistantSheetCoordinator) {
+      _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.regularBrowser];
+    }
     [_assistantSheetCoordinator start];
     return;
   }
@@ -1040,6 +1042,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                               action:@selector(prototypeTabGridCallback)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.baseViewController setAppBar:_appBar];
+
+    LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
+    [center referenceView:_appBar underName:kDiamondBottomAppBarGuide];
   }
 
   _regularGridCoordinator = [[RegularGridCoordinator alloc]

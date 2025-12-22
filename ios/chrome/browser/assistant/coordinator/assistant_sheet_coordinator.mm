@@ -4,40 +4,54 @@
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 
-#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_mediator.h"
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
 @implementation AssistantSheetCoordinator {
   AssistantSheetViewController* _viewController;
-  AssistantSheetMediator* _mediator;
+  AssistantSheetAnimator* _animator;
 }
 
 - (void)start {
+  if (_viewController) {
+    return;
+  }
+
   _viewController = [[AssistantSheetViewController alloc] init];
 
-  _mediator = [[AssistantSheetMediator alloc] init];
+  // Resolve Layout Guide.
+  GuideName* guideName = kDiamondBottomAppBarGuide;
+  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
+  _viewController.anchorView = [center referencedViewUnderName:guideName];
 
-  _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  _viewController.sheetPresentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  _viewController.sheetPresentationController.prefersGrabberVisible = YES;
+  // Add the view controller as a child view controller.
+  [self.baseViewController addChildViewController:_viewController];
+  // Add the view to the hierarchy.
+  [self.baseViewController.view addSubview:_viewController.view];
+  [_viewController didMoveToParentViewController:self.baseViewController];
 
-  // TODO(crbug.com/469050167): Implement full coordination logic.
+  // Force layout to determine optimal size before animating.
+  [self.baseViewController.view layoutIfNeeded];
 
-  [self.baseViewController presentViewController:_viewController
-                                        animated:YES
-                                      completion:nil];
+  // Animation: Expand and Fade In.
+  _animator = [[AssistantSheetAnimator alloc] init];
+  [_animator animatePresentation:_viewController.view completion:nil];
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  // Remove the view controller from the hierarchy. This is required to revert
+  // the steps taken in start.
+  [_viewController willMoveToParentViewController:nil];
+  [_viewController.view removeFromSuperview];
+  [_viewController removeFromParentViewController];
+
   _viewController = nil;
-  _mediator = nil;
+  _animator = nil;
 }
 
 @end
