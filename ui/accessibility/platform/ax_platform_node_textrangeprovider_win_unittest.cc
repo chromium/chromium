@@ -3387,6 +3387,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   std::vector<double> expected_values = {20,  20, 200, 30, /* button */
                                          20,  50, 200, 30, /* check box */
                                          220, 20, 30,  30, /* line 1 */
+                                         250, 20, 1,   30, /* line break */
                                          220, 50, 42,  30 /* line 2 */};
   EXPECT_UIA_SAFEARRAY_EQ(rectangles.Get(), expected_values);
   rectangles.Reset();
@@ -3404,6 +3405,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   expected_values = {20,  20, 200, 30, /* button */
                      20,  50, 200, 30, /* check box */
                      220, 20, 30,  30, /* line 1 */
+                     250, 20, 1,   30, /* line break */
                      220, 50, 35,  30 /* line 2 */};
   EXPECT_UIA_SAFEARRAY_EQ(rectangles.Get(), expected_values);
   rectangles.Reset();
@@ -3419,7 +3421,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20,  20, 200, 30, /* button */
                      20,  50, 200, 30, /* check box */
-                     220, 20, 30,  30 /* line 1 */};
+                     220, 20, 30,  30, /* line 1 */
+                     250, 20, 1,   30 /* line break */};
   EXPECT_UIA_SAFEARRAY_EQ(rectangles.Get(), expected_values);
   rectangles.Reset();
 
@@ -3433,7 +3436,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20, 20, 200, 30, /* button */
-                     20, 50, 200, 30 /* check box */};
+                     20, 50, 200, 30, /* check box */
+                     220, 20, 1, 30 /* line break */};
   EXPECT_UIA_SAFEARRAY_EQ(rectangles.Get(), expected_values);
 }
 
