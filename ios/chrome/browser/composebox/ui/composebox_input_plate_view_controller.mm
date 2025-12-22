@@ -74,7 +74,7 @@ const CGFloat kInputPlateStackViewHorizontalPadding = 10.0f;
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
-const CGFloat kAIMButtonSymbolPointSize = 12;
+const CGFloat kAIMButtonSymbolPointSize = 14;
 /// The width of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
@@ -93,7 +93,7 @@ const CGFloat kFadeViewWidth = 30.0f;
 const CGFloat kCloseModeButtonMargin = 6;
 
 /// The size of the close icon in the context indicator buttons.
-const CGFloat kCloseIndicatorSize = 10.0f;
+const CGFloat kCloseIndicatorSize = 12.0f;
 
 /// The index of the attachment section in the carousel.
 const NSInteger kCarouselAttachmentSectionIndex = 0;
