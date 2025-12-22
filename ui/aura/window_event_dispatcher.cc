@@ -527,10 +527,9 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
 }
 
 void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
-  if (in_shutdown_)
-    return;
-
-  observer_notifiers_.pop();
+  if (!observer_notifiers_.empty()) {
+    observer_notifiers_.pop();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
