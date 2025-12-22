@@ -758,6 +758,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.GenerateCacheKey.Time" units="microseconds"
+    expires_after="2025-12-31">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time spent executing the net::HttpCache::GenerateCacheKey() function.
+    Recorded once for every call to the function.
+
+    This is a temporary histogram to collect real-world performance data and
+    should be removed before 2026.
+
+    The histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
     expires_after="2026-05-17">
   <owner>bashi@chromium.org</owner>

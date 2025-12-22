@@ -734,6 +734,9 @@ std::string HttpCache::GenerateCacheKey(
     bool is_shared_resource,
     std::optional<url::Origin> initiator,
     bool include_url) {
+  // This function is very performance critical, so a histogram macro is
+  // appropriate here.
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("HttpCache.GenerateCacheKey.Time");
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
   // SplitCacheByIncludeCredentials feature is enabled.
