@@ -91,7 +91,6 @@ class Font;
 class FontSelector;
 class HTMLBodyElement;
 class LayoutQuote;
-class HTMLAnchorElement;
 class MediaQueryEvaluator;
 class MediaQuerySet;
 class Node;
@@ -120,7 +119,6 @@ struct MixinMap;
 template <typename T>
 class OrderedScopeTree;
 using StyleContainmentScopeTree = OrderedScopeTree<LayoutQuote>;
-using ScrollTargetGroupScopeTree = OrderedScopeTree<HTMLAnchorElement>;
 
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 
@@ -400,11 +398,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleContainmentScopeTree& EnsureStyleContainmentScopeTree();
   StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
     return style_containment_scope_tree_.Get();
-  }
-
-  ScrollTargetGroupScopeTree& EnsureScrollTargetGroupScopeTree();
-  ScrollTargetGroupScopeTree* GetScrollTargetGroupScopeTree() const {
-    return scroll_target_group_scope_tree_.Get();
   }
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
@@ -1006,10 +999,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // Tree of style containment scopes. Is in charge of the document's quotes.
   Member<StyleContainmentScopeTree> style_containment_scope_tree_;
-
-  // Tree of scroll-target-group scopes. Manages scopes created by elements
-  // with scroll-target-group property and their descendant anchor elements.
-  Member<ScrollTargetGroupScopeTree> scroll_target_group_scope_tree_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
   // using the @import directive are not included in this count. We use this

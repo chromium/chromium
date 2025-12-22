@@ -91,21 +91,17 @@ class OrderedScopeTree : public GarbageCollected<OrderedScopeTree<T>> {
 
     // Move items from parent that belong to this new scope.
     bool parent_has_changed = false;
-    if (ScopeType::StoresItemsInScope()) {
-      HeapVector<Member<T>> items_to_move;
-      for (T* item : parent_scope->Items()) {
-        if (new_scope->IsAncestorOf(ScopeType::GetItemElement(item),
-                                    parent_scope->GetScopeRoot())) {
-          items_to_move.push_back(item);
-        }
+    HeapVector<Member<T>> items_to_move;
+    for (T* item : parent_scope->Items()) {
+      if (new_scope->IsAncestorOf(ScopeType::GetItemElement(item),
+                                  parent_scope->GetScopeRoot())) {
+        items_to_move.push_back(item);
       }
-      for (T* item : items_to_move) {
-        parent_has_changed = true;
-        parent_scope->DetachItem(*item);
-        new_scope->AttachItem(*item);
-      }
-    } else {
-      ScopeType::OnScopeMoveItemsFromParent(new_scope, parent_scope);
+    }
+    for (T* item : items_to_move) {
+      parent_has_changed = true;
+      parent_scope->DetachItem(*item);
+      new_scope->AttachItem(*item);
     }
 
     // Move child scopes from parent that belong to this new scope.
@@ -124,15 +120,10 @@ class OrderedScopeTree : public GarbageCollected<OrderedScopeTree<T>> {
 
     parent_scope->AppendChild(new_scope);
 
-    // Allow type-specific initialization after scope creation.
-    ScopeType::OnScopeCreated(new_scope);
-
     // Mark parent dirty if items or children were moved.
     if (parent_has_changed) {
       UpdateOutermostDirtyScope(parent_scope);
     }
-    // Always mark new scope as dirty to update subscriptions.
-    UpdateOutermostDirtyScope(new_scope);
     return new_scope;
   }
 

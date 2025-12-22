@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
-#include "third_party/blink/renderer/core/css/scroll_target_group_scope.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
@@ -95,7 +94,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -981,14 +979,6 @@ StyleContainmentScopeTree& StyleEngine::EnsureStyleContainmentScopeTree() {
         MakeGarbageCollected<StyleContainmentScopeTree>();
   }
   return *style_containment_scope_tree_;
-}
-
-ScrollTargetGroupScopeTree& StyleEngine::EnsureScrollTargetGroupScopeTree() {
-  if (!scroll_target_group_scope_tree_) {
-    scroll_target_group_scope_tree_ =
-        MakeGarbageCollected<ScrollTargetGroupScopeTree>();
-  }
-  return *scroll_target_group_scope_tree_;
 }
 
 void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
@@ -3353,10 +3343,7 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
         }
       }
       if (!style->ScrollTargetGroupNone()) {
-        if (ScrollTargetGroupScopeTree* tree =
-                GetScrollTargetGroupScopeTree()) {
-          tree->RemoveScopeForElement(*element);
-        }
+        GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -3754,11 +3741,9 @@ void StyleEngine::PostInterleavedRecalcUpdate(
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
     tree->UpdateItems();
   }
-  // Update scroll-target-group scopes.
-  if (ScrollTargetGroupScopeTree* tree = GetScrollTargetGroupScopeTree()) {
-    tree->UpdateItems();
-  }
   GetDocument().InvalidatePendingSVGResources();
+  GetDocument().UpdateScrollTargetGroupRelations();
+  GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
 }
 
 void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
@@ -4125,11 +4110,9 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       tree->UpdateItems();
     }
-    // Update scroll-target-group scopes.
-    if (ScrollTargetGroupScopeTree* tree = GetScrollTargetGroupScopeTree()) {
-      tree->UpdateItems();
-    }
     UpdateCounters();
+    GetDocument().UpdateScrollTargetGroupRelations();
+    GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
   } else {
     style_recalc_root_.Clear();
   }
@@ -4739,7 +4722,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);
-  visitor->Trace(scroll_target_group_scope_tree_);
   visitor->Trace(try_value_flips_);
   visitor->Trace(anchored_element_dirty_set_);
   visitor->Trace(user_rule_set_groups_);

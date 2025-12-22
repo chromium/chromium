@@ -297,6 +297,7 @@ void ScrollMarkerGroupData::AddToFocusGroup(Element& scroll_marker) {
   // have added HTMLAnchorElement.
   if (scroll_marker.HasTagName(html_names::kATag)) {
     SetNeedsScrollersMapUpdate();
+    scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
     scroll_marker.SetScrollTargetGroupContainerData(this);
   }
   focus_group_.push_back(scroll_marker);
@@ -309,6 +310,7 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
     // have added HTMLAnchorElement.
     if (scroll_marker.HasTagName(html_names::kATag)) {
       SetNeedsScrollersMapUpdate();
+      scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
       scroll_marker.SetScrollTargetGroupContainerData(nullptr);
     }
     if (selected_marker_ == scroll_marker) {
@@ -604,30 +606,24 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
   invalidation_state_ = InvalidationState::kNeedsFullUpdate;
 }
 
-void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions() {
+void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions(
+    HeapHashSet<Member<PaintLayerScrollableArea>>& scrollable_areas) {
   if (!needs_scrollers_map_update_) {
     return;
   }
-  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas_) {
+  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
     scrollable_area->RemoveScrollMarkerGroupContainerData(this);
   }
-  scrollable_areas_.clear();
+  scrollable_areas.clear();
   for (Element* anchor_scroll_marker : focus_group_) {
     if (PaintLayerScrollableArea* scrollable_area =
             To<HTMLAnchorElement>(anchor_scroll_marker)
                 ->AncestorScrollableAreaOfScrollTargetElement()) {
-      scrollable_areas_.insert(scrollable_area);
+      scrollable_areas.insert(scrollable_area);
       scrollable_area->AddScrollMarkerGroupContainerData(this);
     }
   }
   needs_scrollers_map_update_ = false;
-}
-
-void ScrollMarkerGroupData::ClearScrollableAreaSubscriptions() {
-  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas_) {
-    scrollable_area->RemoveScrollMarkerGroupContainerData(this);
-  }
-  scrollable_areas_.clear();
 }
 
 Element* ScrollMarkerGroupData::FindNextScrollMarker(const Element* current) {
@@ -669,7 +665,6 @@ void ScrollMarkerGroupData::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
   v->Trace(pending_selected_marker_);
   v->Trace(focus_group_);
-  v->Trace(scrollable_areas_);
   PostLayoutSnapshotClient::Trace(v);
   ElementRareDataField::Trace(v);
 }

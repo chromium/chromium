@@ -137,10 +137,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
   void AttachLayoutTree(AttachContext& context) override;
   void DetachLayoutTree(bool performing_reattach) override;
 
-  // Updates the anchor's membership in scroll-target-group scopes.
-  // Called when the href attribute changes to re-evaluate the scroll target.
-  void UpdateScrollTargetGroupMembership();
-
   // Gets the element which is referenced by this anchor fragment
   // (#scroll-target), or nullptr if not found.
   Element* ScrollTargetElement() const;
