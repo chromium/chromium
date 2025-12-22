@@ -54,11 +54,6 @@ class TextfieldModelTest : public ViewsTestBase,
     composition_text_confirmed_or_cleared_ = true;
   }
 
-  void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                            const std::u16string_view& text) override {
-    ui::ScopedClipboardWriter(clipboard_buffer).WriteText(text);
-  }
-
  protected:
   void ResetModel(TextfieldModel* model) const {
     model->SetText(std::u16string(), 0);

@@ -644,8 +644,8 @@ bool TextfieldModel::Redo() {
 bool TextfieldModel::Cut() {
   if (!HasCompositionText() && HasSelection(true) &&
       !render_text_->obscured()) {
-    delegate_->WriteTextToClipboard(ui::ClipboardBuffer::kCopyPaste,
-                                    GetSelectedText());
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+        .WriteText(GetSelectedText());
     DeleteSelection();
     return true;
   }
@@ -655,8 +655,8 @@ bool TextfieldModel::Cut() {
 bool TextfieldModel::Copy() {
   if (!HasCompositionText() && HasSelection(true) &&
       !render_text_->obscured()) {
-    delegate_->WriteTextToClipboard(ui::ClipboardBuffer::kCopyPaste,
-                                    GetSelectedText());
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+        .WriteText(GetSelectedText());
     return true;
   }
   return false;

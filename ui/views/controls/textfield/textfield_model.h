@@ -59,10 +59,6 @@ class VIEWS_EXPORT TextfieldModel {
     // Called any time that the text property is modified in TextfieldModel
     virtual void OnTextChanged() {}
 
-    // Writes `text` to `clipboard_buffer`, if permitted by the implementation.
-    virtual void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                                      const std::u16string_view& text) {}
-
    protected:
     virtual ~Delegate();
   };

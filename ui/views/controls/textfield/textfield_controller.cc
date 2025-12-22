@@ -37,16 +37,6 @@ views::View::DropCallback TextfieldController::CreateDropCallback(
   return base::NullCallback();
 }
 
-bool TextfieldController::HandleWriteTextToClipboard(
-    ui::ClipboardBuffer clipboard_buffer,
-    const std::u16string_view& text) {
-  return false;
-}
-
-bool TextfieldController::AllowStartDragEvent(const std::u16string_view&) {
-  return true;
-}
-
 bool TextfieldController::OnBeforePaste(Textfield* sender,
                                         std::u16string* paste_contents) {
   // Default implementation does not intercept paste. Controllers may override

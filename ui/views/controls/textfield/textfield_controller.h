@@ -103,15 +103,6 @@ class VIEWS_EXPORT TextfieldController {
   // Gives the controller a chance to modify the context menu contents.
   virtual void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {}
 
-  // Called before write to clipboard buffer
-  // If false, the controller does not override default clipboard write.
-  // If true, the controller overrides the clipboard write.
-  virtual bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                                          const std::u16string_view& text);
-
-  // Returns whether textfield content can be dragged, to drop elsewhere.
-  virtual bool AllowStartDragEvent(const std::u16string_view& selected_text);
-
  protected:
   virtual ~TextfieldController() = default;
 };

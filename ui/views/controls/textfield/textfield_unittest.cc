@@ -536,15 +536,6 @@ void TextfieldTest::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) {
   copied_to_clipboard_ = clipboard_type;
 }
 
-bool TextfieldTest::HandleWriteTextToClipboard(ui::ClipboardBuffer,
-                                               const std::u16string_view&) {
-  return handle_write_to_clipboard_;
-}
-
-bool TextfieldTest::AllowStartDragEvent(const std::u16string_view&) {
-  return allow_drag_event_;
-}
-
 void TextfieldTest::InitTextfield(int count) {
   ASSERT_FALSE(textfield_);
   textfield_ = PrepareTextfields(count, std::make_unique<TestTextfield>(),
@@ -2332,10 +2323,6 @@ TEST_F(TextfieldTest, DragAndDrop_InitiateDrag) {
             textfield_->GetDragOperationsForView(nullptr, kStringPoint));
   EXPECT_TRUE(
       textfield_->CanStartDragForView(nullptr, kStringPoint, gfx::Point()));
-  allow_drag_event_ = false;
-  EXPECT_FALSE(
-      textfield_->CanStartDragForView(nullptr, kStringPoint, kStringPoint));
-  allow_drag_event_ = true;
   // Ensure that textfields support local moves.
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
             textfield_->GetDragOperationsForView(textfield_, kStringPoint));
@@ -2962,11 +2949,6 @@ TEST_F(TextfieldTest, CutCopyPaste) {
 
   // Ensure clipboard buffer is unchanged if override is enabled
   textfield_->SetText(u"345");
-  textfield_->SelectAll(false);
-  SendAlternateCopy();
-  EXPECT_EQ(u"345", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
-  handle_write_to_clipboard_ = true;
-  textfield_->SetText(u"4242");
   textfield_->SelectAll(false);
   SendAlternateCopy();
   EXPECT_EQ(u"345", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
@@ -5767,8 +5749,6 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsIndependentOfDisplayOffset) {
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 TEST_F(TextfieldTest, DragOutsideSelectionModifiesSelection) {
-  allow_drag_event_ = false;
-
   InitTextfield();
   textfield_->SetText(u"Hello World");
   textfield_->SetSelectedRange(gfx::Range(0, 5));  // Selects "Hello"
