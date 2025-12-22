@@ -177,6 +177,14 @@ class FabButton : public views::MdTextButton {
 BEGIN_METADATA(FabButton)
 END_METADATA
 
+BEGIN_VIEW_BUILDER(/* no export */, FabButton, MdTextButton)
+END_VIEW_BUILDER
+
+}  // namespace views::examples
+
+DEFINE_VIEW_BUILDER(, ::views::examples::FabButton)
+
+namespace views::examples {
 ButtonExample::ButtonExample() : ExampleBase("Button") {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   icon_ = rb.GetImageNamed(IDR_CLOSE_H).ToImageSkia();
@@ -187,56 +195,79 @@ ButtonExample::~ButtonExample() = default;
 void ButtonExample::CreateExampleView(View* container) {
   container->SetUseDefaultFillLayout(true);
 
-  auto view = Builder<BoxLayoutView>()
-                  .SetOrientation(BoxLayout::Orientation::kVertical)
-                  .SetInsideBorderInsets(gfx::Insets(10))
-                  .SetBetweenChildSpacing(10)
-                  .SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter)
-                  .AddChildren(Builder<LabelButton>()
-                                   .CopyAddressTo(&label_button_)
-                                   .SetText(kLabelButton)
-                                   .SetRequestFocusOnPress(true)
-                                   .SetCallback(base::BindRepeating(
-                                       &ButtonExample::LabelButtonPressed,
-                                       base::Unretained(this), label_button_)),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_button_)
-                                   .SetText(u"Material Design"),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_disabled_button_)
-                                   .SetText(u"Material Design Disabled Button")
-                                   .SetState(Button::STATE_DISABLED),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_default_button_)
-                                   .SetText(u"Default")
-                                   .SetIsDefault(true),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_tonal_button_)
-                                   .SetStyle(ui::ButtonStyle::kTonal)
-                                   .SetText(u"Tonal"),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_text_button_)
-                                   .SetStyle(ui::ButtonStyle::kText)
-                                   .SetText(u"Material Text"),
-                               Builder<MdTextButton>()
-                                   .CopyAddressTo(&md_icon_text_button_)
-                                   .SetText(u"Material Text with Icon"),
-                               Builder<ImageButton>()
-                                   .CopyAddressTo(&image_button_)
-                                   .SetAccessibleName(l10n_util::GetStringUTF16(
-                                       IDS_BUTTON_IMAGE_BUTTON_AX_LABEL))
-                                   .SetRequestFocusOnPress(true)
-                                   .SetCallback(base::BindRepeating(
-                                       &ButtonExample::ImageButtonPressed,
-                                       base::Unretained(this))))
-                  .Build();
+  auto view =
+      Builder<BoxLayoutView>()
+          .SetOrientation(BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(gfx::Insets(10))
+          .SetBetweenChildSpacing(10)
+          .SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter)
+          .AddChildren(Builder<LabelButton>()
+                           .CopyAddressTo(&label_button_)
+                           .SetText(kLabelButton)
+                           .SetRequestFocusOnPress(true)
+                           .SetMinSize(gfx::Size(150, 36))
+                           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::LabelButtonPressed,
+                               base::Unretained(this), label_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_button_)
+                           .SetText(u"Material Design")
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_disabled_button_)
+                           .SetText(u"Material Design Disabled Button")
+                           .SetState(Button::STATE_DISABLED)
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_disabled_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_default_button_)
+                           .SetText(u"Default")
+                           .SetIsDefault(true)
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_default_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_tonal_button_)
+                           .SetStyle(ui::ButtonStyle::kTonal)
+                           .SetText(u"Tonal")
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_tonal_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_text_button_)
+                           .SetStyle(ui::ButtonStyle::kText)
+                           .SetText(u"Material Text")
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_text_button_)),
+                       Builder<MdTextButton>()
+                           .CopyAddressTo(&md_icon_text_button_)
+                           .SetText(u"Material Text with Icon")
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), md_icon_text_button_)),
+                       Builder<FabButton>()
+                           .CopyAddressTo(&fab_button_)
+                           .SetText(u"Fab Prototype")
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::MdButtonPressed,
+                               base::Unretained(this), fab_button_)),
+                       Builder<ImageButton>()
+                           .CopyAddressTo(&image_button_)
+                           .SetAccessibleName(l10n_util::GetStringUTF16(
+                               IDS_BUTTON_IMAGE_BUTTON_AX_LABEL))
+                           .SetRequestFocusOnPress(true)
+                           .SetCallback(base::BindRepeating(
+                               &ButtonExample::ImageButtonPressed,
+                               base::Unretained(this))))
+          .Build();
   md_icon_text_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kInfoIcon));
-  view->AddChildView(std::make_unique<FabButton>(
-      base::BindRepeating(&ButtonExample::ImageButtonPressed,
-                          base::Unretained(this)),
-      u"Fab Prototype"));
 
   view->AddChildView(ImageButton::CreateIconButton(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
@@ -294,6 +325,13 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
 
 void ButtonExample::ImageButtonPressed() {
   PrintStatus(base::StringPrintf("Image Button Pressed! count: %d", ++count_));
+}
+
+void ButtonExample::MdButtonPressed(MdTextButton* md_button,
+                                    const ui::Event& event) {
+  PrintStatus(base::StringPrintf(
+      "MD Button Pressed: %s, count: %d",
+      base::UTF16ToUTF8(md_button->GetText()).c_str(), ++count_));
 }
 
 }  // namespace views::examples
