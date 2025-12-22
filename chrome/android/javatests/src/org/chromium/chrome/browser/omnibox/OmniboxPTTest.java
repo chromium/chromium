@@ -88,7 +88,6 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q, message = "crbug.com/415805917")
     public void testOpenTypeDelete_fromIncognitoNtp() {
         WebPageStation blankPage = mCtaTestRule.start();
         IncognitoNewTabPageStation incognitoNtp = blankPage.openNewIncognitoTabOrWindowFast();
