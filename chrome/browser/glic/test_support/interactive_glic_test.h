@@ -317,13 +317,23 @@ class InteractiveGlicTestMixin : public T {
     if (!use_element_identifiers_) {
       return WaitForGlic(instrument_mode);
     }
+
+    // NOTE: When the kGlicMultiInstance feature is enabled, the active tab is
+    // passed to the kGlicWindowControllerState observer so it observes the
+    // relevant GlicInstance.
+    tabs::TabInterface* active_tab = nullptr;
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      active_tab = browser()->tab_strip_model()->GetActiveTab();
+    }
+
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
         steps = Api::Steps(
             Api::UninstrumentWebContents(kGlicContentsElementId, false),
             Api::UninstrumentWebContents(kGlicHostElementId, false),
             Api::ObserveState(internal::kGlicWindowControllerState,
-                              std::ref(window_controller)),
+                              std::ref(window_controller),
+                              std::move(active_tab)),
             Api::InAnyContext(Api::Steps(
                 Api::InstrumentNonTabWebView(kGlicHostElementId,
                                              kGlicViewElementId),
@@ -339,7 +349,8 @@ class InteractiveGlicTestMixin : public T {
         steps = Api::Steps(
             Api::UninstrumentWebContents(kGlicHostElementId, false),
             Api::ObserveState(internal::kGlicWindowControllerState,
-                              std::ref(window_controller)),
+                              std::ref(window_controller),
+                              std::move(active_tab)),
             Api::InAnyContext(Api::InstrumentNonTabWebView(kGlicHostElementId,
                                                            kGlicViewElementId)),
             Api::WaitForState(

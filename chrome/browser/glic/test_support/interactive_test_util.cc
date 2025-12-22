@@ -26,8 +26,20 @@ DEFINE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
                               kGlicFreShowingDialogState);
 
 GlicWindowControllerStateObserver::GlicWindowControllerStateObserver(
-    const GlicWindowController& controller)
-    : PollingStateObserver([&controller]() { return controller.state(); }) {}
+    const GlicWindowController& controller,
+    tabs::TabInterface* tab)
+    : PollingStateObserver([&controller, tab]() {
+        if (!tab) {
+          return controller.state();
+        }
+
+        auto* instance = controller.GetInstanceForTab(tab);
+        if (instance && instance->IsShowing()) {
+          return GlicWindowController::State::kOpen;
+        } else {
+          return GlicWindowController::State::kClosed;
+        }
+      }) {}
 GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
     default;
 

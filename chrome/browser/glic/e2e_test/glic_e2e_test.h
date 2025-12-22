@@ -70,6 +70,7 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
   GlicWindowController& window_controller();
   GlicFreController& fre_controller();
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
+  tabs::TabInterface* active_tab();
 
   GlicE2ETestMode test_mode() const { return test_mode_; }
   bool run_low_bandwidth_tests() { return enable_low_bandwidth_tests_; }

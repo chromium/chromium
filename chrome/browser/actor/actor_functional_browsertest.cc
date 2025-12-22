@@ -83,7 +83,7 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     // TODO(crbug.com/453696965): Broken in multi-instance.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{actor::kActorBindCreatedTabToTask},
-        /*disabled_features=*/{features::kGlicMultiInstance});
+        /*disabled_features=*/{});
   }
   ~ActorFunctionalBrowserTest() override = default;
 
