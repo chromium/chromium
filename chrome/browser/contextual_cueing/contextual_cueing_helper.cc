@@ -45,7 +45,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
 namespace contextual_cueing {

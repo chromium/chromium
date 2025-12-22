@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,9 +17,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -102,11 +105,11 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
         ->side_panel_registry();
   }
 
-  GlicSidePanelCoordinator& coordinator() {
+  GlicSidePanelCoordinatorImpl& coordinator() {
     auto* coordinator =
         GlicSidePanelCoordinator::GetForTab(browser()->GetActiveTabInterface());
     CHECK(coordinator);
-    return *coordinator;
+    return *static_cast<GlicSidePanelCoordinatorImpl*>(coordinator);
   }
 
   void CallOnGlicEnabledChanged() { coordinator().OnGlicEnabledChanged(); }

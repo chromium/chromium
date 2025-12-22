@@ -295,12 +295,6 @@ class TabFeatures {
     return ask_before_http_dialog_controller_.get();
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicSidePanelCoordinator* glic_side_panel_coordinator() {
-    return glic_side_panel_coordinator_.get();
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
   BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
     return bookmarkbar_preload_pipeline_manager_.get();
   }

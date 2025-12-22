@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_IMPL_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_IMPL_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_tracker.h"
 
 class SidePanelEntryScope;
@@ -28,60 +28,26 @@ class View;
 
 namespace glic {
 
-// GlicSidePanelCoordinator handles the creation and registration of the
+// GlicSidePanelCoordinatorImpl handles the creation and registration of the
 // glic SidePanelEntry.
-class GlicSidePanelCoordinator : public SidePanelEntryObserver {
+class GlicSidePanelCoordinatorImpl : public GlicSidePanelCoordinator,
+                                     public SidePanelEntryObserver {
  public:
-  DECLARE_USER_DATA(GlicSidePanelCoordinator);
+  GlicSidePanelCoordinatorImpl(tabs::TabInterface* tab,
+                               SidePanelRegistry* side_panel_registry);
+  ~GlicSidePanelCoordinatorImpl() override;
 
-  GlicSidePanelCoordinator(tabs::TabInterface* tab,
-                           SidePanelRegistry* side_panel_registry);
-  ~GlicSidePanelCoordinator() override;
-
-  // Returns true if the Glic side panel is the currently active side panel
-  // entry for `tab`. This means it will be shown if `tab` is foregrounded, or
-  // is currently visible if `tab` is already foregrounded.
-  static bool IsGlicSidePanelActive(tabs::TabInterface* tab);
-
-  static GlicSidePanelCoordinator* GetForTab(tabs::TabInterface* tab);
-
-  // Create and register the Glic side panel entry.
-  void CreateAndRegisterEntry();
-
-  // The current state of the Glic side panel.
-  enum class State {
-    // The side panel is showing in the foreground.
-    kShown,
-    // The side panel is in the background, but it will show if its tab becomes
-    // active.
-    kBackgrounded,
-    // The side panel is closed and will only be shown if explicitly requested.
-    kClosed,
-  };
-
-  // Show the Glic side panel.
-  void Show(bool suppress_animations = false);
-
-  // Close the Glic side panel.
-  void Close();
-
-  // Returns true if the Glic side panel is currently the active entry.
-  bool IsShowing() const;
-
-  State state() { return state_; }
-
-  // Registers `callback` to be called when panel visibility is updated.
+  // GlicSidePanelCoordinator:
+  using GlicSidePanelCoordinator::Show;
+  void Show(bool suppress_animations) override;
+  void Close() override;
+  bool IsShowing() const override;
+  State state() override;
   base::CallbackListSubscription AddStateCallback(
-      base::RepeatingCallback<void(State state)> callback);
-
-  // Sets the content view for the Glic side panel.
-  void SetContentsView(std::unique_ptr<views::View> contents_view);
-
-  // Returns preferred side panel width. Not guaranteed to be used if user
-  // manually set a different width.
-  int GetPreferredWidth();
-
-  views::View* GetView();
+      base::RepeatingCallback<void(State state)> callback) override;
+  void SetContentsView(std::unique_ptr<views::View> contents_view) override;
+  int GetPreferredWidth() override;
+  bool IsGlicSidePanelActive() override;
 
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();
@@ -96,6 +62,9 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
 
  private:
   void CheckStateAfterHidden();
+
+  // Create and register the Glic side panel entry.
+  void CreateAndRegisterEntry();
 
   // Returns the SidePanelCoordinator for the window associated with `tab_`.
   SidePanelCoordinator* GetWindowSidePanelCoordinator() const;
@@ -122,9 +91,9 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // Caches the contents view if it's set before the container is created.
   std::unique_ptr<views::View> contents_view_;
 
-  base::WeakPtrFactory<GlicSidePanelCoordinator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlicSidePanelCoordinatorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_GLIC_GLIC_SIDE_PANEL_COORDINATOR_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
 
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
@@ -28,73 +28,36 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
-#include "glic_side_panel_coordinator.h"
 #include "ui/actions/actions.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace glic {
-DEFINE_USER_DATA(GlicSidePanelCoordinator);
-
-GlicSidePanelCoordinator::GlicSidePanelCoordinator(
+GlicSidePanelCoordinatorImpl::GlicSidePanelCoordinatorImpl(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : tab_(tab), side_panel_registry_(side_panel_registry) {
+    : GlicSidePanelCoordinator(tab),
+      tab_(tab),
+      side_panel_registry_(side_panel_registry) {
   CHECK(GlicEnabling::IsMultiInstanceEnabled());
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab->GetBrowserWindowInterface()->GetProfile());
   on_glic_enabled_changed_subscription_ =
-      glic_service->enabling().RegisterAllowedChanged(
-          base::BindRepeating(&GlicSidePanelCoordinator::OnGlicEnabledChanged,
-                              base::Unretained(this)));
+      glic_service->enabling().RegisterAllowedChanged(base::BindRepeating(
+          &GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged,
+          base::Unretained(this)));
   if (glic_service->enabling().IsAllowed()) {
     CreateAndRegisterEntry();
   }
 }
 
-GlicSidePanelCoordinator::~GlicSidePanelCoordinator() {
+GlicSidePanelCoordinatorImpl::~GlicSidePanelCoordinatorImpl() {
   if (entry_) {
     entry_->RemoveObserver(this);
   }
 }
 
-// static
-GlicSidePanelCoordinator* GlicSidePanelCoordinator::GetForTab(
-    tabs::TabInterface* tab) {
-  if (!tab || !tab->GetTabFeatures()) {
-    return nullptr;
-  }
-  return tab->GetTabFeatures()->glic_side_panel_coordinator();
-}
-
-// static
-bool GlicSidePanelCoordinator::IsGlicSidePanelActive(tabs::TabInterface* tab) {
-  if (!tab) {
-    return false;
-  }
-  auto* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
-    return false;
-  }
-  auto* registry = tab_features->side_panel_registry();
-  if (!registry) {
-    return false;
-  }
-  auto* glic_side_panel_entry =
-      registry->GetEntryForKey(SidePanelEntryKey(SidePanelEntry::Id::kGlic));
-  if (!glic_side_panel_entry) {
-    return false;
-  }
-  const auto& active_entry =
-      registry->GetActiveEntryFor(glic_side_panel_entry->type());
-  if (!active_entry.has_value() ||
-      active_entry.value() != glic_side_panel_entry) {
-    return false;
-  }
-  return true;
-}
-
-void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
+void GlicSidePanelCoordinatorImpl::CreateAndRegisterEntry() {
   if (side_panel_registry_->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {
     return;
@@ -105,9 +68,9 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
           ? SidePanelEntry::PanelType::kToolbar
           : SidePanelEntry::PanelType::kContent,
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
-      base::BindRepeating(&GlicSidePanelCoordinator::CreateView,
+      base::BindRepeating(&GlicSidePanelCoordinatorImpl::CreateView,
                           base::Unretained(this)),
-      base::BindRepeating(&GlicSidePanelCoordinator::GetPreferredWidth,
+      base::BindRepeating(&GlicSidePanelCoordinatorImpl::GetPreferredWidth,
                           base::Unretained(this)));
   entry->set_should_show_header(false);
   entry->set_should_show_outline(false);
@@ -117,7 +80,7 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(entry));
 }
 
-void GlicSidePanelCoordinator::Show(bool suppress_animations) {
+void GlicSidePanelCoordinatorImpl::Show(bool suppress_animations) {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
   if (!window_side_panel_coordinator || !entry_) {
     return;
@@ -138,7 +101,7 @@ void GlicSidePanelCoordinator::Show(bool suppress_animations) {
                                       suppress_animations);
 }
 
-void GlicSidePanelCoordinator::Close() {
+void GlicSidePanelCoordinatorImpl::Close() {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
   if (!window_side_panel_coordinator || !entry_) {
     return;
@@ -148,29 +111,33 @@ void GlicSidePanelCoordinator::Close() {
     return;
   }
   if (state_ == State::kBackgrounded) {
-    CHECK(IsGlicSidePanelActive(tab_));
+    CHECK(IsGlicSidePanelActive());
     side_panel_registry_->ResetActiveEntryFor(entry_->type());
     SetState(State::kClosed);
   }
 }
 
-bool GlicSidePanelCoordinator::IsShowing() const {
+bool GlicSidePanelCoordinatorImpl::IsShowing() const {
   return state_ == State::kShown;
 }
 
-void GlicSidePanelCoordinator::OnEntryWillHide(
+GlicSidePanelCoordinator::State GlicSidePanelCoordinatorImpl::state() {
+  return state_;
+}
+
+void GlicSidePanelCoordinatorImpl::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   pending_hide_reason_ = reason;
 }
 
-void GlicSidePanelCoordinator::OnEntryHideCancelled(SidePanelEntry* entry) {
+void GlicSidePanelCoordinatorImpl::OnEntryHideCancelled(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   pending_hide_reason_.reset();
 }
 
-void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+void GlicSidePanelCoordinatorImpl::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   CHECK(pending_hide_reason_.has_value());
   if (pending_hide_reason_ == SidePanelEntryHideReason::kBackgrounded) {
@@ -180,12 +147,12 @@ void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   }
 }
 
-void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
+void GlicSidePanelCoordinatorImpl::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   SetState(State::kShown);
 }
 
-void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
+void GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged() {
   // Maybe register side panel entry if not yet registered.
   if (glic::GlicEnabling::IsEnabledForProfile(
           tab_->GetBrowserWindowInterface()->GetProfile())) {
@@ -193,7 +160,7 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
   }
 }
 
-std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
+std::unique_ptr<views::View> GlicSidePanelCoordinatorImpl::CreateView(
     SidePanelEntryScope& scope) {
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_->GetBrowserWindowInterface()->GetProfile());
@@ -217,12 +184,12 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
   return glic_container;
 }
 
-base::CallbackListSubscription GlicSidePanelCoordinator::AddStateCallback(
+base::CallbackListSubscription GlicSidePanelCoordinatorImpl::AddStateCallback(
     base::RepeatingCallback<void(State state)> callback) {
   return state_changed_callbacks_.Add(std::move(callback));
 }
 
-void GlicSidePanelCoordinator::SetContentsView(
+void GlicSidePanelCoordinatorImpl::SetContentsView(
     std::unique_ptr<views::View> contents_view) {
   if (!glic_container_tracker_) {
     contents_view_ = std::move(contents_view);
@@ -233,23 +200,37 @@ void GlicSidePanelCoordinator::SetContentsView(
   glic_container_tracker_.view()->AddChildView(std::move(contents_view));
 }
 
-views::View* GlicSidePanelCoordinator::GetView() {
-  return glic_container_tracker_.view();
-}
-
-int GlicSidePanelCoordinator::GetPreferredWidth() {
+int GlicSidePanelCoordinatorImpl::GetPreferredWidth() {
   return features::kGlicSidePanelMinWidth.Get();
 }
 
-SidePanelCoordinator* GlicSidePanelCoordinator::GetWindowSidePanelCoordinator()
-    const {
+bool GlicSidePanelCoordinatorImpl::IsGlicSidePanelActive() {
+  if (!side_panel_registry_) {
+    return false;
+  }
+  auto* glic_side_panel_entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kGlic));
+  if (!glic_side_panel_entry) {
+    return false;
+  }
+  const auto& active_entry =
+      side_panel_registry_->GetActiveEntryFor(glic_side_panel_entry->type());
+  if (!active_entry.has_value() ||
+      active_entry.value() != glic_side_panel_entry) {
+    return false;
+  }
+  return true;
+}
+
+SidePanelCoordinator*
+GlicSidePanelCoordinatorImpl::GetWindowSidePanelCoordinator() const {
   if (auto* window = tab_->GetBrowserWindowInterface()) {
     return SidePanelCoordinator::From(window);
   }
   return nullptr;
 }
 
-void GlicSidePanelCoordinator::SetState(State new_state) {
+void GlicSidePanelCoordinatorImpl::SetState(State new_state) {
   state_ = new_state;
   state_changed_callbacks_.Notify(state_);
 }

@@ -29,6 +29,8 @@ source_set("glic") {
     "host/host_metrics.h",
     "public/context/glic_sharing_manager.h",
     "public/glic_instance.h",
+    "public/glic_side_panel_coordinator.cc",
+    "public/glic_side_panel_coordinator.h",
     "service/glic_instance_helper.cc",
     "service/glic_instance_helper.h",
     "service/metrics/glic_instance_helper_metrics.h",
