@@ -2431,11 +2431,14 @@ void RenderViewContextMenu::AppendGlicItems() {
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
             .value(),
         kGlicReloadMenuItem);
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
-                                    IDS_CONTENT_CONTEXT_CLOSE_GLIC);
-    menu_model_.SetElementIdentifierAt(
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC).value(),
-        kGlicCloseMenuItem);
+    if (!glic::GlicEnabling::IsMultiInstanceEnabled()) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
+                                      IDS_CONTENT_CONTEXT_CLOSE_GLIC);
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC)
+              .value(),
+          kGlicCloseMenuItem);
+    }
     if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
       // Archive  Glic conversation.
@@ -3434,7 +3437,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
 #if BUILDFLAG(ENABLE_GLIC)
-      if (glic::GlicEnabling::IsEnabledByFlags()) {
+      if (glic::GlicEnabling::IsEnabledByFlags() &&
+          !glic::GlicEnabling::IsMultiInstanceEnabled()) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           // TODO(crbug.com/454112198): Clean up after multi-instance launches.
