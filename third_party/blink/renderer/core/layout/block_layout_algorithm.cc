@@ -3978,9 +3978,9 @@ bool BlockLineClampData::UpdateAfterLayout(
     // (since there *is* content after clamp), but data.lines_until_clamp would
     // still be zero. Therefore, if there's a lineless block immediately after
     // the clamp point, we explicitly decrease data.lines_until_clamp.
-    if (data.IsClampByLines() && !ignore_further_lines &&
-        old_lines_until_clamp == 0 && data.lines_until_clamp == 0) {
-      DCHECK(previous_inflow_position_when_clamped.has_value());
+    if (data.IsClampByLines() && !fragment.IsLineBox() &&
+        !ignore_further_lines && old_lines_until_clamp == 0 &&
+        data.lines_until_clamp == 0) {
       data.lines_until_clamp = -1;
     }
   }
