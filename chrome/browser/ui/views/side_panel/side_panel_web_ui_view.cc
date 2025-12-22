@@ -29,28 +29,27 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
                                        base::RepeatingClosure on_show_cb,
                                        base::RepeatingClosure close_cb,
                                        WebUIContentsWrapper* contents_wrapper)
-    : on_show_cb_(std::move(on_show_cb)),
-      close_cb_(std::move(close_cb)),
-      contents_wrapper_(contents_wrapper) {
+    : on_show_cb_(std::move(on_show_cb)), close_cb_(std::move(close_cb)) {
   const bool is_ready_to_show = contents_wrapper->is_ready_to_show();
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(is_ready_to_show);
   SetVisible(is_ready_to_show);
   SetID(kSidePanelWebViewId);
-  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  SetWebContents(contents_wrapper_->web_contents());
+  contents_wrapper->SetHost(weak_factory_.GetWeakPtr());
+  SetWebContents(contents_wrapper->web_contents());
+  CHECK_EQ(contents_wrapper->web_contents(), web_contents());
 
   // The mechanism that ensure the Side Panel will load at high priority even
   // while it is still not visible requires the WebContents to be tagged.
   performance_manager::execution_context_priority::MarkAsSidePanel(
-      contents_wrapper_->web_contents());
+      contents_wrapper->web_contents());
 
   // For per-window side panels the scoped browser does not change. The browser
   // is cleared automatically when the browser is closed.
   if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kBrowser) {
-    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+    webui::SetBrowserWindowInterface(contents_wrapper->web_contents(),
                                      &scope.GetBrowserWindowInterface());
   } else if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kTab) {
-    webui::SetTabInterface(contents_wrapper_->web_contents(),
+    webui::SetTabInterface(contents_wrapper->web_contents(),
                            &scope.GetTabInterface());
     // TODO(crbug.com/371950942): Once the new discard implementation has landed
     // there is no need to re-set the interface on discard and this can be
@@ -72,7 +71,7 @@ void SidePanelWebUIView::ViewHierarchyChanged(
   // Ensure the WebContents is in a visible state after being added to the
   // side panel so the correct lifecycle hooks are triggered.
   if (details.is_add && details.child == this) {
-    contents_wrapper_->web_contents()->WasShown();
+    web_contents()->WasShown();
   }
 }
 
@@ -101,7 +100,7 @@ void SidePanelWebUIView::ShowCustomContextMenu(
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
-      contents_wrapper_->web_contents()->GetContentNativeView());
+      web_contents()->GetContentNativeView());
 }
 
 void SidePanelWebUIView::HideCustomContextMenu() {
