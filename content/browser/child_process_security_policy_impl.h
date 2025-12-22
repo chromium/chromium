@@ -435,12 +435,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Grant the child process the ability to use Web UI Bindings.
   void GrantWebUIBindings(int child_id, BindingsPolicySet bindings);
 
-  // Grant the child process the ability to read raw cookies.
-  void GrantReadRawCookies(int child_id);
-
-  // Revoke read raw cookies permission.
-  void RevokeReadRawCookies(int child_id);
-
   // Some APIs for Android WebView and <webview> tags allow bypassing some
   // security checks, such as which URLs are allowed to commit. This method
   // grants that ability to any document with an origin used with these APIs,
@@ -483,9 +477,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanCopyFileSystemFile(int child_id,
                              const storage::FileSystemURL& src_url,
                              const storage::FileSystemURL& dest_url);
-
-  // Returns true if the specified child_id has been granted ReadRawCookies.
-  bool CanReadRawCookies(int child_id);
 
   // Notifies security state of |child_id| about the IsolationContext it will
   // host.  The main side effect is proper setting of the lowest

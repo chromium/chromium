@@ -359,8 +359,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
       BrowsingInstanceDefaultIsolationStatesMap;
 
   explicit SecurityState(BrowserContext* browser_context)
-      : can_read_raw_cookies_(false),
-        can_send_midi_(false),
+      : can_send_midi_(false),
         can_send_midi_sysex_(false),
         browser_context_(browser_context) {
     if (!base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
@@ -530,10 +529,6 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   void GrantBindings(BindingsPolicySet bindings) {
     enabled_bindings_.PutAll(bindings);
   }
-
-  void GrantReadRawCookies() { can_read_raw_cookies_ = true; }
-
-  void RevokeReadRawCookies() { can_read_raw_cookies_ = false; }
 
   void GrantOriginCheckExemptionForWebView(const url::Origin& origin) {
     // This should only be allowed for opaque origins with LoadDataWithBaseURL
@@ -714,8 +709,6 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return enabled_bindings_.HasAny(kWebUIBindingsPolicySet);
   }
 
-  bool can_read_raw_cookies() const { return can_read_raw_cookies_; }
-
   bool CanSendMidi() const {
     if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       // Ensure the flags are in a consistent state: we can only send SysEx
@@ -815,8 +808,6 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   OriginSet webview_origin_exemption_set_;
 
   BindingsPolicySet enabled_bindings_;
-
-  bool can_read_raw_cookies_;
 
   bool can_send_midi_;
 
@@ -1328,26 +1319,6 @@ void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(
   }
 }
 
-void ChildProcessSecurityPolicyImpl::GrantReadRawCookies(int child_id) {
-  base::AutoLock lock(lock_);
-
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = base::FindOrNull(
-          security_state_, ChildProcessId::FromUnsafeValue(child_id))) {
-    (*state)->GrantReadRawCookies();
-  }
-}
-
-void ChildProcessSecurityPolicyImpl::RevokeReadRawCookies(int child_id) {
-  base::AutoLock lock(lock_);
-
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = base::FindOrNull(
-          security_state_, ChildProcessId::FromUnsafeValue(child_id))) {
-    (*state)->RevokeReadRawCookies();
-  }
-}
-
 void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
     int child_id,
     const url::Origin& origin) {
@@ -1834,17 +1805,6 @@ bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
   if (auto* state = base::FindOrNull(
           security_state_, ChildProcessId::FromUnsafeValue(child_id))) {
     return (*state)->has_web_ui_bindings();
-  }
-  return false;
-}
-
-bool ChildProcessSecurityPolicyImpl::CanReadRawCookies(int child_id) {
-  base::AutoLock lock(lock_);
-
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = base::FindOrNull(
-          security_state_, ChildProcessId::FromUnsafeValue(child_id))) {
-    return (*state)->can_read_raw_cookies();
   }
   return false;
 }
