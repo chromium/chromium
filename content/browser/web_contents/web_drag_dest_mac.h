@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -17,6 +18,7 @@
 namespace content {
 class RenderViewHost;
 class RenderWidgetHostImpl;
+class RenderWidgetHostViewBase;
 class WebContentsImpl;
 class WebDragDestDelegate;
 }  // namespace content
@@ -110,6 +112,30 @@ CONTENT_EXPORT
 // event can be fired, or asynchronously if a "drop" event is still pending
 // since it should be fired first.
 - (void)endDrag:(base::OnceClosure)closure;
+
+// Async drag callbacks (called from async helpers).
+- (void)dragEnterHitTestDidComplete:
+            (const remote_cocoa::mojom::DraggingInfo*)info
+                         targetView:
+                             (base::WeakPtr<content::RenderWidgetHostViewBase>)
+                                 target_view
+                   transformedPoint:(const gfx::PointF&)transformedPoint;
+
+- (void)dragUpdateHitTestDidComplete:
+            (const remote_cocoa::mojom::DraggingInfo*)info
+                          targetView:
+                              (base::WeakPtr<content::RenderWidgetHostViewBase>)
+                                  target_view
+                    transformedPoint:(const gfx::PointF&)transformedPoint;
+
+- (void)dropHitTestDidComplete:(const remote_cocoa::mojom::DraggingInfo*)info
+                    targetView:
+                        (base::WeakPtr<content::RenderWidgetHostViewBase>)
+                            target_view
+              transformedPoint:(const gfx::PointF&)transformedPoint;
+
+// Handles async drop abort when target RWH becomes invalid.
+- (void)handleAsyncDropAbortWithContext:(const content::DropContext&)context;
 
 // Resets internal members for a pending drop.
 - (void)resetDragDropState;
