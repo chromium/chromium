@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,9 +51,10 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -77,6 +79,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
@@ -160,7 +163,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_requiredHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -174,7 +178,20 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithAadcMinorAccount_requiredHistoryOptIn() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_ADULT_ACCOUNT);
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithAadcMinorAccount_requiredHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         launchActivity(
@@ -188,7 +205,21 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_historySyncDeclinedOften_requiredHistoryOptIn() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithAadcMinorAccount_requiredHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_MINOR_ACCOUNT);
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void
+            testWithExistingAccount_signIn_historySyncDeclinedOften_requiredHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
@@ -203,7 +234,21 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_historySyncSupressed() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_historySyncDeclinedOften_requiredHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_ADULT_ACCOUNT);
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_historySyncSupressed_legacy() {
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -220,7 +265,27 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_historySyncDeclinedOften_optionalHistoryOptIn() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_historySyncSupressed() {
+        when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(false);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.ACCOUNT1);
+
+        // Verify that the history opt-in dialog is not shown. Wait for UI-related callbacks to be
+        // executed while seamless sign-in asynchronously completes.
+        verify(mHistorySyncHelperMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .recordHistorySyncNotShown(mSigninAccessPoint);
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void
+            testWithExistingAccount_signIn_historySyncDeclinedOften_optionalHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
@@ -237,8 +302,28 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN)
-    public void testWithExistingAccount_signIn_historySyncDeclinedOften_forceHistoryOptInScreen() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_historySyncDeclinedOften_optionalHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.OPTIONAL, TestAccounts.ACCOUNT1);
+
+        // Verify that the history opt-in dialog is not shown. Wait for UI-related callbacks to be
+        // executed while seamless sign-in asynchronously completes.
+        verify(mHistorySyncHelperMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .recordHistorySyncNotShown(mSigninAccessPoint);
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN)
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void
+            testWithExistingAccount_signIn_historySyncDeclinedOften_forceHistoryOptInScreen_legacy() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
@@ -253,24 +338,35 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
+    @EnableFeatures({
+        SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN,
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+    })
+    public void testWithExistingAccount_signIn_historySyncDeclinedOften_forceHistoryOptInScreen() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.OPTIONAL, TestAccounts.ACCOUNT1);
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn_legacy() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.REQUIRED);
 
-        // The footer should show the email of the signed in account.
+        // The footer should show "You are signed in as..." with the email of the signed in account.
+        var expectedEmail = TestAccounts.AADC_ADULT_ACCOUNT.getEmail();
         onView(withId(R.id.history_sync_footer))
                 .inRoot(isDialog())
-                .check(
-                        matches(
-                                allOf(
-                                        isDisplayed(),
-                                        withText(
-                                                containsString(
-                                                        TestAccounts.AADC_ADULT_ACCOUNT
-                                                                .getEmail())))));
+                .check(matches(allOf(isDisplayed(), withText(containsString(expectedEmail)))));
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -278,7 +374,26 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_optOutHistorySync() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+        launchSeamlessSigninActivity(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_ADULT_ACCOUNT.getId());
+
+        // The footer should show "You are signed in as..." with the email of the signed in account.
+        var expectedEmail = TestAccounts.AADC_ADULT_ACCOUNT.getEmail();
+        onView(withId(R.id.history_sync_footer))
+                .inRoot(isDialog())
+                .check(matches(allOf(isDisplayed(), withText(containsString(expectedEmail)))));
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_optOutHistorySync_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -292,16 +407,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // The user has just signed in, so the footer shouldn't show the email.
-        onViewWaiting(withId(R.id.history_sync_footer), /* checkRootDialog= */ true)
-                .check(
-                        matches(
-                                allOf(
-                                        isDisplayed(),
-                                        not(
-                                                withText(
-                                                        containsString(
-                                                                TestAccounts.AADC_ADULT_ACCOUNT
-                                                                        .getEmail()))))));
+        var email = TestAccounts.AADC_ADULT_ACCOUNT.getEmail();
+        onView(withId(R.id.history_sync_footer))
+                .inRoot(isDialog())
+                .check(matches(allOf(isDisplayed(), not(withText(containsString(email))))));
 
         // Dismiss history sync.
         onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
@@ -317,7 +426,38 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithAadcMinorAccount_signIn_optOutHistorySync() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_optOutHistorySync() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Verify that the history opt-in dialog is shown and decline.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // The user has just signed in, so the footer shouldn't show the email.
+        var email = TestAccounts.AADC_ADULT_ACCOUNT.getEmail();
+        onView(withId(R.id.history_sync_footer))
+                .inRoot(isDialog())
+                .check(matches(allOf(isDisplayed(), not(withText(containsString(email))))));
+
+        // Dismiss history sync.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_secondary), /* checkRootDialog= */ true).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithAadcMinorAccount_signIn_optOutHistorySync_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         launchActivity(
@@ -341,7 +481,29 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithManagedAccount_signIn_showsManagementNotice() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithAadcMinorAccount_signIn_optOutHistorySync() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.AADC_MINOR_ACCOUNT);
+
+        // Verify that the history opt-in dialog is shown and decline.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_secondary), /* checkRootDialog= */ true).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithManagedAccount_signIn_showsManagementNotice_legacy() {
         mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
 
         launchActivity(
@@ -373,7 +535,26 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithManagedAccount_signIn_showsManagementNotice() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        launchSeamlessSigninActivity(
+                HistorySyncConfig.OptInMode.NONE, TestAccounts.MANAGED_ACCOUNT.getId());
+
+        // The management notice should be displayed.
+        onViewWaiting(withText(R.string.sign_in_managed_account)).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.continue_button), isCompletelyDisplayed())).perform(click());
+
+        mSigninTestRule.waitForSignin(TestAccounts.MANAGED_ACCOUNT);
+        // Verify that the activity is finished after the sign-in has completed.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_optionalHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -387,7 +568,20 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signIn_noHistoryOptIn() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.OPTIONAL, TestAccounts.AADC_ADULT_ACCOUNT);
+
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_noHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivity(
@@ -406,7 +600,24 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signIn_noHistoryOptIn() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.NONE, TestAccounts.ACCOUNT1);
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList_legacy() {
         // Sign-in, toggle bookmarks and reading list off, then sign out.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingList();
@@ -431,6 +642,29 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
+        // Sign-in, toggle bookmarks and reading list off, then sign out.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        disableBookmarksAndReadingList();
+        mSigninTestRule.signOut();
+
+        // Override the access point to test bookmarks-specific behavior.
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.NONE, TestAccounts.ACCOUNT1);
+
+        // Verify that bookmarks and reading list were enabled.
+        SyncTestUtil.waitForBookmarksAndReadingListEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_dismissCollapsedBottomSheet_backPress_fromBookmarks() {
         // The new sign-in flow contains behaviors specific to the bookmark access point (enabling
         // bookmark & reading list sync after successful sign-in) therefore the access point is
@@ -460,6 +694,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_signInWithExpandedBottomSheet_noHistoryOptIn() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -492,6 +727,36 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn_legacy() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
+
+        // User clicked "Choose another account"
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED);
+
+        // Select "Add Account to device" on the shown expanded sign-in bottom-sheet.
+        onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
+                .perform(click());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+        addAccountStateWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -503,12 +768,13 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 State.ACTIVITY_SURVIVED)
                         .build();
 
+        // User clicked "Choose another account"
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.REQUIRED);
 
-        // Select "Add Account" on the shown expanded sign-in bottom-sheet.
+        // Select "Add Account to device" on the shown expanded sign-in bottom-sheet.
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
@@ -519,6 +785,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_dismissBottomSheet_backPress() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mBlankActivityTestRule.launchActivity(null);
@@ -557,6 +824,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_dismissExpandedBottomSheet_backPress() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mBlankActivityTestRule.launchActivity(null);
@@ -578,6 +846,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_noSignIn() {
         launchActivity(
                 NoAccountSigninMode.NO_SIGNIN,
@@ -591,6 +860,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_dismissBottomSheet_backPress() {
         mBlankActivityTestRule.launchActivity(null);
         launchActivity(
@@ -611,6 +881,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync() {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -623,6 +894,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync_cancelAddAccount() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -658,6 +930,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -686,6 +959,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_instantSignin_requiredHistorySync_cancelAddAccount() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -710,7 +984,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    public void testHistorySyncStrings() {
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testHistorySyncStrings_legacy() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder("Title").build();
@@ -750,12 +1025,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testSeamlessSignin() {
-        HistogramWatcher signinHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
-                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
-                        .build();
+    public void testHistorySyncStrings() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder("Title").build();
@@ -764,7 +1034,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 bottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.SEAMLESS_SIGNIN,
-                                HistorySyncConfig.OptInMode.NONE,
+                                HistorySyncConfig.OptInMode.REQUIRED,
                                 "Title",
                                 "Subtitle")
                         .useSeamlessWithAccountSignin(TestAccounts.ACCOUNT1.getId())
@@ -774,11 +1044,66 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
-
-        // Verify account is signed in and activity is finished.
+        // Verify seamless signin finished.
         mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
+
+        // Wait for the history opt-in dialog and verify the custom strings.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_title), withText("Title")))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_subtitle), withText("Subtitle")))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSeamlessSignin() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.NONE, TestAccounts.ACCOUNT1);
+
+        // Verify activity is finished.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    private void launchSeamlessSigninAndVerifySignedIn(
+            @HistorySyncConfig.OptInMode int historyOptInMode, CoreAccountInfo accountInfo) {
+        HistogramWatcher signinHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
+                        .build();
+
+        launchSeamlessSigninActivity(historyOptInMode, accountInfo.getId());
+
+        // Verify signed-in state.
+        mSigninTestRule.waitForSignin(accountInfo);
         signinHistogramWatcher.assertExpected();
+    }
+
+    private void launchSeamlessSigninActivity(
+            @HistorySyncConfig.OptInMode int historyOptInMode, CoreAccountId accountId) {
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder("Title").build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.SEAMLESS_SIGNIN,
+                                historyOptInMode,
+                                "Title",
+                                "Subtitle")
+                        .useSeamlessWithAccountSignin(accountId)
+                        .build();
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntent(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivityTestRule.launchActivity(intent);
+        mActivity = mActivityTestRule.getActivity();
     }
 
     private void launchActivity(
