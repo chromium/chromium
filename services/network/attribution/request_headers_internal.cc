@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 
@@ -115,10 +114,10 @@ AttributionReportingHeaderGreaseOptions::FromBits(uint8_t bits) {
   options.swap_greases = bits & 0b1;
   bits >>= 1;
 
-  static_assert(base::to_underlying(GreaseContext::kNone) == 0);
-  static_assert(base::to_underlying(GreaseContext::kKey) == 1);
-  static_assert(base::to_underlying(GreaseContext::kValue) == 2);
-  static_assert(base::to_underlying(GreaseContext::kParamName) == 3);
+  static_assert(std::to_underlying(GreaseContext::kNone) == 0);
+  static_assert(std::to_underlying(GreaseContext::kKey) == 1);
+  static_assert(std::to_underlying(GreaseContext::kValue) == 2);
+  static_assert(std::to_underlying(GreaseContext::kParamName) == 3);
 
   options.context1 = static_cast<GreaseContext>(bits & 0b11);
   bits >>= 2;

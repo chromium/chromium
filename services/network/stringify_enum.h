@@ -22,7 +22,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace network {
 
@@ -319,7 +318,7 @@ void StreamEnumValueTo(std::ostream& os, Enum&& value) {
   } else {
     const std::string_view name = GetEnumValueNameForGenericCode(value);
     if (name.empty()) {
-      os << "Unknown (" << base::to_underlying(value) << ")";
+      os << "Unknown (" << std::to_underlying(value) << ")";
     } else {
       os << name;
     }
