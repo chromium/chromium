@@ -128,6 +128,9 @@ inline constexpr char kVideoIdQueryParameter[] = "v";
 // Character denoting seconds in the "t=" query parameter of a YouTube URL.
 inline constexpr char kVideoTimestampSecondsCharacter = 's';
 
+// Query parameter for the Gen204 identifier.
+inline constexpr char kGen204IdentifierQueryParameter[] = "plla";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -199,6 +202,7 @@ void AppendStickinessSignalForFormula(
 
 void AppendLensOverlaySidePanelParams(
     std::map<std::string, std::string>& params,
+    uint64_t gen204_id,
     bool has_text,
     bool has_image) {
   if (!params.contains(kLensFootprintParameterKey)) {
@@ -213,6 +217,8 @@ void AppendLensOverlaySidePanelParams(
       params[kLensModeParameterKey] = kLensModeParameterUnimodalValue;
     }
   }
+  params[kGen204IdentifierQueryParameter] =
+      base::NumberToString(gen204_id).c_str();
 }
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,

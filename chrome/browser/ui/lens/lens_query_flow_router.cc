@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
+#include "base/rand_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -55,6 +57,7 @@ LensQueryFlowRouter::~LensQueryFlowRouter() {
     if (session_handle && session_handle->GetController()) {
       session_handle->GetController()->RemoveObserver(this);
     }
+    gen204_controller()->OnQueryFlowEnd();
   }
 }
 
@@ -76,6 +79,12 @@ void LensQueryFlowRouter::StartQueryFlow(
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    CHECK(lens_search_controller_->invocation_source().has_value());
+    gen204_id_ = base::RandUint64();
+    gen204_controller()->OnQueryFlowStart(
+        lens_search_controller_->invocation_source().value(), profile(),
+        gen204_id_);
+
     // Create a contextual session for this WebContents if one does not exist.
     CHECK(!pending_session_handle_);
     pending_session_handle_ = CreateContextualSearchSessionHandle();
@@ -123,6 +132,51 @@ void LensQueryFlowRouter::MaybeRestartQueryFlow() {
     return;
   }
   lens_overlay_query_controller()->MaybeRestartQueryFlow();
+}
+
+void LensQueryFlowRouter::SendTaskCompletionGen204IfEnabled(
+    lens::mojom::UserAction user_action) {
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (!session_handle || !session_handle->GetController() ||
+        !overlay_tab_context_file_token_.has_value()) {
+      return;
+    }
+    auto* file_info = session_handle->GetController()->GetFileInfo(
+        overlay_tab_context_file_token_.value());
+    if (!file_info) {
+      return;
+    }
+
+    gen204_controller()->SendTaskCompletionGen204IfEnabled(
+        /*encoded_analytics_id=*/file_info->request_id.analytics_id(),
+        user_action,
+        /*request_id=*/file_info->request_id);
+    return;
+  }
+  lens_overlay_query_controller()->SendTaskCompletionGen204IfEnabled(
+      user_action);
+}
+
+void LensQueryFlowRouter::SendSemanticEventGen204IfEnabled(
+    lens::mojom::SemanticEvent event) {
+  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (!session_handle || !session_handle->GetController() ||
+        !overlay_tab_context_file_token_.has_value()) {
+      return;
+    }
+    auto* file_info = session_handle->GetController()->GetFileInfo(
+        overlay_tab_context_file_token_.value());
+    if (!file_info) {
+      return;
+    }
+
+    gen204_controller()->SendSemanticEventGen204IfEnabled(
+        event, /*request_id=*/file_info->request_id);
+    return;
+  }
+  lens_overlay_query_controller()->SendSemanticEventGen204IfEnabled(event);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
@@ -447,7 +501,7 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   const bool has_text = query_text.has_value() && !query_text->empty();
   const bool has_image = region || region_bytes.has_value();
   lens::AppendLensOverlaySidePanelParams(additional_search_query_params,
-                                         has_text, has_image);
+                                         gen204_id_, has_text, has_image);
 
   request_info->additional_params = additional_search_query_params;
   request_info->invocation_source = invocation_source;
