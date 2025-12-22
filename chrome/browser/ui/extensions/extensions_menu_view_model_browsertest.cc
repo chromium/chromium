@@ -10,7 +10,10 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +38,44 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
+class FakeExtensionActionPlatformDelegate
+    : public ExtensionActionPlatformDelegate {
+ public:
+  void AttachToModel(ExtensionActionViewModel* model) override {}
+  void DetachFromModel() override {}
+  void RegisterCommand() override {}
+  void UnregisterCommand() override {}
+  bool IsShowingPopup() const override { return false; }
+  void HidePopup() override {}
+  gfx::NativeView GetPopupNativeView() override { return gfx::NativeView(); }
+  void TriggerPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                    PopupShowAction show_action,
+                    bool by_user,
+                    ShowPopupCallback callback) override {}
+  void ShowContextMenuAsFallback() override {}
+  bool CloseOverflowMenuIfOpen() override { return false; }
+};
+
+// The test delegate that acts as the factory for Action ViewModels.
+class TestExtensionsMenuDelegate : public ExtensionsMenuViewModel::Delegate {
+ public:
+  explicit TestExtensionsMenuDelegate(BrowserWindowInterface* browser)
+      : browser_(browser) {}
+  ~TestExtensionsMenuDelegate() override = default;
+
+  // ExtensionsMenuViewModel::Delegate:
+  std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const extensions::ExtensionId& extension_id) override {
+    return ExtensionActionViewModel::Create(
+        extension_id, browser_,
+        std::make_unique<FakeExtensionActionPlatformDelegate>());
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+};
 
 }  // namespace
 
@@ -89,6 +130,7 @@ class ExtensionsMenuViewModelBrowserTest
   void TearDownOnMainThread() override;
 
  private:
+  std::unique_ptr<TestExtensionsMenuDelegate> menu_delegate_;
   std::unique_ptr<ExtensionsMenuViewModel> menu_model_;
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
   raw_ptr<PermissionsManager> permissions_manager_;
@@ -162,8 +204,10 @@ void ExtensionsMenuViewModelBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  menu_model_ =
-      std::make_unique<ExtensionsMenuViewModel>(browser_window_interface());
+  menu_delegate_ =
+      std::make_unique<TestExtensionsMenuDelegate>(browser_window_interface());
+  menu_model_ = std::make_unique<ExtensionsMenuViewModel>(
+      browser_window_interface(), menu_delegate_.get());
 
   permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
   permissions_manager_ = PermissionsManager::Get(profile());
@@ -174,6 +218,7 @@ void ExtensionsMenuViewModelBrowserTest::ExtensionsMenuViewModelBrowserTest::
   permissions_manager_ = nullptr;
   permissions_helper_.reset();
   menu_model_.reset();
+  menu_delegate_.reset();
   ExtensionBrowserTest::TearDownOnMainThread();
 }
 
@@ -1108,22 +1153,83 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetOptionalSection) {
             ExtensionsMenuViewModel::OptionalSection::kNone);
 }
 
-// Tests that GetSortedExtensions returns a list of extension IDs sorted by
-// extension name (case-insensitive).
+// Tests that an action model is inserted to the menu model its corresponding
+// extensions is installed, and that the order is maintained alphabetically
+// (case-insensitive).
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetSortedExtensions) {
-  // Add extensions in a non-alphabetical order. We mix casing to verify the
-  // sort is case-insensitive ("alpha" < "Beta").
-  auto extension_c = AddExtension("Charlie");
-  auto extension_a = AddExtension("alpha");
-  auto extension_b = AddExtension("Beta");
+                       OnToolbarActionAdded) {
+  // Add "Alpha". Should be the only item.
+  {
+    AddExtension("Alpha");
+    const auto& actions = menu_model()->action_models();
+    ASSERT_EQ(actions.size(), 1u);
+    EXPECT_EQ(actions[0]->GetActionName(), u"Alpha");
+  }
 
-  std::vector<extensions::ExtensionId> sorted_ids =
-      menu_model()->GetSortedExtensions();
+  // Add "Gamma". Should be after "Alpha".
+  // Current order: Alpha, Gamma.
+  {
+    AddExtension("Gamma");
+    const auto& actions = menu_model()->action_models();
+    ASSERT_EQ(actions.size(), 2u);
+    EXPECT_EQ(actions[0]->GetActionName(), u"Alpha");
+    EXPECT_EQ(actions[1]->GetActionName(), u"Gamma");
+  }
 
-  // Verify the result is sorted alphabetically: alpha, Beta, Charlie.
-  ASSERT_EQ(sorted_ids.size(), 3u);
-  EXPECT_EQ(sorted_ids[0], extension_a->id());
-  EXPECT_EQ(sorted_ids[1], extension_b->id());
-  EXPECT_EQ(sorted_ids[2], extension_c->id());
+  // Add "beta". Should be inserted between "Alpha" and "Gamma" because
+  // sorting is case-insensitive ("alpha" < "beta" < "gamma").
+  // Current order: Alpha, beta, Gamma.
+  {
+    AddExtension("beta");
+    const auto& actions = menu_model()->action_models();
+    ASSERT_EQ(actions.size(), 3u);
+    EXPECT_EQ(actions[0]->GetActionName(), u"Alpha");
+    EXPECT_EQ(actions[1]->GetActionName(), u"beta");
+    EXPECT_EQ(actions[2]->GetActionName(), u"Gamma");
+  }
+}
+
+// Tests that the action model is removed from the menu model when the
+// corresponding extension is uninstalled.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       OnToolbarActionRemoved) {
+  auto extension1 = AddExtension("Alpha");
+  auto extension2 = AddExtension("beta");
+
+  // Verify initial state.
+  ASSERT_EQ(menu_model()->action_models().size(), 2u);
+
+  // Remove "Alpha". The model should update to remove the entry.
+  extension_registrar()->RemoveExtension(
+      extension1->id(), extensions::UnloadedExtensionReason::UNINSTALL);
+
+  // Verify "Alpha" is gone and only "beta" remains.
+  const auto& actions = menu_model()->action_models();
+  ASSERT_EQ(actions.size(), 1u);
+  EXPECT_EQ(actions[0]->GetActionName(), u"beta");
+}
+
+// Tests that the view model is correctly populated and sorted when initialized
+// with existing extensions (e.g., on browser startup).
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       PopulateActionModels) {
+  // Add extensions before creating the model we want to test.
+  auto extension1 = AddExtension("Alpha");
+  auto extension2 = AddExtension("Gamma");
+  auto extension3 = AddExtension("beta");
+
+  // Create a new model. The one in SetUpOnMainThread was created when no
+  // extensions existed. We want to test the constructor's population logic.
+  auto delegate =
+      std::make_unique<TestExtensionsMenuDelegate>(browser_window_interface());
+  auto model = std::make_unique<ExtensionsMenuViewModel>(
+      browser_window_interface(), delegate.get());
+
+  // Verify action models were added and sorted alphabetically
+  // (case-insensitive). Expected order: Alpha, beta, Gamma.
+  const auto& actions = model->action_models();
+  ASSERT_EQ(actions.size(), 3u);
+  EXPECT_EQ(actions[0]->GetActionName(), u"Alpha");
+  EXPECT_EQ(actions[1]->GetActionName(), u"beta");
+  EXPECT_EQ(actions[2]->GetActionName(), u"Gamma");
 }

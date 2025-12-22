@@ -31,7 +31,8 @@ class ToolbarActionsModel;
 // TODO(crbug.com/449814184): Separate extensions UI business logic (e.g what
 // text should appear on a button) versus UI platform logic (e.g updating the
 // view).
-class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Observer,
+class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
+                                      public ExtensionsMenuViewModel::Observer,
                                       public ExtensionsMenuHandler {
  public:
   ExtensionsMenuDelegateDesktop(Browser* browser,
@@ -41,6 +42,10 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Observer,
   const ExtensionsMenuDelegateDesktop& operator=(
       const ExtensionsMenuDelegateDesktop&) = delete;
   ~ExtensionsMenuDelegateDesktop() override;
+
+  // ExtensionsMenuViewModel::Delegate:
+  std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const extensions::ExtensionId& extension_id) override;
 
   // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
@@ -55,12 +60,12 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Observer,
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated() override;
-  void OnToolbarModelInitialized() override;
+  void OnActionAdded(ExtensionActionViewModel* action_model,
+                     int index) override;
+  void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
+                       int index) override;
+  void OnActionUpdated() override;
+  void OnActionsInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
   void OnUserPermissionsSettingsChanged() override;
 
@@ -110,7 +115,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Observer,
 
   // Inserts a menu item for `extension_id` in `main_page` at `index`.
   void InsertMenuItemMainPage(ExtensionsMenuMainPageView* main_page,
-                              const extensions::ExtensionId& extension_id,
+                              ExtensionActionViewModel* action_model,
                               int index);
 
   // Adds or updates a request access entry for `extension_id` in `main_page` at

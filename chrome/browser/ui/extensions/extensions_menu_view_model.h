@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -30,6 +31,20 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public TabListInterfaceObserver,
                                 public content::WebContentsObserver {
  public:
+  // Defines the delegate interface for retrieving platform-specific
+  // information.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Creates the platform-agnostic action view model for the given
+    // `extension_id`. ExtensionsMenuViewModel will own the returned object, but
+    // the Delegate is responsible for constructing it with the necessary
+    // platform dependencies.
+    virtual std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+        const extensions::ExtensionId& extension_id) = 0;
+  };
+
   // Observer used to notify platforms about changes to the model.
   class Observer : public base::CheckedObserver {
    public:
@@ -62,19 +77,20 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) = 0;
 
-    // Notifies the delegate that a new toolbar action was added.
-    virtual void OnToolbarActionAdded(
-        const ToolbarActionsModel::ActionId& action_id) = 0;
+    // Called when an action is added to the menu model at `index`.
+    virtual void OnActionAdded(ExtensionActionViewModel* action_model,
+                               int index) = 0;
 
-    // Notifies the delegate that toolbar action with `action_id` was removed.
-    virtual void OnToolbarActionRemoved(
-        const ToolbarActionsModel::ActionId& action_id) = 0;
+    // Called when an action is removed from the menu model at `index`.
+    virtual void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
+                                 int index) = 0;
 
-    // Notifies the delegate that a toolbar action was updated.
-    virtual void OnToolbarActionUpdated() = 0;
+    // Called when an action is updated in the menu model.
+    virtual void OnActionUpdated() = 0;
 
-    // Notifies the delegate that the toolbar actions model was initialized
-    virtual void OnToolbarModelInitialized() = 0;
+    // Called after all actions are added in the menu model after menu model
+    // construction.
+    virtual void OnActionsInitialized() = 0;
 
     // Notifies the delegate that the pinned toolbar actions have changed
     virtual void OnToolbarPinnedActionsChanged() = 0;
@@ -160,7 +176,7 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_enterprise;
   };
 
-  explicit ExtensionsMenuViewModel(BrowserWindowInterface* browser);
+  ExtensionsMenuViewModel(BrowserWindowInterface* browser, Delegate* delegate);
   ExtensionsMenuViewModel(const ExtensionsMenuViewModel&) = delete;
   const ExtensionsMenuViewModel& operator=(const ExtensionsMenuViewModel&) =
       delete;
@@ -221,8 +237,11 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the site settings for the current web contents.
   SiteSettingsState GetSiteSettingsState();
 
-  // Returns a list of extension IDs sorted by the extension's name.
-  std::vector<extensions::ExtensionId> GetSortedExtensions();
+  // Returns a read-only reference to the list of sorted action view models.
+  const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
+  action_models() {
+    return action_models_;
+  }
 
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
@@ -262,6 +281,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
  private:
+  // Populates the action models in alphabetical order.
+  void PopulateActionModels();
+
   content::WebContents* GetActiveWebContents();
 
   // The browser window that the extensions menu is in.
@@ -269,6 +291,12 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // The observers that handles platform-specific UI.
   base::ObserverList<Observer> observers_;
+
+  // The delegate to retrieve platform-specific information.
+  raw_ptr<Delegate> delegate_;
+
+  // The actions models ordered alphabetically by their action name.
+  std::vector<std::unique_ptr<ExtensionActionViewModel>> action_models_;
 
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>

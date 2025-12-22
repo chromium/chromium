@@ -65,12 +65,22 @@ ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
     : browser_(browser),
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
-      menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser_)),
+      menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser_,
+                                                            /*delegate=*/this)),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   menu_model_observation_.Observe(menu_model_.get());
 }
 
 ExtensionsMenuDelegateDesktop::~ExtensionsMenuDelegateDesktop() = default;
+
+std::unique_ptr<ExtensionActionViewModel>
+ExtensionsMenuDelegateDesktop::CreateActionViewModel(
+    const extensions::ExtensionId& extension_id) {
+  return ExtensionActionViewModel::Create(
+      extension_id, browser_,
+      std::make_unique<ExtensionActionPlatformDelegateViews>(
+          browser_, extensions_container_));
+}
 
 void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
     content::WebContents* web_contents) {
@@ -154,8 +164,9 @@ void ExtensionsMenuDelegateDesktop::OnShowHostAccessRequestsInToolbarChanged(
   }
 }
 
-void ExtensionsMenuDelegateDesktop::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& action_id) {
+void ExtensionsMenuDelegateDesktop::OnActionAdded(
+    ExtensionActionViewModel* action_model,
+    int index) {
   CHECK(current_page_);
 
   // A new toolbar action only affects the main page.
@@ -164,17 +175,12 @@ void ExtensionsMenuDelegateDesktop::OnToolbarActionAdded(
     return;
   }
 
-  std::vector<std::string> sorted_ids = menu_model_->GetSortedExtensions();
-  auto it = std::find(sorted_ids.begin(), sorted_ids.end(), action_id);
-  // The action must be in the list since it was just added to the model.
-  CHECK(it != sorted_ids.end());
-  int index = std::distance(sorted_ids.begin(), it);
-
-  InsertMenuItemMainPage(main_page, action_id, index);
+  InsertMenuItemMainPage(main_page, action_model, index);
 }
 
-void ExtensionsMenuDelegateDesktop::OnToolbarActionRemoved(
-    const ToolbarActionsModel::ActionId& action_id) {
+void ExtensionsMenuDelegateDesktop::OnActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id,
+    int index) {
   CHECK(current_page_);
 
   auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
@@ -190,14 +196,14 @@ void ExtensionsMenuDelegateDesktop::OnToolbarActionRemoved(
   // Remove the menu item for the extension when main page is opened.
   auto* main_page = GetMainPage(current_page_.view());
   CHECK(main_page);
-  main_page->RemoveMenuItem(action_id);
+  main_page->RemoveMenuItem(index);
 }
 
-void ExtensionsMenuDelegateDesktop::OnToolbarActionUpdated() {
+void ExtensionsMenuDelegateDesktop::OnActionUpdated() {
   UpdatePage(GetActiveWebContents());
 }
 
-void ExtensionsMenuDelegateDesktop::OnToolbarModelInitialized() {
+void ExtensionsMenuDelegateDesktop::OnActionsInitialized() {
   CHECK(current_page_);
 
   // Toolbar model should have been initialized if site permissions page is
@@ -376,10 +382,11 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
       int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
       auto* permissions_manager = PermissionsManager::Get(browser_->profile());
       int index = 0;
-      std::vector<std::string> extension_ids =
-          menu_model_->GetSortedExtensions();
 
-      for (const auto& extension_id : extension_ids) {
+      const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
+          action_models = menu_model_->action_models();
+      for (const auto& action_model : action_models) {
+        auto extension_id = action_model->GetId();
         if (permissions_manager->HasActiveHostAccessRequest(tab_id,
                                                             extension_id)) {
           AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
@@ -456,26 +463,20 @@ void ExtensionsMenuDelegateDesktop::SwitchToPage(
 
 void ExtensionsMenuDelegateDesktop::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
-  std::vector<std::string> sorted_ids = menu_model_->GetSortedExtensions();
-  for (size_t i = 0; i < sorted_ids.size(); ++i) {
-    InsertMenuItemMainPage(main_page, sorted_ids[i], i);
+  const std::vector<std::unique_ptr<ExtensionActionViewModel>>& action_models =
+      menu_model_->action_models();
+  for (size_t i = 0; i < action_models.size(); ++i) {
+    InsertMenuItemMainPage(main_page, action_models[i].get(), i);
   }
 }
 
 void ExtensionsMenuDelegateDesktop::InsertMenuItemMainPage(
     ExtensionsMenuMainPageView* main_page,
-    const extensions::ExtensionId& extension_id,
+    ExtensionActionViewModel* action_model,
     int index) {
-  std::unique_ptr<ExtensionActionViewModel> model =
-      ExtensionActionViewModel::Create(
-          extension_id, browser_,
-          std::make_unique<ExtensionActionPlatformDelegateViews>(
-              browser_, extensions_container_));
   ExtensionsMenuViewModel::MenuItemState menu_item =
-      menu_model_->GetMenuItemState(extension_id);
-
-  main_page->CreateAndInsertMenuItem(std::move(model), extension_id, menu_item,
-                                     index);
+      menu_model_->GetMenuItemState(action_model->GetId());
+  main_page->CreateAndInsertMenuItem(action_model, menu_item, index);
 }
 
 void ExtensionsMenuDelegateDesktop::AddOrUpdateExtensionRequestingAccess(

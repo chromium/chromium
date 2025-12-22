@@ -79,21 +79,6 @@ ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
   return views::AsViewClass<ExtensionMenuItemView>(view);
 }
 
-// Returns the ExtensionMenuItemView corresponding to `action_id` if
-// it is a children of `parent_view`. The children of the parent view must be
-// ExtensionMenuItemView, otherwise it will DCHECK.
-ExtensionMenuItemView* GetMenuItem(
-    views::View* parent_view,
-    const ToolbarActionsModel::ActionId& action_id) {
-  for (views::View* view : parent_view->children()) {
-    auto* item_view = GetAsMenuItem(view);
-    if (item_view->view_model()->GetId() == action_id) {
-      return item_view;
-    }
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 // Base class for a container inside the extensions menu.
@@ -200,14 +185,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
-    std::unique_ptr<ExtensionActionViewModel> model,
-    extensions::ExtensionId extension_id,
+    ExtensionActionViewModel* action_model,
     ExtensionsMenuViewModel::MenuItemState menu_item,
     int index) {
+  auto extension_id = action_model->GetId();
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, menu_item.is_enterprise, std::move(model),
+      browser_, menu_item.is_enterprise, action_model,
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
@@ -228,10 +213,8 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 
-void ExtensionsMenuMainPageView::RemoveMenuItem(
-    const ToolbarActionsModel::ActionId& action_id) {
-  views::View* item = GetMenuItem(menu_items_, action_id);
-  menu_items_->RemoveChildViewT(item);
+void ExtensionsMenuMainPageView::RemoveMenuItem(int index) {
+  menu_items_->RemoveChildViewT(menu_items_->children().at(index));
 }
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(

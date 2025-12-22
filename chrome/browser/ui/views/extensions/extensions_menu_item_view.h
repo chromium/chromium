@@ -47,7 +47,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   ExtensionMenuItemView(
       Browser* browser,
       bool is_enterprise,
-      std::unique_ptr<ToolbarActionViewModel> view_model,
+      ToolbarActionViewModel* view_model,
       base::RepeatingCallback<void(bool)> site_access_toggle_callback,
       views::Button::PressedCallback site_permissions_button_callback);
   ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
@@ -93,7 +93,19 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   const raw_ptr<Browser> browser_;
 
   // View Model for an action that is shown in the toolbar.
-  std::unique_ptr<ToolbarActionViewModel> view_model_;
+  // TODO(crbug.com/40857680): Remove `view_model_legacy_` once
+  // kExtensionsMenuAccessControl is fully launched and the legacy constructor
+  // is removed.
+  //
+  // This class supports two ownership view models during the migration:
+  // 1. Legacy (feature disabled): This view owns the ViewModel. It is stored
+  //    in `view_model_legacy_`.
+  // 2. New (feature enabled): The `ExtensionsMenuViewModel` owns the ViewModel.
+  //
+  // `view_model_` serves as the unified accessor for the class implementation
+  // regardless of which constructor was used.
+  const std::unique_ptr<ToolbarActionViewModel> view_model_legacy_;
+  raw_ptr<ToolbarActionViewModel> view_model_;
 
   // Model for the browser actions toolbar that provides information such as the
   // action pin status or visibility.

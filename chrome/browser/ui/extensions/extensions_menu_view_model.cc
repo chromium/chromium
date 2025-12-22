@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
+#include <memory>
 #include <string>
 
 #include "base/i18n/case_conversion.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -38,6 +40,14 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+// Returns true if the action name for `a` comes before the action name for `b`
+// in an alphabetical, case-insensitive comparison.
+bool SortActionsByName(const std::unique_ptr<ExtensionActionViewModel>& a,
+                       const std::unique_ptr<ExtensionActionViewModel>& b) {
+  return base::i18n::ToLower(a->GetActionName()) <
+         base::i18n::ToLower(b->GetActionName());
+}
 
 // The state of the main page in the menu, corresponding to the current site's
 // access restrictions.
@@ -494,14 +504,20 @@ ExtensionsMenuViewModel::ControlState::operator=(const ControlState&) = default;
 ExtensionsMenuViewModel::ControlState::~ControlState() = default;
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
-    BrowserWindowInterface* browser)
+    BrowserWindowInterface* browser,
+    Delegate* delegate)
     : browser_(browser),
+      delegate_(delegate),
       toolbar_model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->GetProfile()));
   toolbar_model_observation_.Observe(toolbar_model_.get());
   auto* tab_list = TabListInterface::From(browser);
   tab_list_interface_observation_.Observe(tab_list);
+
+  if (toolbar_model_->actions_initialized()) {
+    PopulateActionModels();
+  }
 }
 
 ExtensionsMenuViewModel::~ExtensionsMenuViewModel() = default;
@@ -888,21 +904,6 @@ ExtensionsMenuViewModel::GetSiteSettingsState() {
   return site_settings;
 }
 
-std::vector<extensions::ExtensionId>
-ExtensionsMenuViewModel::GetSortedExtensions() {
-  std::vector<extensions::ExtensionId> sorted_ids(
-      toolbar_model_->action_ids().begin(), toolbar_model_->action_ids().end());
-
-  auto sort_by_name = [this](const ToolbarActionsModel::ActionId& a,
-                             const ToolbarActionsModel::ActionId& b) {
-    return base::i18n::ToLower(toolbar_model_->GetExtensionName(a)) <
-           base::i18n::ToLower(toolbar_model_->GetExtensionName(b));
-  };
-  std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
-
-  return sorted_ids;
-}
-
 void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
@@ -1013,28 +1014,70 @@ void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
 
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
+  std::unique_ptr<ExtensionActionViewModel> action_model =
+      delegate_->CreateActionViewModel(action_id);
+  ExtensionActionViewModel* action_model_ptr = action_model.get();
+
+  // Insert action model in the correct order.
+  auto it = std::upper_bound(action_models_.begin(), action_models_.end(),
+                             action_model, SortActionsByName);
+  size_t index = std::distance(action_models_.begin(), it);
+  action_models_.insert(it, std::move(action_model));
+
+  // Notify observers.
   for (Observer& observer : observers_) {
-    observer.OnToolbarActionAdded(action_id);
+    observer.OnActionAdded(action_model_ptr, index);
   }
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  for (Observer& observer : observers_) {
-    observer.OnToolbarActionRemoved(action_id);
+  // Find the action model and return if it doesn't exist.
+  auto it = std::ranges::find_if(
+      action_models_,
+      [&action_id](const auto& model) { return model->GetId() == action_id; });
+  if (it == action_models_.end()) {
+    return;
   }
+
+  // Calculate index for action to be removed.
+  int index = std::distance(action_models_.begin(), it);
+
+  // Move the action model out of the vector but keep it alive locally.
+  // This removes it from the list (so repopulation doesn't see it)
+  // but prevents immediate destruction (so Views holding a raw_ptr to it don't
+  // crash).
+  std::unique_ptr<ExtensionActionViewModel> preserved_action_model =
+      std::move(*it);
+  action_models_.erase(it);
+
+  // Notify observers.
+  for (Observer& observer : observers_) {
+    observer.OnActionRemoved(action_id, index);
+  }
+
+  // preserved_action_model goes out of scope here and is destroyed safely.
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
+  // Re-sort the models in case the action name changed (affecting alphabetical
+  // order).
+  // TODO(emiliapaz): Investigate whether this is necessary, because extension
+  // name is set on the manifest and shouldn't dynamically change.
+  std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
+
+  // Notify observers.
   for (Observer& observer : observers_) {
-    observer.OnToolbarActionUpdated();
+    observer.OnActionUpdated();
   }
 }
 
 void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
+  PopulateActionModels();
+
   for (Observer& observer : observers_) {
-    observer.OnToolbarModelInitialized();
+    observer.OnActionsInitialized();
   }
 }
 
@@ -1057,6 +1100,20 @@ void ExtensionsMenuViewModel::DidFinishNavigation(
   for (Observer& observer : observers_) {
     observer.OnActiveWebContentsChanged(web_contents);
   }
+}
+
+void ExtensionsMenuViewModel::PopulateActionModels() {
+  CHECK(toolbar_model_->actions_initialized());
+  CHECK(action_models_.empty());
+
+  for (const auto& id : toolbar_model_->action_ids()) {
+    auto model = delegate_->CreateActionViewModel(id);
+    if (model) {
+      action_models_.push_back(std::move(model));
+    }
+  }
+
+  std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

@@ -31,7 +31,6 @@ class ToggleButton;
 
 class Browser;
 class ExtensionsMenuHandler;
-class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewModel;
 
@@ -49,13 +48,12 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Creates and adds a menu item for `model` at `index` for a newly-added
   // extension.
-  void CreateAndInsertMenuItem(std::unique_ptr<ExtensionActionViewModel> model,
-                               extensions::ExtensionId extension_id,
+  void CreateAndInsertMenuItem(ExtensionActionViewModel* model,
                                ExtensionsMenuViewModel::MenuItemState menu_item,
                                int index);
 
-  // Removes the menu item corresponding to `action_id`.
-  void RemoveMenuItem(const ToolbarActionsModel::ActionId& action_id);
+  // Removes the menu item at `index`.
+  void RemoveMenuItem(int index);
 
   // Returns the menu items.
   std::vector<ExtensionMenuItemView*> GetMenuItems() const;

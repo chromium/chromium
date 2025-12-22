@@ -48,6 +48,7 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
 };
 
 void ExtensionMenuItemViewTest::SetUp() {
@@ -75,8 +76,9 @@ void ExtensionMenuItemViewTest::SetUp() {
 
   std::unique_ptr<ExtensionMenuItemView> menu_item;
   if (GetParam()) {
+    action_model_holder_ = std::move(model);
     menu_item = std::make_unique<ExtensionMenuItemView>(
-        browser(), /*is_enterprise=*/false, std::move(model),
+        browser(), /*is_enterprise=*/false, action_model_holder_.get(),
         /*site_access_toggle_callback*/ base::DoNothing(),
         /*site_permissions_button_callback=*/base::RepeatingClosure());
   } else {

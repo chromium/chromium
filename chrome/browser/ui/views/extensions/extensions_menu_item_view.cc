@@ -152,7 +152,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     std::unique_ptr<ToolbarActionViewModel> view_model,
     bool allow_pinning)
     : browser_(browser),
-      view_model_(std::move(view_model)),
+      view_model_legacy_(std::move(view_model)),
+      view_model_(view_model_legacy_.get()),
       model_(ToolbarActionsModel::Get(browser_->profile())) {
   CHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
@@ -239,11 +240,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     bool is_enterprise,
-    std::unique_ptr<ToolbarActionViewModel> view_model,
+    ToolbarActionViewModel* view_model,
     base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
-      view_model_(std::move(view_model)),
+      view_model_(view_model),
       model_(ToolbarActionsModel::Get(browser_->profile())) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
