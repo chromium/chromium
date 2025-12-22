@@ -9,24 +9,38 @@ import {setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-export declare interface AutofillFormFieldData {
-  name: string;
-  value: string;
-  renderer_id: string;
-  form_control_type: string;
-  autocomplete_attribute: string;
-  max_length: number;
-  is_autofilled: boolean;
-  is_user_edited: boolean;
-  is_checkable: boolean;
-  is_focusable: boolean;
-  should_autocomplete: boolean;
-  role: number;
-  placeholder_attribute: string;
-  aria_label: string;
-  aria_description: string;
-  option_texts: string[];
-  option_values: string[];
+/**
+ * Base class for objects that are intended to be JSON stringified.
+ * This class ensures that any `toJSON` method on the prototype is nulled out
+ * to prevent unexpected behavior from site-defined `toJSON` overrides.
+ */
+class JsonSafeObject {
+  static {
+    (this.prototype as any).toJSON = null;
+  }
+}
+
+// TODO(crbug.com/469457516): Update the variables in the classes to follow the
+// naming convention.
+/* eslint-disable @typescript-eslint/naming-convention */
+export class AutofillFormFieldData extends JsonSafeObject {
+  name!: string;
+  value!: string;
+  renderer_id!: string;
+  form_control_type!: string;
+  autocomplete_attribute!: string;
+  max_length!: number;
+  is_autofilled!: boolean;
+  is_user_edited!: boolean;
+  is_checkable!: boolean;
+  is_focusable!: boolean;
+  should_autocomplete!: boolean;
+  role!: number;
+  placeholder_attribute!: string;
+  aria_label!: string;
+  aria_description!: string;
+  option_texts!: string[];
+  option_values!: string[];
   label?: string;
   identifier?: string;
   name_attribute?: string;
@@ -34,17 +48,18 @@ export declare interface AutofillFormFieldData {
   pattern_attribute?: string;
 }
 
-export declare interface AutofillFormData {
-  name: string;
-  renderer_id: string;
-  origin: string;
-  action: string;
-  fields: AutofillFormFieldData[];
-  host_frame: string;
+export class AutofillFormData extends JsonSafeObject {
+  name!: string;
+  renderer_id!: string;
+  origin!: string;
+  action!: string;
+  fields!: AutofillFormFieldData[];
+  host_frame!: string;
   child_frames?: FrameTokenWithPredecessor[];
   name_attribute?: string;
   id_attribute?: string;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export declare interface FrameTokenWithPredecessor {
   token: string;

@@ -400,7 +400,7 @@ function getPasswordFormDataFromUnownedElements(): object|null {
   if (unownedControlElements.length === 0) {
     return null;
   }
-  const unownedForm = new gCrWebLegacy['common'].JSONSafeObject();
+  const unownedForm = new fillUtil.AutofillFormData();
   const hasUnownedForm = unownedFormElementsAndFieldSetsToFormData(
       window, fieldsets, unownedControlElements, /* iframeElements= */[], false,
       unownedForm);

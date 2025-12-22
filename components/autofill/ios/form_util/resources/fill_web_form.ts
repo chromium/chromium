@@ -9,7 +9,7 @@ import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/io
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 if (typeof document.__gCrWasEditedByUserMap === 'undefined') {
@@ -564,7 +564,7 @@ function matchLabelsAndFields(
       continue;
     }
 
-    if (!('label' in fieldData)) {
+    if (!fieldData.label) {
       fieldData.label = '';
     }
     let labelText = inferenceUtil.findChildText(label);
@@ -643,7 +643,7 @@ function extractFieldsFromControlElements(
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
-    const formField = new gCrWebLegacy['common'].JSONSafeObject();
+    const formField = new fillUtil.AutofillFormFieldData();
     webFormControlElementToFormField(controlElement, formField);
     formFields.push(formField);
     elementArray[i] = formField;
@@ -713,7 +713,7 @@ export function getFieldName(element: Element|null): string {
  */
 export function autofillSubmissionData(form: HTMLFormElement):
     fillUtil.AutofillFormData {
-  const formData = new gCrWebLegacy['common'].JSONSafeObject();
+  const formData = new fillUtil.AutofillFormData();
   webFormElementToFormData(window, form, null, formData);
   return formData;
 }
