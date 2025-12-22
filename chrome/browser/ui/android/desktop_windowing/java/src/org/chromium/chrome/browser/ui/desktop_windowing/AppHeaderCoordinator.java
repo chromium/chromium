@@ -103,6 +103,8 @@ public class AppHeaderCoordinator
      *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
      * @param savedInstanceState The saved instance state {@link Bundle} holding UI state
      *     information for restoration on startup.
+     * @param persistentState The persistent state {@link PersistableBundle} holding UI state
+     *     information for restoration after a device reboot or app update.
      * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} to determine the
      *     edge-to-edge state.
      */
@@ -113,6 +115,7 @@ public class AppHeaderCoordinator
             InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState,
+            PersistableBundle persistentState,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
@@ -124,10 +127,16 @@ public class AppHeaderCoordinator
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
         // restored.
-        mIsInUnfocusedDesktopWindow =
+        boolean savedUnfocusedDesktopWindowState =
                 savedInstanceState != null
                         && savedInstanceState.getBoolean(
                                 INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        boolean persistedUnfocusedDesktopWindowState =
+                persistentState != null
+                        && persistentState.getBoolean(
+                                INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        mIsInUnfocusedDesktopWindow =
+                savedUnfocusedDesktopWindowState || persistedUnfocusedDesktopWindowState;
 
         mDesktopWindowTopResumedActivitySupplier =
                 new ObservableSupplierImpl<Boolean>(!mIsInUnfocusedDesktopWindow);
@@ -211,7 +220,8 @@ public class AppHeaderCoordinator
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        // TODO(crbug.com/459921316): Persist unfocused desktop windowing state.
+        outPersistentState.putBoolean(
+                INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
     /* Returns true if app header is customized. */

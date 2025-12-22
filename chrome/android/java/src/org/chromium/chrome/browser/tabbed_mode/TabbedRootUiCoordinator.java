@@ -389,6 +389,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
+     * @param persistentState The persistent bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
@@ -500,6 +501,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 initAppHeaderCoordinator(
                         activity,
                         savedInstanceState,
+                        persistentState,
                         edgeToEdgeManager.getEdgeToEdgeStateProvider(),
                         browserControlsManager,
                         insetObserver,
@@ -1553,6 +1555,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static @Nullable AppHeaderCoordinator initAppHeaderCoordinator(
             AppCompatActivity activity,
             Bundle savedInstanceState,
+            PersistableBundle persistentState,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             BrowserControlsManager browserControlsManager,
             InsetObserver insetObserver,
@@ -1570,6 +1573,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 insetObserver,
                 activityLifecycleDispatcher,
                 savedInstanceState,
+                persistentState,
                 edgeToEdgeStateProvider);
     }
 

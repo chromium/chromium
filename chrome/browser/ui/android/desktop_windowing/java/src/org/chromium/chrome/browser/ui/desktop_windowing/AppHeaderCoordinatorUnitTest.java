@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -102,6 +103,7 @@ public class AppHeaderCoordinatorUnitTest {
     private View mSpyRootView;
     private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
     private Bundle mSavedInstanceStateBundle;
+    private PersistableBundle mPersistentStateBundle;
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private boolean mInsetsRectUpdateConsumed;
 
@@ -116,6 +118,7 @@ public class AppHeaderCoordinatorUnitTest {
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
         setupWithNoCaptionInsets();
         mSavedInstanceStateBundle = new Bundle();
+        mPersistentStateBundle = new PersistableBundle();
         mInsetsRectUpdateConsumed = false;
         initAppHeaderCoordinator();
     }
@@ -401,7 +404,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void startupInUnfocusedWindow() {
+    public void startupInUnfocusedWindow_savedInstanceState() {
         // Set initial saved instance state value.
         mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, true);
         initAppHeaderCoordinator();
@@ -412,7 +415,18 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void saveInstanceStateForUnfocusedWindow() {
+    public void startupInUnfocusedWindow_persistentState() {
+        // Set initial saved instance state value.
+        mPersistentStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, true);
+        initAppHeaderCoordinator();
+
+        assertTrue(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+    }
+
+    @Test
+    public void saveInstanceStateForUnfocusedWindow_savedInstanceState() {
         mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
@@ -428,6 +442,28 @@ public class AppHeaderCoordinatorUnitTest {
         mAppHeaderCoordinator.onSaveInstanceState(mSavedInstanceStateBundle);
 
         assertTrue(mSavedInstanceStateBundle.getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
+    }
+
+    @Test
+    public void saveInstanceStateForUnfocusedWindow_persistentState() {
+        mPersistentStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        // Verify initial value.
+        assertFalse(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+
+        // Assume that the current activity lost focus.
+        mAppHeaderCoordinator.onTopResumedActivityChanged(false);
+        // Assume that an activity pause triggers saving the instance state.
+        mAppHeaderCoordinator.onSaveInstanceState(
+                mSavedInstanceStateBundle, mPersistentStateBundle);
+
+        assertFalse(
+                mSavedInstanceStateBundle.getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
+        assertTrue(mPersistentStateBundle.getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
     }
 
     @Test
@@ -878,6 +914,7 @@ public class AppHeaderCoordinatorUnitTest {
                         mInsetObserver,
                         mActivityLifecycleDispatcher,
                         mSavedInstanceStateBundle,
+                        mPersistentStateBundle,
                         mEdgeToEdgeStateProvider);
         mAppHeaderCoordinator.addObserver(mObserver);
     }
