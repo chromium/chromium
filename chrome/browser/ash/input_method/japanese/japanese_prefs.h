@@ -14,8 +14,6 @@ void SetJpOptionsSourceAsPrefService(PrefService& prefs);
 
 void SetJpOptionsSourceAsLegacyConfig(PrefService& prefs);
 
-bool ShouldInitializeJpPrefsFromLegacyConfig(PrefService& prefs);
-
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_PREFS_H_

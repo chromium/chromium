@@ -423,14 +423,6 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   return nullptr;
 }
 
-const base::Value* GetLanguageInputMethodSpecificSetting(
-    PrefService& prefs,
-    const std::string& engine_id,
-    const std::string& preference_name) {
-  return prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
-      .FindByDottedPath(base::StrCat({engine_id, ".", preference_name}));
-}
-
 void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
                                            const std::string& engine_id,
                                            const base::Value::Dict& values) {

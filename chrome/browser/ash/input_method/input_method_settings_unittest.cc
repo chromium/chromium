@@ -374,27 +374,6 @@ TEST(CreateSettingsFromPrefsTest, AutocorrectIsNotSupportedForNonLatin) {
   ASSERT_FALSE(IsAutocorrectSupported("zh-t-i0-pinyin"));
 }
 
-TEST(InputMethodSettingsTest, GetLanguageSpecificInputMethodSettings) {
-  base::Value::Dict dict;
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field1"}), "DEFAULT1");
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field2"}), "DEFAULT2");
-  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".field3"}), "DEFAULT3");
-  TestingPrefServiceSimple prefs;
-  RegisterTestingPrefs(prefs, dict);
-
-  base::Value::Dict new_prefs;
-  new_prefs.Set("field2", "CHANGED");
-  EXPECT_EQ(
-      *GetLanguageInputMethodSpecificSetting(prefs, kZhuyinEngineId, "field1"),
-      "DEFAULT1");
-  EXPECT_EQ(
-      *GetLanguageInputMethodSpecificSetting(prefs, kZhuyinEngineId, "field2"),
-      "DEFAULT2");
-  EXPECT_EQ(
-      *GetLanguageInputMethodSpecificSetting(prefs, kZhuyinEngineId, "field3"),
-      "DEFAULT3");
-}
-
 TEST(InputMethodSettingsTest,
      SetLanguageInputMethodSpecificSettingExistingEngine) {
   base::Value::Dict dict;
