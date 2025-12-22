@@ -102,8 +102,10 @@ struct TabInfo {
   string title;
   // The URL of the tab.
   url.mojom.Url url;
-  // Whether the tab is suitable for display in the recent tab chip.
-  bool show_in_recent_tab_chip;
+  // Whether the tab is suitable for display in the current tab chip.
+  bool show_in_current_tab_chip;
+  // Whether the tab is suitable for display in the previous tab chip.
+  bool show_in_previous_tab_chip;
   // The time the tab was last active.
   mojo_base.mojom.TimeTicks last_active;
 };

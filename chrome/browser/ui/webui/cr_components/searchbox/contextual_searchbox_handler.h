@@ -193,7 +193,6 @@ class ContextualSearchboxHandler
 
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
-  raw_ptr<content::WebContents> web_contents_;
   std::optional<std::pair<base::UnguessableToken,
                           std::unique_ptr<lens::ContextualInputData>>>
       tab_context_snapshot_;

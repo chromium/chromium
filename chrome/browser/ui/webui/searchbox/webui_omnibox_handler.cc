@@ -13,12 +13,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
@@ -206,6 +211,49 @@ void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
 
 void WebuiOmniboxHandler::OpenLensSearch() {
   edit_model()->OpenLensSearch();
+}
+
+void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
+                                        bool delay_upload,
+                                        AddTabContextCallback callback) {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  auto tab_strip_id = tab_strip_model->GetIndexOfTab(tab);
+
+  TabRendererData tab_renderer_data =
+      TabRendererData::FromTabInModel(tab_strip_model, tab_strip_id);
+
+  SearchboxContextData* searchbox_context_data =
+      browser_window_interface->GetFeatures().searchbox_context_data();
+  if (!searchbox_context_data) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  auto context = searchbox_context_data->TakePendingContext();
+  if (!context) {
+    context = std::make_unique<SearchboxContextData::Context>();
+  }
+
+  auto tab_attachment = searchbox::mojom::TabAttachmentStub::New();
+  tab_attachment->tab_id = tab_id;
+  tab_attachment->title = base::UTF16ToUTF8(tab_renderer_data.title);
+  tab_attachment->url = tab_renderer_data.last_committed_url;
+  context->file_infos.push_back(
+      searchbox::mojom::SearchContextAttachmentStub::NewTabAttachment(
+          std::move(tab_attachment)));
+
+  searchbox_context_data->SetPendingContext(std::move(context));
+
+  edit_model()->OpenAiMode(false, /*via_context_menu=*/false);
+  std::move(callback).Run(std::nullopt);
 }
 
 void WebuiOmniboxHandler::OnShow() {

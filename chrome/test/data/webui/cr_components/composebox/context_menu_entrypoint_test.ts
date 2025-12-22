@@ -33,7 +33,8 @@ suite('ContextMenuEntrypoint', () => {
         title: `Tab ${i}`,
         url: {url: `https://www.google.com/${i}`},
         tabId: i,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(i)},
       });
     }
@@ -100,14 +101,16 @@ suite('ContextMenuEntrypoint', () => {
             title: 'Tab 1',
             url: {url: 'https://www.google.com'},
             tabId: 1,
-            showInRecentTabChip: true,
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: true,
             lastActive: {internalValue: BigInt(1)},
           },
           {
             title: 'Tab 2',
             url: {url: 'https://www.google.com'},
             tabId: 2,
-            showInRecentTabChip: true,
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: true,
             lastActive: {internalValue: BigInt(2)},
           },
         ];
@@ -138,14 +141,16 @@ suite('ContextMenuEntrypoint', () => {
         title: 'Tab 1',
         url: {url: 'https://www.google.com'},
         tabId: 1,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(1)},
       },
       {
         title: 'Tab 2',
         url: {url: 'https://www.google.com'},
         tabId: 2,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(2)},
       },
     ];
