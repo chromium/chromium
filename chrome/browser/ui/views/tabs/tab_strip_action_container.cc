@@ -521,8 +521,6 @@ void TabStripActionContainer::OnToggleActionUIState(const Browser* browser,
 }
 
 void TabStripActionContainer::OnTabDeclutterButtonClicked() {
-  tabs::TabDeclutterController::EmitEntryPointHistogram(
-      tab_search::mojom::TabDeclutterEntryPoint::kNudge);
   base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
                                 TriggerOutcome::kAccepted);
   LogDeclutterTriggerBucket(true);

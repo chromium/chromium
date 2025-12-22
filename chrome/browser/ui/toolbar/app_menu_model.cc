@@ -1814,8 +1814,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DeclutterTabs",
                                       delta);
       }
-      tabs::TabDeclutterController::EmitEntryPointHistogram(
-          tab_search::mojom::TabDeclutterEntryPoint::kAppMenu);
+
       LogMenuAction(MENU_ACTION_DECLUTTER_TABS);
       break;
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
