@@ -1696,6 +1696,7 @@ source_set("platform_browser_tests") {
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
       "//components/proxy_config",
       "//components/reading_list/core:test_support",
+      "//components/security_interstitials/content:security_interstitial_page",
       "//components/tabs:public",
       "//components/web_package",
       "//components/web_package/test_support",
@@ -10495,6 +10496,7 @@ test("unit_tests") {
       "//components/commerce/core:pref_names",
       "//components/commerce/core:shopping_service_test_support",
       "//components/constrained_window",
+      "//components/enterprise/common/proto:browser_events_proto_gen",
       "//components/global_media_controls",
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
@@ -10792,6 +10794,8 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
     ]
+
+    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
   }
 
   if (!is_android) {

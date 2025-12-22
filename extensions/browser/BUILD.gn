@@ -872,6 +872,7 @@ source_set("test_support") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/safe_browsing/core/common/proto:crx_info_proto_gen",
     "//components/sync/model",
     "//components/sync_preferences",
