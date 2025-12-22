@@ -392,17 +392,26 @@ allow_unsafe = true
 [crate.ixdtf.extra_kv]
 allow_unsafe = false
 
-[crate.jxl]
-extra_kv = { allow_unsafe = true }
+[crate.jxl.extra_kv]
+allow_unsafe = true
+# JXL decoding requires optimizations even in Debug builds for reasonable performance.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
 
 [crate.jxl_macros]
 extra_kv = { allow_unsafe = false }
 
-[crate.jxl_simd]
-extra_kv = { allow_unsafe = true }
+[crate.jxl_simd.extra_kv]
+allow_unsafe = true
+# JXL decoding requires optimizations even in Debug builds for reasonable performance.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
 
-[crate.jxl_transforms]
-extra_kv = { allow_unsafe = true }
+[crate.jxl_transforms.extra_kv]
+allow_unsafe = true
+# JXL decoding requires optimizations even in Debug builds for reasonable performance.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize']
 
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
