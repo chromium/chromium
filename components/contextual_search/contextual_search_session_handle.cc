@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -261,9 +262,14 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
       contextual_search::SessionState::kNavigationOccurred);
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
-  // Move the uploaded tokens to the request's file_tokens.
-  search_url_request_info->file_tokens =
-      std::exchange(uploaded_context_tokens_, {});
+  // Move the uploaded tokens to the request's file_tokens. Make sure to dedupe
+  // the tokens with those already in the SearchUrlRequestInfo.
+  base::flat_set<base::UnguessableToken> file_tokens_set(
+      std::move(search_url_request_info->file_tokens));
+  file_tokens_set.insert(uploaded_context_tokens_.begin(),
+                         uploaded_context_tokens_.end());
+  search_url_request_info->file_tokens = std::move(file_tokens_set).extract();
+  uploaded_context_tokens_.clear();
 
   // Copy the tokens from this request to the list of all submitted tokens.
   submitted_context_tokens_.insert(submitted_context_tokens_.end(),
