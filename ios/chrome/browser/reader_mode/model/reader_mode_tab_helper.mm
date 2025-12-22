@@ -263,11 +263,9 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     }
   }
 
-  infobars::InfoBarManager* manager =
-      InfoBarManagerImpl::FromWebState(web_state_.get());
-  if (manager) {
-    manager->RemoveAllInfoBars(/*animate=*/false);
-  }
+  // Ensure that any infobars created outside Reading Mode state are removed
+  // prior to creating new ones attached to the Reader mode web page.
+  RemoveTranslateInfobarIfExists(web_state_.get());
 
   WebViewProxyTabHelper* tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state_);
