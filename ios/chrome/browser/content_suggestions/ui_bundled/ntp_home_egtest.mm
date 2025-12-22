@@ -241,12 +241,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         feature_engagement::kIPHWhatsNewUpdatedFeature.name));
   }
 
-  if ([self isRunningTest:@selector
-            (testSignInSignOutScrolledToTop_AccountMenu)]) {
-    config.features_enabled.push_back(
-        switches::kEnableErrorBadgeOnIdentityDisc);
-  }
-
   if ([self isRunningTest:@selector(testMagicStack)]) {
     config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   }

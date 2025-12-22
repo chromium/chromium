@@ -196,11 +196,6 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

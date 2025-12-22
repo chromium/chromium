@@ -8,7 +8,6 @@
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -136,11 +135,6 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
-    config.features_enabled.push_back(
-        switches::kEnableErrorBadgeOnIdentityDisc);
-  }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInline)]) {
     config.features_enabled_and_params.push_back(

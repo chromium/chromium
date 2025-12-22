@@ -628,11 +628,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)updateAccountErrorBadge {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableErrorBadgeOnIdentityDisc) &&
-      !base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    return;
-  }
   BOOL primaryIdentityHasError =
       _signedInIdentity && _syncService->GetUserActionableError() !=
                                syncer::SyncService::UserActionableError::kNone;

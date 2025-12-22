@@ -167,12 +167,6 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)
-// Show the error badge on the identity disc in the NTP.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableErrorBadgeOnIdentityDisc);
-#endif
-
-#if BUILDFLAG(IS_IOS)
 // Features to enable identities in auth error (stale token).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
