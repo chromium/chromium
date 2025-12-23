@@ -92,5 +92,16 @@ cr-icon-button[hidden] {
 }
 
 .dropdown-item cr-icon {
-  padding-inline-end: 10px;
+  margin-inline-end: 10px;
 }
+
+<if expr="_google_chrome">
+.google-g-icon {
+  --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
+
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  margin-inline-end: 10px;
+}
+</if>
