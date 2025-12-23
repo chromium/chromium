@@ -14365,6 +14365,45 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="DecoderCheck1ErrorCount">
+    <summary>
+      The number of video frames that returned an error result when running
+      decoder check1 in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DecoderCheck1SuccessCount">
+    <summary>
+      The number of video frames that returned a successful result when running
+      decoder check1 in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DecoderCheck1WarningCount">
+    <summary>
+      The number of video frames that returned a warning result when running
+      decoder check1 in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="LicenseSdkVersion">
     <summary>
       The SDK version of the license server of the URL that communicates with
