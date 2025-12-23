@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/safe_ref.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -58,6 +59,7 @@ BuildToolRequestResult BuildToolRequest(
 // Builds the ActionsResult proto from the output of a call to the
 // ActorKeyedService::PerformActions API and fetches new observations for
 // tabs relevant to the actions.
+// TODO(bokan): Wrap the params in a struct
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks start_time,
@@ -67,8 +69,21 @@ void BuildActionsResultWithObservations(
     const ActorTask& task,
     bool skip_async_observation_information,
     base::OnceCallback<
-        void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
+        void(base::TimeTicks start_time,
+             mojom::ActionResultCode result_code,
+             std::optional<size_t> index_of_failed_action,
+             std::vector<actor::ActionResultWithLatencyInfo> action_results,
+             actor::TaskId task_id,
+             bool skip_async_observation_information,
+             std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
+        callback);
+
+// For testing: when set, every TabObservation will receive this given
+// mock_result. This allows tests to verify error handling.
+void SetTabObservationResultOverrideForTesting(
+    base::RepeatingCallback<
+        optimization_guide::proto::TabObservation::TabObservationResult()>
         callback);
 
 optimization_guide::proto::ActionsResult BuildErrorActionsResult(
