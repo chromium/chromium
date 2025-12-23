@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -34,7 +33,6 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
-#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -251,8 +249,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     browser_window_interface->GetTabStripModel()->AddObserver(this);
   }
 
-  contextual_tasks_service_ =
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
 #if !BUILDFLAG(IS_ANDROID)
   contextual_tasks_context_service_ =
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
@@ -508,25 +504,10 @@ void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
     bool from_automatic_chip) {
   auto* contextual_session_handle = GetContextualSessionHandle();
-  std::optional<SessionID> associated_tab_id;
   int num_files = 0;
   if (contextual_session_handle) {
-    const contextual_search::FileInfo* file_info =
-        contextual_session_handle->GetController()->GetFileInfo(context_token);
-    if (file_info && file_info->tab_session_id.has_value()) {
-      associated_tab_id = file_info->tab_session_id.value();
-    }
-
     contextual_session_handle->DeleteFile(context_token);
     num_files = contextual_session_handle->GetUploadedContextFileInfos().size();
-
-    if (contextual_tasks_service_ && associated_tab_id.has_value()) {
-      std::optional<base::Uuid> current_task_id = GetTaskId();
-      if (current_task_id.has_value()) {
-        contextual_tasks_service_->DisassociateTabFromTask(
-            current_task_id.value(), associated_tab_id.value());
-      }
-    }
   }
 
   // If the context token matches the cached tab context, we clear the snapshot.
@@ -541,37 +522,10 @@ void ContextualSearchboxHandler::DeleteContext(
 
 void ContextualSearchboxHandler::ClearFiles() {
   if (auto* contextual_session_handle = GetContextualSessionHandle()) {
-    DisassociateTabsFromTask();
     contextual_session_handle->ClearFiles();
   }
   context_input_data_ = std::nullopt;
   tab_context_snapshot_.reset();
-}
-
-void ContextualSearchboxHandler::DisassociateTabsFromTask() {
-  if (!contextual_tasks_service_) {
-    return;
-  }
-
-  std::optional<base::Uuid> current_task_id = GetTaskId();
-  if (!current_task_id.has_value()) {
-    return;
-  }
-
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    return;
-  }
-
-  std::vector<contextual_search::FileInfo> uploaded_file_infos =
-      contextual_session_handle->GetUploadedContextFileInfos();
-
-  for (const auto& file_info : uploaded_file_infos) {
-    if (file_info.tab_session_id.has_value()) {
-      contextual_tasks_service_->DisassociateTabFromTask(
-          current_task_id.value(), file_info.tab_session_id.value());
-    }
-  }
 }
 
 void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
@@ -603,11 +557,6 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
       error_type.has_value()
           ? std::make_optional(contextual_search::ToMojom(error_type.value()))
           : std::nullopt);
-
-  if (file_upload_status ==
-      contextual_search::FileUploadStatus::kUploadSuccessful) {
-    AssociateTabWithTask(file_token);
-  }
 }
 
 std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
@@ -816,44 +765,4 @@ void ContextualSearchboxHandler::OpenUrl(
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
-}
-
-std::optional<base::Uuid> ContextualSearchboxHandler::GetTaskId() {
-  if (!contextual_tasks_service_) {
-    return std::nullopt;
-  }
-  std::optional<contextual_tasks::ContextualTask> current_task =
-      contextual_tasks_service_->GetContextualTaskForTab(
-          sessions::SessionTabHelper::IdForTab(web_contents_));
-  if (!current_task) {
-    return std::nullopt;
-  }
-
-  return current_task->GetTaskId();
-}
-
-void ContextualSearchboxHandler::AssociateTabWithTask(
-    const base::UnguessableToken& file_token) {
-  if (!contextual_tasks_service_) {
-    return;
-  }
-
-  std::optional<base::Uuid> current_task_id = GetTaskId();
-  if (!current_task_id.has_value()) {
-    return;
-  }
-
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    return;
-  }
-
-  const contextual_search::FileInfo* file_info =
-      contextual_session_handle->GetController()->GetFileInfo(file_token);
-  if (!file_info || !file_info->tab_session_id.has_value()) {
-    return;
-  }
-
-  contextual_tasks_service_->AssociateTabWithTask(
-      current_task_id.value(), file_info->tab_session_id.value());
 }
