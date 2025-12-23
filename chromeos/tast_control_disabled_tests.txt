@@ -112,4 +112,8 @@ tast.inputs.VirtualKeyboardTypingUserMode.guest
 # https://crbug.com/368606672
 tast.inputs.InputMethodManagement.guest
 
+# b/451624782
+tast.secagentd.NetworkEvents.relaxed_icmp@chromeos-betty-cfi-thin-lto-chrome
+tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
