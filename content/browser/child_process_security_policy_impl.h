@@ -841,10 +841,32 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                    const std::string& filesystem_id,
                                    int permission);
 
-  // Gets the SecurityState object associated with |child_id|.
+  // Gets the SecurityState object associated with `child_id`, for callers that
+  // want to query but not modify the state. See `GetSecurityStateForMutation`
+  // for callers that want to modify the state.
+  //
+  // This function consults both the live `security_state_` map and the
+  // `pending_remove_state_` map, to ensure queries can access state both while
+  // the RenderProcessHost exists and for a short time afterwards, as long as
+  // any ChildProcessSecurityPolicy::Handles exist. This allows queries to
+  // succeed on other threads until they hear about the process's deletion.
+  //
   // Note: Returned object is only valid for the duration the caller holds
-  // |lock_|.
-  SecurityState* GetSecurityState(ChildProcessId child_id)
+  // `lock_`.
+  SecurityState* GetSecurityStateForQuery(ChildProcessId child_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Gets the SecurityState object associated with `child_id`, for callers that
+  // want to modify the state. Callers that only want to query the state must
+  // not use this, and should use `GetSecurityStateForQuery` instead.
+  //
+  // This function only consults the live `security_state_` map and not the
+  // `pending_remove_state_` map, to ensure that SecurityState can only be
+  // modified while the RenderProcessHost still exists.
+  //
+  // Note: Returned object is only valid for the duration the caller holds
+  // `lock_`.
+  SecurityState* GetSecurityStateForMutation(ChildProcessId child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Convert a list of comma separated isolated origins in |pattern_list|,
