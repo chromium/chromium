@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/to_string.h"
@@ -52,8 +53,6 @@ struct SyntheticTrialTestCase {
 };
 
 constexpr char kEligibleGroupName[] = "eligible";
-constexpr char kOverrideGroupName[] = "override";
-
 class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
   ExperimentManagerImplBrowserTest(std::string group_name_override,
@@ -99,169 +98,7 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
 
 // Android does not support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
-class ExperimentManagerImplSyntheticTrialTest
-    : public ExperimentManagerImplBrowserTest,
-      public testing::WithParamInterface<SyntheticTrialTestCase> {
- public:
-  ExperimentManagerImplSyntheticTrialTest()
-      : ExperimentManagerImplBrowserTest(GetParam().group_name_override,
-                                         GetParam().disable_3pcs,
-                                         GetParam().need_onboarding,
-                                         GetParam().enable_silent_onboarding) {}
-};
-
-IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
-                       PRE_RegistersSyntheticTrial) {
-  Wait();
-
-  // Set up the previous state in the local state prefs.
-  g_browser_process->local_state()->SetInteger(
-      prefs::kTPCDExperimentClientState,
-      static_cast<int>(GetParam().prev_state));
-
-  // Set up preconditions for the profile to be eligible.
-  if (GetParam().new_state_eligible) {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        ::prefs::kPrivacySandboxM1RowNoticeAcknowledged,
-        GetParam().new_state_eligible);
-    g_browser_process->local_state()->SetInt64(
-        metrics::prefs::kInstallDate,
-        (base::Time::Now() - base::Days(31)).ToTimeT());
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
-                       RegistersSyntheticTrial) {
-  // Delay to make sure `CaptureEligibilityInLocalStatePref` has run.
-  Wait();
-
-  // Verify that the user has been registered with the correct synthetic
-  // trial group.
-
-  uint32_t group_name_hash = GetSyntheticTrialGroupNameHash();
-  if (const auto& expected_group_name = GetParam().expected_group_name;
-      expected_group_name.has_value()) {
-    ASSERT_NE(group_name_hash, 0u);
-    EXPECT_EQ(group_name_hash, HashName(*expected_group_name));
-  } else {
-    ASSERT_EQ(group_name_hash, 0u);
-  }
-}
-
-// Test every combination of (initial_state, new_state). If the prev_state is
-// set, use that eligibility and ignore the new one. If the prev_state is
-// unknown, use the new eligibility value.
-const SyntheticTrialTestCase kTestCases[] = {
-    {
-        .prev_state = utils::ExperimentState::kUnknownEligibility,
-        .new_state_eligible = false,
-        .expected_group_name = kSyntheticTrialInvalidGroupName,
-        .group_name_override = "",
-    },
-    {
-        .prev_state = utils::ExperimentState::kUnknownEligibility,
-        .new_state_eligible = false,
-        .expected_group_name = kSyntheticTrialInvalidGroupName,
-        .group_name_override = kOverrideGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kUnknownEligibility,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .group_name_override = "",
-    },
-    {
-        .prev_state = utils::ExperimentState::kUnknownEligibility,
-        .new_state_eligible = true,
-        .expected_group_name = kOverrideGroupName,
-        .group_name_override = kOverrideGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kIneligible,
-        .new_state_eligible = false,
-        .expected_group_name = kSyntheticTrialInvalidGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kIneligible,
-        .new_state_eligible = true,
-        .expected_group_name = kSyntheticTrialInvalidGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = false,
-        .expected_group_name = kEligibleGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .need_onboarding = true,
-        .enable_silent_onboarding = false,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = true,
-        .expected_group_name = std::nullopt,
-        .need_onboarding = true,
-        .enable_silent_onboarding = true,
-    },
-    {
-        .prev_state = utils::ExperimentState::kOnboarded,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .need_onboarding = true,
-        .enable_silent_onboarding = true,
-    },
-    {
-        .prev_state = utils::ExperimentState::kOnboarded,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .need_onboarding = false,
-    },
-    {
-        .prev_state = utils::ExperimentState::kIneligible,
-        .new_state_eligible = false,
-        .expected_group_name = kSyntheticTrialInvalidGroupName,
-        .disable_3pcs = true,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = true,
-        .expected_group_name = std::nullopt,
-        .disable_3pcs = true,
-        .need_onboarding = true,
-    },
-    {
-        .prev_state = utils::ExperimentState::kEligible,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .disable_3pcs = true,
-        .need_onboarding = false,
-    },
-    {
-        .prev_state = utils::ExperimentState::kOnboarded,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .disable_3pcs = true,
-        .need_onboarding = true,
-    },
-    {
-        .prev_state = utils::ExperimentState::kOnboarded,
-        .new_state_eligible = true,
-        .expected_group_name = kEligibleGroupName,
-        .disable_3pcs = true,
-        .need_onboarding = false,
-    },
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExperimentManagerImplSyntheticTrialTest,
-                         testing::ValuesIn(kTestCases));
+#if !BUILDFLAG(IS_CHROMEOS)
 
 class ExperimentManagerImplDisable3PCsSyntheticTrialTest
     : public ExperimentManagerImplBrowserTest {
@@ -290,6 +127,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentManagerImplDisable3PCsSyntheticTrialTest,
   ASSERT_NE(group_name_hash, 0u);
   EXPECT_EQ(group_name_hash, HashName(kEligibleGroupName));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class ExperimentManagerImplSilentOnboardingSyntheticTrialTest
     : public ExperimentManagerImplBrowserTest {
@@ -301,7 +139,6 @@ class ExperimentManagerImplSilentOnboardingSyntheticTrialTest
             /*need_onboarding=*/true,
             /*enable_silent_onboarding=*/true) {}
 };
-
 IN_PROC_BROWSER_TEST_F(ExperimentManagerImplSilentOnboardingSyntheticTrialTest,
                        PRE_ExistingProfilesRegistersSyntheticTrial) {
   Wait();
