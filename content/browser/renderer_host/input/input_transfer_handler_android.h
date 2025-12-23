@@ -63,7 +63,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   static constexpr const char* kTransferInputToVizResultHistogram =
       "Android.InputOnViz.Browser.TransferInputToVizResult2";
   static constexpr const char* kEventsInDroppedSequenceHistogram =
-      "Android.InputOnViz.Browser.NumEventsInDroppedSequence";
+      "Android.InputOnViz.Browser.NumEventsInDroppedSequence2";
   static constexpr const char* kEventTypesInDroppedSequenceHistogram =
       "Android.InputOnViz.Browser.EventTypesInDroppedSequence";
   static constexpr const char* kTouchSequenceDroppedReasonHistogram =
@@ -73,6 +73,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
     return handler_state_ == HandlerState::kConsumeEventsUntilCancel;
   }
   bool FilterRedundantDownEvent(const ui::MotionEvent& event);
+
+  void OnDetachedFromWindow();
 
   enum class RequestInputBackReason {
     kStartDragAndDropGesture = 0,
@@ -111,6 +113,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
     const raw_ref<InputTransferHandlerAndroid> transfer_handler_;
   };
 
+  void Reset();
   void OnTouchTransferredSuccessfully(const ui::MotionEventAndroid& event,
                                       bool browser_would_have_handled);
 
@@ -138,7 +141,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
                                InputOnVizSequenceDroppedReason reason);
 
   void DropCurrentSequence(const ui::MotionEventAndroid& event);
-  void ConsumeEventsUntilCancel(const ui::MotionEventAndroid& event);
+  bool ConsumeEventsUntilCancel(const ui::MotionEventAndroid& event);
   void ConsumeSequence(const ui::MotionEventAndroid& event);
 
   friend class MockInputTransferHandler;
@@ -149,6 +152,11 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   // transferred to VizCompositor. See
   // (https://developer.android.com/reference/android/view/MotionEvent#getDownTime())
   base::TimeTicks cached_transferred_sequence_down_time_ms_;
+  // When a touch sequence is successfully transferred to Viz then current time
+  // is written into `last_successful_transfer_time_`.
+  // Used to detect when a touch cancel might have been missed and unblock
+  // processing of touch sequences occurring later than this time.
+  base::TimeTicks last_successful_transfer_time_;
 
   int num_events_in_dropped_sequence_ = 0;
 

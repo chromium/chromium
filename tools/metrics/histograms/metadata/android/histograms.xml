@@ -2579,7 +2579,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InputOnViz.Browser.NumEventsInDroppedSequence"
+<histogram name="Android.InputOnViz.Browser.NumEventsInDroppedSequence2"
     units="counts" expires_after="2026-04-26">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -2604,7 +2604,7 @@ chromium-metrics-reviews@google.com.
     procoess due to various reasons, when InputOnViz feature is enabled.
 
     `Android.InputOnViz.Browser.EventTypesInDroppedSequence` and
-    `Android.InputOnViz.Browser.NumEventsInDroppedSequence` could be used to
+    `Android.InputOnViz.Browser.NumEventsInDroppedSequence2` could be used to
     know what type of events exist in dropped sequences and the number of events
     in these dropped sequences.
   </summary>
