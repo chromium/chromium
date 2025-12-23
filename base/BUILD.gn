@@ -936,7 +936,6 @@ component("base") {
     "traits_bag.h",
     "tuple.h",
     "types/cxx23_from_range.h",
-    "types/cxx23_to_underlying.h",
     "types/expected.h",
     "types/expected_internal.h",
     "types/expected_macros.h",
