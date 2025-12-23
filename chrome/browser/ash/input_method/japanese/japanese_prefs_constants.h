@@ -88,7 +88,7 @@ inline constexpr std::string_view kJpPrefShiftKeyModeStyleOff = "Off";
 inline constexpr std::string_view kJpPrefShiftKeyModeStyleAlphanumeric =
     "Alphanumeric";
 inline constexpr std::string_view kJpPrefShiftKeyModeStyleKatakana = "Katakana";
-// LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts:JpOptionValues)
+// LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts:JpOptionValues)
 
 // Obsolete CrOS-Prefs key. Entry with this key was previously persisted to
 // CrOS-Prefs for internal use by the now terminated Mozc-to-CrOS-Prefs data

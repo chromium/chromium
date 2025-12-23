@@ -118,43 +118,43 @@
       {
         "id": "JapaneseInputMode",
         "type": "string",
-        "description": "Japanese IME: input mode. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: input mode. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["Kana", "Romaji"]
       },
       {
         "id": "JapanesePunctuationStyle",
         "type": "string",
-        "description": "Japanese IME: punctuation style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: punctuation style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["KutenTouten", "CommaPeriod", "KutenPeriod", "CommaTouten"]
       },
       {
         "id": "JapaneseSymbolStyle",
         "type": "string",
-        "description": "Japanese IME: symbol style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: symbol style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["CornerBracketMiddleDot", "SquareBracketSlash", "CornerBracketSlash", "SquareBracketMiddleDot"]
       },
       {
         "id": "JapaneseSpaceInputStyle",
         "type": "string",
-        "description": "Japanese IME: space input style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: space input style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["InputMode", "Fullwidth", "Halfwidth"]
       },
       {
         "id": "JapaneseSelectionShortcut",
         "type": "string",
-        "description": "Japanese IME: selection shortcut. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: selection shortcut. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["NoShortcut", "Digits123456789", "ASDFGHJKL"]
       },
       {
         "id": "JapaneseKeymapStyle",
         "type": "string",
-        "description": "Japanese IME: keymap style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: keymap style. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["Atok", "MsIme", "Kotoeri", "ChromeOs"]
       },
       {
         "id": "ShiftKeyModeStyle",
         "type": "string",
-        "description": "Japanese IME: shift key mode switch. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts",
+        "description": "Japanese IME: shift key mode switch. Enum values MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "enum": ["Off", "Alphanumeric", "Katakana"]
       },
       {
