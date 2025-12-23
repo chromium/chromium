@@ -49,8 +49,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
 
 VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 
-// TODO(crbug.com/445528000): Update height calculation after child components
-// are added
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
@@ -71,39 +69,74 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     container_buttons.push_back(projects_button_);
   }
 
-  int total_width = exclusion_width_;
-  for (views::LabelButton* container_button : container_buttons) {
-    total_width += container_button->GetPreferredSize().width();
-  }
+  CHECK(!container_buttons.empty());
 
-  total_width += (container_buttons.size() - 1) * kTopButtonPadding;
+  if (state_controller_->IsCollapsed()) {
+    // If the vertical tab strip is collapsed, then lay out the buttons
+    // vertically in reverse order from top-to-bottom.
+    int total_height = exclusion_width_ == 0 ? 0 : toolbar_height_;
+    for (views::LabelButton* container_button : container_buttons) {
+      total_height += container_button->GetPreferredSize().height();
+    }
 
-  // If there is not enough space for the buttons on a single line with caption
-  // buttons, shift them below.
-  if (exclusion_width_ > 0 && total_width > host_size.width()) {
-    host_size.Enlarge(0, toolbar_height_);
-  }
+    total_height += (container_buttons.size() - 1) * kTopButtonPadding;
 
-  int current_x = host_size.width();
-  int current_y = host_size.height();
+    if (total_height > host_size.height()) {
+      host_size.set_height(total_height);
+    }
 
-  // Calculate bounds to right-align the button horizontally and center it
-  // vertically within the available space.
-  for (views::LabelButton* container_button : container_buttons) {
-    const gfx::Size pref_size = container_button->GetPreferredSize();
-    gfx::Rect bounds(
-        current_x - pref_size.width(),
-        current_y -
-            (GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT) +
-             pref_size.height()) /
-                2,
-        pref_size.width(), pref_size.height());
+    int current_y = exclusion_width_ == 0 ? 0 : toolbar_height_;
 
-    layout.child_layouts.emplace_back(container_button,
-                                      container_button->GetVisible(), bounds,
-                                      views::SizeBounds(pref_size));
+    for (views::LabelButton* container_button :
+         base::Reversed(container_buttons)) {
+      const gfx::Size pref_size = container_button->GetPreferredSize();
 
-    current_x = bounds.x() - kTopButtonPadding;
+      gfx::Rect bounds((host_size.width() - pref_size.width()) / 2, current_y,
+                       pref_size.width(), pref_size.height());
+
+      layout.child_layouts.emplace_back(container_button,
+                                        container_button->GetVisible(), bounds,
+                                        views::SizeBounds(pref_size));
+
+      current_y += pref_size.height() + kTopButtonPadding;
+    }
+  } else {
+    // If the vertical tab strip is uncollapsed, then lay out the buttons
+    // horizontally from right-to-left.
+    int total_width = exclusion_width_;
+    for (views::LabelButton* container_button : container_buttons) {
+      total_width += container_button->GetPreferredSize().width();
+    }
+
+    total_width += (container_buttons.size() - 1) * kTopButtonPadding;
+
+    // If there is not enough space for the buttons on a single line with
+    // caption buttons, shift them below.
+    if (exclusion_width_ > 0 && total_width > host_size.width()) {
+      host_size.Enlarge(0, toolbar_height_);
+    }
+
+    int current_x = host_size.width();
+
+    // Calculate bounds to right-align the button horizontally and center it
+    // vertically within the available space.
+    for (views::LabelButton* container_button : container_buttons) {
+      const gfx::Size pref_size = container_button->GetPreferredSize();
+      gfx::Rect bounds(
+          current_x - pref_size.width(),
+          host_size.height() -
+              (GetLayoutConstant(
+                   VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT) +
+               pref_size.height()) /
+                  2,
+          pref_size.width(), pref_size.height());
+
+      layout.child_layouts.emplace_back(container_button,
+                                        container_button->GetVisible(), bounds,
+                                        views::SizeBounds(pref_size));
+
+      current_x = bounds.x() - kTopButtonPadding;
+    }
   }
 
   layout.host_size = host_size;
