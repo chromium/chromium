@@ -221,6 +221,23 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
+void GlicInstanceCoordinatorImpl::CreateNewConversationForTabs(
+    const std::vector<tabs::TabInterface*>& tabs) {
+  if (tabs.empty()) {
+    return;
+  }
+
+  GlicInstanceImpl* instance = CreateGlicInstance();
+  for (tabs::TabInterface* tab : tabs) {
+    SidePanelShowOptions side_panel_options(*tab);
+    side_panel_options.pin_trigger = GlicPinTrigger::kContextMenu;
+    ShowOptions show_opts(side_panel_options);
+    show_opts.focus_on_show =
+        tab->GetBrowserWindowInterface()->IsActive() && tab->IsActivated();
+    instance->Show(show_opts);
+  }
+}
+
 void GlicInstanceCoordinatorImpl::Toggle(
     BrowserWindowInterface* browser,
     bool prevent_close,

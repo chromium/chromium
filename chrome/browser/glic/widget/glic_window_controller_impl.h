@@ -181,6 +181,8 @@ class GlicWindowControllerImpl
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
+  void CreateNewConversationForTabs(
+      const std::vector<tabs::TabInterface*>& tabs) override;
 
   // GlicInstance implementation
   Host& host() override;
