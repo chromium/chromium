@@ -7,10 +7,8 @@
 
 #include <optional>
 
-namespace oak::session::v1 {
-class AttestResponse;
-class AttestRequest;
-}  // namespace oak::session::v1
+#include "components/legion/attestation/server_evidence.h"
+#include "third_party/oak/chromium/proto/session/session.pb.h"
 
 namespace legion {
 
@@ -28,7 +26,7 @@ class AttestationHandler {
   // in response to the attestation request.
   // Returns true if the attestation is valid, false otherwise.
   virtual bool VerifyAttestationResponse(
-      const oak::session::v1::AttestResponse& evidence) = 0;
+      const AttestationEvidence& evidence) = 0;
 };
 
 }  // namespace legion

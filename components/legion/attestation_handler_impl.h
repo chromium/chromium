@@ -17,8 +17,7 @@ class AttestationHandlerImpl : public AttestationHandler {
   // AttestationHandler:
   std::optional<oak::session::v1::AttestRequest> GetAttestationRequest()
       override;
-  bool VerifyAttestationResponse(
-      const oak::session::v1::AttestResponse& evidence) override;
+  bool VerifyAttestationResponse(const AttestationEvidence& evidence) override;
 };
 
 }  // namespace legion

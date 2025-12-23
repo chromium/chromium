@@ -4,7 +4,7 @@
 
 #include "components/legion/attestation_handler_impl.h"
 
-#include "third_party/oak/chromium/proto/session/session.pb.h"
+#include "components/legion/attestation/server_evidence.h"
 
 namespace legion {
 
@@ -18,7 +18,9 @@ AttestationHandlerImpl::GetAttestationRequest() {
 }
 
 bool AttestationHandlerImpl::VerifyAttestationResponse(
-    const oak::session::v1::AttestResponse& evidence) {
+    const AttestationEvidence& evidence) {
+  // TODO(crbug.com/469920666): Actually verify the evidence.
+
   // For now, this is a placeholder that assumes any response is valid.
   return true;
 }

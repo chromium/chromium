@@ -4,8 +4,10 @@
 
 #include "components/legion/attestation_handler_impl.h"
 
+#include "components/legion/attestation/server_evidence.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/oak/chromium/proto/session/messages.pb.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
 namespace legion {
@@ -22,8 +24,8 @@ TEST(AttestationHandlerImplTest, GetAttestationRequest) {
 
 TEST(AttestationHandlerImplTest, VerifyAttestationResponse) {
   AttestationHandlerImpl attestation_handler;
-  oak::session::v1::AttestResponse response;
-  EXPECT_TRUE(attestation_handler.VerifyAttestationResponse(response));
+  AttestationEvidence evidence;
+  EXPECT_TRUE(attestation_handler.VerifyAttestationResponse(evidence));
 }
 
 }  // namespace

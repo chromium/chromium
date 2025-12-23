@@ -18,6 +18,7 @@
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
+#include "components/legion/proto_utils/attestation_evidence_utils.h"
 #include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
@@ -168,7 +169,19 @@ void SecureChannelImpl::OnAttestationResponse(
   DCHECK_EQ(state_, State::kPerformingAttestation);
 
   // Step 2: Verify Attestation Response
-  if (!attestation_handler_->VerifyAttestationResponse(response)) {
+  std::optional<AttestationEvidence> attestation_evidence =
+      ConvertToAttestationEvidence(response);
+  if (!attestation_evidence) {
+    DLOG(ERROR) << "Attestation evidence conversion failed.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingAttestation]);
+    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
+    return;
+  }
+
+  if (!attestation_handler_->VerifyAttestationResponse(*attestation_evidence)) {
     DLOG(ERROR) << "Attestation verification failed.";
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendAttestationRequestLatency.Error",
