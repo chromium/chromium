@@ -307,6 +307,11 @@ BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 // browser startup).
 BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEvents);
 
+// When enabled, input.ime.OnKeyEvent() keyData.key values will match the DOM
+// spec at https://www.w3.org/TR/uievents-key/#keys-modifier for
+// non-ChromeOS-specific keys.
+BASE_DECLARE_FEATURE(kInputImeKeyboardEventDataToDOMSpec);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -182,4 +182,7 @@ BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRequestPersistFilteredEvents,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInputImeKeyboardEventDataToDOMSpec,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

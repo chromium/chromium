@@ -27,6 +27,7 @@
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -150,20 +151,32 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
   }
 }
 
-// TODO(crbug.com/467185174): Compare these values against DOM spec and fix
-// inconsistencies.
 std::string GetKeyFromEvent(const ui::KeyEvent& event) {
+  bool key_to_dom_spec = base::FeatureList::IsEnabled(
+      extensions_features::kInputImeKeyboardEventDataToDOMSpec);
   const std::string code = event.GetCodeString();
-  if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE))
-    return "Control";
+  if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE)) {
+    if (key_to_dom_spec) {
+      return "Control";
+    }
+    return "Ctrl";
+  }
   if (base::StartsWith(code, "Shift", base::CompareCase::SENSITIVE))
     return "Shift";
   if (base::StartsWith(code, "Alt", base::CompareCase::SENSITIVE))
     return "Alt";
-  if (base::StartsWith(code, "Arrow", base::CompareCase::SENSITIVE))
+  if (base::StartsWith(code, "Arrow", base::CompareCase::SENSITIVE)) {
+    if (key_to_dom_spec) {
+      return code;
+    }
     return code.substr(5);
-  if (code == "Escape")
+  }
+  if (code == "Escape") {
+    if (key_to_dom_spec) {
+      return "Escape";
+    }
     return "Esc";
+  }
   if (code == "Backspace" || code == "Tab" || code == "Enter" ||
       code == "CapsLock" || code == "Power")
     return code;
@@ -171,9 +184,15 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   switch (event.key_code()) {
     case ui::VKEY_BROWSER_BACK:
     case ui::VKEY_F1:
+      if (key_to_dom_spec) {
+        return "BrowserBack";
+      }
       return "HistoryBack";
     case ui::VKEY_BROWSER_FORWARD:
     case ui::VKEY_F2:
+      if (key_to_dom_spec) {
+        return "BrowserForward";
+      }
       return "HistoryForward";
     case ui::VKEY_BROWSER_REFRESH:
     case ui::VKEY_F3:

@@ -9,11 +9,10 @@ chrome.inputMethodPrivate.setCurrentInputMethod(
     });
 
 chrome.input.ime.onKeyEvent.addListener(function(unusedEngineID, keyData) {
-  if (keyData.type == 'keydown' && keyData.key === 'Control') {
-    chrome.test.succeed();
+  if (keyData.type == 'keydown') {
+    chrome.test.sendMessage(keyData.key);
   }
 
-  // The test doesn't need to actually modify the value so let it pass through
-  // to the DOM as-is.
-  return false;
+  // Consume the event to prevent browser handling (e.g. navigation).
+  return true;
 });
