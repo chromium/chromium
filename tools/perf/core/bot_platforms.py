@@ -198,7 +198,6 @@ class ExecutableConfig(object):
 
 
 class CrossbenchConfig:
-
   def __init__(self,
                name,
                crossbench_name,
@@ -490,6 +489,19 @@ def _jetstream2_crossbench(estimated_runtime=180, arguments=()):
                           arguments=arguments)
 
 
+def _jetstream3_0_crossbench(estimated_runtime=180, arguments=()):
+  return CrossbenchConfig('jetstream3_0.crossbench',
+                          'jetstream_3.0',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+def _jetstream3_crossbench(estimated_runtime=180, arguments=()):
+  return CrossbenchConfig('jetstream3.crossbench',
+                          'jetstream_3',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
 def _jetstream_main_crossbench(estimated_runtime=180, arguments=()):
   return CrossbenchConfig('jetstream_main.crossbench',
                           'jetstream_main',
@@ -555,6 +567,7 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _speedometer3_crossbench(),
     _motionmark1_3_crossbench(),
     _jetstream2_crossbench(),
+    _jetstream3_crossbench(),
 ])
 
 # TODO(crbug.com/338630584): Remove it when other benchmarks can be run on
@@ -902,8 +915,8 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 
 
 # Linux
-LINUX = PerfPlatform('linux-perf',
-                     'Ubuntu-22.04, Precision 3930 Rack, NVIDIA GeForce GTX 1660',
+LINUX = PerfPlatform('linux-perf', ('Ubuntu-22.04, Precision 3930 Rack, '
+                                    'NVIDIA GeForce GTX 1660'),
                      _LINUX_GPU_BENCHMARK_CONFIGS,
                      7,
                      'linux',

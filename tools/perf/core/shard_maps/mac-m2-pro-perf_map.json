@@ -11,7 +11,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 27,
+                "end": 30,
                 "abridged": false
             }
         }
@@ -19,7 +19,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 27,
+                "begin": 30,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -66,11 +66,7 @@
             },
             "desktop_ui": {
                 "abridged": false
-            }
-        }
-    },
-    "3": {
-        "benchmarks": {
+            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },
@@ -79,15 +75,16 @@
             },
             "jetstream2": {
                 "abridged": false
-            },
+            }
+        }
+    },
+    "3": {
+        "benchmarks": {
             "jetstream2-minorms": {
                 "abridged": false
             },
             "media.desktop": {
-                "abridged": false
-            },
-            "memory.desktop": {
-                "end": 1,
+                "end": 24,
                 "abridged": false
             }
         },
@@ -95,16 +92,20 @@
             "jetstream_2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
+            },
+            "jetstream_3": {
+                "display_name": "jetstream3.crossbench",
+                "arguments": []
             }
         }
     },
     "4": {
         "benchmarks": {
-            "memory.desktop": {
-                "begin": 1,
+            "media.desktop": {
+                "begin": 24,
                 "abridged": false
             },
-            "octane": {
+            "memory.desktop": {
                 "abridged": false
             }
         },
@@ -117,6 +118,9 @@
     },
     "5": {
         "benchmarks": {
+            "octane": {
+                "abridged": false
+            },
             "power.desktop": {
                 "abridged": false
             },
@@ -124,7 +128,7 @@
                 "abridged": false
             },
             "rendering.desktop": {
-                "end": 19,
+                "end": 17,
                 "abridged": false
             }
         }
@@ -132,8 +136,8 @@
     "6": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 19,
-                "end": 79,
+                "begin": 17,
+                "end": 77,
                 "abridged": false
             }
         }
@@ -141,8 +145,8 @@
     "7": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 79,
-                "end": 140,
+                "begin": 77,
+                "end": 139,
                 "abridged": false
             }
         }
@@ -150,8 +154,8 @@
     "8": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 140,
-                "end": 192,
+                "begin": 139,
+                "end": 191,
                 "abridged": false
             }
         }
@@ -159,8 +163,8 @@
     "9": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 192,
-                "end": 238,
+                "begin": 191,
+                "end": 237,
                 "abridged": false
             }
         }
@@ -168,7 +172,7 @@
     "10": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 238,
+                "begin": 237,
                 "end": 283,
                 "abridged": false
             }
@@ -315,17 +319,17 @@
         "predicted_min_shard_index": 18,
         "predicted_max_shard_time": 1164.0,
         "predicted_max_shard_index": 17,
-        "shard #0": 1103.0,
-        "shard #1": 1106.0,
-        "shard #2": 1104.0,
-        "shard #3": 1089.0,
-        "shard #4": 1097.0,
-        "shard #5": 1105.0,
-        "shard #6": 1102.0,
-        "shard #7": 1101.0,
-        "shard #8": 1101.0,
-        "shard #9": 1104.0,
-        "shard #10": 1100.0,
+        "shard #0": 1112.0,
+        "shard #1": 1112.0,
+        "shard #2": 1139.0,
+        "shard #3": 1112.0,
+        "shard #4": 1157.0,
+        "shard #5": 1103.0,
+        "shard #6": 1103.0,
+        "shard #7": 1117.0,
+        "shard #8": 1105.0,
+        "shard #9": 1103.0,
+        "shard #10": 1119.0,
         "shard #11": 1112.0,
         "shard #12": 1122.0,
         "shard #13": 1102.0,

@@ -68,6 +68,10 @@
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
             },
+            "jetstream_3": {
+                "display_name": "jetstream3.crossbench",
+                "arguments": []
+            },
             "motionmark_1.3": {
                 "display_name": "motionmark1.3.crossbench",
                 "arguments": []
@@ -83,11 +87,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 183,
-        "predicted_min_shard_time": 3512,
+        "num_stories": 184,
+        "predicted_min_shard_time": 3692,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 3512,
+        "predicted_max_shard_time": 3692,
         "predicted_max_shard_index": 0,
-        "shard #0": 3512
+        "shard #0": 3692
     }
 }

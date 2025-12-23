@@ -138,7 +138,7 @@
         "benchmarks": {
             "blink_perf.layout": {
                 "begin": 32,
-                "end": 89,
+                "end": 88,
                 "abridged": false
             },
             "speedometer2": {
@@ -152,14 +152,14 @@
     "8": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 89,
+                "begin": 88,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
                 "abridged": false
             },
             "blink_perf.parser": {
-                "end": 19,
+                "end": 15,
                 "abridged": false
             },
             "speedometer2": {
@@ -173,7 +173,7 @@
     "9": {
         "benchmarks": {
             "blink_perf.parser": {
-                "begin": 19,
+                "begin": 15,
                 "abridged": false
             },
             "blink_perf.shadow_dom": {
@@ -630,7 +630,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1159,
+        "num_stories": 1163,
         "predicted_min_shard_time": 720.0,
         "predicted_min_shard_index": 42,
         "predicted_max_shard_time": 1158.0,
@@ -642,10 +642,10 @@
         "shard #4": 787.0,
         "shard #5": 785.0,
         "shard #6": 782.0,
-        "shard #7": 787.0,
-        "shard #8": 787.0,
-        "shard #9": 766.0,
-        "shard #10": 784.0,
+        "shard #7": 781.0,
+        "shard #8": 782.0,
+        "shard #9": 807.0,
+        "shard #10": 794.0,
         "shard #11": 774.0,
         "shard #12": 785.0,
         "shard #13": 775.0,
