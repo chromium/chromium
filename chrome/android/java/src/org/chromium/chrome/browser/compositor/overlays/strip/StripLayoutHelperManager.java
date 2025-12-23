@@ -1185,9 +1185,10 @@ public class StripLayoutHelperManager
     public void updateOffsetTagsInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && offsetTagsInfo != null) {
             // Use the content OffsetTag here, because the tab strip and content are part of
-            // the same subtree and move together with the same offset.
-            mTabStripTreeProvider.updateOffsetTag(offsetTagsInfo.getContentOffsetTag());
+            // the same subtree and move together with the same offset. We need to release the
+            // content offset tag from the static layout first before adding it to the tab strip.
             mStaticLayoutNeedsOffsetTagSupplier.set(false);
+            mTabStripTreeProvider.updateOffsetTag(offsetTagsInfo.getContentOffsetTag());
         } else {
             mTabStripTreeProvider.updateOffsetTag(null);
             mStaticLayoutNeedsOffsetTagSupplier.set(true);
