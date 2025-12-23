@@ -90,6 +90,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimEligibility, (bool eligible), (override));
+  void OnShowAiModePrefChanged(bool canShow) override {}
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

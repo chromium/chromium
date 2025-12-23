@@ -137,6 +137,11 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
             base::BindRepeating(&WebuiOmniboxHandler::OnAimEligibilityChanged,
                                 weak_ptr_factory_.GetWeakPtr()));
   }
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      omnibox::kShowAiModeOmniboxButton,
+      base::BindRepeating(&WebuiOmniboxHandler::OnShowAiModeButtonPrefChanged,
+                          base::Unretained(this)));
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
@@ -323,6 +328,16 @@ void WebuiOmniboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   ContextualSearchboxHandler::SetPage(std::move(pending_page));
   OnAimEligibilityChanged();
+  OnShowAiModeButtonPrefChanged();
+}
+
+void WebuiOmniboxHandler::OnShowAiModeButtonPrefChanged() {
+  if (!IsRemoteBound()) {
+    return;
+  }
+  bool show =
+      profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
+  page_->OnShowAiModePrefChanged(show);
 }
 
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
