@@ -1834,15 +1834,18 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   IsSameSiteGetter is_same_site_getter(is_same_site);
   std::string site_instance_reason;
   std::string* reason_output =
-      base::FeatureList::IsEnabled(features::kHoldbackDebugReasonStringRemoval)
+      (base::FeatureList::IsEnabled(
+           features::kHoldbackDebugReasonStringRemoval) ||
+       request->IsInitialWebUINavigation())
           ? &site_instance_reason
           : reason;
   scoped_refptr<SiteInstanceImpl> dest_site_instance =
       GetSiteInstanceForNavigationRequest(request, is_same_site_getter,
                                           browsing_context_group_swap,
                                           reason_output);
-  if (reason && base::FeatureList::IsEnabled(
-                    features::kHoldbackDebugReasonStringRemoval)) {
+  if (reason && (base::FeatureList::IsEnabled(
+                     features::kHoldbackDebugReasonStringRemoval) ||
+                 request->IsInitialWebUINavigation())) {
     reason->append(site_instance_reason);
   }
 

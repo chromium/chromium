@@ -4821,8 +4821,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
                              ->GetSafeRef();
   } else if (response_should_be_rendered_) {
     std::string* reason_output =
-        base::FeatureList::IsEnabled(
-            features::kHoldbackDebugReasonStringRemoval)
+        (base::FeatureList::IsEnabled(
+             features::kHoldbackDebugReasonStringRemoval) ||
+         IsInitialWebUINavigation())
             ? &rfh_selected_reason
             : nullptr;
 
@@ -5063,13 +5064,8 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
   }
 
   // TODO(crbug.com/399783247): Remove
-  if (base::FeatureList::IsEnabled(
-          features::kHoldbackDebugReasonStringRemoval)) {
-    SCOPED_CRASH_KEY_STRING256("Bug1454273", "base_host_for_data_url",
-                               common_params_->base_url_for_data_url.host());
-    SCOPED_CRASH_KEY_STRING1024("Bug1454273", "rfh_selected_reason",
-                                rfh_selected_reason);
-  }
+  SCOPED_CRASH_KEY_STRING1024("Bug1454273", "rfh_selected_reason",
+                              rfh_selected_reason);
 
   if (HasRenderFrameHost() &&
       !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit().value())) {
@@ -6452,8 +6448,23 @@ void NavigationRequest::CommitNavigation() {
   CHECK(!HasWebUI());
 #if !BUILDFLAG(IS_ANDROID)
   // Initial WebUI navigations must use an initial WebUI process.
-  if (IsInitialWebUINavigation()) {
-    CHECK(GetRenderFrameHost()->GetProcess()->IsForInitialWebUI());
+  if (IsInitialWebUINavigation() &&
+      !GetRenderFrameHost()->GetProcess()->IsForInitialWebUI()) {
+    SCOPED_CRASH_KEY_STRING256("Bug467811037", "nav_url", GetURL().spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "Bug467811037", "cur_rfh_url",
+        frame_tree_node_->current_frame_host()->GetLastCommittedURL().spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "Bug467811037", "nav_rfh_url",
+        GetRenderFrameHost()->GetLastCommittedURL().spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "Bug467811037", "site_url",
+        GetRenderFrameHost()->GetSiteInstance()->GetSiteURL().spec());
+    SCOPED_CRASH_KEY_BOOL(
+        "Bug467811037", "same_si",
+        frame_tree_node_->current_frame_host()->GetSiteInstance() ==
+            GetRenderFrameHost()->GetSiteInstance());
+    base::debug::DumpWithoutCrashing();
   }
 #endif
   CheckSoftNavigationHeuristicsInvariants();
