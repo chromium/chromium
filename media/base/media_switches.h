@@ -276,6 +276,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundTimer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureOcclusionTracking);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureShowWindowAnimation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoPipDisplaySmoothnessOptimization);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kVideoPipForceTrustedForMediaPlaybackForTesting);
 #endif  // !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableRtcpReporting);

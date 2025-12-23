@@ -828,7 +828,9 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
 
   // If the controls are becoming visible, and the title and scrim can be
   // hidden, stop the initial hide timer.
-  if (wanted_visibility && can_hide_title_and_scrim) {
+  if ((wanted_visibility && can_hide_title_and_scrim) ||
+      base::FeatureList::IsEnabled(
+          media::kVideoPipForceTrustedForMediaPlaybackForTesting)) {
     initial_title_hide_timer_.Stop();
   }
 
@@ -2087,6 +2089,11 @@ bool VideoOverlayWindowViews::HasHighMediaEngagement(
 }
 
 bool VideoOverlayWindowViews::IsTrustedForMediaPlayback() const {
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPipForceTrustedForMediaPlaybackForTesting)) {
+    return true;
+  }
+
   content::MediaSession* media_session =
       content::MediaSession::GetIfExists(GetController()->GetWebContents());
   if (!media_session) {

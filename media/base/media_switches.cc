@@ -359,6 +359,11 @@ BASE_FEATURE(kPictureInPictureShowWindowAnimation,
 // the favicon and origin.
 BASE_FEATURE(kVideoPipDisplaySmoothnessOptimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Forces video Picture-in-Picture windows to be treated as trusted for media
+// playback. Used for debugging.
+BASE_FEATURE(kVideoPipForceTrustedForMediaPlaybackForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables user control over muting tab audio from the tab strip.
