@@ -322,6 +322,44 @@ TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
                                                      children[1].get()));
 }
 
+// EnsureOwnerTreeSublevel() should preserve the relative order of widgets with
+// the same sublevel.
+TEST_P(SublevelManagerTest, EnsureOwnerTreeSublevelStability) {
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::array<std::unique_ptr<Widget>, 3> children;
+
+  // Create 3 children with the same sublevel.
+  for (int i = 0; i < 3; i++) {
+    children[i] = CreateChildWidget(
+        root.get(), ui::ZOrderLevel::kNormal, 0,
+        std::get<Widget::InitParams::Activatable>(GetParam()));
+  }
+
+  ShowWidget(root);
+
+  // Show them in order 0, 1, 2.
+  // They should be stacked 0 < 1 < 2.
+  for (int i = 0; i < 3; i++) {
+    ShowWidget(children[i]);
+  }
+
+  // Verify initial order.
+  EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[1].get(),
+                                                     children[0].get()));
+  EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[2].get(),
+                                                     children[1].get()));
+
+  // Trigger EnsureOwnerTreeSublevel.
+  root->GetSublevelManager()->EnsureOwnerTreeSublevel();
+
+  // Verify order is preserved.
+  EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[1].get(),
+                                                     children[0].get()));
+  EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[2].get(),
+                                                     children[1].get()));
+}
+
 // TODO(crbug.com/40227915): We should also test NativeWidgetType::kDesktop,
 // but currently IsWindowStackedAbove() does not work for desktop widgets.
 INSTANTIATE_TEST_SUITE_P(

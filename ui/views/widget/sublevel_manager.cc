@@ -69,7 +69,11 @@ void SublevelManager::EnsureOwnerSublevel() {
 }
 
 void SublevelManager::EnsureOwnerTreeSublevel() {
-  for (Widget* child : children_) {
+  auto children_copy = children_;
+  for (Widget* child : children_copy) {
+    if (!IsTrackingChildWidget(child)) {
+      continue;
+    }
     child->GetSublevelManager()->EnsureOwnerTreeSublevel();
   }
 
