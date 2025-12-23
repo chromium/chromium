@@ -72,6 +72,8 @@ config("skia_config") {
     "SK_CODEC_DECODES_PNG_WITH_RUST",
     "SK_CODEC_ENCODES_PNG",
     "SK_CODEC_ENCODES_PNG_WITH_RUST",
+
+    "SK_CODEC_DECODES_BMP_WITH_RUST",
   ]
 
   include_dirs = [
@@ -476,6 +478,7 @@ component("skia") {
   all_dependent_configs = [ ":skia_config" ]
 
   deps += [
+    ":rust_bmp_ffi",
     ":rust_common_ffi",
     ":rust_png_ffi",
     ":skcms",
@@ -677,6 +680,44 @@ rust_static_library("rust_png_ffi") {
 source_set("rust_png_ffi_cpp") {
   visibility = [ ":*" ]
   public = skia_codec_rust_png_ffi_cpp_hdrs
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    ":skia_library_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+rust_static_library("rust_bmp_ffi") {
+  visibility = [ ":*" ]
+  allow_unsafe = true  # For FFI
+  crate_root = skia_codec_rust_bmp_ffi_crate_root
+  sources = skia_codec_rust_bmp_ffi_rs_srcs
+  cxx_bindings = skia_codec_rust_bmp_ffi_cxx_bridge_srcs
+  public_deps = [ ":rust_bmp_ffi_cpp" ]
+  deps = [
+    ":rust_common_ffi",
+    "//third_party/rust/image/v0_25:lib",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+source_set("rust_bmp_ffi_cpp") {
+  visibility = [ ":*" ]
+  public = skia_codec_rust_bmp_public
+  sources = skia_codec_rust_bmp
+  public_deps = [
+    ":rust_common_ffi_cpp",
+    ":skia_core_public_headers",
+    "//build/rust:cxx_cppdeps",
+  ]
+  deps = [ ":rust_bmp_ffi_cxx_generated_gen" ]
+  check_includes =
+      false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":skia_config",
