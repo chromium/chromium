@@ -246,11 +246,8 @@ ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
-  if (base::FeatureList::IsEnabled(arc::kEnableArcIdleManager) ||
-      base::FeatureList::IsEnabled(arc::kVmmSwapPolicy)) {
-    // Early init so that later objects can rely on this one.
-    arc_window_watcher_ = std::make_unique<ash::ArcWindowWatcher>();
-  }
+  // Early init so that later objects can rely on this one.
+  arc_window_watcher_ = std::make_unique<ash::ArcWindowWatcher>();
 
   // NetworkConnect handles the network connection state machine for the UI.
   network_connect_delegate_ = std::make_unique<NetworkConnectDelegate>();

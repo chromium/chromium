@@ -6569,10 +6569,6 @@ inline constexpr char kArcFriendlierErrorDialogDescription[] =
     "Replaces disruptive error dialogs with Chrome notifications for some ANR "
     "and crash events.";
 
-inline constexpr char kArcIdleManagerName[] = "Enable ARC Idle Manager";
-inline constexpr char kArcIdleManagerDescription[] =
-    "ARC will turn on Android's doze mode when idle.";
-
 inline constexpr char kArcNativeBridgeToggleName[] =
     "Toggle between native bridge implementations for ARC";
 inline constexpr char kArcNativeBridgeToggleDescription[] =

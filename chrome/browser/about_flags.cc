@@ -10401,9 +10401,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"printing-ppd-channel", flag_descriptions::kPrintingPpdChannelName,
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
-    {"arc-idle-manager", flag_descriptions::kArcIdleManagerName,
-     flag_descriptions::kArcIdleManagerDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif
 
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,

@@ -32,6 +32,10 @@
 
 namespace arc {
 
+namespace {
+constexpr base::TimeDelta kArcIdleManagerDelay = base::Seconds(360);
+}  // namespace
+
 class ArcIdleManagerTest : public testing::Test {
  public:
   ArcIdleManagerTest() = default;
@@ -42,9 +46,6 @@ class ArcIdleManagerTest : public testing::Test {
   ~ArcIdleManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kEnableArcIdleManager,
-        {{kEnableArcIdleManagerIgnoreBatteryForPLT.name, "false"}});
     chromeos::PowerManagerClient::InitializeFake();
 
     // This is needed for setting up ArcPowerBridge.
@@ -66,9 +67,7 @@ class ArcIdleManagerTest : public testing::Test {
 
     on_battery_observer_ =
         arc_idle_manager_->GetObserverByName(kArcOnBatteryObserverName);
-    // Observer exist when ignore battery is disabled.
-    DCHECK(kEnableArcIdleManagerIgnoreBatteryForPLT.Get() ==
-           !on_battery_observer_);
+    DCHECK(!on_battery_observer_);
 
     display_power_observer_ =
         arc_idle_manager_->GetObserverByName(kArcDisplayPowerObserverName);
@@ -80,13 +79,6 @@ class ArcIdleManagerTest : public testing::Test {
     arc_window_observer_ =
         arc_idle_manager_->GetObserverByName(kArcWindowObserverName);
     DCHECK(arc_window_observer_);
-
-    // Make sure the next SetActive() call calls into TestDelegateImpl. This
-    // is necessary because ArcIdleManager's constructor may initialize the
-    // variable (and call the default delegate for production) before doing
-    // set_delegate_for_testing(). If that happens, SetActive() might not call
-    // the test delegate as expected.
-    arc_idle_manager_->reset_should_throttle_for_testing();
 
     CreatePowerInstance();
   }
@@ -174,7 +166,6 @@ class ArcIdleManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
 
@@ -204,94 +195,74 @@ TEST_F(ArcIdleManagerTest, TestEarlyPowerBridgeDeath) {
 // Tests that ArcIdleManager responds appropriately to various observers.
 TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
   // When no one blocks, it should enable idle;
-  on_battery_observer()->SetActive(false);
   display_power_observer()->SetActive(false);
   cpu_throttle_observer()->SetActive(false);
   background_service_observer()->SetActive(false);
   arc_window_observer()->SetActive(false);
 
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
 
   EXPECT_EQ(0U, interactive_enabled_counter());
   EXPECT_EQ(2U, interactive_disabled_counter());
 
-  // Battery observer blocking should caused idle disabled.
-  on_battery_observer()->SetActive(true);
+  // Display power blocking should caused idle disabled.
+  display_power_observer()->SetActive(true);
   EXPECT_EQ(1U, interactive_enabled_counter());
   EXPECT_EQ(2U, interactive_disabled_counter());
 
   // Reset.
-  on_battery_observer()->SetActive(false);
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+  display_power_observer()->SetActive(false);
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
   EXPECT_EQ(1U, interactive_enabled_counter());
   EXPECT_EQ(3U, interactive_disabled_counter());
 
-  // Display power blocking should caused idle disabled.
-  display_power_observer()->SetActive(true);
+  // CPU throttle blocking should caused idle disabled.
+  cpu_throttle_observer()->SetActive(true);
   EXPECT_EQ(2U, interactive_enabled_counter());
   EXPECT_EQ(3U, interactive_disabled_counter());
 
   // Reset.
-  display_power_observer()->SetActive(false);
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+  cpu_throttle_observer()->SetActive(false);
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
   EXPECT_EQ(2U, interactive_enabled_counter());
   EXPECT_EQ(4U, interactive_disabled_counter());
 
-  // CPU throttle blocking should caused idle disabled.
-  cpu_throttle_observer()->SetActive(true);
+  // ARC background service active caused idle disabled.
+  background_service_observer()->SetActive(true);
   EXPECT_EQ(3U, interactive_enabled_counter());
   EXPECT_EQ(4U, interactive_disabled_counter());
 
   // Reset.
-  cpu_throttle_observer()->SetActive(false);
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+  background_service_observer()->SetActive(false);
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
   EXPECT_EQ(3U, interactive_enabled_counter());
   EXPECT_EQ(5U, interactive_disabled_counter());
 
-  // ARC background service active caused idle disabled.
-  background_service_observer()->SetActive(true);
+  // Window Observer active should cause idle disabled.
+  arc_window_observer()->SetActive(true);
   EXPECT_EQ(4U, interactive_enabled_counter());
   EXPECT_EQ(5U, interactive_disabled_counter());
 
-  // Reset.
-  background_service_observer()->SetActive(false);
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
-  EXPECT_EQ(4U, interactive_enabled_counter());
-  EXPECT_EQ(6U, interactive_disabled_counter());
-
-  // Window Observer active should cause idle disabled.
-  arc_window_observer()->SetActive(true);
-  EXPECT_EQ(5U, interactive_enabled_counter());
-  EXPECT_EQ(6U, interactive_disabled_counter());
-
   // ResumeVm event when not idle causes additional idle-disable event.
   arc_idle_manager()->OnVmResumed();
-  EXPECT_EQ(6U, interactive_enabled_counter());
-  EXPECT_EQ(6U, interactive_disabled_counter());
+  EXPECT_EQ(5U, interactive_enabled_counter());
+  EXPECT_EQ(5U, interactive_disabled_counter());
 
   // Reset.
   arc_window_observer()->SetActive(false);
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
-  EXPECT_EQ(6U, interactive_enabled_counter());
-  EXPECT_EQ(7U, interactive_disabled_counter());
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
+  EXPECT_EQ(5U, interactive_enabled_counter());
+  EXPECT_EQ(6U, interactive_disabled_counter());
 
   // ResumeVm event when idle does not generate switch events.
   arc_idle_manager()->OnVmResumed();
-  EXPECT_EQ(6U, interactive_enabled_counter());
-  EXPECT_EQ(7U, interactive_disabled_counter());
+  EXPECT_EQ(5U, interactive_enabled_counter());
+  EXPECT_EQ(6U, interactive_disabled_counter());
 }
 
 // Tests that ArcIdleManager records the screen off time metric correctly.
 TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
   // When no one blocks, it should enable idle (screen off).
-
-  on_battery_observer()->SetActive(false);
   display_power_observer()->SetActive(false);
   cpu_throttle_observer()->SetActive(false);
   background_service_observer()->SetActive(false);
@@ -301,15 +272,15 @@ TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histogram_tester;
 
-  task_environment()->FastForwardBy(
-      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+  task_environment()->FastForwardBy(kArcIdleManagerDelay);
 
   histogram_tester.ExpectUniqueTimeSample(
       "Arc.IdleManager.ScreenOffTime",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 0);
 
-  // Battery observer blocking should caused idle disabled (screen back on).
-  on_battery_observer()->SetActive(true);
+  // Display power observer blocking should caused idle disabled (screen back
+  // on).
+  display_power_observer()->SetActive(true);
   EXPECT_EQ(1U, interactive_enabled_counter());
   EXPECT_EQ(2U, interactive_disabled_counter());
 
@@ -326,7 +297,7 @@ TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 
   // State change while we are not watching.
-  on_battery_observer()->SetActive(false);
+  display_power_observer()->SetActive(false);
 
   // Fake systemserver coming back
   arc_idle_manager()->OnConnectionReady();

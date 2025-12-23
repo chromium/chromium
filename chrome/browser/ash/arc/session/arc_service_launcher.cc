@@ -392,8 +392,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
       arc_vm_data_migration_notifier_ =
           std::make_unique<ArcVmDataMigrationNotifier>(profile);
     }
-    if (base::FeatureList::IsEnabled(kEnableArcIdleManager))
-      ArcIdleManager::GetForBrowserContext(profile);
+    ArcIdleManager::GetForBrowserContext(profile);
     if (ShouldUseArcKeyMint()) {
       auto serial_number = arc_session_manager_->GetSerialNumberForKeyMint();
       ArcKeyMintBridge::GetForBrowserContext(profile)->SetSerialNumberInKeyMint(
