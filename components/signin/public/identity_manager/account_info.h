@@ -205,11 +205,7 @@ struct AccountInfo : public CoreAccountInfo {
   std::string full_name;
   // Deprecated: Use GetGivenName() instead.
   std::string given_name;
-  // Deprecated: Use GetAvatarUrl() instead.
-  std::string picture_url;
 
-  // Deprecated: Use GetLastDownloadedAvatarUrlWithSize() instead.
-  std::string last_downloaded_image_url_with_size;
   // Deprecated: Use GetAvatarImage() instead.
   gfx::Image account_image;
 
@@ -228,7 +224,9 @@ struct AccountInfo : public CoreAccountInfo {
  private:
   friend class Builder;
 
-  std::string hosted_domain;
+  std::string hosted_domain_;
+  std::string picture_url_;
+  std::string last_downloaded_image_url_with_size_;
 };
 
 // Builder class for constructing AccountInfo objects.

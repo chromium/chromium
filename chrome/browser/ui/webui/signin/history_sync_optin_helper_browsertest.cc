@@ -113,11 +113,12 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
   AccountInfo MakeAccountInfoAvailableAndSignIn() {
     AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable("test@example.com");
-    // Fill the account info, in particular for the hosted_domain field.
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
     identity_test_env()->SetPrimaryAccount(account_info.email,

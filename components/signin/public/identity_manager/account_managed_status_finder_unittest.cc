@@ -239,7 +239,9 @@ TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
   // an enterprise account (because the hosted domain remains unset). The
   // AccountManagedStatusFinder should keep waiting.
   EXPECT_CALL(outcome_determined, Run).Times(0);
-  account.picture_url = "https://account.picture.url";
+  account = AccountInfo::Builder(account)
+                .SetAvatarUrl("https://account.picture.url")
+                .Build();
   identity_env_.UpdateAccountInfoForAccount(account);
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -247,7 +249,8 @@ TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
   // AccountManagedStatusFinder should determine the account type.
   EXPECT_CALL(outcome_determined, Run);
   identity_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
+      account.GetAccountId(), std::string(account.GetEmail()),
+      account.GetGaiaId(),
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),

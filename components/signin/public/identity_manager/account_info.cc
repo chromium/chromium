@@ -146,31 +146,31 @@ std::optional<std::string_view> AccountInfo::GetGivenName() const {
 }
 
 std::optional<std::string_view> AccountInfo::GetHostedDomain() const {
-  if (hosted_domain.empty()) {
+  if (hosted_domain_.empty()) {
     return std::nullopt;
   }
-  if (hosted_domain == kNoHostedDomainFound) {
+  if (hosted_domain_ == kNoHostedDomainFound) {
     return base::EmptyString();
   }
-  return hosted_domain;
+  return hosted_domain_;
 }
 
 std::optional<std::string_view> AccountInfo::GetAvatarUrl() const {
-  if (picture_url.empty()) {
+  if (picture_url_.empty()) {
     return std::nullopt;
   }
-  if (picture_url == kNoPictureURLFound) {
+  if (picture_url_ == kNoPictureURLFound) {
     return base::EmptyString();
   }
-  return picture_url;
+  return picture_url_;
 }
 
 std::optional<std::string_view>
 AccountInfo::GetLastDownloadedAvatarUrlWithSize() const {
-  if (last_downloaded_image_url_with_size.empty()) {
+  if (last_downloaded_image_url_with_size_.empty()) {
     return std::nullopt;
   }
-  return last_downloaded_image_url_with_size;
+  return last_downloaded_image_url_with_size_;
 }
 
 std::optional<gfx::Image> AccountInfo::GetAvatarImage() const {
@@ -203,15 +203,15 @@ std::optional<std::string_view> AccountInfo::GetLocale() const {
 }
 
 bool AccountInfo::IsEmpty() const {
-  return CoreAccountInfo::IsEmpty() && hosted_domain.empty() &&
+  return CoreAccountInfo::IsEmpty() && hosted_domain_.empty() &&
          full_name.empty() && given_name.empty() && locale.empty() &&
-         picture_url.empty();
+         picture_url_.empty();
 }
 
 bool AccountInfo::IsValid() const {
   return !account_id.empty() && !email.empty() && !gaia.empty() &&
-         !hosted_domain.empty() && !full_name.empty() && !given_name.empty() &&
-         !picture_url.empty();
+         !hosted_domain_.empty() && !full_name.empty() && !given_name.empty() &&
+         !picture_url_.empty();
 }
 
 bool AccountInfo::UpdateWith(const AccountInfo& other) {
@@ -226,9 +226,10 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&full_name, other.full_name, nullptr);
   modified |= UpdateField(&given_name, other.given_name, nullptr);
   modified |=
-      UpdateField(&hosted_domain, other.hosted_domain, kNoHostedDomainFound);
+      UpdateField(&hosted_domain_, other.hosted_domain_, kNoHostedDomainFound);
   modified |= UpdateField(&locale, other.locale, nullptr);
-  modified |= UpdateField(&picture_url, other.picture_url, kNoPictureURLFound);
+  modified |=
+      UpdateField(&picture_url_, other.picture_url_, kNoPictureURLFound);
   modified |= UpdateField(&is_child_account, other.is_child_account);
   modified |= UpdateField(&access_point, other.access_point,
                           signin_metrics::AccessPoint::kUnknown);
@@ -249,11 +250,11 @@ signin::Tribool AccountInfo::IsManaged(const std::string& hosted_domain) {
 bool AccountInfo::IsMemberOfFlexOrg() const {
   return capabilities.is_subject_to_enterprise_features() ==
              signin::Tribool::kTrue &&
-         IsManaged(hosted_domain) != signin::Tribool::kTrue;
+         IsManaged(hosted_domain_) != signin::Tribool::kTrue;
 }
 
 signin::Tribool AccountInfo::IsManaged() const {
-  return IsManaged(hosted_domain);
+  return IsManaged(hosted_domain_);
 }
 
 signin::Tribool AccountInfo::CanApplyAccountLevelEnterprisePolicies() const {
@@ -262,7 +263,7 @@ signin::Tribool AccountInfo::CanApplyAccountLevelEnterprisePolicies() const {
 
 bool AccountInfo::IsEduAccount() const {
   return capabilities.can_use_edu_features() == signin::Tribool::kTrue &&
-         IsManaged(hosted_domain) == signin::Tribool::kTrue;
+         IsManaged() == signin::Tribool::kTrue;
 }
 
 bool AccountInfo::CanHaveEmailAddressDisplayed() const {
@@ -336,7 +337,7 @@ AccountInfo::Builder& AccountInfo::Builder::SetGivenName(
 
 AccountInfo::Builder& AccountInfo::Builder::SetLastDownloadedAvatarUrlWithSize(
     std::string_view avatar_url_with_size) {
-  account_info_.last_downloaded_image_url_with_size =
+  account_info_.last_downloaded_image_url_with_size_ =
       std::string(avatar_url_with_size);
   return *this;
 }
@@ -356,15 +357,15 @@ AccountInfo::Builder& AccountInfo::Builder::SetLocale(
 
 AccountInfo::Builder& AccountInfo::Builder::SetHostedDomain(
     std::string_view hosted_domain_val) {
-  account_info_.hosted_domain = hosted_domain_val.empty()
-                                    ? kNoHostedDomainFound
-                                    : std::string(hosted_domain_val);
+  account_info_.hosted_domain_ = hosted_domain_val.empty()
+                                     ? kNoHostedDomainFound
+                                     : std::string(hosted_domain_val);
   return *this;
 }
 
 AccountInfo::Builder& AccountInfo::Builder::SetAvatarUrl(
     std::string_view avatar_url) {
-  account_info_.picture_url =
+  account_info_.picture_url_ =
       avatar_url.empty() ? kNoPictureURLFound : std::string(avatar_url);
   return *this;
 }
