@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "components/contextual_tasks/public/features.h"
 
 namespace lens {
 
@@ -23,7 +22,7 @@ LensResultsPanelRouter::~LensResultsPanelRouter() = default;
 bool LensResultsPanelRouter::IsEntryShowing() {
   // If Lens in contextual tasks is enabled, the side panel to check is the
   // contextual tasks panel.
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (lens_search_controller_->should_route_to_contextual_tasks()) {
     return tab_interface()
         ->GetBrowserWindowInterface()
         ->GetFeatures()
@@ -36,7 +35,7 @@ bool LensResultsPanelRouter::IsEntryShowing() {
 }
 
 SidePanelEntry::PanelType LensResultsPanelRouter::GetPanelType() const {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (lens_search_controller_->should_route_to_contextual_tasks()) {
     return SidePanelEntry::PanelType::kToolbar;
   }
 

@@ -340,6 +340,7 @@ source_set("interactive_ui_tests") {
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/profiles:profile",
