@@ -1846,7 +1846,33 @@ TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
   EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
 
+  // Create a handle that extends the lifetime of the SecurityState beyond the
+  // RenderProcessHost's lifetime.
+  auto handle = p->CreateHandle(kRendererProcess);
   p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo1));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo2));
+  EXPECT_TRUE(p->CanRedirectToURL(url_bar));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo1));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo1));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo2));
+  EXPECT_TRUE(p->CanRedirectToURL(url_bar));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
 }
 
 #define LOCKED_EXPECT_THAT(lock, value, matcher) \

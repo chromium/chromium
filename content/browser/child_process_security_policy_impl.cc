@@ -570,7 +570,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return false;  // Unmentioned schemes are disallowed.
   }
 
-  bool CanRequestURL(const GURL& url) {
+  bool CanRequestURL(const GURL& url) const {
     DCHECK(!url.SchemeIsBlob() && !url.SchemeIsFileSystem())
         << "inner_url extraction should be done already.";
     // Having permission to a scheme implies permission to all of its URLs.
@@ -755,7 +755,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return it->second == CommitRequestPolicy::kCommitAndRequest;
   }
 
-  bool CanRequestOrigin(const url::Origin& origin) {
+  bool CanRequestOrigin(const url::Origin& origin) const {
     // Anything already in |origin_map_| must have at least request permissions
     // already.
     return base::Contains(origin_map_, origin);
@@ -1385,11 +1385,11 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(int child_id,
     base::AutoLock lock(lock_);
 
     // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    if (auto* state = base::FindOrNull(
-            security_state_, ChildProcessId::FromUnsafeValue(child_id))) {
+    if (auto* state = GetSecurityStateForQuery(
+            ChildProcessId::FromUnsafeValue(child_id))) {
       // Otherwise, we consult the child process's security state to see if it
       // is allowed to request the URL.
-      if ((*state)->CanRequestURL(url)) {
+      if (state->CanRequestURL(url)) {
         return true;
       }
     } else {
