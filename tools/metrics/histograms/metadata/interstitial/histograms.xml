@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceSubtype">
-  <variant name=".scam_experiment_catch_all_enforcement"/>
+  <variant name=".scam_experiment_catch_all"/>
   <variant name=".scam_experiment_verdict_1"
       summary="scam detection verdict 1"/>
   <variant name=".scam_experiment_verdict_2"
