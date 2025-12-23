@@ -105,7 +105,10 @@ std::string GetEncodedHandshakeMessage() {
   ping->add_capabilities(lens::FeatureCapability::DEFAULT);
   ping->add_capabilities(lens::FeatureCapability::OPEN_THREADS_VIEW);
   ping->add_capabilities(lens::FeatureCapability::COBROWSING_DISPLAY_CONTROL);
-  ping->add_capabilities(lens::FeatureCapability::THREAD_CONTEXT_LIBRARY);
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksContextLibrary)) {
+    ping->add_capabilities(lens::FeatureCapability::THREAD_CONTEXT_LIBRARY);
+  }
   const size_t size = message.ByteSizeLong();
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(&serialized_message[0], size);
