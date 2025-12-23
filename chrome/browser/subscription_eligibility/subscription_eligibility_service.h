@@ -29,7 +29,8 @@ class SubscriptionEligibilityService : public KeyedService {
       const SubscriptionEligibilityService&) = delete;
   ~SubscriptionEligibilityService() override;
 
-  // Returns the AI subscription tier for the user.
+  // Returns the AI subscription tier for the user. If a positive tier is
+  // returned, it means the account must have Chrome benefits.
   int32_t GetAiSubscriptionTier();
 
   void AddObserver(Observer* observer);

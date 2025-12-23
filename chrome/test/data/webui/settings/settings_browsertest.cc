@@ -610,8 +610,11 @@ class SettingsGlicSubPageWebActuationAllowedTierToggleTest
  public:
   SettingsGlicSubPageWebActuationAllowedTierToggleTest() {
     // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicWebActuationSetting, {{"allowed_tiers", "100,200"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "100,200"}}}},
+        {});
   }
 
   void SetUserTier(int32_t tier) {

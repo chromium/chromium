@@ -418,6 +418,9 @@ const base::FeatureParam<size_t>
 const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
     &kGlicActor, "glic-actor-type-tool-enter-delay", base::Milliseconds(600)};
 
+constexpr base::FeatureParam<std::string> kGlicActorEligibleTiers{
+    &kGlicActor, "glic-actor-eligible-tiers", ""};
+
 constexpr base::FeatureParam<GlicActorEnterprisePrefDefault>::Option
     kGlicActorEnterprisePrefDefaultOptions[] = {
         {GlicActorEnterprisePrefDefault::kEnabledByDefault,

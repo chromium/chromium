@@ -767,30 +767,15 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   if (!base::FeatureList::IsEnabled(features::kGlicWebActuationSetting)) {
     return false;
   }
-  static const base::NoDestructor<base::flat_set<int32_t>> allowed_tiers([] {
-    std::string allowed_tiers_str =
-        features::kGlicWebActuationAllowedTiers.Get();
-    std::vector<std::string_view> tier_pieces =
-        base::SplitStringPiece(allowed_tiers_str, ",", base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    std::vector<int32_t> tiers;
-    tiers.reserve(tier_pieces.size());
-    for (const auto& piece : tier_pieces) {
-      int32_t tier_id = 0;
-      if (base::StringToInt(piece, &tier_id)) {
-        tiers.push_back(tier_id);
-      }
-    }
-    return base::flat_set<int32_t>(std::move(tiers));
-  }());
 
-  if (!allowed_tiers->empty()) {
+  const base::flat_set<int32_t>& allowed_tiers =
+      actor::ActorPolicyChecker::GetActorEligibleTiers();
+
+  if (!allowed_tiers.empty()) {
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(profile);
-    if (!subscription_service) {
-      return false;
-    }
-    return allowed_tiers->contains(
+    CHECK(subscription_service);
+    return allowed_tiers.contains(
         subscription_service->GetAiSubscriptionTier());
   }
 

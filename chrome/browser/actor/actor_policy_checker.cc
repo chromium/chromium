@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -119,7 +121,7 @@ bool HasUrlAllowlist(Profile& profile) {
 }
 
 // Returns true if !is_enterprise_account_data_protected &&
-// !AccountInfo::IsManaged().
+// !AccountInfo::IsManaged() && can_use_model_execution_features().
 bool IsAccountEligibleForActuation(Profile& profile,
                                    AggregatedJournal& journal) {
   // Note: both `is_enterprise_account_data_protected` and
@@ -179,6 +181,25 @@ bool IsAccountEligibleForActuation(Profile& profile,
          (can_use_model_execution_features == signin::Tribool::kTrue);
 }
 
+// TODO(crbug.com/471065012): This is a consumer check so it should be moved to
+// the overall actuation account access check. Placed here for a quick fix.
+bool AccountHasChromeBenefits(Profile& profile, AggregatedJournal& journal) {
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_service = subscription_eligibility::
+          SubscriptionEligibilityServiceFactory::GetForProfile(&profile);
+  CHECK(subscription_service);
+  const base::flat_set<int32_t>& eligible_tiers =
+      ActorPolicyChecker::GetActorEligibleTiers();
+  int32_t subscription_tier = subscription_service->GetAiSubscriptionTier();
+  journal.Log(
+      GURL(), TaskId(), "AccountHasChromeBenefits",
+      JournalDetailsBuilder()
+          .Add("subscription_tier", subscription_tier)
+          .Add("eligible_tiers", features::kGlicActorEligibleTiers.Get())
+          .Build());
+  return eligible_tiers.contains(subscription_tier);
+}
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }  // namespace
 
@@ -197,6 +218,13 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
       IdentityManagerFactory::GetForProfile(service.GetProfile());
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
+  }
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_service =
+          subscription_eligibility::SubscriptionEligibilityServiceFactory::
+              GetForProfile(service.GetProfile());
+  if (subscription_service) {
+    subscription_eligibility_service_observation_.Observe(subscription_service);
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -221,6 +249,25 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
 }
 
 ActorPolicyChecker::~ActorPolicyChecker() = default;
+
+// static
+const base::flat_set<int32_t>& ActorPolicyChecker::GetActorEligibleTiers() {
+  static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
+    std::string tier_list = features::kGlicActorEligibleTiers.Get();
+    std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
+        tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    base::flat_set<int32_t> tiers;
+    tiers.reserve(tier_pieces.size());
+    for (const auto& piece : tier_pieces) {
+      int32_t tier_id = 0;
+      if (base::StringToInt(piece, &tier_id)) {
+        tiers.insert(tier_id);
+      }
+    }
+    return tiers;
+  }());
+  return *eligible_tiers;
+}
 
 void ActorPolicyChecker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
@@ -253,6 +300,11 @@ void ActorPolicyChecker::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
                              signin::ConsentLevel::kSignin)) {
     OnPrefOrAccountChanged();
   }
+}
+
+void ActorPolicyChecker::OnAiSubscriptionTierUpdated(
+    int32_t new_subscription_tier) {
+  OnPrefOrAccountChanged();
 }
 
 void ActorPolicyChecker::MayActOnTab(
@@ -343,6 +395,9 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   }
   bool account_eligible_for_actuation =
       IsAccountEligibleForActuation(*profile, *journal_);
+  bool account_has_chrome_benefits =
+      AccountHasChromeBenefits(*profile, *journal_);
+
   journal_->Log(
       GURL(), TaskId(), "ActorPolicyChecker::ComputeActOnWebCapability",
       JournalDetailsBuilder()
@@ -357,6 +412,8 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
                base::ToString(actuation_enabled_for_managed_user))
           .Add("actuation_enabled_by_allowlist_only",
                base::ToString(actuation_enabled_by_allowlist_only))
+          .Add("account_has_chrome_benefits",
+               base::ToString(account_has_chrome_benefits))
           .Build());
 
   if (is_likely_dogfood_client || policy_exemption) {
@@ -368,8 +425,12 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   if (!account_eligible_for_actuation) {
     return CanActOutcome::kNo;
   }
-
-  if (!is_browser_managed || actuation_enabled_for_managed_user) {
+  if (!is_browser_managed) {
+    // Only respect the consumer check if the browser is not managed.
+    return account_has_chrome_benefits ? CanActOutcome::kYes
+                                       : CanActOutcome::kNo;
+  }
+  if (actuation_enabled_for_managed_user) {
     return CanActOutcome::kYes;
   }
   if (actuation_enabled_by_allowlist_only) {
