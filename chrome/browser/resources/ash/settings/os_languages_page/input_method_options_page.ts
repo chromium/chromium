@@ -212,6 +212,13 @@ export class SettingsInputMethodOptionsPageElement extends
    * For some engineId, we want to store the data in a different storage
    * engineId. i.e. we want to use the nacl_mozc_jp settings data for
    * the nacl_mozc_us settings.
+   *
+   * TODO(b:203464079): Use distinct CrOS-Prefs for nacl_mozc_jp (Japanese) &
+   * nacl_mozc_us (Japanese for US keyboard) input methods. Due to singleton
+   * constraints in legacy impl, unlike all other input methods whose settings
+   * were distinct from one another, these two shared the the same settings.
+   * Upon CrOS-Prefs migration, the unintended sharing was retained till the
+   * issue is separately addressed outside the scope of the said migration.
    */
   private getStorageEngineId_(): string {
     return this.engineId_ !== 'nacl_mozc_us' ? this.engineId_ : 'nacl_mozc_jp';
@@ -249,9 +256,6 @@ export class SettingsInputMethodOptionsPageElement extends
       isVietnameseFirstPartyInputSettingsAllowed:
           loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
-    // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
-    // types will be stored in nacl_mozc_us. See:
-    // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
     const engineId = this.getStorageEngineId_();
     const currentSettings = inputMethodSpecificSettings[engineId] ?? {};
     const defaultOverrides = this.getDefaultValueOverrides_(engineId);
