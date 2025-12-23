@@ -84,6 +84,8 @@ enum class BWGPageContextAttachmentState {
 // Enum representing the Gemini view state.
 // This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
 enum class GeminiViewState {
+  // The Gemini view state is unknown.
+  kUnknown,
   // The Gemini view is hidden.
   kHidden,
   // The Gemini view is collapsed (minimized) into a circle.
