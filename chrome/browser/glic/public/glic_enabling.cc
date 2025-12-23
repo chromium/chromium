@@ -355,6 +355,10 @@ bool GlicEnabling::IsEnabledByFlags() {
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {
+  if (g_bypass_enablement_checks_for_testing) {
+    return true;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Due to the tight coupling of the browser Profile and OS users in ChromeOS,
   // we check the user session type to align with other desktop browser

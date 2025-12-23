@@ -81,7 +81,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
  public:
   GlicTabSubMenuModelTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicMultiInstance,
+        /*enabled_features=*/{features::kGlic, features::kGlicMultiInstance,
                               features::kGlicMITabContextMenu,
 #if BUILDFLAG(IS_CHROMEOS)
                               chromeos::features::kFeatureManagementGlic
