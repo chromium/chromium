@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-core
 Short Name: grpc-core
-URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-core/1.77.0/grpc-core-1.77.0.jar
-Version: 1.77.0
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-core/1.78.0/grpc-core-1.78.0.jar
+Version: 1.78.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
