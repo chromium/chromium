@@ -761,15 +761,6 @@ bool IsProvisionalNotificationAlertEnabled() {
 BASE_FEATURE(kIOSOneTimeDefaultBrowserNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserBannerPromo, base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit{
-    &kDefaultBrowserBannerPromo, "DefaultBrowserBannerPromoImpressionLimit", 5};
-
-bool IsDefaultBrowserBannerPromoEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
-}
-
 constexpr base::FeatureParam<std::string> kFRESignInHeaderTextUpdateParam{
     &kFRESignInHeaderTextUpdate,
     /*name=*/"FRESignInHeaderTextUpdateParam",

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -141,10 +140,6 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
   // Alert the owning app agent so it can clean up this observer.
   if (level == SceneActivationLevelDisconnected) {
     [_appAgent onSceneDisconnected:_sceneState];
@@ -164,18 +159,10 @@
 
 - (void)sceneState:(SceneState*)sceneState
     isDisplayingIncognitoContent:(BOOL)incognitoContentVisible {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
   [self sceneStateChangedData];
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
   // If the scene is not in the foreground yet, skip this change.
   if (!_sceneIsForeground) {
     return;

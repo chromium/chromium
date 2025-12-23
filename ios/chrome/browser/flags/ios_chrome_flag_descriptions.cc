@@ -442,11 +442,6 @@ const char kDataSharingSharedDataTypesEnabled[] = "Version out-of-date, no UI";
 const char kDataSharingSharedDataTypesEnabledWithUi[] =
     "Version out-of-date, show UI ";
 
-const char kDefaultBrowserBannerPromoName[] = "Default Browser banner promo";
-const char kDefaultBrowserBannerPromoDescription[] =
-    "When enabled, the default browser banner promo will show when conditions "
-    "are met.";
-
 const char kDataSharingVersioningStatesName[] =
     "Data Sharing Versioning Test Scenarios";
 const char kDataSharingVersioningStatesDescription[] =

@@ -23,7 +23,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
   ]
 }

@@ -429,7 +429,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
     }
   }
 
-  if (IsDefaultBrowserBannerPromoEnabled() && _bannerPromoDisplayed) {
+  if (_bannerPromoDisplayed) {
     height += _bannerPromo.intrinsicContentSize.height;
     if (isTopOmnibox) {
       height += kBannerPromoVerticalSpacing;
@@ -572,10 +572,6 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 
 // Sets the banner promo up.
 - (void)setUpBannerPromo {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
   _bannerPromoBackground = [[UIView alloc] init];
   _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
   _bannerPromoBackground.backgroundColor =
@@ -660,55 +656,52 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
                        constant:kExpandedLocationBarHorizontalMargin]
   ]];
 
-  if (IsDefaultBrowserBannerPromoEnabled()) {
-    _bannerPromoBackgroundTopConstraint = [_bannerPromoBackground.topAnchor
-        constraintEqualToAnchor:self.topAnchor];
-    _bannerPromoBackgroundSplitToolbarConstraints = @[
-      _bannerPromoBackgroundTopConstraint,
-      [self.bannerPromo.topAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
-      locationBarContainerLayoutGuideBottomConstraint,
-    ];
+  _bannerPromoBackgroundTopConstraint =
+      [_bannerPromoBackground.topAnchor constraintEqualToAnchor:self.topAnchor];
+  _bannerPromoBackgroundSplitToolbarConstraints = @[
+    _bannerPromoBackgroundTopConstraint,
+    [self.bannerPromo.topAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
+    locationBarContainerLayoutGuideBottomConstraint,
+  ];
 
-    _bannerPromoBackgroundHeightAnimationConstraint =
-        [_bannerPromoBackground.heightAnchor
-            constraintLessThanOrEqualToConstant:0];
-    _bannerPromoBackgroundNonSplitToolbarConstraints = @[
-      [self.bannerPromo.topAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
-      [_locationBarContainerBottomLayoutGuide.bottomAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
-      [_bannerPromoBackground.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor],
-      _bannerPromoBackgroundHeightAnimationConstraint,
-    ];
+  _bannerPromoBackgroundHeightAnimationConstraint =
+      [_bannerPromoBackground.heightAnchor
+          constraintLessThanOrEqualToConstant:0];
+  _bannerPromoBackgroundNonSplitToolbarConstraints = @[
+    [self.bannerPromo.topAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
+    [_locationBarContainerBottomLayoutGuide.bottomAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
+    [_bannerPromoBackground.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor],
+    _bannerPromoBackgroundHeightAnimationConstraint,
+  ];
 
-    _bannerPromoHiddenConstraints =
-        @[ locationBarContainerLayoutGuideBottomConstraint ];
+  _bannerPromoHiddenConstraints =
+      @[ locationBarContainerLayoutGuideBottomConstraint ];
 
-    _bannerPromoBackgroundHeightConstraint =
-        [_bannerPromoBackground.heightAnchor
-            constraintLessThanOrEqualToConstant:
-                [self bannerPromoBackgroundHeightForFullscreenProgress:1]];
-    CGFloat bannerPromoBackgroundHeight =
-        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
-    _bannerPromoBackgroundTopConstraint.constant = -bannerPromoBackgroundHeight;
+  _bannerPromoBackgroundHeightConstraint = [_bannerPromoBackground.heightAnchor
+      constraintLessThanOrEqualToConstant:
+          [self bannerPromoBackgroundHeightForFullscreenProgress:1]];
+  CGFloat bannerPromoBackgroundHeight =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  _bannerPromoBackgroundTopConstraint.constant = -bannerPromoBackgroundHeight;
 
-    [NSLayoutConstraint activateConstraints:@[
-      _bannerPromoBackgroundHeightConstraint,
-      [_bannerPromoBackground.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-      [_bannerPromoBackground.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
+  [NSLayoutConstraint activateConstraints:@[
+    _bannerPromoBackgroundHeightConstraint,
+    [_bannerPromoBackground.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor],
+    [_bannerPromoBackground.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor],
 
-      [self.bannerPromo.leadingAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
-      [self.bannerPromo.trailingAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
-      [self.bannerPromo.bottomAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
-    ]];
-  }
+    [self.bannerPromo.leadingAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
+    [self.bannerPromo.trailingAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
+    [self.bannerPromo.bottomAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
+  ]];
 
   // Trailing StackView constraints.
   [NSLayoutConstraint activateConstraints:@[
