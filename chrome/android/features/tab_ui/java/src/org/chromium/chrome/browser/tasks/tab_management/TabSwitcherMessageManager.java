@@ -152,8 +152,7 @@ public class TabSwitcherMessageManager {
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final SnackbarManager mSnackbarManager;
     private final ModalDialogManager mModalDialogManager;
-    private final MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
-            mMessageCardProviderCoordinator;
+    private final MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
@@ -233,8 +232,8 @@ public class TabSwitcherMessageManager {
         mDesktopWindowStateManager = desktopWindowStateManager;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
 
-        mMessageCardProviderCoordinator =
-                new MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>(
+        mMessageCardProvider =
+                new MessageCardProvider<@MessageType Integer, @UiType Integer>(
                         activity, this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
@@ -256,7 +255,7 @@ public class TabSwitcherMessageManager {
      */
     public void registerMessageHostDelegate(
             MessageHostDelegate<@MessageType Integer, @UiType Integer> messageHostDelegate) {
-        mMessageCardProviderCoordinator.bindHostDelegate(messageHostDelegate);
+        mMessageCardProvider.bindHostDelegate(messageHostDelegate);
     }
 
     /**
@@ -337,11 +336,11 @@ public class TabSwitcherMessageManager {
                         mCurrentTabGroupModelFilterSupplier,
                         mLayoutStateProviderSupplier);
         addObserver(mArchivedTabsMessageService);
-        mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
+        mMessageCardProvider.subscribeMessageService(mArchivedTabsMessageService);
 
         IphMessageService iphMessageService =
                 new IphMessageService(this::getCurrentProfile, mTabGridIphDialogCoordinator);
-        mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
+        mMessageCardProvider.subscribeMessageService(iphMessageService);
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                 && mIncognitoReauthPromoMessageService == null) {
@@ -355,8 +354,7 @@ public class TabSwitcherMessageManager {
                             incognitoReauthManager,
                             mSnackbarManager,
                             mLifecycleDispatcher);
-            mMessageCardProviderCoordinator.subscribeMessageService(
-                    mIncognitoReauthPromoMessageService);
+            mMessageCardProvider.subscribeMessageService(mIncognitoReauthPromoMessageService);
         }
         if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
             mTabGroupSuggestionMessageService =
@@ -365,14 +363,13 @@ public class TabSwitcherMessageManager {
                             mCurrentTabGroupModelFilterSupplier,
                             this::addTabGroupSuggestionMessage,
                             this::translateStartMergeAnimation);
-            mMessageCardProviderCoordinator.subscribeMessageService(
-                    mTabGroupSuggestionMessageService);
+            mMessageCardProvider.subscribeMessageService(mTabGroupSuggestionMessageService);
         }
         mPriceWelcomeMessageController =
                 PriceWelcomeMessageController.build(
                         this,
                         mCurrentTabGroupModelFilterSupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mPriceWelcomeMessageReviewActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
@@ -441,7 +438,7 @@ public class TabSwitcherMessageManager {
             mPriceWelcomeMessageController.destroy();
         }
 
-        mMessageCardProviderCoordinator.destroy();
+        mMessageCardProvider.destroy();
         mTabGridIphDialogCoordinator.destroy();
         if (mIncognitoReauthPromoMessageService != null) {
             mIncognitoReauthPromoMessageService.destroy();
@@ -460,12 +457,12 @@ public class TabSwitcherMessageManager {
     }
 
     public void appendNextMessage(@MessageType int messageType) {
-        assert mMessageCardProviderCoordinator != null;
+        assert mMessageCardProvider != null;
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
         Message<@MessageType Integer> nextMessage =
-                mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
+                mMessageCardProvider.getNextMessageItemForType(messageType);
         if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
         switch (messageType) {
             case MessageType.PRICE_MESSAGE -> tabListCoordinator.addSpecialListItem(
@@ -492,7 +489,7 @@ public class TabSwitcherMessageManager {
 
         sAppendedMessagesForTesting = false;
         List<MessageService<@MessageType Integer, @UiType Integer>> messageServices =
-                mMessageCardProviderCoordinator.getMessageServices();
+                mMessageCardProvider.getMessageServices();
         for (MessageService<@MessageType Integer, @UiType Integer> service : messageServices) {
             Message<@MessageType Integer> message = service.getNextMessageItem();
             if (message == null || !shouldAppendMessage(message)) continue;
@@ -595,7 +592,7 @@ public class TabSwitcherMessageManager {
 
         sAppendedMessagesForTesting = false;
         List<MessageService<@MessageType Integer, @UiType Integer>> messageServices =
-                mMessageCardProviderCoordinator.getMessageServices();
+                mMessageCardProvider.getMessageServices();
         for (MessageService<@MessageType Integer, @UiType Integer> service : messageServices) {
             Message<@MessageType Integer> message = service.getNextMessageItem();
             if (message == null || !shouldAppendMessage(message)) continue;
@@ -623,7 +620,7 @@ public class TabSwitcherMessageManager {
     @VisibleForTesting
     void dismissHandler(@MessageType int messageType) {
         // `bind` and `unbind` to attach to a `TabListCoordinator` are independent of whether the
-        // `MessageCardProviderCoordinator`, has access to the `dismissHandler`. That means this
+        // `MessageCardProvider`, has access to the `dismissHandler`. That means this
         // may be called while unbound by one of the message services.
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
@@ -676,12 +673,12 @@ public class TabSwitcherMessageManager {
     private void addTabGroupSuggestionMessage(@TabId int tabId) {
         @MessageType int messageType = MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
 
-        assert mMessageCardProviderCoordinator != null;
+        assert mMessageCardProvider != null;
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
         Message<@MessageType Integer> nextMessage =
-                mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
+                mMessageCardProvider.getNextMessageItemForType(messageType);
         if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
 
         int index = tabListCoordinator.getIndexFromTabId(tabId);

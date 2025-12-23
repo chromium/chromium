@@ -47,7 +47,7 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Mock private TabSwitcherMessageManager mTabSwitcherMessageManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private MessageCardProviderCoordinator mMessageCardProviderCoordinator;
+    @Mock private MessageCardProvider mMessageCardProvider;
     @Mock private Profile mProfile;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private PriceMessageService mPriceMessageService;
@@ -88,7 +88,7 @@ public class PriceWelcomeMessageControllerUnitTest {
                 new PriceWelcomeMessageController(
                         mTabSwitcherMessageManager,
                         mTabGroupModelFilterSupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier,
@@ -215,35 +215,34 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Test
     public void testBuild_priceAnnotationsEnabled() {
-        reset(mMessageCardProviderCoordinator);
+        reset(mMessageCardProvider);
         ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
                         mTabSwitcherMessageManager,
                         spySupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
-        verify(mMessageCardProviderCoordinator)
-                .subscribeMessageService(any(PriceMessageService.class));
+        verify(mMessageCardProvider).subscribeMessageService(any(PriceMessageService.class));
         verify(spySupplier).addSyncObserverAndCallIfNonNull(any());
     }
 
     @Test
     public void testBuild_priceAnnotationsDisabled() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
-        reset(mMessageCardProviderCoordinator);
+        reset(mMessageCardProvider);
         ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
                         mTabSwitcherMessageManager,
                         spySupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
-        verify(mMessageCardProviderCoordinator, never()).subscribeMessageService(any());
+        verify(mMessageCardProvider, never()).subscribeMessageService(any());
         verify(spySupplier, never()).addSyncObserverAndCallIfNonNull(any());
     }
 }

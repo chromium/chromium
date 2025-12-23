@@ -73,7 +73,7 @@ public class MessageCardProviderTest {
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
 
-    private MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer> mCoordinator;
+    private MessageCardProvider<@MessageType Integer, @UiType Integer> mCoordinator;
     private MessageService<@MessageType Integer, @UiType Integer> mTestingService;
     private MessageService<@MessageType Integer, @UiType Integer> mPriceService;
 
@@ -156,8 +156,7 @@ public class MessageCardProviderTest {
                                     MessageCardViewBinder::bind);
 
                     mCoordinator =
-                            new MessageCardProviderCoordinator<>(
-                                    sActivity, mServiceDismissActionProvider);
+                            new MessageCardProvider<>(sActivity, mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
