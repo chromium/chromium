@@ -59,6 +59,7 @@ constexpr char kDelete[] = "Delete";
 constexpr char kDownloadTrigger[] = "Download";
 constexpr char kScreenCaptureTrigger[] = "ScreenCapture";
 constexpr char kMigrationTrigger[] = "Migration";
+constexpr char kCameraTrigger[] = "Camera";
 
 // Min, max, and bucket count for migration duration histograms.
 constexpr base::TimeDelta kMigrationDurationMin = base::Milliseconds(1);
@@ -98,6 +99,8 @@ std::string GetUMAAction(UploadTrigger trigger) {
       return kScreenCaptureTrigger;
     case UploadTrigger::kMigration:
       return kMigrationTrigger;
+    case UploadTrigger::kCamera:
+      return kCameraTrigger;
   }
 }
 

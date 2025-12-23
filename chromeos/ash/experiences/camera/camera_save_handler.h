@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "ui/gfx/image/image.h"
 
 namespace base {
 class FilePath;
@@ -36,6 +37,24 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
     // Returns the MyFiles folder on the local file system.
     virtual base::FilePath GetMyFilesFolder() const = 0;
+
+    // Returns the OneDrive folder path where files will be uploaded.
+    virtual base::FilePath GetOneDriveUploadFolder() const = 0;
+
+    // Uploads the file with path `upload_from_path` to the cloud destination.
+    // `file_size` is the size of the file in bytes.
+    // `thumbnail` is an image for notifications that may be presented before
+    // upload (e.g. sign-in notification)
+    // `progress_callback` is called periodically during upload with the number
+    // of bytes uploaded.
+    // `done_callback` is called when the upload is finished with a boolean
+    // indicating success or failure.
+    virtual void PerformUpload(
+        const base::FilePath& upload_from_path,
+        int64_t file_size,
+        const gfx::Image& thumbnail,
+        base::RepeatingCallback<void(int64_t)> progress_callback,
+        base::OnceCallback<void(bool)> done_callback) = 0;
   };
 
   CameraSaveHandler(const CameraSaveHandler&) = delete;
@@ -74,6 +93,14 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
   // Returns the initial folder where the camera app will write files to.
   base::FilePath GetWritablePath() const;
+  void PerformUpload(const base::FilePath& upload_from_path,
+                     const gfx::Image& thumbnail,
+                     base::OnceCallback<void(bool)> callback,
+                     std::optional<int64_t> file_size);
+  void OnUploadProgress(const base::FilePath&, int64_t);
+  void OnUploadDone(const base::FilePath&,
+                    base::OnceCallback<void(bool)> callback,
+                    bool);
 
   std::unique_ptr<Delegate> delegate_;
   base::WeakPtrFactory<CameraSaveHandler> weak_ptr_factory_{this};

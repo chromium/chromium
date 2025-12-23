@@ -133,6 +133,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Enterprise_SkyVaultAction">
+  <variant name="Camera" summary="camera"/>
   <variant name="Download" summary="download"/>
   <variant name="Migration" summary="migration"/>
   <variant name="ScreenCapture" summary="screen capture"/>

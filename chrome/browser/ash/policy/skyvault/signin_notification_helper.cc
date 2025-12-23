@@ -149,6 +149,10 @@ void ShowSignInNotification(
 
       break;
     }
+    case local_user_files::UploadTrigger::kCamera: {
+      // TODO(crbug.com/454152412) Implement this.
+      break;
+    }
     case local_user_files::UploadTrigger::kScreenCapture: {
       message_center::RichNotificationData rich_notification_data;
       rich_notification_data.vector_small_image = &ash::kCaptureModeIcon;

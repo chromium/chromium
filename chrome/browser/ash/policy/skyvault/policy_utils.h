@@ -64,7 +64,8 @@ enum class UploadTrigger {
   kDownload = 0,
   kScreenCapture = 1,
   kMigration = 2,
-  kMaxValue = kMigration,
+  kCamera = 3,
+  kMaxValue = kCamera,
 };
 
 // Possible states of the migration. Persisted to a pref.

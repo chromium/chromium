@@ -704,9 +704,11 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
     return base::FilePath();
   }
 
-  return CHECK_DEREF(CameraSaveHandler::Get(*Profile::FromWebUI(web_ui_)))
-      .GetFinalPath()
-      .Append(name_component);
+  base::FilePath camera_save_path =
+      CHECK_DEREF(CameraSaveHandler::Get(*Profile::FromWebUI(web_ui_)))
+          .GetFinalPath();
+  return camera_save_path.empty() ? camera_save_path
+                                  : camera_save_path.Append(name_component);
 }
 
 void ChromeCameraAppUIDelegate::OnFileMonitorInitialized(

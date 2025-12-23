@@ -44,6 +44,8 @@ class SignInNotificationHelperTest
         return "screen_capture";
       case policy::local_user_files::UploadTrigger::kMigration:
         return "migration";
+      case policy::local_user_files::UploadTrigger::kCamera:
+        return "camera";
     }
   }
 
