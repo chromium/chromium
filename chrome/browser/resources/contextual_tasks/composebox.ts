@@ -95,8 +95,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
         // Clear the composebox text after submitting.
-        composebox.clearInput();
-        composebox.clearAutocompleteMatches();
+        this.clearInputAndFocus();
       });
       this.eventTracker_.add(
           composebox, 'composebox-resize', (e: CustomEvent) => {
@@ -155,6 +154,13 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected async refreshTabSuggestions_() {
     const {tabs} = await this.searchboxHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
+  }
+
+  clearInputAndFocus(): void {
+    // Clear text from composebox and focus.
+    this.$.composebox.clearInput();
+    this.$.composebox.focusInput();
+    this.$.composebox.clearAutocompleteMatches();
   }
 }
 

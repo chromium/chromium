@@ -87,6 +87,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.$.threadFrame.src = url.url;
+    this.$.composebox.clearInputAndFocus();
   }
 
   override async connectedCallback() {
@@ -144,6 +145,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     } else {
       const {url} = await this.browserProxy_.handler.getThreadUrl();
       threadUrl = url.url;
+      this.$.composebox.clearInputAndFocus();
     }
 
     // Wait until all necessary data is available before loading the URL.
