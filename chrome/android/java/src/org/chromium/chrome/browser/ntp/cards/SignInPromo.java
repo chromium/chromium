@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
-
 import android.content.Context;
-import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -35,8 +33,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 // TODO(crbug.com/352735671): Remove after uno phase 2 follow-up launch.
 @NullMarked
 public abstract class SignInPromo {
-    /** Period for which promos are suppressed if signin is refused in FRE. */
-    @VisibleForTesting static final long SUPPRESSION_PERIOD_MS = DateUtils.DAY_IN_MILLIS;
 
     private static boolean sDisablePromoForTests;
 
@@ -98,7 +94,7 @@ public abstract class SignInPromo {
                         .getNewTabPageSigninPromoSuppressionPeriodStart();
         if (suppressedFrom == 0) return false;
         long currentTime = System.currentTimeMillis();
-        long suppressedTo = suppressedFrom + SUPPRESSION_PERIOD_MS;
+        long suppressedTo = suppressedFrom + NtpSigninPromoDelegate.getSuppressionPeriodMs();
         if (suppressedFrom <= currentTime && currentTime < suppressedTo) {
             return true;
         }

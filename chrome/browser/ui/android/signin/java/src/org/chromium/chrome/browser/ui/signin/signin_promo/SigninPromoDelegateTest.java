@@ -61,6 +61,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures("EnableSeamlessSignin")
 public class SigninPromoDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -113,6 +114,7 @@ public class SigninPromoDelegateTest {
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
+        SigninPreferencesManager.getInstance().clearNewTabPageSigninPromoSuppressionPeriodStart();
     }
 
     @Test
@@ -402,6 +404,36 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    public void testNtpPromoHidden_withinSuppressionPeriod() {
+        SigninPreferencesManager.getInstance()
+                .setNewTabPageSigninPromoSuppressionPeriodStart(System.currentTimeMillis());
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoShown_outsideSuppressionPeriod() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        SigninPreferencesManager.getInstance()
+                .setNewTabPageSigninPromoSuppressionPeriodStart(
+                        System.currentTimeMillis()
+                                - NtpSigninPromoDelegate.SUPPRESSION_PERIOD_MS
+                                - 1);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoShown_noSuppressionSet() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
     public void testNtpPromoHidden_extendedAccountInfoNotAvailable() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -485,7 +517,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testRecentTabsPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
@@ -501,7 +532,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testBookmarkPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -515,7 +545,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -532,7 +561,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromoLaunches_seamlessFlow_noAccountOnDevice_fallbacksToBottomSheet() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
@@ -546,7 +574,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromo_seamlessFlow_accountOnDevice_secondaryButtonShowsSnackbar() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
