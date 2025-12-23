@@ -30,6 +30,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
       ActorTaskStateChangeCallback callback) override;
   base::CallbackListSubscription RegisterActorTaskStopped(
       ActorTaskStoppedCallback callback) override;
+  base::CallbackListSubscription RegisterActorTaskRemoved(
+      ActorTaskRemovedCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
@@ -47,6 +49,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
                               ActorTask::State final_state,
                               const std::string& title);
 
+  // Notify profile scoped ui components about actor task removal.
+  // This is called after an actor task has been stopped and has hit its expiry
+  // period after `kGlicActorUiCompletedTaskExpiryDelaySeconds` seconds.
+  void NotifyActorTaskRemoved(TaskId task_id);
+
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
@@ -56,6 +63,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   base::RepeatingCallbackList<void(TaskId, ActorTask::State, std::string)>
       actor_task_stopped_callback_list_;
+
+  base::RepeatingCallbackList<void(TaskId)> actor_task_removed_callback_list_;
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };

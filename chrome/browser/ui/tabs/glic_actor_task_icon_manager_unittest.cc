@@ -247,4 +247,42 @@ TEST_F(GlicActorTaskIconManagerTest,
             ActorTaskNudgeState::Text::kDefault);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
 }
+
+TEST_F(GlicActorTaskIconManagerTest,
+       OnActorTaskRemovedTriggersUpdateWhenGlobalTaskIndicatorEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kGlicActorUiGlobalTaskIndicator);
+
+  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
+  TaskId task_id_2 = actor_service()->CreateTaskForTesting();
+
+  actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
+  actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
+
+  manager()->OnActorTaskStateUpdate(task_id_1);
+  manager()->OnActorTaskStateUpdate(task_id_2);
+  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
+  testing::Mock::VerifyAndClearExpectations(&mock_nudge_subscriber_);
+
+  // Expect OnActorTaskRemoved to only trigger updates to last updated task
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(task_id_1)).Times(0);
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(task_id_2));
+
+  manager()->OnActorTaskRemoved(task_id_1);
+}
+
+TEST_F(GlicActorTaskIconManagerTest, OnActorTaskRemovedDoesNothingByDefault) {
+  TaskId task_id = actor_service()->CreateTaskForTesting();
+  manager()->OnActorTaskStateUpdate(task_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
+  testing::Mock::VerifyAndClearExpectations(&mock_nudge_subscriber_);
+
+  // Expect OnActorTaskRemoved to NOT trigger updates
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(testing::_)).Times(0);
+  EXPECT_CALL(mock_nudge_subscriber_, OnStateChanged(testing::_)).Times(0);
+
+  manager()->OnActorTaskRemoved(task_id);
+}
+
 }  // namespace tabs

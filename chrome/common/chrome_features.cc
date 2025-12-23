@@ -356,6 +356,9 @@ const base::FeatureParam<bool> kGlicActorUiStandaloneBorderGlow{
 const base::FeatureParam<base::TimeDelta> kGlicActorUiDebounceTimer{
     &kGlicActorUi, kGlicActorUiDebounceTimerName, base::Milliseconds(25)};
 
+const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
+    &kGlicActorUi, "glic-actor-ui-completed-task-expiry-delay", 30};
+
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};

@@ -266,6 +266,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiStandaloneBorderGlow);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kGlicActorUiDebounceTimer);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>(
+    kGlicActorUiCompletedTaskExpiryDelaySeconds);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(

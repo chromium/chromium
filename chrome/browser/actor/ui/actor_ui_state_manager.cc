@@ -164,6 +164,15 @@ void ActorUiStateManager::OnActorTaskStateChange(
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.
       NotifyActorTaskStopped(task_id, new_task_state, title);
+      if (base::FeatureList::IsEnabled(
+              features::kGlicActorUiGlobalTaskIndicator)) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&ActorUiStateManager::NotifyActorTaskRemoved,
+                           weak_factory_.GetWeakPtr(), task_id),
+            base::Seconds(
+                features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+      }
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
@@ -298,6 +307,15 @@ ActorUiStateManager::RegisterActorTaskStateChange(
 base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskStopped(
     ActorTaskStoppedCallback callback) {
   return actor_task_stopped_callback_list_.Add(std::move(callback));
+}
+
+void ActorUiStateManager::NotifyActorTaskRemoved(TaskId task_id) {
+  actor_task_removed_callback_list_.Notify(task_id);
+}
+
+base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskRemoved(
+    ActorTaskRemovedCallback callback) {
+  return actor_task_removed_callback_list_.Add(std::move(callback));
 }
 
 }  // namespace actor::ui

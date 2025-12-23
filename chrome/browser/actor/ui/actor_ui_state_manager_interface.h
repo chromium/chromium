@@ -45,6 +45,13 @@ class ActorUiStateManagerInterface {
       void(TaskId, ActorTask::State, std::string /*title*/)>;
   virtual base::CallbackListSubscription RegisterActorTaskStopped(
       ActorTaskStoppedCallback callback) = 0;
+
+  // Register for this callback to be notified whenever the actor task has hit
+  // its expiry period after being stopped/cleared after
+  // `kGlicActorUiCompletedTaskExpiryDelaySeconds` seconds.
+  using ActorTaskRemovedCallback = base::RepeatingCallback<void(TaskId)>;
+  virtual base::CallbackListSubscription RegisterActorTaskRemoved(
+      ActorTaskRemovedCallback callback) = 0;
 };
 
 }  // namespace actor::ui

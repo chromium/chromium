@@ -51,6 +51,14 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
           ->RegisterActorTaskStopped(
               base::BindRepeating(&GlicActorTaskIconManager::OnActorTaskStopped,
                                   base::Unretained(this))));
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    callback_subscriptions_.push_back(
+        actor::ActorKeyedService::Get(profile_)
+            ->GetActorUiStateManager()
+            ->RegisterActorTaskRemoved(base::BindRepeating(
+                &GlicActorTaskIconManager::OnActorTaskRemoved,
+                base::Unretained(this))));
+  }
 }
 
 void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
@@ -69,6 +77,16 @@ void GlicActorTaskIconManager::OnActorTaskStopped(
   } else if (final_state == actor::ActorTask::State::kFailed) {
     has_unprocessed_failed_tasks_ = true;
   }
+}
+
+void GlicActorTaskIconManager::OnActorTaskRemoved(actor::TaskId task_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    return;
+  }
+  // TODO(crbug.com/470106502): Ensure only the entry for the provided task_id
+  // is removed and refactor the rest of OnActorTaskRemoved().
+  ClearStoppedTasks();
 }
 
 // TODO(crbug.com/469817191): Stopped tasks should also be added to the popover.

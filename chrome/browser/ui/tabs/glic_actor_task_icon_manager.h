@@ -44,6 +44,9 @@ class GlicActorTaskIconManager : public KeyedService {
                           actor::ActorTask::State final_state,
                           std::string task_title);
 
+  // Called whenever an actor task is removed.
+  void OnActorTaskRemoved(actor::TaskId task_id);
+
   // Determines the state the task nudge should be in.
   void UpdateTaskNudge();
 
