@@ -622,10 +622,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 </enum>
 
 <enum name="JpSettingsPunctuationStyle">
-  <int value="0" label="KutenTouten"/>
+  <int value="0" label="ToutenKuten"/>
   <int value="1" label="CommaPeriod"/>
-  <int value="2" label="KutenPeriod"/>
-  <int value="3" label="CommaTouten"/>
+  <int value="2" label="ToutenPeriod"/>
+  <int value="3" label="CommaKuten"/>
 </enum>
 
 <enum name="JpSettingsSelectionShortcut">

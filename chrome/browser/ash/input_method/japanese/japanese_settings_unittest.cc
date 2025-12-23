@@ -150,7 +150,7 @@ TEST(JapaneseSettingsTest, RecordJapaneseSettingsMetrics) {
       1);
   histogram_tester.ExpectUniqueSample(
       "InputMethod.PhysicalKeyboard.Japanese.Settings.PunctuationStyle",
-      HistPunctuationStyle::kKutenTouten, 1);
+      HistPunctuationStyle::kToutenKuten, 1);
   histogram_tester.ExpectUniqueSample(
       "InputMethod.PhysicalKeyboard.Japanese.Settings.SelectionShortcut",
       HistSelectionShortcut::kDigits123456789, 1);

@@ -24,17 +24,21 @@ constexpr auto kHistValInputModes =
         {JapaneseSettings::InputMode::kKana, HistInputMode::kKana},
     });
 
+// TODO(b:466239577): Fix misnomers in JapaneseSettings::PunctuationStyle Mojo
+// enum (CrOS IME Service) then adapt here (CrOS Input Method Framework), so
+// they match Mozc Config protobuf, just like HistPunctuationStyle C++ enum. The
+// misnomers originate from Mozc Config protobuf but have now been fixed there.
 constexpr auto kHistValPunctuations =
     base::MakeFixedFlatMap<JapaneseSettings::PunctuationStyle,
                            HistPunctuationStyle>({
         {JapaneseSettings::PunctuationStyle::kKutenTouten,
-         HistPunctuationStyle::kKutenTouten},
+         HistPunctuationStyle::kToutenKuten},
         {JapaneseSettings::PunctuationStyle::kCommaPeriod,
          HistPunctuationStyle::kCommaPeriod},
         {JapaneseSettings::PunctuationStyle::kKutenPeriod,
-         HistPunctuationStyle::kKutenPeriod},
+         HistPunctuationStyle::kToutenPeriod},
         {JapaneseSettings::PunctuationStyle::kCommaTouten,
-         HistPunctuationStyle::kCommaTouten},
+         HistPunctuationStyle::kCommaKuten},
     });
 
 constexpr auto kHistValSymbols =

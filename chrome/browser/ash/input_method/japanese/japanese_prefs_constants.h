@@ -115,11 +115,11 @@ enum class HistKeymapStyle {
 };
 
 enum class HistPunctuationStyle {
-  kKutenTouten = 0,
+  kToutenKuten = 0,
   kCommaPeriod = 1,
-  kKutenPeriod = 2,
-  kCommaTouten = 3,
-  kMaxValue = kCommaTouten,
+  kToutenPeriod = 2,
+  kCommaKuten = 3,
+  kMaxValue = kCommaKuten,
 };
 
 enum class HistSelectionShortcut {
