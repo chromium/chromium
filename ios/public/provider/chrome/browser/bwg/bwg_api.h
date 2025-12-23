@@ -81,6 +81,17 @@ enum class BWGPageContextAttachmentState {
   kEnterpriseDisabled,
 };
 
+// Enum representing the Gemini view state.
+// This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
+enum class GeminiViewState {
+  // The Gemini view is hidden.
+  kHidden,
+  // The Gemini view is collapsed (minimized) into a circle.
+  kCollapsed,
+  // The Gemini view is expanded.
+  kExpanded,
+};
+
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration);
 
