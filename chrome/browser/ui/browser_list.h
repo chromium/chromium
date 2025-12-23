@@ -48,8 +48,6 @@ class BrowserList {
   const_iterator begin() const { return browsers_.begin(); }
   const_iterator end() const { return browsers_.end(); }
 
-  bool empty() const { return browsers_.empty(); }
-
   static BrowserList* GetInstance();
 
   // Adds or removes |browser| from the list it is associated with. The browser

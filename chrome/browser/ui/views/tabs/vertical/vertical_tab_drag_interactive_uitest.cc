@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
@@ -105,7 +106,7 @@ class VerticalTabDragHandlerTest
   }
 
   BrowserWindowInterface& GetLatestBrowser() {
-    CHECK(!BrowserList::GetInstance()->empty());
+    CHECK(!GlobalBrowserCollection::GetInstance()->IsEmpty());
     BrowserWindowInterface* browser = *(--BrowserList::GetInstance()->end());
     CHECK(browser);
     return *browser;
