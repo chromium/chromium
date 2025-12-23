@@ -34,6 +34,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="No eligible tabs"/>
 </enum>
 
+<!-- LINT.IfChange(EntrypointSource) -->
+
+<enum name="ContextualTasksEntrypointSource">
+  <int value="0" label="From Web"/>
+  <int value="1" label="From Omnibox"/>
+  <int value="2" label="From New Tab Page"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_ui_service.cc:EntrypointSource) -->
+
 </enums>
 
 </histogram-configuration>
