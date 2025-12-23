@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -126,6 +127,28 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
     EXPECT_EQ(ink_drop_test_api.GetInkDrop()->GetTargetInkDropState(),
               views::InkDropState::ACTIVATED);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(StarViewTest, HiddenOnNTP) {
+  // Shown on non-NTP page context.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+  EXPECT_TRUE(GetStarIcon()->GetVisible());
+
+  // Hidden on NTP page context ("chrome://newtab/").
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  EXPECT_FALSE(GetStarIcon()->GetVisible());
+
+  // Shown on non-NTP page context.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+  EXPECT_TRUE(GetStarIcon()->GetVisible());
+
+  // Hidden on NTP page context ("chrome://new-tab-page/").
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  EXPECT_FALSE(GetStarIcon()->GetVisible());
 }
 
 }  // namespace

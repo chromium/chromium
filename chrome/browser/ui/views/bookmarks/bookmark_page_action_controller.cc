@@ -31,12 +31,8 @@
 namespace {
 
 bool IsNTPUrl(const GURL& url) {
-  if (!url.SchemeIs(content::kChromeUIScheme)) {
-    // NTP starts with chrome:// scheme.
-    return false;
-  }
-  return url.host() == chrome::kChromeUINewTabURL ||
-         url.host() == chrome::kChromeUINewTabPageURL;
+  return url.spec() == chrome::kChromeUINewTabURL ||
+         url.spec() == chrome::kChromeUINewTabPageURL;
 }
 
 }  // namespace
@@ -131,9 +127,9 @@ void BookmarkPageActionController::UpdatePageActionVisibility() {
 }
 
 bool BookmarkPageActionController::ShouldShowPageAction() const {
+  const auto& url = tab().GetContents()->GetLastCommittedURL();
   return browser_defaults::bookmarks_enabled &&
-         edit_bookmarks_enabled_.GetValue() &&
-         !IsNTPUrl(tab().GetContents()->GetLastCommittedURL());
+         edit_bookmarks_enabled_.GetValue() && url.is_valid() && !IsNTPUrl(url);
 }
 
 void BookmarkPageActionController::SetStarred(bool starred) {

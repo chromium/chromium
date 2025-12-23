@@ -4,21 +4,27 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::Return;
@@ -42,6 +48,11 @@ class BookmarkPageActionControllerTest : public testing::Test {
             tab_interface_, &pref_service_, page_action_controller_);
   }
 
+  void SetUp() override {
+    content::WebContentsTester::For(web_contents())
+        ->SetLastCommittedURL(GURL("https://www.example.com"));
+  }
+
   BookmarkPageActionControllerTest(const BookmarkPageActionControllerTest&) =
       delete;
   BookmarkPageActionControllerTest& operator=(
@@ -60,6 +71,8 @@ class BookmarkPageActionControllerTest : public testing::Test {
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
 
   tabs::MockTabInterface& tab() { return tab_interface_; }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -131,4 +144,33 @@ TEST_F(BookmarkPageActionControllerTest,
       page_actions::PageActionTrigger::kGesture);
   histogram_tester.ExpectBucketCount("Bookmarks.EntryPoint",
                                      BookmarkEntryPoint::kStarGesture, 1);
+}
+
+TEST_F(BookmarkPageActionControllerTest, HiddenOnNTP) {
+  pref_service().SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, true);
+
+  // Simulate a navigation to the given `destination_url`.
+  auto navigate_to_url = [&](std::string_view destination_url) {
+    content::WebContentsTester::For(web_contents())
+        ->SetLastCommittedURL(GURL(destination_url));
+    static_cast<content::WebContentsObserver*>(
+        &bookmark_page_action_controller())
+        ->PrimaryPageChanged(web_contents()->GetPrimaryPage());
+  };
+
+  // Shown on non-NTP page context.
+  EXPECT_CALL(page_action_controller(), Show(kActionBookmarkThisTab)).Times(1);
+  navigate_to_url("https://www.example.com");
+
+  // Hidden on NTP page context ("chrome://newtab/").
+  EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
+  navigate_to_url(chrome::kChromeUINewTabURL);
+
+  // Shown on non-NTP page context.
+  EXPECT_CALL(page_action_controller(), Show(kActionBookmarkThisTab)).Times(1);
+  navigate_to_url("https://www.example.com");
+
+  // Hidden on NTP page context ("chrome://new-tab-page/").
+  EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
+  navigate_to_url(chrome::kChromeUINewTabPageURL);
 }
