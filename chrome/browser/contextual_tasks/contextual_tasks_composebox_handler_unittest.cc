@@ -133,7 +133,7 @@ class ContextualTasksComposeboxHandlerTest
     auto contextual_session_handle = service_->CreateSessionForTesting(
         std::move(mock_controller),
         std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(
-            contextual_search::ContextualSearchSource::kLens));
+            contextual_search::ContextualSearchSource::kContextualTasks));
     session_handle_ =
         service_->GetSession(contextual_session_handle->session_id());
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
@@ -176,17 +176,7 @@ class ContextualTasksComposeboxHandlerTest
 TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, GetWebUIWebContents())
-      .WillOnce(testing::Return(web_contents()));
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
-  handler_->SubmitQuery("test query", 0, false, false, false, false);
-}
-
-TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_NoSession) {
-  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-      ->set_session_handle(nullptr);
-
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
   handler_->SubmitQuery("test query", 0, false, false, false, false);
 }
 
@@ -194,20 +184,6 @@ TEST_F(ContextualTasksComposeboxHandlerTest, OnAutocompleteAccept) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
-
-  AutocompleteMatch match;
-  handler_->GetOmniboxControllerForTesting()->client()->OnAutocompleteAccept(
-      GURL("https://www.google.com/search?q=test query"), nullptr,
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
-      AutocompleteMatchType::SEARCH_SUGGEST, base::TimeTicks::Now(), false,
-      false, u"test query", match, match);
-}
-
-TEST_F(ContextualTasksComposeboxHandlerTest, OnAutocompleteAccept_NoSession) {
-  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-      ->set_session_handle(nullptr);
-
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
   AutocompleteMatch match;
   handler_->GetOmniboxControllerForTesting()->client()->OnAutocompleteAccept(

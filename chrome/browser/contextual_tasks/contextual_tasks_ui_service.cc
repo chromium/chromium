@@ -100,7 +100,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     bool is_to_new_tab) {
   CHECK(context_controller_);
 
-  // Get the session handle from the source web contents.
+  // Get the session handle from the source web contents, if provided, to
+  // propagate context from the source WebUI.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
   if (source_tab) {
@@ -143,17 +144,14 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     Navigate(&params);
     contextual_task_web_contents = params.navigated_or_inserted_contents;
   }
-  // Attach the session Id of the ai page to the task.
+  // Associate the web contents with the task and set the session handle if
+  // provided.
   if (contextual_task_web_contents) {
     AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
     if (session_handle) {
-      ContextualSearchWebContentsHelper::CreateForWebContents(
-          contextual_task_web_contents);
-      auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-          contextual_task_web_contents);
-      // Give the created session handle to the new web contents. Allows WebUI
-      // to propagate context from initial web contents.
-      helper->set_session_handle(std::move(session_handle));
+      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+          contextual_task_web_contents)
+          ->set_session_handle(std::move(session_handle));
     }
   }
 }

@@ -6,7 +6,6 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -402,21 +401,11 @@ LensQueryFlowRouter::GetContextualSearchSessionHandle() const {
   auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(
           browser_window_interface());
-  if (!coordinator) {
+  if (!coordinator || !coordinator->IsSidePanelOpenForContextualTask()) {
     return nullptr;
   }
 
-  auto* web_contents = coordinator->GetActiveWebContents();
-  if (!web_contents || !coordinator->IsSidePanelOpenForContextualTask()) {
-    return nullptr;
-  }
-
-  auto* helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents);
-  if (helper && helper->session_handle()) {
-    return helper->session_handle();
-  }
-  return nullptr;
+  return coordinator->GetContextualSearchSessionHandleForSidePanel();
 }
 
 }  // namespace lens

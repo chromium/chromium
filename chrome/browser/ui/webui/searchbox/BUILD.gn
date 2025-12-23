@@ -125,6 +125,7 @@ source_set("browser_tests") {
   deps = [
     ":searchbox",
     ":searchbox_test_utils",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/ui",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/omnibox",

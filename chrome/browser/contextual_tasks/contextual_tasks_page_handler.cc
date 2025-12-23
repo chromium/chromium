@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -284,10 +283,8 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
     return;
   }
 
-  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-      web_ui_controller_->GetWebUIWebContents());
   contextual_search::ContextualSearchSessionHandle* handle =
-      helper ? helper->session_handle() : nullptr;
+      web_ui_controller_->GetContextualSessionHandle();
 
   std::vector<contextual_search::FileInfo> submitted_context;
   if (handle) {

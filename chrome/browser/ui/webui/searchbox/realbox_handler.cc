@@ -75,13 +75,21 @@ void RealboxOmniboxClient::OnBookmarkLaunched() {
 RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    GetSessionHandleCallback get_session_callback)
     : ContextualSearchboxHandler(
           std::move(pending_page_handler),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              std::make_unique<RealboxOmniboxClient>(profile, web_contents))) {
+              std::make_unique<RealboxOmniboxClient>(profile, web_contents)),
+          std::move(get_session_callback)) {
+  // Set the callback for getting suggest inputs from the session.
+  // The session is owned by WebUI controller and accessed via callback.
+  // It is safe to use Unretained because omnibox client is owned by `this`.
+  static_cast<RealboxOmniboxClient*>(omnibox_controller()->client())
+      ->SetSuggestInputsCallback(base::BindRepeating(
+          &RealboxHandler::GetSuggestInputs, base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 

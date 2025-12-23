@@ -65,6 +65,10 @@ class NavigationHandle;
 class WebUI;
 }  // namespace content
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 namespace page_image_service {
 class ImageServiceHandler;
 }  // namespace page_image_service
@@ -321,8 +325,17 @@ class NewTabPageUI
   // type of NTP promos can be shown, if any.
   std::string_view GetNtpPromoType();
 
+  // Returns a reference to the owned contextual search session handle for
+  // `realbox_handler_` and `composebox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle();
+
   // The counter for NewTabPage.Count UMA metrics.
   static int instance_count_;
+
+  // Must outlive `realbox_handler_` and `composebox_handler_`.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      shared_session_handle_;
 
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>

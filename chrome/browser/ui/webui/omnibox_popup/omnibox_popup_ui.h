@@ -29,6 +29,10 @@ class ComposeboxHandler;
 class OmniboxPopupAimHandler;
 class OmniboxPopupUI;
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 class OmniboxPopupUIConfig
     : public DefaultTopChromeWebUIConfig<OmniboxPopupUI> {
  public:
@@ -92,7 +96,15 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
 
+  // Returns a reference to the owned contextual search session handle for
+  // `omnibox_handler_` and `composebox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle();
+
  private:
+  // Must outlive `omnibox_handler_` and `composebox_handler_`.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      shared_session_handle_;
   std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
   raw_ptr<Profile> profile_;
 

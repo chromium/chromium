@@ -29,6 +29,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 namespace searchbox::mojom {
 class PageHandler;
 }  // namespace searchbox::mojom
@@ -94,6 +98,10 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+  // Returns a reference to the owned contextual search session handle for
+  // `realbox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle();
   // webui_browser::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<webui_browser::mojom::Page> page,
@@ -117,6 +125,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   // UIs.
   const std::vector<ui::ElementIdentifier>& GetKnownElementIdentifiers() const;
 
+  // Must outlive `realbox_handler_`.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
   std::unique_ptr<RealboxHandler> realbox_handler_;
   std::unique_ptr<WebUIBrowserBookmarkBarPageHandler>
       bookmark_bar_page_handler_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -105,7 +106,11 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get());
+        web_contents_.get(),
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -226,7 +231,8 @@ TEST_F(RealboxHandlerTest, AddFileContext) {
   file_info->mime_type = "image/png";
   file_info->image_data_url = image_data_url;
   file_info->is_deletable = is_deletable;
-  handler_->AddFileContextFromBrowser(token, file_info.Clone());
+  handler_->SearchboxHandler::AddFileContextFromBrowser(token,
+                                                        file_info.Clone());
   page_.FlushForTesting();
 
   ASSERT_TRUE(captured_file_info);
@@ -420,7 +426,11 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_);
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_,
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

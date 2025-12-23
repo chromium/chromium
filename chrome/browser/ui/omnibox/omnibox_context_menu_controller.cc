@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -402,16 +401,6 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  auto* helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get());
-  if (!helper) {
-    return false;
-  }
-  auto* handle = helper->session_handle();
-  if (!handle) {
-    return false;
-  }
-
   auto omnibox_popup_ui = GetOmniboxPopupUI();
   if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler()) {
     return false;
@@ -424,7 +413,9 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   }
 
   auto file_upload_count =
-      static_cast<int>(handle->GetUploadedContextTokens().size());
+      static_cast<int>(omnibox_popup_ui->composebox_handler()
+                           ->GetUploadedContextTokens()
+                           .size());
   if (file_upload_count > 0) {
     auto max_num_files =
         omnibox::FeatureConfig::Get().config.composebox().max_num_files();

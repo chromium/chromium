@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -128,6 +129,11 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   void CloseSidePanel();
 
+  // Returns a reference to the owned contextual search session handle for
+  // `composebox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle();
+
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
@@ -222,6 +228,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   // A timer used to refresh the OAuth token before it expires.
   base::OneShotTimer token_refresh_timer_;
+
+  // Must outlive `composebox_handler_`.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
 
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;

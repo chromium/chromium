@@ -263,21 +263,20 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "internals/",
       IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
 
-  // Create a session handle on the web contents if it doesn't already exist.
-  // TODO(crbug.com/462193737): Pass the session handle from the omnibox
-  // or NTP through the web contents helper.
-  if (auto* contextual_search_web_contents_helper =
-          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-              web_ui->GetWebContents());
-      !contextual_search_web_contents_helper->session_handle()) {
-    Profile* profile = Profile::FromWebUI(web_ui);
-    auto* contextual_search_service =
-        ContextualSearchServiceFactory::GetForProfile(profile);
-    auto contextual_session_handle = contextual_search_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kContextualTasks);
-    contextual_search_web_contents_helper->set_session_handle(
-        std::move(contextual_session_handle));
+  // Check if a session handle was provided through the web contents. If so,
+  // take ownership. Otherwise create a new session.
+  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+      web_ui->GetWebContents());
+  if (helper && helper->session_handle()) {
+    session_handle_ = helper->TakeSessionHandle();
+  } else {
+    auto* service = ContextualSearchServiceFactory::GetForProfile(
+        Profile::FromWebUI(web_ui));
+    if (service) {
+      session_handle_ = service->CreateSession(
+          ntp_composebox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kContextualTasks);
+    }
   }
 }
 
@@ -442,6 +441,11 @@ void ContextualTasksUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
+}
+
+contextual_search::ContextualSearchSessionHandle*
+ContextualTasksUI::GetContextualSessionHandle() {
+  return session_handle_.get();
 }
 
 void ContextualTasksUI::PostMessageToWebview(

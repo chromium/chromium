@@ -114,7 +114,8 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    GetSessionHandleCallback get_session_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
@@ -124,7 +125,8 @@ ComposeboxHandler::ComposeboxHandler(
           std::make_unique<OmniboxController>(
               std::make_unique<ComposeboxOmniboxClient>(profile,
                                                         web_contents,
-                                                        this))) {}
+                                                        this)),
+          std::move(get_session_callback)) {}
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -133,14 +135,24 @@ ComposeboxHandler::ComposeboxHandler(
         pending_searchbox_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    std::unique_ptr<OmniboxController> omnibox_controller)
+    std::unique_ptr<OmniboxController> controller,
+    GetSessionHandleCallback get_session_callback)
     : ContextualSearchboxHandler(std::move(pending_searchbox_handler),
                                  profile,
                                  web_contents,
-                                 std::move(omnibox_controller)),
+                                 std::move(controller),
+                                 std::move(get_session_callback)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
+  // Set the callback for getting suggest inputs from the session.
+  // The session is owned by WebUI controller and accessed via callback.
+  // It is safe to use Unretained because omnibox client is owned by `this`.
+  if (auto* composebox_client = static_cast<ComposeboxOmniboxClient*>(
+          omnibox_controller()->client())) {
+    composebox_client->SetSuggestInputsCallback(base::BindRepeating(
+        &ComposeboxHandler::GetSuggestInputs, base::Unretained(this)));
+  }
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 

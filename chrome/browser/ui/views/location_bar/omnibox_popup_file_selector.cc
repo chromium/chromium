@@ -10,13 +10,14 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -117,23 +118,24 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   mojo_base::BigBuffer file_data_buffer =
       mojo_base::BigBuffer(file_data_vector);
 
-  auto* handle =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get())
-          ->session_handle();
-
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {
     image_data_url = "data:" + file_data->mime_type + ";base64," +
                      base::Base64Encode(file_data->bytes);
   }
 
-  handle->AddFileContext(
-      file_data->mime_type, std::move(file_data_buffer),
-      std::move(image_encoding_options_),
-      base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
-                     weak_factory_.GetWeakPtr(), mime_type,
-                     std::move(image_data_url), std::move(file_data->name),
-                     std::move(file_data->mime_type)));
+  if (auto* webui = web_contents_->GetWebUI()) {
+    auto* omnibox_popup_ui = webui->GetController()->GetAs<OmniboxPopupUI>();
+    if (omnibox_popup_ui && omnibox_popup_ui->composebox_handler()) {
+      omnibox_popup_ui->composebox_handler()->AddFileContextFromBrowser(
+          file_data->mime_type, std::move(file_data_buffer),
+          std::move(image_encoding_options_),
+          base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
+                         weak_factory_.GetWeakPtr(), mime_type,
+                         std::move(image_data_url), std::move(file_data->name),
+                         std::move(file_data->mime_type)));
+    }
+  }
 
   edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
 }

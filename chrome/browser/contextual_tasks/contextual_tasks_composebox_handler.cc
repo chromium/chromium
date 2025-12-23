@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
@@ -135,8 +134,18 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
           std::make_unique<OmniboxController>(
               std::make_unique<ContextualTasksOmniboxClient>(profile,
                                                              web_contents,
-                                                             this))),
-      web_ui_controller_(ui_controller) {}
+                                                             this)),
+          base::BindRepeating(&ContextualTasksUI::GetContextualSessionHandle,
+                              base::Unretained(ui_controller))),
+      web_ui_controller_(ui_controller) {
+  // Set the callback for getting suggest inputs from the session.
+  // The session is owned by WebUI controller and accessed via callback.
+  // It is safe to use Unretained because omnibox client is owned by `this`.
+  static_cast<ContextualTasksOmniboxClient*>(omnibox_controller()->client())
+      ->SetSuggestInputsCallback(base::BindRepeating(
+          &ContextualTasksComposeboxHandler::GetSuggestInputs,
+          base::Unretained(this)));
+}
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
 
@@ -153,10 +162,7 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
   // Create a client to aim message and send it to the page.
-  if (auto* contextual_search_web_contents_helper =
-          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-              web_ui_controller_->GetWebUIWebContents());
-      contextual_search_web_contents_helper->session_handle()) {
+  if (auto* session_handle = GetContextualSessionHandle()) {
     // If there is an auto-added tab, the user sending the query means we should
     // upload it.
     UploadSnapshotTabContextIfPresent();
@@ -179,9 +185,8 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD;
 
     lens::ClientToAimMessage client_to_page_message =
-        contextual_search_web_contents_helper->session_handle()
-            ->CreateClientToAimRequest(
-                std::move(create_client_to_aim_request_info));
+        session_handle->CreateClientToAimRequest(
+            std::move(create_client_to_aim_request_info));
     web_ui_controller_->PostMessageToWebview(client_to_page_message);
   }
 }
@@ -259,14 +264,9 @@ void ContextualTasksComposeboxHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info,
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
-  auto* contextual_search_web_contents_helper =
-      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-          web_ui_controller_->GetWebUIWebContents());
-
-  if (contextual_search_web_contents_helper &&
-      contextual_search_web_contents_helper->session_handle()) {
+  if (auto* session_handle = GetContextualSessionHandle()) {
     std::string mime_type = file_info->mime_type;
-    contextual_search_web_contents_helper->session_handle()->AddFileContext(
+    session_handle->AddFileContext(
         mime_type, std::move(file_bytes), CreateImageEncodingOptions(),
         base::BindOnce(&ContextualTasksComposeboxHandler::OnFileAddedToSession,
                        weak_factory_.GetWeakPtr(), std::move(file_info),
