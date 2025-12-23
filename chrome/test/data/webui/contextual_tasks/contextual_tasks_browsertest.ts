@@ -118,7 +118,7 @@ suite('ContextualTasksAppTest', function() {
 
     const webview = app.shadowRoot.querySelector('webview');
     assertTrue(!!webview);
-    assertEquals(webview.getAttribute('src'), '');
+    assertFalse(!!webview.getAttribute('src'));
 
     const token = 'test_token';
     proxy.callbackRouterRemote.setOAuthToken(token);

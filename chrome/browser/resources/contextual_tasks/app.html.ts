@@ -18,7 +18,7 @@ export function getHtml(this: ContextualTasksAppElement) {
       </top-toolbar>
   `}
   <error-page id="errorPage"></error-page>
-  <webview id="threadFrame" src="${this.threadUrl_}"></webview>
+  <webview id="threadFrame"></webview>
   <contextual-tasks-composebox id="composebox"
     ?hidden="${!this.showComposebox_}">
   </contextual-tasks-composebox>
