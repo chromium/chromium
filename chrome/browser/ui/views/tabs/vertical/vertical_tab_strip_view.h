@@ -32,8 +32,8 @@ class VerticalTabStripView final : public views::View,
   ~VerticalTabStripView() override;
 
   views::Separator* tabs_separator_for_testing() { return tabs_separator_; }
-  VerticalPinnedTabContainerView* GetPinnedTabsContainerForTesting();
-  VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainerForTesting();
+  VerticalPinnedTabContainerView* GetPinnedTabsContainer();
+  VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
 
   void SetCollapsedState(bool is_collapsed);
 
@@ -45,8 +45,11 @@ class VerticalTabStripView final : public views::View,
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
 
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
+  raw_ptr<VerticalPinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
   raw_ptr<views::ScrollView> unpinned_tabs_scroll_view_ = nullptr;
+  raw_ptr<VerticalUnpinnedTabContainerView> unpinned_tabs_container_view_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_

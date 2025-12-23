@@ -42,6 +42,8 @@ class VerticalTabView : public views::View,
 
   void UpdateHovered(bool hovered);
 
+  void OnTabDragOver();
+
   TabIcon* icon_for_testing() { return icon_; }
   AlertIndicatorButton* alert_indicator_for_testing() {
     return alert_indicator_;

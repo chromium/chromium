@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_utils.h"
@@ -30,7 +31,7 @@ namespace {
 class TabSlotShimView : public TabSlotView {
   METADATA_HEADER(TabSlotShimView, TabSlotView)
  public:
-  explicit TabSlotShimView(TabCollectionNode& node) : node_(node) {
+  explicit TabSlotShimView(const TabCollectionNode& node) : node_(node) {
     // TODO(crbug.com/439963720): Support dragging other types.
     CHECK(node_->type() == TabCollectionNode::Type::TAB);
   }
@@ -48,7 +49,7 @@ class TabSlotShimView : public TabSlotView {
   const TabCollectionNode& node() const { return node_.get(); }
 
  private:
-  const raw_ref<TabCollectionNode> node_;
+  const raw_ref<const TabCollectionNode> node_;
 };
 
 BEGIN_METADATA(TabSlotShimView)
@@ -116,8 +117,39 @@ void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
   ResetDragState();
 }
 
+void VerticalTabDragHandlerImpl::DraggedTabsOverNode(
+    const TabCollectionNode& node) {
+  if (!drag_controller_) {
+    // Do nothing if the drag is not attached to our context yet (e.g. on the
+    // first iteration of the drag loop).
+    return;
+  }
+  if (dragged_tabs_.contains(&node)) {
+    return;
+  }
+  // TODO(crbug.com/439963720): Support dragging over other types.
+  // TODO(crbug.com/439963720): This assumes only one tab is being dragged.
+  CHECK_EQ(1u, dragged_tabs_.size());
+  if (node.type() == TabCollectionNode::Type::TAB) {
+    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+
+    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->GetIndexOfTab(tab),
+                                         std::nullopt);
+  } else if (node.type() == TabCollectionNode::Type::UNPINNED) {
+    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
+                                         std::nullopt);
+  }
+}
+
 TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
   return this;
+}
+
+bool VerticalTabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {
+  // The drag context has to be able to process mouse events during the drag.
+  // By default, this is predicated on visibility, but the handler should not
+  // be visible. Instead, defer the check to the parent.
+  return parent()->CanAcceptEvent(event);
 }
 
 bool VerticalTabDragHandlerImpl::OnMouseDragged(const ui::MouseEvent& event) {
@@ -126,6 +158,10 @@ bool VerticalTabDragHandlerImpl::OnMouseDragged(const ui::MouseEvent& event) {
 
 void VerticalTabDragHandlerImpl::OnMouseReleased(const ui::MouseEvent& event) {
   EndDrag(EndDragReason::kComplete);
+}
+
+void VerticalTabDragHandlerImpl::OnMouseCaptureLost() {
+  EndDrag(EndDragReason::kCaptureLost);
 }
 
 TabDragContext* VerticalTabDragHandlerImpl::GetContextForNewBrowser(
@@ -199,7 +235,13 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 }
 
 void VerticalTabDragHandlerImpl::StartedDragging(
-    const std::vector<TabSlotView*>& views) {}
+    const std::vector<TabSlotView*>& views) {
+  for (auto* view : views) {
+    auto* shim_view = views::AsViewClass<TabSlotShimView>(view);
+    CHECK(shim_view);
+    dragged_tabs_.insert(&shim_view->node());
+  }
+}
 
 void VerticalTabDragHandlerImpl::DraggedTabsDetached() {
   dragged_tabs_.clear();

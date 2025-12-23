@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -325,6 +327,16 @@ void VerticalTabStripRegionView::SetExclusionWidthForLayout(
   top_button_container_->SetExclusionWidthForLayout(exclusion_width);
 }
 
+VerticalPinnedTabContainerView*
+VerticalTabStripRegionView::GetPinnedTabsContainer() {
+  return tab_strip_view_->GetPinnedTabsContainer();
+}
+
+VerticalUnpinnedTabContainerView*
+VerticalTabStripRegionView::GetUnpinnedTabsContainer() {
+  return tab_strip_view_->GetUnpinnedTabsContainer();
+}
+
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
@@ -404,6 +416,16 @@ void VerticalTabStripRegionView::UpdateBackgroundColors() {
 
 bool VerticalTabStripRegionView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
+}
+
+TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
+    const gfx::Point& point_in_screen) {
+  VerticalUnpinnedTabContainerView* container = GetUnpinnedTabsContainer();
+  CHECK(container);
+  if (container->GetBoundsInScreen().Contains(point_in_screen)) {
+    return container;
+  }
+  return nullptr;
 }
 
 BEGIN_METADATA(VerticalTabStripRegionView)

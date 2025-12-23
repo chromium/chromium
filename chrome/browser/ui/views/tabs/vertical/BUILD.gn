@@ -25,6 +25,7 @@ source_set("vertical") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//components/tabs",
     "//ui/base/metadata",
     "//ui/gfx/geometry",

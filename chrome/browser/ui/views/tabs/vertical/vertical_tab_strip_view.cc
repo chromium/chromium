@@ -117,20 +117,13 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   return layouts;
 }
 
-VerticalPinnedTabContainerView*
-VerticalTabStripView::GetPinnedTabsContainerForTesting() {
-  if (views::View* contents = pinned_tabs_scroll_view_->contents()) {
-    return static_cast<VerticalPinnedTabContainerView*>(contents);
-  }
-  return nullptr;
+VerticalPinnedTabContainerView* VerticalTabStripView::GetPinnedTabsContainer() {
+  return pinned_tabs_container_view_;
 }
 
 VerticalUnpinnedTabContainerView*
-VerticalTabStripView::GetUnpinnedTabsContainerForTesting() {
-  if (views::View* contents = unpinned_tabs_scroll_view_->contents()) {
-    return static_cast<VerticalUnpinnedTabContainerView*>(contents);
-  }
-  return nullptr;
+VerticalTabStripView::GetUnpinnedTabsContainer() {
+  return unpinned_tabs_container_view_;
 }
 
 void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
@@ -141,12 +134,17 @@ void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
 
 views::View* VerticalTabStripView::AddScrollViewContents(
     std::unique_ptr<views::View> view) {
-  if (views::IsViewClass<VerticalUnpinnedTabContainerView>(view.get())) {
+  if (auto* container =
+          views::AsViewClass<VerticalUnpinnedTabContainerView>(view.get())) {
+    unpinned_tabs_container_view_ = container;
     return unpinned_tabs_scroll_view_->SetContents(std::move(view));
   }
   // |view| should only ever be VerticalUnpinnedTabContainerView or
   // VerticalPinnedTabContainerView.
-  CHECK(views::IsViewClass<VerticalPinnedTabContainerView>(view.get()));
+  auto* container =
+      views::AsViewClass<VerticalPinnedTabContainerView>(view.get());
+  CHECK(container);
+  pinned_tabs_container_view_ = container;
   return pinned_tabs_scroll_view_->SetContents(std::move(view));
 }
 

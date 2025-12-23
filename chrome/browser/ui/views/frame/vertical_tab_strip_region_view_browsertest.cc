@@ -405,19 +405,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        PinnedTabsAreaSmallerThanUnpinned) {
   region_view()->SetBounds(0, 0, 200, 600);
-  region_view()->pinned_tabs_container_for_testing()->SetPreferredSize(
+  region_view()->GetPinnedTabsContainer()->SetPreferredSize(
       gfx::Size(100, 500));
-  region_view()->unpinned_tabs_container_for_testing()->SetPreferredSize(
+  region_view()->GetUnpinnedTabsContainer()->SetPreferredSize(
       gfx::Size(100, 400));
-  EXPECT_LE(
-      region_view()->pinned_tabs_container_for_testing()->bounds().height(),
-      region_view()->unpinned_tabs_container_for_testing()->bounds().height());
+  EXPECT_LE(region_view()->GetPinnedTabsContainer()->bounds().height(),
+            region_view()->GetUnpinnedTabsContainer()->bounds().height());
 
-  region_view()->unpinned_tabs_container_for_testing()->SetPreferredSize(
+  region_view()->GetUnpinnedTabsContainer()->SetPreferredSize(
       gfx::Size(100, 50));
-  EXPECT_LE(
-      region_view()->pinned_tabs_container_for_testing()->bounds().height(),
-      region_view()->unpinned_tabs_container_for_testing()->bounds().height());
+  EXPECT_LE(region_view()->GetPinnedTabsContainer()->bounds().height(),
+            region_view()->GetUnpinnedTabsContainer()->bounds().height());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
@@ -427,15 +425,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     AppendPinnedTab();
   }
 
-  for (const auto child :
-       region_view()->pinned_tabs_container_for_testing()->children()) {
+  for (const auto child : region_view()->GetPinnedTabsContainer()->children()) {
     child->SetPreferredSize(gfx::Size(50, 60));
   }
   views::SizeBounds bounds;
   auto verify_for_width = [&](int width) {
     bounds.set_width(width);
     EXPECT_LE(region_view()
-                  ->pinned_tabs_container_for_testing()
+                  ->GetPinnedTabsContainer()
                   ->CalculateProposedLayout(bounds)
                   .host_size.width(),
               bounds.width());

@@ -34,6 +34,9 @@ class VerticalTabDragHandler {
   // Ends the drag, if started.
   virtual void EndDrag(EndDragReason reason) = 0;
 
+  // Handles tab strip model updates to reflect a drag over a give tab node.
+  virtual void DraggedTabsOverNode(const TabCollectionNode& node) = 0;
+
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
 };
@@ -44,8 +47,6 @@ class VerticalTabDragHandler {
 // support that needs to be added:
 // - Dragging more than one tab (split tabs, tab group, multi-selection).
 // - Dragging pinned tab (split tabs, tab group, multi-selection).
-// - Dragging within an attached tab strip.
-// - Visual feedback (with animations).
 class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {
   METADATA_HEADER(VerticalTabDragHandlerImpl, TabDragContext)
@@ -63,11 +64,14 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   bool ContinueDrag(views::View& event_source_view,
                     const ui::MouseEvent& event) override;
   void EndDrag(EndDragReason reason) override;
+  void DraggedTabsOverNode(const TabCollectionNode& node) override;
   TabDragContext* GetDragContext() override;
 
   // TabDragContext
+  bool CanAcceptEvent(const ui::Event& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseCaptureLost() override;
   TabDragContext* GetContextForNewBrowser(
       BrowserView* browser_view) const override;
   TabSlotView* GetTabForContents(content::WebContents* contents) override;
@@ -112,11 +116,11 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // The tabs currently being dragged as part of a dragging session managed by
   // this handler.
-  std::set<raw_ptr<TabCollectionNode>> dragged_tabs_;
+  std::set<raw_ptr<const TabCollectionNode>> dragged_tabs_;
 
   // A mapping from nodes to their `TabSlotView` shims, used for compatibility
   // with the core dragging system.
-  std::map<raw_ptr<TabCollectionNode>, raw_ptr<TabSlotView>> shim_views_;
+  std::map<raw_ptr<const TabCollectionNode>, raw_ptr<TabSlotView>> shim_views_;
   std::vector<base::CallbackListSubscription> node_destroyed_callbacks_;
 };
 

@@ -68,12 +68,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
     return tab_strip_view_->tabs_separator_for_testing();
   }
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
-  VerticalPinnedTabContainerView* pinned_tabs_container_for_testing() {
-    return tab_strip_view_->GetPinnedTabsContainerForTesting();
-  }
-  VerticalUnpinnedTabContainerView* unpinned_tabs_container_for_testing() {
-    return tab_strip_view_->GetUnpinnedTabsContainerForTesting();
-  }
+  VerticalPinnedTabContainerView* GetPinnedTabsContainer();
+  VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
 
   RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
 
@@ -131,6 +127,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // the leading, top corner.
   void SetToolbarHeightForLayout(const int toolbar_height);
   void SetExclusionWidthForLayout(const int exclusion_width);
+
+  TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
 
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);

@@ -24,8 +24,11 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
+
+using URLs = std::vector<std::string_view>;
 
 base::RepeatingCallback<size_t()> GetBrowserCount() {
   return base::BindRepeating([]() { return chrome::GetTotalBrowserCount(); });
@@ -33,6 +36,18 @@ base::RepeatingCallback<size_t()> GetBrowserCount() {
 
 base::RepeatingCallback<bool()> GetDragActive() {
   return base::BindRepeating([]() { return TabDragController::IsActive(); });
+}
+
+base::RepeatingCallback<URLs()> GetTabOrder(TabStripModel* model) {
+  return base::BindRepeating(
+      [](TabStripModel* model) {
+        URLs urls;
+        for (auto i = 0; i < model->count(); ++i) {
+          urls.push_back(model->GetWebContentsAt(i)->GetURL().spec());
+        }
+        return urls;
+      },
+      model);
 }
 
 }  // namespace
@@ -53,7 +68,7 @@ class VerticalTabDragHandlerTest
           // TODO(crbug.com/40249472): Since DnD creates a blocking
           // loop, the initiating mouse movement must be executed
           // asynchronously.
-          EXPECT_TRUE(ui_controls::SendMouseMove(point.x(), point.y()));
+          ASSERT_TRUE(ui_controls::SendMouseMove(point.x(), point.y()));
         }));
   }
 
@@ -61,17 +76,25 @@ class VerticalTabDragHandlerTest
   // ending the drag must be executed asynchronoulsy.
   auto ReleaseMouseAsync() {
     return Do([&]() {
-      ui_controls::SendMouseEvents(ui_controls::MouseButton::LEFT,
-                                   ui_controls::MouseButtonState::UP);
+      ASSERT_TRUE(ui_controls::SendMouseEvents(
+          ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
     });
   }
 
   auto PressEscAsync() {
     return Do([&]() {
-      ui_controls::SendKeyPress(
+      ASSERT_TRUE(ui_controls::SendKeyPress(
           GetLatestBrowser().GetWindow()->GetNativeWindow(), ui::VKEY_ESCAPE,
-          false, false, false, false);
+          false, false, false, false));
     });
+  }
+
+  auto MoveMouseToViewAsync(std::string_view view_id) {
+    return WithView(
+        view_id, base::BindOnce([](views::View* view) {
+          const gfx::Point point = view->GetBoundsInScreen().CenterPoint();
+          ASSERT_TRUE(ui_controls::SendMouseMove(point.x(), point.y()));
+        }));
   }
 
   BrowserView& GetBrowserView() {
@@ -89,12 +112,14 @@ class VerticalTabDragHandlerTest
   }
 };
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
                                     kBrowserCountPoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kDragStatePoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
+                                    kTabOrderPoller);
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
@@ -108,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                        MAYBE_DragToDetachIntoNewWindow) {
   constexpr char kSecondTabName[] = "SecondTab";
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kSecondTabName, 1),
       DragTabTo(kSecondTabName,
@@ -140,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                        MAYBE_DragToDetachThenCancel) {
   constexpr char kSecondTabName[] = "SecondTab";
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kSecondTabName, 1),
       DragTabTo(kSecondTabName,
@@ -157,5 +182,140 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
         ASSERT_EQ(3, tab_strip_model->count());
         EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
                   tab_strip_model->GetWebContentsAt(1)->GetURL());
+      }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_DragToDetachThenReattach DragToDetachThenReattach
+#else
+#define MAYBE_DragToDetachThenReattach DISABLED_DragToDetachThenReattach
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragToDetachThenReattach) {
+  constexpr char kSecondTabName[] = "SecondTab";
+  constexpr char kThirdTabName[] = "ThirdTab";
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kThirdTabName, 2),
+      DragTabTo(kThirdTabName,
+                GetBrowserView().GetBoundsInScreen().top_right() +
+                    gfx::Vector2d(50, 50)),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2),
+      MoveMouseToViewAsync(kSecondTabName),
+      WaitForState(kBrowserCountPoller, 1), ReleaseMouseAsync(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false), Do([&]() {
+        TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+        ASSERT_NE(nullptr, tab_strip_model);
+        EXPECT_EQ(3, tab_strip_model->count());
+      }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_DragWithinUnpinnedContainer DragWithinUnpinnedContainer
+#else
+#define MAYBE_DragWithinUnpinnedContainer DISABLED_DragWithinUnpinnedContainer
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragWithinUnpinnedContainer) {
+  constexpr char kFirstTabName[] = "FirstTab";
+  constexpr char kSecondTabName[] = "SecondTab";
+  constexpr char kThirdTabName[] = "ThirdTab";
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kFirstTabName, 0),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kThirdTabName, 2),
+      DragTabTo(kThirdTabName,
+                GetBrowserView().GetBoundsInScreen().top_right() +
+                    gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+
+      MoveMouseToViewAsync(kSecondTabName),
+      WaitForState(kTabOrderPoller,
+                   URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
+                         chrome::kChromeUIBookmarksURL})),
+
+      MoveMouseToViewAsync(kFirstTabName),
+      WaitForState(kTabOrderPoller,
+                   URLs({chrome::kChromeUISettingsURL, url::kAboutBlankURL,
+                         chrome::kChromeUIBookmarksURL})),
+
+      // Release the drag and ensure tab ordering remains.
+      ReleaseMouseAsync(), WaitForState(kDragStatePoller, false), Do([&]() {
+        ASSERT_EQ(3, tab_strip_model->count());
+        EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
+                  tab_strip_model->GetWebContentsAt(0)->GetURL());
+        EXPECT_EQ(GURL(url::kAboutBlankURL),
+                  tab_strip_model->GetWebContentsAt(1)->GetURL());
+        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
+                  tab_strip_model->GetWebContentsAt(2)->GetURL());
+      }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_CancelDragWithinUnpinnedContainer \
+  CancelDragWithinUnpinnedContainer
+#else
+#define MAYBE_CancelDragWithinUnpinnedContainer \
+  DISABLED_CancelDragWithinUnpinnedContainer
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_CancelDragWithinUnpinnedContainer) {
+  constexpr char kSecondTabName[] = "SecondTab";
+  constexpr char kThirdTabName[] = "ThirdTab";
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kThirdTabName, 2),
+      DragTabTo(kThirdTabName,
+                GetBrowserView().GetBoundsInScreen().top_right() +
+                    gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+
+      // Move mouse over the last tab and check tab ordering.
+      MoveMouseToViewAsync(kSecondTabName),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 1),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller,
+                   URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
+                         chrome::kChromeUIBookmarksURL})),
+      PressEscAsync(), WaitForState(kDragStatePoller, false), Do([&]() {
+        ASSERT_EQ(3, tab_strip_model->count());
+        EXPECT_EQ(GURL(url::kAboutBlankURL),
+                  tab_strip_model->GetWebContentsAt(0)->GetURL());
+        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
+                  tab_strip_model->GetWebContentsAt(1)->GetURL());
+        EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
+                  tab_strip_model->GetWebContentsAt(2)->GetURL());
       }));
 }
