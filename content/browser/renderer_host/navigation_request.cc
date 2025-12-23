@@ -1761,6 +1761,25 @@ NavigationRequest::NavigationRequest(
 #endif
   CheckSoftNavigationHeuristicsInvariants();
 
+  if (IsInitialWebUINavigation()) {
+    // Initial WebUI navigations must satisfy all these conditions
+    // - Is browser initiated
+    // - Occur on the outermost main frame
+    // - Have not navigated before
+    CHECK(!IsRendererInitiated());
+    CHECK(!frame_tree_node_->GetParentOrOuterDocumentOrEmbedder());
+    CHECK(frame_tree_node_->is_on_initial_empty_document());
+    CHECK(frame_tree_node_->navigator()
+              .controller()
+              .GetLastCommittedEntry()
+              ->IsInitialEntry());
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // It should not be possible to navigate away from the initial WebUI page.
+  CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(
+      frame_tree_node_->current_url()));
+#endif
+
   ScopedCrashKeys crash_keys(*this);
 
   ComputeDownloadPolicy();
@@ -3205,7 +3224,10 @@ void NavigationRequest::StartNavigation() {
   // at the beginning of the navigation, so we won't run them again.
   // ProcessSelectionDeferringConditions also don't need to run for prerendered
   // page activations because those have already selected a process.
-  if (!IsPrerenderedPageActivation()) {
+  // For initial WebUI navigations, CommitDeferringConditions and
+  // ProcessSelectionDeferringConditions are not run, so that the navigation can
+  // run synchronously from start to commit.
+  if (!IsPrerenderedPageActivation() && !IsInitialWebUINavigation()) {
     commit_deferrer_ = CommitDeferringConditionRunner::Create(
         *this, CommitDeferringCondition::NavigationType::kOther,
         /*candidate_prerender_frame_tree_node_id=*/std::nullopt);
@@ -6174,8 +6196,9 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
   DCHECK_EQ(result.action(), NavigationThrottle::PROCEED);
 
   // When this request is for prerender activation, `commit_deferrer_` has
-  // already been processed.
-  if (IsPrerenderedPageActivation()) {
+  // already been processed. If it's an initial WebUI navigation, commit
+  // deferring conditions are skipped.
+  if (IsPrerenderedPageActivation() || IsInitialWebUINavigation()) {
     DCHECK(!commit_deferrer_);
     CommitNavigation();
     // DO NOT ADD CODE after this. The previous call to CommitNavigation
@@ -6427,6 +6450,12 @@ void NavigationRequest::CommitNavigation() {
   // If a WebUI was created for this navigation, it must have been moved to the
   // RenderFrameHost we're about to commit in already.
   CHECK(!HasWebUI());
+#if !BUILDFLAG(IS_ANDROID)
+  // Initial WebUI navigations must use an initial WebUI process.
+  if (IsInitialWebUINavigation()) {
+    CHECK(GetRenderFrameHost()->GetProcess()->IsForInitialWebUI());
+  }
+#endif
   CheckSoftNavigationHeuristicsInvariants();
 
   CoopCoepSanityCheck();
@@ -11974,6 +12003,14 @@ void NavigationRequest::ValidateCommitOrigin(
 
 PrerenderHostId NavigationRequest::GetPrerenderHostId() const {
   return prerender_host_id_;
+}
+
+bool NavigationRequest::IsInitialWebUINavigation() {
+#if !BUILDFLAG(IS_ANDROID)
+  return GetContentClient()->browser()->IsInitialWebUIURL(GetURL());
+#else
+  return false;
+#endif
 }
 
 }  // namespace content

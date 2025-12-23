@@ -67,6 +67,10 @@ NavigationThrottleRegistryImpl::NavigationThrottleRegistryImpl(
 NavigationThrottleRegistryImpl::~NavigationThrottleRegistryImpl() = default;
 
 void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
+  if (navigation_request_->IsInitialWebUINavigation()) {
+    // Skip adding throttles for navigations to the initial WebUI.
+    return;
+  }
   TRACE_EVENT0("navigation",
                "NavigationThrottleRegistryImpl::RegisterNavigationThrottles");
   // Note: `throttles_` might not be empty. Some NavigationThrottles might have
@@ -161,6 +165,10 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
 
 void NavigationThrottleRegistryImpl::
     RegisterNavigationThrottlesForCommitWithoutUrlLoader() {
+  if (navigation_request_->IsInitialWebUINavigation()) {
+    // Skip adding throttles for navigations to the initial WebUI.
+    return;
+  }
   // Note: `throttles_` might not be empty. Some NavigationThrottles might have
   // been registered with RegisterThrottleForTesting. These must reside at the
   // end of `throttles_`. TestNavigationManagerThrottle expects that the
@@ -265,6 +273,7 @@ void NavigationThrottleRegistryImpl::AddThrottle(
   CHECK(navigation_throttle);
   TRACE_EVENT1("navigation", "NavigationThrottleRegistryImpl::AddThrottle",
                "navigation_throttle", navigation_throttle->GetNameForLogging());
+  CHECK(!navigation_request_->IsInitialWebUINavigation());
   throttles_.push_back(std::move(navigation_throttle));
 }
 
