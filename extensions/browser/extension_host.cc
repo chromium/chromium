@@ -540,29 +540,6 @@ content::WebContents* ExtensionHost::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-  // First, if the creating extension view was associated with a tab contents,
-  // use that tab content's delegate. We must be careful here that the
-  // associated tab contents has the same profile as the new tab contents. In
-  // the case of extensions in 'spanning' incognito mode, they can mismatch.
-  // We don't want to end up putting a normal tab into an incognito window, or
-  // vice versa.
-  // Note that we don't do this for popup windows, because we need to associate
-  // those with their extension_app_id.
-  if (disposition != WindowOpenDisposition::NEW_POPUP) {
-    WebContents* associated_contents = GetAssociatedWebContents();
-    if (associated_contents &&
-        associated_contents->GetBrowserContext() ==
-            new_contents->GetBrowserContext()) {
-      WebContentsDelegate* delegate = associated_contents->GetDelegate();
-      if (delegate) {
-        delegate->AddNewContents(associated_contents, std::move(new_contents),
-                                 target_url, disposition, window_features,
-                                 user_gesture, was_blocked);
-        return nullptr;
-      }
-    }
-  }
-
   delegate_->CreateTab(std::move(new_contents), extension_id_, disposition,
                        window_features, user_gesture);
 
