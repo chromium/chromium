@@ -15,8 +15,11 @@
 class AuthenticationService;
 @class GeminiConfiguration;
 @class GeminiPageContext;
+@class GeminiSettingsAction;
 @class GeminiSettingsMetadata;
 @protocol BWGGatewayProtocol;
+
+typedef NS_ENUM(NSInteger, GeminiSettingsContext);
 
 using BWGEligibilityCallback = void (^)(BOOL eligible);
 
@@ -109,6 +112,9 @@ void UpdatePageContext(GeminiPageContext* gemini_page_context);
 // Returns the Gemini settings that the user is eligible for.
 NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
     AuthenticationService* auth_service);
+
+// Returns the settings action for a given settings context.
+GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context);
 
 // Updates Gemini overlay offset. A positive `offset` will move the overlay
 // towards the top of the viewport while a negative `offset` will move the
