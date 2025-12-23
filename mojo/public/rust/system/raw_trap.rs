@@ -110,8 +110,16 @@ impl RawTrapEvent {
     }
 }
 
-// Due to ABI compatibility, *const T and &T are identical; RawTrapEvent is
-// #[repr(transparent)] and thus has the same layout as MojoTrapEvent).
+/// The EventHandler that will be called when a trigger fires.
+///
+/// Due to ABI compatibility, *const T and &T are identical; RawTrapEvent is
+/// #[repr(transparent)] and thus has the same layout as MojoTrapEvent).
+///
+/// # Safety invariant
+///
+/// The Mojo C API guarantees that once `EventHandler` is called with
+/// `MOJO_RESULT_CANCELLED`, then it won't be called again with the same
+/// `context`.
 pub type EventHandler = extern "C" fn(&RawTrapEvent);
 
 /// The result of arming a `RawTrap`.
@@ -221,7 +229,7 @@ impl RawTrap {
     /// guaranteed to be longer than the lifetime of RawTrap.
     pub fn add_trigger<H: Handle>(
         &self,
-        handle_to_trap: &H,
+        monitored_handle: &H,
         signals: HandleSignals,
         condition: TriggerCondition,
         context: usize,
@@ -238,7 +246,7 @@ impl RawTrap {
             // constraints on `context` noted earlier.
             MojoResult::from_code(mojo_ffi::MojoAddTrigger(
                 self.handle.get_native_handle(),
-                handle_to_trap.get_native_handle(),
+                monitored_handle.get_native_handle(),
                 signals.bits(),
                 condition.to_raw(),
                 context,
@@ -263,14 +271,15 @@ impl RawTrap {
     /// the lifetime of the referent is guaranteed to be longer than the
     /// lifetime of RawTrap.
     pub fn remove_trigger(&self, context: usize) -> MojoResult {
-        unsafe {
+        let result = unsafe {
             // SAFETY: As noted above, the caller must ensure `context` is valid.
             MojoResult::from_code(mojo_ffi::MojoRemoveTrigger(
                 self.handle.get_native_handle(),
                 context,
                 mojo_ffi::MojoRemoveTriggerOptions::new(0).as_ptr(),
             ))
-        }
+        };
+        return result;
     }
 
     /// Arm the trap to invoke event handler on any trigger condition.

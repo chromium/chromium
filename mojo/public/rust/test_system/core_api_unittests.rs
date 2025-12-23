@@ -4,7 +4,7 @@
 
 use rust_gtest_interop::prelude::*;
 
-use std::sync::{Condvar, LazyLock, Mutex};
+use std::sync::{Arc, Condvar, LazyLock, Mutex};
 
 chromium::import! {
     pub "//mojo/public/rust:mojo_rust_system_api" as system;
@@ -83,7 +83,7 @@ fn test_data_pipe_write_and_send() {
     assert_eq!(0, 0);
 }
 
-#[gtest(RustSystemAPITestSuite, MessagePipes_TrapSignalOnReadableTest)]
+#[gtest(RustSystemAPITestSuite, MessagePipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
     test_util::init_mojo_if_needed();
 
@@ -252,9 +252,168 @@ fn test_raw_trap_signal_on_readable() {
     clear_trap_events(3);
 }
 
+#[gtest(RustSystemAPITestSuite, MessagePipes_TrapSignalOnReadableTest)]
+fn test_raw_trap_signal_on_readable() {
+    test_util::init_mojo_if_needed();
+
+    let (endpoint_a, endpoint_b) = system::mojo_types::create_message_pipe().unwrap();
+
+    // 1. Create the safe Trap.
+    let trap = system::safe_trap::Trap::new().expect("Failed to create safe Trap");
+
+    // 2. We use a Mutex/Condvar to wait for the event in the main thread.
+    let hit_count = Arc::new(Mutex::new(0));
+    let condvar = Arc::new(Condvar::new());
+
+    let hit_count_clone = Arc::clone(&hit_count);
+    let condvar_clone = Arc::clone(&condvar);
+
+    let _trigger_id = trap
+        .add_trigger(
+            &endpoint_a,
+            system::mojo_types::HandleSignals::READABLE,
+            system::safe_trap::TriggerCondition::SignalsSatisfied,
+            move |event| {
+                if event.result().is_ok() {
+                    let mut count = hit_count_clone.lock().unwrap();
+                    *count += 1;
+                    condvar_clone.notify_all();
+                }
+            },
+        )
+        .expect("Failed to add trigger");
+
+    trap.arm(system::safe_trap::ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)
+        .expect("Failed to arm trap");
+
+    let write_result = endpoint_b.write(b"hello", Vec::new());
+    expect_eq!(write_result, system::mojo_types::MojoResult::Okay);
+
+    let count = hit_count.lock().unwrap();
+    let final_count =
+        condvar.wait_timeout_while(count, std::time::Duration::from_secs(2), |c| *c == 0).unwrap();
+
+    expect_eq!(*final_count.0, 1, "Should have fired once");
+}
+
+#[gtest(RustSystemAPITestSuite, CloseSafeTrapWithActiveTrigger)]
+fn test_clos_safe_trap_with_active_trigger() {
+    // Trap must do some lifecycle management/teardown of the pointers it encloses
+    // when it is `drop`'d.
+    //
+    // Additionally we expect remove_trigger to be called on each active trigger,
+    // and the associated callback to return TrapError::Cancelled.
+    test_util::init_mojo_if_needed();
+    let trap = system::safe_trap::Trap::new().expect("Failed to create safe Trap");
+    let (ep_a, _ep_b) = system::mojo_types::create_message_pipe().unwrap();
+
+    trap.add_trigger(
+        &ep_a,
+        system::mojo_types::HandleSignals::READABLE,
+        system::safe_trap::TriggerCondition::SignalsSatisfied,
+        move |event| {
+            println!(
+                "Trigger fired with result {:?} and signals {:?}",
+                event.result(),
+                event.signals_state()
+            );
+            expect_eq!(event.result(), Err(system::safe_trap::TrapError::Cancelled));
+        },
+    )
+    .expect(&format!("Failed to add trigger"));
+    drop(trap);
+    // `drop` completed without any errors wrt pointer management and such.
+    assert!(true);
+}
+
+#[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
+fn test_safe_trap_multiple_blocking_events() {
+    test_util::init_mojo_if_needed();
+    let trap = system::safe_trap::Trap::new().expect("Failed to create safe Trap");
+    const NUM_TRIGGERS: usize = 20; // More than MAX_BLOCKING_EVENTS
+
+    let callback_count = Arc::new(Mutex::new(0));
+    let mut endpoints_a = Vec::with_capacity(NUM_TRIGGERS);
+    let mut endpoints_b = Vec::with_capacity(NUM_TRIGGERS);
+
+    // 1. Create NUM_TRIGGERS message pipe pairs. For each, add a trigger.
+    for i in 0..NUM_TRIGGERS {
+        let (ep_a, ep_b) = system::mojo_types::create_message_pipe().unwrap();
+        let ep_a_arc = Arc::new(ep_a);
+
+        let callback_count_clone = Arc::clone(&callback_count);
+        let ep_a_clone = Arc::clone(&ep_a_arc);
+        trap.add_trigger(
+            &*ep_a_arc,
+            system::mojo_types::HandleSignals::READABLE,
+            system::safe_trap::TriggerCondition::SignalsSatisfied,
+            move |event| {
+                println!(
+                    "Trigger {} fired with result {:?} and signals {:?}",
+                    i,
+                    event.result(),
+                    event.signals_state()
+                );
+                match event.result() {
+                    Ok(()) => {
+                        // Standard behavior we expect for this test.
+                        // We are setting 20 triggers so we will expect it to trigger with Ok()
+                        // 20 times.
+                        let mut count = callback_count_clone.lock().unwrap();
+                        *count += 1;
+                        ep_a_clone.read().expect("Failed to read from ep_a in callback");
+                    }
+                    Err(system::safe_trap::TrapError::Cancelled) => {
+                        // Do not increase the callback count, as this is not a callback
+                        // we're interested in measuring, but don't panic either.
+                        // We expect this at the conclusion of our test, when Trap is dropped.
+                        println!("Trigger {} was cancelled. This is expected during Trap drop.", i);
+                    }
+                    Err(system::safe_trap::TrapError::FailedPrecondition) => {
+                        // Since we manually Drop our Trap at the end of the test,
+                        // it should not be possible for the pipes we're monitoring to
+                        // close or go out of scope before the Trap does, which is
+                        // the only way this branch could be triggered.
+                        // This indicates an error for this specific test (though not
+                        // in general! in real code we would gracefully handle a pipe
+                        // unexpectedly becoming unreadable)
+                        panic!("Trigger {} failed with FailedPrecondition.", i);
+                    }
+                }
+            },
+        )
+        .expect(&format!("Failed to add trigger {}", i));
+
+        // 2. Trigger the READABLE signal on ep_a by writing to ep_b.
+        // This creates a blocking event for each trigger.
+        let write_result = ep_b.write(b"x", Vec::new());
+        expect_eq!(write_result, system::mojo_types::MojoResult::Okay);
+        endpoints_a.push(ep_a_arc); // Keep ep_a alive
+        endpoints_b.push(ep_b); // Keep ep_a alive
+    }
+
+    // 3. Call trap.arm(). This should now handle all 20 blocking events.
+    trap.arm(system::safe_trap::ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)
+        .expect("Trap failed to arm after processing multiple blocking events");
+
+    // 4. Verify that all NUM_TRIGGERS callbacks were executed.
+    let final_count = *callback_count.lock().unwrap();
+    expect_eq!(final_count, NUM_TRIGGERS, "Not all blocking events were processed");
+
+    // 5. Verify the trap is now genuinely armed by calling arm again.
+    // Since all blocking events have been handled, this call should immediately
+    // return Armed.
+    trap.arm(system::safe_trap::ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)
+        .expect("Trap failed to re-arm after clearing all blocking events");
+    // Manually drop our trap to ensure teardown behavior is as expected
+    // (that is, Cancelled returned harmelssly for the various triggers
+    // upon removal.)
+    drop(trap);
+}
+
 // We test the majority of our trap functionality via MessagePipes.
 // These DataPipe tests are thus somewhat redundant, but fine to keep for now.
-#[gtest(RustSystemAPITestSuite, DataPipes_TrapSignalOnReadableTest)]
+#[gtest(RustSystemAPITestSuite, DataPipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
     test_util::init_mojo_if_needed();
 
