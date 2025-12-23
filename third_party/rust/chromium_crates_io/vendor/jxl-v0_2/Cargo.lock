@@ -147,7 +147,7 @@ checksum = "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695"
 
 [[package]]
 name = "jxl"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "arbtest",
  "array-init",
@@ -167,9 +167,9 @@ dependencies = [
 
 [[package]]
 name = "jxl_macros"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ff65d92ca949e470de85fcb67b1417c68140695ed00fe33497d6362af54a5fd"
+checksum = "d0e084b8c78c768ebeb0d24ee0c975a41fc7d281a4b88aa2c7fa8e0a1b535144"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
@@ -179,15 +179,15 @@ dependencies = [
 
 [[package]]
 name = "jxl_simd"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05d113aa2171099e929086715afa2e444b4821474c353bae4f78875080f304a5"
+checksum = "ef48c08b31847efb1ae0189409d78cedd8a8cf2e90ee53882c516143a884ba45"
 
 [[package]]
 name = "jxl_transforms"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f4754b1eb52fe1aedfcc36f6719f9e8069276072ff517758e04b0576817e134"
+checksum = "0ac02ba243f053308f8b2a2906c642f34452631aedee1d98fbc08a667d55d6f6"
 dependencies = [
  "jxl_simd",
 ]

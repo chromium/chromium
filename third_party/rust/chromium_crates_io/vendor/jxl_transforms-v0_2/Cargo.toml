@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "jxl_transforms"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Luca Versari <veluca93@gmail.com>"]
 build = false
 autolib = false
@@ -48,7 +48,7 @@ path = "benches/dct.rs"
 harness = false
 
 [dependencies.jxl_simd]
-version = "=0.2.1"
+version = "=0.2.2"
 
 [dev-dependencies.criterion]
 version = "0.7.0"

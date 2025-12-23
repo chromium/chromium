@@ -8,6 +8,7 @@ use std::fmt::Display;
 
 use crate::error::Result;
 use crate::image::{DataTypeTag, ImageDataType};
+use crate::util::ShiftRightCeil;
 
 use super::save::SaveStage;
 use super::stages::ExtendToImageDimensionsStage;
@@ -143,11 +144,16 @@ impl<Buffer> RenderPipelineShared<Buffer> {
                 requested_data_type
             );
         }
+        // 420 JPEGs are padded to 16 pixels, not to 8.
         (
-            (1 << (self.log_group_size - downsample.0 as usize))
-                .min(self.input_size.0.next_multiple_of(8)),
-            (1 << (self.log_group_size - downsample.1 as usize))
-                .min(self.input_size.1.next_multiple_of(8)),
+            (1 << self.log_group_size)
+                .min(self.input_size.0)
+                .shrc(downsample.0 as usize)
+                .next_multiple_of(16),
+            (1 << self.log_group_size)
+                .min(self.input_size.1)
+                .shrc(downsample.1 as usize)
+                .next_multiple_of(16),
         )
     }
 

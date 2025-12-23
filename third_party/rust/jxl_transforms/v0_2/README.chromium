@@ -1,7 +1,7 @@
 Name: jxl_transforms
 URL: https://crates.io/crates/jxl_transforms
-Version: 0.2.1
-Revision: b63a71967a8b31ed2005550aed2dd1475a183cc7
+Version: 0.2.2
+Revision: 2e80a2abdb1c4373bb6c67372eb44babf04a7640
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: BSD-3-Clause
 License File: //third_party/rust/chromium_crates_io/vendor/jxl_transforms-v0_2/LICENSE

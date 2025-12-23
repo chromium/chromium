@@ -32,7 +32,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "jxl_simd"
   cargo_pkg_description = "High performance Rust implementation of a JPEG XL decoder - SIMD support code"
   cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
-  cargo_pkg_version = "0.2.1"
+  cargo_pkg_version = "0.2.2"
 
   allow_unsafe = true
 

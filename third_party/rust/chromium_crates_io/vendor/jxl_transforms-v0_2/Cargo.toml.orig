@@ -1,7 +1,7 @@
 [package]
 name = "jxl_transforms"
 description = "High performance Rust implementation of a JPEG XL decoder - Transforms"
-version = "0.2.1"
+version = "0.2.2"
 readme = "../README.md"
 keywords = ["jpeg-xl", "simd", "dct"]
 categories = ["multimedia::images"]
@@ -11,7 +11,7 @@ edition = "2021"
 license = "BSD-3-Clause"
 
 [dependencies]
-jxl_simd = { path = "../jxl_simd", version = "=0.2.1" }
+jxl_simd = { path = "../jxl_simd", version = "=0.2.2" }
 
 [dev-dependencies]
 criterion = { version = "0.7.0", features = ["html_reports"] }
