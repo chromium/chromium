@@ -153,7 +153,7 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
 
   {
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetSignedIn(signin::ConsentLevel::kSync);
+    sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/syncer::UserSelectableTypeSet());
