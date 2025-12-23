@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+
 export enum LineFocusType {
   NONE = 0,
   LINE = 1,
@@ -56,4 +58,12 @@ export interface SettingsPrefs {
   font: string;
   highlightGranularity: number;
   lineFocus: number;
+}
+
+export interface ShowAtConfigPrefs {
+  anchorAlignmentX?: AnchorAlignment;
+  anchorAlignmentY?: AnchorAlignment;
+  maxX?: number;
+  minX?: number;
+  minY?: number;
 }
