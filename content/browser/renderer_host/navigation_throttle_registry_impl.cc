@@ -67,7 +67,7 @@ NavigationThrottleRegistryImpl::NavigationThrottleRegistryImpl(
 NavigationThrottleRegistryImpl::~NavigationThrottleRegistryImpl() = default;
 
 void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
-  if (navigation_request_->IsInitialWebUINavigation()) {
+  if (navigation_request_->IsInitialWebUISyncNavigation()) {
     // Skip adding throttles for navigations to the initial WebUI.
     return;
   }
@@ -165,7 +165,7 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
 
 void NavigationThrottleRegistryImpl::
     RegisterNavigationThrottlesForCommitWithoutUrlLoader() {
-  if (navigation_request_->IsInitialWebUINavigation()) {
+  if (navigation_request_->IsInitialWebUISyncNavigation()) {
     // Skip adding throttles for navigations to the initial WebUI.
     return;
   }
@@ -273,7 +273,7 @@ void NavigationThrottleRegistryImpl::AddThrottle(
   CHECK(navigation_throttle);
   TRACE_EVENT1("navigation", "NavigationThrottleRegistryImpl::AddThrottle",
                "navigation_throttle", navigation_throttle->GetNameForLogging());
-  CHECK(!navigation_request_->IsInitialWebUINavigation());
+  CHECK(!navigation_request_->IsInitialWebUISyncNavigation());
   throttles_.push_back(std::move(navigation_throttle));
 }
 

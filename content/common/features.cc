@@ -345,6 +345,11 @@ BASE_FEATURE(kIgnoreDuplicateNavsOnlyWithUserGesture,
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether initial WebUI navigations should synchronously go from navigation
+// start to commit, by doing e.g. in-renderer body loading.
+BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the ability to use the updateIfOlderThanMs field in the trusted
 // bidding response to trigger a post-auction update if the group has been
 // updated more recently than updateIfOlderThanMs milliseconds, bypassing the
