@@ -22,6 +22,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -63,7 +64,8 @@ class OmniboxViewViews
 #endif
       public views::TextfieldController,
       public ui::CompositorObserver,
-      public TemplateURLServiceObserver {
+      public TemplateURLServiceObserver,
+      public content::WebContentsObserver {
   // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
   //
   // Both `OmniboxView` and `views::Textfield` (*1) have the
@@ -185,6 +187,14 @@ class OmniboxViewViews
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessibleTextSelectBoundTest);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsAIMButtonPreferenceTest,
                            ButtonVisibilityTogglesWithPref_OmniboxFocused);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
+                           ContextualTasksPlaceholderForContextualTasksPage);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
+                           DefaultSearchEnginePlaceholderForNewTabPage);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
+                           NavigationToAndFromContextualTasks);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
+                           TitleChangeUpdatesPlaceholder);
 
   enum class UnelisionGesture {
     kHomeKeyPressed,
@@ -313,6 +323,11 @@ class OmniboxViewViews
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
 
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
+
   // Permits launch of the external protocol handler after user actions in
   // the omnibox. The handler needs to be informed that omnibox input should
   // always be considered "user gesture-triggered", lest it always return BLOCK.
@@ -336,6 +351,10 @@ class OmniboxViewViews
   // Returns true if the AIM placeholder text should be installed instead of the
   // DSE placeholder text.
   bool ShouldInstallAimPlaceholderText() const;
+
+  // Returns true if the Contextual Tasks placeholder text should be installed
+  // instead of the DSE placeholder text.
+  bool ShouldInstallContextualTasksPlaceholderText() const;
 
   // Returns true if the AIM placeholder text should be visible. This differs
   // from ShouldInstallAimPlaceholderText() because there are certain scenarios
