@@ -741,6 +741,9 @@ void ContextualSearchboxHandler::OpenUrl(
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       new_contextual_session_handle = contextual_session_service->GetSession(
           contextual_session_handle->session_id());
+  new_contextual_session_handle->set_submitted_context_tokens(
+      contextual_session_handle->GetSubmittedContextTokens());
+  contextual_session_handle->ClearSubmittedContextTokens();
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.

@@ -161,6 +161,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
         session_handle =
             service->GetSession(helper->session_handle()->session_id());
         if (session_handle) {
+          session_handle->set_submitted_context_tokens(
+              helper->session_handle()->GetSubmittedContextTokens());
           // TODO(crbug.com/469877869): Determine what to do with the return
           // value of this call, or move this call to a different location.
           session_handle->CheckSearchContentSharingSettings(

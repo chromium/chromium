@@ -145,6 +145,10 @@ class ContextualSearchSessionHandle {
   // that it has received the submitted context.
   void ClearSubmittedContextTokens();
 
+  // Sets the submitted context tokens.
+  void set_submitted_context_tokens(
+      const std::vector<base::UnguessableToken>& tokens);
+
   // Returns the list of submitted FileInfo for this particular instance
   // of the session. These are uploaded and submitted, but we have not received
   // confirmation that they are available on the server.
