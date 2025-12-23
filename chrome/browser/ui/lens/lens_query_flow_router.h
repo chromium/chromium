@@ -66,6 +66,9 @@ class LensQueryFlowRouter
   // Returns the suggest inputs for the current page.
   std::optional<lens::proto::LensOverlaySuggestInputs> GetSuggestInputs();
 
+  // Returns the current gen204 id.
+  uint64_t gen204_id() const { return gen204_id_; }
+
   // Sets the callback for when the suggest inputs are ready.
   void SetSuggestInputsReadyCallback(base::RepeatingClosure callback);
 

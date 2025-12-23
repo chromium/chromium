@@ -377,6 +377,9 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
   if (!GetContextualSearchSessionHandle()) {
     pending_session_handle_ = CreateContextualSearchSessionHandle();
     pending_session_handle_->NotifySessionStarted();
+  }
+
+  if (!overlay_tab_context_file_token_.has_value()) {
     pending_search_url_request_ = std::move(request_info);
     // Upload the page context when creating a session handle.
     if (auto* controller =
@@ -387,6 +390,7 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     }
     return;
   }
+
   GetContextualSearchSessionHandle()->CreateSearchUrl(
       std::move(request_info),
       base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
