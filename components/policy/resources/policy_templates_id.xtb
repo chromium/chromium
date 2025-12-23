@@ -8849,6 +8849,34 @@ Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua p
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="6640748114867542396">Jangan izinkan ekstensi terkelola menggunakan Enterprise Hardware Platform API</translation>
 <translation id="6641109870010271671">Sertifikat TLS yang harus dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server</translation>
+<translation id="6641851832244467923">Menyetel kebijakan ini akan mengonfigurasi aturan yang menentukan proxy mana yang digunakan browser, bergantung pada URL tujuan dan kondisi lainnya. Kebijakan ini akan lebih diutamakan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan pengguna manual jika ada yang disetel.
+
+Jika kebijakan ini tidak disetel, kebijakan proxy atau setelan pengguna lainnya tidak akan terpengaruh.
+
+Saat browser perlu memutuskan proxy yang akan digunakan, entri dalam kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri memenuhi semua poin berikut:
+  * Setidaknya satu pola URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> cocok.
+  * Tidak satu pun pola URL di <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> cocok.
+  * Jika <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ditentukan dan merupakan daftar yang tidak kosong, semua kondisi yang diwakili oleh entrinya akan terpenuhi.
+Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Pola URL yang didukung oleh <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> didokumentasikan di https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sesuai dengan nilai string file PAC seperti:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Atau, penentu proxy yang menyerupai URL dapat digunakan langsung untuk menentukan proxy, misalnya:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+Entri pertama yang dapat dijangkau dalam daftar akan digunakan sebagai proxy. Entri yang tidak valid dalam daftar akan diabaikan.
+
+Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantiannya dapat digunakan untuk menentukan proxy yang akan digunakan. Jika kolom tersebut tidak berisi kondisi apa pun, entrinya akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
+
+Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> yang disediakan dapat menghasilkan alamat IP. DNS tersebut harus berisi host (misalnya example.com) dan, secara opsional, skema atau port (misalnya https://example.com, example.com:123, https://example.com:123). Jika skema aman digunakan (misalnya, https), pencarian DNS juga dapat meminta data HTTPS (lihat RFC 9460 untuk detail selengkapnya). Jika <ph name="PROXY_OVERRIDE_RULES_RESULT" /> bernilai "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", maka kondisinya dianggap terpenuhi. Jika nilainya adalah <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, maka kondisinya dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
 <translation id="6646912445796087001">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual. Kebijakan ini hanya berlaku jika kebijakan "VirtualKeyboardEnabled" diaktifkan.
 

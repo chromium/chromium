@@ -8439,6 +8439,34 @@ Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt toestaa
       Als je dit beleid niet instelt, is toegestaan de standaardoptie voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="6640748114867542396">Beheerde extensies niet toestaan de Enterprise Hardware Platform API te gebruiken</translation>
 <translation id="6641109870010271671">TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen voor serververificatie</translation>
+<translation id="6641851832244467923">Als je dit beleid instelt, configureer je regels die selecteren welke proxy de browser gebruikt, afhankelijk van de URL van de bestemming en andere voorwaarden. Dit beleid heeft voorrang op proxyinstellingen die zijn ingesteld via het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />, de extensie-API <ph name="PROXY_SETTINGS_EXTENSION_API" /> of handmatige gebruikersinstellingen (als die zijn ingesteld).
+
+Als je het beleid niet instelt, heeft dit geen effect op andere proxybeleidsregels of gebruikersinstellingen.
+
+Als de browser moet beslissen welke proxy moet worden gebruikt, worden de vermeldingen van het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> in volgorde geëvalueerd totdat een vermelding aan alle volgende punten voldoet:
+* Er is een overeenkomst met minstens één van de URL-patronen in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+  * Geen van de URL-patronen in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> komt overeen.
+  * Als <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> is aangegeven en een niet-lege lijst is, is aan alle voorwaarden voldaan die door de vermeldingen in de lijst worden vertegenwoordigd.
+De waarde in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> wordt gebruikt als proxy voor een dergelijke overeenkomst. Als er geen overeenkomst wordt gevonden, vallen de proxyinstellingen terug op wat is ingesteld in het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+De URL-patronen die worden ondersteund door <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> en <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />, worden beschreven op https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+De vermeldingen in het veld <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> komen overeen met tekenreekswaarden van PAC-bestanden, zoals:
+* DIRECT
+* PROXY host:poort
+* HTTPS host:poort
+* SOCKS4 host:poort
+* SOCKS5 host:poort
+Je kunt ook rechtstreeks proxy-aanduidingen in URL-indeling gebruiken om de proxy aan te geven, bijvoorbeeld:
+* http://host:poort
+* https://host:poort
+* socks4://host:poort
+* socks5://host:poort
+De eerste bereikbare vermelding in de lijst wordt gebruikt als proxy. Ongeldige vermeldingen in de lijst worden genegeerd.
+
+Het veld <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> bevat een lijst met voorwaarden waaraan allemaal moet worden voldaan voordat de overschrijvingsregel wordt gebruikt om te bepalen welke proxy moet worden gebruikt. Als je dit niet instelt, wordt de vermelding gebruikt zolang er minstens één host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> overeenkomt.
+
+De voorwaarde <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> controleert of de verstrekte DNS-naam <ph name="PROXY_OVERRIDE_RULES_HOST" /> kan worden omgezet in een IP-adres. Deze moet een host bevatten (bijv. example.com) en eventueel een schema of poort (bijv. https://example.com, example.com:123, https://example.com:123). Als er een beveiligd schema wordt gebruikt (bijv. https), kan DNS-lookup ook de HTTPS-record opvragen (zie RFC 9460 voor meer informatie). Als de waarde van <ph name="PROXY_OVERRIDE_RULES_RESULT" /> is ingesteld op <ph name="PROXY_OVERRIDE_RULES_RESOLVED" />, wordt de voorwaarde als voldaan beschouwd. Als de waarde in plaats daarvan is ingesteld op <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, wordt de voorwaarde als voldaan beschouwd als de omzetting is mislukt.</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitzetten</translation>
 <translation id="6646912445796087001">Zet verschillende functies op het schermtoetsenbord aan of uit. Dit beleid geldt alleen als het beleid VirtualKeyboardEnabled is toegepast.
 

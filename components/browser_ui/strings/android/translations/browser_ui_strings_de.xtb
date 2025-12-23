@@ -454,7 +454,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5877248419911025165">Alle Anfragen minimieren</translation>
 <translation id="5878945009165002849">Aufforderungen zur Anmeldung von Identitätsdiensten blockieren</translation>
 <translation id="588258955323874662">Vollbild</translation>
-<translation id="5884085660368669834">Websiteeinstellung</translation>
+<translation id="5884085660368669834">Einstellungen für die Website</translation>
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
 <translation id="5908617755156109052">Websites dürfen weder eine 3D-Karte meiner Umgebung erstellen noch die Kameraposition erfassen</translation>
 <translation id="5916664084637901428">An</translation>
@@ -469,7 +469,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover-Feed aktivieren</translation>
 <translation id="6012967556075291653">Angepinnte Verknüpfung</translation>
-<translation id="6015775454662021376">Zugriff dieser Website auf dein Gerät steuern</translation>
+<translation id="6015775454662021376">Zugriff dieser Website auf dein Gerät verwalten</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6064125863973209585">Abgeschlossene Downloads</translation>

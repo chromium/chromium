@@ -1555,7 +1555,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="2096932573113293941">请求用户许可运行需要授权的插件</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2099380339157427935">不在任务栏中显示“退出”按钮</translation>
-<translation id="2100630160869631650">添加预先填充的 Kerberos 账号。如果 Kerberos 凭证与登录凭证相匹配，则可以将账号配置为重复使用登录凭证，方法是分别为主账号和密码指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的账号。
+<translation id="2100630160869631650">添加预先填充的 Kerberos 账号。如果 Kerberos 凭证与登录凭证相匹配，则可以将账号配置为重复使用登录凭证，方法是分别为主体和密码指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的账号。
 
           如果已启用此政策，系统会将此政策定义的账号列表添加到 Kerberos 账号设置。
 
@@ -8417,6 +8417,34 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
       如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该应用。</translation>
 <translation id="6640748114867542396">不允许受管理的扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="6641109870010271671"><ph name="PRODUCT_NAME" /> 在验证服务器身份时应信任的 TLS 证书</translation>
+<translation id="6641851832244467923">通过设置此政策来配置规则，从而根据目标网址和其他条件来选择浏览器使用的代理。如果您通过 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 扩展程序 API 或自己手动设置了代理，则此政策将优先于这些代理设置。
+
+如果您未设置此政策，则其他代理政策或用户设置不会受到影响。
+
+当浏览器需要决定使用哪个代理时，系统会按顺序评估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的条目，直到有条目满足以下所有条件为止：
+  * 与 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中的至少 1 个网址格式匹配。
+  * 与 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 中的所有网址格式都不匹配。
+  * 符合由 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />（如果已指定为一个非空列表）的条目表示的所有条件。
+如果找到匹配项，<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 中的值将用作代理。如果未找到匹配项，则代理设置将回退到 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策中的设置。
+
+<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 和 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 支持的网址格式都记录在这里：https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns。
+
+<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 字段条目对应于 PAC 文件的字符串值，例如：
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+也可以直接使用与网址类似的代理说明符来指定代理，例如：
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+列表中第一个可连接的条目将用作代理。系统会忽略列表中的无效条目。
+
+<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 字段包含一系列条件，只有满足所有这些条件，系统才会使用其替换规则来决定要使用的代理。如果未设置该字段，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中至少有 1 个匹配的主机，系统就会使用相应条目。
+
+<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 条件会检查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> 是否能够解析为 IP 地址。该 DNS Host 必须包含主机（例如 example.com），并且可以选择性地包含 scheme 或端口（例如 https://example.com、example.com:123、https://example.com:123）。如果使用的是安全 scheme（例如 https），DNS 查找流程也可能会请求 HTTPS 记录。如需了解详情，请参阅 RFC 9460。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值为“<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />”，则视为满足条件。如果该值设为 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，则当解析失败时，系统会认为已满足条件。</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
 <translation id="6646912445796087001">通过设置此政策，您可以启用或停用各种屏幕键盘功能。仅当“VirtualKeyboardEnabled”政策启用后，此政策才会生效。
 

@@ -8483,6 +8483,34 @@ Cette règle ne concerne que le mode navigation privée. Pour autoriser les URL 
       Si cette règle n'est pas définie, le comportement par défaut sera autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6640748114867542396">Ne pas autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="6641109870010271671">Certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur</translation>
+<translation id="6641851832244467923">Configurer cette règle permet de sélectionner le proxy que le navigateur utilise en fonction de l'URL de destination et d'autres conditions. Cette règle est prioritaire sur les paramètres proxy définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />, l'API d'extension <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou manuellement dans les paramètres utilisateur, le cas échéant.
+
+Si cette règle n'est pas configurée, cela n'a aucune incidence sur les autres règles de proxy ni les paramètres utilisateur.
+
+Lorsque le navigateur doit décider quel proxy utiliser, les entrées de la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sont évaluées dans l'ordre jusqu'à ce qu'une entrée remplisse toutes les conditions suivantes :
+  * Au moins un des formats d'URL dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspond.
+  * Aucun des formats d'URL dans <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> ne correspond.
+  * Si <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> est spécifié et qu'il s'agit d'une liste non vide, toutes les conditions représentées par ses entrées sont remplies.
+En cas de correspondance, la valeur de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sera utilisée comme proxy. Si aucune correspondance n'est trouvée, les paramètres proxy seront ceux définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Les formats d'URL acceptés par <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> et <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> sont décrits sur https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Les entrées du champ <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondent à des valeurs de chaîne de fichiers PAC, telles que :
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Vous pouvez aussi utiliser directement des spécificateurs de proxy de type URL pour spécifier le proxy, par exemple :
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+La première entrée accessible de la liste sera utilisée comme proxy. Les entrées non valides de la liste sont ignorées.
+
+Le champ <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contient une liste de conditions qui doivent toutes être remplies pour que la règle de remplacement serve à déterminer le proxy à utiliser. Si ce champ n'est pas défini, l'entrée sera utilisée tant qu'au moins un hôte dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspondra.
+
+La condition <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> vérifie si l’<ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fourni peut être résolu en une adresse IP. Il doit contenir un hôte (par exemple, example.com) et, éventuellement, un schéma ou un port (par exemple, https://example.com, example.com:123, https://example.com:123). Si un schéma sécurisé est utilisé (par exemple, https), la résolution DNS peut également demander l'enregistrement HTTPS (pour en savoir plus, consultez le document RFC 9460). La condition est considérée comme remplie si la valeur de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> est "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />". Si la valeur est définie sur <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condition est considérée comme remplie si la résolution a échoué.</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
 <translation id="6646912445796087001">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran. Cette règle s'applique uniquement si la règle "VirtualKeyboardEnabled" est activée.
 

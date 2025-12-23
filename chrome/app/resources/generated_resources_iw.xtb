@@ -4390,6 +4390,7 @@
 <translation id="394984172568887996">‏מיובא מ-IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> כדי שהורדת הקבצים תהיה בטוחה יותר</translation>
 <translation id="3950479158728806902">יצירה אוטומטית של מפתח גישה כדי להיכנס לחשבון מהר יותר</translation>
+<translation id="3950755269510650933">‏ניהול המידע ש-Gemini יכול להשתמש בו כדי להתאים אישית את חוויית השימוש שלך</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3950841222883198950">הכתבה בקול</translation>
 <translation id="3953834000574892725">החשבונות שלי</translation>
@@ -4419,6 +4420,7 @@
 <translation id="3968739731834770921">קאנה</translation>
 <translation id="3970114302595058915">מזהה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
+<translation id="3971355433478412726">‏הוראות ל-Gemini</translation>
 <translation id="3971764089670057203">טביעות אצבעות במפתח האבטחה הזה</translation>
 <translation id="3973005893595042880">המשתמש אינו מורשה</translation>
 <translation id="3973660817924297510">המערכת בודקת סיסמאות (<ph name="CHECKED_PASSWORDS" /> מתוך <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5825,6 +5827,7 @@
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">לשמור בתיקייה רק במכשיר הזה?</translation>
 <translation id="4959262764292427323">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
+<translation id="4959581970694896608">‏התאמה אישית של התשובות של Gemini</translation>
 <translation id="4960020053211143927">בחלק מהאפליקציות אין תמיכה בשיטה הזו</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">‏הפעלת Cast של התוכן שמוצג במסך</translation>

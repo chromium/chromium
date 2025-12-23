@@ -4376,6 +4376,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="394984172568887996">Internet Explorer arakatzailetik inportatutakoak</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> fitxategiak deskargatzea seguruagoa izan dadin</translation>
 <translation id="3950479158728806902">Sortu sarbide-gako bat automatikoki saioa bizkorrago hasteko</translation>
+<translation id="3950755269510650933">Kudeatu zerbitzua pertsonalizatzeko Gemini-k erabil dezakeen informazioa</translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3950841222883198950">Ahozko idazketa</translation>
 <translation id="3953834000574892725">Nire kontuak</translation>
@@ -4405,6 +4406,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifikatzailea</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
+<translation id="3971355433478412726">Gemini-rako argibideak</translation>
 <translation id="3971764089670057203">Segurtasun-fitxa honetako hatz-markak</translation>
 <translation id="3973005893595042880">Ez da onartzen erabiltzailea</translation>
 <translation id="3973660817924297510">Pasahitzak egiaztatzen (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5809,6 +5811,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Gailu honetan soilik dagoen karpeta batean gorde nahi duzu?</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
+<translation id="4959581970694896608">Pertsonalizatu nola erantzuten dizun Gemini-k</translation>
 <translation id="4960020053211143927">Aplikazio batzuek ez dute onartzen</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>

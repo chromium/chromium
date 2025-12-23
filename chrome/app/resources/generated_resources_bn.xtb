@@ -4391,6 +4391,7 @@
 <translation id="394984172568887996">IE থেকে আমাদানি করা</translation>
 <translation id="3949999964543783947">ফাইল ডাউনলোড করা আরও নিরাপদ করতে <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">আরও দ্রুত সাইন-ইন করতে অটোমেটিক পাসকী তৈরি করুন</translation>
+<translation id="3950755269510650933">আপনার অভিজ্ঞতা পছন্দমতো করে তুলতে Gemini কোন তথ্য ব্যবহার করতে পারবে তা ম্যানেজ করুন</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3950841222883198950">ভয়েস টাইপিং</translation>
 <translation id="3953834000574892725">আমার অ্যাকাউন্ট</translation>
@@ -4420,6 +4421,7 @@
 <translation id="3968739731834770921">কানা</translation>
 <translation id="3970114302595058915">আইডি</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
+<translation id="3971355433478412726">Gemini-র জন্য নির্দেশাবলী</translation>
 <translation id="3971764089670057203">এই নিরাপত্তা কীতে এনরোল করা ফিঙ্গারপ্রিন্ট</translation>
 <translation id="3973005893595042880">ব্যবহারকারীর অনুমতি নেই</translation>
 <translation id="3973660817924297510">(<ph name="TOTAL_PASSWORDS" />টির মধ্যে <ph name="CHECKED_PASSWORDS" />টি) পাসওয়ার্ড চেক করা হচ্ছে…</translation>
@@ -5826,6 +5828,7 @@
 <translation id="4956847150856741762">১</translation>
 <translation id="4958009531430054995">শুধুমাত্র এই ডিভাইসের কোনও ফোল্ডারে সেভ করবেন?</translation>
 <translation id="4959262764292427323">পাসওয়ার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে যাতে আপনি আপনার যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন</translation>
+<translation id="4959581970694896608">Gemini কীভাবে আপনাকে উত্তর দেবে তা কাস্টমাইজ করুন</translation>
 <translation id="4960020053211143927">কিছু অ্যাপে কাজ করে না</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>

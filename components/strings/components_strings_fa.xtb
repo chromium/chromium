@@ -411,7 +411,7 @@
 <translation id="1650602712345345441">‏مدیریت تنظیمات Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">‏برای استفاده از «مدیر گذرواژه» با macOS Keychain، برنامه Chromium را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
-<translation id="1652887625750064647">بهترین نتیجه منطبق از هوش مصنوعی</translation>
+<translation id="1652887625750064647">بهترین انطباق از هوش مصنوعی</translation>
 <translation id="1653465303147789530">پرداخت با <ph name="PAYMENT_METHOD" /> بدون نیاز به عوض کردن برنامه</translation>
 <translation id="1656024727720460136">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق اتصالی ایمن بازیابی کرد.</translation>
 <translation id="1656489000284462475">تحویل گرفتن</translation>
@@ -1557,7 +1557,7 @@
 <translation id="3531780078352352885">برگ‌های کار</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> می‌خواهد از میکروفن شما استفاده کند</translation>
 <translation id="3533328374079021623">صندوق پست ۵</translation>
-<translation id="3536227077203206203">این بار مجاز شد</translation>
+<translation id="3536227077203206203">این بار اجازه هست</translation>
 <translation id="3537165859691846083">نامه افزوده</translation>
 <translation id="353816159217417898">صفحه‌نمایش (صفحه‌دار)</translation>
 <translation id="3541016556608204104">‏اطلاعات بیشتر درباره «رابط‌های Chrome Enterprise»</translation>
@@ -3614,7 +3614,7 @@
 <translation id="6834757537110528125">این سایت از اتصال ایمن پشتیبانی نمی‌کند</translation>
 <translation id="6841864657731852591">سیلندر گراور</translation>
 <translation id="6842196666980060516">۲۶۰ × ۱۸۴ میلی‌متر</translation>
-<translation id="6844998850832008753">ردیابی دست این بار مجاز شد</translation>
+<translation id="6844998850832008753">ردیابی دست این بار اجازه هست</translation>
 <translation id="6849023911358004088">‏دکمه «مدیریت تنظیمات ایمنی»؛ برای مدیریت «مرور ایمن» و موارد دیگر در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6850286078059909152">رنگ نوشتار</translation>
 <translation id="6852204201400771460">برنامه بار کردن مجدد شود؟</translation>
@@ -3744,7 +3744,7 @@
 <translation id="7042465939346919737">‏‫Google از اطلاعات صفحه تسویه‌حساب و دیگر داده‌های مربوط برای ارائه این گزینه‌ها استفاده می‌کند. برای پنهان کردن گزینه‌های «بعداً پرداخت شود»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید</translation>
 <translation id="7042616127917168121">پالایش نتایج</translation>
 <translation id="7043552168914147882">دسته برگ</translation>
-<translation id="7044081119134178347">دوربین این بار مجاز شد</translation>
+<translation id="7044081119134178347">دوربین این بار اجازه هست</translation>
 <translation id="7048095965575426564">تاشوی اروپایی</translation>
 <translation id="7050187094878475250">تلاش کردید به دامنه <ph name="DOMAIN" /> بروید اما گواهینامه‌ای که سرور ارائه کرد، دارای یک تاریخ اعتبار بسیار طولانی است و مورداعتماد نیست.</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
@@ -4040,7 +4040,7 @@
 <translation id="7512685745044087310">‏این خط‌مشی نمی‌تواند روی «True» تنظیم شود و اجباری باشد، بنابراین به توصیه‌شده تغییر کرد.</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
-<translation id="7516123895971374904">«واقعیت مجازی» این بار مجاز شد</translation>
+<translation id="7516123895971374904">«واقعیت مجازی» این بار اجازه هست</translation>
 <translation id="7517201160922869406">وسایل نقلیه بیابان‌گردی</translation>
 <translation id="7517414872996418597">پاکت سی۱۰</translation>
 <translation id="7518003948725431193">صفحه وبی با این آدرس وب یافت نشد: <ph name="URL" /></translation>
@@ -4601,7 +4601,7 @@
 <translation id="8416694386774425977">پیکربندی شبکه نامعتبر است و نمی‌توان آن را وارد کرد.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
+<translation id="8416874502399604126">میکروفون این بار اجازه هست</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8426945547715537628">ملغی کردن صفحه‌کلید مجاز شود؟</translation>
@@ -4685,7 +4685,7 @@
 <translation id="8555010941760982128">هنگام تسویه‌حساب، از این کد استفاده کنید</translation>
 <translation id="8556297087315686325">پایش و مدیریت شبکه</translation>
 <translation id="8557066899867184262">‏CVC در پشت کارتتان قرار گرفته است.</translation>
-<translation id="8558347880669160417">دوربین و میکروفون این بار مجاز شدند</translation>
+<translation id="8558347880669160417">دوربین و میکروفون این بار اجازه هست</translation>
 <translation id="8559762987265718583">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> انجام نمی‌شود، زیرا تاریخ و زمان دستگاه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>
 <translation id="8564182942834072828">اسناد جداگانه/کپی‌های تلفیق‌نشده</translation>
 <translation id="8564466070529550495">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً بعداً دوباره امتحان کنید.</translation>
@@ -5022,7 +5022,7 @@
 <translation id="9140198744651252040">‏مرورگر Chrome می‌خواهد از اثر انگشت برای تکمیل خودکار گذرواژه‌ها استفاده کند</translation>
 <translation id="9141013498910525015">مدیریت نشانی‌ها</translation>
 <translation id="9141435142213469335">ذخیره کردن نشانی با اطلاعات بیشتر</translation>
-<translation id="9141672681283222114">«واقعیت افزوده» این بار مجاز شد</translation>
+<translation id="9141672681283222114">«واقعیت افزوده» این بار اجازه هست</translation>
 <translation id="9143898823728499852">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است</translation>
 <translation id="9144951720726881238">تاریخ انقضا:</translation>
 <translation id="9145910032514306808">دوباره <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />
@@ -5112,7 +5112,7 @@
 <translation id="961372935451193190">زبانه‌ها و فایل‌ها</translation>
 <translation id="961663415146723894">به‌هم چسباندن از پایین</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
-<translation id="961930410699694996">مکان این بار مجاز شد</translation>
+<translation id="961930410699694996">مکان این بار اجازه هست</translation>
 <translation id="962484866189421427">این محتوا ممکن است برنامه‌های فریب‌دهنده‌ای نصب کند که وانمود می‌کنند برنامه دیگری هستند یا اینکه داده‌هایی برای ردیابی شما جمع‌آوری می‌کنند. <ph name="BEGIN_LINK" />درهرصورت نشان داده شود<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏طبق قانونی در منطقه‌تان، Chromium از شما می‌خواهد موتور جستجوی پیش‌فرضتان را انتخاب کنید. این موتورهای جستجو در منطقه شما پرطرفدار هستند و ترتیب نمایش آن‌ها تصادفی است.</translation>
 <translation id="963837307749850257">همه کاربران</translation>

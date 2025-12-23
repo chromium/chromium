@@ -8837,6 +8837,34 @@ Esta política solo afecta el modo Incógnito. Para permitir las URLs en todos l
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="6640748114867542396">No permitir que las extensiones administradas usen la API de Enterprise Hardware Platform</translation>
 <translation id="6641109870010271671">Certificados TLS en los que debe confiar <ph name="PRODUCT_NAME" /> para la autenticación del servidor</translation>
+<translation id="6641851832244467923">Si estableces esta política, se configuran reglas que seleccionan qué proxy usa el navegador según la URL de destino y otras condiciones. Esta política tendrá prioridad sobre la configuración de proxy establecida desde la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, la API de extensión <ph name="PROXY_SETTINGS_EXTENSION_API" /> o la configuración manual del usuario, si se establece alguna.
+
+Si no estableces la política, no se verán afectadas otras políticas de proxy ni la configuración del usuario.
+
+Cuando el navegador necesita decidir qué proxy usar, las entradas de la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se evalúan en secuencia hasta que una entrada cumpla con todos los siguientes puntos:
+  * Coincide con al menos uno de los patrones de URL en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+  * No coincide con ninguno de los patrones de URL en <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
+  * Si se especifica <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> y es una lista no vacía, se cumplen todas las condiciones representadas por sus entradas.
+El valor de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> se usará como un proxy para esa coincidencia. Si no se encuentra ninguna coincidencia, la configuración de proxy volverá a la que se estableció en la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Los patrones de URL compatibles con <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> y <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> se documentan en https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Las entradas del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corresponden a valores de cadena de archivos PAC, como los siguientes:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Como alternativa, se pueden usar directamente especificadores de proxy similares a URLs para especificar el proxy, por ejemplo:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+La primera entrada accesible de la lista se usará como proxy. Se ignorarán las entradas no válidas de la lista.
+
+El campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene una lista de condiciones que se deben cumplir para que se use su regla de anulación a la hora de decidir el proxy que se usará. Si no se establece, la entrada se usará siempre que coincida al menos un host en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+
+La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica si el DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> proporcionado puede resolverse en una dirección IP. Debe contener un host (p. ej., ejemplo.com) y, de manera opcional, un esquema o un puerto (p. ej., https://ejemplo.com, ejemplo.com:123, https://ejemplo.com:123). Si se usa un esquema seguro (p. ej., https), la búsqueda de DNS también puede solicitar el registro HTTPS (consulta el RFC 9460 para obtener más detalles). Si el valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> es "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", se considera que se cumple la condición. Si el valor se establece en <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condición se considera cumplida si la resolución falló.</translation>
 <translation id="6641981670621198190">Inhabilitar la admisión de API gráficas en 3D</translation>
 <translation id="6646912445796087001">Habilita o inhabilita varias funciones en el teclado en pantalla. Esta política solo tiene efecto cuando habilitas la política "VirtualKeyboardEnabled".
 
