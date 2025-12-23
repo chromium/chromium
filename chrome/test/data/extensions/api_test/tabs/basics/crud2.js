@@ -246,8 +246,6 @@ const skipForAndroid = [
     'testOpenWindowInEmptyPopup',
     'testOpenEmptyPopup',
     'testCreatePopupAndMoveTab',
-    'detectLanguage',
-    'getCurrentWindow',
 ];
 
 (async function() {
