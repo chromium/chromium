@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
@@ -62,17 +63,6 @@ import java.util.Set;
 /** Mediator for the Fusebox component. */
 @NullMarked
 public class FuseboxMediator {
-    // TODO(crbug.com/457825183): Supply this class name and extra strings externally.
-    @VisibleForTesting
-    /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
-            "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-
-    public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
-    public static final String EXTRA_IS_INCOGNITO_BRANDED = "EXTRA_IS_INCOGNITO_BRANDED";
-    public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
-    public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
-    public static final String EXTRA_IS_SINGLE_CONTEXT_MODE = "EXTRA_IS_SINGLE_CONTEXT_MODE";
-
     private final Context mContext;
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
@@ -404,8 +394,14 @@ public class FuseboxMediator {
         ArrayList<Integer> preselectedTabIds = new ArrayList<>(mModelList.getAttachedTabIds());
         try {
             intent =
-                    new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
-                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedTabIds);
+                    new Intent(
+                                    mContext,
+                                    Class.forName(
+                                            ChromeItemPickerExtras
+                                                    .CHROME_ITEM_PICKER_ACTIVITY_CLASS))
+                            .putIntegerArrayListExtra(
+                                    ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS,
+                                    preselectedTabIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
 
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -414,16 +410,18 @@ public class FuseboxMediator {
                 isIncognitoBrandedModelSelected =
                         tabModelSelector.isIncognitoBrandedModelSelected();
             }
-            intent.putExtra(EXTRA_IS_INCOGNITO_BRANDED, isIncognitoBrandedModelSelected);
+            intent.putExtra(
+                    ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED,
+                    isIncognitoBrandedModelSelected);
         } catch (ClassNotFoundException e) {
             return;
         }
 
         int maxAllowedTabs = preselectedTabIds.size() + remainingAttachments;
-        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
         boolean isSingleContextMode = !OmniboxFeatures.sMultiattachmentFusebox.getValue();
-        intent.putExtra(EXTRA_IS_SINGLE_CONTEXT_MODE, isSingleContextMode);
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_SINGLE_CONTEXT_MODE, isSingleContextMode);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
@@ -431,7 +429,8 @@ public class FuseboxMediator {
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
-        ArrayList<Integer> tabIds = data.getIntegerArrayListExtra(EXTRA_ATTACHMENT_TAB_IDS);
+        ArrayList<Integer> tabIds =
+                data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);
         // tabIds will be null when the activity finishes with cancel using the back button.
         if (tabIds == null) return;
         updateCurrentlyAttachedTabs(new HashSet<>(tabIds));

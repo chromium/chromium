@@ -25,11 +25,11 @@ import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvid
 import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMediator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 
 import java.util.ArrayList;
@@ -68,7 +68,8 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
         }
 
         ArrayList<Integer> preselectedIds =
-                getIntent().getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
+                getIntent()
+                        .getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS);
         if (preselectedIds == null) {
             // TODO(bbetini): Use a helper method to create an empty list when preselectedIds is
             // null.
@@ -77,11 +78,11 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
 
         int allowedSelectionCount =
                 IntentUtils.safeGetIntExtra(
-                        getIntent(), FuseboxMediator.EXTRA_ALLOWED_SELECTION_COUNT, 0);
+                        getIntent(), ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, 0);
 
         boolean isSingleContextMode =
                 IntentUtils.safeGetBooleanExtra(
-                        getIntent(), FuseboxMediator.EXTRA_IS_SINGLE_CONTEXT_MODE, false);
+                        getIntent(), ChromeItemPickerExtras.EXTRA_IS_SINGLE_CONTEXT_MODE, false);
 
         mItemPickerCoordinator =
                 new TabItemPickerCoordinator(
@@ -163,7 +164,7 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
         mIsIncognito =
                 IntentUtils.safeGetBooleanExtra(
                         intent,
-                        FuseboxMediator.EXTRA_IS_INCOGNITO_BRANDED,
+                        ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED,
                         /* defaultValue= */ false);
     }
 
@@ -177,7 +178,8 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
 
         final Intent resultIntent = new Intent();
 
-        resultIntent.putIntegerArrayListExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
+        resultIntent.putIntegerArrayListExtra(
+                ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
