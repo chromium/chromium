@@ -3355,6 +3355,37 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   p->Remove(kRendererProcess);
 }
 
+// Tests that queries for GetProcessLock work after RenderProcessHost removal
+// until the corresponding Handles are gone. See https://crbug.com/470831168.
+TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  TestBrowserContext context;
+
+  scoped_refptr<SiteInstanceImpl> foo_instance =
+      SiteInstanceImpl::CreateForTesting(&context, GURL("https://foo.com"));
+
+  // Lock process to foo.com.
+  p->Add(kRendererProcess, &context);
+  p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
+  EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+  EXPECT_FALSE(p->GetProcessLock(kRendererProcess).AllowsAnySite());
+
+  // Create a handle that extends the lifetime of the SecurityState beyond the
+  // RenderProcessHost's lifetime.
+  auto handle = p->CreateHandle(kRendererProcess);
+  p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+}
+
 // Test that
 // ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOriginIfNotCached()
 // ignores opaque origins.

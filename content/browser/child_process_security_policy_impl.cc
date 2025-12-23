@@ -2515,8 +2515,8 @@ void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
 ProcessLock ChildProcessSecurityPolicyImpl::GetProcessLock(
     ChildProcessId child_id) {
   base::AutoLock lock(lock_);
-  if (auto* state = base::FindOrNull(security_state_, child_id)) {
-    return (*state)->process_lock();
+  if (auto* state = GetSecurityStateForQuery(child_id)) {
+    return state->process_lock();
   }
   return ProcessLock();
 }
