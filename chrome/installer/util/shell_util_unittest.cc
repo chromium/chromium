@@ -1205,8 +1205,7 @@ TEST_F(ShellUtilRegistryTest, GetAppName) {
   EXPECT_TRUE(empty_app_name.empty());
 
   // Add file associations and test that GetAppName returns the registered app
-  // name. Pass kTestApplicationName for the open command, to handle the Win 7
-  // case, which returns the open command executable name as the app_name.
+  // name.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
       base::FilePath(kTestIconPath), FileExtensions()));
