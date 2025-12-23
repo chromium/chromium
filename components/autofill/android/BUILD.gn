@@ -187,7 +187,9 @@ android_resources("autofill_browser_resources") {
     "browser/java/res/drawable/directions_car.xml",
     "browser/java/res/drawable/flight.xml",
     "browser/java/res/drawable/id_card.xml",
+    "browser/java/res/drawable/passport.xml",
     "browser/java/res/drawable/person_check.xml",
+    "browser/java/res/drawable/travel_luggage_and_bags.xml",
     "browser/java/res/drawable/wallet.xml",
     "browser/java/res/drawable/work_logo.xml",
   ]

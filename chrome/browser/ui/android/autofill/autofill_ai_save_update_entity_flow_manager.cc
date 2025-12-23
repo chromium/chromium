@@ -59,13 +59,13 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
     case EntityTypeName::kDriversLicense:
       return IDR_ANDROID_AUTOFILL_ID_CARD;
     case EntityTypeName::kKnownTravelerNumber:
-      return IDR_ANDROID_AUTOFILL_FLIGHT;
+      return IDR_ANDROID_AUTOFILL_TRAVEL_LUGGAGE_AND_BAGS;
     case EntityTypeName::kNationalIdCard:
       return IDR_ANDROID_AUTOFILL_ID_CARD;
     case EntityTypeName::kPassport:
-      return IDR_ANDROID_AUTOFILL_ID_CARD;
+      return IDR_ANDROID_AUTOFILL_PASSPORT;
     case EntityTypeName::kRedressNumber:
-      return IDR_ANDROID_AUTOFILL_FLIGHT;
+      return IDR_ANDROID_AUTOFILL_TRAVEL_LUGGAGE_AND_BAGS;
     case EntityTypeName::kVehicle:
       return IDR_ANDROID_AUTOFILL_VEHICLE;
     case EntityTypeName::kFlightReservation:
