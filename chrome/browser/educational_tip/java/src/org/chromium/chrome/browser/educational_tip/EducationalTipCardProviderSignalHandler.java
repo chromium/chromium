@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -138,13 +137,12 @@ public class EducationalTipCardProviderSignalHandler {
             return 0.0f;
         }
 
-        TabGroupModelFilterProvider provider = tabModelSelector.getTabGroupModelFilterProvider();
         TabGroupModelFilter normalFilter =
-                provider.getTabGroupModelFilter(/* isIncognito= */ false);
+                tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
         assumeNonNull(normalFilter);
 
         TabGroupModelFilter incognitoFilter =
-                provider.getTabGroupModelFilter(/* isIncognito= */ true);
+                tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ true);
         assumeNonNull(incognitoFilter);
 
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();

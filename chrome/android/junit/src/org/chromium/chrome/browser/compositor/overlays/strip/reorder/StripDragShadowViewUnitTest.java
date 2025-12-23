@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -84,7 +83,6 @@ public class StripDragShadowViewUnitTest {
 
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private LayerTitleCache mMockLayerTitleCache;
-    @Mock private TabGroupModelFilterProvider mMockTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mMockTabGroupModelFilter;
     @Mock private Tab mMockTab;
     @Mock private TabFavicon mMockTabFavicon;
@@ -112,9 +110,7 @@ public class StripDragShadowViewUnitTest {
                             mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
                         });
 
-        when(mMockTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mMockTabGroupModelFilterProvider);
-        when(mMockTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mMockTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mMockTabGroupModelFilter);
 
         when(mMockTab.getId()).thenReturn(TAB_ID);

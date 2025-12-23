@@ -189,9 +189,7 @@ public class SelectableTabListEditorTest {
                                     : compositorViewHolder;
                     mSnackbarManager = new SnackbarManager(cta, rootView, null);
                     var currentTabGroupModelFilterSupplier =
-                            mTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getCurrentTabGroupModelFilterSupplier();
+                            mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
                     mAppHeaderStateProvider =
                             (AppHeaderCoordinator)
                                     mActivityTestRule
@@ -312,10 +310,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     ArrayList<Tab> tabs = new ArrayList<>();
                     TabModel model = mTabModelSelector.getCurrentModel();
-                    TabGroupModelFilter filter =
-                            mTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getCurrentTabGroupModelFilter();
+                    TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
                     for (int i = model.getCount() - urls.size(); i < model.getCount(); i++) {
                         tabs.add(model.getTabAt(i));
                     }
@@ -1937,10 +1932,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<Tab> tabs = new ArrayList<>();
 
-                    TabGroupModelFilter filter =
-                            mTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getCurrentTabGroupModelFilter();
+                    TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
                     for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
                         tabs.add(filter.getRepresentativeTabAt(i));
                     }

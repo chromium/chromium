@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -146,7 +145,6 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private LayoutStateProvider mLayoutManager;
     @Spy private TabModel mTabModel;
     @Mock private View mView;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -346,20 +344,14 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getCurrentTabGroupModelFilter();
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getTabGroupModelFilter(true);
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getTabGroupModelFilter(false);
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getCurrentTabGroupModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(true);
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(false);
         doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
 
-        // Set up TabModelSelector and TabGroupModelFilterProvider.
+        // Set up TabModelSelector.
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
@@ -368,11 +360,8 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabModelList).when(mTabModelSelector).getModels();
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
-        doReturn(mTabGroupModelFilterProvider)
-                .when(mTabModelSelector)
-                .getTabGroupModelFilterProvider();
         doNothing()
-                .when(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
                 .addTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
 
         // Set up OverviewModeBehavior.
@@ -923,7 +912,7 @@ public class TabGroupUiMediatorUnitTest {
 
         mTabGroupUiMediator.destroy();
 
-        verify(mTabGroupModelFilterProvider)
+        verify(mTabModelSelector)
                 .removeTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
         verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.capture());
         verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());

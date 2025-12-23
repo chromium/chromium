@@ -24,7 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -38,7 +37,6 @@ public class TabGroupUsageTrackerUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
 
@@ -47,11 +45,9 @@ public class TabGroupUsageTrackerUnitTest {
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+        when(mTabModelSelector.getTabGroupModelFilter(false))
                 .thenReturn(mRegularTabGroupModelFilter);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
+        when(mTabModelSelector.getTabGroupModelFilter(true))
                 .thenReturn(mIncognitoTabGroupModelFilter);
     }
 

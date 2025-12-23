@@ -99,9 +99,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             if (tab == null || tab.isClosing() || tab.isDestroyed()) return;
 
             TabGroupModelFilter filter =
-                    mTabModelSelector
-                            .getTabGroupModelFilterProvider()
-                            .getTabGroupModelFilter(tab.isIncognito());
+                    mTabModelSelector.getTabGroupModelFilter(tab.isIncognito());
             assumeNonNull(filter);
             if (!filter.isTabInTabGroup(tab)) return;
 

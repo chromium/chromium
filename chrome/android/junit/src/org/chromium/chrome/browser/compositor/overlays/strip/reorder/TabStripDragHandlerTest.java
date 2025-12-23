@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -155,7 +154,6 @@ public class TabStripDragHandlerTest {
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private TabStripDragHandler mSourceInstance;
     private TabStripDragHandler mDestInstance;
@@ -227,11 +225,9 @@ public class TabStripDragHandlerTest {
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTabBeingDragged);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilterSupplier())
+        when(mTabModelSelector.getCurrentTabGroupModelFilterSupplier())
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
 

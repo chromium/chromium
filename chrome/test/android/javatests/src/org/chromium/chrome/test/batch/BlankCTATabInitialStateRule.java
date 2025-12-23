@@ -127,7 +127,6 @@ public class BlankCTATabInitialStateRule implements TestRule {
                     TabGroupModelFilter filter =
                             sActivity
                                     .getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(/* isIncognito= */ false);
                     Tab activityTab = sActivity.getActivityTab();
                     if (filter.isTabInTabGroup(activityTab)) {

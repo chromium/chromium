@@ -34,7 +34,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -61,7 +60,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
 
     private MockTabModel mRegularTabModel;
     private MockTabModel mIncognitoTabModel;
@@ -107,13 +105,11 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         when(mIncognitoTabGroupModelFilter.isTabInTabGroup(incognitoTab0)).thenReturn(false);
         when(mIncognitoTabGroupModelFilter.isTabInTabGroup(incognitoTab1)).thenReturn(false);
 
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+        when(mTabModelSelector.getCurrentTabGroupModelFilter())
                 .thenReturn(mRegularTabGroupModelFilter);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
 
         mCurrentTabModelSupplier = new ObservableSupplierImpl<>();
         mCurrentTabModelSupplier.set(mRegularTabModel);
@@ -250,7 +246,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     private void changePanes() {
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+        when(mTabModelSelector.getCurrentTabGroupModelFilter())
                 .thenReturn(mIncognitoTabGroupModelFilter);
         mCurrentTabModelSupplier.set(mIncognitoTabModel);
         ShadowLooper.runUiThreadTasks();

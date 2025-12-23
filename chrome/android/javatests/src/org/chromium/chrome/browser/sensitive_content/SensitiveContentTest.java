@@ -686,8 +686,7 @@ public class SensitiveContentTest {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
-        assertNotNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        assertNotNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =

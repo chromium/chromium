@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -71,7 +70,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private UndoBarThrottle mUndoBarThrottle;
 
     @Mock private Tab mTab;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabManagementDelegate mTabManagementDelegate;
     @Mock private TabGroupUi mTabGroupUi;
@@ -91,9 +89,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTab.isIncognito()).thenReturn(false);
         mTabGroupUiOneshotSupplier =

@@ -83,9 +83,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         TabGroupModelFilter filter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(tabModel.isIncognito());
+                mTabModelSelector.getTabGroupModelFilter(tabModel.isIncognito());
         assumeNonNull(filter);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.

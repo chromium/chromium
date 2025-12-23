@@ -316,9 +316,7 @@ public class TabGroupUiTest {
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
                     TabGroupModelFilter filter =
-                            cta.getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            cta.getTabModelSelector().getTabGroupModelFilter(false);
                     filter.mergeListOfTabsToGroup(
                             List.of(tab),
                             filter.getRepresentativeTabAt(0),
@@ -367,9 +365,7 @@ public class TabGroupUiTest {
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
                     TabGroupModelFilter filter =
-                            cta.getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            cta.getTabModelSelector().getTabGroupModelFilter(false);
                     filter.mergeListOfTabsToGroup(
                             List.of(tab),
                             filter.getRepresentativeTabAt(0),
@@ -410,8 +406,7 @@ public class TabGroupUiTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter =
-                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab);
                 });
 
@@ -454,8 +449,7 @@ public class TabGroupUiTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter =
-                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab);
                 });
 

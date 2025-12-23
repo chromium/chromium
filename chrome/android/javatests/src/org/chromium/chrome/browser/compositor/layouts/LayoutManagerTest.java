@@ -207,8 +207,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
-        Assert.assertNotNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        Assert.assertNotNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =
@@ -279,8 +278,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
-        Assert.assertNotNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        Assert.assertNotNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =

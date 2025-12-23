@@ -206,9 +206,7 @@ public class TabModelUtilsUnitTest {
     public void testGetTabGroupModelFilterByTab() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(mTab);
-        assertEquals(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter(),
-                filter);
+        assertEquals(mTabModelSelector.getCurrentTabGroupModelFilter(), filter);
     }
 
     @Test
@@ -216,10 +214,6 @@ public class TabModelUtilsUnitTest {
         ArchivedTabModelSelectorHolder.setInstanceFn((profile) -> mArchivedTabModelSelector);
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(mArchivedTab);
-        assertEquals(
-                mArchivedTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter(),
-                filter);
+        assertEquals(mArchivedTabModelSelector.getCurrentTabGroupModelFilter(), filter);
     }
 }

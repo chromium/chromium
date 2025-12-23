@@ -84,16 +84,13 @@ public class QuickDeleteController {
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
                         assumeNonNull(
-                                tabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(/* isIncognito= */ false)));
+                                tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false)));
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
                             assumeNonNull(
-                                    archivedTabModelSelector
-                                            .getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(/* isIncognito= */ false)));
+                                    archivedTabModelSelector.getTabGroupModelFilter(
+                                            /* isIncognito= */ false)));
         } else {
             mDeleteArchivedTabsFilter = null;
         }

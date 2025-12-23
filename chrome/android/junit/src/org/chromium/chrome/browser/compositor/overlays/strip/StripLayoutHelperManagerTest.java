@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -133,7 +132,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabModel mStandardTabModel;
     @Mock private Profile mProfile;
     @Mock private Tab mSelectedTab;
@@ -200,12 +198,10 @@ public class StripLayoutHelperManagerTest {
     }
 
     private void initializeTest() {
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mStandardTabModel);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mStandardTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         when(mStandardTabModel.getProfile()).thenReturn(mProfile);

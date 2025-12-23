@@ -93,7 +93,6 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModelInternal mNormalTabModel;
     @Mock private TabModelInternal mIncognitoTabModel;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
@@ -124,11 +123,9 @@ public class TabPersistentStoreUnitTest {
         when(mPersistencePolicy.isMergeInProgress()).thenReturn(false);
         when(mPersistencePolicy.performInitialization(any(TaskRunner.class))).thenReturn(false);
 
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+        when(mTabModelSelector.getTabGroupModelFilter(false))
                 .thenReturn(mNormalTabGroupModelFilter);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
+        when(mTabModelSelector.getTabGroupModelFilter(true))
                 .thenReturn(mIncognitoTabGroupModelFilter);
 
         mCipherFactory = new CipherFactory();

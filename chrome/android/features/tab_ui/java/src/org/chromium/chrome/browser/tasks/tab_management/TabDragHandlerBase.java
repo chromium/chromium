@@ -98,9 +98,7 @@ public abstract class TabDragHandlerBase
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
         mCurrentTabGroupModelFilterSupplier =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilterSupplier();
+                mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
     }
 
     /** Whether a view drag and drop has started. */

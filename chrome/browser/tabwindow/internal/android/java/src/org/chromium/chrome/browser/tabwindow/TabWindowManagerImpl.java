@@ -543,9 +543,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         if (tabModelSelector == null) return null;
 
         @Nullable TabGroupModelFilter tabGroupModelFilter =
-                tabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
+                tabModelSelector.getTabGroupModelFilter(isIncognito);
         if (tabGroupModelFilter == null) return null;
 
         return tabGroupModelFilter.getTabsInGroup(tabGroupId);
@@ -647,9 +645,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 return;
             }
 
-            filterList.add(
-                    selector.getTabGroupModelFilterProvider()
-                            .getTabGroupModelFilter(/* isIncognito= */ false));
+            filterList.add(selector.getTabGroupModelFilter(/* isIncognito= */ false));
         }
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
                 tabGroupSyncService, filterList);
@@ -658,9 +654,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {
         Set<String> tabGroupIdTokenStrings = new HashSet<>();
         for (TabModelSelector selector : tabModelSelectors) {
-            var filterProvider = selector.getTabGroupModelFilterProvider();
             for (boolean isIncognito : List.of(false, true)) {
-                TabGroupModelFilter filter = filterProvider.getTabGroupModelFilter(isIncognito);
+                TabGroupModelFilter filter = selector.getTabGroupModelFilter(isIncognito);
                 assumeNonNull(filter);
                 for (Token tabGroupId : filter.getAllTabGroupIds()) {
                     tabGroupIdTokenStrings.add(tabGroupId.toString());
@@ -677,9 +672,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
             TabModelSelector selector = entry.getKey();
             if (!selector.isTabStateInitialized()) continue;
 
-            TabGroupModelFilter filter =
-                    selector.getTabGroupModelFilterProvider()
-                            .getTabGroupModelFilter(/* isIncognito= */ false);
+            TabGroupModelFilter filter = selector.getTabGroupModelFilter(/* isIncognito= */ false);
             if (filter == null) continue;
 
             if (TabGroupSyncUtils.isInCurrentWindow(filter, new LocalTabGroupId(tabGroupId))) {
