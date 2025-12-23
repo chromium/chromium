@@ -218,8 +218,7 @@ enum class NotificationCatalogName {
   kDemoMode = 199,
   kArcDlcInstall = 200,
   kIncompatibleCharger = 201,
-  kCameraUpload = 202,
-  kMaxValue = kCameraUpload
+  kMaxValue = kIncompatibleCharger
 };
 
 // A living catalog that registers system nudges.

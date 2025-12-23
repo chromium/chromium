@@ -12,7 +12,6 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
   sources = [
     "assistant.icon",
     "calculate.icon",
-    "camera.icon",
     "conversion_path.icon",
     "dictionary.icon",
     "editor_menu_elaborate.icon",
