@@ -16933,6 +16933,31 @@ be describing additional metrics about the same event.
       emitted for tracing.
     </summary>
   </metric>
+  <metric name="InteractionToActualNavigationStartDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation starts.
+      This metric is recorded only for cross-document navigations where a user
+      interaction timestamp is available.
+    </summary>
+  </metric>
+  <metric name="InteractionToNavigationFinishedDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation finishes
+      committing. This metric is recorded only for cross-document navigations
+      where a user interaction timestamp is available.
+    </summary>
+  </metric>
+  <metric name="InteractionToNavigationFinishedExcludingBeforeUnloadDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation finishes,
+      excluding the time spent running beforeunload handlers/dialogs. This
+      metric is recorded only for cross-document navigations where a user
+      interaction timestamp is available.
+    </summary>
+  </metric>
   <metric name="LoaderStartToFetchStartDuration">
     <summary>
       When the NavigationURLLoader starts, to when the browser is ready to fetch

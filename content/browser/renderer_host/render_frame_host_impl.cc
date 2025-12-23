@@ -1814,6 +1814,15 @@ void RecordNavigationTraceEventsAndMetrics(
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         excluding_before_unload_duration);
+    if (ukm_builder.has_value()) {
+      ukm_builder->SetInteractionToActualNavigationStartDurationMs(
+          interaction_to_actual_navigation_start.InMilliseconds());
+      ukm_builder->SetInteractionToNavigationFinishedDurationMs(
+          including_before_unload_duration.InMilliseconds());
+      ukm_builder
+          ->SetInteractionToNavigationFinishedExcludingBeforeUnloadDurationMs(
+              excluding_before_unload_duration.InMilliseconds());
+    }
   }
 
   // Most navigation metrics currently ignore everything before the adjusted
