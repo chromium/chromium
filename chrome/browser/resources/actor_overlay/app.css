@@ -86,4 +86,7 @@
   transform-origin: 50% 100%;
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.6, 0.0, 0.4, 1.0);
+  filter:
+    drop-shadow(2px 3px 5px rgba(79, 161, 255, 1))
+    drop-shadow(-1px -1px 2px rgba(52, 107, 241, 1));
 }
