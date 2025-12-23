@@ -19,6 +19,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -400,9 +401,7 @@ void PressInfoButtonForCell(NSString* cellId) {
 
 // Tests that the Password Leak detection toggle doesn't under Standard
 // Protection if the the feature is enabled.
-//
-// TODO(crbug.com/468292645): This test is flaky.
-- (void)FLAKY_testPasswordLeakCheckToggle_PresentWhenFeatureFlagDisabled {
+- (void)testPasswordLeakCheckToggle_PresentWhenFeatureFlagDisabled {
   // Ensure that Safe Browsing and password leak detection opt-outs start in
   // their default (opted-in) state.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
@@ -415,7 +414,7 @@ void PressInfoButtonForCell(NSString* cellId) {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Privacy Safe Browsing settings.
-  OpenPrivacySafeBrowsingSettings();
+  [ChromeCoordinatorAppInterface startPrivacySafeBrowsingCoordinator];
 
   // Open Standard Protection menu.
   PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);

@@ -46,6 +46,7 @@
 + (void)startHistoryCoordinator;
 + (void)startNewTabPageCoordinator;
 + (void)startPopupMenuCoordinator;
++ (void)startPrivacySafeBrowsingCoordinator;
 + (void)startOmniboxCoordinator;
 + (void)startQRScannerLegacyCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;

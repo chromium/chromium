@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -319,6 +321,26 @@
   PopupMenuCoordinator* coordinator =
       [[PopupMenuCoordinator alloc] initWithBrowser:self.helper.browser];
   coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startPrivacySafeBrowsingCoordinator {
+  // Setup & display the `SettingsNavigationController`.
+  Browser* browser = self.helper.browser;
+  DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
+  SettingsNavigationController* navigationController =
+      [SettingsNavigationController mainSettingsControllerForBrowser:browser
+                                                            delegate:nil
+                                            hasDefaultBrowserBlueDot:false];
+  [[self rootViewController] presentViewController:navigationController
+                                          animated:false
+                                        completion:nil];
+
+  PrivacySafeBrowsingCoordinator* coordinator =
+      [[PrivacySafeBrowsingCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser];
   self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }
