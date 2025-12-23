@@ -777,7 +777,7 @@ result.links = linksArray;
   }
 
   // Check if PageContext should be force detached.
-  // TODO(crbug.com/423681226): Force detaching PageContext shouldn't depend on
+  // TODO(crbug.com/471244309): Force detaching PageContext shouldn't depend on
   // fetching innerText/APC, it should always be enabled.
   std::optional<bool> shouldDetachPageContext =
       value->GetDict().FindBool(kShouldDetachPageContext);
