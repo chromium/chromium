@@ -28,7 +28,7 @@
 
 namespace {
 
-struct ShortcutsAutoRemovalPrefTestParam {
+struct MostVisitedAutoRemovalTestParam {
   bool custom_links_enabled;
 };
 
@@ -51,10 +51,10 @@ class MockMostVisitedPage : public most_visited::mojom::MostVisitedPage {
   mojo::Receiver<most_visited::mojom::MostVisitedPage> receiver_{this};
 };
 
-class ShortcutsAutoRemovalPrefTest
-    : public ::testing::TestWithParam<ShortcutsAutoRemovalPrefTestParam> {
+class MostVisitedAutoRemovalTest
+    : public ::testing::TestWithParam<MostVisitedAutoRemovalTestParam> {
  public:
-  ShortcutsAutoRemovalPrefTest() = default;
+  MostVisitedAutoRemovalTest() = default;
 
   void SetUp() override {
     SetUpGoogleDefaultSearchProvider();
@@ -102,11 +102,11 @@ class ShortcutsAutoRemovalPrefTest
 
 INSTANTIATE_TEST_SUITE_P(
     MostVisitedHandlerTest,
-    ShortcutsAutoRemovalPrefTest,
-    ::testing::Values(ShortcutsAutoRemovalPrefTestParam{false},
-                      ShortcutsAutoRemovalPrefTestParam{true}));
+    MostVisitedAutoRemovalTest,
+    ::testing::Values(MostVisitedAutoRemovalTestParam{false},
+                      MostVisitedAutoRemovalTestParam{true}));
 
-TEST_P(ShortcutsAutoRemovalPrefTest, AddMostVisitedTile) {
+TEST_P(MostVisitedAutoRemovalTest, AddMostVisitedTile) {
   ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
   handler_->AddMostVisitedTile(GURL("https://foo.com"), "Foo",
@@ -115,7 +115,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, AddMostVisitedTile) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, DeleteMostVisitedTile) {
+TEST_P(MostVisitedAutoRemovalTest, DeleteMostVisitedTile) {
   auto tile = most_visited::mojom::MostVisitedTile::New();
   tile->url = GURL("https://foo.com");
   handler_->AddMostVisitedTile(tile->url, "Foo", base::DoNothing());
@@ -130,7 +130,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, DeleteMostVisitedTile) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, ReorderMostVisitedTile) {
+TEST_P(MostVisitedAutoRemovalTest, ReorderMostVisitedTile) {
   auto tile = most_visited::mojom::MostVisitedTile::New();
   tile->url = GURL("https://foo.com");
   handler_->AddMostVisitedTile(tile->url, "Foo", base::DoNothing());
@@ -145,7 +145,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, ReorderMostVisitedTile) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, UpdateMostVisitedTile) {
+TEST_P(MostVisitedAutoRemovalTest, UpdateMostVisitedTile) {
   auto tile = most_visited::mojom::MostVisitedTile::New();
   tile->url = GURL("https://foo.com");
   handler_->AddMostVisitedTile(tile->url, "Foo", base::DoNothing());
@@ -161,7 +161,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, UpdateMostVisitedTile) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, SetMostVisitedExpandedState) {
+TEST_P(MostVisitedAutoRemovalTest, SetMostVisitedExpandedState) {
   ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
   handler_->SetMostVisitedExpandedState(true);
@@ -169,7 +169,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, SetMostVisitedExpandedState) {
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, OnMostVisitedTileNavigation) {
+TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTileNavigation) {
   ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
   auto tile = most_visited::mojom::MostVisitedTile::New();
@@ -186,7 +186,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, OnMostVisitedTileNavigation) {
 
 // Verify that UndoMostVisitedAutoRemoval restores shortcuts visibility and
 // disables future auto removal.
-TEST_P(ShortcutsAutoRemovalPrefTest, UndoMostVisitedAutoRemoval) {
+TEST_P(MostVisitedAutoRemovalTest, UndoMostVisitedAutoRemoval) {
   ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
   // Hide the shortcuts to test that the undo method sets it to true.
@@ -202,8 +202,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, UndoMostVisitedAutoRemoval) {
       CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_AUTO_REMOVE_UNDO, 1);
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest,
-       OnMostVisitedTilesRendered_UpdatesStaleness) {
+TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTilesRendered) {
   // Ensure conditions for staleness update are met.
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
                                   false);
@@ -233,8 +232,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest,
       1);
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest,
-       DoNotRemoveStaleShortcutsIfFeatureDisabled) {
+TEST_P(MostVisitedAutoRemovalTest, DoNotRemoveStaleShortcutsIfFeatureDisabled) {
   InitFeature(false);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
@@ -248,7 +246,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest,
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest,
+TEST_P(MostVisitedAutoRemovalTest,
        DoNotRemoveStaleShortcutsIfEnterpriseShortcutsEnabled) {
   InitFeature(true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
@@ -268,7 +266,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest,
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, RemoveStaleShortcutsIfReachThreshold) {
+TEST_P(MostVisitedAutoRemovalTest, RemoveStaleShortcutsIfReachThreshold) {
   InitFeature(true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
@@ -293,7 +291,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, RemoveStaleShortcutsIfReachThreshold) {
       CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_AUTO_REMOVE, 1);
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfAlreadyHidden) {
+TEST_P(MostVisitedAutoRemovalTest, DoNotRemoveStaleShortcutsIfAlreadyHidden) {
   InitFeature(true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
@@ -308,7 +306,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfAlreadyHidden) {
       profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfDisabled) {
+TEST_P(MostVisitedAutoRemovalTest, DoNotRemoveStaleShortcutsIfDisabled) {
   InitFeature(true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
@@ -322,7 +320,7 @@ TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfDisabled) {
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
-TEST_P(ShortcutsAutoRemovalPrefTest,
+TEST_P(MostVisitedAutoRemovalTest,
        DoNotRemoveStaleShortcutsIfNotAboveThreshold) {
   InitFeature(true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
