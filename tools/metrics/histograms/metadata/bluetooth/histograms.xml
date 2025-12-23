@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceKeyMissing" enum="BooleanDetected"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>laikatherine@chromium.org</owner>
   <owner>chromeos-bt-team@google.com</owner>
   <summary>Emitted each time a Bluetooth device has missing keys.</summary>
@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1896,7 +1896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.LocalNameIsUtf8" enum="Boolean"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>dcheng@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -1940,7 +1940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Serial.OpenSocketResult" enum="Boolean"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>xutan@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.StackName" enum="BluetoothStackName"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>michaelfsun@google.com</owner>
   <owner>chromeos-bt-kpi@google.com</owner>
   <summary>
@@ -1961,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2026-04-13">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2026-06-21">
   <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1997,7 +1997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2026-04-13">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2026-06-21">
   <owner>chengweih@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -2019,7 +2019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetCharacteristics.Characteristic"
-    enum="GATTCharacteristicHash" expires_after="2026-04-13">
+    enum="GATTCharacteristicHash" expires_after="2026-06-21">
   <owner>chengweih@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

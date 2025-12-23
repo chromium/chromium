@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="TaskManager.Closed.ElapsedTime" units="ms"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>mwoj@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TaskManager.Closed.{Tab}.ElapsedTime" units="ms"
-    expires_after="2026-04-11">
+    expires_after="2026-06-21">
   <owner>mwoj@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TaskManager.Opened" enum="StartAction"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>mwoj@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>

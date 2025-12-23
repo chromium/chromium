@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Show.TryShowOutcome"
-    enum="PaymentRequestTryShowOutcome" expires_after="2026-04-05">
+    enum="PaymentRequestTryShowOutcome" expires_after="2026-06-21">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.LogSize.OnSuccess" units="KB"
-    expires_after="2026-03-01">
+    expires_after="2026-06-21">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-06-21">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>

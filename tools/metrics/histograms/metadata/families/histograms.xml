@@ -366,7 +366,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
 <!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
 
   <owner>ljjlee@google.com</owner>
@@ -381,7 +381,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
-    enum="FamilyInfoLogSourceFetchStatus" expires_after="2026-04-12">
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2026-06-21">
 <!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
 
   <owner>ljjlee@google.com</owner>
@@ -395,7 +395,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
-    enum="Boolean" expires_after="2026-04-12">
+    enum="Boolean" expires_after="2026-06-21">
 <!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
 
   <owner>tju@google.com</owner>
@@ -1155,7 +1155,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.Status" enum="SupervisedUserProtoFetcherStatus"
-    expires_after="2026-04-19">
+    expires_after="2026-06-21">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch in calls to {RequestType}.</summary>

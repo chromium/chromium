@@ -1300,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2026-04-12">
+    enum="FeedRefreshTrigger" expires_after="2026-06-21">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

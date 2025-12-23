@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.InspectElement" units="ms" expires_after="2026-03-22">
+<histogram name="DevTools.InspectElement" units="ms" expires_after="2026-06-21">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>ergunsh@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <owner>bmeurer@google.com</owner>

@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageDegradationAmount" units="KiB"
-    expires_after="2026-04-19">
+    expires_after="2026-06-21">
   <owner>lbaraz@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
