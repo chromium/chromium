@@ -201,7 +201,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 // Sets the additional vertical content inset for the suggestion list.
 - (void)setAdditionalVerticalContentInset:
-    (CGFloat)additionalVerticalContentInset {
+    (UIEdgeInsets)additionalVerticalContentInset {
   [_viewController
       setAdditionalVerticalContentInset:additionalVerticalContentInset];
 }

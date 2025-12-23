@@ -68,7 +68,7 @@ class LargeIconService;
 
 // Sets the additional vertical content inset for the scroll view.
 - (void)setAdditionalVerticalContentInset:
-    (CGFloat)additionalVerticalContentInset;
+    (UIEdgeInsets)additionalVerticalContentInset;
 
 /// Toggle visibility of the omnibox debugger view.
 - (void)toggleOmniboxDebuggerView;
