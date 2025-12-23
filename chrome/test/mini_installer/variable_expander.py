@@ -96,6 +96,7 @@ class VariableExpander:
         *   Chrome'.
         * $CHROME_LONG_NAME_SXS: 'Google Chrome SxS' if $BRAND is 'Google
         *   Chrome'.
+        * $CHROME_PDF_PROG_ID: 'ChromePDF' (or 'ChromiumPDF' or 'CfTPDF').
         * $CHROME_SHORT_NAME: 'Chrome' (or 'Chromium' or
           'Google Chrome for Testing').
         * $CHROME_SHORT_NAME_BETA: 'ChromeBeta' if $BRAND is 'Google Chrome'.
@@ -250,6 +251,14 @@ class VariableExpander:
                 'ChromeSSHTM',
                 'CHROME_LONG_NAME':
                 'Google Chrome',
+                'CHROME_PDF_PROG_ID':
+                'ChromePDF',
+                'CHROME_PDF_PROG_ID_BETA':
+                'ChromeBPDF',
+                'CHROME_PDF_PROG_ID_DEV':
+                'ChromeDPDF',
+                'CHROME_PDF_PROG_ID_SXS':
+                'ChromeSSPDF',
                 'CHROME_SHORT_NAME':
                 'Chrome',
                 'CHROME_UPDATE_REGISTRY_SUBKEY':
@@ -361,6 +370,8 @@ class VariableExpander:
                 'ChromiumHTM',
                 'CHROME_LONG_NAME':
                 'Chromium',
+                'CHROME_PDF_PROG_ID':
+                'ChromiumPDF',
                 'CHROME_SHORT_NAME':
                 'Chromium',
                 'CHROME_UPDATE_REGISTRY_SUBKEY':
@@ -397,6 +408,8 @@ class VariableExpander:
                 'CfTHTML',
                 'CHROME_LONG_NAME':
                 'Google Chrome for Testing',
+                'CHROME_PDF_PROG_ID':
+                'CfTPDF',
                 'CHROME_SHORT_NAME':
                 'Google Chrome for Testing',
                 'CHROME_UPDATE_REGISTRY_SUBKEY':

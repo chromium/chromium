@@ -104,6 +104,15 @@
         }
       }
     },
+    "HKEY_CURRENT_USER\\Software\\Classes\\.pdf\\OpenWithProgids": {
+      "exists": "required",
+      "values": {
+        "$CHROME_HTML_PROG_ID$USER_SPECIFIC_REGISTRY_SUFFIX": {},
+        "$CHROME_PDF_PROG_ID$USER_SPECIFIC_REGISTRY_SUFFIX": {
+          "type": "SZ"
+        }
+      }
+    },
     "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID\\LocalServer32": {
       "exists": "required",
       "values": {
