@@ -165,21 +165,15 @@ views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  const auto is_hit_in_view = [&](views::View* target) {
-    gfx::Point point_in_target = point;
-    View::ConvertPointToTarget(this, target, &point_in_target);
-    return target->HitTestPoint(point_in_target);
-  };
-
-  if (tab_search_button_ && is_hit_in_view(tab_search_button_)) {
+  if (tab_search_button_ && IsHitInView(tab_search_button_, point)) {
     return false;
   }
 
-  if (collapse_button_ && is_hit_in_view(collapse_button_)) {
+  if (collapse_button_ && IsHitInView(collapse_button_, point)) {
     return false;
   }
 
-  if (projects_button_ && is_hit_in_view(projects_button_)) {
+  if (projects_button_ && IsHitInView(projects_button_, point)) {
     return false;
   }
 

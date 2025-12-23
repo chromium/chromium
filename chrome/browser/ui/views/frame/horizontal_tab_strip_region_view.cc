@@ -340,35 +340,20 @@ HorizontalTabStripRegionView::~HorizontalTabStripRegionView() {
   }
 }
 
-bool HorizontalTabStripRegionView::IsRectInWindowCaption(
-    const gfx::Rect& rect) {
-  const auto get_target_rect = [&](views::View* target) {
-    gfx::RectF rect_in_target_coords_f(rect);
-    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
-    return gfx::ToEnclosingRect(rect_in_target_coords_f);
-  };
-
-  // Perform checks for buttons that should be rendered above the tabstrip.
-  views::View* button_painted_to_layer = new_tab_button_;
-  if (button_painted_to_layer &&
-      button_painted_to_layer->GetLocalBounds().Intersects(
-          get_target_rect(button_painted_to_layer))) {
-    return !button_painted_to_layer->HitTestRect(
-        get_target_rect(button_painted_to_layer));
+bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  if (new_tab_button_ && IsHitInView(new_tab_button_, point)) {
+    return false;
   }
 
   if (render_tab_search_before_tab_strip_ && tab_search_container_ &&
-      tab_search_container_->GetLocalBounds().Intersects(
-          get_target_rect(tab_search_container_))) {
-    return !tab_search_container_->HitTestRect(
-        get_target_rect(tab_search_container_));
+      IsHitInView(tab_search_container_, point)) {
+    return false;
   }
 
   if (render_tab_search_before_tab_strip_ && product_specifications_button_ &&
-      product_specifications_button_->GetLocalBounds().Intersects(
-          get_target_rect(product_specifications_button_))) {
-    return !product_specifications_button_->HitTestRect(
-        get_target_rect(product_specifications_button_));
+      IsHitInView(product_specifications_button_, point)) {
+    return false;
   }
 
   // Perform a hit test against the |tab_strip_container_| to ensure that the
@@ -379,27 +364,24 @@ bool HorizontalTabStripRegionView::IsRectInWindowCaption(
   // the |tab_strip_container_| and the |tab_strip_| but not over the same
   // pixels. This could lead to this returning false when it should be returning
   // true.
-  if (tab_strip_container_->HitTestRect(
-          get_target_rect(tab_strip_container_))) {
-    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+  if (IsHitInView(tab_strip_container_, point)) {
+    gfx::RectF rect_in_target_coords_f(gfx::Rect(point, gfx::Size(1, 1)));
+    View::ConvertRectToTarget(this, tab_strip_container_,
+                              &rect_in_target_coords_f);
+    return tab_strip_->IsRectInWindowCaption(
+        gfx::ToEnclosingRect(rect_in_target_coords_f));
   }
 
   // The child could have a non-rectangular shape, so if the rect is not in the
   // visual portions of the child view we treat it as a click to the caption.
   for (View* const child : children()) {
     if (child != tab_strip_container_ && child != reserved_grab_handle_space_ &&
-        child->GetVisible() &&
-        child->GetLocalBounds().Intersects(get_target_rect(child))) {
-      return !child->HitTestRect(get_target_rect(child));
+        child->GetVisible() && IsHitInView(child, point)) {
+      return false;
     }
   }
 
   return true;
-}
-
-bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
-    const gfx::Point& point) {
-  return IsRectInWindowCaption(gfx::Rect(point, gfx::Size(1, 1)));
 }
 
 views::View::Views HorizontalTabStripRegionView::GetChildrenInZOrder() {

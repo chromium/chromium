@@ -1634,6 +1634,12 @@ ui::Cursor View::GetCursor(const ui::MouseEvent& event) {
   return ui::Cursor();
 }
 
+bool View::IsHitInView(views::View* target, const gfx::Point& point) const {
+  gfx::Point point_in_target = point;
+  View::ConvertPointToTarget(this, target, &point_in_target);
+  return target->HitTestPoint(point_in_target);
+}
+
 bool View::HitTestPoint(const gfx::Point& point) const {
   return HitTestRect(gfx::Rect(point, gfx::Size(1, 1)));
 }

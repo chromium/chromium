@@ -103,13 +103,7 @@ views::ProposedLayout ProjectsPanelView::CalculateProposedLayout(
 }
 
 bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
-  const auto is_hit_in_view = [&](views::View* target) {
-    gfx::Point point_in_target = point;
-    View::ConvertPointToTarget(this, target, &point_in_target);
-    return target->HitTestPoint(point_in_target);
-  };
-
-  if (projects_button_ && is_hit_in_view(projects_button_)) {
+  if (projects_button_ && IsHitInView(projects_button_, point)) {
     return false;
   }
 

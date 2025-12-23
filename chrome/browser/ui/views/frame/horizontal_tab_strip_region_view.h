@@ -50,14 +50,9 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
       delete;
   ~HorizontalTabStripRegionView() override;
 
-  // Returns true if the specified rect intersects the window caption area of
-  // the browser window. |rect| is in the local coordinate space
-  // of |this|.
-  bool IsRectInWindowCaption(const gfx::Rect& rect);
-
-  // A convenience function which calls |IsRectInWindowCaption()| with a rect of
-  // size 1x1 and an origin of |point|. |point| is in the local coordinate space
-  // of |this|.
+  // Returns true if |point| falls within the window caption area of the
+  // horizontal tab strip. Returns false if the point hits an interactive child
+  // view. |point| is in the local coordinate space of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }

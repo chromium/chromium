@@ -1190,6 +1190,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the cursor is a shared resource.
   virtual ui::Cursor GetCursor(const ui::MouseEvent& event);
 
+  // A convenience function which checks if |point| falls within the bounds of
+  // |target|. |point| is in the local coordinate space of |this| and is
+  // converted to the coordinate space of |target| before hit testing.
+  bool IsHitInView(views::View* target, const gfx::Point& point) const;
+
   // A convenience function which calls HitTestRect() with a rect of size
   // 1x1 and an origin of |point|. |point| is in the local coordinate space
   // of |this|.
