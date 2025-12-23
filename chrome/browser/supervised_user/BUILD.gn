@@ -30,6 +30,8 @@ static_library("test_support") {
 
   deps = [
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
@@ -55,7 +57,7 @@ static_library("test_support") {
       "//chrome/test:test_support_ui_android",
       "//components/safe_search_api:test_support",
       "//components/signin/public/identity_manager:test_support",
-      "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+      "//components/supervised_user/core/browser/android",
       "//services/network:test_support",
     ]
   } else {
@@ -325,13 +327,15 @@ if (is_android) {
       ]
       deps = [
         "//base",
+        "//chrome/browser:browser_process",
+        "//chrome/browser:global_features",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/sync",
         "//chrome/test:test_support",
         "//components/messages/android/test:test_support_cpp",
         "//components/safe_search_api:test_support",
         "//components/supervised_user/core/browser:test_support",
-        "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+        "//components/supervised_user/core/browser/android",
         "//components/url_matcher",
         "//content/test:test_support",
         "//net:test_support",

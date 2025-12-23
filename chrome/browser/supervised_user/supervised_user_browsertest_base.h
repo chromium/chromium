@@ -11,6 +11,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #else
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -95,14 +96,7 @@ class SupervisedUserBrowserTestBase :
   void SetInitialSupervisedUserState(InitialSupervisedUserState initial_state);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Returns a weak pointer to the search content filters observer bridge owned
-  // by the supervised user service.
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetSearchContentFiltersObserverWeakPtr() const;
-  // Returns a weak pointer to the browser content filters observer bridge owned
-  // by the supervised user service.
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetBrowserContentFiltersObserverWeakPtr() const;
+  AndroidParentalControls* GetAndroidParentalControls();
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

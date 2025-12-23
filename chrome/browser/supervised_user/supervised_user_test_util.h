@@ -24,6 +24,10 @@
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/check_deref.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -114,12 +118,8 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
-          supervised_user::kBrowserContentFiltersSettingName,
-          profile->GetPrefs()),
-      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
-          supervised_user::kSearchContentFiltersSettingName,
-          profile->GetPrefs())
+      CHECK_DEREF(
+          g_browser_process->GetFeatures()->GetAndroidParentalControls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

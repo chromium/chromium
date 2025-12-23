@@ -63,6 +63,12 @@ class UnexportableKeyObsoleteProfileGarbageCollector;
 }  // namespace unexportable_keys
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+#if BUILDFLAG(IS_ANDROID)
+namespace supervised_user {
+class AndroidParentalControls;
+}  // namespace supervised_user
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -177,6 +183,10 @@ class GlobalFeatures {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+  supervised_user::AndroidParentalControls* GetAndroidParentalControls();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   static ui::UserDataFactoryWithOwner<BrowserProcess>&
   GetUserDataFactoryForTesting();
 
@@ -243,6 +253,11 @@ class GlobalFeatures {
       unexportable_keys::UnexportableKeyObsoleteProfileGarbageCollector>
       unexportable_key_obsolete_profile_garbage_collector_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<supervised_user::AndroidParentalControls>
+      android_parental_controls_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

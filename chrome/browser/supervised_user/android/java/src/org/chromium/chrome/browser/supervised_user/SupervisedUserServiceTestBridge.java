@@ -23,21 +23,23 @@ class SupervisedUserServiceTestBridge {
     }
 
     /** Enables the browser content filters for testing. Call {@link #init} once before this. */
-    static void enableBrowserContentFilters(Profile profile) {
+    static void enableBrowserContentFilters() {
         // TODO(crbug.com/429430726): enforce calling init() prior to this.
-        SupervisedUserServiceTestBridgeJni.get().enableBrowserContentFilters(profile);
+        SupervisedUserServiceTestBridgeJni.get().enableBrowserContentFilters();
     }
 
     /** Enables the browser content filters for testing. Call {@link #init} once before this. */
-    static void enableSearchContentFilters(Profile profile) {
+    static void enableSearchContentFilters() {
         // TODO(crbug.com/429430726): enforce calling init() prior to this.
-        SupervisedUserServiceTestBridgeJni.get().enableSearchContentFilters(profile);
+        SupervisedUserServiceTestBridgeJni.get().enableSearchContentFilters();
     }
 
     @NativeMethods
     interface Natives {
         void init(@JniType("Profile*") Profile profile);
-        void enableBrowserContentFilters(@JniType("Profile*") Profile profile);
-        void enableSearchContentFilters(@JniType("Profile*") Profile profile);
+
+        void enableBrowserContentFilters();
+
+        void enableSearchContentFilters();
     }
 }

@@ -26,6 +26,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -112,30 +113,6 @@ class MetricsServiceAccessorDelegateMock
               (override));
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// Fake implementation of ContentFiltersObserverBridge for testing stripped from
-// the Java class backend. Imitates events that would normally be produced by
-// the Android's secure settings (which store content filter settings). Content
-// bridge is initialized with "disabled" setting. Use "SetEnabledForTesting" to
-// simulate the changing value of the setting.
-class FakeContentFiltersObserverBridge final
-    : public ContentFiltersObserverBridge {
- public:
-  // Matching constructor of ContentFiltersObserverBridge.
-  FakeContentFiltersObserverBridge(std::string_view setting_name,
-                                   const PrefService* pref_service);
-  FakeContentFiltersObserverBridge(const FakeContentFiltersObserverBridge&) =
-      delete;
-  FakeContentFiltersObserverBridge& operator=(
-      const FakeContentFiltersObserverBridge&) = delete;
-  ~FakeContentFiltersObserverBridge() override;
-
-  // Override to suppress initialization of the java bridge.
-  void Init() override;
-  void Shutdown() override;
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Configures a handy set of components that form supervised user features, for
 // unit testing. This is a lightweight, unit-test oriented alternative to a
 // TestingProfile with enabled supervision.
@@ -163,6 +140,9 @@ class SupervisedUserTestEnvironment {
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
+#if BUILDFLAG(IS_ANDROID)
+  AndroidParentalControls* android_parental_controls();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
@@ -202,6 +182,10 @@ class SupervisedUserTestEnvironment {
   std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
+
+#if BUILDFLAG(IS_ANDROID)
+  AndroidParentalControls android_parental_controls_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // The objects are actually owned by the service_, but are referenced here for
   // convenience.

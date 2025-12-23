@@ -6,13 +6,16 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-source_set("content_filters_observer_bridge") {
+source_set("android") {
   sources = [
+    "android_parental_controls.cc",
+    "android_parental_controls.h",
     "content_filters_observer_bridge.cc",
     "content_filters_observer_bridge.h",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/prefs",
     "//components/supervised_user/android:jni_headers",
     "//components/supervised_user/core/common",
@@ -21,9 +24,12 @@ source_set("content_filters_observer_bridge") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_filters_observer_bridge_unittest.cc" ]
+  sources = [
+    "android_parental_controls_unittest.cc",
+    "content_filters_observer_bridge_unittest.cc",
+  ]
   deps = [
-    ":content_filters_observer_bridge",
+    ":android",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",

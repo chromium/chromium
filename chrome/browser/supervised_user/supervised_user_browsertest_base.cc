@@ -33,6 +33,10 @@
 #include "content/public/test/browser_test_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/check_deref.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -56,21 +60,6 @@ class WrappedUrlCheckerClient : public safe_search_api::URLCheckerClient {
   base::WeakPtr<MockUrlCheckerClient> client_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<ContentFiltersObserverBridge>
-CreateFakeContentFiltersObserverBridge(const std::string& setting_name,
-                                       const PrefService* pref_service,
-                                       bool enabled) {
-  // Create the bridge and configure its initial value before passing
-  // ownership to the SupervisedUserService.
-  std::unique_ptr<ContentFiltersObserverBridge> bridge =
-      std::make_unique<FakeContentFiltersObserverBridge>(setting_name,
-                                                         pref_service);
-  bridge->SetEnabledForTesting(enabled);
-  return bridge;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 std::unique_ptr<KeyedService> BuildSupervisedUserService(
     base::WeakPtr<MockUrlCheckerClient> mock_url_checker_client,
     SupervisedUserBrowserTestBase::InitialSupervisedUserState initial_state,
@@ -92,12 +81,8 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      CreateFakeContentFiltersObserverBridge(
-          kBrowserContentFiltersSettingName, profile->GetPrefs(),
-          initial_state.android_parental_controls.browser_filter),
-      CreateFakeContentFiltersObserverBridge(
-          kSearchContentFiltersSettingName, profile->GetPrefs(),
-          initial_state.android_parental_controls.search_filter)
+      CHECK_DEREF(
+          g_browser_process->GetFeatures()->GetAndroidParentalControls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -121,6 +106,13 @@ void SupervisedUserBrowserTestBase::SetUpBrowserContextKeyedServices(
   } else {
     DisableParentalControls(*profile->GetPrefs());
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  GetAndroidParentalControls()->SetBrowserContentFiltersEnabledForTesting(
+      initial_state_.android_parental_controls.browser_filter);
+  GetAndroidParentalControls()->SetSearchContentFiltersEnabledForTesting(
+      initial_state_.android_parental_controls.search_filter);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildSupervisedUserService,
@@ -156,16 +148,9 @@ base::WeakPtr<MockUrlCheckerClient> MockUrlCheckerClient::GetWeakPtr() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::WeakPtr<ContentFiltersObserverBridge>
-SupervisedUserBrowserTestBase::GetBrowserContentFiltersObserverWeakPtr() const {
-  return GetSupervisedUserService()
-      ->GetBrowserContentFiltersObserverWeakPtrForTesting();
-}
-
-base::WeakPtr<ContentFiltersObserverBridge>
-SupervisedUserBrowserTestBase::GetSearchContentFiltersObserverWeakPtr() const {
-  return GetSupervisedUserService()
-      ->GetSearchContentFiltersObserverWeakPtrForTesting();
+AndroidParentalControls*
+SupervisedUserBrowserTestBase::GetAndroidParentalControls() {
+  return g_browser_process->GetFeatures()->GetAndroidParentalControls();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

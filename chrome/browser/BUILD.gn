@@ -3544,6 +3544,7 @@ static_library("browser") {
       "//components/subresource_filter/android",
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
+      "//components/supervised_user/core/browser/android",
       "//components/sync_preferences/synced_set_up/android",
       "//components/sync_preferences/synced_set_up/android:jni_headers",
       "//components/tabs",

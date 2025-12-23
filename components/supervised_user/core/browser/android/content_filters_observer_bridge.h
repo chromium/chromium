@@ -11,21 +11,15 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 
-// Required to veto Android Parental Control changes if the user is already
-// subject to parental controls.
-class PrefService;
-
 namespace supervised_user {
-// Forward-declared to go around dependency-cycle.
-bool IsSubjectToParentalControls(const PrefService& pref_service);
 
 // Bridge between the C++ and Java sides for a content filters observer. Used
-// to observe the Android's secure settings, can be a component of a service.
-// observer. Instances of FakeContentFiltersObserverBridge for testing
-// purposes are available from SupervisedUserTestEnvironment.
+// to observe the Android's secure settings. See AndroidParentalControls for a
+// container with known secure settings. SupervisedUserTestEnvironment or
+// TestingBrowserProcess are the recommended ways to interact with instances of
+// this class for testing.
 class ContentFiltersObserverBridge {
  public:
   // Observers will receive notifications about changes to underlying settings
@@ -36,13 +30,11 @@ class ContentFiltersObserverBridge {
         std::string_view setting_name) {}
     virtual void OnContentFiltersObserverDisabled(
         std::string_view setting_name) {}
+    virtual ~Observer() = default;
   };
 
-  // Creates a bridge for a given setting. If present, the pref service is used
-  // to veto Android Parental Control changes if the user is already subject to
-  // parental controls.
-  ContentFiltersObserverBridge(std::string_view setting_name,
-                               const PrefService* pref_service);
+  // Creates a bridge that will observe the given setting.
+  explicit ContentFiltersObserverBridge(std::string_view setting_name);
 
   ContentFiltersObserverBridge(const ContentFiltersObserverBridge&) = delete;
   ContentFiltersObserverBridge& operator=(const ContentFiltersObserverBridge&) =
@@ -60,12 +52,14 @@ class ContentFiltersObserverBridge {
   // Reads the last broadcasted value of the setting from the Java side.
   bool IsEnabled() const;
 
+  // Observer registration mutates this instance, but it is not altering its
+  // internal logical state.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   void SetEnabledForTesting(bool enabled);
 
-  base::WeakPtr<ContentFiltersObserverBridge> GetWeakPtr();
+  std::string_view GetSettingName() const { return setting_name_; }
 
  protected:
   void SetEnabled(bool enabled);
@@ -79,10 +73,10 @@ class ContentFiltersObserverBridge {
   // Java native storage backend, it might be controlled explicitly.
   bool enabled_ = false;
   std::string setting_name_;
-  raw_ptr<const PrefService> pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> bridge_;
+  // Observer list is mutable to allow adding observers even when the referenced
+  // "this instance" is const (e.g. when used in KeyedServiceFactory).
   base::ObserverList<Observer>::Unchecked observer_list_;
-  base::WeakPtrFactory<ContentFiltersObserverBridge> weak_ptr_factory_{this};
 };
 }  // namespace supervised_user
 

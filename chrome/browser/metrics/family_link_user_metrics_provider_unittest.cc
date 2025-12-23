@@ -554,7 +554,7 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
                                 /*is_opted_in_to_parental_supervision=*/false);
   }
 
-  // Builds the `SupervisedUserService` with fake content filters observers.
+  // Builds the `SupervisedUserService` with a fake url content filter delegate.
   std::unique_ptr<KeyedService> BuildSupervisedUserService(
       content::BrowserContext* browser_context) override {
     Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -581,30 +581,25 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
                 *profile->GetPrefs(), platform_delegate->GetCountryCode(),
                 platform_delegate->GetChannel())),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kBrowserContentFiltersSettingName, profile->GetPrefs()),
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kSearchContentFiltersSettingName, profile->GetPrefs()));
+        *TestingBrowserProcess::GetGlobal()
+             ->GetFeatures()
+             ->GetAndroidParentalControls());
   }
 
   // Enables or disables the browser content filters for all profiles.
   void SetBrowserContentFilters(bool enabled) {
-    for (Profile* profile :
-         test_profile_manager()->profile_manager()->GetLoadedProfiles()) {
-      SupervisedUserServiceFactory::GetForProfile(profile)
-          ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
-    }
+    TestingBrowserProcess::GetGlobal()
+        ->GetFeatures()
+        ->GetAndroidParentalControls()
+        ->SetBrowserContentFiltersEnabledForTesting(enabled);
   }
 
   // Enables or disables the search content filters for all profiles.
   void SetSearchContentFilters(bool enabled) {
-    for (Profile* profile :
-         test_profile_manager()->profile_manager()->GetLoadedProfiles()) {
-      SupervisedUserServiceFactory::GetForProfile(profile)
-          ->GetSearchContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
-    }
+    TestingBrowserProcess::GetGlobal()
+        ->GetFeatures()
+        ->GetAndroidParentalControls()
+        ->SetSearchContentFiltersEnabledForTesting(enabled);
   }
 
  private:

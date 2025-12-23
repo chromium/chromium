@@ -45,7 +45,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
-    deps += [ "//components/supervised_user/core/browser/android:content_filters_observer_bridge" ]
+    deps += [ "//components/supervised_user/core/browser/android" ]
   }
 }
 
@@ -180,7 +180,7 @@ static_library("browser") {
   if (is_android) {
     deps += [
       "//components/supervised_user/android:jni_headers",
-      "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+      "//components/supervised_user/core/browser/android",
     ]
   }
 }

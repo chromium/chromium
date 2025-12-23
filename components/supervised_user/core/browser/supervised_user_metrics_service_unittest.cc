@@ -177,14 +177,12 @@ class SupervisedUserMetricsServiceFieldTrialTest
         << "Create test environment first with CreateTestEnvironment().";
 
     if (GetFieldTrialName() == "AndroidDeviceSearchContentFilters") {
-      test_environment_->service()
-          ->GetSearchContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
+      test_environment_->android_parental_controls()
+          ->SetSearchContentFiltersEnabledForTesting(enabled);
       return;
     } else if (GetFieldTrialName() == "AndroidDeviceBrowserContentFilters") {
-      test_environment_->service()
-          ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
+      test_environment_->android_parental_controls()
+          ->SetBrowserContentFiltersEnabledForTesting(enabled);
       return;
     }
 

@@ -6,6 +6,9 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/check_deref.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
@@ -46,10 +50,8 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           std::make_unique<safe_search_api::FakeURLCheckerClient>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
 #if BUILDFLAG(IS_ANDROID)
-      std::make_unique<ContentFiltersObserverBridge>(
-          kBrowserContentFiltersSettingName, profile->GetPrefs()),
-      std::make_unique<ContentFiltersObserverBridge>(
-          kSearchContentFiltersSettingName, profile->GetPrefs())
+      CHECK_DEREF(
+          g_browser_process->GetFeatures()->GetAndroidParentalControls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -62,21 +64,17 @@ static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
-    JNIEnv* env,
-    Profile* profile) {
-  SupervisedUserServiceFactory::GetInstance()
-      ->GetForBrowserContext(profile)
-      ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-      ->SetEnabledForTesting(true);
+    JNIEnv* env) {
+  g_browser_process->GetFeatures()
+      ->GetAndroidParentalControls()
+      ->SetBrowserContentFiltersEnabledForTesting(true);
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
-    JNIEnv* env,
-    Profile* profile) {
-  SupervisedUserServiceFactory::GetInstance()
-      ->GetForBrowserContext(profile)
-      ->GetSearchContentFiltersObserverWeakPtrForTesting()
-      ->SetEnabledForTesting(true);
+    JNIEnv* env) {
+  g_browser_process->GetFeatures()
+      ->GetAndroidParentalControls()
+      ->SetSearchContentFiltersEnabledForTesting(true);
 }
 }  // namespace supervised_user
 

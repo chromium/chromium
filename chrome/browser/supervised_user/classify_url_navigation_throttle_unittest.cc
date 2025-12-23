@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -75,15 +77,12 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   return std::make_unique<SupervisedUserService>(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      *profile->GetPrefs(),
-      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+      identity_manager, url_loader_factory, *profile->GetPrefs(),
+      *SupervisedUserSettingsServiceFactory::GetForKey(
           profile->GetProfileKey()),
-      SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
+      SupervisedUserContentFiltersServiceFactory::GetForKey(
           profile->GetProfileKey()),
-      SyncServiceFactory::GetInstance()->GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       std::make_unique<MockSupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<KidsChromeManagementURLCheckerClient>(
@@ -93,10 +92,9 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      std::make_unique<FakeContentFiltersObserverBridge>(
-          kBrowserContentFiltersSettingName, profile->GetPrefs()),
-      std::make_unique<FakeContentFiltersObserverBridge>(
-          kSearchContentFiltersSettingName, profile->GetPrefs())
+      *TestingBrowserProcess::GetGlobal()
+           ->GetFeatures()
+           ->GetAndroidParentalControls()
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -170,10 +168,6 @@ class ClassifyUrlNavigationThrottleTest
     // as a component of TestSupervisedUserService.
     return static_cast<MockSupervisedUserURLFilter*>(
         SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
-  }
-
-  SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -289,9 +283,10 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
         break;
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
-        GetSupervisedUserService()
-            ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-            ->SetEnabledForTesting(true);
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->GetAndroidParentalControls()
+            ->SetBrowserContentFiltersEnabledForTesting(true);
         break;
 #endif  // BUILDFLAG(IS_ANDROID)
     }

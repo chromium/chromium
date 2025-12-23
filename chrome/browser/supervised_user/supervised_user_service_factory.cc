@@ -28,7 +28,10 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/check_deref.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #else
 #include "chrome/browser/supervised_user/desktop/supervised_user_service_platform_delegate.h"
 #endif
@@ -98,12 +101,8 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
       std::move(platform_delegate)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
-          supervised_user::kBrowserContentFiltersSettingName,
-          profile->GetPrefs()),
-      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
-          supervised_user::kSearchContentFiltersSettingName,
-          profile->GetPrefs())
+      CHECK_DEREF(
+          g_browser_process->GetFeatures()->GetAndroidParentalControls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

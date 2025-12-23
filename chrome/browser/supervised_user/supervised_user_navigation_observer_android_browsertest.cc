@@ -8,16 +8,20 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
@@ -81,7 +85,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
 // search query params are not appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        DontPropagateSearchContentFilterSettingWhenDisabled) {
-  ASSERT_FALSE(GetSearchContentFiltersObserverWeakPtr()->IsEnabled());
+  ASSERT_FALSE(GetAndroidParentalControls()->IsSearchContentFiltersEnabled());
 
   // The loaded URL is exactly as requested.
   EXPECT_TRUE(content::NavigateToURL(
@@ -95,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // feature consistency.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        LoadSafeSearchResultsWithSearchContentFilterPreset) {
-  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
+  GetAndroidParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
   // The final url will be different: with safe search query params.
@@ -109,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // params are appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        PreexistingSafeSearchParamsAreRemovedBeforeAppending) {
-  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
+  GetAndroidParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/search?safe=off&ssui=on&q=cat");
 
@@ -133,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
-  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
+  GetAndroidParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
   navigation_observer.Wait();
 
   // Key part: the search results are reloaded with extra query params.
@@ -150,7 +154,8 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::TestNavigationObserver navigation_observer(web_contents());
     // Turn the filtering on. That will trigger a url check which is resolved to
     // restricted.
-    GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
+    GetAndroidParentalControls()->SetBrowserContentFiltersEnabledForTesting(
+        true);
     navigation_observer.Wait();
   }
 
@@ -257,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test to facilitate the back button click, one url is allowed but
   // others are not. All navigations are subject to classification in this test.
-  GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
+  GetAndroidParentalControls()->SetBrowserContentFiltersEnabledForTesting(true);
 
   // Two classification calls are expected:
   // 1. when the page is first loaded

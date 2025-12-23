@@ -193,31 +193,21 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
           std::make_unique<MetricsServiceAccessorDelegateMock>(),
           initial_state) {}
 
-#if BUILDFLAG(IS_ANDROID)
-namespace {
-std::unique_ptr<ContentFiltersObserverBridge> MakeContentFiltersObserverBridge(
-    std::string_view setting_name,
-    const PrefService* user_prefs,
-    InitialSupervisionState initial_state) {
-  std::unique_ptr<ContentFiltersObserverBridge> bridge =
-      std::make_unique<FakeContentFiltersObserverBridge>(setting_name,
-                                                         user_prefs);
-  bridge->SetEnabledForTesting(
-      initial_state ==
-      InitialSupervisionState::kSupervisedWithAllContentFilters);
-  return bridge;
-}
-}  // namespace
-#endif  // BUILDFLAG(IS_ANDROID)
-
 SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
     std::unique_ptr<MetricsServiceAccessorDelegateMock>
         metrics_service_accessor_delegate,
     InitialSupervisionState initial_state) {
+#if BUILDFLAG(IS_ANDROID)
+  if (initial_state ==
+      InitialSupervisionState::kSupervisedWithAllContentFilters) {
+    android_parental_controls_.SetBrowserContentFiltersEnabledForTesting(true);
+    android_parental_controls_.SetSearchContentFiltersEnabledForTesting(true);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   url_checker_client_ = client.get();
-
   pref_store_environment_.ConfigureInitialValues(initial_state);
   service_ = std::make_unique<SupervisedUserService>(
       identity_test_env_.identity_manager(),
@@ -231,12 +221,7 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       std::make_unique<FakePlatformDelegate>()
 #if BUILDFLAG(IS_ANDROID)
           ,
-      MakeContentFiltersObserverBridge(kBrowserContentFiltersSettingName,
-                                       pref_store_environment_.pref_service(),
-                                       initial_state),
-      MakeContentFiltersObserverBridge(kSearchContentFiltersSettingName,
-                                       pref_store_environment_.pref_service(),
-                                       initial_state)
+      android_parental_controls_
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 
@@ -348,21 +333,10 @@ safe_search_api::FakeURLCheckerClient*
 SupervisedUserTestEnvironment::url_checker_client() {
   return url_checker_client_.get();
 }
-
 #if BUILDFLAG(IS_ANDROID)
-FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
-    std::string_view setting_name,
-    const PrefService* pref_service)
-    : ContentFiltersObserverBridge(setting_name, pref_service) {}
-FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
-
-void FakeContentFiltersObserverBridge::Init() {
-  // Freshly initialized real java bridge would notify all observers.
-  NotifyObservers();
-}
-
-void FakeContentFiltersObserverBridge::Shutdown() {
-  // Do nothing, specifically do not destroy the java bridge from super.
+AndroidParentalControls*
+SupervisedUserTestEnvironment::android_parental_controls() {
+  return &android_parental_controls_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

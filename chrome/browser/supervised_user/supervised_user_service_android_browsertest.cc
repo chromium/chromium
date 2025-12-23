@@ -6,16 +6,20 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -321,18 +325,18 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   // Try turning the knob on the local supervision (browser filtering).
-  GetSupervisedUserService()
-      ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-      ->SetEnabledForTesting(true);
+  g_browser_process->GetFeatures()
+      ->GetAndroidParentalControls()
+      ->SetBrowserContentFiltersEnabledForTesting(true);
   EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
-  GetSupervisedUserService()
-      ->GetSearchContentFiltersObserverWeakPtrForTesting()
-      ->SetEnabledForTesting(true);
+  g_browser_process->GetFeatures()
+      ->GetAndroidParentalControls()
+      ->SetSearchContentFiltersEnabledForTesting(true);
   EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(

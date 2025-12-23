@@ -92,8 +92,8 @@ public class IncognitoInteractionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = incognitoNtp.getActivity().getActivityTab();
-                    // Enable browser content filtering for the current profile.
-                    SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    // Enable browser content filtering.
+                    SupervisedUserServiceTestBridge.enableBrowserContentFilters();
                     // Successfully load a URL in the incognito tab. That proves that the tab is not
                     // closed. If the tab was closed, the load would fail due to assertion error.
                     assertNotNull(tab.getWebContents());
@@ -121,8 +121,8 @@ public class IncognitoInteractionTest {
                 () -> {
                     Tab tab = incognitoNtp.getActivity().getActivityTab();
                     tab.addObserver(tabClosedWaiter);
-                    // Enable browser content filtering for the current profile.
-                    SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    // Enable browser content filtering.
+                    SupervisedUserServiceTestBridge.enableBrowserContentFilters();
                     assertNull(tab.getWebContents());
                 });
 
@@ -150,8 +150,8 @@ public class IncognitoInteractionTest {
                 () -> {
                     Tab tab = incognitoNtp.getActivity().getActivityTab();
                     tab.addObserver(tabClosedWaiter);
-                    // Enable browser content filtering for the current profile.
-                    SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    // Enable browser content filtering.
+                    SupervisedUserServiceTestBridge.enableBrowserContentFilters();
                     assertNull(tab.getWebContents());
                 });
 
@@ -179,8 +179,8 @@ public class IncognitoInteractionTest {
                 () -> {
                     Tab tab = incognitoNtp.getActivity().getActivityTab();
                     tab.addObserver(tabClosedWaiter);
-                    // Enable browser content filtering for the current profile.
-                    SupervisedUserServiceTestBridge.enableSearchContentFilters(profile);
+                    // Enable browser content filtering.
+                    SupervisedUserServiceTestBridge.enableSearchContentFilters();
                     assertNull(tab.getWebContents());
                 });
 
