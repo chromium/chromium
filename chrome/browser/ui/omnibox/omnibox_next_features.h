@@ -107,6 +107,8 @@ extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
 // multi-context input flow is enabled.
 extern const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages;
+// Whether to attach the page title and URL to the suggest request.
+extern const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest;
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the
