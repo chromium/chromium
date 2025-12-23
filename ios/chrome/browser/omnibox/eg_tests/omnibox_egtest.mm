@@ -391,9 +391,11 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:SearchCopiedTextButton()]
       performAction:grey_tap()];
   // Check that the omnibox contains the copied text.
+  [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
                             textToSearch.cr_UTF8String)];
+  [OmniboxEarlGrey defocusOmnibox];
 }
 
 // Tests that Visit Copied Link menu button is shown with a link in the
