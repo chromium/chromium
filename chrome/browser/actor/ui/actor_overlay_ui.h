@@ -58,6 +58,7 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
   // Mojo connection is being established.
   std::vector<base::OnceClosure> handler_initialized_callbacks_;
 
+  base::WeakPtrFactory<ActorOverlayUI> weak_factory_{this};
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/ui/mocks/fake_actor_overlay_page.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -18,6 +19,28 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace actor::ui {
+
+namespace {
+
+class MockPageHandlerFactory {
+ public:
+  explicit MockPageHandlerFactory(ActorOverlayUI* ui) {
+    ui->BindInterface(factory_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void CreatePageHandler(FakeActorOverlayPage* mock_page) {
+    factory_remote_->CreatePageHandler(
+        mock_page->BindAndGetRemote(),
+        handler_remote_.BindNewPipeAndPassReceiver());
+    factory_remote_.FlushForTesting();
+  }
+
+ private:
+  mojo::Remote<mojom::ActorOverlayPageHandlerFactory> factory_remote_;
+  mojo::Remote<mojom::ActorOverlayPageHandler> handler_remote_;
+};
+
+}  // namespace
 
 class ActorOverlayUITest : public InProcessBrowserTest {
  public:
@@ -36,9 +59,20 @@ class ActorOverlayUITest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
-                       SetOverlayBackgroundCrashesIfHandlerNull) {
+                       SetOverlayBackgroundQueuesAndReplaysUpdates) {
   std::unique_ptr<ActorOverlayUI> controller = CreateController();
-  EXPECT_DCHECK_DEATH(controller->SetOverlayBackground(true));
+
+  controller->SetOverlayBackground(true);
+  controller->SetOverlayBackground(false);
+  controller->SetOverlayBackground(true);
+
+  MockPageHandlerFactory factory_helper(controller.get());
+  FakeActorOverlayPage fake_page;
+  factory_helper.CreatePageHandler(&fake_page);
+  fake_page.FlushForTesting();
+
+  EXPECT_EQ(fake_page.scrim_background_call_count(), 3);
+  EXPECT_TRUE(fake_page.is_scrim_background_visible());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,

@@ -73,7 +73,13 @@ void ActorOverlayUI::SetHandlerInitializedCallback(base::OnceClosure callback) {
 }
 
 void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
-  DCHECK(handler_);
+  // If handler is not initialized yet, queue the update.
+  if (!handler_) {
+    SetHandlerInitializedCallback(
+        base::BindOnce(&ActorOverlayUI::SetOverlayBackground,
+                       weak_factory_.GetWeakPtr(), is_visible));
+    return;
+  }
   handler_->SetOverlayBackground(is_visible);
 }
 

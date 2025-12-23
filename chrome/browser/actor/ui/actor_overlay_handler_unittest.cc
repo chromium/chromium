@@ -6,6 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/mocks/fake_actor_overlay_page.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -25,62 +26,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
-
-// Fake implementation for the ActorOverlayPage interface.
-class FakeActorOverlayPage : public mojom::ActorOverlayPage {
- public:
-  FakeActorOverlayPage() = default;
-  ~FakeActorOverlayPage() override = default;
-
-  mojo::PendingRemote<mojom::ActorOverlayPage> BindAndGetRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  // mojom::ActorOverlayPage
-  void SetScrimBackground(bool is_visible) override {
-    is_scrim_background_visible_ = is_visible;
-    set_scrim_background_call_count_++;
-  }
-
-  // mojom::ActorOverlayPage
-  void SetBorderGlowVisibility(bool is_visible) override {
-    is_border_glow_visible_ = is_visible;
-    set_border_glow_call_count_++;
-  }
-
-  // mojom::ActorOverlayPage
-  void MoveCursorTo(const gfx::Point& point,
-                    MoveCursorToCallback callback) override {
-    last_cursor_point_ = point;
-    move_cursor_call_count_++;
-    // Simulate the WebUI replying immediately
-    std::move(callback).Run();
-  }
-
-  // mojom::ActorOverlayPage
-  void SetTheme(mojom::ThemePtr theme) override { set_theme_call_count_++; }
-
-  // Test accessors
-  bool is_scrim_background_visible() { return is_scrim_background_visible_; }
-  int scrim_background_call_count() { return set_scrim_background_call_count_; }
-  bool is_border_glow_visible() { return is_border_glow_visible_; }
-  int border_glow_call_count() { return set_border_glow_call_count_; }
-  int set_theme_call_count() { return set_theme_call_count_; }
-  gfx::Point last_cursor_point() { return last_cursor_point_; }
-  int move_cursor_call_count() { return move_cursor_call_count_; }
-
- private:
-  mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
-  bool is_scrim_background_visible_ = false;
-  int set_scrim_background_call_count_ = 0;
-  bool is_border_glow_visible_ = false;
-  int set_border_glow_call_count_ = 0;
-  int set_theme_call_count_ = 0;
-  gfx::Point last_cursor_point_;
-  int move_cursor_call_count_ = 0;
-};
 
 class ActorOverlayHandlerTest : public testing::Test {
  public:

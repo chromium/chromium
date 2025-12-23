@@ -162,8 +162,11 @@ source_set("actor_ui_interactive_base") {
   ]
 }
 
+# TODO(crbug.com/471004833): Rename mocks/ directory to test_support/.
 source_set("test_support") {
   sources = [
+    "mocks/fake_actor_overlay_page.cc",
+    "mocks/fake_actor_overlay_page.h",
     "mocks/mock_actor_ui_state_manager.cc",
     "mocks/mock_actor_ui_state_manager.h",
     "mocks/mock_actor_ui_tab_controller.cc",
