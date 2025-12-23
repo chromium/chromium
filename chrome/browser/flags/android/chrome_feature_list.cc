@@ -163,7 +163,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &features::kAbortNavigationsFromTabClosures,
     &features::kAndroidAnimatedProgressBarInBrowser,
-    &features::kAndroidAnimatedProgressBarInViz,
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBrowserControlsInViz,
     &features::kAndroidWebAppLaunchHandler,

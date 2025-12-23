@@ -62,8 +62,7 @@ class TopToolbarSceneLayer : public SceneLayer {
                          jint progress_bar_static_background_color,
                          jfloat corner_radius,
                          jboolean progress_bar_visual_update_available,
-                         bool visible,
-                         const base::android::JavaRef<jobject>& joffset_tag);
+                         bool visible);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);

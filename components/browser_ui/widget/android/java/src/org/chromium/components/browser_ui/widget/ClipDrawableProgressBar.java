@@ -22,7 +22,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -41,7 +40,6 @@ public class ClipDrawableProgressBar extends ImageView {
         public float cornerRadius;
         public boolean progressBarVisualUpdateAvailable;
         public boolean visible;
-        public @Nullable OffsetTag offsetTag;
     }
 
     public interface ProgressBarObserver {
@@ -288,34 +286,20 @@ public class ClipDrawableProgressBar extends ImageView {
             }
         }
 
-        // TODO(https://crbug.com/439461465) Remove updates which position the rectangles. These
-        // updates will be done in viz via OffsetTags.
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
-            if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
-                // Fix the width for the foreground and background Rects so that they are wide
-                // enough to cover the entire progress bar. They will be initially positioned to
-                // show 0 progress, and then horizontally translated in viz as the progress updates.
-                drawingInfoOut.progressBarRect.set(getLeft(), getTop(), getRight(), getBottom());
+            drawingInfoOut.progressBarRect.set(
+                    getLeft(),
+                    getTop(),
+                    getLeft() + Math.round(mProgress * getWidth()),
+                    getBottom());
+            if (useGradientDrawable()) {
                 drawingInfoOut.progressBarBackgroundRect.set(
-                        getLeft(), getTop(), getRight(), getBottom());
+                        getRight() - mScaledBackgroundWidth, getTop(), getRight(), getBottom());
             } else {
-                drawingInfoOut.progressBarRect.set(
-                        getLeft(),
-                        getTop(),
-                        getLeft() + Math.round(mProgress * getWidth()),
-                        getBottom());
-                if (useGradientDrawable()) {
-                    drawingInfoOut.progressBarBackgroundRect.set(
-                            getRight() - mScaledBackgroundWidth, getTop(), getRight(), getBottom());
-                } else {
-                    drawingInfoOut.progressBarBackgroundRect.set(
-                            drawingInfoOut.progressBarRect.right,
-                            getTop(),
-                            getRight(),
-                            getBottom());
-                }
+                drawingInfoOut.progressBarBackgroundRect.set(
+                        drawingInfoOut.progressBarRect.right, getTop(), getRight(), getBottom());
             }
         } else {
             // TODO(https://crbug.com/439659091): Implement animated progress bar for RTL.
@@ -441,8 +425,7 @@ public class ClipDrawableProgressBar extends ImageView {
     }
 
     public boolean shouldAnimateCompositedLayer() {
-        return ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
-                || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
+        return ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
     }
 
     public int getCompositedVisibilityForTesting() {

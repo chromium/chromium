@@ -58,8 +58,7 @@ class ToolbarLayer : public Layer {
                          int progress_bar_static_background_color,
                          float corner_radius,
                          bool progress_bar_visual_update_available,
-                         bool visible,
-                         const viz::OffsetTag& offset_tag);
+                         bool visible);
 
   void SetOpacity(float opacity);
 

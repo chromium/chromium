@@ -167,8 +167,6 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER =
             "AndroidAnimatedProgressBarInBrowser";
-    public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ =
-            "AndroidAnimatedProgressBarInViz";
     public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
     public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
@@ -707,8 +705,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, true);
-    public static final CachedFlag sAndroidAnimatedProgressBarInViz =
-            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ, false);
     public static final CachedFlag sAndroidAppIntegrationModule =
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
@@ -1098,7 +1094,6 @@ public abstract class ChromeFeatureList {
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
                     sAndroidAnimatedProgressBarInBrowser,
-                    sAndroidAnimatedProgressBarInViz,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,
                     sAndroidAutoMintedTwa,
