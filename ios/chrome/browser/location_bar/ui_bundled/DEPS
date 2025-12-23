@@ -26,7 +26,7 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model/offline_page_tab_helper.h",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sharing/ui_bundled",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h",
+  "+ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",

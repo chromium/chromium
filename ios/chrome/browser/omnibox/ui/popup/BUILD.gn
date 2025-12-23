@@ -35,7 +35,6 @@ source_set("popup_ui") {
     "//base",
     "//components/favicon/core",
     "//components/omnibox/common",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/model/suggestions:ui_interface",

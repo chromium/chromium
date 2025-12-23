@@ -79,7 +79,7 @@ source_set("flags") {
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/badges/model:features",
     "//ios/chrome/browser/composebox/public:features",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public:features",
+    "//ios/chrome/browser/content_suggestions/default_browser/public:features",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/default_browser/model:features",

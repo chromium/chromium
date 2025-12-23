@@ -1,7 +1,7 @@
 include_rules = [
   "+components/themes",
   "+ios/chrome/browser/commerce/model",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+  "+ios/chrome/browser/content_suggestions/set_up_list",
   "+ios/chrome/browser/discover_feed/model",
   "+ios/chrome/browser/image_fetcher",
   "+ios/chrome/browser/ntp/shared/metrics",

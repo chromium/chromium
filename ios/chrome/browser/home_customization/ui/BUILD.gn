@@ -66,7 +66,7 @@ source_set("ui") {
     ":constants",
     "//base",
     "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/ntp/search_engine_logo/mediator",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",

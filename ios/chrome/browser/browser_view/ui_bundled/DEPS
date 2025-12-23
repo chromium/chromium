@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/composebox/coordinator",
   "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h",
+  "+ios/chrome/browser/content_suggestions/public",
   "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
   "+ios/chrome/browser/contextual_panel",
   "+ios/chrome/browser/crash_report/model/crash_keys_helper.h",

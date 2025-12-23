@@ -88,7 +88,7 @@ source_set("eg2_tests") {
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_container/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
+    "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/history/ui_bundled:constants",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/public:features",

@@ -9,7 +9,7 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"

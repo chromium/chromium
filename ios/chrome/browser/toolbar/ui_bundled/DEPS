@@ -33,7 +33,7 @@ include_rules = [
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
   "+ios/chrome/browser/share_kit/model",
   "+ios/chrome/browser/sharing/ui_bundled",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h",
+  "+ios/chrome/browser/content_suggestions/ui",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/fullscreen/internal",
   "+ios/chrome/browser/lens/ui_bundled",

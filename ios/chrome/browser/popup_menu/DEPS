@@ -58,7 +58,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h",
   "+ios/chrome/browser/url_loading/model/image_search_param_generator.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h",
+  "+ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h"
 ]
 

@@ -41,7 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public:utils",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:utils",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/google/model:google_logo",

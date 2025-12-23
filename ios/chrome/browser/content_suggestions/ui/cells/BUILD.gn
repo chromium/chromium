@@ -1,0 +1,183 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("cells") {
+  sources = [
+    "content_suggestions_action_item.h",
+    "content_suggestions_action_item.mm",
+    "content_suggestions_action_tile_view.h",
+    "content_suggestions_action_tile_view.mm",
+    "content_suggestions_tile_view.h",
+    "content_suggestions_tile_view.mm",
+    "multi_row_container_view.h",
+    "multi_row_container_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/favicon_base",
+    "//components/ntp_tiles",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/content_suggestions/ui/cells/resources",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("standalone_module_view") {
+  sources = [
+    "standalone_module_view.h",
+    "standalone_module_view.mm",
+    "standalone_module_view_configuration.h",
+    "standalone_module_view_configuration.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("icon_detail_view") {
+  sources = [
+    "icon_detail_view.h",
+    "icon_detail_view.mm",
+    "icon_detail_view_configuration.h",
+    "icon_detail_view_configuration.mm",
+    "icon_view.h",
+    "icon_view.mm",
+    "icon_view_configuration.h",
+    "icon_view_configuration.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tile_saver") {
+  sources = [
+    "content_suggestions_tile_saver.h",
+    "content_suggestions_tile_saver.mm",
+  ]
+  public_deps = [ "//components/ntp_tiles" ]
+  deps = [
+    "//base",
+    "//components/favicon/core",
+    "//components/ntp_tiles",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//crypto",
+    "//google_apis",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/widget_kit/model:features",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/ntp_tile",
+    "//ios/chrome/common/ui/favicon",
+    "//net",
+  ]
+  if (ios_enable_widget_kit_extension) {
+    deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
+  }
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "content_suggestions_cells_constants.h",
+    "content_suggestions_cells_constants.mm",
+    "content_suggestions_tile_constants.h",
+    "content_suggestions_tile_constants.mm",
+    "content_suggestions_tile_layout_util.h",
+    "content_suggestions_tile_layout_util.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_suggestions_tile_saver_unittest.mm" ]
+  deps = [
+    ":cells",
+    ":constants",
+    ":tile_saver",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/ntp_tiles",
+    "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/metrics/model:constants",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/ntp_tile",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/test:block_cleanup_test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//net",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//url",
+  ]
+}

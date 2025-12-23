@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "tab_resumption_commands.h",
+    "tab_resumption_consumer.h",
+    "tab_resumption_consumer_source.h",
+    "tab_resumption_item.h",
+    "tab_resumption_item.mm",
+    "tab_resumption_view.h",
+    "tab_resumption_view.mm",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/content_suggestions/magic_stack/ui:public" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/segmentation_platform/public",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui:card_data",
+    "//ios/chrome/browser/content_suggestions/tab_resumption/public:constants",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_resumption_item_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui:card_data",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/start_surface/ui_bundled",
   "+ios/chrome/browser/aim/model",
-  "+ios/chrome/browser/content_suggestions/ui_bundled",
+  "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/first_run/ui_bundled/ios_first_run_field_trials.h",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/authentication/account_menu",

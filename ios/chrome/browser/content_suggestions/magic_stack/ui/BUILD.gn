@@ -1,0 +1,130 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "edit_button_config.h",
+    "edit_button_config.mm",
+    "magic_stack_collection_view.h",
+    "magic_stack_collection_view.mm",
+    "magic_stack_custom_layout.h",
+    "magic_stack_custom_layout.mm",
+    "magic_stack_layout_configurator.h",
+    "magic_stack_layout_configurator.mm",
+    "placeholder_config.h",
+    "placeholder_config.mm",
+  ]
+  deps = [
+    ":cells",
+    ":public",
+    "//base",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui/resources",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  sources = [
+    "magic_stack_collection_view_audience.h",
+    "magic_stack_consumer.h",
+    "magic_stack_module.h",
+    "magic_stack_module.mm",
+    "magic_stack_module_container_delegate.h",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("cells") {
+  sources = [
+    "magic_stack_context_menu_interaction_handler.h",
+    "magic_stack_context_menu_interaction_handler.mm",
+    "magic_stack_edit_button_cell.h",
+    "magic_stack_edit_button_cell.mm",
+    "magic_stack_layout_attributes.h",
+    "magic_stack_layout_attributes.mm",
+    "magic_stack_module_background_view.h",
+    "magic_stack_module_background_view.mm",
+    "magic_stack_module_collection_view_cell.h",
+    "magic_stack_module_collection_view_cell.mm",
+    "magic_stack_module_container.h",
+    "magic_stack_module_container.mm",
+    "magic_stack_module_contents_factory.h",
+    "magic_stack_module_contents_factory.mm",
+  ]
+  deps = [
+    ":magic_stack_module_content_view_delegate",
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//google_apis",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/app_bundle_promo/ui",
+    "//ios/chrome/browser/content_suggestions/default_browser/ui",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
+    "//ios/chrome/browser/content_suggestions/price_tracking_promo/ui",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/safety_check/model:utils",
+    "//ios/chrome/browser/content_suggestions/safety_check/ui",
+    "//ios/chrome/browser/content_suggestions/send_tab_to_self/ui",
+    "//ios/chrome/browser/content_suggestions/set_up_list/coordinator",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:constants",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:utils",
+    "//ios/chrome/browser/content_suggestions/set_up_list/ui",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui",
+    "//ios/chrome/browser/content_suggestions/shop_card/ui:card_data",
+    "//ios/chrome/browser/content_suggestions/shortcuts/ui",
+    "//ios/chrome/browser/content_suggestions/tab_resumption/ui",
+    "//ios/chrome/browser/content_suggestions/tips/ui",
+    "//ios/chrome/browser/content_suggestions/ui:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui/cells",
+    "//ios/chrome/browser/content_suggestions/ui/cells:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("magic_stack_module_content_view_delegate") {
+  sources = [ "magic_stack_module_content_view_delegate.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "magic_stack_collection_view_unittest.mm" ]
+  deps = [
+    ":public",
+    ":ui",
+    "//base/test:test_support",
+    "//components/segmentation_platform/public",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/content_suggestions/price_tracking_promo/ui",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/shortcuts/ui",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

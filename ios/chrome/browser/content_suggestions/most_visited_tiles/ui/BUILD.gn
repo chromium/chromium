@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "most_visited_item.h",
+    "most_visited_item.mm",
+    "most_visited_tile_view.h",
+    "most_visited_tile_view.mm",
+    "most_visited_tiles_collection_view.h",
+    "most_visited_tiles_collection_view.mm",
+    "most_visited_tiles_commands.h",
+    "most_visited_tiles_config.h",
+    "most_visited_tiles_config.mm",
+    "most_visited_tiles_pinned_site_mutator.h",
+    "most_visited_tiles_plus_button_item.h",
+    "most_visited_tiles_plus_button_item.mm",
+    "most_visited_tiles_stack_view.h",
+    "most_visited_tiles_stack_view.mm",
+    "pinned_site_form_view_controller.h",
+    "pinned_site_form_view_controller.mm",
+  ]
+  public_deps = [
+    "//components/ntp_tiles",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+  ]
+  deps = [
+    "//components/favicon_base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui:public",
+    "//ios/chrome/browser/content_suggestions/ui/cells",
+    "//ios/chrome/browser/content_suggestions/ui/cells:constants",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

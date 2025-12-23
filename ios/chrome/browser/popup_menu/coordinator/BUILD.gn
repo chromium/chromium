@@ -34,7 +34,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/commerce/model/push_notification",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
+    "//ios/chrome/browser/content_suggestions/ui/cells:constants",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/find_in_page/model",

@@ -135,7 +135,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",

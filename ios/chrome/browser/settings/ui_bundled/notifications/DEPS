@@ -1,4 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/content_suggestions/ui_bundled",
+  "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/push_notification/ui_bundled",
 ]

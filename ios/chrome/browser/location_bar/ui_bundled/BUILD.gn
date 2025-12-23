@@ -40,7 +40,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/composebox/coordinator",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",

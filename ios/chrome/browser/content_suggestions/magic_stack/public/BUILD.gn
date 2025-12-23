@@ -1,0 +1,36 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "magic_stack_constants.h",
+    "magic_stack_constants.mm",
+  ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "magic_stack_utils.h",
+    "magic_stack_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/application_locale_storage",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
+    "//components/variations/service",
+    "//ios/chrome/browser/content_suggestions/price_tracking_promo/model:prefs",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:authentication_service",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

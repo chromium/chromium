@@ -1,6 +1,6 @@
 include_rules = [
   "+components/safety_check/features.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h",
+  "+ios/chrome/browser/content_suggestions/public",
   "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
   "+ios/chrome/browser/omaha/model",
   "+ios/chrome/browser/passwords/model",

@@ -12,7 +12,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/themes:ntp_background_proto",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/content_suggestions/test:eg_test_support+eg2",
     "//ios/chrome/browser/home_customization/model:seed_colors",
     "//ios/chrome/browser/home_customization/ui:constants",
     "//ios/chrome/browser/ntp/ui_bundled:constants",

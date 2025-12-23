@@ -23,7 +23,7 @@ specific_include_rules = {
     "+ios/chrome/browser/consent_auditor/model",
     "+ios/chrome/browser/content_notification/model",
     "+ios/chrome/browser/content_settings/model",
-    "+ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
+    "+ios/chrome/browser/content_suggestions/impression_limits/model",
     "+ios/chrome/browser/contextual_panel/model",
     "+ios/chrome/browser/contextual_panel/sample/model",
     "+ios/chrome/browser/crash_report/model",

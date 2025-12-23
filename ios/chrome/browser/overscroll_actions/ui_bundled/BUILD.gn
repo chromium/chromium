@@ -16,7 +16,7 @@ source_set("ui_bundled") {
     "//build:blink_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
+    "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/page_info/constants",

@@ -84,7 +84,7 @@ source_set("eg2_tests") {
   deps = [
     "//build:branding_buildflags",
     "//components/version_info",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
