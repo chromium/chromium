@@ -3235,7 +3235,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {
   // Assert: Invocation source is added to the url.
   std::string source_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, "source", &source_value));
-  EXPECT_EQ(source_value, "chrome.cr.menu");
+  EXPECT_EQ(source_value, "chrome.crn.menu");
 }
 
 TEST_F(ComposeboxQueryControllerTest, ContextualTasksOverrides) {

@@ -55,56 +55,56 @@ TEST(LensUrlUtilsTest, Base64EncodeRequestIdTest) {
   EXPECT_EQ(encoded_id, "CAEQAiIDQUJD");
 }
 
-TEST(LensUrlUtilsTest, AppendInvocationSourceParamToUrlAppendsEntryPoints) {
+struct InvocationSourceParamTestCase {
+  lens::LensOverlayInvocationSource invocation_source;
+  std::string expected_param_suffix;
+};
+
+class LensUrlUtilsTestWithParams
+    : public testing::TestWithParam<InvocationSourceParamTestCase> {};
+
+TEST_P(LensUrlUtilsTestWithParams, AppendInvocationSourceParamToUrl) {
+  const auto& test_case = GetParam();
   constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
   const GURL base_url(kResultsSearchBaseUrl);
 
-  std::string expected_app_menu_url =
-      base::StringPrintf("%s?source=chrome.cr.menu", kResultsSearchBaseUrl);
+  std::string expected_url =
+      base::StringPrintf("%s?source=chrome.cr.%s", kResultsSearchBaseUrl,
+                         test_case.expected_param_suffix.c_str());
   EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kAppMenu),
-            expected_app_menu_url);
+                base_url, test_case.invocation_source,
+                /*is_contextual_tasks=*/false),
+            expected_url);
 
-  std::string expected_context_menu_page_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxp", kResultsSearchBaseUrl);
+  std::string expected_contextual_tasks_url =
+      base::StringPrintf("%s?source=chrome.crn.%s", kResultsSearchBaseUrl,
+                         test_case.expected_param_suffix.c_str());
   EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url,
-                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
-            expected_context_menu_page_url);
-
-  std::string expected_context_menu_image_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxi", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage),
-      expected_context_menu_image_url);
-
-  std::string expected_toolbar_url =
-      base::StringPrintf("%s?source=chrome.cr.tbic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kToolbar),
-            expected_toolbar_url);
-
-  std::string expected_find_in_page_url =
-      base::StringPrintf("%s?source=chrome.cr.find", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kFindInPage),
-            expected_find_in_page_url);
-
-  std::string expected_omnibox_url =
-      base::StringPrintf("%s?source=chrome.cr.obic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kOmnibox),
-            expected_omnibox_url);
-
-  std::string expected_context_menu_video_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxv", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo),
-      expected_context_menu_video_url);
+                base_url, test_case.invocation_source,
+                /*is_contextual_tasks=*/true),
+            expected_contextual_tasks_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    InvocationSourceParams,
+    LensUrlUtilsTestWithParams,
+    testing::Values(
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kAppMenu, "menu"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+            "ctxp"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+            "ctxi"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kToolbar, "tbic"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kFindInPage, "find"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kOmnibox, "obic"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo,
+            "ctxv"}));
 
 }  // namespace lens

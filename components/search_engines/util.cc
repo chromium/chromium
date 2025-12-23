@@ -703,8 +703,11 @@ GURL GetUrlForMultimodalSearch(
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_request_id);
   if (invocation_source.has_value()) {
-    result_url =
-        lens::AppendInvocationSourceParamToURL(result_url, *invocation_source);
+    // If the invocation source is set, this is a Lens query that is migrated
+    // to the common ContextualSearchSessionHandle, which is only used for the
+    // contextual tasks flow.
+    result_url = lens::AppendInvocationSourceParamToURL(
+        result_url, *invocation_source, /*is_contextual_tasks=*/true);
   }
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kVisualRequestIdQueryParameter, encoded_request_id);
@@ -742,8 +745,11 @@ GURL GetUrlForMultimodalSearch(
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_contextual_inputs);
   if (invocation_source.has_value()) {
-    result_url =
-        lens::AppendInvocationSourceParamToURL(result_url, *invocation_source);
+    // If the invocation source is set, this is a Lens query that is migrated
+    // to the common ContextualSearchSessionHandle, which is only used for the
+    // contextual tasks flow.
+    result_url = lens::AppendInvocationSourceParamToURL(
+        result_url, *invocation_source, /*is_contextual_tasks=*/true);
   }
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kContextualInputsParameterKey, encoded_contextual_inputs);

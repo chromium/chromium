@@ -41,22 +41,19 @@ constexpr char kOneLensDesktopWebFullscreen[] = "df";
 
 // Query parameter for the invocation source.
 inline constexpr char kInvocationSourceParameterKey[] = "source";
-inline constexpr char kInvocationSourceAppMenu[] = "chrome.cr.menu";
-inline constexpr char kInvocationSourcePageSearchContextMenu[] =
-    "chrome.cr.ctxp";
-inline constexpr char kInvocationSourceImageSearchContextMenu[] =
-    "chrome.cr.ctxi";
-inline constexpr char kInvocationSourceTextSearchContextMenu[] =
-    "chrome.cr.ctxt";
-inline constexpr char kInvocationSourceVideoSearchContextMenu[] =
-    "chrome.cr.ctxv";
-inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
-inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
-inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
-inline constexpr char kInvocationSourceOmniboxPageAction[] = "chrome.cr.obpa";
-inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] =
-    "chrome.cr.obcs";
-inline constexpr char kInvocationSourceHomeworkActionChip[] = "chrome.cr.hwac";
+inline constexpr char kLensPanelPrefix[] = "chrome.cr.";
+inline constexpr char kContextualTasksPrefix[] = "chrome.crn.";
+inline constexpr char kInvocationSourceAppMenu[] = "menu";
+inline constexpr char kInvocationSourcePageSearchContextMenu[] = "ctxp";
+inline constexpr char kInvocationSourceImageSearchContextMenu[] = "ctxi";
+inline constexpr char kInvocationSourceTextSearchContextMenu[] = "ctxt";
+inline constexpr char kInvocationSourceVideoSearchContextMenu[] = "ctxv";
+inline constexpr char kInvocationSourceFindInPage[] = "find";
+inline constexpr char kInvocationSourceToolbarIcon[] = "tbic";
+inline constexpr char kInvocationSourceOmniboxIcon[] = "obic";
+inline constexpr char kInvocationSourceOmniboxPageAction[] = "obpa";
+inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] = "obcs";
+inline constexpr char kInvocationSourceHomeworkActionChip[] = "hwac";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -258,41 +255,43 @@ GURL RemoveSidePanelURLParameters(const GURL& url) {
 
 GURL AppendInvocationSourceParamToURL(
     const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source) {
-  std::string param_value = "";
+    lens::LensOverlayInvocationSource invocation_source,
+    bool is_contextual_tasks) {
+  std::string param_value =
+      is_contextual_tasks ? kContextualTasksPrefix : kLensPanelPrefix;
   switch (invocation_source) {
     case lens::LensOverlayInvocationSource::kAppMenu:
-      param_value = kInvocationSourceAppMenu;
+      param_value += kInvocationSourceAppMenu;
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
-      param_value = kInvocationSourcePageSearchContextMenu;
+      param_value += kInvocationSourcePageSearchContextMenu;
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
-      param_value = kInvocationSourceImageSearchContextMenu;
+      param_value += kInvocationSourceImageSearchContextMenu;
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
-      param_value = kInvocationSourceTextSearchContextMenu;
+      param_value += kInvocationSourceTextSearchContextMenu;
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
-      param_value = kInvocationSourceVideoSearchContextMenu;
+      param_value += kInvocationSourceVideoSearchContextMenu;
       break;
     case lens::LensOverlayInvocationSource::kToolbar:
-      param_value = kInvocationSourceToolbarIcon;
+      param_value += kInvocationSourceToolbarIcon;
       break;
     case lens::LensOverlayInvocationSource::kFindInPage:
-      param_value = kInvocationSourceFindInPage;
+      param_value += kInvocationSourceFindInPage;
       break;
     case lens::LensOverlayInvocationSource::kOmnibox:
-      param_value = kInvocationSourceOmniboxIcon;
+      param_value += kInvocationSourceOmniboxIcon;
       break;
     case lens::LensOverlayInvocationSource::kOmniboxPageAction:
-      param_value = kInvocationSourceOmniboxPageAction;
+      param_value += kInvocationSourceOmniboxPageAction;
       break;
     case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
-      param_value = kInvocationSourceOmniboxContextualSuggestion;
+      param_value += kInvocationSourceOmniboxContextualSuggestion;
       break;
     case lens::LensOverlayInvocationSource::kHomeworkActionChip:
-      param_value = kInvocationSourceHomeworkActionChip;
+      param_value += kInvocationSourceHomeworkActionChip;
       break;
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:
