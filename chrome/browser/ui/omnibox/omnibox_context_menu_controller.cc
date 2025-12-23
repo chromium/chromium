@@ -39,9 +39,11 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -390,6 +392,32 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   }
 }
 
+bool OmniboxContextMenuController::IsCommandIdEnabledHelper(
+    int command_id,
+    omnibox::ChromeAimToolsAndModels aim_tool_mode,
+    const std::vector<contextual_search::FileInfo>& file_infos,
+    int max_num_files) {
+  if (aim_tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
+    return command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE && file_infos.empty();
+  }
+
+  auto file_upload_count = static_cast<int>(file_infos.size());
+
+  if (file_upload_count > 0) {
+    switch (command_id) {
+      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
+        return false;
+      case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
+        return file_upload_count == 1 &&
+               file_infos[0].mime_type == lens::MimeType::kImage;
+      default:
+        return file_upload_count < max_num_files;
+    }
+  }
+
+  return true;
+}
+
 bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   if (command_id == ui::MenuModel::kTitleId) {
     return false;
@@ -408,28 +436,17 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
 
   const omnibox::ChromeAimToolsAndModels aim_tool_mode =
       omnibox_popup_ui->composebox_handler()->GetAimToolMode();
-  if (aim_tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
-    return command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE;
-  }
 
-  auto file_upload_count =
-      static_cast<int>(omnibox_popup_ui->composebox_handler()
-                           ->GetUploadedContextTokens()
-                           .size());
-  if (file_upload_count > 0) {
-    auto max_num_files =
-        omnibox::FeatureConfig::Get().config.composebox().max_num_files();
-    if (file_upload_count < max_num_files) {
-      return command_id != IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH;
-    } else {
-      // Note: If a file is added, create images should be disabled but this
-      // is handled in the WebUI by disabling the button. This will need to be
-      // updated when multifile upload is added.
-      return command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES;
-    }
+  auto* session_handle = omnibox_popup_ui->GetContextualSessionHandle();
+  std::vector<contextual_search::FileInfo> file_infos;
+  if (session_handle) {
+    file_infos = session_handle->GetUploadedContextFileInfos();
   }
+  auto max_num_files =
+      omnibox::FeatureConfig::Get().config.composebox().max_num_files();
 
-  return true;
+  return IsCommandIdEnabledHelper(command_id, aim_tool_mode, file_infos,
+                                  max_num_files);
 }
 
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {

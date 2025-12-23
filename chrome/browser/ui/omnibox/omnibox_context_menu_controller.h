@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -30,9 +31,17 @@ namespace ui {
 class ImageModel;
 }  // namespace ui
 
+namespace omnibox {
+enum ChromeAimToolsAndModels : int;
+}  // namespace omnibox
+
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace contextual_search {
+struct FileInfo;
+}  // namespace contextual_search
 
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
@@ -64,6 +73,25 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       std::optional<searchbox::mojom::ToolMode> tool_mode);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsCommandIdEnabledHelper_InitialState);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsCommandIdEnabledHelper_ImageGenMode);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsCommandIdEnabledHelper_WithImageFile);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsCommandIdEnabledHelper_WithNonImageFile);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsCommandIdEnabledHelper_MaxFiles);
+
+  // Helper function for `IsCommandIdEnabled` exposing main logic to make
+  // unit testing easier.
+  static bool IsCommandIdEnabledHelper(
+      int command_id,
+      omnibox::ChromeAimToolsAndModels aim_tool_mode,
+      const std::vector<contextual_search::FileInfo>& file_infos,
+      int max_num_files);
+
   void BuildMenu();
   // Adds a IDC_* style command to the menu with a string16.
   void AddItem(int id, const std::u16string str);
