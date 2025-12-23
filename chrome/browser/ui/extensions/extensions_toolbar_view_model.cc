@@ -38,6 +38,41 @@ ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionModelForId(
   return it->second.get();
 }
 
+void ExtensionsToolbarViewModel::MovePinnedAction(
+    const ToolbarActionsModel::ActionId& action_id,
+    size_t target_index) {
+  actions_model_->MovePinnedAction(action_id, target_index);
+}
+
+void ExtensionsToolbarViewModel::MovePinnedActionBy(
+    const std::string& action_id,
+    int move_by) {
+  // Find the action's current index and verify that it's currently pinned.
+  auto iter = std::ranges::find(actions_model_->pinned_action_ids(), action_id);
+  CHECK(iter != actions_model_->pinned_action_ids().cend());
+
+  // Calculate the target index, clamping it between 0 and `size - 1` to prevent
+  // out-of-bounds errors.
+  int current_index = iter - actions_model_->pinned_action_ids().cbegin();
+  int new_index = std::clamp(
+      current_index + move_by, 0,
+      static_cast<int>(actions_model_->pinned_action_ids().size()) - 1);
+  if (new_index == current_index) {
+    return;
+  }
+  MovePinnedAction(action_id, new_index);
+}
+
+const base::flat_set<ToolbarActionsModel::ActionId>&
+ExtensionsToolbarViewModel::GetAllActionIds() const {
+  return actions_model_->action_ids();
+}
+
+const std::vector<ToolbarActionsModel::ActionId>&
+ExtensionsToolbarViewModel::GetPinnedActionIds() const {
+  return actions_model_->pinned_action_ids();
+}
+
 bool ExtensionsToolbarViewModel::AreActionsInitialized() {
   return actions_model_->actions_initialized();
 }

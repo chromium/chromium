@@ -64,6 +64,19 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   ToolbarActionViewModel* GetActionModelForId(
       const ToolbarActionsModel::ActionId& action_id);
 
+  // Move the pinned action `action_id` to `target_index`.
+  void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
+                        size_t target_index);
+
+  // Move this pinned action `action_id` by the specified `move_by` amount.
+  void MovePinnedActionBy(const std::string& action_id, int move_by);
+
+  // Returns the sorted list of the IDs of all installed actions.
+  const base::flat_set<ToolbarActionsModel::ActionId>& GetAllActionIds() const;
+
+  // Returns the ordered list of ids of pinned actions.
+  const std::vector<ToolbarActionsModel::ActionId>& GetPinnedActionIds() const;
+
   // Returns whether the actions are initialized.
   bool AreActionsInitialized();
 

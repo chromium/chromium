@@ -288,7 +288,7 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     auto site_permissions_helper =
         extensions::SitePermissionsHelper(browser_->profile());
 
-    for (const auto& action_id : model_->action_ids()) {
+    for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
       bool has_active_request =
           permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
       bool can_show_access_requests_in_toolbar =
@@ -558,12 +558,12 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 }
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
-  return !model_->action_ids().empty();
+  return !toolbar_view_model_->GetAllActionIds().empty();
 }
 
 void ExtensionsToolbarContainer::ReorderAllChildViews() {
   // Reorder pinned action views left-to-right.
-  const auto& pinned_action_ids = model_->pinned_action_ids();
+  const auto& pinned_action_ids = toolbar_view_model_->GetPinnedActionIds();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i) {
     ReorderChildView(GetViewForId(pinned_action_ids[i]), i);
   }
@@ -628,16 +628,7 @@ gfx::Size ExtensionsToolbarContainer::GetToolbarActionSize() {
 void ExtensionsToolbarContainer::MovePinnedActionBy(
     const std::string& action_id,
     int move_by) {
-  auto iter = std::ranges::find(model_->pinned_action_ids(), action_id);
-  CHECK(iter != model_->pinned_action_ids().cend());
-  int current_index = iter - model_->pinned_action_ids().cbegin();
-  int new_index =
-      std::clamp(current_index + move_by, 0,
-                 static_cast<int>(model_->pinned_action_ids().size()) - 1);
-  if (new_index == current_index) {
-    return;
-  }
-  model_->MovePinnedAction(action_id, new_index);
+  toolbar_view_model_->MovePinnedActionBy(action_id, move_by);
 }
 
 void ExtensionsToolbarContainer::UpdateHoverCard(
@@ -675,9 +666,9 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
   DCHECK(data);
 
   auto it = std::ranges::find(
-      model_->pinned_action_ids(), sender,
+      toolbar_view_model_->GetPinnedActionIds(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  DCHECK(it != model_->pinned_action_ids().cend());
+  DCHECK(it != toolbar_view_model_->GetPinnedActionIds().cend());
   ToolbarActionView* extension_view = GetViewForId(*it);
 
   ui::ImageModel icon = GetExtensionIcon(extension_view);
@@ -685,7 +676,7 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
                                 press_pt.OffsetFromOrigin());
 
   // Fill in the remaining info.
-  size_t index = it - model_->pinned_action_ids().cbegin();
+  size_t index = it - toolbar_view_model_->GetPinnedActionIds().cbegin();
   BrowserActionDragData drag_data(extension_view->view_model()->GetId(), index);
   drag_data.Write(browser_->profile(), data);
 }
@@ -709,9 +700,9 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
 
   // Only pinned extensions should be draggable.
   auto it = std::ranges::find(
-      model_->pinned_action_ids(), sender,
+      toolbar_view_model_->GetPinnedActionIds(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  if (it == model_->pinned_action_ids().cend()) {
+  if (it == toolbar_view_model_->GetPinnedActionIds().cend()) {
     return false;
   }
 
@@ -730,7 +721,7 @@ ExtensionsToolbarContainer::CreateActionViewModel(
 void ExtensionsToolbarContainer::OnActionsInitialized() {
   CHECK(icons_.empty());
 
-  for (const auto& action_id : model_->action_ids()) {
+  for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
     CreateActionViewForId(action_id);
   }
 
@@ -842,7 +833,7 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   const int offset_into_icon_area = GetMirroredXInView(event.x());
   const size_t before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
 
-  const size_t visible_icons = model_->pinned_action_ids().size();
+  const size_t visible_icons = toolbar_view_model_->GetPinnedActionIds().size();
 
   // Because the user can drag outside the container bounds, we need to clamp
   // to the valid range. Note that the maximum allowable value is
@@ -907,7 +898,8 @@ size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
       std::max((x_offset + element_padding) /
                    (GetToolbarActionSize().width() + element_padding),
                0);
-  return std::min(unclamped_count, model_->action_ids().size());
+  return std::min(unclamped_count,
+                  toolbar_view_model_->GetAllActionIds().size());
 }
 
 ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(
@@ -920,9 +912,9 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
     ToolbarActionsModel::ActionId id,
     bool visible) {
   auto it = std::ranges::find(
-      model_->pinned_action_ids(), GetViewForId(id),
+      toolbar_view_model_->GetPinnedActionIds(), GetViewForId(id),
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  if (it == model_->pinned_action_ids().cend()) {
+  if (it == toolbar_view_model_->GetPinnedActionIds().cend()) {
     return;
   }
 
@@ -1029,7 +1021,7 @@ void ExtensionsToolbarContainer::MovePinnedAction(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  model_->MovePinnedAction(action_id, index);
+  toolbar_view_model_->MovePinnedAction(action_id, index);
 
   output_drag_op = DragOperation::kMove;
   // `cleanup` will run automatically when it goes out of scope to finish
