@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/authentication/signin/non_modal_promo/coordinator",
   "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
   "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/favicon/model",

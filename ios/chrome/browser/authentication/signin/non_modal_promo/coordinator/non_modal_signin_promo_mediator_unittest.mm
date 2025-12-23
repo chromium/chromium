@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
@@ -10,7 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -34,7 +34,7 @@
 
 @property(nonatomic, assign) NSInteger dismissCount;
 @property(nonatomic, assign) NSInteger showCount;
-@property(nonatomic, assign) SignInPromoType lastPromoType;
+@property(nonatomic, assign) NonModalSignInPromoType lastPromoType;
 
 @end
 
@@ -48,7 +48,7 @@
   return self;
 }
 
-- (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType {
+- (void)showNonModalSignInPromoWithType:(NonModalSignInPromoType)promoType {
   _showCount++;
   _lastPromoType = promoType;
 }
@@ -139,7 +139,7 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
         initWithAuthenticationService:authentication_service_
                       identityManager:identity_manager
              featureEngagementTracker:mock_tracker_
-                            promoType:SignInPromoType::kPassword];
+                            promoType:NonModalSignInPromoType::kPassword];
 
     mediator_.delegate = fake_delegate_;
   }

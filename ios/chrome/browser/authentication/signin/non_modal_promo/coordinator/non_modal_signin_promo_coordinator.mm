@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_coordinator.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 
 #import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_mediator.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_metrics_util.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
@@ -42,7 +42,7 @@ constexpr CGFloat kLogoSize = 22;
   // The mediator responsible for the business logic.
   NonModalSignInPromoMediator* _mediator;
   // The type of promo to be displayed.
-  SignInPromoType _promoType;
+  NonModalSignInPromoType _promoType;
   raw_ptr<feature_engagement::Tracker> _tracker;
   // Whether the latest displayed infobar is not yet tapped.
   BOOL _infobarUntapped;
@@ -55,7 +55,7 @@ constexpr CGFloat kLogoSize = 22;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                 promoType:(SignInPromoType)promoType {
+                                 promoType:(NonModalSignInPromoType)promoType {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                       type:InfobarType::kInfobarTypeSignin];
@@ -112,11 +112,11 @@ constexpr CGFloat kLogoSize = 22;
 - (void)notifyFeatureEngagementDismissed {
   if (self.bannerWasPresented) {
     switch (_promoType) {
-      case SignInPromoType::kPassword:
+      case NonModalSignInPromoType::kPassword:
         _tracker->Dismissed(
             feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
         break;
-      case SignInPromoType::kBookmark:
+      case NonModalSignInPromoType::kBookmark:
         _tracker->Dismissed(
             feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
         break;
@@ -160,12 +160,12 @@ constexpr CGFloat kLogoSize = 22;
 
   // Configure subtitle based on promo type
   switch (_promoType) {
-    case SignInPromoType::kPassword:
+    case NonModalSignInPromoType::kPassword:
       subtitle =
           l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_SAVE_PASSWORD);
       break;
 
-    case SignInPromoType::kBookmark:
+    case NonModalSignInPromoType::kBookmark:
       subtitle =
           l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_ADD_BOOKMARK);
       break;
@@ -272,10 +272,10 @@ constexpr CGFloat kLogoSize = 22;
   // Select the appropriate access point based on promo type
   signin_metrics::AccessPoint accessPoint;
   switch (_promoType) {
-    case SignInPromoType::kPassword:
+    case NonModalSignInPromoType::kPassword:
       accessPoint = signin_metrics::AccessPoint::kNonModalSigninPasswordPromo;
       break;
-    case SignInPromoType::kBookmark:
+    case NonModalSignInPromoType::kBookmark:
       accessPoint = signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo;
       break;
   }

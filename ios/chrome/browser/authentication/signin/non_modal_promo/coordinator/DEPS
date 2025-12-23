@@ -1,4 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/infobars/ui_bundled",
+  "+ios/chrome/browser/signin/model",
 ]

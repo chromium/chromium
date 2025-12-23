@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-enum class SignInPromoType;
+enum class NonModalSignInPromoType;
 
 // Commands related to the Non-Modal Sign-In Promo.
 @protocol NonModalSignInPromoCommands <NSObject>
@@ -15,7 +15,7 @@ enum class SignInPromoType;
 // Triggers the business logic to display the non-modal sign-in promo with the
 // given type. The mediator may introduce a delay before actually showing the
 // promo.
-- (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType;
+- (void)showNonModalSignInPromoWithType:(NonModalSignInPromoType)promoType;
 
 @end
 

@@ -12,13 +12,13 @@ source_set("coordinator") {
     "non_modal_signin_promo_metrics_util.mm",
   ]
   deps = [
+    ":promo_types",
     "//base",
     "//components/feature_engagement/public",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
-    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
@@ -40,12 +40,12 @@ source_set("unit_tests") {
 
   deps = [
     ":coordinator",
+    ":promo_types",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/signin/public/identity_manager/objc",
-    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -61,4 +61,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("promo_types") {
+  sources = [ "non_modal_signin_promo_types.h" ]
+  frameworks = [ "Foundation.framework" ]
 }

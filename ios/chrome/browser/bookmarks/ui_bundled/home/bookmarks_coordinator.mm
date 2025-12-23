@@ -21,7 +21,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator.h"
 #import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator.h"
@@ -256,7 +256,7 @@ enum class PresentedState {
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          NonModalSignInPromoCommands);
   [nonModalSignInPromoHandler
-      showNonModalSignInPromoWithType:SignInPromoType::kBookmark];
+      showNonModalSignInPromoWithType:NonModalSignInPromoType::kBookmark];
 
   default_browser::NotifyBookmarkAddOrEdit(
       feature_engagement::TrackerFactory::GetForProfile(

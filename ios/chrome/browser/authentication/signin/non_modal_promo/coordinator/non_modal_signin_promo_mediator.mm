@@ -1,14 +1,15 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
+
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_mediator.h"
 
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_metrics_util.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
@@ -52,7 +53,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   raw_ptr<feature_engagement::Tracker> _tracker;
 
   // The type of promo (password or bookmark) being shown.
-  SignInPromoType _promoType;
+  NonModalSignInPromoType _promoType;
 
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
@@ -63,7 +64,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
     initWithAuthenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
          featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                        promoType:(SignInPromoType)promoType {
+                        promoType:(NonModalSignInPromoType)promoType {
   self = [super init];
   if (self) {
     CHECK(authService, base::NotFatalUntil::M145);
@@ -100,10 +101,10 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   // Check with the feature engagement tracker if promo should be shown.
   bool wouldShowPromo = false;
 
-  if (_promoType == SignInPromoType::kPassword) {
+  if (_promoType == NonModalSignInPromoType::kPassword) {
     wouldShowPromo = _tracker->WouldTriggerHelpUI(
         feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
-  } else if (_promoType == SignInPromoType::kBookmark) {
+  } else if (_promoType == NonModalSignInPromoType::kBookmark) {
     wouldShowPromo = _tracker->WouldTriggerHelpUI(
         feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
   }
@@ -151,10 +152,10 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 
   bool shouldShowPromo = false;
 
-  if (_promoType == SignInPromoType::kPassword) {
+  if (_promoType == NonModalSignInPromoType::kPassword) {
     shouldShowPromo = _tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
-  } else if (_promoType == SignInPromoType::kBookmark) {
+  } else if (_promoType == NonModalSignInPromoType::kBookmark) {
     shouldShowPromo = _tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
   }

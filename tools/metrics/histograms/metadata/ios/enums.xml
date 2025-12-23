@@ -1657,7 +1657,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Timeout"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h:NonModalSignInPromoAction) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_metrics_util.h:NonModalSignInPromoAction) -->
 
 <!-- LINT.IfChange(NotificationType) -->
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_
 
 #import "base/time/time.h"
 
-enum class SignInPromoType;
+enum class NonModalSignInPromoType;
 
 // Possible actions for a non-modal sign-in promo.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -24,6 +24,6 @@ enum class NonModalSignInPromoAction {
 
 // Logs metrics for an action happening in a non-modal sign-in promo.
 void LogNonModalSignInPromoAction(NonModalSignInPromoAction action,
-                                  SignInPromoType promo_type);
+                                  NonModalSignInPromoType promo_type);
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_METRICS_UTIL_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -20,7 +20,7 @@ namespace signin {
 bool SigninIsPossible(AuthenticationService* auth_service);
 }  // namespace signin
 
-enum class SignInPromoType;
+enum class NonModalSignInPromoType;
 
 @class NonModalSignInPromoMediator;
 
@@ -43,7 +43,7 @@ enum class SignInPromoType;
     initWithAuthenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
          featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                        promoType:(SignInPromoType)promoType
+                        promoType:(NonModalSignInPromoType)promoType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -62,4 +62,4 @@ enum class SignInPromoType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_SIGNIN_NON_MODAL_PROMO_COORDINATOR_NON_MODAL_SIGNIN_PROMO_MEDIATOR_H_
