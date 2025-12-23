@@ -32,6 +32,12 @@
   margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
   min-height: var(--cr-icon-button-size);
   padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.context-menu-container > * {
+  flex-shrink: 0;
 }
 
 #contextEntrypoint {
@@ -57,6 +63,8 @@
       var(--color-searchbox-results-background-hovered);
   --cr-icon-button-size: 48px;
   color: var(--color-composebox-upload-button);
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 :host([inputs-disabled_]) .upload-button {
