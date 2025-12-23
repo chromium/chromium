@@ -32,7 +32,7 @@ public class TripBuilder {
     private final List<CarryOn> mCarryOnsToPickUp = new ArrayList<>();
     private final List<CarryOn> mCarryOnsToDrop = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
-    private @Nullable Trigger mTrigger;
+    private final List<Trigger> mTriggers = new ArrayList<>();
     private TransitionOptions mOptions = TransitionOptions.DEFAULT;
     private @Nullable Station<?> mDestinationStation;
     private @Nullable Station<?> mOriginStation;
@@ -47,14 +47,23 @@ public class TripBuilder {
     /** Set the Trigger to a |runnable|. */
     @CheckReturnValue
     public TripBuilder withRunnableTrigger(Runnable runnable) {
-        mTrigger = runnable::run;
+        mTriggers.clear();
+        mTriggers.add(runnable::run);
         return this;
     }
 
     /** Set the Trigger to a |trigger|. */
     @CheckReturnValue
     public TripBuilder withTrigger(Trigger trigger) {
-        mTrigger = trigger;
+        mTriggers.clear();
+        mTriggers.add(trigger);
+        return this;
+    }
+
+    /** Add a |trigger| to run after the already set triggers. */
+    @CheckReturnValue
+    public TripBuilder withAdditionalTrigger(Trigger trigger) {
+        mTriggers.add(trigger);
         return this;
     }
 
@@ -303,7 +312,7 @@ public class TripBuilder {
     /** Build and perform the Transition synchronously. */
     public Trip complete() {
         assert !mIsComplete : "Transition already completed";
-        assert mTrigger != null : "Trigger not set";
+        assert !mTriggers.isEmpty() : "Trigger not set";
         assert !mInNewTask || mDestinationStation != null
                 : "A new Station needs to be entered in the new task";
 
@@ -370,7 +379,7 @@ public class TripBuilder {
                         mCarryOnsToDrop,
                         mCarryOnsToPickUp,
                         mOptions,
-                        mTrigger);
+                        buildCompleteTrigger());
         trip.transitionSync();
 
         mIsComplete = true;
@@ -392,7 +401,7 @@ public class TripBuilder {
      * @throws AssertionError if there are any Conditions to wait for already set.
      */
     public void executeTriggerWithoutTransition() {
-        assert mTrigger != null : "Trigger not set";
+        assert !mTriggers.isEmpty() : "Trigger not set";
         String justRunErrorMessage =
                 "justRun() will not enter or leave any ConditionalStates or check any Conditions";
         assert mOriginStation == null : justRunErrorMessage;
@@ -403,17 +412,33 @@ public class TripBuilder {
         assert mCarryOnsToPickUp.isEmpty() : justRunErrorMessage;
         assert mConditions.isEmpty() : justRunErrorMessage;
 
+        Trigger trigger = buildCompleteTrigger();
+        assert trigger != null;
         try {
             if (mOptions.getRunTriggerOnUiThread()) {
                 Log.i(TAG, "Will run trigger on UI thread");
-                ThreadUtils.runOnUiThread(mTrigger::triggerTransition);
+                ThreadUtils.runOnUiThread(trigger::triggerTransition);
             } else {
                 Log.i(TAG, "Will run trigger on Instrumentation thread");
-                mTrigger.triggerTransition();
+                trigger.triggerTransition();
             }
             Log.i(TAG, "Finished running trigger");
         } catch (Throwable e) {
             throw TravelException.newTravelException(String.format("Trigger threw "), e);
+        }
+    }
+
+    private @Nullable Trigger buildCompleteTrigger() {
+        if (mTriggers.isEmpty()) {
+            return null;
+        } else if (mTriggers.size() == 1) {
+            return mTriggers.get(0);
+        } else {
+            return () -> {
+                for (Trigger trigger : mTriggers) {
+                    trigger.triggerTransition();
+                }
+            };
         }
     }
 }

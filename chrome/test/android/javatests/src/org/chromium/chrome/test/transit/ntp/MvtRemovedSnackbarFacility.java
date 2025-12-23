@@ -26,9 +26,10 @@ public class MvtRemovedSnackbarFacility extends SnackbarFacility<RegularNewTabPa
                 new MvtsFacility(
                         mMvtsBeforeRemoval.getSiteSuggestions(),
                         mMvtsBeforeRemoval.getSeparatorIndices());
-        return runTo(
+        return buttonElement
+                .clickTo()
+                .withAdditionalTrigger(
                         () -> {
-                            buttonElement.click();
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(

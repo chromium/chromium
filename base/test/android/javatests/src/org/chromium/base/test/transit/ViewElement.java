@@ -366,6 +366,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         }
     }
 
+    /** Convenience default {@link Options}. */
+    public static ViewElement.Options defaultOptions() {
+        return Options.DEFAULT;
+    }
+
     /** Convenience {@link Options} setting unscoped(). */
     public static Options unscopedOption() {
         return newOptions().unscoped().build();

@@ -4,12 +4,28 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.widget.ListView;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.ui.ListMenuFacility;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter;
 
 import java.util.List;
 
@@ -18,11 +34,27 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
     private final MvtsFacility mMvtsFacility;
     private final MvtsTileFacility mMvtsTileFacility;
 
+    public final ViewElement<ListView> menuListElement;
+    public Item openInNewTab;
+    public Item openInNewTabInGroup;
+    public Item openInIncognitoTab;
+    public Item openInIncognitoWindow;
+    public Item openInOtherWindow;
+    public Item downloadLink;
+    public Item editShortcut;
+    public Item remove;
+    public Item pin;
+    public Item unpin;
+
     public MvtsTileContextMenuFacility(
             MvtsFacility mvtsFacility, MvtsTileFacility mvtsTileFacility) {
         super();
         mMvtsFacility = mvtsFacility;
         mMvtsTileFacility = mvtsTileFacility;
+
+        menuListElement =
+                declareContainerView(
+                        ListView.class, withId(R.id.menu_list), ViewElement.defaultOptions());
     }
 
     /**
@@ -37,16 +69,14 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
             FakeMostVisitedSites fakeMostVisitedSites) {
         var mvtsAfterRemove = new MvtsFacility(siteSuggestionsAfterRemove);
         var snackbar = new MvtRemovedSnackbarFacility(mMvtsFacility, mvtsAfterRemove);
-        runTo(
+        remove.scrollToAndSelectTo()
+                .withAdditionalTrigger(
                         () -> {
-                            invokeMenuItem("Remove");
-
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(
                                                     siteSuggestionsAfterRemove));
                         })
-                .exitFacilitiesAnd(this)
                 .enterFacilities(mvtsAfterRemove, snackbar);
         return snackbar;
     }
@@ -63,31 +93,30 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
             FakeMostVisitedSites fakeMostVisitedSites) {
         var mvtsAfterUnpin = new MvtsFacility(siteSuggestionsAfterUnpin);
         var snackbar = new MvtUnpinnedSnackbarFacility(mMvtsFacility, mvtsAfterUnpin);
-        runTo(
+        unpin.scrollToAndSelectTo()
+                .withAdditionalTrigger(
                         () -> {
-                            invokeMenuItem("Unpin");
-
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(
                                                     siteSuggestionsAfterUnpin));
                         })
-                .exitFacilitiesAnd(this)
                 .enterFacilities(mvtsAfterUnpin, snackbar);
         return snackbar;
     }
 
     /** Select "Open in new tab" to open the tile in a new tab in background. */
     public void selectOpenInNewTab() {
-        invokeMenuItemTo("Open in new tab")
-                .waitForAnd(new TabCountChangedCondition(mHostStation.getTabModel(), +1))
-                .exitFacility();
+        openInNewTab
+                .scrollToAndSelectTo()
+                .waitFor(new TabCountChangedCondition(mHostStation.getTabModel(), +1));
     }
 
     /** Select "Open in incognito tab" to open the tile in a new incognito tab. */
     public WebPageStation selectOpenInIncognitoTab() {
         String url = mMvtsTileFacility.getSiteSuggestion().url.getSpec();
-        return invokeMenuItemTo("Open in Incognito tab")
+        return openInIncognitoTab
+                .scrollToAndSelectTo()
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .initOpeningNewTab()
@@ -99,7 +128,8 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
     /** Select "Open in incognito window" to open the tile in a new incognito window. */
     public WebPageStation selectOpenInIncognitoWindow() {
         String url = mMvtsTileFacility.getSiteSuggestion().url.getSpec();
-        return invokeMenuItemTo("Open in Incognito window")
+        return openInIncognitoWindow
+                .scrollToAndSelectTo()
                 .inNewTask()
                 .arriveAt(
                         WebPageStation.newBuilder()
@@ -107,5 +137,62 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
                                 .withIncognito(true)
                                 .withExpectedUrlSubstring(url)
                                 .build());
+    }
+
+    @Override
+    protected void declareItems(ItemsBuilder items) {
+        openInNewTab =
+                items.declareItem(
+                        viewSpec(withText("Open in new tab")),
+                        menuItemMatcher(ContextMenuItemId.OPEN_IN_NEW_TAB));
+        openInNewTabInGroup =
+                items.declareItem(
+                        viewSpec(withText("Open in new tab in group")),
+                        menuItemMatcher(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP));
+        openInIncognitoTab =
+                items.declareItem(
+                        viewSpec(withText("Open in Incognito tab")),
+                        menuItemMatcher(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB));
+        openInIncognitoWindow =
+                items.declareItem(
+                        viewSpec(withText("Open in Incognito window")),
+                        menuItemMatcher(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW));
+        openInOtherWindow =
+                items.declareItem(
+                        viewSpec(withText("Open in other window")),
+                        menuItemMatcher(ContextMenuItemId.OPEN_IN_OTHER_WINDOW));
+        downloadLink =
+                items.declareItem(
+                        viewSpec(withText("Download link")),
+                        menuItemMatcher(ContextMenuItemId.SAVE_FOR_OFFLINE));
+        editShortcut =
+                items.declareItem(
+                        viewSpec(withText("Edit shortcut")),
+                        menuItemMatcher(ContextMenuItemId.EDIT_SHORTCUT));
+        remove =
+                items.declareItem(
+                        viewSpec(withText("Remove")), menuItemMatcher(ContextMenuItemId.REMOVE));
+        pin =
+                items.declareItem(
+                        viewSpec(withText("Pin")),
+                        menuItemMatcher(ContextMenuItemId.PIN_THIS_SHORTCUT));
+        unpin =
+                items.declareItem(
+                        viewSpec(withText("Unpin")), menuItemMatcher(ContextMenuItemId.UNPIN));
+    }
+
+    private static Matcher<MVCListAdapter.ListItem> menuItemMatcher(@ContextMenuItemId int id) {
+        return new TypeSafeMatcher<>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with menu item id ");
+                description.appendText(String.valueOf(id));
+            }
+
+            @Override
+            protected boolean matchesSafely(MVCListAdapter.ListItem listItem) {
+                return listItem.model.get(ListMenuItemProperties.MENU_ITEM_ID) == id;
+            }
+        };
     }
 }

@@ -4,33 +4,24 @@
 
 package org.chromium.chrome.test.transit.ui;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.chromium.base.test.transit.Condition.notFulfilled;
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
 
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.PayloadCallbackCondition;
+import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /**
  * Facility for a list menu that appears upon long press or right click.
  *
- * <p>TODO(crbug.com/363308068): Use ViewElements for the options when non-default roots are
- * supported.
- *
  * @param <HostStationT> the type of station this is scoped to.
  */
 public abstract class ListMenuFacility<HostStationT extends Station<?>>
-        extends Facility<HostStationT> {
+        extends ScrollableFacility<HostStationT> {
     private final PayloadCallbackCondition<AnchoredPopupWindow> mPopupWindowCallbackCondition;
     public final Element<AnchoredPopupWindow> popupWindowElement;
 
@@ -64,24 +55,5 @@ public abstract class ListMenuFacility<HostStationT extends Station<?>>
     protected void onTransitionToFinished() {
         super.onTransitionToFinished();
         ListMenuHost.setMenuChangedListenerForTesting(null);
-    }
-
-    /**
-     * Click the list menu item assuming the menu is shown.
-     *
-     * @param text The text option of the desired list menu item.
-     */
-    public void invokeMenuItem(String text) {
-        // Invoke menu item since menu is visible
-        onView(withText(text)).inRoot(isPlatformPopup()).perform(click());
-    }
-
-    /**
-     * Click the list menu item assuming the menu is shown to start a Trip.
-     *
-     * @param text The text option of the desired list menu item.
-     */
-    public TripBuilder invokeMenuItemTo(String text) {
-        return runTo(() -> invokeMenuItem(text));
     }
 }
