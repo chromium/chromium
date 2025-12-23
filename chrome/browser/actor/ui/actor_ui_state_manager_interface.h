@@ -41,8 +41,7 @@ class ActorUiStateManagerInterface {
   // Register for this callback to be notified whenever the actor task is
   // stopped. This callback will occur immediately once the task enters
   // a stopped state.
-  using ActorTaskStoppedCallback = base::RepeatingCallback<
-      void(TaskId, ActorTask::State, std::string /*title*/)>;
+  using ActorTaskStoppedCallback = base::RepeatingCallback<void(TaskId)>;
   virtual base::CallbackListSubscription RegisterActorTaskStopped(
       ActorTaskStoppedCallback callback) = 0;
 

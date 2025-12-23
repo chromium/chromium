@@ -163,7 +163,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
       ui_tab_state = GetCompletedUiTabState();
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.
-      NotifyActorTaskStopped(task_id, new_task_state, title);
+      NotifyActorTaskStopped(task_id);
       if (base::FeatureList::IsEnabled(
               features::kGlicActorUiGlobalTaskIndicator)) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -292,10 +292,8 @@ void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
   actor_task_state_change_callback_list_.Notify(task_id);
 }
 
-void ActorUiStateManager::NotifyActorTaskStopped(TaskId task_id,
-                                                 ActorTask::State final_state,
-                                                 const std::string& title) {
-  actor_task_stopped_callback_list_.Notify(task_id, final_state, title);
+void ActorUiStateManager::NotifyActorTaskStopped(TaskId task_id) {
+  actor_task_stopped_callback_list_.Notify(task_id);
 }
 
 base::CallbackListSubscription

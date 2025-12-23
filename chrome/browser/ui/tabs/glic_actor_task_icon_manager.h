@@ -40,9 +40,7 @@ class GlicActorTaskIconManager : public KeyedService {
   void OnActorTaskStateUpdate(actor::TaskId task_id);
 
   // Called whenever an actor task is completed.
-  void OnActorTaskStopped(actor::TaskId task_id,
-                          actor::ActorTask::State final_state,
-                          std::string task_title);
+  void OnActorTaskStopped(actor::TaskId task_id);
 
   // Called whenever an actor task is removed.
   void OnActorTaskRemoved(actor::TaskId task_id);
@@ -69,8 +67,6 @@ class GlicActorTaskIconManager : public KeyedService {
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
 
   raw_ptr<tabs::TabInterface> GetLastUpdatedTabForTaskId(actor::TaskId task_id);
-
-  void ClearStoppedTasks();
 
   std::map<actor::TaskId, ActorTaskListBubbleRowState>
   GetActorTaskListBubbleRows() const {
@@ -105,13 +101,6 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // TODO(mjenn): Update implementation for multi-tab actuation.
   actor::TaskId current_task_id_;
-
-  // TODO(b/440770955): Replace complete task lists (complete + fail) with a
-  // snapshot (task title, state and tab handle) of the completed or failed
-  // tasks for the pop-over.
-  bool has_unprocessed_completed_tasks_ = false;
-  // Whether there is an unprocessed failed task.
-  bool has_unprocessed_failed_tasks_ = false;
 
   // Map of tasks needing notifications.
   std::map<actor::TaskId, ActorTaskListBubbleRowState>

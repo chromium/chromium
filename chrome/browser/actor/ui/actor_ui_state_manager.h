@@ -45,9 +45,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
                               const std::string& title);
 
   // Notify profile scoped ui components about actor task stop.
-  void NotifyActorTaskStopped(TaskId task_id,
-                              ActorTask::State final_state,
-                              const std::string& title);
+  void NotifyActorTaskStopped(TaskId task_id);
 
   // Notify profile scoped ui components about actor task removal.
   // This is called after an actor task has been stopped and has hit its expiry
@@ -61,8 +59,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   base::RepeatingCallbackList<void(TaskId)>
       actor_task_state_change_callback_list_;
 
-  base::RepeatingCallbackList<void(TaskId, ActorTask::State, std::string)>
-      actor_task_stopped_callback_list_;
+  base::RepeatingCallbackList<void(TaskId)> actor_task_stopped_callback_list_;
 
   base::RepeatingCallbackList<void(TaskId)> actor_task_removed_callback_list_;
 

@@ -67,33 +67,16 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   UpdateTaskNudge();
 }
 
-// TODO(crbug.com/469817191): Stopped tasks should also be added to the popover.
-void GlicActorTaskIconManager::OnActorTaskStopped(
-    actor::TaskId task_id,
-    actor::ActorTask::State final_state,
-    std::string task_title) {
-  if (final_state == actor::ActorTask::State::kFinished) {
-    has_unprocessed_completed_tasks_ = true;
-  } else if (final_state == actor::ActorTask::State::kFailed) {
-    has_unprocessed_failed_tasks_ = true;
-  }
-}
 
 void GlicActorTaskIconManager::OnActorTaskRemoved(actor::TaskId task_id) {
   if (!base::FeatureList::IsEnabled(
           features::kGlicActorUiGlobalTaskIndicator)) {
     return;
   }
-  // TODO(crbug.com/470106502): Ensure only the entry for the provided task_id
-  // is removed and refactor the rest of OnActorTaskRemoved().
-  ClearStoppedTasks();
+  // TODO(crbug.com/470106502): Implement.
 }
-
-// TODO(crbug.com/469817191): Stopped tasks should also be added to the popover.
-void GlicActorTaskIconManager::ClearStoppedTasks() {
-  has_unprocessed_completed_tasks_ = false;
-  has_unprocessed_failed_tasks_ = false;
-  OnActorTaskStateUpdate(current_task_id_);
+void GlicActorTaskIconManager::OnActorTaskStopped(actor::TaskId task_id) {
+  // TODO(crbug.com/470106502): Implement.
 }
 
 void GlicActorTaskIconManager::Shutdown() {}
@@ -155,7 +138,7 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
           .title = task->title(),
           .requires_processing = RequiresTaskProcessing(task->GetState())};
       actor_task_list_bubble_rows_[task_id] = task_state;
-    } else {
+    } else if (RequiresTaskProcessing(task->GetState())) {
       ActorTaskListBubbleRowState task_state = {.task_id = task_id,
                                                 .title = task->title()};
       actor_task_list_bubble_rows_.insert({task_state.task_id, task_state});

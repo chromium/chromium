@@ -117,8 +117,7 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
 
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_1, actor::ActorTask::State::kFinished,
-                                /*task_title=*/"");
+  manager()->OnActorTaskStopped(task_id_1);
   manager()->UpdateTaskListBubble(task_id_1);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
@@ -127,8 +126,7 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
   actor_service()->StopTask(task_id_2,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_2, actor::ActorTask::State::kFinished,
-                                /*task_title=*/"");
+  manager()->OnActorTaskStopped(task_id_2);
   manager()->UpdateTaskListBubble(task_id_2);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
@@ -141,8 +139,7 @@ TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_1, actor::ActorTask::State::kFinished,
-                                /*task_title=*/"");
+  manager()->OnActorTaskStopped(task_id_1);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
@@ -258,30 +255,6 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
-}
-
-TEST_F(GlicActorTaskIconManagerTest,
-       OnActorTaskRemovedTriggersUpdateWhenGlobalTaskIndicatorEnabled) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kGlicActorUiGlobalTaskIndicator);
-
-  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
-  TaskId task_id_2 = actor_service()->CreateTaskForTesting();
-
-  actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
-  actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
-
-  manager()->OnActorTaskStateUpdate(task_id_1);
-  manager()->OnActorTaskStateUpdate(task_id_2);
-  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
-  testing::Mock::VerifyAndClearExpectations(&mock_nudge_subscriber_);
-
-  // Expect OnActorTaskRemoved to only trigger updates to last updated task
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(task_id_1)).Times(0);
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(task_id_2));
-
-  manager()->OnActorTaskRemoved(task_id_1);
 }
 
 TEST_F(GlicActorTaskIconManagerTest, OnActorTaskRemovedDoesNothingByDefault) {
