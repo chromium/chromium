@@ -356,9 +356,16 @@ impl RenderPipeline for LowMemoryRenderPipeline {
             }
         }
 
+        let default_channels: Vec<usize> = (0..nc).collect();
         for (s, ibi) in stage_input_buffer_index.iter_mut().enumerate() {
             let mut filtered = vec![];
-            for c in 0..nc {
+            // For SaveStage, use s.channels to get correct output ordering (e.g., BGRA).
+            let channels = if let Stage::Save(save_stage) = &shared.stages[s] {
+                save_stage.channels.as_slice()
+            } else {
+                default_channels.as_slice()
+            };
+            for &c in channels {
                 if shared.stages[s].uses_channel(c) {
                     filtered.push(ibi[c]);
                 }

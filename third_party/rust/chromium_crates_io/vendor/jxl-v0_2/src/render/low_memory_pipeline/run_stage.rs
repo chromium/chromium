@@ -123,9 +123,12 @@ impl<T: RenderPipelineInOutStage> RunInOutStage<RowBuffer> for T {
         let mut output_row_data = SmallVec::new();
         // optimize for the common case of a single output row per channel.
         if output_rows_per_channel == 1 {
+            // Use OutputT's x0_offset, not InputT's - they differ for type conversions (e.g., f32→u8).
+            // Must apply the same offset calculation as the else branch.
+            let output_xstart = RowBuffer::x0_offset::<T::OutputT>() - (xpre << T::SHIFT.0);
             for x in output_buffers.iter_mut() {
                 let row = x.get_row_mut::<T::OutputT>(current_row);
-                output_row_data.push(&mut row[xstart..]);
+                output_row_data.push(&mut row[output_xstart..]);
             }
         } else {
             for x in output_buffers.iter_mut() {

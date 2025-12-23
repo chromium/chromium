@@ -41,7 +41,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "High performance Rust implementation of a JPEG XL decoder - Transforms"
   cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
-  cargo_pkg_version = "0.2.0"
+  cargo_pkg_version = "0.2.1"
 
   allow_unsafe = true
 
@@ -71,8 +71,8 @@ cargo_crate("lib") {
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
   # `gnrt_config.toml`).
-  _configs_to_remove += []
-  _configs_to_add += []
+  _configs_to_remove += [ "//build/config/compiler:default_optimization" ]
+  _configs_to_add += [ "//build/config/compiler:optimize" ]
 
   # Applying config changes.
   library_configs -= _configs_to_remove

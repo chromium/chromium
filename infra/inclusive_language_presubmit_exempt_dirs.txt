@@ -194,6 +194,7 @@ docs/media/capture
 docs/memory-infra
 docs/security
 docs/security/research/graphics
+docs/security/takes
 docs/security/url_display_guidelines
 docs/speed
 docs/speed/benchmark/harnesses
@@ -622,13 +623,17 @@ third_party/pylint/pylint
 third_party/rapidhash
 third_party/rust/chromium_crates_io/supply-chain
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
+third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5
+third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5/src
 third_party/rust/chromium_crates_io/vendor/anyhow-v1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/array-init-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7
 third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7/.github/workflows
 third_party/rust/chromium_crates_io/vendor/base64-v0_22
+third_party/rust/chromium_crates_io/vendor/bit-set-v0_8
 third_party/rust/chromium_crates_io/vendor/bit-set-v0_8/.github/workflows
+third_party/rust/chromium_crates_io/vendor/bit-vec-v0_8
 third_party/rust/chromium_crates_io/vendor/bit-vec-v0_8/.github/workflows
 third_party/rust/chromium_crates_io/vendor/byteorder-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/bytes-v1/.github/workflows
@@ -665,7 +670,7 @@ third_party/rust/chromium_crates_io/vendor/itertools-v0_11/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1/src
-third_party/rust/chromium_crates_io/vendor/jxl-v0_1/src/util
+third_party/rust/chromium_crates_io/vendor/jxl-v0_2/src/util
 third_party/rust/chromium_crates_io/vendor/libc-v0_2
 third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/glibc
 third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/glibc/posix
@@ -689,6 +694,7 @@ third_party/rust/chromium_crates_io/vendor/log-v0_4
 third_party/rust/chromium_crates_io/vendor/log-v0_4/.github/workflows
 third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8
 third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/.github/workflows
+third_party/rust/chromium_crates_io/vendor/murmur3-v0_4
 third_party/rust/chromium_crates_io/vendor/num-bigint-v0_4
 third_party/rust/chromium_crates_io/vendor/num-derive-v0_4
 third_party/rust/chromium_crates_io/vendor/num-integer-v0_1
@@ -743,6 +749,7 @@ third_party/rust/chromium_crates_io/vendor/typed-arena-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering

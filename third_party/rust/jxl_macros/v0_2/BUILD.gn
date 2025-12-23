@@ -25,7 +25,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "jxl_macros"
   cargo_pkg_description = "High performance Rust implementation of a JPEG XL decoder - supporting macros"
   cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
-  cargo_pkg_version = "0.2.0"
+  cargo_pkg_version = "0.2.1"
 
   allow_unsafe = false
 

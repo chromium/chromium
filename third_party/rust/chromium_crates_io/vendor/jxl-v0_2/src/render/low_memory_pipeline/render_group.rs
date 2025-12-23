@@ -225,6 +225,7 @@ impl LowMemoryRenderPipeline {
                     }
                     Stage::Save(s) => {
                         // Find buffers for channels that will be saved.
+                        // Channel ordering is handled in stage_input_buffer_index construction.
                         let mut input_data: ChannelVec<_> = self.stage_input_buffer_index[i]
                             .iter()
                             .map(|(si, ci)| &self.row_buffers[*si][*ci])
@@ -360,6 +361,7 @@ impl LowMemoryRenderPipeline {
                     }
                     Stage::Save(s) => {
                         // Find buffers for channels that will be saved.
+                        // Channel ordering is handled in stage_input_buffer_index construction.
                         let mut input_data: ChannelVec<_> = self.stage_input_buffer_index[i]
                             .iter()
                             .map(|(si, ci)| &self.row_buffers[*si][*ci])

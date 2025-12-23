@@ -12,7 +12,7 @@
 [package]
 edition = "2024"
 name = "jxl"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Luca Versari <veluca93@gmail.com>"]
 build = false
 exclude = ["resources/"]
@@ -50,13 +50,13 @@ version = "2.0.0"
 version = "1.4.3"
 
 [dependencies.jxl_macros]
-version = "=0.2.0"
+version = "=0.2.1"
 
 [dependencies.jxl_simd]
-version = "=0.2.0"
+version = "=0.2.1"
 
 [dependencies.jxl_transforms]
-version = "0.2.0"
+version = "0.2.1"
 
 [dependencies.num-derive]
 version = "0.4"
@@ -75,7 +75,7 @@ optional = true
 version = "0.3.2"
 
 [dev-dependencies.jxl_macros]
-version = "=0.2.0"
+version = "=0.2.1"
 features = ["test"]
 
 [dev-dependencies.paste]
