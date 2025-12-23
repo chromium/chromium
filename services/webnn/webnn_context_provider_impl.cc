@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,6 +35,7 @@
 #include "services/webnn/ort/context_provider_ort.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_session_options.h"
+#include "services/webnn/webnn_switches.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -250,7 +252,23 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
 #if BUILDFLAG(IS_WIN)
   if (ort::ShouldCreateOrtContext(*options)) {
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+
     scoped_trace.AddStep("EnsureWebNNExecutionProvidersReady");
+
+    // If ignore IHV EPs, use empty `ep_package_info` to create the ORT context.
+    if (command_line->HasSwitch(switches::kWebNNOrtIgnoreIhvEps)) {
+      DidEnsureWebNNExecutionProvidersReady(
+          std::move(scoped_trace), std::move(options),
+          std::move(write_tensor_producer), std::move(write_tensor_consumer),
+          std::move(read_tensor_producer), std::move(read_tensor_consumer),
+          command_buffer_id, std::move(gpu_sequence),
+          std::move(owning_task_runner), std::move(receiver), std::move(remote),
+          std::move(callback),
+          /*ep_package_info=*/{});
+      return;
+    }
 
     gpu_host_->EnsureWebNNExecutionProvidersReady(base::BindOnce(
         &WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady,
