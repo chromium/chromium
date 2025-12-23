@@ -1072,11 +1072,15 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     chrome::NewTab(new_window->GetBrowserForMigrationOnly(),
                    NewTabTypes::kNewTabCommand);
   }
-  chrome::SelectNumberedTab(
-      new_window->GetBrowserForMigrationOnly(), 0,
-      TabStripUserGestureDetails(
-          TabStripUserGestureDetails::GestureType::kNone));
 #endif
+
+  // Select the first tab in the window, if there's at least one tab. There may
+  // be no tabs, since we allow the creation of an empty popup above.
+  TabListInterface* tab_list = TabListInterface::From(new_window);
+  CHECK(tab_list);
+  if (tab_list->GetTabCount() > 0) {
+    tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
+  }
 
   bool focused = true;
   if (create_data_ && create_data_->focused) {

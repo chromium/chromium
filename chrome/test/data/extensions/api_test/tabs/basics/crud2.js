@@ -4,8 +4,7 @@
 
 var newTabUrls = [
   'chrome://newtab/',
-  // The tab URL for to the Local New Tab Page.
-  'chrome-search://local-ntp/local-ntp.html',
+  'chrome-native://newtab/',
 ];
 
 var firstWindowId;
@@ -56,7 +55,8 @@ const tests = [
         assertEq((i == 0), tabs[i].active && tabs[i].selected);
       }
       assertEq("about:blank", tabs[0].url);
-      assertTrue(newTabUrls.includes(tabs[1].url));
+      assertTrue(newTabUrls.includes(tabs[1].url),
+                 'Unexpected URL: ' + tabs[1].url);
       assertEq(pageUrl("a"), tabs[2].url);
     }));
 
@@ -241,8 +241,6 @@ const tests = [
 // The following tests don't work on desktop android (yet).
 // TODO(https://crbug.com/371432155): Enable these on desktop android.
 const skipForAndroid = [
-    'getAllInWindow',
-    'getAllInWindowNullArg',
     'updateSelect',
     'update',
     'openerTabId',
