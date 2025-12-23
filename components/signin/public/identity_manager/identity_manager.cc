@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -484,6 +485,11 @@ IdentityManager::GetPrimaryAccountInfo(JNIEnv* env, jint consent_level) const {
   if (account_info.IsEmpty()) {
     return nullptr;
   }
+  // TODO(https://crbug.com/471185380): After M146 reaches Stable - change the
+  // return type for GetPrimaryAccountInfo to AccountInfo.
+  CHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
+             .IsEmpty(),
+        base::NotFatalUntil::M146);
   return ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
