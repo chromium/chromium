@@ -7,8 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller_delegate.h"
+
 // View Controller for the Assistant Sheet.
-@interface AssistantSheetViewController : UIViewController
+@interface AssistantSheetViewController
+    : UIViewController <AssistantSheetConsumer>
+
+// Delegate for handling actions.
+@property(nonatomic, weak) id<AssistantSheetViewControllerDelegate> delegate;
 
 // The view to anchor to. If nil, falls back to the bottom of the parent view.
 @property(nonatomic, weak) UIView* anchorView;

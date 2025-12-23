@@ -4,13 +4,18 @@
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 
+#import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+
+@interface AssistantSheetCoordinator () <AssistantSheetViewControllerDelegate>
+@end
 
 @implementation AssistantSheetCoordinator {
   AssistantSheetViewController* _viewController;
@@ -23,11 +28,18 @@
   }
 
   _viewController = [[AssistantSheetViewController alloc] init];
+  _viewController.delegate = self;
 
   // Resolve Layout Guide.
   GuideName* guideName = kDiamondBottomAppBarGuide;
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
   _viewController.anchorView = [center referencedViewUnderName:guideName];
+
+  // Configure navigation bar.
+  AssistantNavbarConfiguration* config =
+      [[AssistantNavbarConfiguration alloc] init];
+  config.title = @"Assistant Sheet";
+  [_viewController setNavigationBarConfiguration:config];
 
   // Add the view controller as a child view controller.
   [self.baseViewController addChildViewController:_viewController];
@@ -52,6 +64,24 @@
 
   _viewController = nil;
   _animator = nil;
+}
+
+#pragma mark - AssistantSheetViewControllerDelegate
+
+- (void)assistantSheetViewControllerDidTapClose:
+    (AssistantSheetViewController*)viewController {
+  __weak __typeof(self) weakSelf = self;
+  [_animator animateDismissal:_viewController.view
+                   completion:^{
+                     [weakSelf dismissalAnimationCompletion];
+                   }];
+}
+
+#pragma mark - Private
+
+// Called when the dismissal animation completes.
+- (void)dismissalAnimationCompletion {
+  [self stop];
 }
 
 @end

@@ -4,12 +4,16 @@
 
 source_set("ui") {
   sources = [
+    "assistant_navbar_configuration.h",
+    "assistant_navbar_configuration.mm",
     "assistant_sheet_animator.h",
     "assistant_sheet_animator.mm",
+    "assistant_sheet_consumer.h",
     "assistant_sheet_view.h",
     "assistant_sheet_view.mm",
     "assistant_sheet_view_controller.h",
     "assistant_sheet_view_controller.mm",
+    "assistant_sheet_view_controller_delegate.h",
   ]
   deps = [
     "//base",
