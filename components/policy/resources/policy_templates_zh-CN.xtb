@@ -1568,7 +1568,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="2096932573113293941">请求用户许可运行需要授权的插件</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2099380339157427935">不在任务栏中显示“退出”按钮</translation>
-<translation id="2100630160869631650">添加预先填充的 Kerberos 账号。如果 Kerberos 凭证与登录凭证相匹配，则可以将账号配置为重复使用登录凭证，方法是分别为主账号和密码指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的账号。
+<translation id="2100630160869631650">添加预先填充的 Kerberos 账号。如果 Kerberos 凭证与登录凭证相匹配，则可以将账号配置为重复使用登录凭证，方法是分别为主体和密码指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的账号。
 
           如果已启用此政策，系统会将此政策定义的账号列表添加到 Kerberos 账号设置。
 

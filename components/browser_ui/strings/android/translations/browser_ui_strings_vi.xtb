@@ -123,7 +123,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Chính xác</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
-<translation id="2404857459073803936">Quyền truy cập thông tin vị trí đối với trang web này</translation>
+<translation id="2404857459073803936">Quyền truy cập thông tin vị trí cho trang web này</translation>
 <translation id="2410940059315936967">Trang web bạn truy cập có thể nhúng nội dung từ các trang web khác, chẳng hạn như hình ảnh, quảng cáo và văn bản. Cookie do các trang web khác đặt được gọi là cookie của bên thứ ba.</translation>
 <translation id="2411116727035790889">Bật lối tắt</translation>
 <translation id="2433507940547922241">Hình thức</translation>
