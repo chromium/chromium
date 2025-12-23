@@ -55,6 +55,8 @@ extern const base::FeatureParam<bool> kCloseComposeboxByEscape;
 extern const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
+// Whether to allow drag and drop files in the composebox.
+extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
 // Whether or not to enable viewport images with page context uploads.
 extern const base::FeatureParam<bool> kEnableViewportImages;
 // Whether to force tools and models to show in the composebox context menu.

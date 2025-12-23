@@ -322,6 +322,9 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInExpandedComposebox",
     false);
+const base::FeatureParam<bool> kEnableContextDragAndDrop(&internal::kWebUIOmniboxAimPopup,
+                                                  "EnableContextDragAndDrop",
+                                                  false);
 const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
     &internal::kWebUIOmniboxAimPopup,
     "SuppressLnsSurfaceParamIfNoImage",

@@ -913,6 +913,15 @@ const FeatureEntry::FeatureParam
         {"ShowVoiceSearchInExpandedComposebox", "true"},
         {"ShowRecentTabChip", "true"},
 };
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonDragAndDrop[] = {
+        {"AddContextButtonVariant", "below_results"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
+        {"EnableContextDragAndDrop", "true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
+};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
@@ -932,7 +941,10 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button below results, Recent Tab Chip",
      kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip,
      std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip),
-     nullptr}};
+     nullptr},
+    {"- \"Add Context\" Button enable drag and drop",
+     kWebUIOmniboxAimPopupAddContextButtonDragAndDrop,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
