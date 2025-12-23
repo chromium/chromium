@@ -107,6 +107,7 @@ class MockContextualTasksUI : public ContextualTasksUI {
               (override));
   MOCK_METHOD(content::WebContents*, GetWebUIWebContents, (), (override));
   MOCK_METHOD(const std::optional<base::Uuid>&, GetTaskId, (), (override));
+  MOCK_METHOD(void, DisableActiveTabContextSuggestion, (), (override));
 };
 
 class TestContextualTasksComposeboxHandler
@@ -741,3 +742,147 @@ INSTANTIATE_TEST_SUITE_P(
         ToolModeTestParam{
             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD, false,
             true}));
+
+TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
+  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  std::string kQuery = "delayed tab query";
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  // Setup context.
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+
+  EXPECT_CALL(
+      *mock_tasks_controller_ptr_,
+      GetContextForTask(
+          task_id,
+          testing::Contains(contextual_tasks::ContextualTaskContextSource::
+                                kPendingContextDecorator),
+          testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&
+                  sources,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams> params,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // 1. Add delayed tab context.
+  int32_t tab_id = 100;
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&token_opt));
+
+  handler_->AddTabContext(tab_id, /*delay_upload=*/true, callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  base::UnguessableToken token = token_opt.value();
+  ASSERT_FALSE(token.is_empty());
+
+  // 2. Verify tab is added to GetTabsToUpdate (via CreateAndSendQueryMessage).
+  // We need to mock the tab handle resolution. Since we can't easily mock
+  // TabHandle::Get() for arbitrary IDs in this test harness without more setup,
+  // we will use the active tab's ID which IS set up.
+  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+
+  // Reset and try again with active tab ID.
+  std::optional<base::UnguessableToken> active_token_opt;
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&active_token_opt));
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  ASSERT_TRUE(active_token_opt.has_value());
+  base::UnguessableToken active_token = active_token_opt.value();
+  ASSERT_FALSE(active_token.is_empty());
+
+  // Expect GetPageContext call for the active tab.
+  EXPECT_CALL(*mock_tab_controller_, GetPageContext(testing::_))
+      .WillOnce([](MockTabContextualizationController::GetPageContextCallback
+                       callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->context_input = std::vector<lens::ContextualInput>();
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect UploadTabContextWithData call.
+  EXPECT_CALL(*handler_, UploadTabContextWithData(testing::_, testing::_,
+                                                  testing::_, testing::_))
+      .WillOnce(
+          [](int32_t tab_id, std::optional<int64_t> context_id,
+             std::unique_ptr<lens::ContextualInputData> data,
+             ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            std::move(callback).Run(true);
+          });
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
+  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  std::string kQuery = "delete context query";
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  // Setup context.
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+
+  EXPECT_CALL(
+      *mock_tasks_controller_ptr_,
+      GetContextForTask(
+          task_id,
+          testing::Contains(contextual_tasks::ContextualTaskContextSource::
+                                kPendingContextDecorator),
+          testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&
+                  sources,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams> params,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // 1. Add delayed tab context.
+  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&token_opt));
+
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  base::UnguessableToken token = token_opt.value();
+  ASSERT_FALSE(token.is_empty());
+
+  // 2. Delete the context.
+  handler_->DeleteContext(token, /*from_automatic_chip=*/true);
+
+  // 3. Verify UploadTabContextWithData is NOT called.
+  EXPECT_CALL(*handler_, UploadTabContextWithData(testing::_, testing::_,
+                                                  testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+  base::RunLoop().RunUntilIdle();
+}
