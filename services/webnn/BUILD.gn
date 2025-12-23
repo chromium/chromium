@@ -240,6 +240,7 @@ source_set("webnn_test_support") {
     "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom/gl",
+    "//services/webnn/host",
     "//services/webnn/public/mojom",
   ]
 

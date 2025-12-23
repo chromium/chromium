@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
@@ -75,7 +76,7 @@ class GraphBuilderTflite final {
     Result(flatbuffers::DetachedBuffer buffer,
            base::flat_map<std::string, int> input_name_to_index,
            base::flat_map<std::string, int> output_name_to_index,
-           std::vector<uint8_t> buffer_data,
+           base::File weights_file,
            bool graph_requires_fp32_precision);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
@@ -86,7 +87,7 @@ class GraphBuilderTflite final {
     flatbuffers::DetachedBuffer buffer;
     base::flat_map<std::string, int> input_name_to_index;
     base::flat_map<std::string, int> output_name_to_index;
-    std::vector<uint8_t> buffer_data;
+    base::File weights_file;
     bool graph_requires_fp32_precision;
   };
 
@@ -100,10 +101,11 @@ class GraphBuilderTflite final {
       const mojom::GraphInfo& graph_info,
       const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
-      const base::flat_map<OperandId, base::flat_set<OperationId>>&
+      const base::flat_map<OperandId, base::flat_set<OperationId>>
           operand_to_dependent_operations,
-      const base::flat_map<OperandId, OperationId>&
-          operand_to_producing_operation);
+      const base::flat_map<OperandId, OperationId>
+          operand_to_producing_operation,
+      base::File weights_file);
 
   static ContextProperties GetContextProperties();
 
@@ -128,7 +130,8 @@ class GraphBuilderTflite final {
       const base::flat_map<OperandId, base::flat_set<OperationId>>&
           operand_to_dependent_operations,
       const base::flat_map<OperandId, OperationId>&
-          operand_to_producing_operation);
+          operand_to_producing_operation,
+      base::File weights_file);
   ~GraphBuilderTflite();
 
   // Maps to WebNN operand information.
@@ -957,11 +960,8 @@ class GraphBuilderTflite final {
   std::vector<BufferOffset> buffers_;
   std::vector<TensorOffset> tensors_;
 
-  // Rather than serializing buffer contents into the Flatbuffer we store an
-  // offset into this vector, which avoids the 2GB size limit.
-  // TODO(https://crbug.com/383999372): Write this to a file instead of holding
-  // it in memory.
-  std::vector<uint8_t> buffer_data_;
+  // A temporary file created in browser process to hold all weights.
+  base::File weights_file_;
 
   // The following std::vector<Offset<tflite:XXX>>> stores all operator
   // information including operator type, the index of input output tensor to

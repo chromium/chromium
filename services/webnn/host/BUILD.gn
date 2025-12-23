@@ -3,8 +3,12 @@
 # found in the LICENSE file.
 
 source_set("host") {
-  sources = []
-  deps = []
+  sources = [
+    "weights_file_provider.cc",
+    "weights_file_provider.h",
+  ]
+
+  deps = [ "//base" ]
 
   if (is_win) {
     sources += [
@@ -13,7 +17,6 @@ source_set("host") {
     ]
 
     deps += [
-      "//base",
       "//services/webnn:webnn_switches",
       "//services/webnn/public/cpp:win",
       "//services/webnn/public/mojom",

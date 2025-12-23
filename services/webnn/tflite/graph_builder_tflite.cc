@@ -19,6 +19,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -382,12 +383,12 @@ GraphBuilderTflite::Result::Result(
     flatbuffers::DetachedBuffer buffer,
     base::flat_map<std::string, int> input_name_to_index,
     base::flat_map<std::string, int> output_name_to_index,
-    std::vector<uint8_t> buffer_data,
+    base::File weights_file,
     bool graph_requires_fp32_precision)
     : buffer(std::move(buffer)),
       input_name_to_index(std::move(input_name_to_index)),
       output_name_to_index(std::move(output_name_to_index)),
-      buffer_data(std::move(buffer_data)),
+      weights_file(std::move(weights_file)),
       graph_requires_fp32_precision(graph_requires_fp32_precision) {}
 
 GraphBuilderTflite::Result::Result(Result&&) = default;
@@ -404,13 +405,14 @@ GraphBuilderTflite::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
-    const base::flat_map<OperandId, base::flat_set<OperationId>>&
+    const base::flat_map<OperandId, base::flat_set<OperationId>>
         operand_to_dependent_operations,
-    const base::flat_map<OperandId, OperationId>&
-        operand_to_producing_operation) {
-  GraphBuilderTflite builder(std::move(context_properties), graph_info,
-                             constant_operands, operand_to_dependent_operations,
-                             operand_to_producing_operation);
+    const base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+    base::File weights_file) {
+  GraphBuilderTflite builder(
+      std::move(context_properties), graph_info, constant_operands,
+      std::move(operand_to_dependent_operations),
+      std::move(operand_to_producing_operation), std::move(weights_file));
 
   bool graph_requires_fp32_precision = false;
   for (size_t i = 0; i < graph_info.operations.size(); ++i) {
@@ -813,18 +815,21 @@ GraphBuilderTflite::GraphBuilderTflite(
     const base::flat_map<OperandId, base::flat_set<OperationId>>&
         operand_to_dependent_operations,
     const base::flat_map<OperandId, OperationId>&
-        operand_to_producing_operation)
+        operand_to_producing_operation,
+    base::File weights_file)
     : context_properties_(std::move(context_properties)),
       graph_info_(graph_info),
       constant_operands_(constant_operands),
       operand_to_dependent_operations_(operand_to_dependent_operations),
-      operand_to_producing_operation_(operand_to_producing_operation) {
+      operand_to_producing_operation_(operand_to_producing_operation),
+      weights_file_(std::move(weights_file)) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
   // TFLite requires that offsets into the weights file are greater than 1 and
   // we need anything we add to be aligned.
-  std::fill_n(std::back_inserter(buffer_data_), kWeightsAlignment, 0);
+  CHECK(weights_file_.Seek(base::File::FROM_CURRENT, kWeightsAlignment));
+  weights_file_.SetLength(kWeightsAlignment);
 }
 
 GraphBuilderTflite::~GraphBuilderTflite() = default;
@@ -2865,7 +2870,7 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   is_created_model_ = true;
 
   return {builder_.Release(), std::move(input_name_to_index),
-          std::move(output_name_to_index), std::move(buffer_data_),
+          std::move(output_name_to_index), std::move(weights_file_),
           graph_requires_fp32_precision};
 }
 
@@ -2877,13 +2882,18 @@ GraphBuilderTflite::BufferIndex GraphBuilderTflite::SerializeBuffer(
     buffers_.emplace_back(::tflite::CreateBuffer(
         builder_, builder_.CreateVector(buffer.data(), buffer.size())));
   } else {
-    size_t offset = base::bits::AlignUp(buffer_data_.size(), kWeightsAlignment);
+    const size_t buffer_size =
+        base::checked_cast<size_t>(weights_file_.GetLength());
+    size_t offset = base::bits::AlignUp(buffer_size, kWeightsAlignment);
     CHECK_GT(offset, 1u);
-    size_t padding = offset - buffer_data_.size();
-    std::fill_n(std::back_inserter(buffer_data_), padding, 0);
-    CHECK_EQ(buffer_data_.size() % kWeightsAlignment, 0u);
+    size_t padding = offset - buffer_size;
+    if (padding > 0) {
+      CHECK(weights_file_.Seek(base::File::FROM_BEGIN, offset));
+      weights_file_.SetLength(offset);
+    }
 
-    std::ranges::copy(buffer, std::back_inserter(buffer_data_));
+    // TODO(crbug.com/470115252): Return error instead of checking the result.
+    CHECK(weights_file_.WriteAtCurrentPosAndCheck(buffer));
     buffers_.emplace_back(
         ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
   }

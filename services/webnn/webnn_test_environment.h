@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
+#define SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -11,9 +14,6 @@
 #include "services/webnn/host/execution_provider_initializer.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
-
-#ifndef SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
-#define SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
 
 namespace webnn::test {
 
@@ -55,6 +55,7 @@ class FakeGpuHostForTesting : public viz::mojom::GpuHost {
   void EnsureWebNNExecutionProvidersReady(
       EnsureWebNNExecutionProvidersReadyCallback callback) override;
 #endif
+  void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback callback) override;
 
  private:
   mojo::Receiver<viz::mojom::GpuHost> receiver_;

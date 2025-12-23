@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -130,15 +131,13 @@ base::span<uint8_t> SpanFromTensor(TfLiteTensor* tensor) {
 class GraphImplTflite::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  Create(WebNNContextImpl* context,
-         flatbuffers::DetachedBuffer buffer,
-         std::vector<uint8_t> buffer_data,
-         const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
-             constant_operands,
-         bool graph_requires_fp32_precision) {
-    auto self = std::make_unique<ComputeResources>();
+  Create(mojom::Device context_device,
+         GraphBuilderTflite::Result build_graph_result) {
+    auto self = std::make_unique<ComputeResources>(
+        std::move(build_graph_result.input_name_to_index),
+        std::move(build_graph_result.output_name_to_index));
 
-    self->model_content_ = std::move(buffer);
+    self->model_content_ = std::move(build_graph_result.buffer);
     self->model_ = ::tflite::FlatBufferModel::BuildFromBuffer(
         reinterpret_cast<const char*>(self->model_content_.data()),
         self->model_content_.size(), ::tflite::DefaultErrorReporter());
@@ -154,10 +153,13 @@ class GraphImplTflite::ComputeResources {
     }
 
     OpResolver op_resolver;
-
-    self->model_weights_ = std::move(buffer_data);
+    if (!self->weights_mapped_file_.Initialize(
+            std::move(build_graph_result.weights_file))) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError, "Failed to map weights file."));
+    }
     self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
-        self->model_weights_.data(), self->model_weights_.size(),
+        self->weights_mapped_file_.data(), self->weights_mapped_file_.length(),
         ::tflite::DefaultErrorReporter());
 
     ::tflite::InterpreterBuilder builder(
@@ -169,8 +171,9 @@ class GraphImplTflite::ComputeResources {
     int num_of_threads =
         std::min(4, (base::SysInfo::NumberOfProcessors() + 1) / 2);
     builder.SetNumThreads(num_of_threads);
-    self->SetUpDelegates(builder, context->options().device,
-                         graph_requires_fp32_precision, num_of_threads);
+    self->SetUpDelegates(builder, context_device,
+                         build_graph_result.graph_requires_fp32_precision,
+                         num_of_threads);
 
     TfLiteStatus status = builder(&self->interpreter_);
 
@@ -240,7 +243,10 @@ class GraphImplTflite::ComputeResources {
     return self;
   }
 
-  ComputeResources() = default;
+  ComputeResources(base::flat_map<std::string, int> input_name_to_index,
+                   base::flat_map<std::string, int> output_name_to_index)
+      : input_name_to_index(std::move(input_name_to_index)),
+        output_name_to_index(std::move(output_name_to_index)) {}
 
   ~ComputeResources() {
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
@@ -333,6 +339,10 @@ class GraphImplTflite::ComputeResources {
     return buffers;
   }
   std::vector<mojom::Device> devices;
+
+  // Used for getting queueable input/output resources.
+  base::flat_map<std::string, int> input_name_to_index;
+  base::flat_map<std::string, int> output_name_to_index;
 
  private:
   using TfLiteDelegatePtr =
@@ -428,13 +438,13 @@ class GraphImplTflite::ComputeResources {
   }
 
   flatbuffers::DetachedBuffer model_content_;
-  std::vector<uint8_t> model_weights_;
+  base::MemoryMappedFile weights_mapped_file_;
   std::vector<DelegateInfo> delegates_;
 
   // `model_` depends on `model_content_` outliving it.
   std::unique_ptr<::tflite::FlatBufferModel> model_;
 
-  // `allocation_` depends on `model_weights_` outliving it.
+  // `allocation_` depends on `weights_mapped_file_` outliving it.
   std::unique_ptr<::tflite::Allocation> allocation_;
 
   // `interpreter_` depends on `model_`, `allocation_`, and `delegates_`
@@ -447,41 +457,95 @@ class GraphImplTflite::ComputeResources {
 };
 
 // static
-base::expected<scoped_refptr<GraphImplTflite>, mojom::ErrorPtr>
-GraphImplTflite::CreateAndBuild(
+void GraphImplTflite::CreateAndBuild(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
-    ContextImplTflite* context) {
-  ASSIGN_OR_RETURN(GraphBuilderTflite::Result result,
-                   GraphBuilderTflite::CreateAndBuild(
-                       context->properties(), *graph_info, constant_operands,
-                       compute_resource_info.operand_to_dependent_operations,
-                       compute_resource_info.operand_to_producing_operation),
-                   [](std::string error) {
-                     return mojom::Error::New(
-                         mojom::Error::Code::kNotSupportedError,
-                         std::move(error));
-                   });
+    ContextImplTflite* context,
+    base::File weights_file,
+    WebNNContextImpl::CreateGraphImplCallback callback) {
+  base::flat_map<OperandId, base::flat_set<OperationId>>
+      operand_to_dependent_operations =
+          std::move(compute_resource_info.operand_to_dependent_operations);
+  base::flat_map<OperandId, OperationId> operand_to_producing_operation =
+      std::move(compute_resource_info.operand_to_producing_operation);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&GraphImplTflite::CreateAndBuildOnBackgroundThread,
+                     context->properties(), context->options().device,
+                     std::move(graph_info), std::move(constant_operands),
+                     std::move(operand_to_dependent_operations),
+                     std::move(operand_to_producing_operation),
+                     std::move(weights_file)),
+      base::BindOnce(&GraphImplTflite::DidCreateAndBuild, std::move(receiver),
+                     context->AsWeakPtr(), std::move(compute_resource_info),
+                     std::move(callback)));
+}
 
+// static
+base::expected<std::unique_ptr<GraphImplTflite::ComputeResources>,
+               mojom::ErrorPtr>
+GraphImplTflite::CreateAndBuildOnBackgroundThread(
+    ContextProperties context_properties,
+    mojom::Device context_device,
+    mojom::GraphInfoPtr graph_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    base::flat_map<OperandId, base::flat_set<OperationId>>
+        operand_to_dependent_operations,
+    base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+    base::File weights_file) {
   ASSIGN_OR_RETURN(
-      std::unique_ptr<ComputeResources> compute_resources,
-      ComputeResources::Create(context, std::move(result.buffer),
-                               std::move(result.buffer_data), constant_operands,
-                               result.graph_requires_fp32_precision));
-  auto devices = std::move(compute_resources->devices);
+      GraphBuilderTflite::Result result,
+      GraphBuilderTflite::CreateAndBuild(
+          context_properties, *graph_info, std::move(constant_operands),
+          std::move(operand_to_dependent_operations),
+          std::move(operand_to_producing_operation), std::move(weights_file)),
+      [](std::string error) {
+        return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                                 std::move(error));
+      });
+
+  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
+                   ComputeResources::Create(context_device, std::move(result)));
+  return compute_resources;
+}
+
+void GraphImplTflite::DidCreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    ComputeResourceInfo compute_resource_info,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+        compute_resources) {
+  if (!context) {
+    return;
+  }
+
+  if (!compute_resources.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(std::move(compute_resources.error())));
+    return;
+  }
+
+  auto devices = std::move((*compute_resources)->devices);
+  auto input_name_to_index =
+      std::move((*compute_resources)->input_name_to_index);
+  auto output_name_to_index =
+      std::move((*compute_resources)->output_name_to_index);
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
-          std::move(compute_resources));
-  return base::MakeRefCounted<GraphImplTflite>(
+          std::move(*compute_resources));
+  std::move(callback).Run(base::MakeRefCounted<GraphImplTflite>(
       std::move(receiver), std::move(compute_resource_info),
-      std::move(result.input_name_to_index),
-      std::move(result.output_name_to_index),
-      std::move(compute_resources_state), context->AsWeakPtr(),
-      std::move(devices));
+      std::move(input_name_to_index), std::move(output_name_to_index),
+      std::move(compute_resources_state), std::move(context),
+      std::move(devices)));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;

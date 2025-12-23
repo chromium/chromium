@@ -81,10 +81,36 @@ void ContextImplTflite::CreateGraphImpl(
         constant_operands,
     base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     CreateGraphImplCallback callback) {
-  std::move(callback).Run(GraphImplTflite::CreateAndBuild(
-      std::move(receiver), std::move(graph_info),
+  CreateWeightsFile(base::BindOnce(
+      &ContextImplTflite::DidCreateWeightsFile,
+      // Unretained is safe here because a reference is held by the
+      // `WebNNContextProviderImpl`
+      base::Unretained(this), std::move(receiver), std::move(graph_info),
       std::move(compute_resource_info), std::move(constant_operands),
-      std::move(constant_tensor_operands), this));
+      std::move(constant_tensor_operands), std::move(callback)));
+}
+
+void ContextImplTflite::DidCreateWeightsFile(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    CreateGraphImplCallback callback,
+    base::File weights_file) {
+  if (!weights_file.IsValid()) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create temporary file to save weights.")));
+    return;
+  }
+
+  GraphImplTflite::CreateAndBuild(std::move(receiver), std::move(graph_info),
+                                  std::move(compute_resource_info),
+                                  std::move(constant_operands),
+                                  std::move(constant_tensor_operands), this,
+                                  std::move(weights_file), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

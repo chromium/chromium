@@ -375,6 +375,11 @@ WebNNContextProviderImpl::GetWebNNContextImplForTesting(
   return it->get();
 }
 
+void WebNNContextProviderImpl::CreateWeightsFile(
+    viz::mojom::GpuHost::CreateWebNNWeightsFileCallback callback) {
+  gpu_host_->CreateWebNNWeightsFile(std::move(callback));
+}
+
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 void WebNNContextProviderImpl::CreateTFLiteContext(
     ScopedTrace scoped_trace,

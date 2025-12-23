@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
+#include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -242,6 +243,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // process and kill the GPU process to destroy all contexts.
   void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
 #endif  // BUILDFLAG(IS_WIN)
+
+  void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
   // This weak pointer can only be dereferenced on the sequence where
   // `context_provider_->main_thread_task_runner()` runs tasks.

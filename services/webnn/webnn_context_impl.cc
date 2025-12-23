@@ -113,6 +113,20 @@ void WebNNContextImpl::DestroyAllContextsAndKillGpuProcess(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void WebNNContextImpl::CreateWeightsFile(
+    base::OnceCallback<void(base::File)> callback) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WebNNContextProviderImpl::CreateWeightsFile, context_provider_,
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
+    return;
+  }
+
+  context_provider_->CreateWeightsFile(std::move(callback));
+}
+
 void WebNNContextImpl::ReportBadGraphBuilderMessage(
     const std::string& message,
     base::PassKey<WebNNGraphBuilderImpl> pass_key) {

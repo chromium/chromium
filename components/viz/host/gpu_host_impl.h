@@ -293,6 +293,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void EnsureWebNNExecutionProvidersReady(
       EnsureWebNNExecutionProvidersReadyCallback cb) override;
 #endif
+  void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) override;
 
   // mojom::GpuLogging:
   void RecordLogMessage(int32_t severity,

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -17,6 +18,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn {
@@ -33,15 +35,16 @@ class ContextImplTflite;
 // and executing the graph.
 class GraphImplTflite final : public WebNNGraphImpl {
  public:
-  static base::expected<scoped_refptr<GraphImplTflite>, mojom::ErrorPtr>
-  CreateAndBuild(
+  static void CreateAndBuild(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
-      ContextImplTflite* context);
+      ContextImplTflite* context,
+      base::File weights_file,
+      WebNNContextImpl::CreateGraphImplCallback callback);
 
   class ComputeResources;
   GraphImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
@@ -58,6 +61,26 @@ class GraphImplTflite final : public WebNNGraphImpl {
 
  private:
   ~GraphImplTflite() override;
+
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+  CreateAndBuildOnBackgroundThread(
+      ContextProperties context_properties,
+      mojom::Device context_device,
+      mojom::GraphInfoPtr graph_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, base::flat_set<OperationId>>
+          operand_to_dependent_operations,
+      base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+      base::File weights_file);
+
+  static void DidCreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      base::WeakPtr<WebNNContextImpl> context,
+      ComputeResourceInfo compute_resource_info,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+          result);
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
