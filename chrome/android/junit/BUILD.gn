@@ -1341,6 +1341,7 @@ if (is_android) {
 
   # This target contains test files in packages which has <= 2 test files.
   robolectric_library("chrome_junit_tests_various") {
+    resources_package = "org.chromium.chrome"
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/provider/PageContentProviderImplUnitTest.java",
       "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImplUnitTest.java",
