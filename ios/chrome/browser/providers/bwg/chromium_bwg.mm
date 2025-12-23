@@ -44,4 +44,6 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context) {
 
 void UpdateOverlayOffset(CGFloat offset) {}
 
+void UpdateGeminiViewState(GeminiViewState view_state) {}
+
 }  // namespace ios::provider

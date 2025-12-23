@@ -132,6 +132,9 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context);
 // overlay towards the bottom and even below the viewport.
 void UpdateOverlayOffset(CGFloat offset);
 
+// Updates Gemini floaty view state.
+void UpdateGeminiViewState(GeminiViewState view_state);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_
