@@ -29,6 +29,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/common/chrome_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -63,6 +66,65 @@ namespace {
 constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
+
+// Matches a localized text object from a map based on |application_locale|.
+const blink::mojom::ManifestLocalizedTextObject* MatchLocalizedText(
+    const base::flat_map<icu::Locale,
+                         blink::mojom::ManifestLocalizedTextObjectPtr>&
+        localized_map,
+    const icu::Locale& application_locale) {
+  if (localized_map.empty()) {
+    return nullptr;
+  }
+
+  auto it = localized_map.find(application_locale);
+  if (it != localized_map.end()) {
+    return it->second.get();
+  }
+
+  // Fall back to language-only ("en") match if no exact match ("en-US") found.
+  icu::Locale language_only(application_locale.getLanguage());
+  it = localized_map.find(language_only);
+  if (it != localized_map.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
+LocalizedText GetLocalizedTitleFromManifestFields(
+    const blink::mojom::Manifest& manifest) {
+  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+    const icu::Locale application_locale(g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->Get()
+                                             .c_str());
+
+    const blink::mojom::ManifestLocalizedTextObject* localized_name = nullptr;
+    if (manifest.name_localized.has_value()) {
+      localized_name =
+          MatchLocalizedText(*manifest.name_localized, application_locale);
+    }
+    if (!localized_name && manifest.short_name_localized.has_value()) {
+      localized_name = MatchLocalizedText(*manifest.short_name_localized,
+                                          application_locale);
+    }
+
+    if (localized_name && !localized_name->value.empty()) {
+      return LocalizedText(localized_name->value, localized_name->lang,
+                           localized_name->dir);
+    }
+  }
+  // Fall back to non-localized fields. Use assignment operator which handles
+  // clearing lang/dir fields.
+  LocalizedText result;
+  std::u16string name = manifest.name.value_or(std::u16string());
+  if (!name.empty()) {
+    result = name;
+  } else if (manifest.short_name) {
+    result = *manifest.short_name;
+  }
+  return result;
+}
 
 // Construct a list of icons from the parsed icons field of the manifest
 // *outside* of |web_app_info|, and update the current web_app_info if found.
@@ -594,13 +656,7 @@ void ManifestToWebAppInstallInfoJob::FetchIconsInternal(
 }
 
 void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
-  // Give the full length name priority if it's not empty.
-  std::u16string name = manifest_->name.value_or(std::u16string());
-  if (!name.empty()) {
-    install_info().title = name;
-  } else if (manifest_->short_name) {
-    install_info().title = *manifest_->short_name;
-  }
+  install_info().title = GetLocalizedTitleFromManifestFields(*manifest_);
 
   // Clean up.
   if (manifest_->scope.is_valid()) {
