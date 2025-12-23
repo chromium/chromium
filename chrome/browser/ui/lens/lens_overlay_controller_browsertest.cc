@@ -137,6 +137,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/pdf_features.h"
@@ -8668,10 +8669,34 @@ class LensOverlayControllerOverlaySearchbox
   }
 
   void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
-    EXPECT_THAT(url_to_process.spec(),
-                testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
-                                      ".*source=chrome.cr.menu.*&vit=.*&gsc=2&"
-                                      "hl=.*&q=.*&biw=\\d+&bih=\\d+"));
+    const GURL base_url(kResultsSearchBaseUrl);
+    EXPECT_EQ(url_to_process.scheme(), base_url.scheme());
+    EXPECT_EQ(url_to_process.host(), base_url.host());
+    EXPECT_EQ(url_to_process.path(), base_url.path());
+
+    std::string value;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "source", &value));
+    EXPECT_EQ(value, "chrome.cr.menu");
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "vit", &value));
+    EXPECT_FALSE(value.empty());
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "gsc", &value));
+    EXPECT_EQ(value, "2");
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "hl", &value));
+    EXPECT_FALSE(value.empty());
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "q", &value));
+    EXPECT_FALSE(value.empty());
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "biw", &value));
+    int biw_val;
+    EXPECT_TRUE(base::StringToInt(value, &biw_val));
+
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url_to_process, "bih", &value));
+    int bih_val;
+    EXPECT_TRUE(base::StringToInt(value, &bih_val));
   }
 };
 

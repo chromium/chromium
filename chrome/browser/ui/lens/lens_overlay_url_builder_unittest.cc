@@ -458,7 +458,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 
-  EXPECT_EQ(
+  EXPECT_TRUE(lens::AreSearchUrlsEquivalent(
       StripQuerySubmissionTimeAndClientUploadDurationParam(
           lens::BuildLensSearchURL(
               kTestTime,
@@ -466,7 +466,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
               /*page_title=*/std::nullopt, std::move(request_id), cluster_info,
               additional_params, lens::LensOverlayInvocationSource::kAppMenu,
               /*use_dark_mode=*/false)),
-      expected_url);
+      GURL(expected_url)));
 }
 
 TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {

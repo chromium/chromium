@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -96,6 +97,8 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
+inline constexpr char kModeParameterKey[] = "udm";
+inline constexpr char kAimModeParameterValue[] = "50";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -589,6 +592,12 @@ void LensOverlayQueryController::SendContextualTextQuery(
   // Include the vit to get contextualized results.
   additional_search_query_params = AddVisualInputTypeQueryParam(
       additional_search_query_params, primary_content_type_);
+  // If AIM omnibox is enabled, all contextual queries for lens should be
+  // fulfilled in AIM.
+  if (omnibox::IsAimPopupEnabled(profile_)) {
+    additional_search_query_params.insert(
+        {kModeParameterKey, kAimModeParameterValue});
+  }
 
   SendInteraction(query_start_time, /*region=*/nullptr, query_text,
                   /*object_id=*/std::nullopt, lens_selection_type,
@@ -996,8 +1005,13 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // blocking on the encoding.
   encoding_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&lens::DownscaleAndEncodeBitmap, original_screenshot_,
-                     ui_scale_factor_, ref_counted_logs),
+      base::BindOnce(
+          [](const SkBitmap& screenshot, int scale_factor,
+             scoped_refptr<lens::RefCountedLensOverlayClientLogs> logs) {
+            return lens::DownscaleAndEncodeBitmap(screenshot, scale_factor,
+                                                  logs);
+          },
+          original_screenshot_, ui_scale_factor_, ref_counted_logs),
       base::BindOnce(&LensOverlayQueryController::
                          CreateFullImageRequestAndTryPerformFullImageRequest,
                      weak_ptr_factory_.GetWeakPtr(), current_sequence_id,

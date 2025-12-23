@@ -1084,11 +1084,6 @@ void LensOverlayController::IssueTextSearchRequestInner(
 
   // If the overlay is off, turn it on so the request can be fulfilled.
   if (state_ == State::kOff) {
-    // TODO(crbug.com/403573362): This is a temporary fix to unblock
-    // prototyping. Since this flow goes straight to the side panel results with
-    // not overlay UI, this flow does a lot of unnecessary work. There should be
-    // a new flow that can contextualize without the overlay UI being
-    // initialized.
     // TODO(crbug.com/439082713) Decouple the contextualization controller from
     // the overlay controller so that the overlay controller is less dependent
     // on it for proper functioning.
