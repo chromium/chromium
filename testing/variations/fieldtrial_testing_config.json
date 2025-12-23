@@ -16944,7 +16944,6 @@
                     "name": "Enabled",
                     "params": {
                         "ConfigParam": "CgIIAxI8CAEQARoXCAAQ4MZbGMAMIMAMKCgyB2ltYWdlLyoiGwiAhK9fEhQucGRmLGFwcGxpY2F0aW9uL3BkZigB",
-                        "SendLnsSurfaceParam": "true",
                         "ShowComposeboxZps": "true",
                         "ShowContextMenu": "true"
                     },

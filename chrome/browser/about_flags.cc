@@ -1735,7 +1735,6 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
         {"ShowCreateImageTool", "true"},
         {"ShowRecentTabChip", "true"},
         {"ShowSubmit", "true"},
-        {"SendLnsSurfaceParam", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"MaxNumFiles", "10"},
@@ -1747,7 +1746,6 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowRecentTabChip", "true"},
     {"ContextMenuEnableMultiTabSelection", "true"},
     {"ShowSubmit", "true"},
-    {"SendLnsSurfaceParam", "true"},
 };
 const FeatureEntry::FeatureParam
     kComposeboxNextForRealboxNextWithContextIdMigration[] = {

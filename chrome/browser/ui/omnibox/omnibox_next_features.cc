@@ -221,9 +221,7 @@ std::unique_ptr<
 CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
-  config_params->send_lns_surface = kSendLnsSurfaceParam.Get();
-  config_params->suppress_lns_surface_param_if_no_image =
-      kSuppressLnsSurfaceParamIfNoImage.Get();
+  config_params->send_lns_surface = true;
   config_params->enable_multi_context_input_flow = kMaxNumFiles.Get() > 1;
   config_params->enable_viewport_images = kEnableViewportImages.Get();
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
@@ -262,10 +260,6 @@ const base::FeatureParam<bool> kForceToolsAndModels(
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
                                            1);
-const base::FeatureParam<bool> kSendLnsSurfaceParam(
-    &internal::kWebUIOmniboxAimPopup,
-    "SendLnsSurfaceParam",
-    true);
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxImageSuggestions",
@@ -327,10 +321,6 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
 const base::FeatureParam<bool> kEnableContextDragAndDrop(&internal::kWebUIOmniboxAimPopup,
                                                   "EnableContextDragAndDrop",
                                                   false);
-const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
-    &internal::kWebUIOmniboxAimPopup,
-    "SuppressLnsSurfaceParamIfNoImage",
-    true);
 const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(
         &internal::kWebUIOmniboxAimPopup,

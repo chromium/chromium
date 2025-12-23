@@ -63,10 +63,6 @@ extern const base::FeatureParam<bool> kEnableViewportImages;
 extern const base::FeatureParam<bool> kForceToolsAndModels;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
-// Whether to send the lns_surface parameter.
-// TODO(crbug.com/430070871): Remove this flag once the server supports the
-// `lns_surface` parameter.
-extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 // Whether to show image suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
 // Whether to show typed suggestions under the composebox.
@@ -99,10 +95,6 @@ extern const base::FeatureParam<bool> kShowToolsAndModels;
 extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 // Whether to show the voice search button in expanded composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
-// If kSendLnsSurfaceParam is true, whether to suppress the `lns_surface`
-// parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
-// is false.
-extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
 // Whether or not to use separate request ids for viewport images if the
 // multi-context input flow is enabled.
 extern const base::FeatureParam<bool>
