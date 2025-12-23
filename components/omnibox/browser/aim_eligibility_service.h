@@ -103,6 +103,9 @@ class AimEligibilityService
   // returns false for off-the-record profiles.
   virtual bool IsCreateImagesEligible() const;
 
+  // Checks if user is eligible for Canvas in AIM features.
+  virtual bool IsCanvasEligible() const;
+
  protected:
   // Virtual methods for platform-specific country and locale access.
   virtual std::string GetCountryCode() const = 0;
@@ -155,6 +158,9 @@ class AimEligibilityService
   // initialization may have to be delayed until after `template_url_service_`
   // has loaded.
   void Initialize();
+
+  // Returns server eligibility if the feature is AIM eligible.
+  bool IsEligibleByServer(bool server_eligibility) const;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
