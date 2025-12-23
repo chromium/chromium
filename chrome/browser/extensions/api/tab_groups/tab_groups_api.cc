@@ -91,10 +91,6 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 }  // namespace
 
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return RespondNow(Error(kNotYetImplementedError));
-#else
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
   DCHECK(params.has_value());
@@ -113,9 +109,13 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
 
   DCHECK(!id.is_empty());
 
+  // TODO(crbug.com/405219902): Replace this with CHECK(visual_data) and
+  // use *visual_data when desktop Android supports visual data.
+  const tab_groups::TabGroupVisualData& visual_data_ref =
+      visual_data ? *visual_data : tab_groups::TabGroupVisualData();
+
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      ExtensionTabUtil::CreateTabGroupObject(id, *visual_data))));
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+      ExtensionTabUtil::CreateTabGroupObject(id, visual_data_ref))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {

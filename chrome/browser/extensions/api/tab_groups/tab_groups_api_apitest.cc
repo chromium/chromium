@@ -5,14 +5,12 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -21,19 +19,94 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
+// Runs the chrome.tabGroups.get(groupId) function.
+base::Value::Dict RunTabGroupsGetFunction(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    const std::string& args) {
+  auto function = base::MakeRefCounted<TabGroupsGetFunction>();
+  function->set_extension(extension);
+  std::optional<base::Value> value =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), args, browser_context,
+          api_test_utils::FunctionMode::kNone);
+  return std::move(*value).TakeDict();
+}
+
+// Creates an extension with "tabGroups" permission.
+scoped_refptr<const Extension> CreateTabGroupsExtension() {
+  return ExtensionBuilder("Extension with tabGroups permission")
+      .AddAPIPermission("tabGroups")
+      .Build();
+}
+
 using TabGroupsApiTest = ExtensionApiTest;
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
+  // Open a tab, bringing the count to 2.
+  NavigateToURLInNewTab(GURL("about:blank"));
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  ASSERT_EQ(2, tab_list->GetTabCount());
+
+  // Create a group with the 2 tabs.
+  std::vector<tabs::TabHandle> tabs;
+  tabs.push_back(tab_list->GetTab(0)->GetHandle());
+  tabs.push_back(tab_list->GetTab(1)->GetHandle());
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  ASSERT_TRUE(group.has_value());
+
+  // Call the chrome.tabGroups.get() function with a valid group id.
+  auto extension = CreateTabGroupsExtension();
+  int group_id = ExtensionTabUtil::GetGroupId(*group);
+  constexpr char kFormatArgs[] = R"([%d])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id);
+  base::Value::Dict group_info =
+      RunTabGroupsGetFunction(profile(), extension.get(), args);
+
+  // Group info was returned.
+  EXPECT_EQ(group_id, *group_info.FindInt("id"));
+  EXPECT_EQ(ExtensionTabUtil::GetWindowId(browser_window_interface()),
+            *group_info.FindInt("windowId"));
+  EXPECT_FALSE(*group_info.FindBool("shared"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunctionInvalidGroup) {
+  auto extension = CreateTabGroupsExtension();
+  auto function = base::MakeRefCounted<TabGroupsGetFunction>();
+  function->set_extension(extension);
+
+  // Call the chrome.tabGroups.get() function with an invalid group id (0).
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), "[0]", profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ("No group with id: 0.", error);
+}
+
+// TODO(crbug.com/371432155): Port tests to desktop Android as the underlying
+// API methods are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/371432155): Port to desktop Android when tabs.group() is
 // supported.
-IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGet) {
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetApi) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/get")) << message_;
 }
 
@@ -128,6 +201,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, SetGroupTitleToEmoji) {
                                                           ->visual_data();
   EXPECT_EQ(visual_data->title(), std::u16string(u"🤡"));
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions
