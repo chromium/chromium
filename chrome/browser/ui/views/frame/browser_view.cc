@@ -950,11 +950,13 @@ BrowserView::BrowserView(Browser* browser)
       AddChildView(std::make_unique<HorizontalTabStripRegionView>(this));
   tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
+  auto* const vertical_tab_strip_state_controller =
+      tabs::VerticalTabStripStateController::From(browser_);
+  if (vertical_tab_strip_state_controller) {
     // TODO(466091787): just use BWI.
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
-            tabs::VerticalTabStripStateController::From(browser_),
+            vertical_tab_strip_state_controller,
             browser_->GetActions()->root_action_item(), browser_);
 
     vertical_tab_strip_container_ =
@@ -1000,32 +1002,27 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
+  if (vertical_tab_strip_state_controller) {
     const std::optional<bool>& restored_state_collapsed =
         browser_->is_vertical_tabs_initially_collapsed();
     const std::optional<int>& restored_state_uncollapsed_width =
         browser_->get_vertical_tabs_initial_uncollapsed_width();
-    if (restored_state_collapsed.has_value() &&
-        restored_state_uncollapsed_width.has_value()) {
-      tabs::VerticalTabStripStateController::From(browser)->SetCollapsed(
-          restored_state_collapsed.value());
-      tabs::VerticalTabStripStateController::From(browser_)
-          ->SetUncollapsedWidth(restored_state_uncollapsed_width.value());
-    }
+    vertical_tab_strip_state_controller->SetCollapsed(
+        restored_state_collapsed.value_or(false));
+    vertical_tab_strip_state_controller->SetUncollapsedWidth(
+        restored_state_uncollapsed_width.value_or(
+            tabs::kVerticalTabStripDefaultUncollapsedWidth));
+
+    vertical_tab_subscription_ =
+        vertical_tab_strip_state_controller->RegisterOnStateChanged(
+            base::BindRepeating(&BrowserView::OnVerticalTabStripStateChanged,
+                                base::Unretained(this)));
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 
   if (GetFocusManager()) {
     focus_manager_observation_.Observe(GetFocusManager());
-  }
-
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    vertical_tab_subscription_ =
-        tabs::VerticalTabStripStateController::From(browser_)
-            ->RegisterOnStateChanged(base::BindRepeating(
-                &BrowserView::OnVerticalTabStripStateChanged,
-                base::Unretained(this)));
   }
 
   if (tabs::IsProjectsPanelFeatureEnabled()) {
@@ -1223,9 +1220,9 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
 #endif
 
 TabStripRegionView* BrowserView::tab_strip_view() const {
-  if (vertical_tab_strip_container_ &&
-      tabs::VerticalTabStripStateController::From(browser_)
-          ->ShouldDisplayVerticalTabs()) {
+  auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+  if (vertical_tab_strip_container_ && controller &&
+      controller->ShouldDisplayVerticalTabs()) {
     return vertical_tab_strip_container_.get();
   }
 
@@ -1282,9 +1279,9 @@ bool BrowserView::ShouldDrawTabStrip() const {
 }
 
 bool BrowserView::ShouldDrawVerticalTabStrip() const {
-  return ShouldDrawTabStrip() && tabs::IsVerticalTabsFeatureEnabled() &&
-         tabs::VerticalTabStripStateController::From(browser_)
-             ->ShouldDisplayVerticalTabs();
+  auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+  return ShouldDrawTabStrip() && controller &&
+         controller->ShouldDisplayVerticalTabs();
 }
 
 bool BrowserView::IsVerticalTabStripCollapsed() const {
@@ -4548,9 +4545,10 @@ void BrowserView::UpdateTabSearchBubbleHost() {
     toolbar_button_controller->UpdateBubbleHost(nullptr);
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled() &&
-      tabs::VerticalTabStripStateController::From(browser_)
-          ->ShouldDisplayVerticalTabs()) {
+  auto* vertical_tab_strip_state_controller =
+      tabs::VerticalTabStripStateController::From(browser_);
+  if (vertical_tab_strip_state_controller &&
+      vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         vertical_tab_strip_container_->GetTopContainer()->GetTabSearchButton(),
         browser_.get());
@@ -5325,7 +5323,7 @@ void BrowserView::AddedToWidget() {
                 weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
+  if (vertical_tab_strip_container_) {
     vertical_tab_strip_container_->CreateTabStripController(this);
   }
 

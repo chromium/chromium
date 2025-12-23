@@ -37,10 +37,11 @@ MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 void MainBackgroundRegionView::Layout(PassKey) {
   background_view_->SetBoundsRect(GetLocalBounds());
 
+  auto* vertical_tab_strip_state_controller =
+      tabs::VerticalTabStripStateController::From(browser_view_->browser());
   if (ImmersiveModeController::From(browser_view_->browser())->IsEnabled() ||
-      (tabs::IsVerticalTabsFeatureEnabled() &&
-       tabs::VerticalTabStripStateController::From(browser_view_->browser())
-           ->ShouldDisplayVerticalTabs())) {
+      (vertical_tab_strip_state_controller &&
+       vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs())) {
     // Rounded top corners are not needed in immersive mode or when showing
     // vertical tabs, so use an empty clip path.
     background_view_->SetClipPath(SkPathBuilder().detach());

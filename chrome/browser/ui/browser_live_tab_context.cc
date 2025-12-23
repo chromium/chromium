@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -168,15 +169,13 @@ std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
   std::map<std::string, std::string> data;
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    auto* controller =
-        tabs::VerticalTabStripStateController::From(&browser_.get());
-    if (controller) {
-      data[tabs::VerticalTabStripStateController::kCollapsedKey] =
-          base::ToString(controller->IsCollapsed());
-      data[tabs::VerticalTabStripStateController::kUncollapsedWidthKey] =
-          base::NumberToString(controller->GetUncollapsedWidth());
-    }
+  auto* controller =
+      tabs::VerticalTabStripStateController::From(&browser_.get());
+  if (controller) {
+    data[tabs::VerticalTabStripStateController::kCollapsedKey] =
+        base::ToString(controller->IsCollapsed());
+    data[tabs::VerticalTabStripStateController::kUncollapsedWidthKey] =
+        base::NumberToString(controller->GetUncollapsedWidth());
   }
 
   return data;
