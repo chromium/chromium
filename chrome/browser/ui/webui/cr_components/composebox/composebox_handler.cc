@@ -12,10 +12,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
@@ -219,6 +221,26 @@ void ComposeboxHandler::HandleLensButtonClick() {
 
 void ComposeboxHandler::HandleFileUpload(bool is_image) {
   // Ignore, intentionally unimplemented for NTP.
+}
+
+void ComposeboxHandler::NavigateUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return;
+  }
+  content::WebContents* current_web_contents = web_contents_.get();
+  if (!current_web_contents) {
+    return;
+  }
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(current_web_contents);
+  if (!browser_window_interface) {
+    return;
+  }
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  browser_window_interface->OpenURL(std::move(params),
+                                    /*navigation_handle_callback=*/{});
 }
 
 void ComposeboxHandler::ExecuteAction(uint8_t line,

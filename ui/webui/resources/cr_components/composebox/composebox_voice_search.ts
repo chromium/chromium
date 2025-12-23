@@ -9,6 +9,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {PageHandlerRemote} from './composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './composebox_voice_search.css.js';
 import {getHtml} from './composebox_voice_search.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -103,7 +105,7 @@ export class ComposeboxVoiceSearchElement extends
   private accessor state_: State = State.UNINITIALIZED;
   protected accessor transcript_: string = '';
   protected accessor listeningPlaceholder_: string =
-      loadTimeData.getString('listening');
+      loadTimeData.getString('voiceListening');
   private voiceRecognition_: SpeechRecognition;
   protected accessor finalResult_: string = '';
   protected accessor interimResult_: string = '';
@@ -113,7 +115,8 @@ export class ComposeboxVoiceSearchElement extends
   protected detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
-
+  private pageHandler_: PageHandlerRemote =
+      ComposeboxProxyImpl.getInstance().handler;
   protected get showErrorScrim_(): boolean {
     return !!this.errorMessage_;
   }
@@ -247,7 +250,7 @@ export class ComposeboxVoiceSearchElement extends
     switch (webkitError) {
       case 'not-allowed':
         this.error_ = Error.NOT_ALLOWED;
-        this.errorMessage_ = loadTimeData.getString('permissionError');
+        this.errorMessage_ = loadTimeData.getString('voicePermissionError');
         return;
       default:
         return;
@@ -281,7 +284,14 @@ export class ComposeboxVoiceSearchElement extends
     this.errorMessage_ = '';
   }
 
-  protected onLinkClick_() {
+  protected onLinkClick_(e: Event) {
+    // Manually handle navigation to support WebView environments where default
+    // link clicks may be ignored.
+    e.preventDefault();
+    const href = (e.currentTarget as HTMLAnchorElement).href;
+    if (href) {
+      this.pageHandler_.navigateUrl({url: href});
+    }
     this.fire('voice-search-cancel');
   }
 }

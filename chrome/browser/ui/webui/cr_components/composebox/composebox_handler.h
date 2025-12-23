@@ -50,6 +50,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
+  void NavigateUrl(const GURL& url) override;
 
   // searchbox::mojom::PageHandler:
   void ExecuteAction(uint8_t line,

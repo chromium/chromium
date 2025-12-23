@@ -11,7 +11,9 @@ source_set("composebox") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/contextual_search:public",
