@@ -135,11 +135,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                               size_t num_codec_reference_frames,
                               uint8_t bit_depth);
 
-  // Sends the EXT_CTRLS ioctl for 10-bit video at the specified |size|. This
-  // will enable retrieving the proper format from the CAPTURE queue. |size| is
-  // needed so that we are passing in all the information that might be needed
-  // by the driver to know what the format is.
-  CroStatus SetExtCtrls10Bit(const gfx::Size& size);
+  // Sends the EXT_CTRLS ioctl with the specified |size| and |bit_depth|. This
+  // is required by the V4L2 stateless decoder spec at 4.5.3.2. Initialization.
+  CroStatus SetExtCtrlsInit(const gfx::Size& size, const uint8_t bit_depth);
 
   // Start streaming V4L2 input and (if |start_output_queue| is true) output
   // queues. Attempt to start |device_poll_thread_| after streaming starts.
