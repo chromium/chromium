@@ -4,6 +4,7 @@
 
 import {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -11,6 +12,7 @@ suite('ModuleHeaderV2', () => {
   let moduleHeaderElementV2: ModuleHeaderElementV2;
 
   setup(() => {
+    loadTimeData.overrideValues({hideDismissModules: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     moduleHeaderElementV2 = new ModuleHeaderElementV2();
     document.body.appendChild(moduleHeaderElementV2);
@@ -125,5 +127,27 @@ suite('ModuleHeaderV2', () => {
     assertEquals(1, dropDownItems.length);
     const horizontalRule = $$(moduleHeaderElementV2, 'hr');
     assertFalse(isVisible(horizontalRule));
+  });
+
+  test('dismiss action is hidden if `hideDismissModules` is true', async () => {
+    moduleHeaderElementV2.menuItems = [
+      {
+        action: 'dismiss',
+        icon: 'modules:dismiss',
+        text: 'Dismiss',
+      },
+      {
+        action: 'disable',
+        icon: 'modules:disable',
+        text: 'Disable',
+      },
+    ];
+    moduleHeaderElementV2.$.menuButton.click();
+    await microtasksFinished();
+    const dropDownItems =
+        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    assertEquals(2, dropDownItems.length);
+    assertEquals('disable', dropDownItems[0]!.id);
+    assertEquals('customize-module', dropDownItems[1]!.id);
   });
 });
