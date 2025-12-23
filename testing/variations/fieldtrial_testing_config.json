@@ -7052,6 +7052,46 @@
             ]
         }
     ],
+    "ContextualTasks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ContextualTasksEntryPoint": "toolbar-permanent"
+                    },
+                    "enable_features": [
+                        "ContextualTasks",
+                        "TabbedBrowserUseNewLayout"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContextualTasksContext": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "ControlsVisibilityFromNavigations": [
         {
             "platforms": [
