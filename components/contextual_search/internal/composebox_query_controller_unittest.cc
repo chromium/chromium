@@ -3241,7 +3241,9 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {
 TEST_F(ComposeboxQueryControllerTest, ContextualTasksOverrides) {
   // Arrange: Enable ContextualTasks.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+  feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasks,
+      {{"ForceContextIdMigration", "true"}});
 
   // Create controller with flags disabled initially.
   CreateController(
