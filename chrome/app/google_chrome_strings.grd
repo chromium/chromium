@@ -2961,6 +2961,12 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SETTINGS_GLIC_ROW_LABEL" desc="Label of the Gemini row button on the AI settings page leading to the Gemini subpage.">
           Gemini in Chrome
         </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" translateable="false" desc="Title for the Gemini feature introduction screen">
+          Let Chrome browse for you
+        </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" translateable="false" desc="Subheader explaining what the Gemini feature does">
+          Gemini in Chrome uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Profile Picker Glic version-->
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling.">

@@ -2946,6 +2946,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Glic row button on the AI settings page leading to the Glic subpage.">
           Gemini in Chromium
         </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" translateable="false" desc="Title for the Gemini feature introduction screen">
+          Let Chromium browse for you
+        </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" translateable="false" desc="Subheader explaining what the Gemini feature does">
+          Gemini in Chromium uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Profile Picker Glic version-->
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Profile picker main view title for Glic version. 'Glic' has a special styling." translateable="false">

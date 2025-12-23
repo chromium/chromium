@@ -195,12 +195,6 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model.">
     The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen">
-    Let Gemini browse for you
-  </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does">
-    Gemini works in your tabs to complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
     Gemini Apps Activity
   </message>
