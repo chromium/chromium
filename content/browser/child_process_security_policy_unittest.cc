@@ -1560,6 +1560,34 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
     EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
 }
 
+// Tests that queries for Midi permissions work after RenderProcessHost removal
+// until the corresponding Handles are gone. See https://crbug.com/471021577.
+TEST_P(ChildProcessSecurityPolicyTest, MidiAfterProcessRemoval) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->AddForTesting(kRendererProcess, browser_context());
+  auto handle = p->CreateHandle(kRendererProcess);
+
+  p->GrantSendMidiMessage(kRendererID);
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_FALSE(p->CanSendMidiSysExMessage(kRendererProcess));
+  p->GrantSendMidiSysExMessage(kRendererID);
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_TRUE(p->CanSendMidiSysExMessage(kRendererProcess));
+
+  // Simulate RenderProcessHost deletion while Handles still exist.
+  p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_TRUE(p->CanSendMidiSysExMessage(kRendererProcess));
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_FALSE(p->CanSendMidiSysExMessage(kRendererProcess));
+}
+
 // Exercise the basic functionality of how MatchesCommittedOrigin() matches URLs
 // against origins that have committed in a process. This test simulates an
 // unlocked process that may commit origins from different sites (e.g., in a

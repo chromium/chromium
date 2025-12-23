@@ -2559,8 +2559,8 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(
     ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  if (auto* state = base::FindOrNull(security_state_, child_id)) {
-    return (*state)->CanSendMidi();
+  if (auto* state = GetSecurityStateForQuery(child_id)) {
+    return state->CanSendMidi();
   }
   return false;
 }
@@ -2569,8 +2569,8 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(
     ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  if (auto* state = base::FindOrNull(security_state_, child_id)) {
-    return (*state)->CanSendMidiSysEx();
+  if (auto* state = GetSecurityStateForQuery(child_id)) {
+    return state->CanSendMidiSysEx();
   }
   return false;
 }
