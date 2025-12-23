@@ -52990,6 +52990,43 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="{ClosingSidePanelType}.ClosedToOpen.{OpeningSidePanelType}">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    {ClosingSidePanelType} has been closed due {OpeningSidePanelType} opening.
+  </description>
+  <token key="ClosingSidePanelType" variants="SidePanelType"/>
+  <token key="OpeningSidePanelType" variants="SidePanelType"/>
+</action>
+
+<action
+    name="{ClosingSidePanelType}.{ClosingSidePanelEntry}.EntryClosedToOpen.{OpeningSidePanelEntry}">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    {ClosingSidePanelType} has been closed when the {ClosingSidePanelEntry} side
+    panel entry was showing due {OpeningSidePanelEntry} side panel entry
+    opening.
+  </description>
+  <token key="ClosingSidePanelType" variants="SidePanelType"/>
+  <token key="ClosingSidePanelEntry" variants="SidePanelEntry"/>
+  <token key="OpeningSidePanelEntry" variants="SidePanelEntry"/>
+</action>
+
+<action
+    name="{ClosingSidePanelType}.{SidePanelEntry}.ClosedToOpen.{OpeningSidePanelType}">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    {ClosingSidePanelType} has been closed when the {SidePanelEntry} side panel
+    entry was showing due {OpeningSidePanelType} opening.
+  </description>
+  <token key="ClosingSidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+  <token key="OpeningSidePanelType" variants="SidePanelType"/>
+</action>
+
 <action name="{SidePanelType}.Hide">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

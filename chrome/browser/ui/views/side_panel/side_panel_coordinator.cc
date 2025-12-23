@@ -145,6 +145,9 @@ void SidePanelCoordinator::Show(
                               ? SidePanelEntry::PanelType::kToolbar
                               : SidePanelEntry::PanelType::kContent;
         IsSidePanelShowing(other_type)) {
+      SidePanelUtil::RecordPanelClosedForOtherPanelTypeMetrics(
+          other_type, entry->type(), GetCurrentEntryId(other_type).value(),
+          entry->key().id());
       Close(other_type, SidePanelEntryHideReason::kSidePanelClosed,
             /*suppress_animations=*/true);
     }

@@ -259,3 +259,25 @@ void SidePanelUtil::RecordSidePanelAnimationMetrics(
       base::StrCat({GetSidePanelNameFor(type), ".TimeOfLongestAnimationStep"}),
       largest_step_time);
 }
+
+void SidePanelUtil::RecordPanelClosedForOtherPanelTypeMetrics(
+    SidePanelEntry::PanelType closing_panel_type,
+    SidePanelEntry::PanelType opening_panel_type,
+    SidePanelEntryId closing_panel_id,
+    SidePanelEntryId opening_panel_id) {
+  base::RecordComputedAction(
+      base::StrCat({GetSidePanelNameFor(closing_panel_type), ".ClosedToOpen.",
+                    GetSidePanelNameFor(opening_panel_type)}));
+  if (closing_panel_id == SidePanelEntryId::kContextualTasks) {
+    base::RecordComputedAction(base::StrCat(
+        {GetSidePanelNameFor(closing_panel_type), ".",
+         SidePanelEntryIdToHistogramName(closing_panel_id), ".ClosedToOpen.",
+         GetSidePanelNameFor(opening_panel_type)}));
+    if (opening_panel_id == SidePanelEntryId::kGlic) {
+      base::RecordComputedAction(base::StrCat(
+          {GetSidePanelNameFor(closing_panel_type), ".",
+           SidePanelEntryIdToHistogramName(closing_panel_id), ".EntryClosedToOpen.",
+           SidePanelEntryIdToHistogramName(opening_panel_id)}));
+    }
+  }
+}
