@@ -94,6 +94,9 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
+  void PingMainThread(PingMainThreadCallback callback) override {
+    DLOG(WARNING) << "Input request on unbound interface";
+  }
 #if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
@@ -150,6 +153,7 @@ void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("input", "RenderInputRouter::SetupInputRouter");
 
   in_flight_event_count_ = 0;
+  hang_monitor_timer_state_ = HangMonitorTimerState::kStopped;
   StopInputEventAckTimeout();
 
   bool was_active = input_router_ && input_router_->IsActive();
@@ -362,6 +366,8 @@ void RenderInputRouter::StartInputEventAckTimeout() {
   }
 
   if (!input_event_ack_timeout_.IsRunning()) {
+    DCHECK_EQ(hang_monitor_timer_state_, HangMonitorTimerState::kStopped);
+    hang_monitor_timer_state_ = HangMonitorTimerState::kMonitoring;
     input_event_ack_timeout_.Start(
         FROM_HERE, hung_renderer_delay_,
         base::BindOnce(&RenderInputRouter::OnInputEventAckTimeout,
@@ -371,12 +377,15 @@ void RenderInputRouter::StartInputEventAckTimeout() {
 
 void RenderInputRouter::StopInputEventAckTimeout() {
   input_event_ack_timeout_.Stop();
+  hang_monitor_timer_state_ = HangMonitorTimerState::kStopped;  // Reset state
   delegate_->RendererIsResponsive();
 }
 
 void RenderInputRouter::RestartInputEventAckTimeoutIfNecessary() {
   if (!is_blocked_ && !should_disable_hang_monitor_ &&
       in_flight_event_count_ > 0) {
+    // Reset state to Monitoring and restart the standard timer.
+    hang_monitor_timer_state_ = HangMonitorTimerState::kMonitoring;
     input_event_ack_timeout_.Start(
         FROM_HERE, hung_renderer_delay_,
         base::BindOnce(&RenderInputRouter::OnInputEventAckTimeout,
@@ -385,6 +394,30 @@ void RenderInputRouter::RestartInputEventAckTimeoutIfNecessary() {
 }
 
 void RenderInputRouter::OnInputEventAckTimeout() {
+  TRACE_EVENT("input", "RenderInputRouter::OnInputEventAckTimeout", "state",
+              static_cast<int>(hang_monitor_timer_state_));
+
+  if (hang_monitor_timer_state_ == HangMonitorTimerState::kMonitoring) {
+    // The standard delay expired. We must actively probe the main thread.
+    hang_monitor_timer_state_ = HangMonitorTimerState::kPinging;
+
+    // Send the Ping IPC to the MainThread.
+    auto callback = base::BindOnce(&RenderInputRouter::OnPingAck,
+                                   weak_factory_.GetWeakPtr());
+    GetWidgetInputHandler()->PingMainThread(std::move(callback));
+
+    // Start the shorter timer for the IPC response.
+    input_event_ack_timeout_.Start(
+        FROM_HERE, input::kHungRendererPingTimeout,
+        base::BindOnce(&RenderInputRouter::OnInputEventAckTimeout,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // The renderer is unresponsive. Reset the state so that subsequent events can
+  // restart the monitoring cycle if needed.
+  hang_monitor_timer_state_ = HangMonitorTimerState::kStopped;
+
   delegate_->OnInputEventAckTimeout(
       /* ack_timeout_ts= */ base::TimeTicks::Now());
   // Do not add code after this since the Delegate may delete this
@@ -413,6 +446,19 @@ void RenderInputRouter::DecrementInFlightEventCount(
       RestartInputEventAckTimeoutIfNecessary();
     }
   }
+}
+
+void RenderInputRouter::OnPingAck() {
+  TRACE_EVENT("input", "RenderInputRouter::OnPingAck");
+
+  if (hang_monitor_timer_state_ != HangMonitorTimerState::kPinging) {
+    // State changed while waiting (e.g., a regular MT ACK arrived just before
+    // this).
+    return;
+  }
+
+  // The main thread executed the ping task. It is responsive.
+  RestartInputEventAckTimeoutIfNecessary();
 }
 
 void RenderInputRouter::OnInputDispatchedToRendererResult(

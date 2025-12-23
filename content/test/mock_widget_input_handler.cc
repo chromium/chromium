@@ -120,6 +120,8 @@ void MockWidgetInputHandler::WaitForInputProcessed(
   NOTREACHED();
 }
 
+void MockWidgetInputHandler::PingMainThread(PingMainThreadCallback callback) {}
+
 MockWidgetInputHandler::MessageVector
 MockWidgetInputHandler::GetAndResetDispatchedMessages() {
   MessageVector dispatched_events;
