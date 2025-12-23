@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -226,11 +226,12 @@ void ExtensionsMenuDelegateDesktop::OnToolbarPinnedActionsChanged() {
     return;
   }
 
-  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
-  for (auto* menu_item : menu_items) {
+  std::vector<ExtensionsMenuEntryView*> menu_entries =
+      main_page->GetMenuEntries();
+  for (auto* menu_entry : menu_entries) {
     bool is_action_pinned =
-        toolbar_model_->IsActionPinned(menu_item->view_model()->GetId());
-    menu_item->UpdateContextMenuButton(is_action_pinned);
+        toolbar_model_->IsActionPinned(menu_entry->view_model()->GetId());
+    menu_entry->UpdateContextMenuButton(is_action_pinned);
   }
 }
 
@@ -404,14 +405,15 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
       break;
   }
 
-  // Update menu items.
+  // Update menu entries.
   // TODO(crbug.com/40879945): Reorder the extensions after updating them, since
   // their names can change.
-  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
-  for (auto* menu_item : menu_items) {
+  std::vector<ExtensionsMenuEntryView*> menu_entries =
+      main_page->GetMenuEntries();
+  for (auto* menu_entry : menu_entries) {
     ExtensionsMenuViewModel::MenuItemState menu_item_state =
-        menu_model_->GetMenuItemState(menu_item->view_model()->GetId());
-    menu_item->Update(menu_item_state);
+        menu_model_->GetMenuItemState(menu_entry->view_model()->GetId());
+    menu_entry->Update(menu_item_state);
   }
 }
 

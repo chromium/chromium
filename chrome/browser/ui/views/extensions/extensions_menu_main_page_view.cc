@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_id.h"
@@ -70,13 +70,13 @@ constexpr int kRequestEntryIconIndex = 0;
 // requests container.
 constexpr int kRequestEntryLabelIndex = 1;
 
-// Converts a view to a ExtensionMenuItemView. This cannot be used to
-// *determine* if a view is an ExtensionMenuItemView (it should only be used
+// Converts a view to a ExtensionsMenuEntryView. This cannot be used to
+// *determine* if a view is an ExtensionsMenuEntryView (it should only be used
 // when the view is known to be one). It is only used as an extra measure to
 // prevent bad static casts.
-ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
-  DCHECK(views::IsViewClass<ExtensionMenuItemView>(view));
-  return views::AsViewClass<ExtensionMenuItemView>(view);
+ExtensionsMenuEntryView* GetAsMenuEntry(views::View* view) {
+  DCHECK(views::IsViewClass<ExtensionsMenuEntryView>(view));
+  return views::AsViewClass<ExtensionsMenuEntryView>(view);
 }
 
 }  // namespace
@@ -191,7 +191,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
   auto extension_id = action_model->GetId();
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
-  auto item = std::make_unique<ExtensionMenuItemView>(
+  auto item = std::make_unique<ExtensionsMenuEntryView>(
       browser_, menu_item.is_enterprise, action_model,
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
@@ -339,11 +339,11 @@ void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
   SizeToPreferredSize();
 }
 
-std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
-    const {
-  std::vector<ExtensionMenuItemView*> menu_item_views;
+std::vector<ExtensionsMenuEntryView*>
+ExtensionsMenuMainPageView::GetMenuEntries() const {
+  std::vector<ExtensionsMenuEntryView*> menu_item_views;
   for (views::View* view : menu_items_->children()) {
-    menu_item_views.push_back(GetAsMenuItem(view));
+    menu_item_views.push_back(GetAsMenuEntry(view));
   }
   return menu_item_views;
 }

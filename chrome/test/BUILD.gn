@@ -10571,6 +10571,7 @@ test("unit_tests") {
       "../browser/ui/views/download/download_in_progress_dialog_view_unittest.cc",
       "../browser/ui/views/extensions/chooser_dialog_view_unittest.cc",
       "../browser/ui/views/extensions/expandable_container_view_unittest.cc",
+      "../browser/ui/views/extensions/extensions_menu_entry_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_item_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_main_page_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_site_permissions_page_view_unittest.cc",

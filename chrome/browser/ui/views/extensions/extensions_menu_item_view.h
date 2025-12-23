@@ -7,14 +7,11 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -24,12 +21,6 @@ class ExtensionsMenuButton;
 class HoverButton;
 class ToolbarActionViewModel;
 class ToolbarActionsModel;
-
-namespace views {
-class ToggleButton;
-}  // namespace views
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
 
 // Single row inside the extensions menu for every installed extension. Includes
 // information about the extension, a button to pin the extension to the toolbar
@@ -42,36 +33,20 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   ExtensionMenuItemView(Browser* browser,
                         std::unique_ptr<ToolbarActionViewModel> view_model,
                         bool allow_pinning);
-
-  // Constructor for the kExtensionsMenuAccessControl feature.
-  ExtensionMenuItemView(
-      Browser* browser,
-      bool is_enterprise,
-      ToolbarActionViewModel* view_model,
-      base::RepeatingCallback<void(bool)> site_access_toggle_callback,
-      views::Button::PressedCallback site_permissions_button_callback);
   ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
   ExtensionMenuItemView& operator=(const ExtensionMenuItemView&) = delete;
   ~ExtensionMenuItemView() override;
 
-  // Updates the controller and child views to be on sync with the parent views.
-  void Update(ExtensionsMenuViewModel::MenuItemState menu_item);
-
   // Updates the pin button.
   void UpdatePinButton(bool is_force_pinned, bool is_pinned);
-
-  // Updates the context menu button given `is_action_pinned`.
-  void UpdateContextMenuButton(bool is_action_pinned);
 
   ToolbarActionViewModel* view_model() { return view_model_.get(); }
   const ToolbarActionViewModel* view_model() const { return view_model_.get(); }
 
   bool IsContextMenuRunningForTesting() const;
   ExtensionsMenuButton* primary_action_button_for_testing();
-  views::ToggleButton* site_access_toggle_for_testing();
   HoverButton* context_menu_button_for_testing();
   HoverButton* pin_button_for_testing();
-  HoverButton* site_permissions_button_for_testing();
 
  private:
   // ExtensionContextMenuController::Observer:
@@ -93,31 +68,13 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   const raw_ptr<Browser> browser_;
 
   // View Model for an action that is shown in the toolbar.
-  // TODO(crbug.com/40857680): Remove `view_model_legacy_` once
-  // kExtensionsMenuAccessControl is fully launched and the legacy constructor
-  // is removed.
-  //
-  // This class supports two ownership view models during the migration:
-  // 1. Legacy (feature disabled): This view owns the ViewModel. It is stored
-  //    in `view_model_legacy_`.
-  // 2. New (feature enabled): The `ExtensionsMenuViewModel` owns the ViewModel.
-  //
-  // `view_model_` serves as the unified accessor for the class implementation
-  // regardless of which constructor was used.
-  const std::unique_ptr<ToolbarActionViewModel> view_model_legacy_;
-  raw_ptr<ToolbarActionViewModel> view_model_;
+  const std::unique_ptr<ToolbarActionViewModel> view_model_;
 
   // Model for the browser actions toolbar that provides information such as the
   // action pin status or visibility.
   const raw_ptr<ToolbarActionsModel> model_;
 
   raw_ptr<ExtensionsMenuButton> primary_action_button_;
-
-  raw_ptr<views::ToggleButton> site_access_toggle_ = nullptr;
-
-  // Button that displays the extension site access and opens its site
-  // permissions page.
-  raw_ptr<HoverButton> site_permissions_button_ = nullptr;
 
   raw_ptr<HoverButton> pin_button_ = nullptr;
 

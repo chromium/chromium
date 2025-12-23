@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -93,10 +94,8 @@ gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   OpenExtensionsMenu();
 
-  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
-  DCHECK(view);
-  ExtensionsMenuButton* primary_button =
-      view->primary_action_button_for_testing();
+  ExtensionsMenuButton* primary_button = GetPrimaryButton(id);
+  CHECK(primary_button);
 
   views::test::ButtonTestApi(primary_button).NotifyDefaultMouseClick();
 }
@@ -181,9 +180,8 @@ bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
              : menu_view_;
 }
 
-ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
+ExtensionsMenuButton* ExtensionsMenuTestUtil::GetPrimaryButton(
     const extensions::ExtensionId& id) {
-  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsMenuMainPageView* main_page =
@@ -191,17 +189,29 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
             ->GetDelegateForTesting()
             ->GetMainPageViewForTesting();
     DCHECK(main_page);
-    auto items = main_page->GetMenuItems();
-    menu_items = {items.begin(), items.end()};
+    std::vector<ExtensionsMenuEntryView*> menu_entries =
+        main_page->GetMenuEntries();
 
-  } else {
-    menu_items = menu_view_->extensions_menu_items_for_testing();
+    auto iter = std::find_if(menu_entries.begin(), menu_entries.end(),
+                             [&id](ExtensionsMenuEntryView* entry) {
+                               return entry->view_model()->GetId() == id;
+                             });
+
+    return (iter == menu_entries.end())
+               ? nullptr
+               : (*iter)->primary_action_button_for_testing();
   }
 
-  auto iter = std::ranges::find(
-      menu_items, id,
-      [](ExtensionMenuItemView* view) { return view->view_model()->GetId(); });
-  return (iter == menu_items.end()) ? nullptr : *iter;
+  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
+      menu_view_->extensions_menu_items_for_testing();
+  auto iter = std::find_if(menu_items.begin(), menu_items.end(),
+                           [&id](ExtensionMenuItemView* item) {
+                             return item->view_model()->GetId() == id;
+                           });
+
+  return (iter == menu_items.end())
+             ? nullptr
+             : (*iter)->primary_action_button_for_testing();
 }
 
 // static

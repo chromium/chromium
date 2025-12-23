@@ -3791,6 +3791,8 @@ static_library("ui") {
       "views/extensions/extensions_menu_coordinator.h",
       "views/extensions/extensions_menu_delegate_desktop.cc",
       "views/extensions/extensions_menu_delegate_desktop.h",
+      "views/extensions/extensions_menu_entry_view.cc",
+      "views/extensions/extensions_menu_entry_view.h",
       "views/extensions/extensions_menu_handler.h",
       "views/extensions/extensions_menu_item_view.cc",
       "views/extensions/extensions_menu_item_view.h",
