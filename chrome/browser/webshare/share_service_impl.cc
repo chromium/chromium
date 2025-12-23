@@ -15,10 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
-#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -30,6 +28,12 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/share_operation.h"
 #include "ui/display/display.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #endif
 
 // IsDangerousFilename() and IsDangerousMimeType() should be kept in sync with
@@ -193,7 +197,9 @@ void ShareServiceImpl::Share(const std::string& title,
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool should_check_url = false;
+#endif
   for (auto& file : files) {
     if (!file || !file->blob || !file->blob->blob) {
       mojo::ReportBadMessage("Invalid file to share()");
@@ -209,6 +215,7 @@ void ShareServiceImpl::Share(const std::string& title,
       return;
     }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     // Check if at least one file is marked by the download protection service
     // to send a ping to check this file type.
     if (!should_check_url &&
@@ -216,6 +223,7 @@ void ShareServiceImpl::Share(const std::string& title,
             path)) {
       should_check_url = true;
     }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
     // In the case where the original blob handle was to a native file (of
     // unknown size), the serialized data does not contain an accurate file
@@ -224,30 +232,34 @@ void ShareServiceImpl::Share(const std::string& title,
     // the blobs.
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   DCHECK(!safe_browsing_request_);
   if (should_check_url && g_browser_process->safe_browsing_service()) {
     safe_browsing_request_.emplace(
         g_browser_process->safe_browsing_service()->database_manager(),
         web_contents->GetLastCommittedURL(),
-        base::BindOnce(&ShareServiceImpl::OnSafeBrowsingResultReceived,
+        base::BindOnce(&ShareServiceImpl::RunShareOperation,
                        weak_factory_.GetWeakPtr(), title, text, share_url,
                        std::move(files), std::move(callback)));
     return;
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-  OnSafeBrowsingResultReceived(title, text, share_url, std::move(files),
-                               std::move(callback),
-                               /*is_url_safe=*/true);
+  RunShareOperation(title, text, share_url, std::move(files),
+                    std::move(callback),
+                    /*is_url_safe=*/true);
 }
 
-void ShareServiceImpl::OnSafeBrowsingResultReceived(
+void ShareServiceImpl::RunShareOperation(
     const std::string& title,
     const std::string& text,
     const GURL& share_url,
     std::vector<blink::mojom::SharedFilePtr> files,
     ShareCallback callback,
     bool is_url_safe) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing_request_.reset();
+#endif
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());

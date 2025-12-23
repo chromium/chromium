@@ -7157,9 +7157,14 @@ static_library("browser") {
   }
 
   if (is_win || is_chromeos || is_mac) {
+    if (safe_browsing_mode != 0) {
+      sources += [
+        "webshare/safe_browsing_request.cc",
+        "webshare/safe_browsing_request.h",
+      ]
+    }
+
     sources += [
-      "webshare/safe_browsing_request.cc",
-      "webshare/safe_browsing_request.h",
       "webshare/share_service_impl.cc",
       "webshare/share_service_impl.h",
     ]
