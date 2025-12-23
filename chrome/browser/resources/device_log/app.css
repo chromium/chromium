@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 :host {
@@ -12,6 +13,27 @@
   flex-direction: column;
   height: 100%;
   margin: 0;
+  background-color: #f8f9fa;
+  color: var(--cr-primary-text-color)
+}
+
+button,
+select,
+input {
+  color: var(--cr-primary-text-color);
+}
+
+@media(prefers-color-scheme: dark) {
+  :host {
+    background-color: #3c3c3c;
+  }
+
+  button,
+  select,
+  input {
+    background-color: #464646;
+    border-color: #f0f0f0;
+  }
 }
 
 div {
@@ -43,7 +65,7 @@ label {
 /* Log */
 
 #logContainer {
-  border: 1px solid rgb(220, 220, 220);
+  border: 1px solid var(--cr-separator-color);
   flex: 1 1 100%;
   font-size: 12px;
   overflow: auto;
@@ -70,19 +92,33 @@ label {
 }
 
 .log-level-error {
-  color: red;
+  color: var(--google-red-800);
 }
 
 .log-level-user {
-  color: blue;
+  color: var(--google-blue-800);
 }
 
 .log-level-event {
-  color: black;
+  color: var(--cr-primary-text-color);
 }
 
 .log-level-debug {
-  color: grey;
+  color: var(--google-grey-800);
+}
+
+@media(prefers-color-scheme: dark) {
+  .log-level-error {
+    color: var(--google-red-300);
+  }
+
+  .log-level-user {
+    color: var(--google-blue-200);
+  }
+
+  .log-level-debug {
+    color: var(--google-grey-300);
+  }
 }
 
 /* Log Type tags */
@@ -100,13 +136,35 @@ label {
 }
 
 .log-type-login {
-  color: darkgreen;
+  color: var(--google-green-800);
 }
 
 .log-type-network {
-  color: darkblue;
+  color: var(--google-blue-800);
 }
 
 .log-type-power {
-  color: purple;
+  color: var(--google-purple-900);
+}
+
+.log-type-fido {
+  color: var(--google-yellow-700);
+}
+
+@media(prefers-color-scheme: dark) {
+  .log-type-login {
+    color: var(--google-green-200);
+  }
+
+  .log-type-network {
+    color: var(--google-blue-200);
+  }
+
+  .log-type-power {
+    color: var(--google-purple-200);
+  }
+
+  .log-type-fido {
+    color: var(--google-yellow-200);
+  }
 }
