@@ -140335,6 +140335,19 @@
         {}
        ]
       ],
+      "grid-gap-decorations-038.html": [
+       "2b3c46e44e843733e36c4ccce9d289c8d990c8dc",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/agnostic/gap-decorations-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-039.html": [
        "c03d482ac495fc6b29d742fda8682d2bb8060174",
        [
@@ -140550,19 +140563,6 @@
         [
          [
           "/css/css-gaps/grid/grid-gap-decorations-058-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "grid-gap-decorations-38.html": [
-       "2b3c46e44e843733e36c4ccce9d289c8d990c8dc",
-       [
-        null,
-        [
-         [
-          "/css/css-gaps/agnostic/gap-decorations-002-ref.html",
           "=="
          ]
         ],
@@ -141264,6 +141264,19 @@
         {}
        ]
       ],
+      "multicol-gap-decorations-018.html": [
+       "b8f8e1619a0dc25c6824cb2cd441635d93885e06",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-018-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multicol-gap-decorations-019.html": [
        "c4f81bb95ea74e49f30f86fb5cf452094c801a4f",
        [
@@ -141336,19 +141349,6 @@
         [
          [
           "/css/css-gaps/multicol/multicol-gap-decorations-024-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "multicol-gap-intersections-018.html": [
-       "b8f8e1619a0dc25c6824cb2cd441635d93885e06",
-       [
-        null,
-        [
-         [
-          "/css/css-gaps/multicol/multicol-gap-decorations-018-ref.html",
           "=="
          ]
         ],
@@ -319602,7 +319602,7 @@
         ]
        },
        "customizable-select-listbox": {
-        "customizable-select-listbox-appearance.tentative.html": [
+        "customizable-select-listbox-appearance.html": [
          "1bc8dc2fc82def4c145e3cbb53418dc3684c271d",
          [
           null,
@@ -319615,7 +319615,7 @@
           {}
          ]
         ],
-        "customizable-select-listbox-sizing.tentative.html": [
+        "customizable-select-listbox-sizing.html": [
          "cd2cec264c1715b6701573aea02d6d79207f8094",
          [
           null,
@@ -363300,7 +363300,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "63825617895f647a82daca092c4aff06c92fb39b",
+      "78a98a33f808e7f837de148859df25edfa957849",
       []
      ],
      "alternates-order-ref.html": [
@@ -363309,7 +363309,7 @@
      ],
      "animations": {
       "WEB_FEATURES.yml": [
-       "df5848487fa2a0e75f8cb72dc074723b1d0f1606",
+       "32fb3916e23bbeb8d984af6db8d134389d28d164",
        []
       ]
      },
@@ -364355,7 +364355,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "bd2c6f939b49ed3280047200f07f43ddbc837fdc",
+       "7c3b5e6e4e54c8b89b6bfde3886909b32052432b",
        []
       ],
       "ahem-ex-500.otf": [
@@ -684821,8 +684821,8 @@
         ]
        },
        "customizable-select-listbox": {
-        "customizable-select-listbox-keyboard-behavior.tentative.html": [
-         "ea63dc005b917660b391072b62d48abf85e22de2",
+        "customizable-select-listbox-keyboard-behavior.optional.html": [
+         "6915682c6ddc86229c6fe9e2192eb78d960bfe03",
          [
           null,
           {
@@ -684830,7 +684830,7 @@
           }
          ]
         ],
-        "customizable-select-listbox-mouse-behavior.tentative.html": [
+        "customizable-select-listbox-mouse-behavior.html": [
          "d5b93693cf7d65b1202f459223a8cf6b8cff581a",
          [
           null,
@@ -684849,8 +684849,8 @@
           }
          ]
         ],
-        "select-listbox-typeahead.tentative.html": [
-         "c31087ec5c2dd94c22fe7414d81e26d7f4c4e128",
+        "select-listbox-typeahead.optional.html": [
+         "e9ddd16b5f2a756f81a1304e842a64d673fe812e",
          [
           null,
           {
