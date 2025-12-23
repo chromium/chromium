@@ -334,9 +334,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           ? std::make_optional(chrome_ui_data->actor_task_id().value())
           : std::nullopt;
   visit_source_qualifies_for_ntp_most_visited =
-      !(base::FeatureList::IsEnabled(
-            history::kBrowsingHistoryActorIntegrationM2) &&
-        actor_task_id.has_value());
+      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
+      !actor_task_id.has_value();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool should_consider_for_ntp_most_visited =

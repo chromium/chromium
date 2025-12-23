@@ -80,8 +80,7 @@ void ChromeTemplateURLServiceClient::OnURLVisited(
   // recommendations and impacting user journeys.
   // TODO(crbug.com/464331451): Add tests to check that `SOURCE ACTOR` visits
   // are dropped.
-  if (base::FeatureList::IsEnabled(
-          history::kBrowsingHistoryActorIntegrationM2) &&
+  if (history::IsBrowsingHistoryActorIntegrationM2Enabled() &&
       visited_url_info.visit_row.source == history::SOURCE_ACTOR) {
     return;
   }

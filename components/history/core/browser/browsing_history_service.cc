@@ -580,7 +580,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     auto& current_day_entries =
-        base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+        history::IsBrowsingHistoryActorIntegrationM2Enabled() &&
                 entry.is_actor_visit
             ? actor_current_day_entries
             : non_actor_current_day_entries;

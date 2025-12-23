@@ -4560,6 +4560,24 @@
             ]
         }
     ],
+    "BrowsingHistoryActorIntegrationM3": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowsingHistoryActorIntegrationM3"
+                    ]
+                }
+            ]
+        }
+    ],
     "BubbleMetricsApi": [
         {
             "platforms": [

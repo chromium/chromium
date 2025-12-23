@@ -338,7 +338,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
 
       bool is_actor_visit = false;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+      if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
         is_actor_visit = (visit.source == SOURCE_ACTOR);
       }
 #endif
@@ -605,7 +605,7 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
 // TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
 // rolled out.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+  if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
     sql += ", IFNULL(visit_source.source,1)";
     joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
 
