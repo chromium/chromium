@@ -158,8 +158,7 @@ bool RenderWidgetHostViewIOS::IsSurfaceAvailableForCopy() {
 void RenderWidgetHostViewIOS::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& dst_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
   base::WeakPtr<DelegatedFrameHost> popup_frame_host;
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(

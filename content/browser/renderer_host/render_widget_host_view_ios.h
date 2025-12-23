@@ -27,7 +27,6 @@ namespace content {
 
 class RenderWidgetHost;
 class UIViewHolder;
-struct CopyOutputBitmapWithMetadata;
 
 ///////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewIOS
@@ -125,8 +124,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& dst_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) override;
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
   ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   ui::Compositor* GetCompositor() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
