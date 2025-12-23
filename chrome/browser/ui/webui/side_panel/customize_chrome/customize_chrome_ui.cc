@@ -36,6 +36,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/ntp_tiles/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
@@ -303,10 +304,19 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
-  source->AddBoolean("aimPolicyEnabled",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsDeepSearchEligible() &&
-                         aim_eligibility_service->IsCreateImagesEligible());
+  bool action_chips_eligible =
+      ntp_features::kNtpNextShowSimplificationUIParam.Get()
+          ? aim_eligibility_service &&
+                (aim_eligibility_service->IsDeepSearchEligible() ||
+                 aim_eligibility_service->IsCreateImagesEligible())
+          : aim_eligibility_service &&
+                aim_eligibility_service->IsDeepSearchEligible() &&
+                aim_eligibility_service->IsCreateImagesEligible();
+  bool show_tools =
+      action_chips_eligible &&
+      contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs());
+  source->AddBoolean("aimPolicyEnabled", show_tools);
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
