@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_controller.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_prompt_view_android.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
@@ -20,6 +22,7 @@
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/messages/android/message_enums.h"
 #include "components/resources/android/theme_resources.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,13 +31,30 @@ namespace autofill {
 
 namespace {
 
-std::u16string GetMessageDescription() {
-  // TODO: crbug.com/460410690 - Confirm save/update subtitle strings.
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_AI_SAVE_ENTITY_MESSAGE_SUBTITLE);
+std::u16string GetMessageDescription(content::WebContents* web_contents,
+                                     bool is_wallet_entity) {
+  if (!is_wallet_entity) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_AI_SAVE_ENTITY_MESSAGE_SUBTITLE);
+  }
+  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
+      web_contents->GetBrowserContext());
+  if (!account) {
+    return std::u16string();
+  }
+
+  const std::u16string google_wallet_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_MESSAGE_SUBTITLE,
+      google_wallet_text, base::UTF8ToUTF16(account->email));
 }
 
 int GetMessageIconResourceId(const EntityInstance& entity) {
+  if (entity.record_type() == EntityInstance::RecordType::kServerWallet) {
+    // TODO: crbug.com/460410690 - Use colorful icon for branded builds.
+    return IDR_ANDROID_AUTOFILL_WALLET;
+  }
   switch (entity.type().name()) {
     case EntityTypeName::kDriversLicense:
       return IDR_ANDROID_AUTOFILL_ID_CARD;
@@ -85,7 +105,9 @@ AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
       messages::MessageIdentifier::SAVE_UPDATE_ENTITY);
 
   message->SetTitle(GetPromptTitle(entity.type().name(), is_save_prompt));
-  message->SetDescription(GetMessageDescription());
+  message->SetDescription(GetMessageDescription(
+      web_contents_,
+      entity.record_type() == EntityInstance::RecordType::kServerWallet));
   message->SetDescriptionMaxLines(kDescriptionMaxLines);
   message->SetPrimaryButtonText(GetPrimaryButtonText(is_save_prompt));
   message->SetPrimaryButtonTextMaxLines(1);
