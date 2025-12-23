@@ -426,12 +426,19 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)sendText:(NSString*)text
     additionalParams:(std::map<std::string, std::string>)additionalParams {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
+
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->additional_params = additionalParams;
+  search_url_request_info->invocation_source =
+      isNTP ? lens::LensOverlayInvocationSource::kNtpContextualQuery
+            : lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
+
   if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
     search_url_request_info->additional_params["imgn"] = "1";
   }
