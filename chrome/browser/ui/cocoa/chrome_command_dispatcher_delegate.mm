@@ -34,7 +34,7 @@
   //  1) As regular extension commands, see ExtensionKeybindingRegistryViews.
   //     This always has high priority.
   //  2) As page/browser popup actions, see
-  //     ExtensionActionPlatformDelegateViews. This always has high priority.
+  //     ExtensionActionDelegateDesktop. This always has high priority.
   //
   // The only reasonable way to access the registered accelerators for (1) and
   // (2) is to use the FocusManager. That is what we do here. But that will also

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 
 #include <utility>
 
@@ -29,26 +29,26 @@
 
 using extensions::ActionInfo;
 
-ExtensionActionPlatformDelegateViews::ExtensionActionPlatformDelegateViews(
+ExtensionActionDelegateDesktop::ExtensionActionDelegateDesktop(
     BrowserWindowInterface* browser,
     ExtensionsContainerViews* extensions_container)
     : browser_(browser), extensions_container_(extensions_container) {}
 
-ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {
+ExtensionActionDelegateDesktop::~ExtensionActionDelegateDesktop() {
   // Should have already unregistered.
   DCHECK(!action_keybinding_);
 }
 
-ExtensionActionPlatformDelegateViews*
-ExtensionActionPlatformDelegateViews::GetPopupOwnerDelegate() {
+ExtensionActionDelegateDesktop*
+ExtensionActionDelegateDesktop::GetPopupOwnerDelegate() {
   ExtensionActionViewModel* owner_model =
       static_cast<ExtensionActionViewModel*>(
           extensions_container_->GetActionForId(model_->GetId()));
-  return static_cast<ExtensionActionPlatformDelegateViews*>(
+  return static_cast<ExtensionActionDelegateDesktop*>(
       owner_model->platform_delegate());
 }
 
-void ExtensionActionPlatformDelegateViews::DoTriggerPopup(
+void ExtensionActionDelegateDesktop::DoTriggerPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     PopupShowAction show_action,
     bool by_user,
@@ -67,12 +67,12 @@ void ExtensionActionPlatformDelegateViews::DoTriggerPopup(
 
   extensions_container_->PopOutAction(
       model_->GetId(),
-      base::BindOnce(&ExtensionActionPlatformDelegateViews::ShowPopup,
+      base::BindOnce(&ExtensionActionDelegateDesktop::ShowPopup,
                      weak_factory_.GetWeakPtr(), std::move(host), show_action,
                      by_user, std::move(callback)));
 }
 
-void ExtensionActionPlatformDelegateViews::ShowPopup(
+void ExtensionActionDelegateDesktop::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     PopupShowAction show_action,
     bool by_user,
@@ -104,7 +104,7 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   extensions_container_->OnPopupShown(model_->GetId(), by_user);
 }
 
-void ExtensionActionPlatformDelegateViews::OnPopupClosed() {
+void ExtensionActionDelegateDesktop::OnPopupClosed() {
   DCHECK(popup_host_observation_.IsObservingSource(popup_host_.get()));
   popup_host_observation_.Reset();
   popup_host_ = nullptr;
@@ -116,19 +116,19 @@ void ExtensionActionPlatformDelegateViews::OnPopupClosed() {
   extensions_container_->OnPopupClosed(model_->GetId());
 }
 
-void ExtensionActionPlatformDelegateViews::AttachToModel(
+void ExtensionActionDelegateDesktop::AttachToModel(
     ExtensionActionViewModel* model) {
   CHECK(model);
   CHECK(!model_);
   model_ = model;
 }
 
-void ExtensionActionPlatformDelegateViews::DetachFromModel() {
+void ExtensionActionDelegateDesktop::DetachFromModel() {
   CHECK(model_);
   model_ = nullptr;
 }
 
-void ExtensionActionPlatformDelegateViews::RegisterCommand() {
+void ExtensionActionDelegateDesktop::RegisterCommand() {
   // If we've already registered, do nothing.
   if (action_keybinding_) {
     return;
@@ -145,7 +145,7 @@ void ExtensionActionPlatformDelegateViews::RegisterCommand() {
   }
 }
 
-void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
+void ExtensionActionDelegateDesktop::UnregisterCommand() {
   // If we've already unregistered, do nothing.
   if (!action_keybinding_) {
     return;
@@ -159,11 +159,11 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
   }
 }
 
-bool ExtensionActionPlatformDelegateViews::IsShowingPopup() const {
+bool ExtensionActionDelegateDesktop::IsShowingPopup() const {
   return popup_host_ != nullptr;
 }
 
-void ExtensionActionPlatformDelegateViews::HidePopup() {
+void ExtensionActionDelegateDesktop::HidePopup() {
   if (!IsShowingPopup()) {
     return;
   }
@@ -183,11 +183,11 @@ void ExtensionActionPlatformDelegateViews::HidePopup() {
   }
 }
 
-gfx::NativeView ExtensionActionPlatformDelegateViews::GetPopupNativeView() {
+gfx::NativeView ExtensionActionDelegateDesktop::GetPopupNativeView() {
   return popup_host_ ? popup_host_->view()->GetNativeView() : gfx::NativeView();
 }
 
-void ExtensionActionPlatformDelegateViews::TriggerPopup(
+void ExtensionActionDelegateDesktop::TriggerPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     PopupShowAction show_action,
     bool by_user,
@@ -196,15 +196,15 @@ void ExtensionActionPlatformDelegateViews::TriggerPopup(
                                           std::move(callback));
 }
 
-void ExtensionActionPlatformDelegateViews::ShowContextMenuAsFallback() {
+void ExtensionActionDelegateDesktop::ShowContextMenuAsFallback() {
   extensions_container_->ShowContextMenuAsFallback(model_->GetId());
 }
 
-bool ExtensionActionPlatformDelegateViews::CloseOverflowMenuIfOpen() {
+bool ExtensionActionDelegateDesktop::CloseOverflowMenuIfOpen() {
   return extensions_container_->CloseOverflowMenuIfOpen();
 }
 
-bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
+bool ExtensionActionDelegateDesktop::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   DCHECK(model_->CanHandleAccelerators());
 
@@ -218,11 +218,11 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
   return true;
 }
 
-bool ExtensionActionPlatformDelegateViews::CanHandleAccelerators() const {
+bool ExtensionActionDelegateDesktop::CanHandleAccelerators() const {
   return model_->CanHandleAccelerators();
 }
 
-void ExtensionActionPlatformDelegateViews::OnExtensionHostDestroyed(
+void ExtensionActionDelegateDesktop::OnExtensionHostDestroyed(
     extensions::ExtensionHost* host) {
   OnPopupClosed();
 }

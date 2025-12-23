@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_DELEGATE_DESKTOP_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_DELEGATE_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,29 +25,29 @@ class ExtensionViewHost;
 // This class doesn't subclass View directly, as the implementations for the
 // action button in the toolbar and one in the extensions menu are different
 // types of views.
-class ExtensionActionPlatformDelegateViews
+class ExtensionActionDelegateDesktop
     : public ExtensionActionPlatformDelegate,
       public ui::AcceleratorTarget,
       public extensions::ExtensionHostObserver {
  public:
-  ExtensionActionPlatformDelegateViews(
+  ExtensionActionDelegateDesktop(
       BrowserWindowInterface* browser,
       ExtensionsContainerViews* extensions_container);
 
-  ExtensionActionPlatformDelegateViews(
-      const ExtensionActionPlatformDelegateViews&) = delete;
-  ExtensionActionPlatformDelegateViews& operator=(
-      const ExtensionActionPlatformDelegateViews&) = delete;
+  ExtensionActionDelegateDesktop(const ExtensionActionDelegateDesktop&) =
+      delete;
+  ExtensionActionDelegateDesktop& operator=(
+      const ExtensionActionDelegateDesktop&) = delete;
 
-  ~ExtensionActionPlatformDelegateViews() override;
+  ~ExtensionActionDelegateDesktop() override;
 
  private:
-  // Returns the ExtensionActionPlatformDelegateViews instance that should own
+  // Returns the ExtensionActionDelegateDesktop instance that should own
   // the action popup, i.e. the one tied to the action button in the toolbar.
   // TODO(crbug.com/448199168): Remove this method. It is confusing that we have
   // two platform delegates per action that maintain popup states separately but
   // only one of them are actually used.
-  ExtensionActionPlatformDelegateViews* GetPopupOwnerDelegate();
+  ExtensionActionDelegateDesktop* GetPopupOwnerDelegate();
 
   // Begins the process of showing the popup for the extension action on the
   // current web contents. This function must be called on the
@@ -113,8 +113,7 @@ class ExtensionActionPlatformDelegateViews
                           extensions::ExtensionHostObserver>
       popup_host_observation_{this};
 
-  base::WeakPtrFactory<ExtensionActionPlatformDelegateViews> weak_factory_{
-      this};
+  base::WeakPtrFactory<ExtensionActionDelegateDesktop> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_DELEGATE_DESKTOP_H_

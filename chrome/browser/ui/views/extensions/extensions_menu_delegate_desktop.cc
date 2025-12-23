@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -78,8 +78,8 @@ ExtensionsMenuDelegateDesktop::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
   return ExtensionActionViewModel::Create(
       extension_id, browser_,
-      std::make_unique<ExtensionActionPlatformDelegateViews>(
-          browser_, extensions_container_));
+      std::make_unique<ExtensionActionDelegateDesktop>(browser_,
+                                                       extensions_container_));
 }
 
 void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(

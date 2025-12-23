@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
-#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -724,8 +724,7 @@ ExtensionsToolbarContainer::CreateActionViewModel(
     const ToolbarActionsModel::ActionId& action_id) {
   return ExtensionActionViewModel::Create(
       action_id, browser_,
-      std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
-                                                             this));
+      std::make_unique<ExtensionActionDelegateDesktop>(browser_.get(), this));
 }
 
 void ExtensionsToolbarContainer::OnActionsInitialized() {
