@@ -165,26 +165,25 @@ export class ActorOverlayAppElement extends CrLitElement {
     const scale = window.devicePixelRatio;
     const targetX = point.x / scale;
     const targetY = point.y / scale;
-    // Get current position, using target if not initialized.
-    const currentX = this.isCursorInitialized_ ? this.currentX_ : targetX;
-    const currentY = this.isCursorInitialized_ ? this.currentY_ : targetY;
 
     // Initialize cursor position and state if first movement.
     if (!this.isCursorInitialized_) {
       this.$.magicCursor.style.opacity = '1';
       this.isCursorInitialized_ = true;
-      this.setCursorTransform(targetX, targetY);
-      this.currentX_ = targetX;
-      this.currentY_ = targetY;
-      // TODO(crbug.com/468313184): Determine if first coordinate should still
-      // have a moving animation from a random location or if it should be set
-      // initially without transition.
-      return Promise.resolve();
+      // Initialize cursor at the top-left or top-right corner, whichever is
+      // closer to the target.
+      this.currentX_ =
+          (targetX < window.innerWidth / 2) ? 0 : window.innerWidth;
+      this.currentY_ = 0;
+      this.setCursorTransform(this.currentX_, this.currentY_);
+      // Querying `offsetWidth` forces a page reflow to render the magic cursor
+      // before calculating the cursor movement to the target.
+      void this.$.magicCursor.offsetWidth;
     }
 
     // Calculate distance and duration for animation
-    const dx = targetX - currentX;
-    const dy = targetY - currentY;
+    const dx = targetX - this.currentX_;
+    const dy = targetY - this.currentY_;
     const distance = Math.hypot(dx, dy);
     let durationMs = Math.round(distance / DESIRED_SPEED_PX_PER_MS);
     durationMs =

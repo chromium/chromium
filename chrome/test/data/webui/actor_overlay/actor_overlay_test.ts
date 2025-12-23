@@ -201,6 +201,7 @@ suite('MagicCursor', function() {
   let testRemote: ActorOverlayPageRemote;
   // Store original DPR to restore it after tests.
   const originalDpr = window.devicePixelRatio;
+  const originalInnerWindowWidth = window.innerWidth;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -224,6 +225,12 @@ suite('MagicCursor', function() {
       writable: true,
       configurable: true,
       value: originalDpr,
+    });
+    // Restore original inner window width
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: originalInnerWindowWidth,
     });
   });
 
@@ -365,12 +372,11 @@ suite('MagicCursor', function() {
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
-    // First cursor move, no distance calculation for initialization.
+    // First cursor move.
     const point1 = {x: 100, y: 100};
     const movePromise1 = testRemote.moveCursorTo(point1);
     await microtasksFinished();
-    // Verify initialization state has no transition duration set.
-    assertEquals(magicCursor.style.transitionDuration, '');
+    assertEquals(magicCursor.style.transitionDuration, '212ms');
     magicCursor.dispatchEvent(new Event('transitionend'));
     await movePromise1;
 
@@ -409,5 +415,58 @@ suite('MagicCursor', function() {
     assertEquals(magicCursor.style.transitionDuration, '675ms');
     magicCursor.dispatchEvent(new Event('transitionend'));
     await movePromise5;
+  });
+
+  async function verifyInitialCursorMove(
+      targetX: number, targetY: number, expectedStartX: number,
+      expectedStartY: number) {
+    // Force innerWidth to be 1000px for testing.
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1000,
+    });
+
+    // Spy on the private `setCursorTransform` method to verify the sequence
+    // of coordinate updates (edge start -> target). We call the original
+    // method to ensure the UI still updates.
+    const transformCalls: Array<{x: number, y: number}> = [];
+    const originalSetTransform = (page as any).setCursorTransform.bind(page);
+    (page as any).setCursorTransform = (x: number, y: number) => {
+      transformCalls.push({x, y});
+      originalSetTransform(x, y);
+    };
+
+    // Trigger Move.
+    const point = {x: targetX, y: targetY};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+
+    // Expect 2 calls: [0]: Start Position, [1]: End Position.
+    assertEquals(2, transformCalls.length);
+
+    // Check start position.
+    assertEquals(expectedStartX, transformCalls[0]!.x);
+    assertEquals(expectedStartY, transformCalls[0]!.y);
+
+    // Check end position.
+    assertEquals(targetX, transformCalls[1]!.x);
+    assertEquals(targetY, transformCalls[1]!.y);
+
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+  }
+
+  test('InitialMoveFromLeftEdge', async function() {
+    // Target (100, 100) is closer to left edge (0, 0).
+    await verifyInitialCursorMove(100, 100, 0, 0);
+  });
+
+  test('InitialMoveFromRightEdge', async function() {
+    // Target (900, 100) is closer to right edge (1000, 0).
+    await verifyInitialCursorMove(900, 100, 1000, 0);
   });
 });
