@@ -134,6 +134,8 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
   session->CreateAndAppend<InspectorAuditsAgent>(
       network_agent, thread_->GetInspectorIssueStorage(),
       /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
+  auto* inspector_agent = session->CreateAndAppend<InspectorInspectorAgent>();
+  inspector_agents_.insert(session, inspector_agent);
   if (auto* worker_global_scope =
           DynamicTo<WorkerGlobalScope>(worker_or_worklet_global_scope)) {
     auto* virtual_time_controller =
@@ -143,9 +145,6 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
                                                       *virtual_time_controller);
     session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),
                                                   worker_global_scope);
-    auto* inspector_agent =
-        session->CreateAndAppend<InspectorInspectorAgent>(worker_global_scope);
-    inspector_agents_.insert(session, inspector_agent);
     CoreInitializer::GetInstance().InitWorkerInspectorAgentSession(
         session, worker_global_scope);
   }
