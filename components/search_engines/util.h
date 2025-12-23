@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -254,6 +255,8 @@ GURL GetUrlForMultimodalSearch(
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source =
+        std::nullopt,
     const std::string& lns_surface = std::string(),
     const std::u16string& query_text = std::u16string(),
     std::map<std::string, std::string> additional_params = {});
@@ -274,6 +277,8 @@ GURL GetUrlForMultimodalSearch(
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source =
+        std::nullopt,
     const std::string& lns_surface = std::string(),
     const std::u16string& query_text = std::u16string(),
     std::map<std::string, std::string> additional_params = {});

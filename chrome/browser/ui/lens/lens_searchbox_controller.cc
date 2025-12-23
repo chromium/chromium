@@ -246,7 +246,7 @@ void LensSearchboxController::OnSuggestionAccepted(
   // this class.
   lens_search_controller_->lens_overlay_controller()->IssueSearchBoxRequest(
       query_start_time, query_text, match_type, is_zero_prefix_suggestion,
-      additional_query_parameters);
+      additional_query_parameters, std::nullopt);
 }
 
 void LensSearchboxController::OnFocusChanged(bool focused) {

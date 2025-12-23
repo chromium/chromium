@@ -22,14 +22,10 @@ static_library("lens") {
     "contextual_input.h",
     "lens_composebox_user_action.h",
     "lens_constants.h",
-    "lens_entrypoints.h",
-    "lens_metadata.cc",
-    "lens_metadata.h",
     "lens_metrics.cc",
     "lens_metrics.h",
     "lens_overlay_dismissal_source.h",
     "lens_overlay_first_interaction_type.h",
-    "lens_overlay_invocation_source.h",
     "lens_overlay_metrics.cc",
     "lens_overlay_metrics.h",
     "lens_overlay_new_tab_source.h",
@@ -45,8 +41,6 @@ static_library("lens") {
     "lens_request_construction.h",
     "lens_testing_utils.cc",
     "lens_testing_utils.h",
-    "lens_url_utils.cc",
-    "lens_url_utils.h",
     "ref_counted_lens_overlay_client_logs.cc",
     "ref_counted_lens_overlay_client_logs.h",
   ]
@@ -70,6 +64,7 @@ static_library("lens") {
   ]
   public_deps = [
     ":features",
+    ":lens_url_utils",
     ":mime_type",
   ]
   sources += [
@@ -95,6 +90,30 @@ static_library("lens") {
 
 source_set("mime_type") {
   sources = [ "lens_overlay_mime_type.h" ]
+}
+
+static_library("lens_url_utils") {
+  sources = [
+    "lens_entrypoints.h",
+    "lens_metadata.cc",
+    "lens_metadata.h",
+    "lens_overlay_invocation_source.h",
+    "lens_url_utils.cc",
+    "lens_url_utils.h",
+  ]
+  public_deps = [
+    ":features",
+    ":lens_mojo",
+    ":mime_type",
+    "//base",
+    "//components/lens/proto/v1:lens_latencies_metadata_proto",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//url",
+  ]
+  deps = [
+    "//net",
+    "//ui/gfx",
+  ]
 }
 
 component("features") {

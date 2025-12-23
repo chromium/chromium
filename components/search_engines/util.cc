@@ -22,7 +22,9 @@
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_util.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -684,6 +686,7 @@ GURL GetUrlForMultimodalSearch(
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
@@ -699,6 +702,10 @@ GURL GetUrlForMultimodalSearch(
   base::Base64UrlEncode(serialized_request_id,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_request_id);
+  if (invocation_source.has_value()) {
+    result_url =
+        lens::AppendInvocationSourceParamToURL(result_url, *invocation_source);
+  }
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kVisualRequestIdQueryParameter, encoded_request_id);
   result_url = net::AppendOrReplaceQueryParameter(
@@ -718,6 +725,7 @@ GURL GetUrlForMultimodalSearch(
     const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
@@ -733,6 +741,10 @@ GURL GetUrlForMultimodalSearch(
   base::Base64UrlEncode(serialized_contextual_inputs,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_contextual_inputs);
+  if (invocation_source.has_value()) {
+    result_url =
+        lens::AppendInvocationSourceParamToURL(result_url, *invocation_source);
+  }
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kContextualInputsParameterKey, encoded_contextual_inputs);
   result_url = net::AppendOrReplaceQueryParameter(

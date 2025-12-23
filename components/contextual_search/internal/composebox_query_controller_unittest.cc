@@ -22,6 +22,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -3202,6 +3203,40 @@ TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithPageTitleAndUrl) {
   EXPECT_EQ(suggest_inputs->page_url(), "https://page.url/");
 }
 
+TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->invocation_source =
+      lens::LensOverlayInvocationSource::kAppMenu;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Assert: Invocation source is added to the url.
+  std::string source_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, "source", &source_value));
+  EXPECT_EQ(source_value, "chrome.cr.menu");
+}
 
 TEST_F(ComposeboxQueryControllerTest, ContextualTasksOverrides) {
   // Arrange: Enable ContextualTasks.

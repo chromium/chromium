@@ -249,6 +249,7 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
   search_url_request_info->file_tokens = uploaded_context_tokens_;
+
   context_controller->CreateSearchUrl(std::move(search_url_request_info),
                                       std::move(callback));
 }
