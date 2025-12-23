@@ -33,6 +33,7 @@ cr-composebox {
   --color-composebox-cancel-button: unset; /* Lens only */
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-file-carousel-remove-button: var(--color-omnibox-results-button-ink-drop-row-hovered);
 
