@@ -9,7 +9,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
@@ -94,8 +93,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
     ToolbarActionViewModel* view_model,
     base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
-    : view_model_(view_model),
-      model_(ToolbarActionsModel::Get(browser->profile())) {
+    : view_model_(view_model) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -190,7 +188,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
-  SetupContextMenuButton();
+  SetupContextMenuButton(browser);
 
   // By default, the button's accessible description is set to the button's
   // tooltip text. This is the accepted workaround to ensure only accessible
@@ -258,7 +256,7 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(bool is_action_pinned) {
                                    view_model_->GetActionName()));
 }
 
-void ExtensionsMenuEntryView::SetupContextMenuButton() {
+void ExtensionsMenuEntryView::SetupContextMenuButton(Browser* browser) {
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
       view_model_.get(), this,
@@ -279,7 +277,8 @@ void ExtensionsMenuEntryView::SetupContextMenuButton() {
   context_menu_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
-  bool is_action_pinned = model_->IsActionPinned(view_model_->GetId());
+  bool is_action_pinned = ToolbarActionsModel::Get(browser->profile())
+                              ->IsActionPinned(view_model_->GetId());
   UpdateContextMenuButton(is_action_pinned);
 }
 

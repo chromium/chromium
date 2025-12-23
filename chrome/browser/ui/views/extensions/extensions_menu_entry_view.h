@@ -67,7 +67,7 @@ class ExtensionsMenuEntryView
  private:
   // Sets ups the context menu button controllers. Must be called by the
   // constructor.
-  void SetupContextMenuButton();
+  void SetupContextMenuButton(Browser* browser);
 
   // Handles the context menu button press. This is passed as a callback to
   // `context_menu_button_`.
@@ -81,11 +81,6 @@ class ExtensionsMenuEntryView
   // TODO(crbug.com/471045053): Store extension id instead of the action view
   // model.
   raw_ptr<ToolbarActionViewModel> view_model_;
-
-  // Model for the browser actions toolbar that provides information such as the
-  // action pin status or visibility.
-  // TODO(crbug.com/471045053): Dont store the model, as it shouldn't be needed.
-  const raw_ptr<ToolbarActionsModel> model_;
 
   // Controller responsible for showing the context menu for an extension.
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
