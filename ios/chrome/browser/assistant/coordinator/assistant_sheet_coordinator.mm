@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 
+#import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
+#import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_coordinator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
@@ -19,6 +22,7 @@
 
 @implementation AssistantSheetCoordinator {
   AssistantSheetViewController* _viewController;
+  AssistantSheetChildCoordinator* _childCoordinator;
   AssistantSheetAnimator* _animator;
 }
 
@@ -35,11 +39,25 @@
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
   _viewController.anchorView = [center referencedViewUnderName:guideName];
 
-  // Configure navigation bar.
-  AssistantNavbarConfiguration* config =
-      [[AssistantNavbarConfiguration alloc] init];
-  config.title = @"Assistant Sheet";
-  [_viewController setNavigationBarConfiguration:config];
+  // Initialize Child Coordinator based on Mode.
+  switch (self.mode) {
+    case AssistantSheetModeAI:
+      _childCoordinator = [[AssistantAIMCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser];
+      break;
+    case AssistantSheetModeGemini:
+      _childCoordinator = [[AssistantGeminiCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser];
+      break;
+  }
+
+  [_childCoordinator start];
+  [_viewController setChildViewController:_childCoordinator.viewController];
+  // Configure Navigation Bar using the child's configuration.
+  [_viewController
+      setNavigationBarConfiguration:_childCoordinator.navbarConfiguration];
 
   // Add the view controller as a child view controller.
   [self.baseViewController addChildViewController:_viewController];
@@ -56,6 +74,9 @@
 }
 
 - (void)stop {
+  [_childCoordinator stop];
+  _childCoordinator = nil;
+
   // Remove the view controller from the hierarchy. This is required to revert
   // the steps taken in start.
   [_viewController willMoveToParentViewController:nil];

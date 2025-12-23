@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_ASSISTANT_GEMINI_UI_ASSISTANT_GEMINI_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_ASSISTANT_GEMINI_UI_ASSISTANT_GEMINI_VIEW_CONTROLLER_H_
+
+#import <UIKit/UIKit.h>
+
+// View Controller for the 'Gemini' assistant screen.
+@interface AssistantGeminiViewController : UIViewController
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_ASSISTANT_GEMINI_UI_ASSISTANT_GEMINI_VIEW_CONTROLLER_H_

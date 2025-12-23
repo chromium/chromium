@@ -8,7 +8,10 @@ source_set("coordinator") {
     "assistant_sheet_coordinator.mm",
   ]
   deps = [
+    ":child_coordinator",
     "//base",
+    "//ios/chrome/browser/assistant/aim/coordinator",
+    "//ios/chrome/browser/assistant/gemini/coordinator",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
@@ -17,5 +20,17 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+  ]
+}
+
+source_set("child_coordinator") {
+  sources = [
+    "assistant_sheet_child_coordinator.h",
+    "assistant_sheet_child_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }
