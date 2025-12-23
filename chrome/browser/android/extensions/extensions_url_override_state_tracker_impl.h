@@ -32,7 +32,7 @@ class ExtensionUrlOverrideStateTrackerImpl
 
   ExtensionUrlOverrideStateTrackerImpl(Profile* profile,
                                        StateListener* listener);
-  ~ExtensionUrlOverrideStateTrackerImpl();
+  ~ExtensionUrlOverrideStateTrackerImpl() override;
 
   ExtensionUrlOverrideStateTrackerImpl(
       const ExtensionUrlOverrideStateTrackerImpl& client) = delete;
