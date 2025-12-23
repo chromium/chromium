@@ -3819,4 +3819,28 @@ public class TabCollectionTabModelImplTest {
                     assertThat(groupIds).containsExactly(groupId0, groupId1);
                 });
     }
+
+    @Test
+    @MediumTest
+    public void testCreateTabGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        List<Tab> tabs = List.of(tab0, tab1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.listTabGroups().isEmpty());
+
+                    Token groupId = mCollectionModel.createTabGroup(tabs);
+                    assertNotNull(groupId);
+
+                    assertTrue(mCollectionModel.containsTabGroup(groupId));
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+
+                    List<Token> groupIds = mCollectionModel.listTabGroups();
+                    assertEquals(1, groupIds.size());
+                    assertThat(groupIds).containsExactly(groupId);
+                });
+    }
 }

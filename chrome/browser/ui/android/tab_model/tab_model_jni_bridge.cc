@@ -33,6 +33,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -64,8 +65,10 @@ using content::WebContents;
 
 namespace {
 
-std::vector<TabAndroid*> GetAllTabsFromHandles(
-    const std::set<tabs::TabHandle>& handles) {
+// Returns a vector of TabAndroid* from a container (e.g. a std::set or a
+// std::vector) of TabHandle.
+template <typename Container>
+std::vector<TabAndroid*> GetAllTabsFromHandles(const Container& handles) {
   std::vector<TabAndroid*> tabs;
   tabs.reserve(tabs.size());
   for (tabs::TabHandle handle : handles) {
@@ -606,11 +609,14 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   return group_ids;
 }
 
-tab_groups::TabGroupId TabModelJniBridge::CreateTabGroup(
+std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
-  // TODO(crbug.com/405219902): Add JNI.
-  NOTIMPLEMENTED();
-  return tab_groups::TabGroupId::CreateEmpty();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::vector<TabAndroid*> tabs_to_add = GetAllTabsFromHandles(tabs);
+  std::optional<base::Token> group_id_token =
+      Java_TabModelJniBridge_createTabGroup(env, jobj, tabs_to_add);
+  return tab_groups::TabGroupId::FromOptionalToken(group_id_token);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(

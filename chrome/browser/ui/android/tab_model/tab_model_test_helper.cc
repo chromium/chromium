@@ -207,10 +207,10 @@ std::vector<tab_groups::TabGroupId> TestTabModel::ListTabGroups() {
   return {};
 }
 
-tab_groups::TabGroupId TestTabModel::CreateTabGroup(
+std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
-  return tab_groups::TabGroupId::CreateEmpty();
+  return std::nullopt;
 }
 
 std::optional<tab_groups::TabGroupId> TestTabModel::AddTabsToGroup(
@@ -469,10 +469,10 @@ bool OwningTestTabModel::ContainsTabGroup(tab_groups::TabGroupId group_id) {
   return false;
 }
 
-tab_groups::TabGroupId OwningTestTabModel::CreateTabGroup(
+std::optional<tab_groups::TabGroupId> OwningTestTabModel::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
-  return tab_groups::TabGroupId::CreateEmpty();
+  return std::nullopt;
 }
 
 std::vector<tab_groups::TabGroupId> OwningTestTabModel::ListTabGroups() {

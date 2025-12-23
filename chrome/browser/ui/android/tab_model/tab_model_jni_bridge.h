@@ -128,7 +128,7 @@ class TabModelJniBridge : public TabModel {
   void UnpinTab(tabs::TabHandle tab) override;
   bool ContainsTabGroup(tab_groups::TabGroupId group_id) override;
   std::vector<tab_groups::TabGroupId> ListTabGroups() override;
-  tab_groups::TabGroupId CreateTabGroup(
+  std::optional<tab_groups::TabGroupId> CreateTabGroup(
       const std::vector<tabs::TabHandle>& tabs) override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,

@@ -86,12 +86,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
   std::vector<tabs::TabHandle> tabs;
   tabs.push_back(tab_list->GetTab(0)->GetHandle());
   tabs.push_back(tab_list->GetTab(1)->GetHandle());
-  tab_groups::TabGroupId group = tab_list->CreateTabGroup(tabs);
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  ASSERT_TRUE(group.has_value());
 
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
   std::unique_ptr<DetachedTabCollection> detached_group =
-      browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
+      browser()->tab_strip_model()->DetachTabGroupForInsertion(*group);
 
   event_observer.WaitForEventWithName(api::tab_groups::OnRemoved::kEventName);
   EXPECT_TRUE(base::Contains(event_observer.events(),

@@ -854,6 +854,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    protected @Nullable Token createTabGroup(List<Tab> tabs) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return null;
+        if (tabs.isEmpty()) return null;
+        Tab tab = tabs.get(0);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mergeListOfTabsToGroup(tabs, tab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
+        }
+        // All tabs will have the same group ID, so return the first one.
+        return tab.getTabGroupId();
+    }
+
+    @Override
     protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
         assertOnUiThread();
         try (ScopedStorageBatch ignored = createBatch(getProfile())) {

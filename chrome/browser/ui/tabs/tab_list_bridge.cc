@@ -207,14 +207,14 @@ std::vector<tab_groups::TabGroupId> TabListBridge::ListTabGroups() {
   return tab_strip_->group_model()->ListTabGroups();
 }
 
-tab_groups::TabGroupId TabListBridge::CreateTabGroup(
+std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   // Not all browsers support tab groups.
   if (!tab_strip_->group_model()) {
-    return tab_groups::TabGroupId::CreateEmpty();
+    return std::nullopt;
   }
 
-  // TabStripModel operates on indices.
+  // TabStripModel::AddToNewGroup() operates on indices.
   std::vector<int> tab_indices;
   tab_indices.reserve(tabs.size());
   for (const auto& tab_handle : tabs) {
