@@ -46,8 +46,7 @@ class ContextualCueingService;
 }
 namespace glic {
 
-BASE_FEATURE(kGlicHibernateAllOnMemoryPressure,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_DECLARE_FEATURE(kGlicHibernateAllOnMemoryPressure);
 
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
