@@ -73,6 +73,7 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/common/web_package/signed_exchange_utils.h"
+#include "content/common/web_ui_loading_util.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -1242,6 +1243,41 @@ void InitializeFrameWidgetForFrame(
   // renderer, and that update comes as part of the CreateFrame message.
   // TODO(crbug.com/40387047): This could become part of WebFrameWidget Init.
   web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
+}
+
+mojo::ScopedDataPipeConsumerHandle FillResponseForInitialWebUI(
+    const GURL& url,
+    const url::Origin& origin,
+    const blink::mojom::LocalResourceLoaderConfigPtr&
+        local_resource_loader_config,
+    network::mojom::URLResponseHeadPtr* response_head,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote) {
+  // Read the response body locally within the renderer, and make the
+  // `response_body` pipe point to the result.
+  CHECK(local_resource_loader_config->sources.contains(origin));
+  const blink::mojom::LocalResourceSourcePtr& source =
+      local_resource_loader_config->sources[origin];
+  const std::map<std::string, std::string> replacement_strings(
+      source->replacement_strings.begin(), source->replacement_strings.end());
+
+  auto [response_body, output_size] =
+      webui::GetPipe(LocalResourceURLLoaderFactory::GetResource(
+                         url, source, replacement_strings, "text/html"),
+                     /*requested_range=*/std::nullopt);
+
+  // Update the content length, and send the completion signal with the
+  // correct length. Note that we don't need to call `OnReceiveResponse()`
+  // here, since `NavigationBodyLoader` doesn't need it, and just reads from
+  // the `response_body` pipe directly.
+  (*response_head)->content_length = output_size;
+  mojo::Remote<network::mojom::URLLoaderClient> client(
+      std::move(client_remote));
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.encoded_data_length = output_size;
+  status.encoded_body_length = output_size;
+  status.decoded_body_length = output_size;
+  client->OnComplete(status);
+  return std::move(response_body);
 }
 
 }  // namespace
@@ -2657,6 +2693,23 @@ void RenderFrameImpl::CommitNavigation(
 
   if (frame_->IsOutermostMainFrame() && permissions_policy) {
     navigation_params->permissions_policy_override = permissions_policy;
+  }
+
+  if (IsForInitialWebUI() && base::FeatureList::IsEnabled(
+                                 features::kInitialWebUISyncNavStartToCommit)) {
+    CHECK(subresource_loader_factories);
+    CHECK(subresource_loader_factories->local_resource_loader_config());
+    // Initial WebUI navigations loads the response body locally within the
+    // renderer instead of reading from the pipe from the browser. Set up the
+    // pipes here. Note that for navigation body loading, we don't actually
+    // expect any calls to the `URLLoader` interface, so just put a null Remote.
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote;
+    url_loader_client_endpoints = network::mojom::URLLoaderClientEndpoints::New(
+        mojo::NullRemote(), client_remote.InitWithNewPipeAndPassReceiver());
+    response_body = FillResponseForInitialWebUI(
+        common_params->url, commit_params->origin_to_commit,
+        subresource_loader_factories->local_resource_loader_config(),
+        &response_head, std::move(client_remote));
   }
 
   auto commit_with_params = base::BindOnce(

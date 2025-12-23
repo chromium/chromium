@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -61,6 +62,15 @@ class CONTENT_EXPORT LocalResourceURLLoaderFactory
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override;
 
+  // Fetches the resource from the ResourceBundle or browser-sent response map.
+  // This might be called to load not only subresources, but also document body
+  // loads.
+  static scoped_refptr<base::RefCountedMemory> GetResource(
+      const GURL& url,
+      const blink::mojom::LocalResourceSourcePtr& source,
+      const std::map<std::string, std::string>& replacement_strings,
+      const std::string& mime_type);
+
  private:
   // CanServe returns true if and only if all of the following are true:
   //
@@ -82,9 +92,9 @@ class CONTENT_EXPORT LocalResourceURLLoaderFactory
   // out-of-process.
   bool CanServe(const network::ResourceRequest& request) const;
 
-  // Fetches the resource from the ResourceBundle and sends it to the
-  // URLLoaderClient. This is static because it is posted as a task which may
-  // outlive |this|.
+  // Fetches the resource from the ResourceBundle or browser-sent response map,
+  // and sends it to the URLLoaderClient. This is static because it is posted as
+  // a task which may outlive |this|.
   static void GetResourceAndRespond(
       const scoped_refptr<base::RefCountedData<std::map<url::Origin, Source>>>
           sources,

@@ -247,14 +247,62 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
   const std::map<std::string, std::string>& replacement_strings =
       it->second.replacement_strings;
 
-  // Get resource id.
-  std::string_view path = request.url.path().substr(1);
+  // Mime type.
+  auto url_response_head = network::mojom::URLResponseHead::New();
+  url_response_head->mime_type = GetMimeType(request.url);
+  std::string mime_type = url_response_head->mime_type;
+
+  // Other headers.
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(source->headers);
+  headers->SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
+  url_response_head->headers = headers;
+  url_response_head->parsed_headers = network::PopulateParsedHeaders(
+      url_response_head->headers.get(), request.url);
+
+  // Handle Range header if request.
+  std::optional<net::HttpByteRange> maybe_range = std::nullopt;
+  base::expected<net::HttpByteRange, webui::GetRequestedRangeError>
+      range_or_error = webui::GetRequestedRange(request.headers);
+  // Errors (aside from 'no Range header') should be surfaced to the client.
+  if (!range_or_error.has_value() &&
+      range_or_error.error() != webui::GetRequestedRangeError::kNoRanges) {
+    webui::CallOnError(std::move(client),
+                       net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+    return;
+  }
+
+  if (range_or_error.has_value()) {
+    maybe_range = range_or_error.value();
+  }
+
+  webui::SendData(
+      std::move(url_response_head), std::move(client), maybe_range,
+      GetResource(request.url, source, replacement_strings, mime_type));
+}
+
+// static
+scoped_refptr<base::RefCountedMemory>
+LocalResourceURLLoaderFactory::GetResource(
+    const GURL& url,
+    const blink::mojom::LocalResourceSourcePtr& source,
+    const std::map<std::string, std::string>& replacement_strings,
+    const std::string& mime_type) {
+  // Get resource.
+  std::string_view path = url.path().substr(1);
   auto resource_it = source->path_to_resource_map.find(std::string(path));
   // CanServe should have been called before this point, which would have
-  // confirmed that there exists a resource ID corresponding to the URL path.
+  // confirmed that there exists a resource corresponding to the URL path.
   CHECK(resource_it != source->path_to_resource_map.end());
+  if (resource_it->second->is_response_body()) {
+    // The resource is a direct response. Note that this should already be
+    // handled earlier for callers from `GetResourceAndRespond()`, so this path
+    // is only for direct callers for `GetResource()`.
+    return base::MakeRefCounted<base::RefCountedString>(
+        resource_it->second->get_response_body());
+  }
 
-  // Load bytes.
+  // Load bytes using a resource ID.
   scoped_refptr<base::RefCountedMemory> raw_bytes =
       GetResourceBytes(resource_it->second);
   // CanServe should have been called before this point, which would have
@@ -263,19 +311,12 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
   CHECK(raw_bytes);
   std::string_view bytes(base::as_string_view(*raw_bytes));
 
-  // Mime type.
-  auto url_response_head = network::mojom::URLResponseHead::New();
-  url_response_head->mime_type = GetMimeType(request.url);
-
-  // Perform template replacement using `replacement_strings` if necessary.
   scoped_refptr<base::RefCountedMemory> bytes_after_replacement = raw_bytes;
-  if (source->replacement_strings.size() > 0 &&
-      (url_response_head->mime_type == "text/html" ||
-       url_response_head->mime_type == "text/css" ||
-       (source->should_replace_i18n_in_js &&
-        url_response_head->mime_type == "text/javascript"))) {
+  if (replacement_strings.size() > 0 &&
+      (mime_type == "text/html" || mime_type == "text/css" ||
+       (source->should_replace_i18n_in_js && mime_type == "text/javascript"))) {
     std::string replaced_string;
-    if (url_response_head->mime_type == "text/javascript") {
+    if (mime_type == "text/javascript") {
       CHECK(ui::ReplaceTemplateExpressionsInJS(bytes, replacement_strings,
                                                &replaced_string));
     } else {
@@ -286,31 +327,7 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
         std::move(replaced_string));
   }
 
-  // Other headers.
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>(source->headers);
-  headers->SetHeader(net::HttpRequestHeaders::kContentType,
-                     url_response_head->mime_type);
-  url_response_head->headers = headers;
-  url_response_head->parsed_headers = network::PopulateParsedHeaders(
-      url_response_head->headers.get(), request.url);
-
-  // Handle Range header if request.
-  base::expected<net::HttpByteRange, webui::GetRequestedRangeError>
-      range_or_error = webui::GetRequestedRange(request.headers);
-  // Errors (aside from 'no Range header') should be surfaced to the client.
-  if (!range_or_error.has_value() &&
-      range_or_error.error() != webui::GetRequestedRangeError::kNoRanges) {
-    webui::CallOnError(std::move(client),
-                       net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
-    return;
-  }
-  std::optional<net::HttpByteRange> maybe_range =
-      range_or_error.has_value() ? std::make_optional(range_or_error.value())
-                                 : std::nullopt;
-
-  webui::SendData(std::move(url_response_head), std::move(client), maybe_range,
-                  bytes_after_replacement);
+  return bytes_after_replacement;
 }
 
 }  // namespace content
