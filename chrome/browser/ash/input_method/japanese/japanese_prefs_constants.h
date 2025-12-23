@@ -48,7 +48,7 @@ inline constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
 // UMA settings.
 inline constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
     "AutomaticallySendStatisticsToGoogle";
-// LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts:JpOptionCategories)
+// LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts:JpOptionCategories)
 // Options values for the above option categories:
 // LINT.IfChange(JpOptionValues)
 inline constexpr std::string_view kJpPrefInputModeKana = "Kana";

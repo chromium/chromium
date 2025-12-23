@@ -203,7 +203,7 @@ chrome.inputMethodPrivate.ShiftKeyModeStyle = {
 /**
  * User preference settings for a specific input method. Entry names MUST match
  * CrOS Settings @
- * https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts
+ * https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts
  * @typedef {{
  *   enableCompletion: (boolean|undefined),
  *   enableDoubleSpacePeriod: (boolean|undefined),

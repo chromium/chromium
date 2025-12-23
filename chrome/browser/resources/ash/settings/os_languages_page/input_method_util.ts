@@ -13,125 +13,15 @@ import {assertExhaustive} from '../assert_extras.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KeyboardLayout, OptionType} from './input_method_prefs_consts.js';
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_prefs_consts.js';
 
 /**
  * The prefix string shared by all first party input method ID.
  */
 export const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
     '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
-
-/**
- * The preference string used to indicate a user has autocorrect enabled by
- * default for a particular engine. See the following for more details
- * https://crsrc.org/chrome/browser/ash/input_method/autocorrect_prefs.cc
- */
-export const PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT =
-    'physicalKeyboardAutoCorrectionEnabledByDefault';
-
-/**
- * All possible keyboard layouts. Should match Google3.
- */
-enum KeyboardLayout {
-  STANDARD = 'Default',
-  GINYIEH = 'Gin Yieh',
-  ETEN = 'Eten',
-  IBM = 'IBM',
-  HSU = 'Hsu',
-  ETEN26 = 'Eten 26',
-  SET2 = '2 Set / 두벌식',
-  SET2Y = '2 Set (Old Hangul) / 두벌식 (옛글)',
-  SET390 = '3 Set (390) / 세벌식 (390)',
-  SET3_FINAL = '3 Set (Final) / 세벌식 (최종)',
-  SET3_SUN = '3 Set (No Shift) / 세벌식 (순아래)',
-  SET3_YET = '3 Set (Old Hangul) / 세벌식 (옛글)',
-  XKB_US = 'US',
-  XKB_DVORAK = 'Dvorak',
-  XKB_COLEMAK = 'Colemak',
-}
-
-/**
- * CrOS-Prefs-backed options on option pages. Where applicable, these literal
- * string values are persisted as entry keys in CrOS-Prefs dictionary value for
- * input-method-specific settings of a particular CrOS 1P input method.
- */
-export enum OptionType {
-  ENABLE_COMPLETION = 'enableCompletion',
-  ENABLE_DOUBLE_SPACE_PERIOD = 'enableDoubleSpacePeriod',
-  ENABLE_GESTURE_TYPING = 'enableGestureTyping',
-  ENABLE_PREDICTION = 'enablePrediction',
-  ENABLE_SOUND_ON_KEYPRESS = 'enableSoundOnKeypress',
-  PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL =
-      'physicalKeyboardAutoCorrectionLevel',
-  PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION =
-      'physicalKeyboardEnableCapitalization',
-  PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING =
-      'physicalKeyboardEnablePredictiveWriting',
-  VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL = 'virtualKeyboardAutoCorrectionLevel',
-  VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION =
-      'virtualKeyboardEnableCapitalization',
-  XKB_LAYOUT = 'xkbLayout',
-  // Options for Japanese input method.
-  // LINT.IfChange(JpOptionCategories)
-  JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH = 'AutomaticallySwitchToHalfwidth',
-  JAPANESE_SHIFT_KEY_MODE_STYLE = 'ShiftKeyModeStyle',
-  JAPANESE_USE_INPUT_HISTORY = 'UseInputHistory',
-  JAPANESE_USE_SYSTEM_DICTIONARY = 'UseSystemDictionary',
-  JAPANESE_NUMBER_OF_SUGGESTIONS = 'numberOfSuggestions',
-  JAPANESE_INPUT_MODE = 'JapaneseInputMode',
-  JAPANESE_PUNCTUATION_STYLE = 'JapanesePunctuationStyle',
-  JAPANESE_SYMBOL_STYLE = 'JapaneseSymbolStyle',
-  JAPANESE_SPACE_INPUT_STYLE = 'JapaneseSpaceInputStyle',
-  // "...Section..." in the string value below is a typo, but persisted in CrOS
-  // Prefs storage so must NOT be fixed unless user data are migrated first.
-  JAPANESE_SELECTION_SHORTCUT = 'JapaneseSectionShortcut',
-  JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
-  JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
-  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionCategories)
-  // Options for Korean input method.
-  KOREAN_ENABLE_SYLLABLE_INPUT = 'koreanEnableSyllableInput',
-  KOREAN_KEYBOARD_LAYOUT = 'koreanKeyboardLayout',
-  // Options for pinyin input method.
-  PINYIN_CHINESE_PUNCTUATION = 'pinyinChinesePunctuation',
-  PINYIN_DEFAULT_CHINESE = 'pinyinDefaultChinese',
-  PINYIN_ENABLE_FUZZY = 'pinyinEnableFuzzy',
-  PINYIN_ENABLE_LOWER_PAGING = 'pinyinEnableLowerPaging',
-  PINYIN_ENABLE_UPPER_PAGING = 'pinyinEnableUpperPaging',
-  PINYIN_FULL_WIDTH_CHARACTER = 'pinyinFullWidthCharacter',
-  PINYIN_EN_ENG = 'en:eng',
-  PINYIN_AN_ANG = 'an:ang',
-  PINYIN_IAN_IANG = 'ian:iang',
-  PINYIN_K_G = 'k:g',
-  PINYIN_R_L = 'r:l',
-  PINYIN_UAN_UANG = 'uan:uang',
-  PINYIN_C_CH = 'c:ch',
-  PINYIN_F_H = 'f:h',
-  PINYIN_IN_ING = 'in:ing',
-  PINYIN_L_N = 'l:n',
-  PINYIN_S_SH = 's:sh',
-  PINYIN_Z_ZH = 'z:zh',
-  // Options for zhuyin input method.
-  ZHUYIN_KEYBOARD_LAYOUT = 'zhuyinKeyboardLayout',
-  ZHUYIN_PAGE_SIZE = 'zhuyinPageSize',
-  ZHUYIN_SELECT_KEYS = 'zhuyinSelectKeys',
-  // Options for Vietnamese VNI input method
-  VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS =
-      'vietnameseVniAllowFlexibleDiacritics',
-  VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT =
-      'vietnameseVniNewStyleToneMarkPlacement',
-  VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO = 'vietnameseVniInsertDoubleHornOnUo',
-  VIETNAMESE_VNI_SHOW_UNDERLINE = 'vietnameseVniShowUnderline',
-  VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS =
-      'vietnameseTelexAllowFlexibleDiacritics',
-  VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT =
-      'vietnameseTelexNewStyleToneMarkPlacement',
-  VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO =
-      'vietnameseTelexInsertDoubleHornOnUo',
-  VIETNAMESE_TELEX_INSERT_U_HORN_ON_W = 'vietnameseTelexInsertUHornOnW',
-  VIETNAMESE_TELEX_SHOW_UNDERLINE = 'vietnameseTelexShowUnderline',
-}
 
 /**
  * UI-only items (not backed by CrOS-Prefs) on option pages. These typically

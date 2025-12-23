@@ -160,7 +160,7 @@
       {
         "id": "InputMethodSettings",
         "type": "object",
-        "description": "User preference settings for a specific input method. Entry names MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts",
+        "description": "User preference settings for a specific input method. Entry names MUST match CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts",
         "properties": {
           "enableCompletion": { "type": "boolean", "optional": true, "description": "Whether to enable auto completion."},
           "enableDoubleSpacePeriod": { "type": "boolean", "optional": true, "description": "Whether to auto transform double spaces to type period."},
