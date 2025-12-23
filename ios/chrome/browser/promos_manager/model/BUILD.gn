@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+
 source_set("model") {
   sources = [
     "promos_manager.h",
@@ -77,6 +79,11 @@ source_set("constants") {
     "constants.cc",
     "constants.h",
   ]
+  deps = [ "//base" ]
+}
+
+swift_source_set("app_store_review_swift") {
+  sources = [ "app_store_review_adapter.swift" ]
   deps = [ "//base" ]
 }
 
