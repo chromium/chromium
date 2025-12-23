@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "fullscreen_signin_promo_display_handler.h",
+    "fullscreen_signin_promo_display_handler.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+  ]
+}

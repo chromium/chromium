@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/fullscreen_signin_promo_display_handler.h"
+#import "ios/chrome/browser/authentication/signin/fullscreen_promo/coordinator/fullscreen_signin_promo_display_handler.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/feature_constants.h"

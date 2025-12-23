@@ -32,7 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_store_rating/coordinator",
     "//ios/chrome/browser/app_store_rating/model:features",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/promo",
+    "//ios/chrome/browser/authentication/signin/fullscreen_promo/coordinator",
     "//ios/chrome/browser/credential_provider_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_browser/promo/model:promo_handler",
