@@ -631,6 +631,12 @@ int QuicChromiumClientSession::Handle::GetSelfAddress(
   return OK;
 }
 
+void QuicChromiumClientSession::Handle::AssertIsValidFor(
+    const GURL& url) const {
+  CHECK(session_);
+  session_->AssertIsValidFor(url);
+}
+
 bool QuicChromiumClientSession::Handle::WasEverUsed() const {
   if (!session_) {
     return was_ever_used_;
@@ -1845,6 +1851,20 @@ void QuicChromiumClientSession::LogZeroRttStats() {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_STATE, [&] {
     return base::Value::Dict().Set("state", ZeroRttStateToString(state));
   });
+}
+
+void QuicChromiumClientSession::AssertIsValidFor(const GURL& url) const {
+  if (allow_any_url_for_testing_) {
+    return;
+  }
+  CHECK(cert_verify_result_);
+
+  // Don't check host for HTTP schemes. Non-tunnelled HTTP requests may be sent
+  // directly to a QUIC proxy - while we currently use tunnels for that case,
+  // best not to prohibit doing so at this layer.
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    CHECK(cert_verify_result_->verified_cert->VerifyNameMatch(url.host()));
+  }
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(

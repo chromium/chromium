@@ -128,6 +128,8 @@ int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
     return GetResponseStatus();
   }
 
+  quic_session()->AssertIsValidFor(request_info_->url);
+
   // Store the serialized request headers.
   CreateSpdyHeadersFromHttpRequest(*request_info_, priority_, request_headers,
                                    &request_headers_);

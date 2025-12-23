@@ -81,6 +81,10 @@ MockCryptoClientStream::MockCryptoClientStream(
   crypto_framer_.set_visitor(this);
   // Simulate a negotiated cipher_suite with a fake value.
   crypto_negotiated_params_->cipher_suite = 1;
+  if (!proof_verify_details_) {
+    static_cast<QuicChromiumClientSession*>(session)
+        ->set_allow_any_url_for_testing();
+  }
 }
 
 MockCryptoClientStream::~MockCryptoClientStream() = default;
@@ -311,6 +315,13 @@ void MockCryptoClientStream::NotifySessionOneRttKeyAvailable() {
   encryption_established_ = true;
   handshake_confirmed_ = true;
   DCHECK(session()->version().UsesTls());
+
+  FillCryptoParams();
+  if (proof_verify_details_) {
+    reinterpret_cast<QuicSpdyClientSessionBase*>(session())
+        ->OnProofVerifyDetailsAvailable(*proof_verify_details_);
+  }
+
   if (use_mock_crypter_) {
     if (session()->connection()->version().KnowsWhichDecrypterToUse()) {
       session()->connection()->InstallDecrypter(
