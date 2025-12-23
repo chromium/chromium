@@ -259,6 +259,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(std::optional<NavigationDiscardReason>,
               GetNavigationDiscardReason,
               ());
+  MOCK_METHOD(bool, NeedsUrlLoader, ());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,

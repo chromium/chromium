@@ -90,6 +90,8 @@ class MetricsWebContentsObserver
   void WebContentsWillSoonBeDestroyed();
 
   // content::WebContentsObserver implementation:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -135,7 +137,6 @@ class MetricsWebContentsObserver
                          StorageType storage_type);
 
   // These methods are forwarded from the MetricsNavigationThrottle.
-  void WillStartNavigationRequest(content::NavigationHandle* navigation_handle);
   void WillProcessNavigationResponse(
       content::NavigationHandle* navigation_handle);
 
@@ -250,8 +251,7 @@ class MetricsWebContentsObserver
   // otherwise. The tracker measures per-frame memory usage by V8.
   PageLoadMetricsMemoryTracker* GetMemoryTracker() const;
 
-  void WillStartNavigationRequestImpl(
-      content::NavigationHandle* navigation_handle);
+  void DidStartNavigationImpl(content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
   void UpdateTiming(

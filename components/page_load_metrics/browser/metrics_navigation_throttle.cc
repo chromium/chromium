@@ -20,17 +20,6 @@ void MetricsNavigationThrottle::CreateAndAdd(
 MetricsNavigationThrottle::~MetricsNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
-MetricsNavigationThrottle::WillStartRequest() {
-  MetricsWebContentsObserver* observer =
-      MetricsWebContentsObserver::FromWebContents(
-          navigation_handle()->GetWebContents());
-  if (observer) {
-    observer->WillStartNavigationRequest(navigation_handle());
-  }
-  return content::NavigationThrottle::PROCEED;
-}
-
-content::NavigationThrottle::ThrottleCheckResult
 MetricsNavigationThrottle::WillProcessResponse() {
   MetricsWebContentsObserver* observer =
       MetricsWebContentsObserver::FromWebContents(
