@@ -116,6 +116,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
     if (glic_embedder && glic_embedder->IsShowing()) {
       SidePanelShowOptions side_panel_options{*tab_to_bind};
       side_panel_options.suppress_opening_animation = true;
+      side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
       auto show_options = ShowOptions{side_panel_options};
       show_options.focus_on_show = tab_to_bind->IsActivated();
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
@@ -267,7 +268,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   if (const auto* side_panel_options =
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options && !side_panel_options->tab->IsActivated()) {
-    ShowInactiveSidePanelEmbedderFor(&side_panel_options->tab.get());
+    ShowInactiveSidePanelEmbedderFor(*side_panel_options);
     return;
   }
 
@@ -427,7 +428,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   if (base::FeatureList::IsEnabled(
           kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
       IsDetached()) {
-    BindTab(created_tab);
+    BindTab(created_tab, GlicPinTrigger::kDaisyChain);
     if (embedder_has_focus) {
       GetActiveEmbedder()->Focus();
     }
@@ -723,7 +724,7 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
     const ShowOptions& options) {
   return std::visit(
       absl::Overload{[&](const SidePanelShowOptions& opts) {
-                       return CreateActiveEmbedderForSidePanel(&opts.tab.get());
+                       return CreateActiveEmbedderForSidePanel(opts);
                      },
                      [&](const FloatingShowOptions& opts) {
                        return CreateActiveEmbedderForFloaty(opts.initial_bounds,
@@ -733,10 +734,10 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
-    tabs::TabInterface* tab) {
-  auto& entry = BindTab(tab);
+    const SidePanelShowOptions& options) {
+  auto& entry = BindTab(&options.tab.get(), options.pin_trigger);
   entry.embedder = std::make_unique<GlicSidePanelUi>(
-      profile_, tab->GetWeakPtr(), *this, instance_metrics_);
+      profile_, options.tab->GetWeakPtr(), *this, instance_metrics_);
   return entry.embedder.get();
 }
 
@@ -754,10 +755,10 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
 }
 
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
-    tabs::TabInterface* tab) {
-  auto& entry = BindTab(tab);
-  entry.embedder =
-      GlicInactiveSidePanelUi::CreateForBackgroundTab(tab->GetWeakPtr(), *this);
+    const SidePanelShowOptions& options) {
+  auto& entry = BindTab(&options.tab.get(), options.pin_trigger);
+  entry.embedder = GlicInactiveSidePanelUi::CreateForBackgroundTab(
+      options.tab.get().GetWeakPtr(), *this);
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
@@ -869,7 +870,8 @@ bool GlicInstanceImpl::ShouldPinOnBind() const {
 }
 
 GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
-    tabs::TabInterface* tab) {
+    tabs::TabInterface* tab,
+    GlicPinTrigger pin_trigger) {
   EmbedderKey key = CreateSidePanelEmbedderKey(tab);
   auto [it, inserted] = embedders_.try_emplace(key);
 
@@ -897,7 +899,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
       std::make_unique<GlicTabContentsObserver>(tab->GetContents(), this);
   if (ShouldPinOnBind()) {
     // Auto-pin on bind.
-    sharing_manager().PinTabs({tab->GetHandle()});
+    sharing_manager().PinTabs({tab->GetHandle()}, pin_trigger);
   }
 
   return new_entry;
@@ -1087,10 +1089,12 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
   if (base::FeatureList::IsEnabled(
           kGlicBindOnPinFromFloatingUiDoesntShowSidePanel) &&
       IsDetached()) {
-    // Bind without showing if floaty is open.
-    BindTab(tab);
+    // Bind without showing if floaty is open. We pass in the unknown pin
+    // trigger because the tab is already pinned, so we don't expect any pinning
+    // to actually happen on bind.
+    BindTab(tab, GlicPinTrigger::kUnknown);
   } else {
-    ShowInactiveSidePanelEmbedderFor(tab);
+    ShowInactiveSidePanelEmbedderFor(SidePanelShowOptions(*tab));
   }
 }
 
@@ -1147,7 +1151,8 @@ void GlicInstanceImpl::OnTabAddedToTask(
   if (base::FeatureList::IsEnabled(
           kGlicActorDaisyChainingFromFloatingUiDoesntClose) &&
       IsDetached()) {
-    ShowInactiveSidePanelEmbedderFor(tab);
+    side_panel_options.pin_trigger = GlicPinTrigger::kActuation;
+    ShowInactiveSidePanelEmbedderFor(side_panel_options);
   } else {
     Show(ShowOptions{side_panel_options});
   }

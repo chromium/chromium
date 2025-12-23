@@ -496,7 +496,12 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   } else {
     instance = GetOrCreateGlicInstanceImplForTab(tab);
   }
-  instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close, source);
+  // If the tab is already bound, then it already has a pin trigger and this pin
+  // trigger will not be used. If it's not already bound, then we know it's a
+  // newly created instance, so we provide the instance creation trigger.
+  instance->Toggle(
+      ShowOptions::ForSidePanel(*tab, GlicPinTrigger::kInstanceCreation),
+      prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
@@ -656,6 +661,7 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
   auto* instance = CreateGlicInstance();
   SidePanelShowOptions side_panel_options{new_tab};
   side_panel_options.suppress_opening_animation = true;
+  side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
   instance->Show(ShowOptions{side_panel_options});
 }
 

@@ -51,6 +51,13 @@ ShowOptions ShowOptions::ForSidePanel(tabs::TabInterface& bound_tab) {
   return ShowOptions{SidePanelShowOptions{bound_tab}};
 }
 
+ShowOptions ShowOptions::ForSidePanel(tabs::TabInterface& bound_tab,
+                                      GlicPinTrigger pin_trigger) {
+  SidePanelShowOptions side_panel_options{bound_tab};
+  side_panel_options.pin_trigger = pin_trigger;
+  return ShowOptions{side_panel_options};
+}
+
 // end static
 
 }  // namespace glic
