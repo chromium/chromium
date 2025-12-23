@@ -796,8 +796,7 @@ void ContextualSearchboxHandler::OpenUrl(
                 ? AutocompleteMatchType::Type::SEARCH_SUGGEST
                 : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
             /*is_zero_prefix_suggestion=*/query_text.empty());
-        // TODO(crbug.com/469458346): Fix bug where omnibox remains open after
-        // navigation.
+        active_web_contents->Focus();
         return;
       }
     }
