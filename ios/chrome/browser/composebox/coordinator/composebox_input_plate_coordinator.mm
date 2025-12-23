@@ -104,6 +104,7 @@ const CGFloat kSnackbarBottomMargin = 10;
   ComposeboxTheme* _theme;
   ComposeboxMetricsRecorder* _metricsRecorder;
   ComposeboxModeHolder* _modeHolder;
+  ComposeboxSnackbarPresenter* _snackbarPresenter;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -211,6 +212,7 @@ const CGFloat kSnackbarBottomMargin = 10;
 }
 
 - (void)stop {
+  [_snackbarPresenter dismissAllSnackbars];
   if (_tabPickerCoordinator.started) {
     [_tabPickerCoordinator stop];
   }
@@ -511,24 +513,30 @@ const CGFloat kSnackbarBottomMargin = 10;
 /// Displays a snackbar error indicating the maximum number of attachments has
 /// been reached.
 - (void)showMaxAttachmentSnackbarError {
-  ComposeboxSnackbarPresenter* snackbar =
-      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+  [self createSnackbarPresenterIfNeeded];
   CGFloat offset = _viewController.keyboardHeight;
   if (!_theme.isTopInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
-  [snackbar showAttachmentLimitSnackbarWithBottomOffset:offset];
+  [_snackbarPresenter showAttachmentLimitSnackbarWithBottomOffset:offset];
 }
 
 /// Displays a snackbar error indicating that attachment failed to be added.
 - (void)showUnableToAddAttachmentSnackbarError {
-  ComposeboxSnackbarPresenter* snackbar =
-      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+  [self createSnackbarPresenterIfNeeded];
   CGFloat offset = _viewController.keyboardHeight;
   if (!_theme.isTopInputPlate) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
-  [snackbar showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
+  [_snackbarPresenter showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
+}
+
+- (void)createSnackbarPresenterIfNeeded {
+  if (_snackbarPresenter) {
+    return;
+  }
+  _snackbarPresenter =
+      [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
 }
 
 @end

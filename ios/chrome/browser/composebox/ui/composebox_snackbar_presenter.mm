@@ -62,4 +62,11 @@
   [snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
+- (void)dismissAllSnackbars {
+  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarHandler dismissAllSnackbars];
+}
+
 @end
