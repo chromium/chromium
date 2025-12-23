@@ -491,6 +491,14 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   // `sync_service_` can be null in tests or if Sync is disabled.
   CHECK(pref_provider_);
 
+#if BUILDFLAG(IS_ANDROID)
+  // This needs to come at the start of the constructor; otherwise, methods we
+  // call in the constructor will NPE.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_object_.Reset(Java_CrossDevicePrefTracker_Constructor(
+      env, reinterpret_cast<intptr_t>(this)));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   is_local_device_info_ready_ =
       GetLocalCacheGuid(device_info_sync_service_).has_value();
 
@@ -537,12 +545,6 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   // Clean up any expired device entries from the cross-device storage.
   // This relies on `active_device_guids_`.
   GarbageCollectStaleCacheGuids();
-
-#if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_CrossDevicePrefTracker_Constructor(
-      env, reinterpret_cast<intptr_t>(this)));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 CrossDevicePrefTrackerImpl::~CrossDevicePrefTrackerImpl() {
@@ -900,7 +902,14 @@ void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
                                  remote_device_info);
   }
 
-  // TODO(crbug.com/442902926): Notify Java side of updates.
+#if BUILDFLAG(IS_ANDROID)
+  TimestampedPrefValueBridge bridge(timestamped_value);
+  Java_CrossDevicePrefTracker_onRemotePrefChanged(
+      base::android::AttachCurrentThread(), java_object_,
+      tracked_pref_name.data(), bridge.GetJavaObject(),
+      static_cast<int>(remote_device_info.os_type()),
+      static_cast<int>(remote_device_info.form_factor()));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void CrossDevicePrefTrackerImpl::HandleLocalDeviceInfoIfAvailable() {

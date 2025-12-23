@@ -67,17 +67,16 @@ public class CrossDevicePrefTracker {
         mObservers.removeObserver(observer);
     }
 
-    // TODO(crbug.com/442902926): Notify Java side of updates.
-    // @CalledByNative
-    // private void onRemotePrefChanged(
-    //     String prefName,
-    //     TimestampedPrefValue timestampedPrefValue,
-    //     @OsType int osType,
-    //     @FormFactor int formFactor) {
-    //   for (CrossDevicePrefTrackerObserver observer : mObservers) {
-    //       observer.onRemotePrefChanged(prefName, timestampedPrefValue, osType, formFactor);
-    //   }
-    // }
+    @CalledByNative
+    private void onRemotePrefChanged(
+            @JniType("std::string") String prefName,
+            TimestampedPrefValue timestampedPrefValue,
+            @OsType int osType,
+            @FormFactor int formFactor) {
+        for (CrossDevicePrefTrackerObserver observer : mObservers) {
+            observer.onRemotePrefChanged(prefName, timestampedPrefValue, osType, formFactor);
+        }
+    }
 
     /**
      * Returns all known values for the given {@param prefName} and device information filters.
