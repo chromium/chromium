@@ -2038,6 +2038,11 @@ class MakeDafsaSanitizer(BaseActionSanitizer):
     # (e.g. registry_controlled_domain.cc)
     return True
 
+  def _sanitize_args(self):
+    self._update_all_args(self._sanitize_filepath_with_location_tag)
+    self._update_all_args(self._sanitize_filepath)
+    super()._sanitize_args()
+
 
 class JavaCppFeatureSanitizer(BaseActionSanitizer):
 
