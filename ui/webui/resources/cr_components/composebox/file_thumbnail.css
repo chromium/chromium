@@ -97,12 +97,15 @@
 }
 
 .pdf-icon {
-  background-color: var(--color-composebox-background);
+  background-color: var(--color-composebox-pdf-chip-icon-background,
+      --color-composebox-background);
+  /* TODO(crbug.com/467758241): fix radius of svg itself. */
+  border-radius: var(--pdf-icon-border-radius, 4px);
   box-sizing: border-box;
-  border-radius: 4px;
-  color: var(--color-composebox-pdf-chip-icon);
-  height: 100%;
-  width: 100%;
+  border-radius: var(--pdf-icon-border-radius, 4px);
+  color: var(--color-composebox-pdf-chip-icon-border);
+  height: var(--pdf-icon-size, 100%);
+  width: var(--pdf-icon-size, 100%);
 }
 
 .chip-overlay {

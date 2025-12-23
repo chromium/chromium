@@ -19,10 +19,10 @@
   --color-composebox-file-carousel-remove-button: rgba(0, 0, 0, 0.6);
   --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.2);
-  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
+  --color-composebox-file-carousel-url: rgba(91, 91, 91, 1);
   --color-composebox-file-chip-background: rgb(225, 227, 232);
   --color-composebox-file-chip-background-hovered: rgba(225, 227, 232, 1);
-  --color-composebox-file-chip-favicon-background: rgba(225 224 238, 1);
+  --color-composebox-file-chip-favicon-background: rgba(255, 255, 255, 1);
   --color-composebox-file-chip-text: rgba(31, 31, 31, 1);
   --color-composebox-font: rgba(86, 89, 94, 1);
   --color-composebox-font-dark: rgba(10, 10, 10, 1);
@@ -31,9 +31,11 @@
    */
   --color-composebox-font-light: rgba(31, 31, 31, 1);
   --color-composebox-hover: rgba(233, 235, 240, 1);
+  --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
+  --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
-  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
+  --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);

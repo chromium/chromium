@@ -55,7 +55,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
       </cr-icon-button>`: ''}
     </div>` : html`
     <div id="pdfChip" class="chip">
-      <div id="pdfThumbnail" class="thumbnail">
+      <div id="pdfThumbnail" class="thumbnail" part="thumbnail">
         ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
           <cr-icon icon="thumbnail:pdf" class="pdf-icon">
           </cr-icon>
