@@ -1276,7 +1276,13 @@ TEST_P(AutofillServerCommunicationTest, Query) {
   EXPECT_EQ(GetParam() != DISABLED, SendQueryRequest(form_structures));
 }
 
-TEST_P(AutofillServerCommunicationTest, Upload) {
+// Flaky on fuchsia bots, see crbug.com/471202285.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_Upload DISABLED_Upload
+#else
+#define MAYBE_Upload Upload
+#endif
+TEST_P(AutofillServerCommunicationTest, MAYBE_Upload) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &autofill_client(), version_info::Channel::UNKNOWN);
   std::optional<RandomizedEncoder> randomized_encoder =
