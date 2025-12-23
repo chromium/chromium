@@ -114,6 +114,7 @@
 <translation id="1178821169867863726">12 x 16 అంగుళాలు</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1181381397492575884">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
+<translation id="1185331130467528132"><ph name="URL" /> మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయాలనుకుంటోంది</translation>
 <translation id="1185343831726846924">వర్చువల్ కార్డ్‌ను ఆన్ చేయడం సాధ్యపడదని నిర్ధారించడం</translation>
 <translation id="1186201132766001848">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="1187430513518041110">ఆటోమేటిక్ వాహనాలు &amp; వాహనాలు</translation>
@@ -166,6 +167,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">మీ సంస్థ నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ను నమోదు చేశారు. మీ ఖాతాను రక్షించడం కోసం, ఇతర యాప్‌లు మరియు సైట్‌లలో మీ పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="1257553931232494454">జూమ్ స్థాయిలు</translation>
+<translation id="1257714792349895570">లోకల్ నెట్‌వర్క్</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1264309058268477500">ఆల్టర్నేట్</translation>
 <translation id="1264974993859112054">క్రీడలు</translation>
@@ -1055,6 +1057,7 @@
 <translation id="2690699652723742414">గత 30 రోజులు</translation>
 <translation id="2691385045260836588">మోడల్</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
+<translation id="2694088736180584846">లూప్‌బ్యాక్ నెట్‌వర్క్</translation>
 <translation id="2696385693639654606">క్లౌడ్ నుండి బ్రౌజర్ పాలసీలను, యాప్‌లను, ఎక్స్‌టెన్షన్‌లను మేనేజ్ చేసే వీలును Chrome Enterprise Core మీకు కల్పిస్తుంది</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />‌ని అడగండి</translation>
 <translation id="2699273987028089219">సబ్‌మెనూ అందుబాటులో ఉంది, అదనపు ఆప్షన్‌లకు నావిగేట్ చేయడానికి <ph name="SHORTCUT" />‌ని ఉపయోగించండి.</translation>
@@ -1313,6 +1316,7 @@
 <translation id="3122696783148405307">గత 30 రోజుల ఫలితాలను చూడండి</translation>
 <translation id="3126023634486644099">లేబుల్స్ (పర్మనెంట్)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ఇప్పుడు మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్</translation>
+<translation id="3134859781443140237">లోకల్ నెట్‌వర్క్</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> సెర్చ్ చేయండి</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{ఏమీ లేవు}=1{1 ఖాతా సైన్ ఇన్ డేటా}other{# ఖాతాల సైన్ ఇన్ డేటా}}</translation>
 <translation id="3140646734028448730">బిజినెస్ సర్వీస్‌లు</translation>
@@ -1386,6 +1390,7 @@
 <translation id="3238395604961564389">లింక్‌ను అజ్ఞాత విండోలో తెరవండి</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3240791268468473923">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ తెరవబడలేదు</translation>
+<translation id="3241320538788585298">లూప్‌బ్యాక్ నెట్‌వర్క్</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="3243650379537999343">డ్రా</translation>
 <translation id="3248329428895535435">ఈ సైట్‌లో చూపవద్దు</translation>
@@ -1554,6 +1559,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{సింక్ చేసిన పరికరాల్లో కనీసం 1 అంశం}=1{1 అంశం (మరియు సింక్ చేసిన పరికరాల్లో మరిన్ని)}other{# అంశాలు (మరియు సింక్ చేసిన పరికరాల్లో మరిన్ని)}}</translation>
 <translation id="3531366304259615706">స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="3531780078352352885">జాబ్ షీట్‌లు</translation>
+<translation id="3532624859962632484">మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయండి</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="3533328374079021623">మెయిల్‌బాక్స్ 5</translation>
 <translation id="3536227077203206203">ఈసారి అనుమతి ఉంది</translation>
@@ -1880,6 +1886,7 @@
 <translation id="4030545038933060179">ఈ సెట్టింగ్ ఆన్‌లో ఉన్నప్పుడు, మీ తాజా బ్రౌజింగ్ హిస్టరీ ఆధారంగా టాపిక్‌ల లిస్ట్ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4036753017940930924">స్థలాలు &amp; భూములు</translation>
+<translation id="403724377879219932">మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయమని అడగవచ్చు</translation>
 <translation id="4039506337798853114">మీ కర్సర్‌ను చూపడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="4045070493270310437">ట్యాబ్‌లను మళ్లీ తెరవండి</translation>
 <translation id="4045226534284799755">మళ్లీ ట్రై చేయడానికి ముందు మీ Microsoft ఖాతాకు సైన్ ఇన్ చేయండి</translation>
@@ -3163,6 +3170,7 @@
 <translation id="6108702513636120202">Chromiumలో మీ సెర్చ్ ఇంజిన్</translation>
 <translation id="6108849843016142864">సరీసృపాలు &amp; ఉభయచరాలు</translation>
 <translation id="611018310643025551">మీ సెర్చ్‌లు, వాటి బెస్ట్ మ్యాచ్‌లు, ఇంకా వాటి పేజీలలోని కంటెంట్ గురించిన సమాచారం Googleకు పంపబడుతుంది, ఈ ఫీచర్‌ను మెరుగుపరచడంలో సహాయపడటానికి రివ్యూవర్‌లు ఈ సమాచారాన్ని రివ్యూ చేయవచ్చు.</translation>
+<translation id="6111759749003439722">ఈ డివైజ్‌లోని ఇతర యాప్‌లను, సర్వీస్‌లను యాక్సెస్ చేయమని అడగవచ్చు</translation>
 <translation id="6116338172782435947">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడండి</translation>
 <translation id="6116500665626559298">మీ ఖాతాలో డేటాను మేనేజ్ చేయండి బటన్, మీ Google ఖాతాలో మీరు సేవ్ చేసే Chrome సమాచారాన్ని మేనేజ్ చేయడానికి యాక్టివేట్ చేయండి</translation>
 <translation id="6117833587752089929">ఫోటో (శాటిన్)</translation>
@@ -3744,7 +3752,6 @@
 <translation id="7035705295266423040">ఇది మీరేనని మీ బ్యాంక్ వెరిఫై చేయాలనుకుంటుంది</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
-<translation id="7042465939346919737">ఈ ఆప్షన్‌లను అందించడానికి Google చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది. 'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి</translation>
 <translation id="7042616127917168121">ఫలితాలను మెరుగుపరుస్తుంది</translation>
 <translation id="7043552168914147882">ట్యాబ్ స్టాక్</translation>
 <translation id="7044081119134178347">ఈసారి కెమెరాకు అనుమతి ఉంది</translation>
@@ -4616,6 +4623,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8433057134996913067">దీని వలన మీరు చాలా వెబ్‌సైట్‌ల నుండి సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="8434840396568290395">పెంపుడు జంతువులు</translation>
+<translation id="8435542599425298931"><ph name="URL" /> ఈ డివైజ్‌లోని ఇతర యాప్‌లను, సర్వీస్‌లను యాక్సెస్ చేయాలనుకుంటోంది</translation>
 <translation id="8436623588884785770">పాలసీని జోడించండి</translation>
 <translation id="8437238597147034694">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8438786541497918448">కెమెరా, మైక్రోఫోన్‌ను ఉపయోగించాలా?</translation>
@@ -4996,6 +5004,7 @@
 <translation id="9090548458280093580">AI సహాయంతో మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయండి</translation>
 <translation id="9090993752571911635">ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు (ISPలు)</translation>
 <translation id="9093723786115107672">నైట్ డ్రెస్</translation>
+<translation id="9094424186948667194">ఈ డివైజ్‌లోని ఇతర యాప్‌లను, సర్వీస్‌లను యాక్సెస్ చేయండి</translation>
 <translation id="9094544726794842788">మీరు ఈ ఫలితాలను ఎందుకు డిస్‌లైక్ చేశారు అనే దాని గురించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను పంపడానికి 'బాగా లేదు' ఆప్షన్ మీ కోసం ఫారమ్‌ను తెరుస్తుంది</translation>
 <translation id="9094809883254050729">తర్వాతిసారి ఆటోఫిల్ చేయండి. సేవ్ చేసినప్పుడు కార్డ్ ఎన్‌క్రిప్ట్ చేయబడింది.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ట్యాబ్‌ను నొక్కి, ఆపై 'Enter'ను నొక్కి iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>

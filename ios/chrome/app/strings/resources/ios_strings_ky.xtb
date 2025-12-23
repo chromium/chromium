@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 тандалды}other{# тандалды}}</translation>
 <translation id="3668816008081204991">Окуу тизмеси жашырылды</translation>
 <translation id="3670030362669914947">Сан</translation>
+<translation id="3672283986707092811">Баарын тандоо</translation>
 <translation id="3679163990085797665">Окулгандарды жок кылуу</translation>
 <translation id="368329460027487650">Аккаунтуңуздан чыктыңыз. Кирүү параметрлерин ачат.</translation>
 <translation id="3695446226812920698">Үйрөнүп алыңыз</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Көрсөтүлүүчү аты-жөнү</translation>
 <translation id="4375772272517383391">Бардык өтмөктөрдү жабуу</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Тандоо</translation>
 <translation id="4389019817280890563">Тилди өзгөртүү үчүн таптап коюңуз.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 күндөн кийин}other{{COUNT} күндөн кийин}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Файлды сактоо</translation>
 <translation id="5355191726083956201">Күчөтүлгөн коргоо күйүк</translation>
 <translation id="536067926684072644">Кыстармаларды көрсөтүү</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} киргизүүчү ачкыч өткөрүлүп алынган жок}other{{count} киргизүүчү ачкыч өткөрүлүп алынган жок}}</translation>
 <translation id="5371112366564891538">Тексттин өлчөмүн чоңойтуу</translation>
+<translation id="5376135254804080693">Баарын тандоодон чыгаруу</translation>
 <translation id="537853552771686272">Өзүңүздү кызыктырган темаларды жана сайттарды тескеңиз</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} жабылды}other{{count} жабылды}}</translation>
 <translation id="5394975111793637642">"Сиз үчүн тандалган товарлар тууралуу сын-пикирлер" картасын жашыруу</translation>

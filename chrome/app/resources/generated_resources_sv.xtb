@@ -2473,6 +2473,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2646132387794831258">Vill du spara i en mapp i Google-kontot?</translation>
 <translation id="264897126871533291">Protanopi</translation>
 <translation id="2649045351178520408">Base64-kodad ASCII, certifikatkedja</translation>
+<translation id="2649331484502514724">Säker DNS</translation>
 <translation id="2649508632465204949">Lär mig en ny färdighet</translation>
 <translation id="2651259505411913186">Ja, håll min data åtskild från skolan</translation>
 <translation id="265156376773362237">Standardförinläsning</translation>
@@ -3406,6 +3407,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="329838636886466101">Reparera</translation>
 <translation id="3298789223962368867">Du har angett en ogiltig webbadress.</translation>
 <translation id="32991397311664836">Enheter:</translation>
+<translation id="330140779027048024">Använd alltid med vald DNS över HTTPS-leverantör</translation>
 <translation id="3301554464236215299">Den här filen laddas sällan ned och kan vara skadlig</translation>
 <translation id="3301996560342889673">Vill du synkronisera historiken?</translation>
 <translation id="33022249435934718">GDI-handtag</translation>
@@ -4766,6 +4768,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4206144641569145248">Utomjording</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4206585797409671301">Får visa begäranden</translation>
+<translation id="4207144975205749656">Krypterar navigeringsbegäranden så att angripare i samma nätverk inte kan se din trafik</translation>
 <translation id="4207932031282227921">Behörighet har begärts, tryck på F6 för att svara</translation>
 <translation id="4208390505124702064">Sök i <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
@@ -6176,6 +6179,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5186362203408605578">Använd en annan enhet genom att skanna QR-koden</translation>
 <translation id="5186381005592669696">Anpassa visningsspråk för appar som stöds</translation>
 <translation id="5186788525428341874">Du kan logga in snabbare på dina enheter med den här nyckeln. Den sparas med Google Lösenordshantering för <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Använd standardalternativet om det är tillgängligt</translation>
 <translation id="5187641678926990264">&amp;Installera sidan som en app …</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Delas av <ph name="USER_NAME" /></translation>
@@ -7152,6 +7156,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5863445608433396414">Aktivera felsökningsfunktioner</translation>
 <translation id="5863515189965725638">Redigera IBAN</translation>
 <translation id="5864195618110239517">Använd anslutning med datapriser</translation>
+<translation id="5864624288360677142">Använd standardalternativet om det är tillgängligt och Googles DNS som reserv</translation>
 <translation id="5864754048328252126">Inaktivitetsåtgärd vid laddning</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> pausas snart</translation>
 <translation id="586567932979200359">Du kör <ph name="PRODUCT_NAME" /> från diskavbildningen. Om du installerar programmet på din dator kan du köra det utan diskavbildningen och du kan vara säker på att det alltid är uppdaterat.</translation>
@@ -7603,6 +7608,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6180550893222597997">Vilken nyckel vill du använda för <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Appar uppdaterar ibland sitt varumärke. Granska alla ändringar och se till att du är nöjd med dem innan du uppdaterar.</translation>
 <translation id="6181431612547969857">Nedladdningen blockerades</translation>
+<translation id="6182100780603067202">Dela även ljud från appen (från alla dess fönster)</translation>
 <translation id="6183369864942961155">Automatiskt ljust/mörkt tema</translation>
 <translation id="6184099524311454384">Sök bland flikar</translation>
 <translation id="6185132558746749656">Enhetsplats</translation>

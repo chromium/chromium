@@ -1560,6 +1560,7 @@
 <translation id="3525130752944427905">10 x 14 դյույմ</translation>
 <translation id="3525435918300186947">Թույլատրե՞լ MIDI սարքերի կառավարումը և վերահսկումը</translation>
 <translation id="3527181387426738155">Երաժշտություն և աուդիո</translation>
+<translation id="3527624163937328588">Հեռացնել առդիրը</translation>
 <translation id="3528171143076753409">Սերվերի վկայագիրը վստահելի չէ:</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Առնվազն 1 տարր համաժամացված սարքերում}=1{1 տարր (և ավելին համաժամացված սարքերում)}one{# տարր (և ավելին համաժամացված սարքերում)}other{# տարր (և ավելին համաժամացված սարքերում)}}</translation>
 <translation id="3531366304259615706">Օգտագործել էկրանի կողպումը</translation>
@@ -1616,6 +1617,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">«Կառավարել Google-ի գաղտնիության կարգավորումները» կոճակ․ ակտիվացրեք՝ ձեր Google հաշվի գաղտնիության կարգավորումները բացելու համար</translation>
 <translation id="3603507503523709">Ձեր ադմինիստրատորն արգելափակել է հավելվածը</translation>
+<translation id="3605082766859363473">Ընտրված է ԱԲ ռեժիմը</translation>
 <translation id="3605899229568538311">5 x 5 դյույմ</translation>
 <translation id="3606917451836803637">Հեռուստահաղորդումներ և ծրագրեր</translation>
 <translation id="3608932978122581043">Նշել դիրքը</translation>
@@ -1951,6 +1953,7 @@
 <translation id="411918202192379658">Ինքնալրացումն ավելի հարմար է դարձել</translation>
 <translation id="4121428309786185360">Ժամկետը լրանում է`</translation>
 <translation id="4123572138124678573">Երեք անցք ներքևում</translation>
+<translation id="4125597496726375563">Ընտրված է «Ստեղծել պատկեր» ընտրանքը</translation>
 <translation id="412601465078863288">Վերբեռնման ժամանակը սպառվել է</translation>
 <translation id="4127317221386336246">Հագուստի պարագաներ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 այլ}one{# այլ}other{# այլ}}</translation>
@@ -3671,6 +3674,7 @@
 <translation id="6917795328362592458">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել պահված գաղտնաբառերը։</translation>
 <translation id="6917873303492266709">Ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում համատեղ աշխատելու համար բացեք կարգավորումները և միացրեք «Թույլատրել մուտքը Chrome-ում» կարգավորումը։</translation>
 <translation id="6921197121276419421">Վեբ ծրագրերի տեղադրումը թույլատրված է</translation>
+<translation id="6922905531092220751">Հեռացնել կցված պատկերը</translation>
 <translation id="69238565902785824">Ձեր հաշիվը միացված պահելը կօգնի ձեզ ավելի արագ վճարել<ph name="BNPL_ISSUER_NAME" />, բայց դուք կարող եք անջատել այն՝ գնալով <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Ընտրեք՝ արդյոք ցուցադրել քարտի առավելությունները վճարում կատարելիս (գործում են բանկի պայմանները)</translation>
 <translation id="6924933062125062950">Նույնականացման քարտի ջնջում</translation>
@@ -3754,7 +3758,6 @@
 <translation id="7035705295266423040">Ձեր բանկը ցանկանում է հաստատել ձեր ինքնությունը</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Ձեր Google հաշվի գաղտնիության կարգավորումները կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
-<translation id="7042465939346919737">Google-ը օգտագործում է վճարման էջի տեղեկությունները և այլ համապատասխան տվյալներ՝ այս տարբերակներն առաջարկելու համար։ Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Որոնման պայմանների հստակեցում</translation>
 <translation id="7043552168914147882">Բաժանարար</translation>
 <translation id="7044081119134178347">Տրվել է տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>

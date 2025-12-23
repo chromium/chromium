@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="3668816008081204991">읽기 목록이 숨겨져 있음</translation>
 <translation id="3670030362669914947">번호</translation>
+<translation id="3672283986707092811">전체 선택</translation>
 <translation id="3679163990085797665">읽은 항목 삭제</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">표시 이름</translation>
 <translation id="4375772272517383391">탭 모두 닫기</translation>
 <translation id="4378154925671717803">전화</translation>
+<translation id="4380677808580146413">선택</translation>
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1일 후}other{{COUNT}일 후}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">파일 저장</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="536067926684072644">북마크 보기</translation>
+<translation id="5364647308446127983">{count,plural, =1{패스키 {count}개를 가져올 수 없음}other{패스키 {count}개를 가져올 수 없음}}</translation>
 <translation id="5371112366564891538">텍스트 크기 확대</translation>
+<translation id="5376135254804080693">모두 선택 해제</translation>
 <translation id="537853552771686272">관심 있는 주제 및 사이트 관리</translation>
 <translation id="5390458669633674385">{count,plural, =1{닫힌 탭 {count}개}other{닫힌 탭 {count}개}}</translation>
 <translation id="5394975111793637642">추천 제품 리뷰 카드 숨기기</translation>

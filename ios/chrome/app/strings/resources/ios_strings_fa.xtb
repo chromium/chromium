@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">ماه انقضا</translation>
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1161663161838091892">برای ادامه، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
+<translation id="1162834932051545794">{count,plural, =1{‫{count} کارت اعتباری}one{‫{count} کارت اعتباری}other{‫{count}کارت اعتباری}}</translation>
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1172898394251786223">فیلد بعدی</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">زبانه‌های باز</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
 <translation id="1764070164487214210">مسیرها</translation>
+<translation id="1764511703783285459">«مدیر گذرواژه» دیگر هیچ گذرواژه یا گذرکلیدی را هم‌رسانی نکرد</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
 <translation id="1771016937398045251">منو ابزارها</translation>
 <translation id="1772468122139624049">مجدد بار کردن زبانه‌ها ممکن نیست</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087098519049306025">پیگیری قیمت</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
+<translation id="510580293474170715">چیزی وارد نشد</translation>
 <translation id="5113960131843706315">درحال دریافت داده‌های شما…</translation>
 <translation id="5118462200606189584">افزودن حساب…</translation>
 <translation id="5118764316110575523">خاموش</translation>
@@ -1449,6 +1452,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6410390304316730527">«مرور ایمن» از شما دربرابر مهاجمانی محافظت می‌کند که ممکن است فریبتان دهند تا کارهای خطرناکی انجام دهید؛ ازجمله نصب نرم‌افزار مخرب یا افشای اطلاعات شخصی مثل گذرواژه‌ها، شماره‌های تماس، یا کارت‌های اعتباری. اگر «مرور ایمن» را خاموش می‌کنید، هنگام مرور کردن در سایت‌های ناآشنا یا نامعتبر احتیاط کنید.</translation>
 <translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند زبانه باز کنید</translation>
 <translation id="6418346271604475326">‏آماده‌سازی PDF</translation>
+<translation id="6420292512900923139">مشکل در وارد کردن داده‌ها</translation>
 <translation id="6421038304268477484">نوشتار ترجمه‌شده</translation>
 <translation id="6429213933892582367">گزینه‌های «گذرواژه » را باز کنید</translation>
 <translation id="6435236283694032571">افزودن به فهرست خواندن</translation>
@@ -1487,6 +1491,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6550891580932862748">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. تنظیمات «مرور ایمن» شما در دیگر محصولات Google تحت‌تأثیر قرار نخواهد گرفت.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">ازنو انجام دادن</translation>
 <translation id="6559301491397835130">{count,plural, =1{نشانک در «{title}» ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}one{نشانک‌ها در «{title}» ذخیره شد. این نشانک‌ها فقط در این دستگاه ذخیره می‌شود.}other{نشانک‌ها در «{title}» ذخیره شد. این نشانک‌ها فقط در این دستگاه ذخیره می‌شود.}}</translation>
 <translation id="656065428026159829">بیشتر دیدن</translation>

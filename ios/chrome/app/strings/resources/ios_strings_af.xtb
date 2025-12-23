@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1161663161838091892">Sinkroniseer oortjies en geskiedenis om voort te gaan</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kredietkaart}other{{count} kredietkaarte}}</translation>
 <translation id="1164891049599601209">Op misleidende werf ingevoer</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgende veld</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Oop oortjies</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
 <translation id="1764070164487214210">Aanwysings</translation>
+<translation id="1764511703783285459">Die ander wagwoordbestuurder het nie enige wagwoorde of toegangsleutels gedeel nie</translation>
 <translation id="1767766085187034454">Google Vertaal</translation>
 <translation id="1771016937398045251">Nutsgoedkieslys</translation>
 <translation id="1772468122139624049">Kan nie oortjies herlaai nie</translation>
@@ -688,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 is gekies}other{# is gekies}}</translation>
 <translation id="3668816008081204991">Leeslys word versteek</translation>
 <translation id="3670030362669914947">Nommer</translation>
+<translation id="3672283986707092811">Kies alles</translation>
 <translation id="3679163990085797665">Vee uit wat gelees is</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
 <translation id="3695446226812920698">Vind uit hoe</translation>
@@ -870,6 +873,7 @@
 <translation id="4367971618859387374">Vertoonnaam</translation>
 <translation id="4375772272517383391">Maak alle oortjies toe</translation>
 <translation id="4378154925671717803">Foon</translation>
+<translation id="4380677808580146413">Kies</translation>
 <translation id="4389019817280890563">Tik om taal te verander.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Ná 1 dag}other{Ná {COUNT} dae}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
@@ -1068,6 +1072,7 @@
 <translation id="508645147179720015">Nota is langer as 1 000 karakters</translation>
 <translation id="5087098519049306025">Prysnasporing</translation>
 <translation id="5090832849094901128">As hierdie wagwoord uitgevee word, sal jou rekening op <ph name="WEBSITE" /> nie uitgevee word nie.</translation>
+<translation id="510580293474170715">Niks is ingevoer nie</translation>
 <translation id="5113960131843706315">Kry tans jou goed …</translation>
 <translation id="5118462200606189584">Voeg rekening by …</translation>
 <translation id="5118764316110575523">Af</translation>
@@ -1138,7 +1143,9 @@
 <translation id="5352128922772839949">Stoor lêer</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
 <translation id="536067926684072644">Wys boekmerke</translation>
+<translation id="5364647308446127983">{count,plural, =1{Kon {count} toegangsleutel nie invoer nie}other{Kon {count} toegangsleutels nie invoer nie}}</translation>
 <translation id="5371112366564891538">Vergroot teks</translation>
+<translation id="5376135254804080693">Ontkies alles</translation>
 <translation id="537853552771686272">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} is toegemaak}other{{count} is toegemaak}}</translation>
 <translation id="5394975111793637642">Versteek produkresensies vir jou kaart</translation>
@@ -1445,6 +1452,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6410390304316730527">Veiligblaai beskerm jou teen aanvallers wat jou dalk kan mislei om iets gevaarlik te doen, soos om kwaadwillige sagteware te installeer of jou persoonlike inligting, soos wagwoorde, foonnommers of kredietkaartinligting, bekend te maak. As jy dit afskakel, moet jy versigtig wees wanneer jy op onbekende of nie-fatsoenlike werwe blaai.</translation>
 <translation id="6410883413783534063">Maak oortjies oop om verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="6418346271604475326">Berei PDF voor</translation>
+<translation id="6420292512900923139">Kon nie jou data invoer nie</translation>
 <translation id="6421038304268477484">Vertaalde teks</translation>
 <translation id="6429213933892582367">Maak Wagwoordopsies oop</translation>
 <translation id="6435236283694032571">Voeg by Leeslys</translation>
@@ -1483,6 +1491,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opsies</translation>
 <translation id="6550891580932862748">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jou Veiligblaai-instellings in ander Google-produkte sal nie geraak word nie.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Herdoen</translation>
 <translation id="6559301491397835130">{count,plural, =1{Boekmerk is gestoor na “{title}”. Dit word net op hierdie toestel gestoor.}other{Boekmerk is gestoor na “{title}”. Dit word net op hierdie toestel gestoor.}}</translation>
 <translation id="656065428026159829">Sien meer</translation>

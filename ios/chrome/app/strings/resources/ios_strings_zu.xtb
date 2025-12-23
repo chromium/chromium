@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Kukhethwe oku-1}one{Kukhethwe okungu-#}other{Kukhethwe okungu-#}}</translation>
 <translation id="3668816008081204991">Uhlu lokufunda lufihliwe</translation>
 <translation id="3670030362669914947">Inombolo</translation>
+<translation id="3672283986707092811">Khetha Konke</translation>
 <translation id="3679163990085797665">Sula okufundiwe</translation>
 <translation id="368329460027487650">Uphume ngemvume. Ivula okukhethwa kukho kokungena ngemvume.</translation>
 <translation id="3695446226812920698">Funda ukuthi kanjani</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Bonisa igama</translation>
 <translation id="4375772272517383391">Vala wonke amathebhu</translation>
 <translation id="4378154925671717803">Ifoni</translation>
+<translation id="4380677808580146413">Khetha</translation>
 <translation id="4389019817280890563">Thepha ukuze ushintshe ulimi.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Ngemva kosuku olungu-1}one{Ngemva kwezinsuku ezingu-{COUNT}}other{Ngemva kwezinsuku ezingu-{COUNT}}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{Ithebhu engu-1}one{Amathebhu angu-#}other{Amathebhu angu-#}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Londoloza ifayela</translation>
 <translation id="5355191726083956201">Ukuvikelwa Okuthuthukisiwe kuvuliwe</translation>
 <translation id="536067926684072644">Bonisa Amabhukimakhi</translation>
+<translation id="5364647308446127983">{count,plural, =1{Ayikwazanga ukungenisa ukhiye wokudlula ongu-{count}}one{Ayikwazanga ukungenisa okhiye bokudlula abangu-{count}}other{Ayikwazanga ukungenisa okhiye bokudlula abangu-{count}}}</translation>
 <translation id="5371112366564891538">Khulisa usayizi wombhalo</translation>
+<translation id="5376135254804080693">Susa Ukukhetha konke</translation>
 <translation id="537853552771686272">Lawula izihloko namasayithi onentshisekelo kuwo</translation>
 <translation id="5390458669633674385">{count,plural, =1{Kuvalwe okungu-{count}}one{Kuvalwe okungu-{count}}other{Kuvalwe okungu-{count}}}</translation>
 <translation id="5394975111793637642">Fihla izibuyekezo zomkhiqizo zekhadi lakho</translation>

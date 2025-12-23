@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Atlasīts 1 vienums}zero{Atlasīti # vienumi}one{Atlasīts # vienums}other{Atlasīti # vienumi}}</translation>
 <translation id="3668816008081204991">Lasīšanas saraksts ir paslēpts.</translation>
 <translation id="3670030362669914947">Numurs</translation>
+<translation id="3672283986707092811">Atlasīt visu</translation>
 <translation id="3679163990085797665">Dzēst izlasītos</translation>
 <translation id="368329460027487650">Jūs esat izrakstījies. Tiek atvērtas pierakstīšanās opcijas.</translation>
 <translation id="3695446226812920698">Uzzināt vairāk</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Parādāmais vārds</translation>
 <translation id="4375772272517383391">Visu ciļņu aizvēršana</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
+<translation id="4380677808580146413">Atlasīt</translation>
 <translation id="4389019817280890563">Pieskarieties, lai mainītu valodu.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pēc 1 dienas}zero{Pēc {COUNT} dienām}one{Pēc {COUNT} dienas}other{Pēc {COUNT} dienām}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Saglabāt failu</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="536067926684072644">Rādīt grāmatzīmes</translation>
+<translation id="5364647308446127983">{count,plural, =1{Nevarēja importēt {count} piekļuves atslēgu.}zero{Nevarēja importēt {count} piekļuves atslēgas.}one{Nevarēja importēt {count} piekļuves atslēgu.}other{Nevarēja importēt {count} piekļuves atslēgas.}}</translation>
 <translation id="5371112366564891538">Palielināt teksta lielumu</translation>
+<translation id="5376135254804080693">Noņemt visu atlasi</translation>
 <translation id="537853552771686272">Pārvaldiet tēmas un vietnes, kas jūs interesē</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} aizvērta cilne}zero{{count} aizvērtu ciļņu}one{{count} aizvērta cilne}other{{count} aizvērtas cilnes}}</translation>
 <translation id="5394975111793637642">Paslēpt kartīti “Jums ieteiktās produktu atsauksmes”</translation>

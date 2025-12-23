@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="3668816008081204991">Leeslijst is verborgen</translation>
 <translation id="3670030362669914947">Nummer</translation>
+<translation id="3672283986707092811">Alles selecteren</translation>
 <translation id="3679163990085797665">Gelezen items verwijderen</translation>
 <translation id="368329460027487650">Uitgelogd. Hiermee open je de inlogopties.</translation>
 <translation id="3695446226812920698">Meer informatie</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Weergavenaam</translation>
 <translation id="4375772272517383391">Alle tabbladen sluiten</translation>
 <translation id="4378154925671717803">Telefoon</translation>
+<translation id="4380677808580146413">Selecteren</translation>
 <translation id="4389019817280890563">Tik om de taal te wijzigen.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Na 1 dag}other{Na {COUNT} dagen}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Bestand opslaan</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="536067926684072644">Bookmarks tonen</translation>
+<translation id="5364647308446127983">{count,plural, =1{Kan {count} toegangssleutel niet importeren}other{Kan {count} toegangssleutels niet importeren}}</translation>
 <translation id="5371112366564891538">Lettergrootte groter maken</translation>
+<translation id="5376135254804080693">Alles deselecteren</translation>
 <translation id="537853552771686272">Beheer de onderwerpen en sites waarin je geïnteresseerd bent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} gesloten}other{{count} gesloten}}</translation>
 <translation id="5394975111793637642">Kaart Productreviews voor jou verbergen</translation>

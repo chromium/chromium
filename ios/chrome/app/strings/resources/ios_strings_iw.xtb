@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{נבחר פריט אחד}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
 <translation id="3668816008081204991">רשימת הקריאה מוסתרת</translation>
 <translation id="3670030362669914947">מספר</translation>
+<translation id="3672283986707092811">בחירת הכול</translation>
 <translation id="3679163990085797665">מחיקת פריטים שנקראו</translation>
 <translation id="368329460027487650">החשבון לא מחובר. ייפתחו אפשרויות הכניסה.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">השם המוצג</translation>
 <translation id="4375772272517383391">סגירת כל הכרטיסיות</translation>
 <translation id="4378154925671717803">טלפון</translation>
+<translation id="4380677808580146413">בחירה</translation>
 <translation id="4389019817280890563">צריך ללחוץ לשינוי שפה</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{אחרי יום אחד}one{אחרי {COUNT} ימים}two{אחרי יומיים ({COUNT})}other{אחרי {COUNT} ימים}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{כרטיסייה אחת}one{‫# כרטיסיות}two{‫# כרטיסיות}other{‫# כרטיסיות}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">שמירת קובץ</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="536067926684072644">הצגת הסימניות</translation>
+<translation id="5364647308446127983">{count,plural, =1{לא ניתן לייבא מפתח גישה אחד ({count})}one{לא ניתן לייבא {count} מפתחות גישה}two{לא ניתן לייבא {count} מפתחות גישה}other{לא ניתן לייבא {count} מפתחות גישה}}</translation>
 <translation id="5371112366564891538">הגדלת הטקסט</translation>
+<translation id="5376135254804080693">ביטול כל הבחירות</translation>
 <translation id="537853552771686272">ניהול הנושאים והאתרים שמעניינים אותך</translation>
 <translation id="5390458669633674385">{count,plural, =1{מספר הכרטיסיות שנסגרו: {count}}one{{count} closed}two{מספר הכרטיסיות שנסגרו: {count}}other{מספר הכרטיסיות שנסגרו: {count}}}</translation>
 <translation id="5394975111793637642">הסתרת הכרטיס "ביקורות על מוצרים"</translation>

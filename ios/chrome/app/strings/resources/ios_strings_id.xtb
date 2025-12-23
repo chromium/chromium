@@ -690,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="3668816008081204991">Daftar bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nomor</translation>
+<translation id="3672283986707092811">Pilih Semua</translation>
 <translation id="3679163990085797665">Hapus yang telah dibaca</translation>
 <translation id="368329460027487650">Logout. Buka opsi untuk login.</translation>
 <translation id="3695446226812920698">Pelajari caranya</translation>
@@ -872,6 +873,7 @@
 <translation id="4367971618859387374">Nama tampilan</translation>
 <translation id="4375772272517383391">Tutup semua tab</translation>
 <translation id="4378154925671717803">Ponsel</translation>
+<translation id="4380677808580146413">Pilih</translation>
 <translation id="4389019817280890563">Ketuk untuk mengubah bahasa.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Setelah 1 hari}other{Setelah {COUNT} hari}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}other{# tab}}</translation>
@@ -1141,7 +1143,9 @@
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
+<translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimpor {count} kunci sandi}other{Tidak dapat mengimpor {count} kunci sandi}}</translation>
 <translation id="5371112366564891538">Perbesar ukuran teks</translation>
+<translation id="5376135254804080693">Batalkan Semua Pilihan</translation>
 <translation id="537853552771686272">Kelola topik dan situs yang Anda minati</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kartu ulasan produk untuk Anda</translation>

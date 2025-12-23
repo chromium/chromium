@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
 <translation id="3668816008081204991">Leseliste ist ausgeblendet</translation>
 <translation id="3670030362669914947">Nummer</translation>
+<translation id="3672283986707092811">Alle auswählen</translation>
 <translation id="3679163990085797665">Gelesene löschen</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Anzeigename</translation>
 <translation id="4375772272517383391">Alle Tabs schließen</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Auswählen</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Nach 1 Tag}other{Nach {COUNT} Tagen}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 Tab}other{# Tabs}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="536067926684072644">Lesezeichen einblenden</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} Passkey konnte nicht importiert werden}other{{count} Passkeys konnten nicht importiert werden}}</translation>
 <translation id="5371112366564891538">Text vergrößern</translation>
+<translation id="5376135254804080693">Auswahl für alle aufheben</translation>
 <translation id="537853552771686272">Hier kannst du Themen und Websites verwalten, die dich interessieren</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} geschlossen}other{{count} geschlossen}}</translation>
 <translation id="5394975111793637642">Karte „Rezensionen für dich“ ausblenden</translation>

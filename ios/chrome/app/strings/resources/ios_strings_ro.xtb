@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Unul selectat}few{# selectate}other{# selectate}}</translation>
 <translation id="3668816008081204991">Lista de lecturi este ascunsă</translation>
 <translation id="3670030362669914947">Număr</translation>
+<translation id="3672283986707092811">Selectează tot</translation>
 <translation id="3679163990085797665">Șterge-le pe cele citite</translation>
 <translation id="368329460027487650">Utilizator deconectat. Deschide opțiunile pentru a te conecta.</translation>
 <translation id="3695446226812920698">Află cum</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Numele afișat</translation>
 <translation id="4375772272517383391">Închide toate filele</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Selectează</translation>
 <translation id="4389019817280890563">Atinge pentru a schimba limba.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{După o zi}few{După {COUNT} zile}other{După {COUNT} de zile}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{O filă}few{# file}other{# de file}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Salvează fișierul</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
 <translation id="536067926684072644">Afișează marcajele</translation>
+<translation id="5364647308446127983">{count,plural, =1{Nu s-a putut importa {count} cheie de acces.}few{Nu s-au putut importa {count} chei de acces.}other{Nu s-au putut importa {count} de chei de acces.}}</translation>
 <translation id="5371112366564891538">Mărește dimensiunea textului</translation>
+<translation id="5376135254804080693">Debifează tot</translation>
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} închisă}few{{count} închise}other{{count} închise}}</translation>
 <translation id="5394975111793637642">Ascunde cardul Recenzii de produse pentru tine</translation>

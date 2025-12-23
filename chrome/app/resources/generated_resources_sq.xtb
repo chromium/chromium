@@ -1734,6 +1734,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2157457598652721267">Përdor “/” dhe “-” për të zgjedhur butonin e majtë ose të djathtë të miut. Përdor “*” për të zgjedhur të dy butonat.</translation>
 <translation id="2157474325782140681">Për të marrë veçori shtesë, përdor një stacion lidhjeje Dell të projektuar për të funksionuar me këtë Chromebook.</translation>
 <translation id="215753907730220065">Dil nga ekrani i plotë</translation>
+<translation id="2157632422749995237">Më vonë, "Portofoli" mund të të dërgojë njoftime për ngjarjet e tua</translation>
 <translation id="2157779167749714207">Pajisja jote <ph name="DEVICE_TYPE" /> vjen me Gemini</translation>
 <translation id="2158103060812356265">Krahaso me lehtësi produkte të ngjashme</translation>
 <translation id="2158249272743343757">Fshi të dhënat e personalizimit...</translation>
@@ -2433,6 +2434,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2633212996805280240">Të hiqet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nuk mund ta përfundonte instalimin, por do të vazhdojë të ekzekutohet nga imazhi i diskut.</translation>
 <translation id="2633764681656412085">FIDO</translation>
+<translation id="2634116253227318548">Qasu te dokumentet e tua dixhitale, si p.sh. biletat e ngjarjeve dhe kartat e besnikërisë, nga pajisja jote</translation>
 <translation id="2634199532920451708">Historiku i printimeve</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635164452434513092">Nuk të paralajmëron për sajtet private, si p.sh. intranetin e kompanisë sate</translation>
@@ -2456,6 +2458,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2646132387794831258">Të ruhet te një dosje në "Llogarinë tënde të Google"?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">ASCII i koduar me Base64, zinxhir certifikatash</translation>
+<translation id="2649331484502514724">DNS e sigurt</translation>
 <translation id="2649508632465204949">Më mëso një aftësi të re</translation>
 <translation id="2651259505411913186">Po, mbaji të dhënat e mia veçmas nga shkolla</translation>
 <translation id="265156376773362237">Ngarkimi paraprak standard</translation>
@@ -3389,6 +3392,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="329838636886466101">Riparoje</translation>
 <translation id="3298789223962368867">U fut URL e pavlefshme.</translation>
 <translation id="32991397311664836">Pajisjet:</translation>
+<translation id="330140779027048024">Përdore gjithmonë me ofruesin e zgjedhur të DNS over HTTPS</translation>
 <translation id="3301554464236215299">Ky skedar nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="3301996560342889673">Të sinkronizohet historiku?</translation>
 <translation id="33022249435934718">Profile GDI</translation>
@@ -4717,6 +4721,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4178220097446335546">Për ta harruar këtë abonim dhe rrjetet e tij të lidhura, shko te faqja e abonimit të Passpoint për të hequr abonimin.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
+<translation id="4182182457914031017">Për të ofruar sugjerime dhe për të përmirësuar këtë veçori, URL-ja dhe përmbajtja e plotë e faqes së sajtit që viziton ndahen me Google</translation>
 <translation id="4182339886482390129">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet, shkarkimet dhe shtesat e rrezikshme</translation>
 <translation id="4184803915913850597">Pajisja HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="418527077671811642"><ph name="WEBSITE" /> do të mësojë markën dhe modelin e çelësit tënd të sigurisë</translation>
@@ -4748,6 +4753,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Raporti i komenteve</translation>
 <translation id="4206585797409671301">Lejohet të shfaqë kërkesat</translation>
+<translation id="4207144975205749656">Enkripton kërkesat e navigimit, në mënyrë që sulmuesit në të njëjtin rrjet të mos arrijnë ta shikojnë trafikun tënd</translation>
 <translation id="4207932031282227921">Kërkohet leje, shtyp F6 për t'u përgjigjur</translation>
 <translation id="4208390505124702064">Kërko në <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">E madhe</translation>
@@ -6157,6 +6163,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5186362203408605578">Përdor një pajisje tjetër duke skanuar kodin QR</translation>
 <translation id="5186381005592669696">Personalizo gjuhën e ekranit për aplikacionet e mbështetura</translation>
 <translation id="5186788525428341874">Mund ta përdorësh këtë çelës kalimi për t'u identifikuar më shpejt në pajisjet e tua. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google" për <ph name="ACCOUNT_NAME" />.</translation>
+<translation id="5186792064936776005">Përdor parazgjedhjen nëse ofrohet</translation>
 <translation id="5187641678926990264">&amp;Instalo faqen si aplikacion...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Ndarë nga <ph name="USER_NAME" /></translation>
@@ -7132,6 +7139,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5863445608433396414">Aktivizo funksionet e korrigjimit</translation>
 <translation id="5863515189965725638">Modifiko numrin IBAN</translation>
 <translation id="5864195618110239517">Përdor lidhjen me matje</translation>
+<translation id="5864624288360677142">Përdor parazgjedhjen nëse ofrohet dhe DNS-në e Google si rezervë</translation>
 <translation id="5864754048328252126">Veprimi i gjendjes joaktive gjatë karikimit</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> do të vendoset në pauzë së shpejti</translation>
 <translation id="586567932979200359">Po e ekzekuton <ph name="PRODUCT_NAME" /> nga imazhi i tij i diskut. Instalimi i tij në kompjuter lejon që ta ekzekutosh pa imazhin e diskut dhe garanton se do të mbahet i përditësuar.</translation>
@@ -7583,6 +7591,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6180550893222597997">Cilin çelës kalimi dëshiron të përdorësh për <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Ndonjëherë, aplikacionet e përditësojnë markën e tyre. Rishiko të gjitha ndryshimet për t'u siguruar që janë të duhurat përpara se t'i përditësosh.</translation>
 <translation id="6181431612547969857">Shkarkimi u bllokua</translation>
+<translation id="6182100780603067202">Ndaj edhe audion e aplikacionit (nga të gjitha dritaret e tij)</translation>
 <translation id="6183369864942961155">Tema automatike e ndriçuar/errët</translation>
 <translation id="6184099524311454384">Kërko skedat</translation>
 <translation id="6185132558746749656">Vendndodhja e pajisjes</translation>
@@ -8997,6 +9006,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7175037578838465313">Konfiguro <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Ngarkuar nga:</translation>
 <translation id="7177659256878428843">Konverto grupin e skedave në një dosje faqeshënuesish</translation>
+<translation id="7180569503618416775">"Portofoli" mund të ofrojë të ruajë informacionet nga faqet që po shikon, si p.sh. biletat që blen</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7181117767881540376">&amp;Fshih shiritin e faqeshënuesve</translation>
@@ -10359,6 +10369,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8084429490152575036">Cilësimet e APN-së së rrjetit celular</translation>
 <translation id="8084510406207562688">R&amp;estauro të gjitha skedat</translation>
 <translation id="8084628902026812045">Ky sajt nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
+<translation id="808488435221187916">Informacionet e tua ofrohen te "Portofoli i Google" në çdo pajisje ku je identifikuar</translation>
 <translation id="8086015605808120405">Po konfiguron <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Kjo skedë po ndan ekranin tënd</translation>
 <translation id="8086610718778464681">Aplikacionet dhe skedarët e Linux nuk mund të rezervohen</translation>

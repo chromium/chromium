@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Dette nulstiller alle websites på din liste til standardzoom</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1994173015038366702">Webadresse</translation>
+<translation id="1994558116414798016">Skrifttypen Lexend</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2028449514182362831">Funktioner, der skal bruge bevægelsessensorer, fungerer ikke</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Temafarve (lys)</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2102396546234652240">Tillad ikke, at websites anvender din mikrofon</translation>
+<translation id="2115808389282428160">Tillad ikke, at websites kan tilgå andre apps og tjenester på denne enhed</translation>
 <translation id="2117655453726830283">Næste dias</translation>
 <translation id="2146263598007866206">Websites kan automatisk downloade relaterede filer sammen for at spare tid</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -159,6 +161,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2626708220538466178">Feltet i bunden med standardbrowseren er lukket</translation>
 <translation id="2653659639078652383">Send</translation>
+<translation id="2665056444046933274">Websites kan bruge denne funktion til at få adgang til andre apps og tjenester på denne enhed</translation>
 <translation id="2670403088701171361">Tillad ikke, at websites ser tekst eller billeder fra din udklipsholder</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2682367912565197520">Slet gemt zoomniveau</translation>
@@ -202,8 +205,10 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="311394601889664316">Tillad ikke, at websites redigerer filer og mapper på din enhed</translation>
 <translation id="3114012059975132928">Videoafspiller</translation>
 <translation id="3115898365077584848">Vis info</translation>
+<translation id="3120204271988747891">Websites kan anmode om adgang til andre enheder på dit lokale netværk</translation>
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
+<translation id="3134859781443140237">Lokalt netværk</translation>
 <translation id="3143754809889689516">Afspil fra begyndelsen</translation>
 <translation id="3164169438034704658">Du kan aktivere præcis lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Tillad, at et website bruger tredjepartscookies</translation>
@@ -214,6 +219,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3223425961342298674">Adgang til lokation er ikke tilladt</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Slet browserdata…</translation>
+<translation id="3241320538788585298">Loopback-netværk</translation>
 <translation id="3242646949159196181">Når dette er slået til, kan websites afspille lyd. Når dette er slået fra, kan websites ikke afspille lyd.</translation>
 <translation id="3273479183583863618">Prisfald på faner</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
@@ -423,6 +429,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> er blokeret</translation>
 <translation id="560980142378233747">Det betyder, at websitefunktionerne gerne skulle fungere som forventet, men du vil muligvis have mindre browserbeskyttelse. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Felt i bunden med kort på siden Ny fane</translation>
+<translation id="5621413808884657932">Når funktionen er aktiveret, kan websites anmode om adgang til andre apps og tjenester på denne enhed. Når funktionen er deaktiveret, kan websites ikke tilgå andre apps og tjenester på denne enhed.</translation>
 <translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5649053991847567735">Automatiske downloads</translation>
 <translation id="5668404140385795438">Tilsidesæt en anmodning fra et website om at undgå at zoome ind</translation>
@@ -543,6 +550,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6842868554183332230">Websites registrerer som regel, hvornår du aktivt bruger din enhed, så de kan angive din tilgængelighed i chatapps</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhedstjek</translation>
+<translation id="6882736949427544336">Tillad ikke, at websites kan tilgå andre enheder på dit lokale netværk</translation>
 <translation id="6900883974539674431">Opret fanegrupper, der automatisk gemmes og opdateres på alle dine enheder</translation>
 <translation id="6912998170423641340">Bloker websites, så de ikke kan læse tekst og billeder fra udklipsholderen</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -604,6 +612,8 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7586676035079382730">Notifikationer er ikke tilladt</translation>
 <translation id="7594634374516752650">Forbundet til en Bluetooth-enhed</translation>
 <translation id="7617547684249261169">Du kan slette dele af eller hele din historik og dele af eller alle cookies, websitedata og meget mere</translation>
+<translation id="762200934554267613">Websites kan anmode om adgang til andre apps og tjenester på denne enhed</translation>
+<translation id="7627749368210392160">Websites kan bruge denne funktion til at få adgang til andre enheder på dit lokale netværk</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7655411746932645568">Websites kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="7658239707568436148">Annuller</translation>
@@ -659,6 +669,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8211406090763984747">Forbindelsen er sikker</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Når funktionen er aktiveret, kan websites anmode om adgang til andre enheder på dit lokale netværk. Når funktionen er deaktiveret, kan websites ikke tilgå andre enheder på dit lokale netværk.</translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8284326494547611709">Undertekster</translation>
@@ -712,6 +723,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udført</translation>
 <translation id="8737426583868847403">Websites, du har gemt et tilpasset zoomniveau for, vises her</translation>
+<translation id="8748714929822124637">Tillad ikke, at websites kan tilgå andre enheder på dit lokale netværk</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8775741625735357092">Du kan aktivere bogmærkelinjen under Indstillinger &gt; Udseende</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>

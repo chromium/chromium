@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium beskytter dine følsomme oplysninger med Face ID.</translation>
 <translation id="1591119736686995611">Åbner fanegitteret i Chromium.</translation>
 <translation id="16001233025397167">Sikkerhedstjek beskytter dig mod brud på datasikkerheden, usikre websites og meget mere. Modtag underretninger om eventuelle privatlivsrelaterede eller sikkerhedsmæssige problemer, som Chromium registrerer for dig.</translation>
+<translation id="1614362805233822594">Du har allerede adgangskoder eller adgangsnøgler i Adgangskodeadministrator til de viste websites. Vælg en konto for at beholde de viste loginoplysninger, og overskriv oplysningerne i Adgangskodeadministrator.</translation>
 <translation id="1617663976202781617">Data fra Chromium Sync</translation>
 <translation id="164952285225495380">Denne pakke er allerede blevet sporet i Chromium.</translation>
+<translation id="1703338211136118534">Følgende adgangskoder blev ikke importeret til Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="1707458603865303524">Brug Chromium, hver gang du trykker på links i meddelelser eller andre apps.</translation>
 <translation id="1722370509450468186">Din adgangskode gemmes på din konto (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Et tilpasset feed, der er som skabt til dig</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps i Chromium</translation>
 <translation id="1867772173333403444">4. Vælg Chromium</translation>
 <translation id="1965068424387304464">Tip til Chromium: Gem adgangskoder</translation>
+<translation id="1992653360331625459">Du har allerede adgangskoder til disse konti i Adgangskodeadministrator. Hvis du vælger at importere én af adgangskoderne nedenfor, vil den erstatte den eksisterende adgangskode.</translation>
 <translation id="2006345422933397527">Chromium kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2042889939382983733">Se din Chromium-historik</translation>
 <translation id="2052320862053429062">Chromium tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
 
 Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
+<translation id="2334943301233020675">Følgende adgangsnøgler blev ikke importeret til Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="2337722506862731008">Del Chromium</translation>
 <translation id="2340423701577464731">Føj et element til læselisten i Chromium</translation>
 <translation id="2374627437126809292">Chromium bruger Google Maps til at give dig rutevejledninger og lokale oplysninger om registrerede adresser.</translation>

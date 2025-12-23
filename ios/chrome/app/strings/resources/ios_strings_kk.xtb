@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 элемент таңдалды}other{# элемент таңдалды}}</translation>
 <translation id="3668816008081204991">Оқу тізімі жасырылған.</translation>
 <translation id="3670030362669914947">Нөмір</translation>
+<translation id="3672283986707092811">Барлығын таңдау</translation>
 <translation id="3679163990085797665">Оқылғандарды жою</translation>
 <translation id="368329460027487650">Аккаунттан шыққансыз. Аккаунтқа кіру опцияларын ашады.</translation>
 <translation id="3695446226812920698">Әдісін білу</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Көрсетілетін атау</translation>
 <translation id="4375772272517383391">Барлық қойындыларды жабу</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Таңдау</translation>
 <translation id="4389019817280890563">Тілді өзгерту үшін түртіңіз.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 күннен кейін}other{{COUNT} күннен кейін}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 қойынды}other{# қойынды}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Файлды сақтау</translation>
 <translation id="5355191726083956201">Жақсартылған қорғаныс қосулы.</translation>
 <translation id="536067926684072644">Бетбелгілерді көрсету</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} кіру кілті импортталмады.}other{{count} кіру кілті импортталмады.}}</translation>
 <translation id="5371112366564891538">Мәтіннің өлшемін үлкейту</translation>
+<translation id="5376135254804080693">Барлығын таңдаудан алу</translation>
 <translation id="537853552771686272">Сізді қызықтыратын тақырыптар мен сайттарды басқару</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} қойынды жабылды.}other{{count} қойынды жабылды.}}</translation>
 <translation id="5394975111793637642">Картаңызда өнім туралы пікірлерді жасыру</translation>

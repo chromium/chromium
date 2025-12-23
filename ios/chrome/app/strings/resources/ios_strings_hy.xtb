@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Ընտրված է 1 տարր}one{Ընտրված է # տարր}other{Ընտրված է # տարր}}</translation>
 <translation id="3668816008081204991">Ընթերցանության ցանկը թաքցված է</translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
+<translation id="3672283986707092811">Ընտրել բոլորը</translation>
 <translation id="3679163990085797665">Ջնջել կարդացվածները</translation>
 <translation id="368329460027487650">Դուք դուրս եք եկել հաշվից։ Բացում է մուտք գործելու եղանակները։</translation>
 <translation id="3695446226812920698">Իմանալ ինչպես</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Ցուցադրվող անունը</translation>
 <translation id="4375772272517383391">Փակել բոլոր ներդիրները</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
+<translation id="4380677808580146413">Ընտրել</translation>
 <translation id="4389019817280890563">Հպեք՝ լեզուն փոխելու համար։</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 օր հետո}one{{COUNT} օր հետո}other{{COUNT} օր հետո}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Պահել ֆայլը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="536067926684072644">Ցույց տալ էջանիշները</translation>
+<translation id="5364647308446127983">{count,plural, =1{Չհաջողվեց ներմուծել {count} մուտքի բանալի}one{Չհաջողվեց ներմուծել {count} մուտքի բանալի}other{Չհաջողվեց ներմուծել {count} մուտքի բանալի}}</translation>
 <translation id="5371112366564891538">Մեծացնել տեքստի չափսը</translation>
+<translation id="5376135254804080693">Չեղարկել բոլոր ընտրությունները</translation>
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}-ը փակված է}one{{count}-ը փակված է}other{{count}-ը փակված է}}</translation>
 <translation id="5394975111793637642">Թաքցնել ապրանքի կարծիքները ձեր քարտի համար</translation>

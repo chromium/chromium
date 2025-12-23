@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Es restabliran tots els llocs web de la llista al nivell de zoom predeterminat</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
+<translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
 <translation id="2028449514182362831">Les funcions que necessiten un sensor de moviment no funcionaran</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Color del tema clar</translation>
 <translation id="2096716221239095980">Suprimeix totes les dades</translation>
 <translation id="2102396546234652240">No permetis que els llocs web utilitzin el micròfon</translation>
+<translation id="2115808389282428160">No permetis que els llocs web accedeixin a altres aplicacions i serveis en aquest dispositiu</translation>
 <translation id="2117655453726830283">Diapositiva següent</translation>
 <translation id="2146263598007866206">És possible que els llocs web baixin automàticament fitxers relacionats en grup per estalviar-te temps</translation>
 <translation id="2148716181193084225">Avui</translation>
@@ -159,6 +161,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
 <translation id="2626708220538466178">Full inferior del navegador predeterminat tancat</translation>
 <translation id="2653659639078652383">Envia</translation>
+<translation id="2665056444046933274">Els llocs web poden utilitzar aquesta funció per accedir a altres aplicacions i serveis d'aquest dispositiu</translation>
 <translation id="2670403088701171361">No permetis que els llocs web vegin el text o les imatges del porta-retalls</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2682367912565197520">Suprimeix el nivell de zoom desat</translation>
@@ -202,8 +205,10 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="311394601889664316">No permetis que els llocs web editin fitxers o carpetes al dispositiu</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
+<translation id="3120204271988747891">Els llocs web poden demanar permís per accedir a altres dispositius de la teva xarxa local</translation>
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
+<translation id="3134859781443140237">Xarxa local</translation>
 <translation id="3143754809889689516">Reprodueix des del principi</translation>
 <translation id="3164169438034704658">Pots activar la ubicació precisa a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permet que un lloc web utilitzi galetes de tercers</translation>
@@ -214,6 +219,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3223425961342298674">No està permès utilitzar la ubicació</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3232293466644486101">Suprimeix les dades de navegació…</translation>
+<translation id="3241320538788585298">Xarxa loopback</translation>
 <translation id="3242646949159196181">Quan aquesta opció està activada, els llocs web poden reproduir so. Quan aquesta opció està desactivada, els llocs web no poden reproduir so.</translation>
 <translation id="3273479183583863618">Baixades de preu en pestanyes</translation>
 <translation id="3277252321222022663">Permet que els llocs web accedeixin als sensors (opció recomanada)</translation>
@@ -423,6 +429,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquejat</translation>
 <translation id="560980142378233747">Això significa que les funcions del lloc web haurien de funcionar de la manera prevista, tot i que pot ser que tinguis menys protecció de navegació. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Full inferior de les targetes de la pàgina Pestanya nova</translation>
+<translation id="5621413808884657932">Quan aquesta opció està activada, els llocs web poden demanar permís per accedir a altres aplicacions i serveis d'aquest dispositiu. Quan aquesta opció està desactivada, els llocs web no poden accedir a altres aplicacions i serveis d'aquest dispositiu.</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5649053991847567735">Baixades automàtiques</translation>
 <translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi el zoom</translation>
@@ -543,6 +550,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6842868554183332230">Els llocs web solen detectar quan estàs utilitzant el dispositiu de manera activa per definir la teva disponibilitat en les aplicacions de xat</translation>
 <translation id="6864395892908308021">Aquest dispositiu no pot llegir NFC</translation>
 <translation id="6870169401250095575">Amaga la targeta Comprovació de seguretat</translation>
+<translation id="6882736949427544336">No permetis que els llocs web accedeixin a altres dispositius de la teva xarxa local</translation>
 <translation id="6900883974539674431">Crea grups de pestanyes que es desin i s'actualitzin automàticament en tots els teus dispositius</translation>
 <translation id="6912998170423641340">Impedeix que els llocs web llegeixin el text i les imatges del porta-retalls</translation>
 <translation id="6945221475159498467">Selecciona</translation>
@@ -604,6 +612,8 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7586676035079382730">No està permès utilitzar les notificacions</translation>
 <translation id="7594634374516752650">Connectat a un dispositiu Bluetooth</translation>
 <translation id="7617547684249261169">Pots suprimir l'historial, les galetes, les dades dels llocs web i més en la seva totalitat o bé una part</translation>
+<translation id="762200934554267613">Els llocs web poden demanar permís per accedir a altres aplicacions i serveis d'aquest dispositiu</translation>
+<translation id="7627749368210392160">Els llocs web poden utilitzar aquesta funció per accedir a altres dispositius de la teva xarxa local</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7655411746932645568">Els llocs web poden demanar permís per connectar-se a ports en sèrie</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
@@ -659,6 +669,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Quan aquesta opció està activada, els llocs web poden demanar permís per accedir a altres dispositius de la teva xarxa local. Quan aquesta opció està desactivada, els llocs web no poden accedir a altres dispositius de la teva xarxa local.</translation>
 <translation id="8249310407154411074">Mou a la part superior</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8284326494547611709">Subtítols</translation>
@@ -712,6 +723,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8737426583868847403">Els llocs web per als quals desis un nivell de zoom personalitzat es mostraran aquí</translation>
+<translation id="8748714929822124637">No permetis que els llocs web accedeixin a altres dispositius de la teva xarxa local</translation>
 <translation id="8751914237388039244">Selecciona una imatge</translation>
 <translation id="8775741625735357092">Pots activar la barra d'adreces d'interès a Configuració &gt; Aparença</translation>
 <translation id="8800034312320686233">El lloc web no funciona?</translation>

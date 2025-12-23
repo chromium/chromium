@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1161663161838091892">આગળ વધવા માટે ટૅબ અને ઇતિહાસ સિંક કરો</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} ક્રેડિટ કાર્ડ}one{{count} ક્રેડિટ કાર્ડ}other{{count} ક્રેડિટ કાર્ડ}}</translation>
 <translation id="1164891049599601209">છેતરામણી સાઇટ પર પ્રવેશ કર્યો</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1172898394251786223">આગલું ફીલ્ડ</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">ટેબ્સ ખોલો</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
 <translation id="1764070164487214210">દિશાનિર્દેશો</translation>
+<translation id="1764511703783285459">અન્ય પાસવર્ડ મેનેજર દ્વારા કોઈ પાસવર્ડ કે પાસકી શેર કરવામાં આવી નથી</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">ટૂલ મેનૂ</translation>
 <translation id="1772468122139624049">ટૅબ ફરીથી લોડ કરી શકતા નથી</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">નોંધમાં 1,000થી વધુ અક્ષર છે</translation>
 <translation id="5087098519049306025">કિંમતને ટ્રૅક કરવું</translation>
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
+<translation id="510580293474170715">કંઈપણ આયાત કર્યું નથી</translation>
 <translation id="5113960131843706315">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ…</translation>
 <translation id="5118462200606189584">એકાઉન્ટ ઉમેરો…</translation>
 <translation id="5118764316110575523">બંધ</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">Safe Browsing એવા હુમલાખોરોથી તમારું રક્ષણ કરી શકે છે જે તમને દુર્ભાવનાપૂર્ણ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અથવા પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ જેવી વ્યક્તિગત માહિતી જાહેર કરવા જેવી જોખમી બાબતો કરવા ગેરમાર્ગે દોરી શકે છે. જો તમે આ બંધ કરો, તો અજાણી અથવા ભરોસાપાત્ર ન હોય એવી સાઇટ બ્રાઉઝ કરતી વખતે સાવધાન રહેજો.</translation>
 <translation id="6410883413783534063">એકસાથે વિભિન્ન પેજની મુલાકાત લેવા માટે ટૅબ ખોલો</translation>
 <translation id="6418346271604475326">PDF તૈયાર કરી રહ્યાં છે</translation>
+<translation id="6420292512900923139">તમારો ડેટા આયાત કરવામાં સમસ્યા આવી</translation>
 <translation id="6421038304268477484">અનુવાદ કરેલી ટેક્સ્ટ</translation>
 <translation id="6429213933892582367">પાસવર્ડના વિકલ્પો ખોલો</translation>
 <translation id="6435236283694032571">વાંચન સૂચિમાં ઉમેરો</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
 <translation id="6550891580932862748">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. અન્ય Google પ્રોડક્ટના તમારા Safe Browsing સેટિંગને કોઈ અસર થશે નહીં.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6559301491397835130">{count,plural, =1{"{title}"માં બુકમાર્ક સાચવ્યું. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{"{title}"માં બુકમાર્ક સાચવ્યું. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{"{title}"માં બુકમાર્ક સાચવ્યા. તે ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
 <translation id="656065428026159829">વધુ જુઓ</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Tukar kedudukan untuk menyesuaikan pengalaman penyemakan imbas anda</translation>
 <translation id="1848033246551405023">Fon Sans Serif</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1881806992065048905">Helaian bawah penampilan halaman tab baharu</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Dibenarkan pada masa ini • Tepat</translation>
 <translation id="2544997614631598250">Tema warna gelap</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
+<translation id="2553552004849639664">Dapatkan perlindungan Chrome yang paling kukuh terhadap ancaman dalam talian</translation>
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
@@ -415,6 +417,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5373874281522292782">Kumpulan tab anda disimpan</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
+<translation id="5407203562970638234">Tingkatkan keselamatan anda</translation>
 <translation id="5438097262470833822">Pilihan ini akan menetapkan semula kebenaran untuk <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Apabila dihidupkan, laman dapat meminta lokasi anda. Apabila dimatikan, laman tidak dapat melihat lokasi anda.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>

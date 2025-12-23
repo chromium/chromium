@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
 <translation id="3668816008081204991">Naka-hide ang listahan ng babasahin</translation>
 <translation id="3670030362669914947">Numero</translation>
+<translation id="3672283986707092811">Piliin Lahat</translation>
 <translation id="3679163990085797665">I-delete ang nabasa na</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
 <translation id="3695446226812920698">Alamin kung paano</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4375772272517383391">Isara ang lahat ng tab</translation>
 <translation id="4378154925671717803">Telepono</translation>
+<translation id="4380677808580146413">Pumili</translation>
 <translation id="4389019817280890563">I-tap para baguhin ang wika.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pagkalipas ng 1 araw}one{Pagkalipas ng {COUNT} araw}other{Pagkalipas ng {COUNT} na araw}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">I-save ang file</translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="536067926684072644">Ipakita ang Mga Bookmark</translation>
+<translation id="5364647308446127983">{count,plural, =1{Hindi ma-import ang {count} passkey}one{Hindi ma-import ang {count} passkey}other{Hindi ma-import ang {count} na passkey}}</translation>
 <translation id="5371112366564891538">Palakihin ang text</translation>
+<translation id="5376135254804080693">I-deselect Lahat</translation>
 <translation id="537853552771686272">Pamahalaan ang mga paksa at site kung saan ka interesado</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ang isinara}one{{count} ang isinara}other{{count} ang isinara}}</translation>
 <translation id="5394975111793637642">I-hide ang card na mga review ng produkto para sa iyo</translation>

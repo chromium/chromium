@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="3668816008081204991">Lista Do przeczytania jest ukryta</translation>
 <translation id="3670030362669914947">Numer</translation>
+<translation id="3672283986707092811">Zaznacz wszystko</translation>
 <translation id="3679163990085797665">Usuń przeczytane</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
 <translation id="3695446226812920698">Instrukcje</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Wyświetlana nazwa</translation>
 <translation id="4375772272517383391">Zamknij wszystkie karty</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Zaznacz</translation>
 <translation id="4389019817280890563">Kliknij, by zmienić język.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po 1 dniu}few{Po {COUNT} dniach}many{Po {COUNT} dniach}other{Po {COUNT} dnia}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Zapisz plik</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
+<translation id="5364647308446127983">{count,plural, =1{Nie udało się zaimportować {count} klucza dostępu}few{Nie udało się zaimportować {count} kluczy dostępu}many{Nie udało się zaimportować {count} kluczy dostępu}other{Nie udało się zaimportować {count} klucza dostępu}}</translation>
 <translation id="5371112366564891538">Zwiększ rozmiar tekstu</translation>
+<translation id="5376135254804080693">Odznacz wszystko</translation>
 <translation id="537853552771686272">Zarządzaj tematami i witrynami, które Cię interesują</translation>
 <translation id="5390458669633674385">{count,plural, =1{Zamknięto {count}}few{Zamknięto {count}}many{Zamknięto {count}}other{Zamknięto {count}}}</translation>
 <translation id="5394975111793637642">Ukryj opinie o produktach na swojej karcie</translation>

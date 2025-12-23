@@ -1554,6 +1554,7 @@
 <translation id="3525130752944427905">10 po x 14 po</translation>
 <translation id="3525435918300186947">Contrôler et reprogrammer des appareils MIDI?</translation>
 <translation id="3527181387426738155">Musique et audio</translation>
+<translation id="3527624163937328588">Retirer la pièce jointe</translation>
 <translation id="3528171143076753409">Le certificat du serveur n'est pas approuvé.</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Au moins 1 élément sur des appareils synchronisés}=1{1 élément (et plus sur des appareils synchronisés)}one{# élément (et plus sur des appareils synchronisés)}other{# éléments (et plus sur des appareils synchronisés)}}</translation>
 <translation id="3531366304259615706">Utiliser le verrouillage d'écran</translation>
@@ -1610,6 +1611,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Bouton Gérer les paramètres de confidentialité de Google, activez-le pour accéder aux paramètres de confidentialité de votre compte Google</translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
+<translation id="3605082766859363473">Mode IA sélectionné</translation>
 <translation id="3605899229568538311">5 po x 5 po</translation>
 <translation id="3606917451836803637">Séries télévisées</translation>
 <translation id="3608932978122581043">Orientation de l'alimentation</translation>
@@ -1945,6 +1947,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="411918202192379658">Le remplissage automatique s'est amélioré</translation>
 <translation id="4121428309786185360">Expire le</translation>
 <translation id="4123572138124678573">Triple perforation en bas</translation>
+<translation id="4125597496726375563">Créer une image sélectionnée</translation>
 <translation id="412601465078863288">Le téléversement a dépassé le délai</translation>
 <translation id="4127317221386336246">Accessoires vestimentaires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 autre élément}one{# autre élément}other{# autres éléments}}</translation>
@@ -3662,6 +3665,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6917795328362592458">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6917873303492266709">Pour partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers, ouvrez les paramètres et activez Autoriser la connexion à Chrome</translation>
 <translation id="6921197121276419421">L'installation d'applis Web est autorisée</translation>
+<translation id="6922905531092220751">Retirer l'image en pièce jointe</translation>
 <translation id="69238565902785824">Si votre compte est associé, vous pouvez payer plus rapidement avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en accédant à <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Choisissez si vous voyez les avantages de votre carte lors du paiement (des conditions bancaires s'appliquent)</translation>
 <translation id="6924933062125062950">Supprimer la carte d'identité</translation>
@@ -3745,7 +3749,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7035705295266423040">Votre banque veut confirmer votre identité</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les paramètres de confidentialité de votre compte Google</translation>
 <translation id="7040230719604914234">Opérateur</translation>
-<translation id="7042465939346919737">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options. Pour masquer les options de paiement différé, accédez à <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Affiner les résultats</translation>
 <translation id="7043552168914147882">Stock d'onglet</translation>
 <translation id="7044081119134178347">L'appareil photo est autorisé cette fois</translation>

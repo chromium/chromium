@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 selecionada}one{# selecionada}other{# selecionadas}}</translation>
 <translation id="3668816008081204991">A Lista de leitura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3672283986707092811">Selecionar tudo</translation>
 <translation id="3679163990085797665">Excluir itens lidos</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
 <translation id="3695446226812920698">Saiba como</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Nome de exibição</translation>
 <translation id="4375772272517383391">Fechar todas as guias</translation>
 <translation id="4378154925671717803">Telefone</translation>
+<translation id="4380677808580146413">Selecionar</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Após 1 dia}one{Após {COUNT} dia}other{Após {COUNT} dias}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Salvar arquivo</translation>
 <translation id="5355191726083956201">A Proteção reforçada está ativa</translation>
 <translation id="536067926684072644">Mostrar favoritos</translation>
+<translation id="5364647308446127983">{count,plural, =1{Não foi possível importar {count} chave de acesso}one{Não foi possível importar {count} chave de acesso}other{Não foi possível importar {count} chaves de acesso}}</translation>
 <translation id="5371112366564891538">Aumentar tamanho do texto</translation>
+<translation id="5376135254804080693">Desmarcar tudo</translation>
 <translation id="537853552771686272">Gerencie os temas e os sites do seu interesse</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} guia fechada}one{{count} guia fechada}other{{count} guias fechadas}}</translation>
 <translation id="5394975111793637642">Ocultar o card "Avaliações de produtos para você"</translation>

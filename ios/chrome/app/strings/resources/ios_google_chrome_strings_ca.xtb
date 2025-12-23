@@ -116,6 +116,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="3460369101684070455">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chrome per a Emplenament automàtic</translation>
 <translation id="3472587960215700950">Chrome utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="3482807551645716768">Accedeix a Chrome més ràpidament des de la pantalla d'inici de l'iPad.</translation>
+<translation id="3491067552520121605">Ja tens contrasenyes o claus d'accés al gestor de contrasenyes de Google per als llocs web que es mostren. Selecciona un compte per mantenir la informació d'inici de sessió que es mostra i sobreescriure la del gestor de contrasenyes de Google.</translation>
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
 <translation id="364480321352456989">Chrome no està actualitzat.</translation>
@@ -135,6 +136,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="4167555379306984168">Descobreix les novetats de Chrome</translation>
 <translation id="417201473131094001">No s'admeten a Chrome Canary</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
+<translation id="4409545895715116037">Les claus d'accés següents no s'han importat al gestor de contrasenyes de Google perquè no compleixen els requisits.</translation>
 <translation id="4430797724889237570">Obre enllaços de Gmail, Maps, YouTube i altres aplicacions a Chrome</translation>
 <translation id="447252321002412580">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>

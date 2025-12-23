@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Изабрали сте 1 ставку}one{Изабрали сте # ставку}few{Изабрали сте # ставке}other{Изабрали сте # ставки}}</translation>
 <translation id="3668816008081204991">Листа за читање је скривена</translation>
 <translation id="3670030362669914947">Број</translation>
+<translation id="3672283986707092811">Изабери све</translation>
 <translation id="3679163990085797665">Избриши прочитано</translation>
 <translation id="368329460027487650">Одјављени сте. Отвара опције за пријављивање.</translation>
 <translation id="3695446226812920698">Сазнајте како</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Име за приказ</translation>
 <translation id="4375772272517383391">Затвори све картице</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Изабери</translation>
 <translation id="4389019817280890563">Додирните да бисте променили језик</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{После 1 дана}one{После {COUNT} дана}few{После {COUNT} дана}other{После {COUNT} дана}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
 <translation id="536067926684072644">Прикажи обележиваче</translation>
+<translation id="5364647308446127983">{count,plural, =1{Увоз {count} приступног кључа није успео}one{Увоз {count} приступног кључа није успео}few{Увоз {count} приступна кључа није успео}other{Увоз {count} приступних кључева није успео}}</translation>
 <translation id="5371112366564891538">Повећајте величину текста</translation>
+<translation id="5376135254804080693">Опозови све</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
 <translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>

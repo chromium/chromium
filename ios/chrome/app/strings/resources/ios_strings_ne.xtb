@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{एउटा वस्तु चयन गरिएको छ}other{# वटा वस्तु चयन गरिएका छन्}}</translation>
 <translation id="3668816008081204991">रिडिङ लिस्ट लुकाइएको छ</translation>
 <translation id="3670030362669914947">अङ्क</translation>
+<translation id="3672283986707092811">सबै चयन गर्नुहोस्</translation>
 <translation id="3679163990085797665">"पढिसकिएको" सामग्री मेटाउनुहोस्</translation>
 <translation id="368329460027487650">साइन आउट गरिएको छ। यो बटनमा ट्याप गर्दा साइन इन गर्ने विकल्पहरू खुल्छन्।</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">देखाइने नाम</translation>
 <translation id="4375772272517383391">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="4380677808580146413">चयन गर्नुहोस्</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{१ दिनपछि}other{{COUNT} दिनपछि}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{एउटा ट्याब}other{# वटा ट्याब}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">फाइल सेभ गर्नुहोस्</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
 <translation id="536067926684072644">बुकमार्कहरू देखाउनुहोस्</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} पासकी इम्पोर्ट गर्न सकिएन}other{{count} वटा पासकी इम्पोर्ट गर्न सकिएन}}</translation>
 <translation id="5371112366564891538">टेक्स्टको आकार बढाउनुहोस्</translation>
+<translation id="5376135254804080693">सबै चयन रद्द गर्नुहोस्</translation>
 <translation id="537853552771686272">आफूलाई रुचि लाग्ने विषय र साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} बन्द गरिएको छ}other{{count} बन्द गरिएको छ}}</translation>
 <translation id="5394975111793637642">"तपाईंका लागि सिफारिस गरिएका उत्पादनका रिभ्यू" कार्ड लुकाउनुहोस्</translation>

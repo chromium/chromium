@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">See lähtestab kõik teie loendis olevaid saidid vaikesuumitasemele.</translation>
 <translation id="1989112275319619282">Sirvi</translation>
 <translation id="1994173015038366702">Saidi URL</translation>
+<translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
 <translation id="2025115093177348061">Liitreaalsus</translation>
 <translation id="2028449514182362831">Liikumisandureid vajavad funktsioonid ei tööta</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Hele teemavärv</translation>
 <translation id="2096716221239095980">Kustuta kõik andmed</translation>
 <translation id="2102396546234652240">Ära luba saitidel kasutada minu mikrofoni</translation>
+<translation id="2115808389282428160">Ära luba saitidel selle seadme teistele rakendustele ja teenustele juurde pääseda</translation>
 <translation id="2117655453726830283">Järgmine slaid</translation>
 <translation id="2146263598007866206">Saidid võivad seotud faile koos automaatselt alla laadida, et teie aega säästa</translation>
 <translation id="2148716181193084225">Täna</translation>
@@ -159,6 +161,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="2621115761605608342">Lubage JavaScript konkreetse saidi jaoks.</translation>
 <translation id="2626708220538466178">Vaikebrauseri alumine leht on suletud</translation>
 <translation id="2653659639078652383">Esita</translation>
+<translation id="2665056444046933274">Saidid saavad selle funktsiooni abil selle seadme teistele rakendustele ja teenustele juurdepääsu.</translation>
 <translation id="2670403088701171361">Ära luba saitidel näha minu lõikelaual olevat teksti ega pilte</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2682367912565197520">Salvestatud suumitaseme kustutamine</translation>
@@ -202,8 +205,10 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="311394601889664316">Ära luba saitidel muuta seadmes olevaid faile ega kaustu</translation>
 <translation id="3114012059975132928">Videopleier</translation>
 <translation id="3115898365077584848">Kuva teave</translation>
+<translation id="3120204271988747891">Saidid võivad küsida juurdepääsu teie kohaliku võrgu teistele seadmetele</translation>
 <translation id="3123473560110926937">Blokeeritud teatud saitidel</translation>
 <translation id="3132996321662585180">Värskendatakse iga päev</translation>
+<translation id="3134859781443140237">Kohalik võrk</translation>
 <translation id="3143754809889689516">Esita algusest</translation>
 <translation id="3164169438034704658">Täpse asukoha saate sisse lülitada <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Saidil lubatakse kasutada kolmanda osapoole küpsisefaile</translation>
@@ -214,6 +219,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3223425961342298674">Asukoht ei ole lubatud</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Sirvimisandmete kustutamine …</translation>
+<translation id="3241320538788585298">Silmustuse võrk</translation>
 <translation id="3242646949159196181">Kui see on sisse lülitatud, saavad saidid heli esitada. Kui see on välja lülitatud, ei saa saidid heli esitada.</translation>
 <translation id="3273479183583863618">Hinnaalandused vahelehtedel</translation>
 <translation id="3277252321222022663">Luba saitide jaoks juurdepääs anduritele (soovitatav)</translation>
@@ -423,6 +429,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="5591840828808741583">Saidi <ph name="SITE_NAME" /> jaoks blokeeritud</translation>
 <translation id="560980142378233747">See tähendab, et saidi funktsioonid peaksid ootuspäraselt töötama, kuid teil võib olla väiksem sirvimiskaitse. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Uue vahelehe kaartide alumine leht</translation>
+<translation id="5621413808884657932">Kui see on sisse lülitatud, võivad saidid küsida luba selle seadme muudele rakendustele ja teenustele juurdepääsemiseks. Kui see on välja lülitatud, ei pääse saidid selle seadme teistele rakendustele ja teenustele juurde.</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="5649053991847567735">Automaatsed allalaadimised</translation>
 <translation id="5668404140385795438">Sissesuumimise takistamiseks veebisaidi taotluse alistamine</translation>
@@ -543,6 +550,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="6842868554183332230">Saidid tuvastavad, millel seadet aktiivselt kasutate, et määrata vestlusrakendustes teie saadavalolek</translation>
 <translation id="6864395892908308021">See seade ei saa NFC andmeid lugeda</translation>
 <translation id="6870169401250095575">Peida ohutuskontrolli kaart</translation>
+<translation id="6882736949427544336">Ära luba saitidel teie kohaliku võrgu teistele seadmetele juurde pääseda</translation>
 <translation id="6900883974539674431">Looge vahelehegruppe, mida salvestatakse ja värskendatakse teie kõigis seadmetes automaatselt</translation>
 <translation id="6912998170423641340">Keela saitidel lugeda lõikelaual olevat teksti ja pilte</translation>
 <translation id="6945221475159498467">Vali</translation>
@@ -604,6 +612,8 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7586676035079382730">Märguanded ei ole lubatud</translation>
 <translation id="7594634374516752650">Ühendatud Bluetooth-seadmega</translation>
 <translation id="7617547684249261169">Saate kustutada osa või kogu oma ajaloo, küpsisefailid, saidiandmed ja palju muud</translation>
+<translation id="762200934554267613">Saidid võivad selle seadme teistele rakendustele ja teenustele juurdepääsu küsida</translation>
+<translation id="7627749368210392160">Saidid saavad selle funktsiooni abil teie kohaliku võrgu teistele seadmetele juurdepääsu.</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7655411746932645568">Saidid saavad küsida luba jadaportidega ühenduse loomiseks</translation>
 <translation id="7658239707568436148">Tühista</translation>
@@ -659,6 +669,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8211406090763984747">Ühendus on turvaline</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Kui see on sisse lülitatud, võivad saidid küsida luba teie kohaliku võrgu teistele seadmetele juurdepääsemiseks. Kui see on välja lülitatud, ei pääse saidid teie kohaliku võrgu teistele seadmetele juurde.</translation>
 <translation id="8249310407154411074">Teisalda kõige üles</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
@@ -712,6 +723,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8737426583868847403">Siin kuvatakse saidid, mille jaoks salvestate kohandatud suumitaseme</translation>
+<translation id="8748714929822124637">Ära luba saitidel teie kohaliku võrgu teistele seadmetele juurde pääseda.</translation>
 <translation id="8751914237388039244">Kujutise valimine</translation>
 <translation id="8775741625735357092">Järjehoidjariba saate sisse lülitada menüüs Seaded &gt; Välimus.</translation>
 <translation id="8800034312320686233">Kas sait ei tööta?</translation>

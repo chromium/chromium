@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбраны # элементы}many{Выбрана # элементаў}other{Выбраны # элемента}}</translation>
 <translation id="3668816008081204991">Спіс на прагляд схаваны</translation>
 <translation id="3670030362669914947">Нумар</translation>
+<translation id="3672283986707092811">Выбраць усё</translation>
 <translation id="3679163990085797665">Выдаліць прачытанае</translation>
 <translation id="368329460027487650">Выкананы выхад. Адкрываюцца параметры для ўваходу.</translation>
 <translation id="3695446226812920698">Даведацца больш</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Бачная назва</translation>
 <translation id="4375772272517383391">Закрыць усе ўкладкі</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
+<translation id="4380677808580146413">Выбраць</translation>
 <translation id="4389019817280890563">Каб змяніць мову, націсніце.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Праз 1 дзень}one{Праз {COUNT} дзень}few{Праз {COUNT} дні}many{Праз {COUNT} дзён}other{Праз {COUNT} дня}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Захаваць файл</translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
 <translation id="536067926684072644">Паказаць закладкі</translation>
+<translation id="5364647308446127983">{count,plural, =1{Не ўдалося імпартаваць {count} ключ доступу}one{Не ўдалося імпартаваць {count} ключ доступу}few{Не ўдалося імпартаваць {count} ключы доступу}many{Не ўдалося імпартаваць {count} ключоў доступу}other{Не ўдалося імпартаваць {count} ключа доступу}}</translation>
 <translation id="5371112366564891538">Павялічыць памер тэксту</translation>
+<translation id="5376135254804080693">Скасаваць выбар усіх</translation>
 <translation id="537853552771686272">Выберыце, якія тэмы і сайты вас цікавяць</translation>
 <translation id="5390458669633674385">{count,plural, =1{Закрыта: {count}}one{Закрыта: {count}}few{Закрыта: {count}}many{Закрыта: {count}}other{Закрыта: {count}}}</translation>
 <translation id="5394975111793637642">Схаваць картку "Водгукі пра тавар для вас"</translation>

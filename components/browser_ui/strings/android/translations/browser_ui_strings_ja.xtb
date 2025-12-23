@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">リストのすべてのサイトがデフォルトのズームにリセットされます</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
+<translation id="1994558116414798016">フォントを Lexend に設定</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2025115093177348061">拡張現実（AR）</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">テーマカラー ライト</translation>
 <translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2102396546234652240">サイトにマイクの使用を許可しない</translation>
+<translation id="2115808389282428160">サイトにこのデバイス上の他のアプリやサービスへのアクセスを許可しない</translation>
 <translation id="2117655453726830283">次のスライド</translation>
 <translation id="2146263598007866206">時間節約のために、関連する複数のファイルをまとめて自動的にダウンロードするサイトもあります</translation>
 <translation id="2148716181193084225">今日</translation>
@@ -159,6 +161,7 @@
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
 <translation id="2626708220538466178">デフォルトのブラウザのボトムシートが閉じられました</translation>
 <translation id="2653659639078652383">送信</translation>
+<translation id="2665056444046933274">サイトはこの機能を使用して、このデバイス上の他のアプリやサービスにアクセスできます</translation>
 <translation id="2670403088701171361">サイトにクリップボード内のテキストや画像へのアクセスを許可しない</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2682367912565197520">保存したズームレベルを削除</translation>
@@ -202,8 +205,10 @@
 <translation id="311394601889664316">サイトにデバイス上のファイルやフォルダの編集を許可しない</translation>
 <translation id="3114012059975132928">動画プレーヤー</translation>
 <translation id="3115898365077584848">情報を表示</translation>
+<translation id="3120204271988747891">サイトがローカル ネットワーク上の他のデバイスへのアクセスを要求できるようにする</translation>
 <translation id="3123473560110926937">一部のサイトでブロックされています</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
+<translation id="3134859781443140237">ローカル ネットワーク</translation>
 <translation id="3143754809889689516">最初から再生</translation>
 <translation id="3164169438034704658">正確な位置情報は、[<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />] でオンにできます。</translation>
 <translation id="3165022941318558018">サイトにサードパーティ Cookie の使用を許可する</translation>
@@ -214,6 +219,7 @@
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3232293466644486101">閲覧履歴データを削除...</translation>
+<translation id="3241320538788585298">ループバック ネットワーク</translation>
 <translation id="3242646949159196181">オンにすると、サイトは音声を再生できます。オフにすると、サイトは音声を再生できません。</translation>
 <translation id="3273479183583863618">タブの値下げ情報</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
@@ -423,6 +429,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> をブロックしました</translation>
 <translation id="560980142378233747">この場合、サイトの機能は想定どおりに動作しますが、ブラウジング保護の強度が低くなる可能性があります。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">新しいタブページのカードのボトムシート</translation>
+<translation id="5621413808884657932">オンにすると、サイトはこのデバイス上の他のアプリやサービスへのアクセスを要求できます。オフにすると、サイトはこのデバイス上の他のアプリやサービスにアクセスできません。</translation>
 <translation id="5632485077360054581">手順を見る</translation>
 <translation id="5649053991847567735">自動ダウンロード</translation>
 <translation id="5668404140385795438">ウェブサイトのズーム防止リクエストを上書きします</translation>
@@ -543,6 +550,7 @@
 <translation id="6842868554183332230">チャットアプリのステータスを設定するため、サイトでデバイスのアクティブ状態を検出する場合があります。</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
 <translation id="6870169401250095575">安全チェックカードを非表示にする</translation>
+<translation id="6882736949427544336">サイトにローカル ネットワーク上の他のデバイスへのアクセスを許可しない</translation>
 <translation id="6900883974539674431">タブグループを作成すると、お使いのすべてのデバイスで自動的に保存され、更新されます</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -604,6 +612,8 @@
 <translation id="7586676035079382730">通知は許可されていません</translation>
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
 <translation id="7617547684249261169">履歴、Cookie、サイトデータなどの一部またはすべてを削除できます</translation>
+<translation id="762200934554267613">サイトがこのデバイス上の他のアプリやサービスへのアクセスを要求できるようにする</translation>
+<translation id="7627749368210392160">サイトはこの機能を使用して、ローカル ネットワーク上の他のデバイスにアクセスできます</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7655411746932645568">サイトがシリアルポートへの接続を要求できるようにする</translation>
 <translation id="7658239707568436148">キャンセル</translation>
@@ -659,6 +669,7 @@
 <translation id="8200772114523450471">再開</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">オンにすると、サイトはローカル ネットワーク上の他のデバイスへのアクセスを要求できます。オフにすると、サイトはローカル ネットワーク上の他のデバイスにアクセスできません。</translation>
 <translation id="8249310407154411074">一番上に移動</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -712,6 +723,7 @@
 <translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8737426583868847403">カスタムのズームレベルを保存したサイトがここに表示されます</translation>
+<translation id="8748714929822124637">サイトにローカル ネットワーク上の他のデバイスへのアクセスを許可しない</translation>
 <translation id="8751914237388039244">画像を選択</translation>
 <translation id="8775741625735357092">[設定] &gt; [デザイン] でブックマーク バーをオンにできます</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>

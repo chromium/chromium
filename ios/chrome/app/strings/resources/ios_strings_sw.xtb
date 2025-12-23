@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Mwezi wa kuisha kwa muda wa matumizi</translation>
 <translation id="1150989369772528668">Kalenda</translation>
 <translation id="1161663161838091892">Kusawazisha vichupo na historia ili uendelee</translation>
+<translation id="1162834932051545794">{count,plural, =1{Kadi {count} ya mikopo}other{Kadi {count} za mikopo}}</translation>
 <translation id="1164891049599601209">Limewekwa kwenye tovuti ya kulaghai</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1172898394251786223">Sehemu inayofuata</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1752547299766512813">Hifadhi Manenosiri</translation>
 <translation id="1764070164487214210">Maelekezo</translation>
+<translation id="1764511703783285459">Kidhibiti kingine cha manenosiri hakikutuma manenosiri au funguo zozote za siri</translation>
 <translation id="1767766085187034454">Google Tafsiri</translation>
 <translation id="1771016937398045251">Menyu ya zana</translation>
 <translation id="1772468122139624049">Imeshindwa kupakia upya vichupo</translation>
@@ -688,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Umechagua 1}other{Umechagua #}}</translation>
 <translation id="3668816008081204991">Kipengele cha orodha ya kusoma kimefichwa</translation>
 <translation id="3670030362669914947">Nambari</translation>
+<translation id="3672283986707092811">Chagua Zote</translation>
 <translation id="3679163990085797665">Futa ulizosoma</translation>
 <translation id="368329460027487650">Umeondoka kwenye akaunti. Hufungua chaguo za kuingia katika akaunti.</translation>
 <translation id="3695446226812920698">Pata maelezo</translation>
@@ -870,6 +873,7 @@
 <translation id="4367971618859387374">Jina litakaloonyeshwa</translation>
 <translation id="4375772272517383391">Funga vichupo vyote</translation>
 <translation id="4378154925671717803">Simu</translation>
+<translation id="4380677808580146413">Chagua</translation>
 <translation id="4389019817280890563">Gusa ili ubadilishe lugha.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Baada ya siku 1}other{Baada ya siku {COUNT}}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{Kichupo 1}other{Vichupo #}}</translation>
@@ -1068,6 +1072,7 @@
 <translation id="508645147179720015">Kidokezo kimezidi herufi 1000</translation>
 <translation id="5087098519049306025">Ufuatiliaji wa Bei</translation>
 <translation id="5090832849094901128">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Hakuna chochote kilichopakiwa</translation>
 <translation id="5113960131843706315">Inapakua faili zako…</translation>
 <translation id="5118462200606189584">Weka akaunti…</translation>
 <translation id="5118764316110575523">Imezimwa</translation>
@@ -1138,7 +1143,9 @@
 <translation id="5352128922772839949">Hifadhi faili</translation>
 <translation id="5355191726083956201">Umewasha Kipengele cha Ulinzi Ulioboreshwa</translation>
 <translation id="536067926684072644">Onyesha Alamisho</translation>
+<translation id="5364647308446127983">{count,plural, =1{Imeshindwa kupakia ufunguo {count} wa siri}other{Imeshindwa kupakia funguo {count} za siri}}</translation>
 <translation id="5371112366564891538">Ongeza ukubwa wa maandishi</translation>
+<translation id="5376135254804080693">Ondoa Alama ya Kuchagua Zote</translation>
 <translation id="537853552771686272">Dhibiti mada na tovuti zinazokuvutia</translation>
 <translation id="5390458669633674385">{count,plural, =1{Umefunga kichupo {count}}other{Umefunga vichupo {count}}}</translation>
 <translation id="5394975111793637642">Ficha maoni ya bidhaa kwenye kadi yako</translation>
@@ -1445,6 +1452,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6410390304316730527">Kipengele cha Kuvinjari Salama hukulinda dhidi ya washambulizi ambao wanaweza kukulaghai ufanye kitu hatari kama vile kusakinisha programu hasidi au kufichua taarifa binafsi kama vile manenosiri, namba za simu au kadi za mikopo. Ukikizima, kuwa makini unapovinjari tovuti zisizo za kawaida au zisizo na sifa nzuri.</translation>
 <translation id="6410883413783534063">Fungua vichupo ili utembelee kurasa mbalimbali kwa wakati mmoja</translation>
 <translation id="6418346271604475326">Inaandaa PDF</translation>
+<translation id="6420292512900923139">Hitilafu imetokea wakati wa kupakia data yako</translation>
 <translation id="6421038304268477484">Maandishi yaliyotafsiriwa</translation>
 <translation id="6429213933892582367">Fungua Chaguo za Nenosiri</translation>
 <translation id="6435236283694032571">Ongeza kwenye Orodha ya Kusoma</translation>
@@ -1483,6 +1491,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Chaguo</translation>
 <translation id="6550891580932862748">Haikulindi dhidi ya tovuti, vipakuliwa na viendelezi hatari. Mipangilio yako ya Kuvinjari Salama katika bidhaa nyingine za Google haitaathiriwa.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Rudia</translation>
 <translation id="6559301491397835130">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}". Inahifadhiwa katika kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye "{title}". Zinahifadhiwa katika kifaa hiki pekee.}}</translation>
 <translation id="656065428026159829">Angalia zaidi</translation>

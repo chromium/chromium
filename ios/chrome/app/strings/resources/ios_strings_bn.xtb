@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{১টি বেছে নেওয়া হয়েছে}one{#টি বেছে নেওয়া হয়েছে}other{#টি বেছে নেওয়া হয়েছে}}</translation>
 <translation id="3668816008081204991">পড়ার তালিকা লুকানো আছে</translation>
 <translation id="3670030362669914947">নম্বর</translation>
+<translation id="3672283986707092811">সব বেছে নিন</translation>
 <translation id="3679163990085797665">পড়া আইটেম মুছুন</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
 <translation id="3695446226812920698">কীভাবে করবেন তা জানুন</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">যে নাম দেখানো হবে</translation>
 <translation id="4375772272517383391">সব ট্যাব বন্ধ করুন</translation>
 <translation id="4378154925671717803">ফোন</translation>
+<translation id="4380677808580146413">বেছে নিন</translation>
 <translation id="4389019817280890563">ভাষা পরিবর্তন করতে ট্যাপ করুন।</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{১ দিন পরে}one{{COUNT} দিন পরে}other{{COUNT} দিন পরে}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{১টি ট্যাব}one{#টি ট্যাব}other{#টি ট্যাব}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">ফাইল সেভ করুন</translation>
 <translation id="5355191726083956201">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="536067926684072644">বুকমার্ক দেখান</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count}টি পাসকী ইমপোর্ট করা যায়নি}one{{count}টি পাসকী ইমপোর্ট করা যায়নি}other{{count}টি পাসকী ইমপোর্ট করা যায়নি}}</translation>
 <translation id="5371112366564891538">টেক্সটের সাইজ বড় করুন</translation>
+<translation id="5376135254804080693">সবকটি বাদ দিন</translation>
 <translation id="537853552771686272">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}টি বন্ধ আছে}one{{count}টি বন্ধ আছে}other{{count}টি বন্ধ আছে}}</translation>
 <translation id="5394975111793637642">'আপনার জন্য প্রোডাক্টের পর্যালোচনা' কার্ড লুকান</translation>

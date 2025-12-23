@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="3668816008081204991">A lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3672283986707092811">Seleccionar todo</translation>
 <translation id="3679163990085797665">Eliminar elementos lidos</translation>
 <translation id="368329460027487650">Tes a sesión pechada. Abre as opcións de inicio de sesión.</translation>
 <translation id="3695446226812920698">Máis información</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Nome visible</translation>
 <translation id="4375772272517383391">Pechar todas as pestanas</translation>
 <translation id="4378154925671717803">Teléfono</translation>
+<translation id="4380677808580146413">Seleccionar</translation>
 <translation id="4389019817280890563">Toca para cambiar de idioma.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Despois de 1 día}other{Despois de {COUNT} días}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 pestana}other{# pestanas}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Gardar o ficheiro</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
+<translation id="5364647308446127983">{count,plural, =1{Non se puido importar {count} clave de acceso}other{Non se puideron importar {count} claves de acceso}}</translation>
 <translation id="5371112366564891538">Aumentar tamaño do texto</translation>
+<translation id="5376135254804080693">Anular toda a selección</translation>
 <translation id="537853552771686272">Xestiona os temas e sitios que che interesan</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} pechada}other{{count} pechadas}}</translation>
 <translation id="5394975111793637642">Ocultar a tarxeta Reseñas de produtos para ti</translation>

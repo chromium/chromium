@@ -245,7 +245,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="138218114945450791">Ljusblå</translation>
 <translation id="1382194467192730611">USB-enhet som tillåtits av administratören</translation>
 <translation id="1384725838384960382">Arbetsblad för autentisering av användaruppgifter för säker betalning</translation>
-<translation id="1386623374109090026">Kommentarer</translation>
+<translation id="1386623374109090026">Annoteringar</translation>
 <translation id="138810468159004008">Tillåt vid besök på webbplatsen</translation>
 <translation id="1391145880481608015">Läs mer om den här varningen</translation>
 <translation id="139161720020179799">Mörkgrå 1</translation>
@@ -3749,7 +3749,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7035705295266423040">Din bank vill verifiera din identitet</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Google-kontots integritetsinställningar</translation>
 <translation id="7040230719604914234">Operatör</translation>
-<translation id="7042465939346919737">Google använder information från kassasidan och annan relevant data för att erbjuda dessa alternativ. Gå till <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="7042616127917168121">Finjustera resultatet</translation>
 <translation id="7043552168914147882">Flikpapper</translation>
 <translation id="7044081119134178347">Kameran tillåts den här gången</translation>

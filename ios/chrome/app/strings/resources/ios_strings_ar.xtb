@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{تم اختيار حساب واحد}zero{تم اختيار # حساب}two{تم اختيار حسابَين}few{تم اختيار # حسابات}many{تم اختيار # حسابًا}other{تم اختيار # حساب}}</translation>
 <translation id="3668816008081204991">"قائمة القراءة" مخفية</translation>
 <translation id="3670030362669914947">الرقم</translation>
+<translation id="3672283986707092811">اختيار الكل</translation>
 <translation id="3679163990085797665">حذف الإدخالات المقروءة</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">الاسم المعروض</translation>
 <translation id="4375772272517383391">إغلاق جميع علامات التبويب</translation>
 <translation id="4378154925671717803">هاتف</translation>
+<translation id="4380677808580146413">اختيار</translation>
 <translation id="4389019817280890563">انقر لتغيير اللغة.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{بعد يوم واحد}zero{بعد {COUNT} يوم}two{بعد يومَين ({COUNT})}few{بعد {COUNT} أيام}many{بعد {COUNT} يومًا}other{بعد {COUNT} يوم}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{علامة تبويب واحدة}zero{‫# علامة تبويب}two{علامتا تبويب}few{‫# علامات تبويب}many{‫# علامة تبويب}other{‫# علامة تبويب}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">حفظ الملف</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
+<translation id="5364647308446127983">{count,plural, =1{تعذَّر استيراد مفتاح مرور واحد ({count})}zero{تعذَّر استيراد {count} مفاتيح مرور}two{تعذَّر استيراد مفتاحَي مرور ({count})}few{تعذَّر استيراد {count} مفاتيح مرور}many{تعذَّر استيراد {count} مفتاح مرور}other{تعذَّر استيراد {count} مفتاح مرور}}</translation>
 <translation id="5371112366564891538">زيادة حجم النص</translation>
+<translation id="5376135254804080693">إلغاء اختيار الكل</translation>
 <translation id="537853552771686272">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>
 <translation id="5390458669633674385">{count,plural, =1{وتم إغلاق علامة تبويب واحدة ({count})}zero{وتم إغلاق {count} علامة تبويب}two{وتم إغلاق علامتَي تبويب ({count})}few{وتم إغلاق {count} علامات تبويب}many{وتم إغلاق {count} علامة تبويب}other{وتم إغلاق {count} علامة تبويب}}</translation>
 <translation id="5394975111793637642">إخفاء بطاقة "مراجعات المنتج المخصّصة لك"</translation>

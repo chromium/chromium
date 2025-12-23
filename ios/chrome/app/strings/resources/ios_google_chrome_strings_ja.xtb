@@ -116,6 +116,7 @@
 <translation id="3460369101684070455">保存したパスワードを他のアプリで簡単に使用できるようするには、Chrome の自動入力を選択します</translation>
 <translation id="3472587960215700950">Chrome では Google マップを使用して、検出された住所までの経路やローカル情報を表示しています。</translation>
 <translation id="3482807551645716768">iPad のホーム画面から Chrome にすばやくアクセスできます。</translation>
+<translation id="3491067552520121605">表示されているサイトのパスワードまたはパスキーはすでに Google パスワード マネージャーに保存されています。表示されているログイン情報を保存するアカウントを選択すると、Google パスワード マネージャーの情報が上書きされます。</translation>
 <translation id="3503014945441706099">この Chrome プロフィールもセーフ ブラウジング保護強化機能で保護されます</translation>
 <translation id="3522659714780527202">どのデバイスからでも Chrome で自分のタブにアクセスするには、同期をオンにしてください</translation>
 <translation id="364480321352456989">Chrome は最新ではありません。</translation>
@@ -135,6 +136,7 @@
 <translation id="4167555379306984168">Chrome の最新情報をチェック</translation>
 <translation id="417201473131094001">Chrome Canary では対象外です。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
+<translation id="4409545895715116037">次のパスキーは要件を満たしていないため、Google パスワード マネージャーにインポートされませんでした。</translation>
 <translation id="4430797724889237570">Gmail、マップ、YouTube などのアプリで選択したリンクを Chrome で開きます</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>

@@ -393,6 +393,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> yüklenemedi: Görüntü URL'si <ph name="HTTP_ERROR" /> hata kodu döndürdü. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="1247372569136754018">Mikrofon (dahili)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 sitenin bildirimlerine izin verilmiyor}other{{NUM_SITES} sitenin bildirimlerine izin verilmiyor}}</translation>
+<translation id="1250051134109624637">Projeleri görüntüle</translation>
 <translation id="125097549534200450">silin</translation>
 <translation id="1251366534849411931">Küme açma parantezi olması bekleniyor: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Mobil veri ağları taranıyor...</translation>
@@ -403,6 +404,7 @@
 <translation id="1254034280040157728">Büyük Kanyon</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
 <translation id="1255095393630332248">Paylaşılan sekmelerin sayfa içerikleri ve URL'leri Google'a gönderilir.</translation>
+<translation id="1256143630373008432">Kendi kendine test başarısız</translation>
 <translation id="1256588359404100567">Ayar, önceki cihazınızdan senkronize edildi.</translation>
 <translation id="1257336506558170607">Seçili sertifikayı dışa aktar</translation>
 <translation id="1258491128795710625">Yenilikler</translation>
@@ -2006,6 +2008,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340152924294936648"><ph name="EXTENSION_NAME" /> uzantısının bu siteyi okumasına ve değiştirmesine izin verin</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> güvenli bir şekilde indirilemiyor</translation>
+<translation id="2341392013052489530"><ph name="VERSION" /> sürümü kaldırıldı, nedeni: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Çocuğunuz, bu cihazın kilidini açmak için şifre yerine bir sayı (PIN) kullanabilir. PIN'i daha sonra ayarlamak için Ayarlar'a gidin.</translation>
 <translation id="2342666982755031076">Düzlük</translation>
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> sitesinde uzantılara izin verilmiyor</translation>
@@ -2125,6 +2128,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2431027948063157455">Google Asistan yüklenemedi, lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="243179355394256322">Kuruluşunuz, cihaz kaydını yalnızca yetkili kullanıcılarla sınırlıyor. Bu kullanıcının cihaz kaydetme yetkisi yok. Lütfen kullanıcının, Yönetici konsolunun Kullanıcılar bölümünde "Google Meet hardware cihazlarını kaydetme" yönetici ayrıcalıklarına sahip olduğundan emin olun.</translation>
 <translation id="243275146591958220">İndirmeyi iptal et</translation>
+<translation id="2432882794929808179"><ph name="APP_COUNT" /> uygulama kaydedildi</translation>
 <translation id="2433237965825924228">Yalıtılmış web uygulamaları, kimlik doğrulama cihazlarını ve bu cihazların erişebildiği akıllı kartları kontrol eder. Akıllı kartlar genellikle kimliğinizi doğrulamak için kullanılan tanımlayıcılar içerir.</translation>
 <translation id="2433452467737464329">Sayfayı otomatik olarak yenilemek için URL'ye bir sorgu parametresi ekleyin: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Görünüm</translation>
@@ -2265,6 +2269,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seçildi)</translation>
 <translation id="2513396635448525189">Giriş resmi</translation>
+<translation id="2513904627589542105">Kendi Kendine Test</translation>
 <translation id="251425554130284360">En son etkinliğinize kolayca geri dönmenize yardımcı olması için ziyaret ettiğiniz sayfaları ve önerilen aramaları görüyorsunuz.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -2453,6 +2458,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2646132387794831258">Google Hesabınızdaki bir klasöre kaydedilsin mi?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">Base64 kodlu ASCII, sertifika zinciri</translation>
+<translation id="2649331484502514724">Güvenli DNS</translation>
 <translation id="2649508632465204949">Bana yeni bir beceri öğret</translation>
 <translation id="2651259505411913186">Evet, verilerimi okul profilinden ayrı tut</translation>
 <translation id="265156376773362237">Standart önceden yükleme</translation>
@@ -2726,6 +2732,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2822634587701817431">Daralt / Genişlet</translation>
 <translation id="2822910719211888134">Linux yedeklenirken hata oluştu</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />, yöneticinizden gelen proxy ayarlarını kullanıyor</translation>
+<translation id="282525059261716597">Komut satırı:</translation>
 <translation id="2825758591930162672">Konunun Ortak Anahtarı</translation>
 <translation id="2826576843404243001">Güvenli bağlantıları desteklemeyen siteleri ziyaret etmeden önce uyarı alın. Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayarı değiştiremezsiniz.</translation>
 <translation id="2828375943530438449">Oturum açma sayfasından önceki sayfaya dön</translation>
@@ -2803,6 +2810,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2878889940310164513">Hücresel Ağ ekle...</translation>
 <translation id="288042212351694283">Evrensel 2. Faktör cihazlarınıza erişim</translation>
 <translation id="2881076733170862447">Uzantıyı Tıkladığınızda</translation>
+<translation id="2882301808122022326">Omaha Yanıtı</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> geçici olarak yeniden başlatılacak ve sıfırlanacaktır.</translation>
 <translation id="2884070497102362193">Pilinizi, CPU'nuzu, belleğinizi, bağlantınızı ve daha fazlasını test edin</translation>
 <translation id="2885129935310217435">Aynı ada sahip bir düğme var. Lütfen başka bir ad seçin.</translation>
@@ -3037,6 +3045,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3031557471081358569">İçe aktarılacak öğeleri seçin:</translation>
 <translation id="3032204772252313646">Otomatik altyazı</translation>
 <translation id="3032272345862007156">Son yapay zeka teması <ph name="INDEX" /></translation>
+<translation id="303283648048257083">Projeleri gizle</translation>
 <translation id="3033167916029856961">Rahatsız Etmeyin modu etkin</translation>
 <translation id="3033348223765101500">Verilerinizi kontrol edin</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazı iade etmek için son tarih geçti.</translation>
@@ -3381,6 +3390,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="329838636886466101">Onar</translation>
 <translation id="3298789223962368867">Geçersiz URL girildi.</translation>
 <translation id="32991397311664836">Cihazlar:</translation>
+<translation id="330140779027048024">Her zaman seçili DNS-over-HTTPS sağlayıcısıyla kullan</translation>
 <translation id="3301554464236215299">Bu dosya çok indirilen bir dosya olmadığı için tehlikeli olabilir</translation>
 <translation id="3301996560342889673">Geçmiş senkronize edilsin mi?</translation>
 <translation id="33022249435934718">GDI İşleyicileri</translation>
@@ -3809,6 +3819,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3590194807845837023">Profilin Kilidini Aç ve Tekrar Başlat</translation>
 <translation id="3590295622232282437">Yönetilen oturuma giriliyor.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> dosyasını sakla</translation>
+<translation id="3591519988492877237">{NUM_TASKS,plural, =1{Görevinizi kontrol edin}other{Görevlerinizi kontrol edin}}</translation>
 <translation id="359177822697434450">USB cihazları hakkında</translation>
 <translation id="3592260987370335752">&amp;Daha fazla bilgi edinin</translation>
 <translation id="3592344177526089979">Bir sekme <ph name="DEVICE_NAME" /> adlı cihazda yayınlanıyor</translation>
@@ -4145,6 +4156,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3798449238516105146">Sürüm</translation>
 <translation id="3798632811625902122"><ph name="DEVICE" /> adlı Bluetooth cihaz eşleme izni istiyor.</translation>
 <translation id="3798670284305777884">Hoparlör (dahili)</translation>
+<translation id="3798937718167175364">İşlem, bilinmeyen sonuçla tamamlandı</translation>
 <translation id="3799128412641261490">Anahtar erişimi ayarları</translation>
 <translation id="3800764353337460026">Sembol stili</translation>
 <translation id="3800828618615365228">Google Chrome ve ChromeOS Ek Şartları</translation>
@@ -4739,6 +4751,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4206144641569145248">Uzaylı</translation>
 <translation id="4206323443866416204">Geri Bildirim Raporu</translation>
 <translation id="4206585797409671301">İstek göstermesine izin verilen siteler</translation>
+<translation id="4207144975205749656">Aynı ağdaki saldırganların trafiğinizi görememesi için gezinme isteklerini şifreler</translation>
 <translation id="4207932031282227921">İzin istendi, yanıtlamak için F6 tuşuna basın</translation>
 <translation id="4208390505124702064">Ara <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Büyük</translation>
@@ -4765,6 +4778,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4223404254440398437">Mikrofona izin verilmiyor</translation>
 <translation id="4224541845943007092">Adres çubuğundan klavye girişini okuma ve kaydetme</translation>
 <translation id="4225397296022057997">Tüm sitelerde</translation>
+<translation id="4226303886821889519">Güncelleyici sürümü: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Kuruluşunuzun e-posta adresini kullanın</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu uzantıya izin verilmiyor}other{Bazı uzantılara izin verilmiyor}}</translation>
 <translation id="4231053948789591973">Yayın şu anda duraklatılmış durumda. İstediğiniz zaman ekranınızı yayınlamayı devam ettirebilir veya durdurabilirsiniz.</translation>
@@ -5091,6 +5105,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4434611816075088065">Şu anda ilgilenmeniz gereken başka bir konu yok</translation>
 <translation id="4435020454241191356">Profiliniz için bir ad veya etiket ekleyin</translation>
 <translation id="443503224864902151">Bu işlem, çoğu sitedeki oturumunuzu kapatır. Google Hesabınızda oturumunuz açık kalacağından senkronize edilmiş verileriniz silinebilecektir.</translation>
+<translation id="4436201444922652535">Bağlantılar</translation>
 <translation id="443719869834432257">Etkinlik Türü: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Şifreleri ve geçiş anahtarlarını kaydetmeyi öner</translation>
 <translation id="4437947179446780764">Özel DNS servis sağlayıcı ekleyin</translation>
@@ -5417,6 +5432,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4675065861091108046">Daha Önce <ph name="ORIGIN" /> Adresinde Tüm Uzantılara İzin Vermeyi Seçtiniz</translation>
 <translation id="467510802200863975">Şifreler eşleşmiyor</translation>
 <translation id="4675828034887792601">Sitelerde arama yapmak ve arama motorunuzu yönetmek için kısayollar oluşturun</translation>
+<translation id="4676219265718114723">İşlem, <ph name="EXIT_CODE" /> koduyla sonlandırıldı</translation>
 <translation id="4676543021048806071">Google Şifre Yöneticisi için 6 haneli PIN'inizi girin</translation>
 <translation id="4676595058027112862">Telefon Merkezi, Daha Fazla Bilgi</translation>
 <translation id="4676616966096505747">Bazı veriler henüz hesabınıza kaydedilmedi</translation>
@@ -6123,6 +6139,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5163910114647549394">Sekme, sekme şeridinin sonuna taşındı</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> için bildirimlere izin verilmiyor</translation>
 <translation id="516747639689914043">HyperText Aktarım Protokolü (HTTP)</translation>
+<translation id="5167736746160955799">Projeleri görüntüle</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5171045022955879922">Arayın veya URL'yi yazın</translation>
 <translation id="5171343362375269016">Değiştirilmiş Bellek</translation>
@@ -6145,6 +6162,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5186362203408605578">QR kodunu tarayarak başka bir cihaz kullanın</translation>
 <translation id="5186381005592669696">Desteklenen uygulamalar için görüntüleme dilini özelleştir</translation>
 <translation id="5186788525428341874">Cihazlarınızda daha hızlı oturum açmak için bu geçiş anahtarını kullanabilirsiniz. <ph name="ACCOUNT_NAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
+<translation id="5186792064936776005">Varsa varsayılanı kullan</translation>
 <translation id="5187641678926990264">&amp;Sayfayı Uygulama Olarak Yükle...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> tarafından paylaşıldı</translation>
@@ -6311,6 +6329,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5296350763804564124">Cihazınızı ekrana bakmadan kullanabilmek için sözlü geri bildirimleri dinleyin. Braille geri bildirimi, bağlı bir cihazla kullanılabilir.</translation>
 <translation id="5296536303670088158">Zararlı web sitelerine karşı Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
 <translation id="5297005732522718715">Tethering Yapılandırmasını Yenile</translation>
+<translation id="5297021821125993168">Etkinleştirme başarılı</translation>
 <translation id="5297082477358294722">Şifre kaydedildi. Kayıtlı şifrelerinizi <ph name="SAVED_PASSWORDS_STORE" /> üzerinde görüntüleyebilir ve yönetebilirsiniz.</translation>
 <translation id="5297548311167268289"><ph name="RP_ID" /> sitesinde oturum açın</translation>
 <translation id="5297946558563358707">Başka birisi ekranınıza baktığında sağ altta Gizlilik göz simgesi gösterilir</translation>
@@ -7025,6 +7044,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5804259315582798390">Yerel veri kurtarma özelliği etkinleştirilemedi</translation>
 <translation id="5805268472388605531">Aksan işaretlerini ve özel karakterleri görmek için klavye tuşlarını basılı tutun</translation>
+<translation id="5805353596216929913">Kullanılabilir güncelleme yoktu</translation>
 <translation id="5805697420284793859">Pencere yöneticisi</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> dosyasını silmek için Enter tuşuna basın</translation>
 <translation id="5806447147478173900">Görüntülenen siteler tarafından kullanılan toplam depolama alanı: <ph name="TOTAL_USAGE" /></translation>
@@ -7119,6 +7139,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5863445608433396414">Hata ayıklama özelliklerini etkinleştir</translation>
 <translation id="5863515189965725638">IBAN'ı düzenleyin</translation>
 <translation id="5864195618110239517">Sayaçlı bağlantıyı kullan</translation>
+<translation id="5864624288360677142">Varsa varsayılanı ve yedek olarak da Google DNS'yi kullan</translation>
 <translation id="5864754048328252126">Şarj olurken boşta kalma işlemi</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> yakında duraklatılacak</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> programını disk görüntüsünden çalıştırıyorsunuz. Bu ürünü bilgisayarınıza kurduğunuzda, disk görüntüsü olmadan çalıştırabilir ve her zaman güncel olacağından emin olabilirsiniz.</translation>
@@ -7419,6 +7440,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> ile ilgili ipuçları ve güncellemeler</translation>
 <translation id="6077476112742402730">Sesle yazma</translation>
 <translation id="6078121669093215958">{0,plural, =1{Misafir}other{# misafir penceresi açık}}</translation>
+<translation id="6078199831684941650"><ph name="VERSION" /> sürümüne güncellendi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6078752646384677957">Lütfen mikrofonunuzu ve ses seviyelerini kontrol edin.</translation>
 <translation id="608029822688206592">Ağ bulunamadı. Lütfen SIM kartınızı takıp tekrar deneyin.</translation>
@@ -7569,6 +7591,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> için hangi geçiş anahtarını kullanmak istersiniz?</translation>
 <translation id="6181218116951226898">Uygulamalar bazen marka öğelerini günceller. Güncelleme yapmadan önce tüm değişiklikleri inceleyerek bunların sizin için uygun olduğundan emin olun.</translation>
 <translation id="6181431612547969857">İndirme engellendi</translation>
+<translation id="6182100780603067202">Uygulama sesini de paylaş (tüm pencerelerinden)</translation>
 <translation id="6183369864942961155">Otomatik açık/koyu tema</translation>
 <translation id="6184099524311454384">Sekme Ara</translation>
 <translation id="6185132558746749656">Cihaz Konumu</translation>
@@ -7987,6 +8010,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6478849105642611893">Hızlı Yapıştır tuşu, sekme tuşunun altında yer alır</translation>
 <translation id="6479881432656947268">Chrome Web Mağazası'nı ziyaret edin</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
+<translation id="6480532238409319936">Güncelleme işlemi başarısız</translation>
 <translation id="6481749622989211463">Yakındaki cihazlarla dosyaları ve diğer öğeleri paylaşın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="648204537326351595"><ph name="SPECIFIC_NAME" /> öğesinin mikrofonunuza erişmesine izin verin</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
@@ -8569,6 +8593,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="686839242150793617">Otomatik olarak pencere içinde pencere moduna girmesine izin verilenler</translation>
 <translation id="6868934826811377550">Ayrıntılara Bakın</translation>
 <translation id="6870470066213933201">JavaScript optimizasyonunu ve güvenliği yönetin</translation>
+<translation id="6870953451576517204">Kendi kendine test başarılı</translation>
 <translation id="6871644448911473373">OCSP Yanıtlayanı: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Diller</translation>
 <translation id="6873571253135628430">Site izinlerini değiştir</translation>
@@ -9361,6 +9386,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7431719494109538750">HID cihaz bulunamadı</translation>
 <translation id="7431991332293347422">Göz atma geçmişinizin Arama ve diğer hizmetleri kişiselleştirmek için nasıl kullanıldığını kontrol edin</translation>
 <translation id="7432200167665670017">Yöneticiniz "<ph name="EXTENSION_NAME" />" uzantısını engelledi. Uygulama Kimliği <ph name="EXTENSION_ID" /></translation>
+<translation id="7433103263856598557">Arşivle</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> cihazınızı kullanmaya devam etmek için akıllı kartı takın</translation>
 <translation id="7433957986129316853">Değişiklikleri koru</translation>
 <translation id="7434100547946193426">Diğer uygulamalar</translation>
@@ -9484,6 +9510,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7514417110442087199">Atama ekle</translation>
 <translation id="7515139121338932179">Pencerenizi paylaşmak için sisteminizin pencere seçicisini kullanın</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" />, yönetici tarafından engellendi. Bu uygulamayı kullanmak için yöneticiden izin isteyin.</translation>
+<translation id="7515839311973675282">Bu uygulama, cihazınıza yüklenecek</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sayfa aşağı</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> duraklatıldı</translation>
@@ -9894,6 +9921,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
     Yakındaki cihazlar <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> olarak görebilir...</translation>
 <translation id="7786889348652477777">&amp;Uygulamayı Yeniden Yükle</translation>
 <translation id="7787308148023287649">Başka bir ekranda görüntüle</translation>
+<translation id="7788976206742181876">Omaha İsteği</translation>
 <translation id="7789895198197042595">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
 <translation id="7791269138074599214">Giriş yöntemi</translation>
 <translation id="7791436592012979144">Ters kaydırma etkinleştirildi</translation>
@@ -10352,6 +10380,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8090234456044969073">En sık ziyaret ettiğiniz web sitelerinin listesini okuma</translation>
 <translation id="8090513782447872344">İstediğiniz zaman geri gelerek tekrar göz atabilirsiniz</translation>
 <translation id="8090686009202681725">Yapay zeka ile tema üret</translation>
+<translation id="8092792048365451089">İşlem şu sonuçla tamamlandı: <ph name="OUTCOME" /></translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> yanıt vermiyor</translation>
 <translation id="8094536695728193970">Kayısı rengi</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive'a yedekleyin. Verilerinizi istediğiniz zaman kolayca geri yükleyin veya cihazlar arasında geçiş yapın. Yedekleme işleminiz uygulama verilerini içerir.<ph name="END_PARAGRAPH1" />
@@ -10375,6 +10404,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8102139037507939978">Kimliği Tanımlayabilecek Bilgiler'i system_logs.txt dosyasından çıkar.</translation>
 <translation id="810362914482827094">Geçiş anahtarı arama</translation>
 <translation id="8104088837833760645">eSIM profili indir</translation>
+<translation id="8104778744208707085">İşlem yapmanız gerekiyor</translation>
 <translation id="8105050970626643057">İhtiyacınız olduğunda Gemini'ı hızlıca açın</translation>
 <translation id="8105273883928376822">Devam etmek için lütfen oturum açın.</translation>
 <translation id="8106114112474206597">Bir fare düğmesine basmak için "i" tuşunu kullanın</translation>
@@ -10512,6 +10542,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8203152941016626022">Yakındakilerle Paylaş cihaz adı</translation>
 <translation id="8203732864715032075">Size bildirimler gönderir ve Mesajlar uygulaması için bu bilgisayarın hatırlanmasını varsayılan ayar yapar. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Sağ tıklama</translation>
+<translation id="8204712121332316335">Komut, <ph name="EXIT_CODE" /> koduyla sonlandırıldı</translation>
 <translation id="8205478243727418828">başlatıcı + aşağı ok</translation>
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8206267832882844324">Notu düzenle</translation>
@@ -11258,6 +11289,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8707562594602678416">Yerler</translation>
 <translation id="8708000541097332489">Çıkışta temizle</translation>
 <translation id="870805141700401153">Microsoft Bireysel Kod İmzalama</translation>
+<translation id="8708088555926718398">Hata: Kategori: <ph name="CATEGORY" />, Kod: <ph name="CODE" />, Ekstra Kod: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Daha Fazla Bilgi</translation>
 <translation id="8709368517685334931">Eski renkleri Chrome Web Mağazası'nda bulabilirsiniz</translation>
 <translation id="8710414664106871428">Fantastik</translation>
@@ -11361,6 +11393,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP adresleri hakkındaki bilgiler bu kapsamda yer alabilir.</translation>
 <translation id="876956356450740926">Geliştirici araçları, entegre geliştirme ortamları ve düzenleyicileri çalıştırın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Uzantı kök dizini</translation>
+<translation id="8772460977477465365">Sonraki sürüm: <ph name="VERSION" /></translation>
 <translation id="8773535891252326047">Vurgulanan kısma bağlantı kopyalandı</translation>
 <translation id="8774379074441005279">Geri Yüklemeyi Onaylayın</translation>
 <translation id="8774934320277480003">Üst kenar boşluğu</translation>
@@ -11562,6 +11595,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8909833622202089127">Site, konumunuzu izliyor</translation>
 <translation id="8910222113987937043">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızla ilgili değişiklikler artık Google Hesabınızla senkronize edilmez. Ancak mevcut verileriniz Google Hesabınızda kalmaya devam eder ve <ph name="BEGIN_LINK" />Google Hesap Özeti<ph name="END_LINK" />'nde yönetilebilir.</translation>
 <translation id="8910987510378294980">Cihaz listesini gizle</translation>
+<translation id="8911914282056933784">Projeleri gizle</translation>
 <translation id="8912362522468806198">Google Hesabı</translation>
 <translation id="8912810933860534797">Otomatik taramayı etkinleştir</translation>
 <translation id="8914030287343429787">Chrome veya Android kullanmıyorken bile <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> adresinde oturum açarak şifrelerinizi görüntüleyebilirsiniz.</translation>
@@ -11819,6 +11853,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9069417381769492963">Aramanızla eşleşen yer işareti yok</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> uygulamasına verdiğiniz izinler aynı zamanda yüklü ve akışla yayınlanan uygulamaları için de geçerli olur.</translation>
 <translation id="9070342919388027491">Sekme sola taşındı</translation>
+<translation id="9072220108592671115">Yüklü sürüm <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Gemini'a, sizin adınıza görevleri tamamlaması için bu sitelerde oturum açma izni verdiniz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB fare bağlandı</translation>

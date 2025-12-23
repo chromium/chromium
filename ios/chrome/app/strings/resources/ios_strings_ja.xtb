@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1161663161838091892">続行するにはタブと履歴を同期してください</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} 件のクレジット カード}other{{count} 件のクレジット カード}}</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1172898394251786223">次の項目</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1752547299766512813">パスワードの保存</translation>
 <translation id="1764070164487214210">ルート</translation>
+<translation id="1764511703783285459">他のパスワード マネージャーから共有されたパスワードまたはパスキーはありません</translation>
 <translation id="1767766085187034454">Google 翻訳</translation>
 <translation id="1771016937398045251">ツールメニュー</translation>
 <translation id="1772468122139624049">タブを再読み込みできません</translation>
@@ -688,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 件選択しました}other{# 件選択しました}}</translation>
 <translation id="3668816008081204991">リーディング リストは非表示になっています</translation>
 <translation id="3670030362669914947">番号</translation>
+<translation id="3672283986707092811">すべて選択</translation>
 <translation id="3679163990085797665">既読を削除</translation>
 <translation id="368329460027487650">ログアウトしています。ログインのオプションを開きます。</translation>
 <translation id="3695446226812920698">詳細</translation>
@@ -870,6 +873,7 @@
 <translation id="4367971618859387374">表示名</translation>
 <translation id="4375772272517383391">すべてのタブを閉じる</translation>
 <translation id="4378154925671717803">電話</translation>
+<translation id="4380677808580146413">選択</translation>
 <translation id="4389019817280890563">タップして言語を変更できます。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 日後}other{{COUNT} 日後}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 件のタブ}other{# 件のタブ}}</translation>
@@ -1068,6 +1072,7 @@
 <translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
 <translation id="5087098519049306025">価格の追跡</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
+<translation id="510580293474170715">インポートされたアイテムはありません</translation>
 <translation id="5113960131843706315">読み込んでいます…</translation>
 <translation id="5118462200606189584">アカウントを追加…</translation>
 <translation id="5118764316110575523">オフ</translation>
@@ -1138,7 +1143,9 @@
 <translation id="5352128922772839949">ファイルを保存</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="536067926684072644">ブックマークを表示する</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} 件のパスキーをインポートできませんでした}other{{count} 件のパスキーをインポートできませんでした}}</translation>
 <translation id="5371112366564891538">文字サイズを拡大</translation>
+<translation id="5376135254804080693">選択をすべて解除</translation>
 <translation id="537853552771686272">関心のあるトピックとサイトを管理する</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 個のタブを閉じました}other{{count} 個のタブを閉じました}}</translation>
 <translation id="5394975111793637642">おすすめの商品レビュー カードを非表示にする</translation>
@@ -1445,6 +1452,7 @@
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
 <translation id="6410883413783534063">タブを開くと、さまざまなページに同時にアクセスできます</translation>
 <translation id="6418346271604475326">PDF を準備しています</translation>
+<translation id="6420292512900923139">データのインポート中に問題が発生しました</translation>
 <translation id="6421038304268477484">翻訳されたテキスト</translation>
 <translation id="6429213933892582367">[パスワードのオプション] を開きます</translation>
 <translation id="6435236283694032571">リーディング リストに追加する</translation>
@@ -1483,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">オプション</translation>
 <translation id="6550891580932862748">危険なウェブサイト、ダウンロード、拡張機能から保護しません。他の Google サービスのセーフ ブラウジング設定には影響しません。</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">やり直す</translation>
 <translation id="6559301491397835130">{count,plural, =1{ブックマークを「{title}」に保存しました。保存されるのはこのデバイスのみに限られます。}other{ブックマークを「{title}」に保存しました。保存されるのはこのデバイスのみに限られます。}}</translation>
 <translation id="656065428026159829">もっと見る</translation>

@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Избрахте 1}other{Избрахте #}}</translation>
 <translation id="3668816008081204991">Списъкът за четене е скрит</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3672283986707092811">Избиране на всички</translation>
 <translation id="3679163990085797665">Изтриване на прочетените</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
 <translation id="3695446226812920698">Научете как</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Екранно име</translation>
 <translation id="4375772272517383391">Затваряне на всички раздели</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4380677808580146413">Избиране</translation>
 <translation id="4389019817280890563">Докоснете за смяна на езика.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{След 1 ден}other{След {COUNT} дни}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Запазване на файла</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="536067926684072644">Показване на отметките</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} ключ за достъп не бе импортиран}other{{count} ключа за достъп не бяха импортирани}}</translation>
 <translation id="5371112366564891538">Увеличаване на размера на текста</translation>
+<translation id="5376135254804080693">Премахване на избора от всички</translation>
 <translation id="537853552771686272">Управлявайте темите и сайтовете, които ви интересуват</translation>
 <translation id="5390458669633674385">{count,plural, =1{Затворихте {count}}other{Затворихте {count}}}</translation>
 <translation id="5394975111793637642">Скриване на картата „Подходящи за вас отзиви за продукт“</translation>

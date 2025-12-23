@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">此操作會將清單中的所有網站重設為預設縮放等級</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1994173015038366702">網站網址</translation>
+<translation id="1994558116414798016">Lexend 字型</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
 <translation id="2025115093177348061">擴張實境</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">主題色彩淺色</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2102396546234652240">不允許網站使用麥克風</translation>
+<translation id="2115808389282428160">不允許網站存取此裝置上的其他應用程式和服務</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
 <translation id="2146263598007866206">網站可能會自動同時下載相關檔案，以便節省時間</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -159,6 +161,7 @@
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2626708220538466178">預設瀏覽器頁底面板閂咗</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2665056444046933274">網站可使用此功能存取此裝置上的其他應用程式和服務</translation>
 <translation id="2670403088701171361">不允許網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2682367912565197520">刪除已儲存的縮放等級</translation>
@@ -202,8 +205,10 @@
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資料</translation>
+<translation id="3120204271988747891">網站可要求存取區域網絡上的其他裝置</translation>
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
 <translation id="3132996321662585180">每日重新整理</translation>
+<translation id="3134859781443140237">區域網絡</translation>
 <translation id="3143754809889689516">從頭開始播放</translation>
 <translation id="3164169438034704658">你可以在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟精確位置。</translation>
 <translation id="3165022941318558018">允許網站使用第三方 Cookie</translation>
@@ -214,6 +219,7 @@
 <translation id="3223425961342298674">唔批准存取位置資料</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3232293466644486101">刪除瀏覽資料…</translation>
+<translation id="3241320538788585298">Loopback 網絡</translation>
 <translation id="3242646949159196181">開咗之後，網站可以播放音效。閂咗之後，網站唔可以播放音效。</translation>
 <translation id="3273479183583863618">在分頁上啟用減價通知</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
@@ -423,6 +429,7 @@
 <translation id="5591840828808741583">已封鎖 <ph name="SITE_NAME" /></translation>
 <translation id="560980142378233747">這代表網站功能應可正常運作，但瀏覽保護程度會降低。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">新分頁資訊卡頁底面板</translation>
+<translation id="5621413808884657932">開咗之後，網站可以要求存取呢部裝置上嘅其他應用程式同服務。閂咗之後，網站唔可以存取呢部裝置上嘅其他應用程式同服務。</translation>
 <translation id="5632485077360054581">顯示方法</translation>
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
@@ -543,6 +550,7 @@
 <translation id="6842868554183332230">為了設定您在即時通訊應用程式中的是否有空狀態，網站通常會偵測您使用裝置的時間</translation>
 <translation id="6864395892908308021">此裝置無法讀取 NFC</translation>
 <translation id="6870169401250095575">隱藏「安全檢查」資訊卡</translation>
+<translation id="6882736949427544336">不允許網站存取區域網絡上的其他裝置</translation>
 <translation id="6900883974539674431">建立分頁群組後，系統會自動儲存群組，並同步至所有裝置</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -604,6 +612,8 @@
 <translation id="7586676035079382730">唔批准通知</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部記錄、Cookie、網站資料等</translation>
+<translation id="762200934554267613">網站可要求存取此裝置上的其他應用程式和服務</translation>
+<translation id="7627749368210392160">網站可使用此功能存取區域網絡上的其他裝置</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7655411746932645568">網站可要求連接序列連接埠</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -659,6 +669,7 @@
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">開咗之後，網站可以要求存取區域網絡上嘅其他裝置。閂咗之後，網站就唔可以存取區域網絡上嘅其他裝置。</translation>
 <translation id="8249310407154411074">移至頂部</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -712,6 +723,7 @@
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8737426583868847403">已儲存自訂縮放等級的網站會在這裡顯示</translation>
+<translation id="8748714929822124637">不允許網站存取區域網絡上的其他裝置</translation>
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8775741625735357092">你可以在 [設定] &gt; [外觀] 中開啟書籤列</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>

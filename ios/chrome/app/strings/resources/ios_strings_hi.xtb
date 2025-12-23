@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 चुना गया}one{# चुना गया}other{# चुने गए}}</translation>
 <translation id="3668816008081204991">रीडिंग लिस्ट छिपी हुई है</translation>
 <translation id="3670030362669914947">कार्ड नंबर</translation>
+<translation id="3672283986707092811">सभी चुनें</translation>
 <translation id="3679163990085797665">पढ़ी गई एंट्री मिटाएं</translation>
 <translation id="368329460027487650">साइन आउट किया गया. इस बटन पर टैप करने से, साइन इन करने के विकल्प मिलते हैं.</translation>
 <translation id="3695446226812920698">तरीका जानें</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">डिसप्ले नेम</translation>
 <translation id="4375772272517383391">सभी टैब बंद करें</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
+<translation id="4380677808580146413">चुनें</translation>
 <translation id="4389019817280890563">भाषा बदलने के लिए टैप करें.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 दिन बाद}one{{COUNT} दिन बाद}other{{COUNT} दिनों बाद}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">फ़ाइल सेव करें</translation>
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
 <translation id="536067926684072644">बुकमार्क दिखाएं</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} पासकी इंपोर्ट नहीं की जा सकी}one{{count} पासकी इंपोर्ट नहीं की जा सकी}other{{count} पासकी इंपोर्ट नहीं की जा सकीं}}</translation>
 <translation id="5371112366564891538">टेक्स्ट का साइज़ बढ़ाएं</translation>
+<translation id="5376135254804080693">सभी से चुने हुए का निशान हटाएं</translation>
 <translation id="537853552771686272">अपनी पसंद के विषयों और साइटों को मैनेज करें</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} टैब बंद कर दिया गया है}one{{count} टैब बंद कर दिया गया है}other{{count} टैब बंद कर दिए गए हैं}}</translation>
 <translation id="5394975111793637642">'आपके लिए प्रॉडक्ट की समीक्षाएं' कार्ड को छिपाएं</translation>

@@ -690,6 +690,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1ක් තේරිණි}one{#ක් තෝරා ගන්නා ලදි}other{#ක් තෝරා ගන්නා ලදි}}</translation>
 <translation id="3668816008081204991">කියවීමේ ලැයිස්තුව සඟවා ඇත</translation>
 <translation id="3670030362669914947">අංකය</translation>
+<translation id="3672283986707092811">සියල්ල තෝරන්න</translation>
 <translation id="3679163990085797665">කියවීම මකන්න</translation>
 <translation id="368329460027487650">වරනය විය. පුරනය වීමට විකල්ප විවෘත කරයි.</translation>
 <translation id="3695446226812920698">කෙසේදැයි දැන ගන්න</translation>
@@ -872,6 +873,7 @@
 <translation id="4367971618859387374">සංදර්ශක නම</translation>
 <translation id="4375772272517383391">සියලු පටිති වසන්න</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
+<translation id="4380677808580146413">තෝරන්න</translation>
 <translation id="4389019817280890563">භාෂාව මාරු කිරීමට තට්ටු කරන්න.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{දින 1කට පසු}one{දින {COUNT}කට පසු}other{දින {COUNT}කට පසු}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 පටිත්තක්}one{පටිති #ක්}other{පටිති #ක්}}</translation>
@@ -1141,7 +1143,9 @@
 <translation id="5352128922772839949">ගොනුව සුරකින්න</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
 <translation id="536067926684072644">පිටුසන් පෙන්වන්න</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} මුරයතුරක් ආයාත කිරීමට නොහැකි විය}one{මුරයතුරු {count}ක් ආයාත කිරීමට නොහැකි විය}other{මුරයතුරු {count}ක් ආයාත කිරීමට නොහැකි විය}}</translation>
 <translation id="5371112366564891538">පෙළ ප්‍රමාණය වැඩි කරන්න</translation>
+<translation id="5376135254804080693">සියල්ල තේරීම ඉවත් කරන්න</translation>
 <translation id="537853552771686272">ඔබ උනන්දුවක් දක්වන මාතෘකා සහ අඩවි කළමනාකරණය කරන්න</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} වැසිණි}one{{count} වැසිණි}other{{count} වැසිණි}}</translation>
 <translation id="5394975111793637642">ඔබේ කාඩ්පත සඳහා නිෂ්පාදන සමාලෝචන සඟවන්න</translation>

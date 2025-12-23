@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{Eitt valið}one{# valið}other{# valin}}</translation>
 <translation id="3668816008081204991">Leslisti er falinn</translation>
 <translation id="3670030362669914947">Númer</translation>
+<translation id="3672283986707092811">Velja allt</translation>
 <translation id="3679163990085797665">Eyða því sem er lesið</translation>
 <translation id="368329460027487650">Útskráð(ur). Opnar valkosti fyrir innskráningu.</translation>
 <translation id="3695446226812920698">Kynntu þér hvernig</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Skjánafn</translation>
 <translation id="4375772272517383391">Loka öllum flipum</translation>
 <translation id="4378154925671717803">Sími</translation>
+<translation id="4380677808580146413">Velja</translation>
 <translation id="4389019817280890563">Ýttu til að skipta um tungumál.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Eftir einn dag}one{Eftir {COUNT} dag}other{Eftir {COUNT} daga}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{Einn flipi}one{# flipi}other{# flipar}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Vista skrá</translation>
 <translation id="5355191726083956201">Kveikt er á aukinni vörn</translation>
 <translation id="536067926684072644">Sýna bókamerki</translation>
+<translation id="5364647308446127983">{count,plural, =1{Ekki tókst að flytja inn {count} aðgangslykil}one{Ekki tókst að flytja inn {count} aðgangslykil}other{Ekki tókst að flytja inn {count} aðgangslykla}}</translation>
 <translation id="5371112366564891538">Stækka texta</translation>
+<translation id="5376135254804080693">Ekki velja neitt</translation>
 <translation id="537853552771686272">Stjórnaðu umfjöllunarefnunum og vefsvæðunum sem þú hefur áhuga á</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} lokað}one{{count} lokað}other{{count} lokað}}</translation>
 <translation id="5394975111793637642">Fela spjaldið „Umsagnir um vörur fyrir þig“</translation>

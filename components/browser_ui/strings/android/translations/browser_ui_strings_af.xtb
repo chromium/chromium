@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Dit sal al die werwe op jou lys na die verstek-zoeminstelling terugstel</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
+<translation id="1994558116414798016">Lettertipe Lexend</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2025115093177348061">Aangevulde realiteit</translation>
 <translation id="2028449514182362831">Kenmerke wat bewegingsensors nodig het, sal nie werk nie</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Temakleur lig</translation>
 <translation id="2096716221239095980">Vee alle data uit</translation>
 <translation id="2102396546234652240">Moenie werwe toelaat om jou mikrofoon te gebruik nie</translation>
+<translation id="2115808389282428160">Moenie werwe toelaat om toegang tot ander apps en dienste op hierdie toestel te kry nie</translation>
 <translation id="2117655453726830283">Volgende skyfie</translation>
 <translation id="2146263598007866206">Werwe kan dalk outomaties verwante lêers saam aflaai om jou tyd te bespaar</translation>
 <translation id="2148716181193084225">Vandag</translation>
@@ -159,6 +161,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
 <translation id="2626708220538466178">Onderste blad van verstekblaaier is toegemaak</translation>
 <translation id="2653659639078652383">Dien in</translation>
+<translation id="2665056444046933274">Werwe kan hierdie kenmerk gebruik om toegang tot ander apps en dienste op hierdie toestel te kry</translation>
 <translation id="2670403088701171361">Moenie werwe toelaat om teks of prente op jou knipbord te sien nie</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2682367912565197520">Vee gestoorde zoemvlak uit</translation>
@@ -202,8 +205,10 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="311394601889664316">Moenie werwe toelaat om lêers of vouers op jou toestel te wysig nie</translation>
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Wys inligting</translation>
+<translation id="3120204271988747891">Werwe kan vra om toegang tot ander toestelle op jou plaaslike netwerk te kry</translation>
 <translation id="3123473560110926937">Geblokkeer op sommige werwe</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
+<translation id="3134859781443140237">Plaaslike netwerk</translation>
 <translation id="3143754809889689516">Speel van die begin af</translation>
 <translation id="3164169438034704658">Jy kan presiese ligging in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="3165022941318558018">Laat ’n werf toe om derdepartywebkoekies te gebruik</translation>
@@ -214,6 +219,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3223425961342298674">Ligging nie toegelaat nie</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3232293466644486101">Vee blaaierdata uit …</translation>
+<translation id="3241320538788585298">Teruglusnetwerk</translation>
 <translation id="3242646949159196181">Wanneer dit aan is, kan werwe klank speel. Wanneer dit af is, kan werwe nie klank speel nie.</translation>
 <translation id="3273479183583863618">Prysdalings op oortjies</translation>
 <translation id="3277252321222022663">Laat werwe toegang tot sensors toe (aanbeveel)</translation>
@@ -423,6 +429,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> geblokkeer</translation>
 <translation id="560980142378233747">Dit beteken dat werfkenmerke soos verwag behoort te werk, maar dat jy dalk minder blaaibeskerming het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Onderste blad van Nuwe Oortjie-bladsykaarte</translation>
+<translation id="5621413808884657932">Wanneer dit aan is, kan werwe vra om toegang tot ander apps en dienste op hierdie toestel te kry. Wanneer dit af is, kan werwe nie toegang tot ander apps en dienste op hierdie toestel kry nie.</translation>
 <translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5649053991847567735">Outomatiese aflaaie</translation>
 <translation id="5668404140385795438">Ignoreer 'n webwerf se versoek om inzoem te verhoed</translation>
@@ -543,6 +550,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="6842868554183332230">Werwe bespeur gewoonlik wanneer jy jou toestel aktief gebruik om jou beskikbaarheid op kletsprogramme te stel</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
 <translation id="6870169401250095575">Versteek Veiligheidskontrole-kaart</translation>
+<translation id="6882736949427544336">Moenie werwe toelaat om toegang tot ander toestelle op jou plaaslike netwerk te kry nie</translation>
 <translation id="6900883974539674431">Skep oortjiegroepe wat outomaties op al jou toestelle stoor en opdateer</translation>
 <translation id="6912998170423641340">Blokkeer werwe om teks en prente van die knipbord af te lees</translation>
 <translation id="6945221475159498467">Kies</translation>
@@ -604,6 +612,8 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7586676035079382730">Kennisgewings nie toegelaat nie</translation>
 <translation id="7594634374516752650">Aan ’n Bluetooth-toestel gekoppel</translation>
 <translation id="7617547684249261169">Jy kan sommige of al jou geskiedenis, webkoekies, werfdata en meer uitvee</translation>
+<translation id="762200934554267613">Werwe kan vra om toegang tot ander apps en dienste op hierdie toestel te kry</translation>
+<translation id="7627749368210392160">Werwe kan hierdie kenmerk gebruik om toegang tot ander toestelle op jou plaaslike netwerk te kry</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7655411746932645568">Werwe kan vra om aan reekspoorte te koppel</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
@@ -659,6 +669,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8211406090763984747">Verbinding is veilig</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Wanneer dit aan is, kan werwe vra om toegang tot ander toestelle op jou plaaslike netwerk te kry. Wanneer dit af is, kan werwe nie toegang tot ander toestelle op jou plaaslike netwerk kry nie.</translation>
 <translation id="8249310407154411074">Skuif na bo</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8284326494547611709">Onderskrifte</translation>
@@ -712,6 +723,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8737426583868847403">Werwe vir wie jy ’n gepasmaakte zoemvlak stoor, sal hier verskyn</translation>
+<translation id="8748714929822124637">Moenie werwe toelaat om toegang tot ander toestelle op jou plaaslike netwerk te kry nie</translation>
 <translation id="8751914237388039244">Kies 'n prent</translation>
 <translation id="8775741625735357092">Jy kan die boekmerkbalk aanskakel in Instellings &gt; Voorkoms</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>

@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{已选择 1 个}other{已选择 # 个}}</translation>
 <translation id="3668816008081204991">已隐藏阅读清单</translation>
 <translation id="3670030362669914947">卡号</translation>
+<translation id="3672283986707092811">全选</translation>
 <translation id="3679163990085797665">删除已读项</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
 <translation id="3695446226812920698">如何解决</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">显示名称</translation>
 <translation id="4375772272517383391">关闭所有标签页</translation>
 <translation id="4378154925671717803">电话</translation>
+<translation id="4380677808580146413">选择</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 天后}other{{COUNT} 天后}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">保存文件</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="536067926684072644">显示书签</translation>
+<translation id="5364647308446127983">{count,plural, =1{无法导入 {count} 个通行密钥}other{无法导入 {count} 个通行密钥}}</translation>
 <translation id="5371112366564891538">放大文字</translation>
+<translation id="5376135254804080693">取消全选</translation>
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 个已关闭}other{{count} 个已关闭}}</translation>
 <translation id="5394975111793637642">隐藏“为您推荐的商品评价”卡片</translation>

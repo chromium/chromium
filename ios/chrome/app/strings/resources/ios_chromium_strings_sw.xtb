@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium huweka data yako nyeti salama kwa kutumia Face ID.</translation>
 <translation id="1591119736686995611">Hufungua Gridi ya Kichupo cha Chromium.</translation>
 <translation id="16001233025397167">Kipengele cha Ukaguzi wa Usalama hukulinda dhidi ya ufichuzi haramu wa data, tovuti zisizo salama na zaidi. Pokea arifa kuhusu matatizo yoyote ya faragha au ya usalama ambayo Chromium itatambua kuwa yanakuathiri.</translation>
+<translation id="1614362805233822594">Tayari una manenosiri au funguo za siri katika Kidhibiti cha Manenosiri cha tovuti zilizoonyeshwa. Chagua akaunti ili uhifadhi maelezo ya kuingia katika akaunti yaliyoonyeshwa, ukibadilisha yaliyo kwenye Kidhibiti cha Manenosiri.</translation>
 <translation id="1617663976202781617">Data kutoka usawazishaji wa Chromium</translation>
 <translation id="164952285225495380">Kifurushi hiki tayari kimefuatiliwa kwenye Chromium.</translation>
+<translation id="1703338211136118534">Manenosiri yafuatayo hayakuhamishiwa kwenye Kidhibiti cha Manenosiri, kwa sababu hayatimizi masharti.</translation>
 <translation id="1707458603865303524">Tumia Chromium wakati wowote unapogusa viungo kwenye ujumbe au programu nyingine.</translation>
 <translation id="1722370509450468186">Nenosiri lako litahifadhiwa katika Akaunti yako (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Mipasho maalum tuliyokuandalia</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Ramani katika Chromium</translation>
 <translation id="1867772173333403444">4. Chagua Chromium</translation>
 <translation id="1965068424387304464">Kidokezo cha Chromium: Hifadhi Manenosiri</translation>
+<translation id="1992653360331625459">Tayari una manenosiri ya akaunti hizi katika huduma yako ya Kidhibiti cha Manenosiri. Ukichagua kupakia mojawapo ya manenosiri yaliyo hapa chini, litatumika badala ya lililopo.</translation>
 <translation id="2006345422933397527">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="2042889939382983733">Kuangalia Historia Yako ya Chromium</translation>
 <translation id="2052320862053429062">Chromium hukagua mara kwa mara manenosiri yako ikilinganisha na orodha ambazo zimechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google.
 
 Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
+<translation id="2334943301233020675">Funguo zifuatazo za siri hazikuhamishiwa kwenye Kidhibiti cha Manenosiri, kwa sababu hazitimizi masharti.</translation>
 <translation id="2337722506862731008">Tuma Chromium</translation>
 <translation id="2340423701577464731">Weka kipengee cha orodha ya kusoma kwenye Chromium</translation>
 <translation id="2374627437126809292">Chromium hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>

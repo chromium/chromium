@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 kiválasztva}other{# kiválasztva}}</translation>
 <translation id="3668816008081204991">Az Olvasólista el van rejtve</translation>
 <translation id="3670030362669914947">Szám</translation>
+<translation id="3672283986707092811">Az összes kijelölése</translation>
 <translation id="3679163990085797665">Olvasottak törlése</translation>
 <translation id="368329460027487650">Kijelentkezve. Megnyitja a bejelentkezési lehetőségeket.</translation>
 <translation id="3695446226812920698">Tudnivalók</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Megjelenített név</translation>
 <translation id="4375772272517383391">Az összes lap bezárása</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Kiválasztás</translation>
 <translation id="4389019817280890563">Koppintson a nyelv módosításához.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 nap után}other{{COUNT} nap után}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 lap}other{# lap}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Fájl mentése</translation>
 <translation id="5355191726083956201">A Speciális védelem be van kapcsolva</translation>
 <translation id="536067926684072644">Könyvjelzők megjelenítése</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} azonosítókulcs importálása nem sikerült}other{{count} azonosítókulcs importálása nem sikerült}}</translation>
 <translation id="5371112366564891538">Szövegméret növelése</translation>
+<translation id="5376135254804080693">Összes kijelölés megszüntetése</translation>
 <translation id="537853552771686272">Az Önt érdeklő témák és webhelyek kezelése</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} bezárva}other{{count} bezárva}}</translation>
 <translation id="5394975111793637642">A „Termékvélemények Önnek” kártya elrejtése</translation>

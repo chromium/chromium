@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
 <translation id="3668816008081204991">Okuma listesi gizlendi</translation>
 <translation id="3670030362669914947">Numara</translation>
+<translation id="3672283986707092811">Tümünü Seç</translation>
 <translation id="3679163990085797665">Okunanları sil</translation>
 <translation id="368329460027487650">Oturum kapatıldı. Oturum açma seçeneklerini açar.</translation>
 <translation id="3695446226812920698">Nasıl yapacağınızı öğrenin</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Görünen ad</translation>
 <translation id="4375772272517383391">Tüm sekmeleri kapat</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Seç</translation>
 <translation id="4389019817280890563">Dili değiştirmek için dokunun.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 gün sonra}other{{COUNT} gün sonra}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Dosyayı kaydet</translation>
 <translation id="5355191726083956201">Gelişmiş Koruma açık</translation>
 <translation id="536067926684072644">Yer İşaretlerini Göster</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} geçiş anahtarı içe aktarılamadı}other{{count} geçiş anahtarı içe aktarılamadı}}</translation>
 <translation id="5371112366564891538">Metin boyutunu büyüt</translation>
+<translation id="5376135254804080693">Tümünün Seçimini Kaldır</translation>
 <translation id="537853552771686272">İlgilendiğiniz konuları ve siteleri yönetin</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} sekme kapalı}other{{count} sekme kapalı}}</translation>
 <translation id="5394975111793637642">Size özel ürün yorumları kartını gizle</translation>

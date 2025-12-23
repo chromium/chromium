@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1161663161838091892">同步處理分頁和記錄即可繼續</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} 張信用卡}other{{count} 張信用卡}}</translation>
 <translation id="1164891049599601209">已在欺詐網站上輸入</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1752547299766512813">儲存密碼</translation>
 <translation id="1764070164487214210">路線</translation>
+<translation id="1764511703783285459">其他密碼管理工具並未分享任何密碼或密鑰</translation>
 <translation id="1767766085187034454">Google 翻譯</translation>
 <translation id="1771016937398045251">工具選單</translation>
 <translation id="1772468122139624049">無法重新載入分頁</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">筆記超過 1000 個字元</translation>
 <translation id="5087098519049306025">價格追蹤</translation>
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
+<translation id="510580293474170715">未匯入任何項目</translation>
 <translation id="5113960131843706315">正在擷取資料…</translation>
 <translation id="5118462200606189584">新增帳戶…</translation>
 <translation id="5118764316110575523">關閉</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">「安全瀏覽」能保護您免受攻擊，攻擊者可能會誘使您採取一些危險的行動，例如安裝惡意軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。如關閉「安全瀏覽」，請在瀏覽不熟悉或信譽不佳的網站時提高警覺。</translation>
 <translation id="6410883413783534063">開啟分頁即可同時瀏覽不同網頁</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
+<translation id="6420292512900923139">匯入資料時發生問題</translation>
 <translation id="6421038304268477484">譯文</translation>
 <translation id="6429213933892582367">開啟 [密碼選項]</translation>
 <translation id="6435236283694032571">加入閱讀清單</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6559301491397835130">{count,plural, =1{書籤已儲存至「{title}」。系統只會將這項資料儲存在此裝置。}other{書籤已儲存至「{title}」。系統只會將這些資料儲存在此裝置。}}</translation>
 <translation id="656065428026159829">查看更多</translation>

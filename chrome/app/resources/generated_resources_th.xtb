@@ -2460,6 +2460,7 @@
 <translation id="2646132387794831258">บันทึกลงในโฟลเดอร์ในบัญชี Google ไหม</translation>
 <translation id="264897126871533291">ตาบอดสีแดง</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, กลุ่มใบรับรอง (Certificate Chain)</translation>
+<translation id="2649331484502514724">DNS ที่ปลอดภัย</translation>
 <translation id="2649508632465204949">สอนทักษะใหม่ให้ฉันหน่อย</translation>
 <translation id="2651259505411913186">ใช่ แยกข้อมูลของฉันออกจากข้อมูลโรงเรียน</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
@@ -3391,6 +3392,7 @@
 <translation id="329838636886466101">ซ่อม</translation>
 <translation id="3298789223962368867">URL ที่ป้อนไม่ถูกต้อง</translation>
 <translation id="32991397311664836">อุปกรณ์:</translation>
+<translation id="330140779027048024">ใช้เสมอโดยเลือกผู้ให้บริการ DNS-over-HTTPS</translation>
 <translation id="3301554464236215299">ไฟล์นี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="3301996560342889673">หากต้องการซิงค์ประวัติการเข้าชม</translation>
 <translation id="33022249435934718">GDI จัดการ</translation>
@@ -4246,6 +4248,7 @@
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="3848688783623004960">เปิดในมุมมองแบบแยก</translation>
+<translation id="3849517590329855428">ยุบทั้งหมด</translation>
 <translation id="3850172593216628215">การอัปเดตความปลอดภัยสิ้นสุดแล้ว ประหยัดอย่างน้อย $50 เมื่อซื้อ Chromebook เครื่องใหม่</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3850989673553106152">เปลี่ยนรหัสผ่านแล้ว</translation>
@@ -4751,6 +4754,7 @@
 <translation id="4206144641569145248">มนุษย์ต่างดาว</translation>
 <translation id="4206323443866416204">รายงานความคิดเห็น</translation>
 <translation id="4206585797409671301">ได้รับอนุญาตให้แสดงคำขอ</translation>
+<translation id="4207144975205749656">เข้ารหัสคำขอนำทางเพื่อไม่ให้ผู้โจมตีในเครือข่ายเดียวกันเห็นการเข้าชมของคุณ</translation>
 <translation id="4207932031282227921">ขอสิทธิ์ กด F6 เพื่อตอบกลับ</translation>
 <translation id="4208390505124702064">ค้นหา <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">ขนาดใหญ่</translation>
@@ -6160,6 +6164,7 @@
 <translation id="5186362203408605578">ใช้อุปกรณ์อื่นโดยสแกนคิวอาร์โค้ด</translation>
 <translation id="5186381005592669696">ปรับแต่งภาษาที่แสดงสำหรับแอปที่รองรับ</translation>
 <translation id="5186788525428341874">คุณสามารถใช้พาสคีย์นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ต่างๆ ได้เร็วขึ้น เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT_NAME" /></translation>
+<translation id="5186792064936776005">ใช้ค่าเริ่มต้นหากมี</translation>
 <translation id="5187641678926990264">ติดตั้งหน้าเว็บเป็นแอป...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">แชร์โดย <ph name="USER_NAME" /></translation>
@@ -7133,6 +7138,7 @@
 <translation id="5863445608433396414">เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่อง</translation>
 <translation id="5863515189965725638">แก้ไข IBAN</translation>
 <translation id="5864195618110239517">ใช้การเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
+<translation id="5864624288360677142">ใช้ค่าเริ่มต้นหากมี และใช้ Google DNS เป็นข้อมูลสำรอง</translation>
 <translation id="5864754048328252126">การทำงานสำหรับการไม่ใช้งานขณะที่ชาร์จ</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> จะหยุดชั่วคราวเร็วๆ นี้</translation>
 <translation id="586567932979200359">คุณกำลังเรียกใช้ <ph name="PRODUCT_NAME" /> จากดิสก์อิมเมจ การติดตั้งผลิตภัณฑ์นี้บนคอมพิวเตอร์จะทำให้คุณเรียกใช้ได้โดยไม่ต้องใช้ดิสก์อิมเมจและคุณมั่นใจได้ว่าผลิตภัณฑ์จะอัปเดตตลอดเวลา</translation>
@@ -7249,6 +7255,7 @@
 <translation id="5945363896952315544">คีย์ความปลอดภัยเก็บลายนิ้วมือไม่ได้อีก หากต้องการเพิ่มใหม่ ให้ลบลายนิ้วมือที่มีอยู่ออกก่อน</translation>
 <translation id="5946591249682680882">รหัสรายงาน <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">ดับเบิลคลิกที่เมาส์</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{แยกวิเคราะห์กิจกรรม 1 รายการไม่ได้และไม่แสดง}other{แยกวิเคราะห์กิจกรรม # รายการไม่ได้และไม่แสดง}}</translation>
 <translation id="5948476936444935795">ยกเลิกการนำเข้า</translation>
 <translation id="5948536763493709626">เชื่อมต่อแป้นพิมพ์หรือเมาส์ หรือตั้งค่าต่อโดยใช้หน้าจอสัมผัส หากกำลังใช้อุปกรณ์บลูทูธ ให้ตรวจสอบว่าอุปกรณ์พร้อมที่จะจับคู่</translation>
 <translation id="5949795028157144515">โหมดนักพัฒนาซอฟต์แวร์ปิดอยู่ ส่วนขยายบางรายการจึงถูกปิดใช้</translation>
@@ -7583,6 +7590,7 @@
 <translation id="6180550893222597997">คุณต้องการใช้พาสคีย์ใดสําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="6181218116951226898">บางครั้งแอปจะอัปเดตการสร้างแบรนด์ของตน โปรดตรวจสอบการเปลี่ยนแปลงทั้งหมดเพื่อให้แน่ใจว่าคุณพอใจกับการเปลี่ยนแปลงเหล่านั้นก่อนทำการอัปเดต</translation>
 <translation id="6181431612547969857">การดาวน์โหลดถูกบล็อก</translation>
+<translation id="6182100780603067202">แชร์เสียงของแอปพลิเคชันด้วย (จากหน้าต่างทั้งหมด)</translation>
 <translation id="6183369864942961155">ธีมสว่าง/ธีมมืดอัตโนมัติ</translation>
 <translation id="6184099524311454384">ค้นหาแท็บ</translation>
 <translation id="6185132558746749656">ตำแหน่งของอุปกรณ์</translation>
@@ -8642,6 +8650,7 @@
 <translation id="6914812290245989348">ไม่เห็นคำเตือนก่อนที่จะไปยังเว็บไซต์ที่ไม่ปลอดภัย</translation>
 <translation id="6916590542764765824">จัดการส่วนขยาย</translation>
 <translation id="6916676294509106572">ปฏิทิน Outlook ซ่อนอยู่</translation>
+<translation id="6916818963747321523">ขยายทั้งหมด</translation>
 <translation id="6917873303492266709">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้เปิดการตั้งค่าและเปิด "อนุญาตให้ลงชื่อเข้าใช้ Chrome"</translation>
 <translation id="6918677045355889289">ต้องอัปเดต Chrome OS</translation>
 <translation id="6918733588290914545">การตั้งค่าด่วนด้วยโทรศัพท์ Android</translation>
@@ -9192,6 +9201,7 @@
 <translation id="7312040805247765153">ติดตั้งแอปไม่ได้</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313539585802573958">สีไฟแบ็กไลต์ของแป้นพิมพ์</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{ระบุวันที่ของกิจกรรม 1 รายการไม่ได้และไม่แสดง}other{ไม่สามารถระบุวันที่ของกิจกรรม # รายการและระบบจะไม่แสดง}}</translation>
 <translation id="7314865262803554456">คุณจะไม่ได้รับการแจ้งเตือนเมื่อเริ่มการบันทึก</translation>
 <translation id="7314989823816739632">โรแมนติก</translation>
 <translation id="7317342082064136423">ยืนยันบัญชี</translation>

@@ -4263,6 +4263,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Mở trong cửa sổ Ẩ&amp;n danh</translation>
 <translation id="3848688783623004960">Mở trong dạng xem phân tách</translation>
+<translation id="3849517590329855428">Thu gọn tất cả</translation>
 <translation id="3850172593216628215">Bạn sẽ không nhận được các bản cập nhật bảo mật nữa. Bạn sẽ tiết kiệm được 50 USD trở lên khi mua Chromebook mới.</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3850989673553106152">Đã đổi mật khẩu</translation>
@@ -7273,6 +7274,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5945363896952315544">Khóa bảo mật của bạn không thể lưu trữ thêm vân tay. Để thêm một vân tay mới, trước tiên, hãy xóa một vân tay hiện có.</translation>
 <translation id="5946591249682680882">ID báo cáo <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Nhấp đúp chuột</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{Không thể phân tích cú pháp 1 sự kiện nên sự kiện này đã bị ẩn}other{Không thể phân tích cú pháp # sự kiện nên các sự kiện này đã bị ẩn}}</translation>
 <translation id="5948476936444935795">Huỷ nhập</translation>
 <translation id="5948536763493709626">Kết nối bàn phím/chuột hoặc tiếp tục thiết lập bằng màn hình cảm ứng. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="5949795028157144515">Chế độ nhà phát triển đang tắt. Một số tiện ích đã bị tắt.</translation>
@@ -8670,6 +8672,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6914812290245989348">Không hiện cảnh báo trước khi truy cập vào các trang web không an toàn</translation>
 <translation id="6916590542764765824">Quản lý các tiện ích</translation>
 <translation id="6916676294509106572">Đã ẩn Lịch Outlook</translation>
+<translation id="6916818963747321523">Mở rộng tất cả</translation>
 <translation id="6917873303492266709">Để chia sẻ, tham gia và cộng tác trong nhóm thẻ, vui lòng mở phần cài đặt rồi bật chế độ Cho phép đăng nhập vào Chrome</translation>
 <translation id="6918677045355889289">Cần cập nhật ChromeOS</translation>
 <translation id="6918733588290914545">Thiết lập nhanh bằng điện thoại Android</translation>
@@ -9220,6 +9223,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7312040805247765153">Không cài đặt được ứng dụng</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7313539585802573958">Màu đèn nền bàn phím</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Không thể xác định ngày cho 1 sự kiện nên sự kiện này đã bị ẩn}other{Không thể xác định ngày cho # sự kiện nên các sự kiện này đã bị ẩn}}</translation>
 <translation id="7314865262803554456">Bạn sẽ không nhận được thông báo khi quá trình ghi bắt đầu.</translation>
 <translation id="7314989823816739632">Lãng mạn</translation>
 <translation id="7317342082064136423">Xác minh tài khoản của bạn</translation>

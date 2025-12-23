@@ -688,6 +688,7 @@
 <translation id="3662966164093827811">{count,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="3668816008081204991">Leselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
+<translation id="3672283986707092811">Velg alle</translation>
 <translation id="3679163990085797665">Slett leste</translation>
 <translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
 <translation id="3695446226812920698">Sånn gjør du det</translation>
@@ -870,6 +871,7 @@
 <translation id="4367971618859387374">Visningsnavn</translation>
 <translation id="4375772272517383391">Lukk alle faner</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Velg</translation>
 <translation id="4389019817280890563">Trykk for å bytte språk.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Etter 1 dag}other{Etter {COUNT} dager}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 fane}other{# faner}}</translation>
@@ -1138,7 +1140,9 @@
 <translation id="5352128922772839949">Lagre fil</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
 <translation id="536067926684072644">Vis bokmerker</translation>
+<translation id="5364647308446127983">{count,plural, =1{Kunne ikke importere {count} passnøkkel}other{Kunne ikke importere {count} passnøkler}}</translation>
 <translation id="5371112366564891538">Øk tekststørrelsen</translation>
+<translation id="5376135254804080693">Velg bort alle</translation>
 <translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} er lukket}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul «Produktanmeldelser for deg»-kortet</translation>
