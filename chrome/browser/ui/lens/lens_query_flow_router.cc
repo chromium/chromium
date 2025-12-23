@@ -290,6 +290,10 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
       web_contents()->GetBrowserContext())
       ->StartTaskUiInSidePanel(browser_window_interface(), tab_interface(), url,
                                std::move(pending_session_handle_));
+  // Notify the overlay controller that the side panel was opened so it can
+  // update its UI state.
+  lens_search_controller_->lens_overlay_controller()
+      ->NotifyResultsPanelOpened();
 }
 
 void LensQueryFlowRouter::UploadContextualInputData(

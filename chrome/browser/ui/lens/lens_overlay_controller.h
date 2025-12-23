@@ -266,7 +266,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void SendObjects(std::vector<lens::mojom::OverlayObjectPtr> objects);
 
   // Send message to overlay notifying that the results side panel opened.
-  void NotifyResultsPanelOpened();
+  virtual void NotifyResultsPanelOpened();
 
   // Send message to overlay to copy the currently selection if any.
   void TriggerCopy();
