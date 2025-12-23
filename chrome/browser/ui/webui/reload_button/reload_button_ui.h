@@ -17,7 +17,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class ReloadButtonUI;
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 class ReloadButtonUI : public TopChromeWebUIController,
                        public reload_button::mojom::PageHandlerFactory {
@@ -36,9 +38,23 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   ReloadButtonPageHandler* page_handler_for_testing();
 
+  // TopChromeWebUIController:
+  // The controller uses `requesting_origin` to:
+  // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
+  //    resources to trusted "chrome://" origins.
+  // 2. Generate correct CORS headers. Since resources added here often belong
+  //    to a different origin than the page loading the, they need a CORS header
+  //    that explicitly allow `current_origin`.
+  void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& requesting_origin) override;
+
   // For testing:
   // Sets a custom CommandUpdater for testing purposes.
   void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
+
+  // Sets a custom ColorProvider for testing purposes.
+  void SetColorProviderForTesting(const ui::ColorProvider* color_provider);
 
  private:
   // reload_button::mojom::PageHandlerFactory:
@@ -55,6 +71,9 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
   raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
+
+  // Initialized only in tests by SetColorProviderForTesting().
+  raw_ptr<const ui::ColorProvider> color_provider_for_testing_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

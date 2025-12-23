@@ -53,6 +53,7 @@ inline constexpr char kChromeUIQuotaInternalsHost[] = "quota-internals";
 inline constexpr char kChromeUIResourcesHost[] = "resources";
 inline constexpr char kChromeUIServiceWorkerInternalsHost[] =
     "serviceworker-internals";
+inline constexpr char kChromeUIThemeHost[] = "theme";
 inline constexpr char kChromeUITracesInternalsHost[] = "traces";
 inline constexpr char kChromeUITracingHost[] = "tracing";
 inline constexpr char kChromeUIUkmHost[] = "ukm";

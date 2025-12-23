@@ -46,15 +46,15 @@ ReloadButtonWebView::ReloadButtonWebView(
   auto* web_contents = web_view->GetWebContents(kUrl);
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
-  web_view->LoadInitialURL(kUrl);
+
   const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   web_view->SetPreferredSize(gfx::Size(size, size));
-  webui::SetBrowserWindowInterface(web_contents, browser);
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  reload_button_ui_ =
-      web_contents->GetWebUI()->GetController()->GetAs<ReloadButtonUI>();
   web_view->SetID(VIEW_ID_RELOAD_BUTTON);
-  AddChildView(std::move(web_view));
+
+  // We must save the pointer to the WebView so we can load the URL after the
+  // view is added to a widget.
+  web_view_ = AddChildView(std::move(web_view));
   web_contents->SetDelegate(this);
   Observe(web_contents);
 
@@ -77,11 +77,26 @@ ReloadButtonWebView::ReloadButtonWebView(
   UpdateAccessibleHasPopup();
   UpdateTooltipText();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
-  SetReloadButtonUIState();
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 ReloadButtonWebView::~ReloadButtonWebView() = default;
+
+void ReloadButtonWebView::AddedToWidget() {
+  CHECK(web_view_);
+  if (reload_button_ui_) {
+    return;
+  }
+  // Ensure the browser window interface is associated with the WebContents
+  // before the WebUI acts on it.
+  webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUIReloadButtonURL));
+  reload_button_ui_ = web_view_->GetWebContents()
+                          ->GetWebUI()
+                          ->GetController()
+                          ->GetAs<ReloadButtonUI>();
+  SetReloadButtonUIState();
+}
 
 void ReloadButtonWebView::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,

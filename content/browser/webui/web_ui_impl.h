@@ -104,7 +104,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
 
   static blink::mojom::LocalResourceLoaderConfigPtr
   GetLocalResourceLoaderConfigForTesting(URLDataManagerBackend* data_backend,
-                                         const url::Origin& current_origin);
+                                         const url::Origin& current_origin,
+                                         WebUIController* controller);
 
  private:
   friend class WebUIMainFrameObserver;

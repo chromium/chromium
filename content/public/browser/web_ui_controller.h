@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -54,6 +56,17 @@ class CONTENT_EXPORT WebUIController {
   // Called when a WebUI page load is about to be committed, even if RenderFrame
   // is reused. This sets up MojoJS interface broker.
   void WebUIReadyToCommitNavigation(RenderFrameHost* render_frame_host);
+
+  // Allows the controller to directly populate the local resource loader
+  // config. This is used to add shared resources or dynamically generated
+  // content, e.g. theme colors, without creating a full WebUIDataSource.
+  //
+  // `requesting_origin` is the origin of the WebUI page that is requesting the
+  // resources, e.g. "chrome://reload-button.top-chrome". It matches the origin
+  // that the `config` will be sent to.
+  virtual void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& requesting_origin) {}
 
   WebUI* web_ui() const { return web_ui_; }
 

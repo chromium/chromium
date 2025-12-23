@@ -7,14 +7,22 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
+#include "base/debug/dump_without_crashing.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/color_provider_browser_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,6 +31,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "ui/views/widget/widget.h"
 #include "ui/webui/webui_util.h"
 
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
@@ -100,4 +111,67 @@ CommandUpdater* ReloadButtonUI::GetCommandUpdater() const {
 void ReloadButtonUI::SetCommandUpdaterForTesting(
     CommandUpdater* command_updater) {
   command_updater_for_testing_ = command_updater;
+}
+
+void ReloadButtonUI::SetColorProviderForTesting(
+    const ui::ColorProvider* color_provider) {
+  CHECK_IS_TEST();
+  color_provider_for_testing_ = color_provider;
+}
+
+void ReloadButtonUI::PopulateLocalResourceLoaderConfig(
+    blink::mojom::LocalResourceLoaderConfig* config,
+    const url::Origin& requesting_origin) {
+  // TODO(crbug.com/457618790): Refactor the following into a profile service
+  // and ensure we have ColorProviders available early in View init separately.
+  const ui::ColorProvider* color_provider = nullptr;
+  if (color_provider_for_testing_) {
+    CHECK_IS_TEST();
+    color_provider = color_provider_for_testing_.get();
+  } else {
+    auto* browser_window = BrowserWindow::FindBrowserWindowWithWebContents(
+        web_ui()->GetWebContents());
+    if (browser_window) {
+      color_provider = browser_window->GetColorProvider();
+    }
+    // Fallback to ThemeService if we couldn't get the ColorProvider from the
+    // BrowserWindow. This might happen if the platform doesn't fully initialize
+    // the native views yet.
+    if (!color_provider) {
+      auto* theme_service =
+          ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+      if (theme_service) {
+        color_provider = theme_service->GetColorProvider();
+        // Should not happen in normal operation.
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+  }
+  CHECK(color_provider);
+
+  // Generate the colors CSS.
+  // We use the Widget's ColorProvider to ensure we match the window's theme.
+  GURL colors_css_url(ThemeSource::kThemeColorsCssUrl);
+  const auto* theme_service = ThemeServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui())->GetOriginalProfile());
+  std::optional<std::string> css_content = ThemeSource::GenerateColorsCss(
+      *color_provider, colors_css_url, theme_service->GetIsGrayscale(),
+      theme_service->GetIsBaseline());
+  if (!css_content) {
+    return;
+  }
+
+  auto source = blink::mojom::LocalResourceSource::New();
+  if (requesting_origin.scheme() == content::kChromeUIScheme) {
+    source->headers =
+        "Access-Control-Allow-Origin: " + requesting_origin.Serialize();
+  }
+  source->path_to_resource_map[colors_css_url.path().substr(1)] =
+      blink::mojom::LocalResourceValue::NewResponseBody(
+          std::move(*css_content));
+
+  auto origin = url::Origin::CreateFromNormalizedTuple(
+      content::kChromeUIScheme, content::kChromeUIThemeHost, 0);
+  CHECK(config->sources.find(origin) == config->sources.end());
+  config->sources[origin] = std::move(source);
 }

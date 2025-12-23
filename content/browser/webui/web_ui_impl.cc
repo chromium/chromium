@@ -104,24 +104,53 @@ void PopulateLocalResourceMap(
 // TODO(crbug.com/459528908): Allow configuring this from URLDataSource.
 bool ShouldIncludeDataSource(const url::Origin& origin,
                              const url::Origin& current_origin) {
+  // We only support data sources that serve URLs of the form: chrome://*
+  if (origin.scheme() != kChromeUIScheme) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(
           features::kWebUIInProcessResourceLoadingV2)) {
     return true;
   }
 
-  // `kChromeUIResourcesHost` covers both "chrome://resources" and
-  // "chrome-untrusted://resources".
-  // TODO(crbug.com/457618790): Allow serving "chrome://theme" resources to
-  // every WebUI.
-  return origin == current_origin || origin.host() == kChromeUIResourcesHost;
+  return origin == current_origin || origin.host() == kChromeUIResourcesHost ||
+         origin.host() == kChromeUIThemeHost;
+}
+
+// Helper to add a single data source to the config.
+void AddDataSourceToConfig(
+    WebUIDataSourceImpl* webui_data_source,
+    const url::Origin& current_origin,
+    blink::mojom::LocalResourceLoaderConfig* loader_config) {
+  url::Origin origin = webui_data_source->GetOrigin();
+
+  if (!ShouldIncludeDataSource(origin, current_origin)) {
+    return;
+  }
+
+  auto loader_source = blink::mojom::LocalResourceSource::New();
+  webui_data_source->EnsureLoadTimeDataDefaultsAdded();
+  loader_source->headers =
+      URLDataManagerBackend::GetHeaders(webui_data_source, GURL("/"), "")
+          ->raw_headers();
+  loader_source->should_replace_i18n_in_js =
+      webui_data_source->source()->ShouldReplaceI18nInJS();
+  PopulateLocalResourceMap(*webui_data_source,
+                           loader_source->path_to_resource_map);
+  loader_source->replacement_strings.insert(
+      webui_data_source->source()->GetReplacements()->begin(),
+      webui_data_source->source()->GetReplacements()->end());
+  loader_config->sources[origin] = std::move(loader_source);
 }
 
 blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     URLDataManagerBackend* data_backend,
-    const url::Origin& current_origin) {
+    const url::Origin& current_origin,
+    WebUIController* controller) {
   auto loader_config = blink::mojom::LocalResourceLoaderConfig::New();
-  base::flat_map<url::Origin, blink::mojom::LocalResourceSourcePtr>&
-      loader_sources = loader_config->sources;
+
+  // 1. Process data sources from the backend.
   for (auto const& [source_name, data_source] : data_backend->data_sources()) {
     // For a data source to be useful in the renderer process, it must have a
     // map from path to resource ID. Only WebUIDataSourceImpls have a map from
@@ -133,29 +162,18 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     }
     auto* webui_data_source =
         static_cast<WebUIDataSourceImpl*>(data_source.get());
-    url::Origin origin = webui_data_source->GetOrigin();
-    // We only support data sources that serve URLs of the form: chrome://*
-    if (origin.scheme() != kChromeUIScheme) {
-      continue;
-    }
-
-    if (!ShouldIncludeDataSource(origin, current_origin)) {
-      continue;
-    }
-    auto loader_source = blink::mojom::LocalResourceSource::New();
-    webui_data_source->EnsureLoadTimeDataDefaultsAdded();
-    loader_source->headers =
-        URLDataManagerBackend::GetHeaders(webui_data_source, GURL("/"), "")
-            ->raw_headers();
-    loader_source->should_replace_i18n_in_js =
-        data_source->source()->ShouldReplaceI18nInJS();
-    PopulateLocalResourceMap(*webui_data_source,
-                             loader_source->path_to_resource_map);
-    loader_source->replacement_strings.insert(
-        webui_data_source->source()->GetReplacements()->begin(),
-        webui_data_source->source()->GetReplacements()->end());
-    loader_sources[origin] = std::move(loader_source);
+    AddDataSourceToConfig(webui_data_source, current_origin,
+                          loader_config.get());
   }
+
+  // 2. Process shared data sources provided by the controller.
+  if (base::FeatureList::IsEnabled(
+          features::kWebUIInProcessResourceLoadingV2) &&
+      controller) {
+    controller->PopulateLocalResourceLoaderConfig(loader_config.get(),
+                                                  current_origin);
+  }
+
   return loader_config;
 }
 
@@ -411,15 +429,18 @@ WebUIImpl::GetLocalResourceLoaderConfig(const url::Origin& origin_to_commit) {
   URLDataManagerBackend* data_backend =
       URLDataManagerBackend::GetForBrowserContext(
           web_contents_->GetBrowserContext());
-  return CreateLocalResourceLoaderConfig(data_backend, origin_to_commit);
+  return CreateLocalResourceLoaderConfig(data_backend, origin_to_commit,
+                                         controller_.get());
 }
 
 // static
 blink::mojom::LocalResourceLoaderConfigPtr
 WebUIImpl::GetLocalResourceLoaderConfigForTesting(
     URLDataManagerBackend* data_backend,
-    const url::Origin& current_origin) {
-  return CreateLocalResourceLoaderConfig(data_backend, current_origin);
+    const url::Origin& current_origin,
+    WebUIController* controller) {
+  return CreateLocalResourceLoaderConfig(data_backend, current_origin,
+                                         controller);
 }
 
 }  // namespace content

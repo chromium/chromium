@@ -41,11 +41,13 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
     "//chrome/browser/resources/reload_button:resources_grit",
+    "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
+    "//ui/views",
     "//ui/webui",
   ]
 }
@@ -69,6 +71,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/views",
     "//url",
   ]
 }
