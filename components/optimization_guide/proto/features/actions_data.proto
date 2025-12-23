@@ -106,7 +106,7 @@ message ScrollAction {
 
   ScrollDirection direction = 2 [features = { field_presence: EXPLICIT }];
 
-  // The distance to scroll in pixels.
+  // The distance to scroll in DIPs.
   float distance = 3 [features = { field_presence: EXPLICIT }];
 
   int32 tab_id = 4 [features = { field_presence: EXPLICIT }];
