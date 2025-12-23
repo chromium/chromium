@@ -122,12 +122,6 @@ class MockPrivacySandboxSettingsDelegate
         });
   }
 
-  void SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
-      bool result) {
-    ON_CALL(*this, AreThirdPartyCookiesBlockedByCookieDeprecationExperiment)
-        .WillByDefault([=]() { return result; });
-  }
-
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool,
               IsPrivacySandboxCurrentlyUnrestricted,
@@ -144,10 +138,6 @@ class MockPrivacySandboxSettingsDelegate
               (const, override));
   MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
               GetCookieDeprecationExperimentCurrentEligibility,
-              (),
-              (const, override));
-  MOCK_METHOD(bool,
-              AreThirdPartyCookiesBlockedByCookieDeprecationExperiment,
               (),
               (const, override));
 };

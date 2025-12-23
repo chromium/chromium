@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
@@ -30,7 +29,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
-#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/common/content_features.h"
@@ -308,46 +306,3 @@ void PrivacySandboxSettingsDelegate::OverrideWebappRegistryForTesting(
   webapp_registry_ = std::move(webapp_registry);
 }
 #endif
-
-bool PrivacySandboxSettingsDelegate::
-    AreThirdPartyCookiesBlockedByCookieDeprecationExperiment() const {
-  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    return false;
-  }
-
-  if (!IsCookieDeprecationExperimentEligible()) {
-    return false;
-  }
-
-  if (!tpcd::experiment::kDisable3PCookies.Get()) {
-    return false;
-  }
-
-  auto* tracking_protection_onboarding =
-      TrackingProtectionOnboardingFactory::GetForProfile(profile_);
-  if (!tracking_protection_onboarding) {
-    return false;
-  }
-
-  // Third-party cookies are not disabled until the profile gets onboarded.
-  switch (tracking_protection_onboarding->GetOnboardingStatus()) {
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kIneligible:
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kEligible:
-      return false;
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kOnboarded:
-      break;
-  }
-
-  // Respect user preferences.
-
-  if (static_cast<content_settings::CookieControlsMode>(
-          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
-      content_settings::CookieControlsMode::kBlockThirdParty) {
-    return false;
-  }
-
-  return true;
-}

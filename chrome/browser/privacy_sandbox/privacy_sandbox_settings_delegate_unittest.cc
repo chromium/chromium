@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -34,8 +33,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
-#include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/common/content_features.h"
@@ -48,9 +45,6 @@
 #endif
 
 namespace {
-
-using ::privacy_sandbox::tracking_protection::
-    TrackingProtectionOnboardingStatus;
 
 constexpr char kTestEmail[] = "test@test.com";
 
@@ -252,8 +246,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
   EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
 }
-
-namespace {
 
 using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;
 
@@ -656,89 +648,3 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
 INSTANTIATE_TEST_SUITE_P(All,
                          CookieDeprecationExperimentEligibilityOTRProfileTest,
                          testing::Bool());
-
-namespace {
-
-struct ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase {
-  bool is_client_eligible;
-  bool is_profile_onboarded = false;
-  content_settings::CookieControlsMode cookie_controls_mode_pref =
-      content_settings::CookieControlsMode::kOff;
-  bool expected;
-};
-
-const ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase
-    kThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCases[] = {
-        {
-            .is_client_eligible = false,
-            .expected = false,
-        },
-        {
-            .is_client_eligible = true,
-            .is_profile_onboarded = false,
-            .expected = false,
-        },
-        {
-            .is_client_eligible = true,
-            .is_profile_onboarded = true,
-            .expected = true,
-        },
-        {
-            .is_client_eligible = true,
-            .is_profile_onboarded = true,
-            .cookie_controls_mode_pref =
-                content_settings::CookieControlsMode::kBlockThirdParty,
-            .expected = false,
-        },
-};
-
-class ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest
-    : public PrivacySandboxSettingsDelegateTest,
-      public ::testing::WithParamInterface<
-          ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase> {
- public:
-  ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kCookieDeprecationFacilitatedTesting,
-         {{tpcd::experiment::kDisable3PCookiesName, "true"}}}};
-    if (GetParam().is_profile_onboarded) {
-      enabled_features.push_back(
-          {content_settings::features::kTrackingProtection3pcd, {}});
-    }
-    feature_list()->InitWithFeaturesAndParameters(enabled_features, {});
-  }
-};
-
-}  // namespace
-
-TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
-       AreThirdPartyCookiesBlockedByExperiment) {
-  const ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase&
-      test_case = GetParam();
-
-  if (test_case.is_profile_onboarded) {
-    // Simulate onboarding a profile.
-    prefs()->SetInteger(
-        prefs::kTrackingProtectionOnboardingStatus,
-        static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
-                             OnboardingStatus::kOnboarded));
-  }
-
-  prefs()->SetInteger(prefs::kCookieControlsMode,
-                      static_cast<int>(test_case.cookie_controls_mode_pref));
-
-  EXPECT_CALL(*experiment_manager(), IsClientEligible)
-      .WillOnce(::testing::Return(test_case.is_client_eligible));
-
-  EXPECT_EQ(
-      delegate()->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment(),
-      test_case.expected);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ThirdPartyCookiesBlockedByCookieDeprecationExperiment,
-    ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
-    ::testing::ValuesIn(
-        kThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCases));
-
-}  // namespace

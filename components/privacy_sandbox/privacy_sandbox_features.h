@@ -120,16 +120,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset);
 #endif
 
-// Enables attribution reporting transitional debug reporting for the cookie
-// deprecation experiment.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting);
-
-// Enables Private Aggregation debug reporting to be enabled during the
-// third-party cookie deprecation experiment.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
-
 // Prevents site-level exceptions from permitting Private Aggregation debug
 // reporting if third-party cookies are generally blocked.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

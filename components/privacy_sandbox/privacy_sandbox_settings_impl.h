@@ -68,8 +68,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin,
-      bool& can_bypass) const override;
+      const url::Origin& reporting_origin) const override;
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
                                bool allowed) override;
   void ClearFledgeJoiningAllowedSettings(base::Time start_time,
