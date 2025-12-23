@@ -1181,9 +1181,11 @@ TEST_F(AmountExtractionManagerTest,
 }
 
 TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Success) {
+  const base::TimeDelta kLatency = base::Milliseconds(200);
   ukm::SourceId kTestUkmSourceId = 12345;
   autofill::autofill_metrics::LogAiAmountExtractionResult(
-      autofill_metrics::AiAmountExtractionResult::kSuccess, kTestUkmSourceId);
+      autofill_metrics::AiAmountExtractionResult::kSuccess, kLatency,
+      kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
@@ -1197,9 +1199,11 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Success) {
 }
 
 TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Failed) {
+  const base::TimeDelta kLatency = base::Milliseconds(200);
   ukm::SourceId kTestUkmSourceId = 12345;
   autofill::autofill_metrics::LogAiAmountExtractionResult(
-      autofill_metrics::AiAmountExtractionResult::kFailed, kTestUkmSourceId);
+      autofill_metrics::AiAmountExtractionResult::kFailed, kLatency,
+      kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
@@ -1214,9 +1218,10 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Failed) {
 
 TEST_F(AmountExtractionManagerTest,
        AiAmountExtraction_UkmResult_InvalidResponse) {
+  const base::TimeDelta kLatency = base::Milliseconds(200);
   ukm::SourceId kTestUkmSourceId = 12345;
   autofill::autofill_metrics::LogAiAmountExtractionResult(
-      autofill_metrics::AiAmountExtractionResult::kInvalidResponse,
+      autofill_metrics::AiAmountExtractionResult::kInvalidResponse, kLatency,
       kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
@@ -1233,7 +1238,8 @@ TEST_F(AmountExtractionManagerTest,
 TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Timeout) {
   ukm::SourceId kTestUkmSourceId = 12345;
   autofill::autofill_metrics::LogAiAmountExtractionResult(
-      autofill_metrics::AiAmountExtractionResult::kTimeout, kTestUkmSourceId);
+      autofill_metrics::AiAmountExtractionResult::kTimeout,
+      /*latency=*/std::nullopt, kTestUkmSourceId);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
@@ -1244,6 +1250,163 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Timeout) {
             static_cast<int64_t>(
                 autofill_metrics::AiAmountExtractionResult::kTimeout));
   EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Success) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  const base::TimeDelta kLatency = base::Milliseconds(150);
+
+  ApcFetchCallback fetch_callback;
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  ASSERT_TRUE(fetch_callback);
+
+  ModelExecutionCallback model_callback;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+  ASSERT_TRUE(model_callback);
+
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_final_checkout_amount(100.00);
+  response.set_currency("USD");
+  response.set_is_successful(true);
+
+  // Simulate time passing for the latency measurement.
+  task_environment_.FastForwardBy(kLatency);
+
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response),
+               /*execution_info=*/nullptr),
+           /*model_quality_log_entry=*/nullptr);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kSuccessLatencyInMillisName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(
+      ukm_entries[0].metrics.at("Result"),
+      static_cast<uint8_t>(
+          autofill::autofill_metrics::AiAmountExtractionResult::kSuccess));
+  EXPECT_EQ(ukm_entries[0].metrics.at("SuccessLatencyInMillis"),
+            kLatency.InMilliseconds());
+  EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
+                                          .GetMainFrameDriver()
+                                          ->GetPageUkmSourceId());
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Failure) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  const base::TimeDelta kLatency = base::Milliseconds(150);
+
+  ApcFetchCallback fetch_callback;
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  ASSERT_TRUE(fetch_callback);
+
+  ModelExecutionCallback model_callback;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+  ASSERT_TRUE(model_callback);
+
+  // Simulate time passing for the latency measurement.
+  task_environment_.FastForwardBy(kLatency);
+
+  std::move(model_callback)
+      .Run(
+          // Inject an invalid result by passing an empty model execution
+          // result.
+          optimization_guide::OptimizationGuideModelExecutionResult(),
+          /*model_quality_log_entry=*/nullptr);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kFailureLatencyInMillisName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<uint8_t>(
+                autofill::autofill_metrics::AiAmountExtractionResult::kFailed));
+  EXPECT_EQ(ukm_entries[0].metrics.at("FailureLatencyInMillis"),
+            kLatency.InMilliseconds());
+  EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
+                                          .GetMainFrameDriver()
+                                          ->GetPageUkmSourceId());
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_UkmLatency_InvalidResponse) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  const base::TimeDelta kLatency = base::Milliseconds(150);
+
+  ApcFetchCallback fetch_callback;
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillOnce(Return(model_executor()));
+
+  ModelExecutionCallback model_callback;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(123);
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+
+  ASSERT_TRUE(model_callback);
+
+  optimization_guide::proto::AmountExtractionResponse response;
+  // Inject an invalid response by adding a negative checkout amount.
+  response.set_final_checkout_amount(-50.00);
+  response.set_currency("USD");
+
+  // Simulate time passing for the latency measurement.
+  task_environment_.FastForwardBy(kLatency);
+
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response),
+               /*execution_info=*/nullptr),
+           /*model_quality_log_entry=*/nullptr);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kInvalidResponseLatencyInMillisName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(
+      ukm_entries[0].metrics.at("Result"),
+      static_cast<uint8_t>(autofill::autofill_metrics::
+                               AiAmountExtractionResult::kInvalidResponse));
+  EXPECT_EQ(ukm_entries[0].metrics.at("InvalidResponseLatencyInMillis"),
+            kLatency.InMilliseconds());
+  EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
+                                          .GetMainFrameDriver()
+                                          ->GetPageUkmSourceId());
 }
 
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
@@ -1328,6 +1491,11 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_NegativeAmount) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kNegativeAmount))));
@@ -1337,6 +1505,11 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_InvalidCurrency) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kMissingCurrency))));
@@ -1346,6 +1519,11 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_NegativeAmountAndInvalidCurrency) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kNegativeAmount))));
@@ -1355,6 +1533,11 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_NonUsdCurrency) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kUnsupportedCurrency))));
@@ -1364,6 +1547,10 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_ValidResult) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
   AiAmountExtractionResult::ResultType expected_success =
       std::make_pair(123'450'000, "USD");
 
@@ -1375,6 +1562,11 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_MissingServerResponse) {
+  // Manually set the start time before calling
+  // FakeCheckoutAmountReceivedFromAi.
+  test_api(*amount_extraction_manager_)
+      .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kMissingServerResponse))));

@@ -14,12 +14,31 @@
 namespace autofill::autofill_metrics {
 
 void LogAiAmountExtractionResult(AiAmountExtractionResult result,
+                                 std::optional<base::TimeDelta> latency,
                                  ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Autofill.AiAmountExtraction.Result", result);
 
-  ukm::builders::Autofill_AiAmountExtraction_Result(ukm_source_id)
-      .SetResult(static_cast<int64_t>(result))
-      .Record(ukm::UkmRecorder::Get());
+  ukm::builders::Autofill_AiAmountExtraction_Result ukm_builder(ukm_source_id);
+  CHECK(latency.has_value() || result == AiAmountExtractionResult::kTimeout);
+  ukm_builder.SetResult(static_cast<int64_t>(result));
+  if (latency) {
+    switch (result) {
+      case AiAmountExtractionResult::kSuccess:
+        ukm_builder.SetSuccessLatencyInMillis(latency->InMilliseconds());
+        break;
+      case AiAmountExtractionResult::kFailed:
+        ukm_builder.SetFailureLatencyInMillis(latency->InMilliseconds());
+        break;
+      case AiAmountExtractionResult::kInvalidResponse:
+        ukm_builder.SetInvalidResponseLatencyInMillis(
+            latency->InMilliseconds());
+        break;
+      case AiAmountExtractionResult::kTimeout:
+        // No latency metric is logged for a timeout.
+        NOTREACHED();
+    }
+  }
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 void LogAiAmountExtractedInIssuerRange(bool is_within_range,

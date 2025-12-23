@@ -2421,6 +2421,32 @@ be describing additional metrics about the same event.
     (successfully, with failure, or with invalid data) or when the client-side
     timeout is reached.
   </summary>
+  <metric name="FailureLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when an empty response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InvalidResponseLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when an invalid response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Result" enum="AiAmountExtractionResult">
     <summary>
       The result of the AI amount extraction.
@@ -2429,6 +2455,19 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SuccessLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when a non-empty valid response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
         </statistics>
       </history>
     </aggregation>

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -44,9 +45,10 @@ enum class AiAmountExtractionInvalidResponseReason {
   kMaxValue = kCurrencyCodeMissing,
 };
 
-// Logs the result of the AI-based amount extraction process. Logs to both UMA
-// and UKM.
+// Logs the result and latency of the AI-based amount extraction process.
+// Logs to both UMA and UKM.
 void LogAiAmountExtractionResult(AiAmountExtractionResult result,
+                                 std::optional<base::TimeDelta> latency,
                                  ukm::SourceId ukm_source_id);
 
 // Logs if the amount extracted is within or outside the issuer's supported

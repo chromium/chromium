@@ -402,6 +402,7 @@ void BnplManager::FetchVcnDetails(GURL url) {
 
 void BnplManager::Reset() {
   payments_autofill_client().GetPaymentsNetworkInterface()->CancelRequest();
+  browser_autofill_manager_->GetAmountExtractionManager().Reset();
   ongoing_flow_state_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }

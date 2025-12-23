@@ -172,6 +172,7 @@ class AmountExtractionManager {
  private:
   friend class AmountExtractionManagerTest;
   friend class AmountExtractionManagerTestApi;
+  friend class BnplManager;
 
   // Invoked after the amount extraction process completes.
   // `extracted_amount` provides the extracted amount upon success and an
@@ -206,7 +207,8 @@ class AmountExtractionManager {
   // Logs the result of the AI-based amount extraction, but only if a result
   // has not been logged already.
   void LogAiAmountExtractionResultIfApplicable(
-      autofill_metrics::AiAmountExtractionResult result);
+      autofill_metrics::AiAmountExtractionResult result,
+      std::optional<base::TimeDelta> latency);
 
   // The owning BrowserAutofillManager.
   raw_ref<BrowserAutofillManager> autofill_manager_;
@@ -238,6 +240,13 @@ class AmountExtractionManager {
   // Aggregated status for AI-based amount extraction for the current page load.
   // Tied to the lifecycle of `this` and should not be reset by `Reset()`.
   AmountExtractionStatus amount_extraction_status_;
+
+  // The time when the AI-based amount extraction was initiated. This is used to
+  // calculate the latency of amount extraction process, which measured from
+  // when the page content is started to fetch until the amount is received from
+  // AI model. It is reset after the latency is collected or when the page is
+  // refreshed.
+  std::optional<base::TimeTicks> ai_amount_extraction_start_time_;
 
   base::WeakPtrFactory<AmountExtractionManager> weak_ptr_factory_{this};
 };
