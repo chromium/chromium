@@ -589,6 +589,11 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
                  ? base::FEATURE_ENABLED_BY_DEFAULT
                  : base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will help users fill in non-affiliated loyalty cards
+// on loyalty card only fields.
+BASE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

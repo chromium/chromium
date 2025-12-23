@@ -207,6 +207,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLoyaltyCardsFilling);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
