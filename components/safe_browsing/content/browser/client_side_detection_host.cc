@@ -758,11 +758,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 // static
 ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult
 ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult::
-    Failure(int model_version) {
+    Failure(int model_version, ModelType model_type) {
   return {.brand = "",
           .intent = "",
           .model_version = model_version,
-          .execution_success = false};
+          .execution_success = false,
+          .model_type = model_type};
 }
 
 // static
@@ -1675,6 +1676,8 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
 
     if (!intelligent_scan_eligible) {
       IntelligentScanInfo intelligent_scan_info;
+      // TODO(crbug.com/462643935): Add a new reason for
+      // SERVER_MODEL_UNAVAILABLE.
       intelligent_scan_info.set_no_info_reason(
           IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
       *verdict->mutable_intelligent_scan_info() =
@@ -1765,12 +1768,28 @@ void ClientSideDetectionHost::OnIntelligentScanDone(
     intelligent_scan_info.set_brand(response.brand);
     intelligent_scan_info.set_intent(response.intent);
   } else {
+    // TODO(crbug.com/462643935): Add a new reason for
+    // SERVER_MODEL_OUTPUT_MISSING.
     intelligent_scan_info.set_no_info_reason(
         IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   }
   if (response.model_version != IntelligentScanDelegate::IntelligentScanResult::
                                     kModelVersionUnavailable) {
     intelligent_scan_info.set_model_version(response.model_version);
+  }
+  switch (response.model_type) {
+    case IntelligentScanDelegate::ModelType::kNotSupported:
+      intelligent_scan_info.set_model_type(
+          IntelligentScanModelType::NOT_SUPPORTED);
+      break;
+    case IntelligentScanDelegate::ModelType::kOnDevice:
+      intelligent_scan_info.set_model_type(
+          IntelligentScanModelType::ON_DEVICE_MODEL);
+      break;
+    case IntelligentScanDelegate::ModelType::kServerSide:
+      intelligent_scan_info.set_model_type(
+          IntelligentScanModelType::SERVER_SIDE_MODEL);
+      break;
   }
   *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
 

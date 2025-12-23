@@ -34,6 +34,7 @@ namespace safe_browsing {
 
 using IntelligentScanResult =
     ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult;
+using ModelType = ClientSideDetectionHost::IntelligentScanDelegate::ModelType;
 
 class ClientSideDetectionIntelligentScanDelegateDesktopTest
     : public testing::Test {
@@ -514,6 +515,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 0);
   EXPECT_FALSE(future.Get().execution_success);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -683,6 +685,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -755,6 +758,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -793,6 +797,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_EQ(future.Get().brand, "Google");
   EXPECT_EQ(future.Get().intent, "Search Engine");
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,

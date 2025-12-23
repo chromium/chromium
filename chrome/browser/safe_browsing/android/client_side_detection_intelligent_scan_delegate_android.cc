@@ -30,6 +30,7 @@ namespace safe_browsing {
 namespace {
 using optimization_guide::mojom::OnDeviceFeature::kScamDetection;
 using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
+using ModelType = ClientSideDetectionHost::IntelligentScanDelegate::ModelType;
 }  // namespace
 
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
@@ -145,7 +146,8 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   if (!result.response.has_value()) {
     client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
         /*success=*/false, session_execution_start_time);
-    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    std::move(callback_).Run(
+        IntelligentScanResult::Failure(model_version, ModelType::kOnDevice));
     return;
   }
 
@@ -164,14 +166,16 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
 
   if (!scam_detection_response) {
     base::debug::DumpWithoutCrashing();
-    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    std::move(callback_).Run(
+        IntelligentScanResult::Failure(model_version, ModelType::kOnDevice));
     return;
   }
 
   std::move(callback_).Run({.brand = scam_detection_response->brand(),
                             .intent = scam_detection_response->intent(),
                             .model_version = model_version,
-                            .execution_success = true});
+                            .execution_success = true,
+                            .model_type = ModelType::kOnDevice});
 
   // Reset this inquiry immediately so that future inference is not affected by
   // the old context.
@@ -187,7 +191,8 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   int model_version = IntelligentScanResult::kModelVersionUnavailable;
   if (!result.response.has_value()) {
     // TODO(crbug.com/462643935): Log error_response from result.execution_info.
-    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    std::move(callback_).Run(
+        IntelligentScanResult::Failure(model_version, ModelType::kServerSide));
     return;
   }
 
@@ -196,14 +201,16 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
       result.response.value());
 
   if (!scam_detection_response) {
-    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    std::move(callback_).Run(
+        IntelligentScanResult::Failure(model_version, ModelType::kServerSide));
     return;
   }
 
   std::move(callback_).Run({.brand = scam_detection_response->brand(),
                             .intent = scam_detection_response->intent(),
                             .model_version = model_version,
-                            .execution_success = true});
+                            .execution_success = true,
+                            .model_type = ModelType::kServerSide});
 
   // Reset this inquiry immediately so that future inference is not affected by
   // the old context.
@@ -310,7 +317,9 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     // TODO(crbug.com/462643935): Log a metric for quota exceeded. Add a new
     // IntelligentScanResult for quota exceeded.
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable));
+        IntelligentScanResult::kModelVersionUnavailable,
+        is_server_model_enabled_ ? ModelType::kServerSide
+                                 : ModelType::kOnDevice));
     return std::nullopt;
   }
 

@@ -3773,6 +3773,8 @@ class ClientSideDetectionHostScamDetectionTest
                   IntelligentScanResult scam_detection_response;
               scam_detection_response.execution_success = false;
               scam_detection_response.model_version = -1;
+              scam_detection_response.model_type = ClientSideDetectionHost::
+                  IntelligentScanDelegate::ModelType::kOnDevice;
               if (!should_return_response) {
                 std::move(callback).Run(scam_detection_response);
                 return token;
@@ -3807,6 +3809,8 @@ class ClientSideDetectionHostScamDetectionTest
                           example_intent_);
                 EXPECT_EQ(request->intelligent_scan_info().model_version(),
                           example_model_version_);
+                EXPECT_EQ(request->intelligent_scan_info().model_type(),
+                          IntelligentScanModelType::ON_DEVICE_MODEL);
               } else {
                 EXPECT_FALSE(request->intelligent_scan_info().has_brand());
                 EXPECT_FALSE(request->intelligent_scan_info().has_intent());

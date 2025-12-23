@@ -40,6 +40,7 @@ using ::testing::_;
 using ::testing::NiceMock;
 using IntelligentScanResult =
     ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult;
+using ModelType = ClientSideDetectionHost::IntelligentScanDelegate::ModelType;
 using RemoteModelExecutionCallback = base::OnceCallback<void(
     optimization_guide::OptimizationGuideModelExecutionResult,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>;
@@ -295,6 +296,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_TRUE(future.Get().execution_success);
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
+  EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 
   // server-side model execution shouldn't log on-device model execution
@@ -333,6 +335,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
+  EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -344,6 +347,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   delegate_->StartIntelligentScan("test rendered text", future.GetCallback());
 
   EXPECT_FALSE(future.Get().execution_success);
+  EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -387,6 +391,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
+    EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   }
 
   // Fast forward time by 2 days, the quota should be cleared.
@@ -425,6 +430,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     base::test::TestFuture<IntelligentScanResult> future;
     delegate_->StartIntelligentScan("test", future.GetCallback());
     EXPECT_FALSE(future.Get().execution_success);
+    EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   }
 
   // Next scan should fail due to quota.
@@ -436,6 +442,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
+    EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   }
 }
 
@@ -603,6 +610,7 @@ TEST_F(
   EXPECT_EQ(future.Get().model_version, fake_asset_.version());
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
   // Inquiry should be reset after a successful response.
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
   histogram_tester_.ExpectTotalCount(
@@ -627,6 +635,7 @@ TEST_F(
   EXPECT_EQ(future.Get().model_version, fake_asset_.version());
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
   histogram_tester_.ExpectUniqueSample(
@@ -646,6 +655,7 @@ TEST_F(
   EXPECT_EQ(future.Get().model_version, -1);
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
 }
 
 TEST_F(

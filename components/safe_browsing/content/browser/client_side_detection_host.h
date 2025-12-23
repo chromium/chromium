@@ -118,15 +118,24 @@ class ClientSideDetectionHost
   // Delegate for handling intelligent scanning.
   class IntelligentScanDelegate : public KeyedService {
    public:
+    // The model type that the client uses to perform intelligent scan.
+    enum class ModelType {
+      kNotSupported = 0,
+      kOnDevice = 1,
+      kServerSide = 2,
+    };
+
     // Represents the result of an intelligent scan.
     struct IntelligentScanResult {
       static constexpr int kModelVersionUnavailable = -1;
-      static IntelligentScanResult Failure(int model_version);
+      static IntelligentScanResult Failure(int model_version,
+                                           ModelType model_type);
 
       std::string brand;
       std::string intent;
       int model_version;
       bool execution_success;
+      ModelType model_type;
     };
     using IntelligentScanDoneCallback =
         base::OnceCallback<void(IntelligentScanResult)>;

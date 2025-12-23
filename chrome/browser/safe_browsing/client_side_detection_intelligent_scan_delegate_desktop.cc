@@ -20,6 +20,10 @@ namespace {
 using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
 using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
 
+// Intelligent scan is always performed on the on-device model on desktop.
+constexpr auto kOnDeviceModelType = safe_browsing::ClientSideDetectionHost::
+    IntelligentScanDelegate::ModelType::kOnDevice;
+
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
 static constexpr auto kWaitableReasons =
@@ -96,7 +100,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::Start(
   if (!session_) {
     LogOnDeviceModelSessionCreationSuccess(false);
     std::move(callback_).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable));
+        IntelligentScanResult::kModelVersionUnavailable, kOnDeviceModelType));
     return;
   }
 
@@ -131,7 +135,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::
     client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
         /*success=*/false, session_execution_start_time_);
     if (callback_) {
-      std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+      std::move(callback_).Run(
+          IntelligentScanResult::Failure(model_version, kOnDeviceModelType));
     }
     return;
   }
@@ -152,7 +157,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::
   if (!scam_detection_response) {
     LogOnDeviceModelExecutionParse(false);
     if (callback_) {
-      std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+      std::move(callback_).Run(
+          IntelligentScanResult::Failure(model_version, kOnDeviceModelType));
     }
     return;
   }
@@ -164,7 +170,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::
     std::move(callback_).Run({.brand = scam_detection_response->brand(),
                               .intent = scam_detection_response->intent(),
                               .model_version = model_version,
-                              .execution_success = true});
+                              .execution_success = true,
+                              .model_type = kOnDeviceModelType});
   }
 
   // Reset session immediately so that future inference is not affected by the
@@ -254,7 +261,7 @@ ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
   // we want to check one last time before creating a session.
   if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable));
+        IntelligentScanResult::kModelVersionUnavailable, kOnDeviceModelType));
     return std::nullopt;
   }
 
