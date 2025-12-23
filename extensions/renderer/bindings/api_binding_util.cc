@@ -51,8 +51,7 @@ class ContextInvalidationData : public base::SupportsUserData::Data {
 
  private:
   bool is_context_valid_ = true;
-  base::ObserverList<ContextInvalidationListener>::Unchecked
-      invalidation_listeners_;
+  base::ObserverList<ContextInvalidationListener> invalidation_listeners_;
 };
 
 constexpr char ContextInvalidationData::kPerContextDataKey[];
