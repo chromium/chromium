@@ -661,7 +661,7 @@ public class LayoutManagerImpl
                         mTabContentManagerSupplier.get(),
                         mBrowserControlsStateProvider,
                         mTopUiThemeColorProvider,
-                        !hasTabletUi());
+                        getLayoutNeedOffsetTagSupplier());
 
         setNextLayout(null, true);
 
@@ -1445,7 +1445,7 @@ public class LayoutManagerImpl
         mLayoutObservers.removeObserver(listener);
     }
 
-    public boolean hasTabletUi() {
-        return false;
+    public NonNullObservableSupplier<Boolean> getLayoutNeedOffsetTagSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 }

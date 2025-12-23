@@ -254,6 +254,9 @@ public class StripLayoutHelperManager
      */
     private boolean mIsTopResumedActivity;
 
+    private final SettableNonNullObservableSupplier<Boolean> mStaticLayoutNeedsOffsetTagSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     // 3-dots menu button with tab strip end padding
@@ -1184,9 +1187,15 @@ public class StripLayoutHelperManager
             // Use the content OffsetTag here, because the tab strip and content are part of
             // the same subtree and move together with the same offset.
             mTabStripTreeProvider.updateOffsetTag(offsetTagsInfo.getContentOffsetTag());
+            mStaticLayoutNeedsOffsetTagSupplier.set(false);
         } else {
             mTabStripTreeProvider.updateOffsetTag(null);
+            mStaticLayoutNeedsOffsetTagSupplier.set(true);
         }
+    }
+
+    public NonNullObservableSupplier<Boolean> getLayoutNeedOffsetTagSupplier() {
+        return mStaticLayoutNeedsOffsetTagSupplier;
     }
 
     @Override
@@ -1604,7 +1613,9 @@ public class StripLayoutHelperManager
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        updateOffsetTagsInfo(offsetTagsInfo);
+                        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
+                            updateOffsetTagsInfo(offsetTagsInfo);
+                        }
                     }
 
                     @Override

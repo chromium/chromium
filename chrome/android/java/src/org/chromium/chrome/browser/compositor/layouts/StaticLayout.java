@@ -12,6 +12,7 @@ import android.graphics.RectF;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,7 +58,10 @@ public class StaticLayout extends Layout {
     private static @Nullable Integer sToolbarTextBoxBackgroundColorForTesting;
 
     private final boolean mHandlesTabLifecycles;
-    private final boolean mNeedsOffsetTag;
+
+    // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
+    // on the TabStripSceneLayer already if tablet UI is present.
+    private final NonNullObservableSupplier<Boolean> mNeedsOffsetTag;
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
@@ -78,6 +82,8 @@ public class StaticLayout extends Layout {
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
     private boolean mIsShowing;
+    private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
+    private final Callback<Boolean> mUpdateOffsetTagsCallback;
 
     @SuppressWarnings("HidingField")
     private final float mPxToDp;
@@ -107,7 +113,7 @@ public class StaticLayout extends Layout {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            boolean needsOffsetTag) {
+            NonNullObservableSupplier<Boolean> needsOffsetTag) {
         this(
                 context,
                 updateHost,
@@ -137,7 +143,7 @@ public class StaticLayout extends Layout {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             @Nullable StaticTabSceneLayer testSceneLayer,
-            boolean needsOffsetTag) {
+            NonNullObservableSupplier<Boolean> needsOffsetTag) {
         super(context, updateHost, renderHost);
 
         mContext = context;
@@ -175,6 +181,17 @@ public class StaticLayout extends Layout {
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
+
+        mUpdateOffsetTagsCallback =
+                (ignored) -> {
+                    mModel.set(
+                            LayoutTab.CONTENT_OFFSET_TAG,
+                            mNeedsOffsetTag.get() && mOffsetTagsInfo != null
+                                    ? mOffsetTagsInfo.getContentOffsetTag()
+                                    : null);
+                };
+        mNeedsOffsetTag.addObserver(mUpdateOffsetTagsCallback);
+
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
@@ -184,11 +201,8 @@ public class StaticLayout extends Layout {
                             @BrowserControlsState int constraints,
                             boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            if (mNeedsOffsetTag) {
-                                mModel.set(
-                                        LayoutTab.CONTENT_OFFSET_TAG,
-                                        offsetTagsInfo.getContentOffsetTag());
-                            }
+                            mOffsetTagsInfo = offsetTagsInfo;
+                            mUpdateOffsetTagsCallback.onResult(mNeedsOffsetTag.get());
 
                             if (shouldUpdateOffsets) {
                                 mModel.set(

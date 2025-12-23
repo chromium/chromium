@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.chromium.base.Log;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableObservableSupplier;
@@ -240,8 +241,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
-    public boolean hasTabletUi() {
-        return true;
+    public NonNullObservableSupplier<Boolean> getLayoutNeedOffsetTagSupplier() {
+        return mTabStripLayoutHelperManager.getLayoutNeedOffsetTagSupplier();
     }
 
     @Override
