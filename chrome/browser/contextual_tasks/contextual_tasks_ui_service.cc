@@ -397,7 +397,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   bool is_nav_to_ai = IsAiUrl(url_params.url);
 
   // If the user is not signed in to Chrome, do not intercept.
-  if (!IsSignedInToBrowser(url_params.url)) {
+  if (!IsSignedInToBrowserWithValidCredentials()) {
     return false;
   }
 
@@ -508,15 +508,25 @@ bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
   return contextual_tasks::IsUrlForPrimaryAccount(identity_manager_, url);
 }
 
-bool ContextualTasksUiService::IsSignedInToBrowser(const GURL& url) {
+bool ContextualTasksUiService::IsSignedInToBrowserWithValidCredentials() {
   if (!identity_manager_) {
     return false;
   }
 
-  return IsUserSignedInToWeb(identity_manager_, url) ||
-         !identity_manager_
-              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .IsEmpty();
+  // If the primary account doesn't have a refresh token, the <webview> will
+  // not be properly authenticated, so treat this as signed out.
+  if (!identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  // Verify that the primary account refresh token does not have any errors. If
+  // it does, the <webview> will not be properly authenticated, so treat as
+  // signed out.
+  const CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+      primary_account);
 }
 
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
