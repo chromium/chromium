@@ -751,15 +751,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="ContentVerifyJobResult" expires_after="2024-11-20">
+    enum="ContentVerifyJobResult" expires_after="2026-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The reason why an extension was detected to be corrupted. Recorded each time
     an extension is disabled due to corruption detection.
 
-    Warning: this histogram was expired from 2022-12 to 2023-11; data will be
-    missing during this timeframe.
+    Warning: this histogram was expired from 2022-12 to 2023-11, and 2024-011 to
+    2025-12; data will be missing during these timeframes.
   </summary>
 </histogram>
 
