@@ -60,12 +60,26 @@ void GlicActorNudgeController::OnStateUpdateImpl(
     ActorTaskNudgeState actor_task_nudge_state) {
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
+
+  // If the task icon is inactive, hide it and perform no additional style
+  // changes.
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
+      actor_task_nudge_state.task_list_size < 1) {
+    tab_strip_action_container_->HideGlicActorTaskIcon();
+    return;
+  }
+
   switch (actor_task_nudge_state.text) {
     case ActorTaskNudgeState::Text::kDefault:
-      tab_strip_action_container_->HideGlicActorTaskIcon();
-      // All bubbles should close when the nudge is hidden.
-      if (bubble_controller->GetBubbleWidget()) {
-        bubble_controller->GetBubbleWidget()->Close();
+      if (base::FeatureList::IsEnabled(
+              features::kGlicActorUiGlobalTaskIndicator)) {
+        tab_strip_action_container_->ShowGlicActorTaskIcon();
+      } else {
+        tab_strip_action_container_->HideGlicActorTaskIcon();
+        // All bubbles should close when the nudge is hidden.
+        if (bubble_controller->GetBubbleWidget()) {
+          bubble_controller->GetBubbleWidget()->Close();
+        }
       }
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:

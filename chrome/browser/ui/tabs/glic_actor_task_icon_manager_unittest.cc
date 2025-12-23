@@ -85,6 +85,18 @@ class GlicActorTaskIconManagerTest : public testing::Test {
   MockTaskListBubbleChangeSubscriber mock_bubble_subscriber_;
 };
 
+TEST_F(GlicActorTaskIconManagerTest, DefaultState) {
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kDefault);
+}
+
+TEST_F(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
+  manager()->UpdateTaskNudge();
+
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kDefault);
+}
+
 TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   EXPECT_CALL(
       mock_nudge_subscriber_,

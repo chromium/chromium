@@ -458,9 +458,14 @@ TabStripActionContainer::CreateGlicActorButtonContainer() {
   glic_actor_button_container->SetCollapseMargins(true);
   glic_actor_button_container->SetCrossAxisAlignment(
       views::LayoutAlignment::kCenter);
-  glic_actor_button_container->SetBackground(views::CreateRoundedRectBackground(
-      kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
-      gfx::Insets::VH(4, 8)));
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    // Remove background for global task indicator.
+    glic_actor_button_container->SetBackground(
+        views::CreateRoundedRectBackground(
+            kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
+            gfx::Insets::VH(4, 8)));
+  }
 
   // Should be hidden until a task starts.
   glic_actor_button_container->SetVisible(false);
@@ -723,6 +728,9 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
     glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
 
   glic_actor_button_container_->SetVisible(true);
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    glic_button_->SuppressLabel();
+  }
   UpdateGlicActorButtonContainerBorders();
 #else
   NOTREACHED();
@@ -739,11 +747,15 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
     HideTabStripNudge(glic_actor_task_icon_);
     // Once we hide the nudge we want to bring the glic button default label
     // back.
+    // TODO(mjenn): Remove  when GlicActorUiGlobalTaskIndicator is launched.
     glic_button_->ShowDefaultLabel();
   }
   glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(false);
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    glic_button_->ShowDefaultLabel();
+  }
   UpdateGlicActorButtonContainerBorders();
 #if !BUILDFLAG(IS_MAC)
   // Re-add the separator so it's ordered after the GlicButton.

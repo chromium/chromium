@@ -57,6 +57,12 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
     param_list.emplace_back(CreateRowButtonParamsForTaskState(task.second));
   }
   const size_t param_list_size = param_list.size();
+  // Do not show bubble if there are no rows to show.
+  // TODO(crbug.com/470101572): Remove when active tasks show in the bubble.
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
+      param_list_size < 1) {
+    return;
+  }
   bubble_widget_ =
       ActorTaskListBubble::ShowBubble(anchor_view, std::move(param_list));
   if (widget_observation_.IsObserving()) {

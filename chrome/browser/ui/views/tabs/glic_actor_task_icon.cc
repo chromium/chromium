@@ -7,8 +7,10 @@
 #include <string>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -17,8 +19,21 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 namespace glic {
+
+const gfx::VectorIcon& GetTaskIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    return glic::GlicVectorIconManager::GetVectorIcon(
+        IDR_ACTOR_AUTO_BROWSE_ICON);
+  }
+#endif
+  return gfx::VectorIcon::EmptyIcon();
+}
 
 constexpr int kActorNudgeLabelMargin = 6;
 
@@ -30,7 +45,7 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
                           std::u16string(),
                           kGlicActorTaskIconElementId,
                           Edge::kNone,
-                          gfx::VectorIcon::EmptyIcon(),
+                          GetTaskIcon(),
                           /*show_close_button=*/false),
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
@@ -61,8 +76,11 @@ gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
   const int height = TabStripControlButton::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
-  // Task Icon shouldn't show normally, making the default width 0.
   int width = std::lerp(0, full_width, GetWidthFactor());
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    // Task icon should show.
+    width = std::lerp(height, full_width, GetWidthFactor());
+  }
 
   return gfx::Size(width, height);
 }

@@ -25,6 +25,8 @@ struct ActorTaskNudgeState {
     kMaxValue = kCompleteTasks,
   };
   Text text = Text::kDefault;
+  // TODO(mjenn): Remove task list size and replace with
+  // GetActorTaskListBubbleRows() size checks.
   int task_list_size = 0;
 
   bool operator==(const ActorTaskNudgeState& other) const {
