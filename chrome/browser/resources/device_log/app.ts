@@ -5,23 +5,13 @@
 import '/strings.m.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-
-
-// LogLevel values must match the strings provided by the backend.
-// LINT.IfChange
-export enum LogLevel {
-  DEBUG = 'Debug',
-  EVENT = 'Event',
-  USER = 'User',
-  ERROR = 'Error',
-}
-// LINT.ThenChange(/components/device_event_log/device_event_log_impl.cc)
+import type {BrowserProxy, LogEntry} from './browser_proxy.js';
+import {BrowserProxyImpl, LogLevel} from './browser_proxy.js';
 
 // List of log levels in priority order.
 const logLevels: LogLevel[] =
@@ -46,15 +36,6 @@ const logTypes: string[] = [
   'Usb',
 ];
 // LINT.ThenChange(/components/device_event_log/device_event_log_impl.cc)
-
-interface LogEntry {
-  event: string;
-  file: string;
-  level: LogLevel;
-  timestampshort: string;
-  timestamp: string;
-  type: string;
-}
 
 interface EventType {
   type: string;
@@ -104,6 +85,8 @@ export class DeviceLogAppElement extends CrLitElement {
   protected accessor logTimeDetail_: boolean = false;
   protected accessor logs_: LogEntry[] = [];
   protected accessor selectedLogLevel_: LogLevel = LogLevel.DEBUG;
+
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -165,12 +148,12 @@ export class DeviceLogAppElement extends CrLitElement {
     this.selectedLogLevel_ = target.value as LogLevel;
   }
 
-  protected onLogFileinfoClick_(event: Event) {
+  protected onLogFileinfoChange_(event: Event) {
     const target = event.target as HTMLInputElement;
     this.logFileInfo_ = target.checked;
   }
 
-  protected onLogTimedetailClick_(event: Event) {
+  protected onLogTimedetailChange_(event: Event) {
     const target = event.target as HTMLInputElement;
     this.logTimeDetail_ = target.checked;
   }
@@ -183,18 +166,18 @@ export class DeviceLogAppElement extends CrLitElement {
   /**
    * Requests a log update.
    */
-  protected onLogRefreshClick_() {
-    sendWithPromise('getLog').then((logs: string) => {
-      const logStrings = JSON.parse(logs);
-      this.logs_ = logStrings.map(JSON.parse);
-    });
+  protected async onLogRefreshClick_() {
+    const logs = await this.browserProxy_.getLog();
+    // The backend returns a JSON-encoded string of JSON-encoded log entries.
+    const logStrings = JSON.parse(logs);
+    this.logs_ = logStrings.map(JSON.parse);
   }
 
   /**
    * Clears the log and queues an update.
    */
   protected onLogClearClick_() {
-    chrome.send('clearLog');
+    this.browserProxy_.clearLog();
     this.logs_ = [];
   }
 

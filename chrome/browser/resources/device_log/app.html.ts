@@ -5,7 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {DeviceLogAppElement} from './app.js';
-import {LogLevel} from './app.js';
+import {LogLevel} from './browser_proxy.js';
 
 export function getHtml(this: DeviceLogAppElement) {
   return html`<!--_html_template_start_-->
@@ -30,13 +30,13 @@ export function getHtml(this: DeviceLogAppElement) {
     </select>
     <label>
       <input id="logFileinfo" type="checkbox"
-          @click="${this.onLogFileinfoClick_}"
+          @change="${this.onLogFileinfoChange_}"
           .checked="${this.logFileInfo_}">
       <span>$i18n{logLevelFileinfoText}</span>
     </label>
     <label>
       <input id="logTimedetail" type="checkbox"
-          @click="${this.onLogTimedetailClick_}"
+          @change="${this.onLogTimedetailChange_}"
           .checked="${this.logTimeDetail_}">
       <span>$i18n{logLevelTimeDetailText}</span>
     </label>
