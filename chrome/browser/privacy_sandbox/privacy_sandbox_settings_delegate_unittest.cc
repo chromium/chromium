@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -55,11 +54,8 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment();
     adapter_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    experiment_manager_ =
-        std::make_unique<tpcd::experiment::MockExperimentManager>();
     delegate_ = std::make_unique<PrivacySandboxSettingsDelegate>(
-        profile_.get(), experiment_manager_.get(),
-        GetSingletonPrivacySandboxCountries());
+        profile_.get(), GetSingletonPrivacySandboxCountries());
   }
 
  protected:
@@ -95,16 +91,12 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
   }
-  tpcd::experiment::MockExperimentManager* experiment_manager() {
-    return experiment_manager_.get();
-  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adapter_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<tpcd::experiment::MockExperimentManager> experiment_manager_;
   std::unique_ptr<PrivacySandboxSettingsDelegate> delegate_;
 };
 
@@ -469,40 +461,6 @@ class CookieDeprecationLabelAllowedTest
 
 }  // namespace
 
-TEST_F(PrivacySandboxSettingsDelegateTest, IsEligible) {
-  feature_list()->InitAndEnableFeature(
-      features::kCookieDeprecationFacilitatedTesting);
-
-  const struct {
-    const char* description;
-    std::optional<bool> is_eligible;
-    bool expected_eligible;
-  } kTestCases[] = {
-      {
-          .description = "unknown",
-          .expected_eligible = false,
-      },
-      {
-          .description = "eligible",
-          .is_eligible = true,
-          .expected_eligible = true,
-      },
-      {
-          .description = "ineligible",
-          .is_eligible = false,
-          .expected_eligible = false,
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-    EXPECT_CALL(*experiment_manager(), IsClientEligible)
-        .WillOnce(::testing::Return(test_case.is_eligible));
-    EXPECT_EQ(delegate()->IsCookieDeprecationExperimentEligible(),
-              test_case.expected_eligible);
-  }
-}
-
 TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   const CookieDeprecationExperimentEligibilityTestCase& test_case = GetParam();
   std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -579,15 +537,13 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
   PrivacySandboxSettingsDelegate otr_delegate_under_test(
-      off_the_record_profile, experiment_manager(),
-      GetSingletonPrivacySandboxCountries());
+      off_the_record_profile, GetSingletonPrivacySandboxCountries());
 
   // Android does not have guest profiles.
 #if !BUILDFLAG(IS_ANDROID)
   auto guest_profile = TestingProfile::Builder().SetGuestSession().Build();
   PrivacySandboxSettingsDelegate guest_delegate_under_test(
-      guest_profile.get(), experiment_manager(),
-      GetSingletonPrivacySandboxCountries());
+      guest_profile.get(), GetSingletonPrivacySandboxCountries());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool use_profile_filtering = GetParam();
@@ -602,26 +558,14 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
          {"use_profile_filtering", use_profile_filtering_param},
          {"enable_otr_profiles", "true"}});
 
-    if (!use_profile_filtering) {
-      EXPECT_CALL(*experiment_manager(), IsClientEligible)
-          .WillOnce(::testing::Return(true));
-    } else {
-      EXPECT_CALL(*experiment_manager(), IsClientEligible).Times(0);
-    }
-
-    EXPECT_TRUE(
-        otr_delegate_under_test.IsCookieDeprecationExperimentEligible());
-
+    // Profile is only eligible if `use_profile_filtering` is true.
+    // TODO(crbug.com/469047728): Remove this test entirely after the
+    // `use_profile_filtering` eligibility check is removed.
+    EXPECT_EQ(otr_delegate_under_test.IsCookieDeprecationExperimentEligible(),
+              use_profile_filtering);
 #if !BUILDFLAG(IS_ANDROID)
-    if (!use_profile_filtering) {
-      EXPECT_CALL(*experiment_manager(), IsClientEligible)
-          .WillOnce(::testing::Return(true));
-    } else {
-      EXPECT_CALL(*experiment_manager(), IsClientEligible).Times(0);
-    }
-
-    EXPECT_TRUE(
-        guest_delegate_under_test.IsCookieDeprecationExperimentEligible());
+    EXPECT_EQ(guest_delegate_under_test.IsCookieDeprecationExperimentEligible(),
+              use_profile_filtering);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     feature_list()->Reset();

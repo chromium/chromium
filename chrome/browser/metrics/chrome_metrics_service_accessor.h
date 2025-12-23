@@ -107,10 +107,6 @@ class PerSessionSettingsUserActionTracker;
 }  // namespace settings
 }  // namespace ash
 
-namespace tpcd::experiment {
-class ExperimentManagerImpl;
-}
-
 namespace readaloud {
 class SyntheticTrial;
 }
@@ -187,7 +183,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class DataSharingUI;
   // Used to register synthetic trials for ongoing growth experiments.
   friend class CampaignsManagerClientImpl;
-  friend class tpcd::experiment::ExperimentManagerImpl;
   friend class readaloud::SyntheticTrial;
   friend class tab_groups::TabGroupTrial;
 #if !BUILDFLAG(IS_ANDROID)

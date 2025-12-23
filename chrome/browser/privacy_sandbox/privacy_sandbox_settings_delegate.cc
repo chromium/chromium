@@ -19,7 +19,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/tpcd/experiment/experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -59,10 +58,8 @@ const base::FeatureParam<bool> kCookieDeprecationUseProfileFiltering{
 
 PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
     Profile* profile,
-    tpcd::experiment::ExperimentManager* experiment_manager,
     PrivacySandboxCountries* privacy_sandbox_countries)
     : profile_(profile),
-      experiment_manager_(experiment_manager),
       privacy_sandbox_countries_(privacy_sandbox_countries)
 #if BUILDFLAG(IS_ANDROID)
       ,
@@ -194,10 +191,6 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
     }
 
     return *is_cookie_deprecation_experiment_eligible_;
-  }
-
-  if (experiment_manager_) {
-    return experiment_manager_->IsClientEligible().value_or(false);
   }
 
   return false;
