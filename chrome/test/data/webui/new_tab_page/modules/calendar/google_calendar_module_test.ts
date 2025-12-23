@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {GoogleCalendarPageHandlerRemote} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
-import type {DismissModuleInstanceEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, DismissModuleInstanceEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {googleCalendarDescriptor, GoogleCalendarProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -21,6 +21,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
   const dismissTime = '6';
   const dismissToast = 'Google Calendar hidden';
+  const disableToast = 'Google Calendar disabled';
   const title = 'Google Calendar';
 
   async function initializeModule(numEvents: number = 0) {
@@ -35,6 +36,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     loadTimeData.overrideValues({
       modulesGoogleCalendarTitle: title,
       modulesGoogleCalendarDismissToastMessage: dismissToast,
+      modulesGoogleCalendarDisableToastMessage: disableToast,
       modulesDismissForHoursButtonText: 'Hide for $1 hours',
       calendarModuleDismissHours: dismissTime,
       hideDismissModules: false,
@@ -83,6 +85,24 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
   });
+
+  test(
+      'clicking the disable button sets the correct toast message',
+      async () => {
+        await initializeModule(1);
+        assertTrue(!!module);
+
+        // Act.
+        const whenFired = eventToPromise('disable-module', module);
+        const disableButton = module.$.moduleHeaderElementV2.shadowRoot
+                                  .querySelector<HTMLElement>('#disable');
+        assertTrue(!!disableButton);
+        disableButton.click();
+
+        // Assert.
+        const event: DisableModuleEvent = await whenFired;
+        assertEquals(disableToast, event.detail.message);
+      });
 
   test('Calendar element created and passed event data', async () => {
     await initializeModule(2);
