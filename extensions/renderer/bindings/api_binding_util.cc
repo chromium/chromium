@@ -65,18 +65,18 @@ ContextInvalidationData::~ContextInvalidationData() {
 
 void ContextInvalidationData::AddListener(
     ContextInvalidationListener* listener) {
-  DCHECK(is_context_valid_);
+  CHECK(is_context_valid_);
   invalidation_listeners_.AddObserver(listener);
 }
 
 void ContextInvalidationData::RemoveListener(
     ContextInvalidationListener* listener) {
-  DCHECK(invalidation_listeners_.HasObserver(listener));
+  CHECK(invalidation_listeners_.HasObserver(listener));
   invalidation_listeners_.RemoveObserver(listener);
 }
 
 void ContextInvalidationData::Invalidate() {
-  DCHECK(is_context_valid_);
+  CHECK(is_context_valid_);
   is_context_valid_ = false;
 
   for (ContextInvalidationListener& listener : invalidation_listeners_)
