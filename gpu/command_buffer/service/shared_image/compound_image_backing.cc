@@ -871,13 +871,25 @@ SharedImageBackingType CompoundImageBacking::GetType() const {
 }
 
 void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  CHECK(!in_fence);
+  // Update() synchronizes CPU-side writes (from Shared Memory or GMB) with the
+  // GPU. Hence it must target the backing which owns the CPU-mappable memory.
+  //
+  // Per this backing's design:
+  // 1. SharedMemoryImageBacking if present is the exclusive owner of CPU
+  // memory.
+  // 2. A SharedMemoryImageBacking or other CPU-mappable backing is always
+  // created only at initialization time. Hence it is guaranteed to be at
+  // elements_[0].
+  // 3. |elements_| always contains at least one element.
+  CHECK(!elements_.empty());
+  auto& element = elements_[0];
+  CHECK(element.backing);
+  element.backing->Update(std::move(in_fence));
 
-  // Find a shared memory backing to update.
-  auto& shm_element = GetShmElement();
-  CHECK(shm_element.backing);
-  ++latest_content_id_;
-  shm_element.content_id_ = latest_content_id_;
+  // Incrementing the content ID marks this backing as the new "source
+  // of truth." Subsequent access to other backings will trigger an
+  // efficient copy from this element to ensure consistency.
+  element.content_id_ = ++latest_content_id_;
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {

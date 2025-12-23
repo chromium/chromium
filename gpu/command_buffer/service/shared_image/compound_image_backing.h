@@ -47,10 +47,61 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
                                       SharedImageAccessStream::kSkia,
                                       SharedImageAccessStream::kWebNNTensor>;
 
-// A compound backing that combines a shared memory backing and real GPU
-// backing. The real GPU backing must implement `UploadFromMemory()` and not
-// have its own shared memory segment.
-// TODO(crbug.com/40213543): Support multiple GPU backings.
+// A CompoundImageBacking is a specialized container that manages one or more
+// underlying SharedImageBacking instances of different types. It serves as a
+// bridge to allow a single SharedImage to be backed by multiple memory types
+// (e.g., CPU memory and GPU memory OR multiple GPU memory) and provides the
+// necessary interoperability (interop) to synchronize data between them as
+// usage requirements change.
+//
+// ----------------------------------
+// Core Architecture and Interop
+// ----------------------------------
+//
+// Initial Creation: It creates one or more backings during initial setup based
+// on the provided SharedImageUsageSet.
+//
+// Dynamic GPU Allocation & Data Sync: If a client requests a new usage that
+// the current backings cannot satisfy, CompoundImageBacking can create a new
+// GPU backing at runtime. Upon creation, the latest data from the existing
+// backings is efficiently and automatically copied to this new backing to
+// ensure continuity.
+//
+// Automated Interop: The container manages the lifecycle and data consistency
+// between its members. If a client writes to one backing (e.g., CPU) and later
+// requires a different representation (e.g., GPU), the CompoundImageBacking
+// handles the synchronization logic internally.
+//
+// Dynamic Management: To optimize memory, backings can be deleted dynamically
+// based on usage and memory pressure, provided that at least one backing
+// remains active at all times.
+//
+// (Note: Dynamic allocation/de-allocations are currently disabled by default
+// but is a core architectural feature).
+//
+// ---------------------------------------
+// Critical Constraints and Assumptions
+// ---------------------------------------
+//
+// Shared Memory Limit: A CompoundImageBacking can never have more than one
+// SharedMemoryImageBacking.
+//
+// Mappable Backing Placement: Any type of mappable backing (including
+// SharedMemoryImageBacking) must be created during the initial setup and is
+// never allocated dynamically. These are strictly stored as the first element
+// (elements_[0]).
+// TODO(crbug.com/471036798): Add CHECK to ensure that mappable backings are
+// never created dynamically.
+//
+// Persistence: The container must always maintain at least one backing to
+// ensure the SharedImage remains valid during dynamic memory adjustments.
+//
+// Memory Upload Requirements: When combining a shared memory backing with a
+// hardware-based GPU backing:
+// 1.The GPU backing must implement UploadFromMemory() and ReadbackToMemory() to
+// copy to/from shared memory backing.
+// 2.The GPU backing must not have its own separate shared memory segment, as it
+// relies on the primary shared memory backing for data transfers.
 class GPU_GLES2_EXPORT CompoundImageBacking
     : public ClearTrackingSharedImageBacking {
  public:
