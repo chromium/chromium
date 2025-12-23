@@ -76,7 +76,9 @@ public class TabStripTestUtils {
      */
     public static TabGroupModelFilter getTabGroupModelFilter(
             ChromeTabbedActivity activity, boolean isIncognito) {
-        return activity.getTabModelSelector().getTabGroupModelFilter(isIncognito);
+        return activity.getTabModelSelector()
+                .getTabGroupModelFilterProvider()
+                .getTabGroupModelFilter(isIncognito);
     }
 
     /**

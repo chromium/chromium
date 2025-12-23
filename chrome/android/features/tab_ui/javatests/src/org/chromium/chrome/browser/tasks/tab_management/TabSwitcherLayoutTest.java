@@ -393,7 +393,10 @@ public class TabSwitcherLayoutTest {
                         });
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
-        TabGroupModelFilter filter = cta.getTabModelSelector().getCurrentTabGroupModelFilter();
+        TabGroupModelFilter filter =
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         filter.getTabUngrouper()
@@ -974,7 +977,10 @@ public class TabSwitcherLayoutTest {
 
         // Get the next suggested color id.
         TabGroupModelFilter filter =
-                cta.getTabModelSelectorSupplier().get().getCurrentTabGroupModelFilter();
+                cta.getTabModelSelectorSupplier()
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
         int nextSuggestedColorId1 = getNextSuggestedColorId(filter);
 
         // Merge last two tabs into a group.
@@ -1045,7 +1051,10 @@ public class TabSwitcherLayoutTest {
 
         // Get the next suggested color id.
         TabGroupModelFilter filter =
-                cta.getTabModelSelectorSupplier().get().getCurrentTabGroupModelFilter();
+                cta.getTabModelSelectorSupplier()
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
         int nextSuggestedColorId1 = getNextSuggestedColorId(filter);
 
         // Merge last two tabs into a group.
@@ -1105,7 +1114,10 @@ public class TabSwitcherLayoutTest {
 
         // Get the next suggested color id.
         TabGroupModelFilter filter =
-                cta.getTabModelSelectorSupplier().get().getCurrentTabGroupModelFilter();
+                cta.getTabModelSelectorSupplier()
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
         int nextSuggestedColorId = getNextSuggestedColorId(filter);
 
         // Merge first two tabs into a group.
@@ -1458,6 +1470,7 @@ public class TabSwitcherLayoutTest {
                 .getActivity()
                 .getTabModelSelectorSupplier()
                 .get()
+                .getTabGroupModelFilterProvider()
                 .getCurrentTabGroupModelFilter();
     }
 }

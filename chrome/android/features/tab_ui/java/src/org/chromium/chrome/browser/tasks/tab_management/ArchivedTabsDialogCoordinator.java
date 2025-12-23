@@ -793,6 +793,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* parentView= */ mDialogView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
                         assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
+                                .getTabGroupModelFilterProvider()
                                 .getCurrentTabGroupModelFilterSupplier(),
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ CallbackUtils

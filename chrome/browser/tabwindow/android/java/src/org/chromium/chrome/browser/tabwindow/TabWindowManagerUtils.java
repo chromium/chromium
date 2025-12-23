@@ -39,7 +39,9 @@ public class TabWindowManagerUtils {
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
         TabGroupModelFilter tabGroupModelFilter =
-                tabModelSelector.getTabGroupModelFilter(isIncognito);
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         if (tabGroupModelFilter == null) return null;
         return TabGroupTitleUtils.getDisplayableTitle(context, tabGroupModelFilter, tabGroupId);
     }
@@ -59,7 +61,9 @@ public class TabWindowManagerUtils {
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return TabGroupColorId.GREY;
         TabGroupModelFilter tabGroupModelFilter =
-                tabModelSelector.getTabGroupModelFilter(isIncognito);
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         if (tabGroupModelFilter == null) return TabGroupColorId.GREY;
         return tabGroupModelFilter.getTabGroupColorWithFallback(tabGroupId);
     }

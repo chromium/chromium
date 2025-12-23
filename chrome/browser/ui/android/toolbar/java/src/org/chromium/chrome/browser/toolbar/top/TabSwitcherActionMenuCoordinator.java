@@ -243,7 +243,8 @@ public class TabSwitcherActionMenuCoordinator {
         if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             if (selector == null || !selector.isTabStateInitialized()) return;
-            TabGroupModelFilter filter = selector.getCurrentTabGroupModelFilter();
+            TabGroupModelFilter filter =
+                    selector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
             if (filter == null || !filter.isTabModelRestored()) return;
         }
 
@@ -338,7 +339,9 @@ public class TabSwitcherActionMenuCoordinator {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector != null) {
             TabGroupModelFilter currentTabGroupModelFilter =
-                    tabModelSelector.getCurrentTabGroupModelFilter();
+                    tabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter();
             assumeNonNull(currentTabGroupModelFilter);
             return currentTabGroupModelFilter.getTabGroupCount() != 0;
         }

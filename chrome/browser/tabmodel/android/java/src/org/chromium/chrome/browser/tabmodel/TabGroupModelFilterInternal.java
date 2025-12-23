@@ -11,7 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 interface TabGroupModelFilterInternal extends TabGroupModelFilter {
     /**
      * Mark TabState initialized, and TabGroupModelFilter ready to use. This should only be called
-     * once, and should only be called by {@link TabModelSelector}.
+     * once, and should only be called by {@link TabGroupModelFilterProvider}.
      */
     /*package*/ void markTabStateInitialized();
 

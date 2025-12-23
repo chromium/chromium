@@ -124,7 +124,11 @@ public class TabModelMultiWindowTest {
     @LargeTest
     public void testMoveTabGroupToWindow() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
-        TabGroupModelFilter filter = activity1.getTabModelSelector().getTabGroupModelFilter(false);
+        TabGroupModelFilter filter =
+                activity1
+                        .getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(false);
         List<Tab> group = createTabGroup(2, filter);
         Token groupId = group.get(0).getTabGroupId();
         int initialTabCount = getTabCountOnUiThread(mTabModelJni);

@@ -789,9 +789,8 @@ public class ChromeTabUtils {
 
     /**
      * Groups together two tabs.
-     *
      * @param tab1 First tab to group.
-     * @param tab2 Second tab to group.\
+     * @param tab2 Second tab to group.
      */
     public static void mergeTabsToGroup(Tab tab1, Tab tab2) {
         Assert.assertTrue(ThreadUtils.runningOnUiThread());
@@ -799,7 +798,9 @@ public class ChromeTabUtils {
         // Verify that the two tabs do not belong with different models.
         Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
         final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
-        final TabGroupModelFilter filter = selector.getTabGroupModelFilter(tab1.isIncognito());
+        final TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tab1.isIncognito());
 
         filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
         Assert.assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());

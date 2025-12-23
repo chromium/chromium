@@ -83,7 +83,10 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
                 RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
             } else {
-                TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
+                TabGroupModelFilter filter =
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilter();
                 assumeNonNull(filter);
                 int previousIndex = filter.representativeIndexOf(previousTab);
                 int currentIndex = filter.representativeIndexOf(tab);
@@ -108,7 +111,10 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabSwitched");
             }
 
-            TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
+            TabGroupModelFilter filter =
+                    mTabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter();
             assumeNonNull(filter);
             if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");

@@ -108,7 +108,8 @@ public class RecentlyClosedBridgeTest {
         mActivity = mActivityTestRule.getActivity();
         mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
         mTabModel = mTabModelSelector.getModel(false);
-        TabGroupModelFilter filter = mTabModelSelector.getTabGroupModelFilter(false);
+        TabGroupModelFilter filter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         mTabGroupModelFilter = filter;
         final Tab tab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.waitForInteractable(tab);
@@ -1789,7 +1790,8 @@ public class RecentlyClosedBridgeTest {
         mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
         CriteriaHelper.pollUiThread(mTabModelSelector::isTabStateInitialized);
         mTabModel = mTabModelSelector.getModel(false);
-        mTabGroupModelFilter = mTabModelSelector.getTabGroupModelFilter(false);
+        mTabGroupModelFilter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
     }
 
     private void closeTabs(TabClosureParams params) {

@@ -190,7 +190,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 new UserEducationHelper(activity, profileSupplier, handler);
 
         Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
-                () -> assumeNonNull(tabModelSelector.getTabGroupModelFilter(isIncognito));
+                () ->
+                        assumeNonNull(
+                                tabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(isIncognito));
         TabSwitcherPaneBase pane =
                 isIncognito
                         ? new IncognitoTabSwitcherPane(
@@ -239,7 +243,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             DataSharingTabManager dataSharingTabManager) {
         LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
-                        () -> assumeNonNull(tabModelSelector.getTabGroupModelFilter(false)));
+                        () ->
+                                assumeNonNull(
+                                        tabModelSelector
+                                                .getTabGroupModelFilterProvider()
+                                                .getTabGroupModelFilter(false)));
         return new TabGroupsPane(
                 context,
                 tabGroupModelFilterSupplier,

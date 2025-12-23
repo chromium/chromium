@@ -321,7 +321,9 @@ public class TabItemPickerCoordinator {
             TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
         return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
-                tabModelSelector.getTabGroupModelFilter(isIncognito));
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito));
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */

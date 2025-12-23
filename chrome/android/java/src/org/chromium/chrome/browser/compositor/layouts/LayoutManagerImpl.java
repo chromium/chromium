@@ -714,7 +714,9 @@ public class LayoutManagerImpl
         selector.getCurrentTabModelSupplier().addSyncObserver(mCurrentTabModelObserver);
 
         mTabGroupModelFilterObserver = createTabModelObserver();
-        getTabModelSelector().addTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
+        getTabModelSelector()
+                .getTabGroupModelFilterProvider()
+                .addTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
     }
 
     @Override
@@ -730,7 +732,9 @@ public class LayoutManagerImpl
                     .removeObserver(mCurrentTabModelObserver);
         }
         if (mTabGroupModelFilterObserver != null) {
-            getTabModelSelector().removeTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
+            getTabModelSelector()
+                    .getTabGroupModelFilterProvider()
+                    .removeTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
         }
     }
 

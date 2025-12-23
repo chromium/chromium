@@ -123,7 +123,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
                     @Override
                     public TabGroupModelFilter getFilter(boolean incognito) {
-                        return mSelector.getTabGroupModelFilter(incognito);
+                        return mSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(incognito);
                     }
 
                     @Override
@@ -139,10 +141,16 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         TabRemover normalTabRemover =
                 new PassthroughTabRemover(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         TabUngrouper normalTabUngrouper =
                 new PassthroughTabUngrouper(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
                         ProfileManager.getLastUsedRegularProfile(),
@@ -157,10 +165,16 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ true));
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ true));
         TabUngrouper incognitoTabUngrouper =
                 new PassthroughTabUngrouper(
-                        () -> mSelector.getTabGroupModelFilter(/* isIncognito= */ true));
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ true));
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
                         ProfileManager.getLastUsedRegularProfile()

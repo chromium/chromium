@@ -1625,7 +1625,8 @@ public class TabGridDialogTest {
         // Set title programmatically as doing this through the UI is flaky due to the keyboard
         // state not being particularly reliable.
         TabModelSelector selector = cta.getTabModelSelector();
-        TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
+        TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
@@ -1818,7 +1819,8 @@ public class TabGridDialogTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
+                    TabGroupModelFilter filter =
+                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab);
                 });
 

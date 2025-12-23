@@ -232,7 +232,10 @@ public class LayerTitleCache {
 
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
-        TabGroupModelFilter filter = mTabModelSelector.getTabGroupModelFilter(incognito);
+        TabGroupModelFilter filter =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(incognito);
         assumeNonNull(filter);
         if (!filter.tabGroupExists(groupId)) return;
 
@@ -260,7 +263,8 @@ public class LayerTitleCache {
             title.register();
         }
 
-        TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
+        TabGroupModelFilter filter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         assert filter != null;
         Bitmap titleBitmap =
                 titleBitmapFactory.getGroupTitleBitmap(filter, mContext, groupId, titleString);

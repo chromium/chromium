@@ -122,7 +122,10 @@ public final class TabGroupSyncControllerImpl
 
         mNavigationTracker = new NavigationTracker();
         mTabGroupModelFilter =
-                assertNonNull(tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+                assertNonNull(
+                        tabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false));
 
         mTabCreationDelegate =
                 new TabCreationDelegateImpl(

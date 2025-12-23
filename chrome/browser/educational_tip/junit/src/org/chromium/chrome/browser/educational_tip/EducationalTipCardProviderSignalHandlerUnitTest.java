@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -66,6 +67,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private TabModel mNormalModel;
     @Mock private TabModel mIncognitoModel;
+    @Mock private TabGroupModelFilterProvider mProvider;
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncService mMockTabGroupSyncService;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
@@ -81,9 +83,9 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
         when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false))
-                .thenReturn(mNormalFilter);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ true))
+        when(mTabModelSelector.getTabGroupModelFilterProvider()).thenReturn(mProvider);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ false)).thenReturn(mNormalFilter);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ true))
                 .thenReturn(mIncognitoFilter);
         when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);

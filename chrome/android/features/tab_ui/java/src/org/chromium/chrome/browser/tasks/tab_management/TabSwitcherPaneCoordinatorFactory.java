@@ -243,7 +243,8 @@ public class TabSwitcherPaneCoordinatorFactory {
         // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
         TabModelSelector selector = mTabModelSelector;
         if (!selector.getModels().isEmpty()) {
-            TabGroupModelFilter filter = selector.getTabGroupModelFilter(isIncognito);
+            TabGroupModelFilter filter =
+                    selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(isIncognito);
             tabGroupModelFilterSupplier.set(filter);
         } else {
             selector.addObserver(
@@ -252,7 +253,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                         public void onChange() {
                             assert !selector.getModels().isEmpty();
                             TabGroupModelFilter filter =
-                                    selector.getTabGroupModelFilter(isIncognito);
+                                    selector.getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(isIncognito);
                             assert filter != null;
                             selector.removeObserver(this);
                             tabGroupModelFilterSupplier.set(filter);
@@ -269,7 +271,9 @@ public class TabSwitcherPaneCoordinatorFactory {
                     new TabSwitcherMessageManager(
                             mActivity,
                             mLifecycleDispatcher,
-                            mTabModelSelector.getCurrentTabGroupModelFilterSupplier(),
+                            mTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilterSupplier(),
                             mMultiWindowModeStateDispatcher,
                             mSnackbarManager,
                             mModalDialogManager,

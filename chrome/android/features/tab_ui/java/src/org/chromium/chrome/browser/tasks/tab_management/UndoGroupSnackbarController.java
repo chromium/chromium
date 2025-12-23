@@ -156,6 +156,9 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     }
 
     private TabGroupModelFilter getFilter(boolean isIncognito) {
-        return assumeNonNull(mTabModelSelector.getTabGroupModelFilter(isIncognito));
+        return assumeNonNull(
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito));
     }
 }

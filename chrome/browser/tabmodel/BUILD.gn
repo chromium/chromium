@@ -50,6 +50,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterInternal.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupTitleUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupVisualDataStore.java",

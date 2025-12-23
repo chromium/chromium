@@ -63,7 +63,9 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         assert savedTabGroup != null;
         assert savedTabGroup.localId != null;
         TabGroupModelFilter tabGroupModelFilter =
-                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         assumeNonNull(tabGroupModelFilter);
         int rootId = tabGroupModelFilter.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
