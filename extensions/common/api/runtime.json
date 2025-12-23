@@ -738,7 +738,10 @@
           }
         ],
         "returns": {
-          "type": "boolean",
+          "choices": [
+            {"type": "boolean"},
+            {"type": "object", "isInstanceOf": "Promise"}
+          ],
           "optional": true,
           "description": "Return true from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
         }
