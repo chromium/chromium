@@ -240,6 +240,8 @@ interface PageHandler {
   OnModuleUsed(string module_id);
   // Returns a list of available module id and name pairs.
   GetModulesIdNames() => (array<ModuleIdName> data);
+  // Returns a list of module ids that are eligible for auto removal.
+  GetModulesEligibleForRemoval() => (array<string> module_ids);
   // Sets the order of modules.
   SetModulesOrder(array<string> module_ids);
   // Returns the order of modules or an empty array if the user has not
@@ -247,6 +249,8 @@ interface PageHandler {
   GetModulesOrder() => (array<string> module_ids);
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
+  // Disables modules with IDs |module_ids| if |disabled|. Enables otherwise.
+  SetModulesDisabled(array<string> module_ids, bool disabled);
   // Updates the visibility of the action chips in the NTP on any pref changes.
   UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.

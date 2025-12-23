@@ -97,6 +97,7 @@ export class ModulesElement extends CrLitElement {
       },
       moduleInstances_: {type: Array},
       disabledModules_: {type: Object},
+      pendingAutoRemovedModules_: {type: Array},
       /** Data about the most recent un-doable action. */
       undoData_: {type: Object},
     };
@@ -108,6 +109,7 @@ export class ModulesElement extends CrLitElement {
   accessor moduleInstances_: ModuleInstance[] = [];
   accessor disabledModules_:
       {all: boolean, ids: string[]} = {all: true, ids: []};
+  protected accessor pendingAutoRemovedModules_: string[] = [];
   protected accessor undoData_: {message: string, undo?: () => void}|null =
       null;
 
@@ -186,6 +188,13 @@ export class ModulesElement extends CrLitElement {
         this.callbackRouter_.setDisabledModules.addListener(
             (all: boolean, ids: string[]) => {
               this.disabledModules_ = {all, ids};
+              // The pending auto removed modules need to be updated here to
+              // reflect their current state. If not cleaned up properly, their
+              // state is considered disabled for rendering purposes, and will
+              // remain so until the NTP is refreshed.
+              this.pendingAutoRemovedModules_ =
+                  this.pendingAutoRemovedModules_.filter(
+                      id => !ids.includes(id));
             });
     this.pageHandler_.updateDisabledModules();
 
@@ -249,7 +258,8 @@ export class ModulesElement extends CrLitElement {
 
   protected moduleDisabled_(instance: ModuleInstance): boolean {
     return this.disabledModules_.all ||
-        this.disabledModules_.ids.includes(instance.descriptor.id);
+        this.disabledModules_.ids.includes(instance.descriptor.id) ||
+        this.pendingAutoRemovedModules_.includes(instance.descriptor.id);
   }
 
   /**
@@ -258,20 +268,36 @@ export class ModulesElement extends CrLitElement {
    * and is called only when the container is empty.
    */
   private async loadModules_(): Promise<void> {
-    const modulesIdNames = (await this.pageHandler_.getModulesIdNames()).data;
+    const [modulesIdNamesResponse, modulesEligibleForRemovalResponse] =
+        await Promise.all([
+          this.pageHandler_.getModulesIdNames(),
+          this.pageHandler_.getModulesEligibleForRemoval(),
+        ]);
+    const modulesIdNames = modulesIdNamesResponse.data;
     const modules =
         await ModuleRegistry.getInstance().initializeModulesHavingIds(
             modulesIdNames.map((m: ModuleIdName) => m.id),
             loadTimeData.getInteger('modulesLoadTimeout'));
+
+    // We only want to remove modules that are both eligible for auto removal
+    // and will currently load on the NTP. Otherwise, we postpone the auto
+    // removal until the module is eligible to be loaded on the NTP.
+    const modulesEligibleForRemoval =
+        modulesEligibleForRemovalResponse.moduleIds.filter(
+            id => modules.some(module => module.descriptor.id === id));
+
     if (modules.length > 0) {
       this.pageHandler_.onModulesLoadedWithData(
-          modules.map(module => module.descriptor.id));
+          modules.map(module => module.descriptor.id)
+              .filter(id => !modulesEligibleForRemoval.includes(id)));
 
       this.moduleInstances_ = modules
                                   .map(module => {
                                     return createModuleInstances(module);
                                   })
                                   .flat();
+
+      this.handleModulesAutoRemoval_(modulesEligibleForRemoval);
     }
     this.recordInitialLoadMetrics_(modules, modulesIdNames);
     this.dispatchEvent(new CustomEvent<number|null>(
@@ -308,6 +334,40 @@ export class ModulesElement extends CrLitElement {
               `${histogramBase}.${moduleDescriptorId}`, id);
         }
       });
+    }
+  }
+
+  /**
+   * Handles the the auto-removal of stale modules, which are defined as modules
+   * that have not been interacted with by the user within a certain period of
+   * time. The removal is undone if the user clicks on the undo button in the
+   * toast.
+   *
+   * Due to the asynchronous nature of module loading, it is possible for the
+   * modules to be loaded before the auto-removal is processed by the browser.
+   * Therefore, pending modules are added to a pending list, and removed after
+   * the browser has processed the auto-removal during the `setDisabledModules`
+   * callback.
+   *
+   * @param moduleIds - An array of module ids that have been auto-removed.
+   */
+  private handleModulesAutoRemoval_(moduleIds: string[]) {
+    if (moduleIds.length > 0) {
+      const isSingleModuleRemoval = moduleIds.length === 1;
+      const undoToastMessage = isSingleModuleRemoval ?
+          loadTimeData.getString('moduleInactivityRemovalMsg') :
+          loadTimeData.getString('modulesInactivityRemovalMsg');
+
+      this.undoData_ = {
+        message: undoToastMessage,
+        undo: () => {
+          this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ false);
+        },
+      };
+
+      this.pendingAutoRemovedModules_ = moduleIds;
+      this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ true);
+      this.$.undoToast.show();
     }
   }
 
