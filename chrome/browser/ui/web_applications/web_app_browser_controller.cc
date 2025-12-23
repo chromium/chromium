@@ -140,6 +140,11 @@ WebAppBrowserController::WebAppBrowserController(
   install_manager_observation_.Observe(&provider.install_manager());
   registrar_observation_.Observe(&provider.registrar_unsafe());
   PerformDigitalAssetLinkVerification(browser);
+
+  if (AppUsesWindowControlsOverlay()) {
+    per_window_wco_enabled_ =
+        registrar().GetWindowControlsOverlayEnabled(this->app_id());
+  }
 }
 
 WebAppBrowserController::~WebAppBrowserController() = default;
@@ -172,25 +177,25 @@ bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
 }
 
 bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
-  return AppUsesWindowControlsOverlay() &&
-         registrar().GetWindowControlsOverlayEnabled(app_id());
+  return AppUsesWindowControlsOverlay() && per_window_wco_enabled_;
 }
 
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
     base::OnceClosure on_complete) {
   DCHECK(AppUsesWindowControlsOverlay());
 
+  per_window_wco_enabled_ = !IsWindowControlsOverlayEnabled();
+
   provider_->scheduler().ScheduleCallback(
       "WebAppBrowserController::ToggleWindowControlsOverlayEnabled",
       AppLockDescription(app_id()),
       base::BindOnce(
-          [](const webapps::AppId& app_id, AppLock& lock,
+          [](const webapps::AppId& app_id, bool wco_enabled, AppLock& lock,
              base::Value::Dict& debug_value) {
-            lock.sync_bridge().SetAppWindowControlsOverlayEnabled(
-                app_id,
-                !lock.registrar().GetWindowControlsOverlayEnabled(app_id));
+            lock.sync_bridge().SetAppWindowControlsOverlayEnabled(app_id,
+                                                                  wco_enabled);
           },
-          app_id()),
+          app_id(), per_window_wco_enabled_),
       /*on_complete=*/std::move(on_complete));
 }
 

@@ -206,6 +206,11 @@ class WebAppBrowserController : public AppBrowserController,
   // the window is open.
   const bool has_pinned_home_tab_ = false;
 
+  // Per-window Window Controls Overlay enabled state.
+  // Allows each window of the same app to have independent WCO state.
+  // Initialized from the app-level default when the window is created.
+  bool per_window_wco_enabled_ = false;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.
   // Only used for web-only TWAs installed through the Play Store.

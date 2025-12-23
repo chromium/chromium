@@ -2084,6 +2084,37 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(draggable_region.value().isEmpty());
 }
 
+// Test that WCO state persists across multiple app windows and that each
+// window maintains independent per-window state.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       WCOStatePersistsAcrossWindows) {
+  // Install and launch the web app, verify WCO is disabled by default.
+  webapps::AppId app_id = InstallAndLaunchWebApp();
+  web_app::AppBrowserController* app_controller_window1 =
+      helper()->app_browser()->app_controller();
+  EXPECT_FALSE(app_controller_window1->IsWindowControlsOverlayEnabled());
+
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_TRUE(app_controller_window1->IsWindowControlsOverlayEnabled());
+
+  // Launch new window of same app and verify that WCO is enabled at launch
+  BrowserView* browser_view_window2 = BrowserView::GetBrowserViewForBrowser(
+      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id));
+  web_app::AppBrowserController* app_controller_window2 =
+      browser_view_window2->browser()->app_controller();
+  EXPECT_TRUE(app_controller_window2->IsWindowControlsOverlayEnabled());
+
+  // Verify window 1 still has WCO enabled (independent per-window state).
+  EXPECT_TRUE(app_controller_window1->IsWindowControlsOverlayEnabled());
+
+  ToggleWindowControlsOverlayAndWaitHelper(
+      browser_view_window2->GetActiveWebContents(), browser_view_window2);
+  EXPECT_FALSE(app_controller_window2->IsWindowControlsOverlayEnabled());
+
+  // Verify window 1 still has WCO enabled (independent per-window state).
+  EXPECT_TRUE(app_controller_window1->IsWindowControlsOverlayEnabled());
+}
+
 // Tests for Additional Windowing Controls on web app windows.
 // https://chromestatus.com/feature/5201832664629248
 // For popup tests see PopupTest_AdditionalWindowingControls
