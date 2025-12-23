@@ -5,7 +5,6 @@
 package org.chromium.ui.test.util;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
 import static org.hamcrest.Matchers.greaterThan;
@@ -148,30 +147,13 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a view in a dialog root view that matches the given matcher and any of the given
-     * {@link ExpectedViewState}s. waitForViewCheckingState is flaky with dialogs after api 29.
+     * Waits until a view matches the given matcher and any of the given {@link ExpectedViewState}s.
      * Fails if the matcher applies to multiple views. Times out after {@link
      * CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @param viewState State that the matching view should be in. If multiple states are passed,
      *     the waiting will stop if at least one applies.
-     */
-    public static void waitForDialogViewCheckingState(
-            Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
-        onView(isRoot())
-                .inRoot(isDialog())
-                .check(withEventualExpectedViewState(viewMatcher, viewState));
-    }
-
-    /**
-     * Waits until a view matches the given matcher and any of the given {@link ExpectedViewState}s.
-     * Fails if the matcher applies to multiple views. Times out after
-     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     * @param viewState State that the matching view should be in. If multiple states are passed,
-     *                  the waiting will stop if at least one applies.
      */
     public static void waitForViewCheckingState(
             Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
