@@ -284,6 +284,8 @@ class BrowserAutofillManager : public AutofillManager {
       base::span<const raw_ref<FormStructure>> forms) override;
   void Reset() override;
 
+  base::WeakPtr<BrowserAutofillManager> GetBrowserAutofillManagerWeakPtr();
+
   // Retrieves the four digit combinations from the DOM of the current web page
   // and stores them in `four_digit_combinations_in_dom_`. This is used to check
   // for the virtual card last four when checking for standalone CVC field.

@@ -3591,4 +3591,9 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   }
 }
 
+base::WeakPtr<BrowserAutofillManager>
+BrowserAutofillManager::GetBrowserAutofillManagerWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace autofill

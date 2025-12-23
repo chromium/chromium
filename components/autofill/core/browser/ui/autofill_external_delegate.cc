@@ -29,16 +29,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -608,13 +612,13 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillAutofillAi:
       if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
+        const auto& payload =
+            suggestion.GetPayload<Suggestion::AutofillAiPayload>();
         if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(
-                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-                        .guid)) {
+                edm->GetEntityInstance(payload.guid)) {
           manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
                                       query_form_, query_field_.global_id(),
-                                      &*entity,
+                                      entity.as_ptr(),
                                       AutofillTriggerSource::kAutofillAi);
         }
       }
@@ -798,14 +802,54 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kFillAutofillAi:
       if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
+        const Suggestion::AutofillAiPayload& payload =
+            suggestion.GetPayload<Suggestion::AutofillAiPayload>();
         if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(
-                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-                        .guid)) {
-          manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                      query_form_, query_field_.global_id(),
-                                      &*entity,
-                                      AutofillTriggerSource::kAutofillAi);
+                edm->GetEntityInstance(payload.guid)) {
+          const FormStructure* form_structure =
+              manager_->FindCachedFormById(query_form_.global_id());
+          if (!form_structure) {
+            break;
+          }
+          const AutofillField* autofill_field =
+              form_structure->GetFieldById(query_field_.global_id());
+          if (autofill_field &&
+              ShouldReauthBeforeFilling(
+                  *entity,
+                  RationalizeAndDetermineAttributeTypes(
+                      form_structure->fields(), autofill_field->section(),
+                      entity->type()),
+                  manager_->client().GetAppLocale())) {
+            MaybeAuthenticateBeforeFilling(
+                l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH),
+                base::BindOnce(
+                    [](base::WeakPtr<BrowserAutofillManager> manager,
+                       mojom::ActionPersistence action_persistence,
+                       const FormData& form, const FieldGlobalId& field_id,
+                       const EntityInstance::EntityId entity_id,
+                       AutofillTriggerSource trigger_source) {
+                      if (manager) {
+                        if (EntityDataManager* edm =
+                                manager->client().GetEntityDataManager()) {
+                          if (base::optional_ref<const EntityInstance> entity =
+                                  edm->GetEntityInstance(entity_id)) {
+                            manager->FillOrPreviewForm(
+                                action_persistence, form, field_id,
+                                entity.as_ptr(), trigger_source);
+                          }
+                        }
+                      }
+                    },
+                    manager_->GetBrowserAutofillManagerWeakPtr(),
+                    mojom::ActionPersistence::kFill, query_form_,
+                    query_field_.global_id(), payload.guid,
+                    AutofillTriggerSource::kAutofillAi));
+          } else {
+            manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                        query_form_, query_field_.global_id(),
+                                        entity.as_ptr(),
+                                        AutofillTriggerSource::kAutofillAi);
+          }
         }
       }
       break;
@@ -1381,6 +1425,37 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         suggestion.type == SuggestionType::kScanCreditCard
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
+  }
+}
+
+void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
+    const std::u16string reauth_message,
+    base::OnceClosure callback) {
+  if (authenticator_) {
+    authenticator_->Cancel();
+    authenticator_.reset();
+  }
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      manager_->client().GetDeviceAuthenticator();
+
+  if (!authenticator ||
+      !authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  authenticator_ = std::move(authenticator);
+  authenticator_->AuthenticateWithMessage(
+      reauth_message,
+      base::BindOnce(&AutofillExternalDelegate::OnReauthCompleted, GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void AutofillExternalDelegate::OnReauthCompleted(base::OnceClosure callback,
+                                                 bool auth_succeeded) {
+  authenticator_.reset();
+  if (auth_succeeded) {
+    std::move(callback).Run();
   }
 }
 
