@@ -48,6 +48,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -628,7 +629,7 @@ class LocationBarViewAddContextButtonBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/454313733): This test is flaky on Linux.
+// TODO(crbug.com/459561205): This test is flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_AddContextButtonVisibilityAndClick \
   DISABLED_AddContextButtonVisibilityAndClick
@@ -679,4 +680,42 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   location_icon_view->OnMousePressed(click_event);
 
   EXPECT_TRUE(run_menu_called);
+}
+
+// TODO(crbug.com/467998506): This test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrefChangesAddContextButtonVisibility \
+  DISABLED_PrefChangesAddContextButtonVisibility
+#else
+#define MAYBE_PrefChangesAddContextButtonVisibility \
+  PrefChangesAddContextButtonVisibility
+#endif
+IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
+                       MAYBE_PrefChangesAddContextButtonVisibility) {
+  LocationBarView* location_bar_view = GetLocationBarView();
+  OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  OmniboxEditModel* edit_model =
+      location_bar_view->GetOmniboxController()->edit_model();
+
+  // pref is initially true to show the button.
+  prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
+
+  // Force "Add content" button to show by focusing and typing.
+  location_bar_view->FocusLocation(true);
+  omnibox_view->SetUserText(u"test");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return location_bar_view->GetOmniboxController()->IsPopupOpen();
+  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return edit_model->ShouldShowAddContextButton(); }));
+
+  // Set pref to false.
+  prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !edit_model->ShouldShowAddContextButton(); }));
+  // Set pref to true again.
+  prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return edit_model->ShouldShowAddContextButton(); }));
 }

@@ -230,6 +230,14 @@ LocationBarView::LocationBarView(Browser* browser,
       profile_(profile),
       delegate_(delegate),
       is_popup_mode_(is_popup_mode) {
+  if (browser_) {
+    pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_registrar_->Init(browser_->GetProfile()->GetPrefs());
+    pref_registrar_->Add(omnibox::kShowAiModeOmniboxButton,
+                         base::BindRepeating(&LocationBarView::OnChanged,
+                                             base::Unretained(this)));
+  }
+
   run_omnibox_context_menu_callback_ =
       base::BindRepeating([](OmniboxContextMenu* menu, gfx::Point point) {
         menu->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);

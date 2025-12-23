@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -67,6 +68,7 @@ class PageActionIconContainerView;
 class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
+class PrefChangeRegistrar;
 
 namespace page_actions {
 class PageActionContainerView;
@@ -595,6 +597,7 @@ class LocationBarView
 
   std::unique_ptr<OmniboxContextMenu> omnibox_context_menu_;
   std::unique_ptr<OmniboxPopupFileSelector> omnibox_popup_file_selector_;
+  std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
 
   base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)>
       run_omnibox_context_menu_callback_;

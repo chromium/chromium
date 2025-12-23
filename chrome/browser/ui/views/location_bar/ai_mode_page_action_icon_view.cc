@@ -19,7 +19,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -46,14 +45,6 @@ AiModePageActionIconView::AiModePageActionIconView(
       browser_(browser) {
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
 
-  // browser_ can be null in tests.
-  if (browser_) {
-    pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    pref_registrar_->Init(browser_->GetProfile()->GetPrefs());
-    pref_registrar_->Add(omnibox::kShowAiModeOmniboxButton,
-                         base::BindRepeating(&AiModePageActionIconView::Update,
-                                             base::Unretained(this)));
-  }
 
   SetProperty(views::kElementIdentifierKey, kAiModePageActionIconElementId);
 
