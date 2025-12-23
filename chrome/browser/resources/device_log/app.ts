@@ -29,6 +29,7 @@ const logTypes: string[] = [
   'Geolocation',
   'Hid',
   'Login',
+  'Memory',
   'Network',
   'Power',
   'Printer',

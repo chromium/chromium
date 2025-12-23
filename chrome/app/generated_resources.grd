@@ -17097,6 +17097,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEVICE_LOG_TYPE_LOGIN" desc="Checkbox to enable showing events of type LOGIN">
         Login
       </message>
+      <message name="IDS_DEVICE_LOG_TYPE_MEMORY" desc="Checkbox to enable showing events of type MEMORY">
+        Memory
+      </message>
       <message name="IDS_DEVICE_LOG_TYPE_NETWORK" desc="Checkbox to enable showing events of type NETWORK">
         Network
       </message>
