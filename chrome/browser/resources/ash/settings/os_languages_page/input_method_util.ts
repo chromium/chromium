@@ -13,7 +13,7 @@ import {assertExhaustive} from '../assert_extras.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KeyboardLayout, OptionType} from './input_method_prefs_consts.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, XkbKeyboardLayout, ZhuyinKeyboardLayout, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
 
@@ -49,7 +49,7 @@ export const OPTION_DEFAULT = {
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
-  [OptionType.XKB_LAYOUT]: 'US',
+  [OptionType.XKB_LAYOUT]: XkbKeyboardLayout.XKB_US,
   // Options for Japanese input methods.
   // LINT.IfChange(JpPrefDefaults)
   [OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH]: true,
@@ -72,7 +72,7 @@ export const OPTION_DEFAULT = {
 
   // Options for Korean input method.
   [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
-  [OptionType.KOREAN_KEYBOARD_LAYOUT]: KeyboardLayout.SET2,
+  [OptionType.KOREAN_KEYBOARD_LAYOUT]: KoreanKeyboardLayout.SET2,
   // Options for pinyin input method.
   [OptionType.PINYIN_CHINESE_PUNCTUATION]: true,
   [OptionType.PINYIN_DEFAULT_CHINESE]: true,
@@ -81,9 +81,10 @@ export const OPTION_DEFAULT = {
   [OptionType.PINYIN_ENABLE_UPPER_PAGING]: true,
   [OptionType.PINYIN_FULL_WIDTH_CHARACTER]: false,
   // Options for zhuyin input method.
-  [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
+  [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: ZhuyinKeyboardLayout.STANDARD,
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
-  [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
+  [OptionType.ZHUYIN_SELECT_KEYS]:
+      ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234567890,
   // Options for Vietnamese inputs.
   [OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS]: true,
   [OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
@@ -723,25 +724,40 @@ export function getOptionMenuItems(option: OptionType|UiOptionType):
       ];
     case OptionType.XKB_LAYOUT:
       return [
-        {value: 'US', name: 'inputMethodOptionsUsKeyboard'},
-        {value: 'Dvorak', name: 'inputMethodOptionsDvorakKeyboard'},
-        {value: 'Colemak', name: 'inputMethodOptionsColemakKeyboard'},
+        {value: XkbKeyboardLayout.XKB_US, name: 'inputMethodOptionsUsKeyboard'},
+        {
+          value: XkbKeyboardLayout.XKB_DVORAK,
+          name: 'inputMethodOptionsDvorakKeyboard',
+        },
+        {
+          value: XkbKeyboardLayout.XKB_COLEMAK,
+          name: 'inputMethodOptionsColemakKeyboard',
+        },
       ];
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
       return [
-        {value: 'Default', name: 'inputMethodOptionsZhuyinLayoutDefault'},
-        {value: 'IBM', name: 'inputMethodOptionsZhuyinLayoutIBM'},
-        {value: 'Eten', name: 'inputMethodOptionsZhuyinLayoutEten'},
+        {
+          value: ZhuyinKeyboardLayout.STANDARD,
+          name: 'inputMethodOptionsZhuyinLayoutDefault',
+        },
+        {
+          value: ZhuyinKeyboardLayout.IBM,
+          name: 'inputMethodOptionsZhuyinLayoutIBM',
+        },
+        {
+          value: ZhuyinKeyboardLayout.ETEN,
+          name: 'inputMethodOptionsZhuyinLayoutEten',
+        },
       ];
     case OptionType.ZHUYIN_SELECT_KEYS:
       // Zhuyin select keys correspond to physical keys so are not
       // translated.
       return [
-        {value: '1234567890'},
-        {value: 'asdfghjkl;'},
-        {value: 'asdfzxcv89'},
-        {value: 'asdfjkl789'},
-        {value: '1234qweras'},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234567890},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFGHJKL},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFZXCV89},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFJKL789},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234QWERAS},
       ];
     case OptionType.ZHUYIN_PAGE_SIZE:
       // Zhuyin page size is just a number, so is not translated.
@@ -895,14 +911,15 @@ export function getOptionMenuItems(option: OptionType|UiOptionType):
       ];
     case OptionType.KOREAN_KEYBOARD_LAYOUT:
       // Korean layout strings are already Korean / English, so not
-      // translated. The literal values of these strings are critical.
+      // translated. The literal values of these strings are critical, as
+      // they're persisted in values of CrOS-Prefs entries.
       return [
-        {value: '2 Set / 두벌식'},
-        {value: '3 Set (390) / 세벌식 (390)'},
-        {value: '3 Set (Final) / 세벌식 (최종)'},
-        {value: '3 Set (No Shift) / 세벌식 (순아래)'},
-        {value: '2 Set (Old Hangul) / 두벌식 (옛글)'},
-        {value: '3 Set (Old Hangul) / 세벌식 (옛글)'},
+        {value: KoreanKeyboardLayout.SET2},
+        {value: KoreanKeyboardLayout.SET390},
+        {value: KoreanKeyboardLayout.SET3_FINAL},
+        {value: KoreanKeyboardLayout.SET3_SUN},
+        {value: KoreanKeyboardLayout.SET2Y},
+        {value: KoreanKeyboardLayout.SET3_YET},
       ];
     default:
       return [];

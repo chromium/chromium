@@ -92,32 +92,61 @@ export const PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT =
     'physicalKeyboardAutoCorrectionEnabledByDefault';
 
 /**
- * All possible keyboard layouts. Should match Google3.
+ * Values persisted in OptionType.ZHUYIN_KEYBOARD_LAYOUT CrOS-Prefs entry.
  */
-export enum KeyboardLayout {
+export enum ZhuyinKeyboardLayout {
   STANDARD = 'Default',
-  GINYIEH = 'Gin Yieh',
   ETEN = 'Eten',
   IBM = 'IBM',
-  HSU = 'Hsu',
-  ETEN26 = 'Eten 26',
+}
+
+/**
+ * Values persisted in OptionType.KOREAN_KEYBOARD_LAYOUT CrOS-Prefs entry.
+ *
+ * Although these may look like UI display strings, and they also happen to be
+ * used for UI display, they're still critical values persisted in CrOS-Prefs.
+ */
+export enum KoreanKeyboardLayout {
   SET2 = '2 Set / 두벌식',
   SET2Y = '2 Set (Old Hangul) / 두벌식 (옛글)',
   SET390 = '3 Set (390) / 세벌식 (390)',
   SET3_FINAL = '3 Set (Final) / 세벌식 (최종)',
   SET3_SUN = '3 Set (No Shift) / 세벌식 (순아래)',
   SET3_YET = '3 Set (Old Hangul) / 세벌식 (옛글)',
+}
+
+/**
+ * Values persisted in OptionType.XKB_LAYOUT CrOS-Prefs entry.
+ */
+export enum XkbKeyboardLayout {
   XKB_US = 'US',
   XKB_DVORAK = 'Dvorak',
   XKB_COLEMAK = 'Colemak',
 }
 
+/**
+ * Values persisted in OptionType.ZHUYIN_SELECT_KEYS CrOS-Prefs entry.
+ */
+export enum ZhuyinSelectKeys {
+  ZHUYIN_SELECT_KEYS_1234567890 = '1234567890',
+  ZHUYIN_SELECT_KEYS_ASDFGHJKL = 'asdfghjkl;',
+  ZHUYIN_SELECT_KEYS_ASDFZXCV89 = 'asdfzxcv89',
+  ZHUYIN_SELECT_KEYS_ASDFJKL789 = 'asdfjkl789',
+  ZHUYIN_SELECT_KEYS_1234QWERAS = '1234qweras',
+}
+
 // LINT.IfChange(JpOptionValues)
+/**
+ * Values persisted in OptionType.JAPANESE_INPUT_MODE CrOS-Prefs entry.
+ */
 export enum JapaneseInputMode {
   KANA = 'Kana',
   ROMAJI = 'Romaji',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_PUNCTUATION_STYLE CrOS-Prefs entry.
+ */
 export enum JapanesePunctuationStyle {
   KUTEN_TOUTEN = 'KutenTouten',
   COMMA_PERIOD = 'CommaPeriod',
@@ -125,6 +154,9 @@ export enum JapanesePunctuationStyle {
   COMMA_TOUTEN = 'CommaTouten',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_SYMBOL_STYLE CrOS-Prefs entry.
+ */
 export enum JapaneseSymbolStyle {
   CORNER_BRACKET_MIDDLE_DOT = 'CornerBracketMiddleDot',
   SQUARE_BRACKET_SLASH = 'SquareBracketSlash',
@@ -132,18 +164,27 @@ export enum JapaneseSymbolStyle {
   SQUARE_BRACKET_MIDDLE_DOT = 'SquareBracketMiddleDot',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_SPACE_INPUT_STYLE CrOS-Prefs entry.
+ */
 export enum JapaneseSpaceInputStyle {
   INPUT_MODE = 'InputMode',
   FULLWIDTH = 'Fullwidth',
   HALFWIDTH = 'Halfwidth',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_SELECTION_SHORTCUT CrOS-Prefs entry.
+ */
 export enum JapaneseSelectionShortcut {
   NO_SHORTCUT = 'NoShortcut',
   DIGITS_123456789 = 'Digits123456789',
   ASDFGHJKL = 'ASDFGHJKL',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_KEYMAP_STYLE CrOS-Prefs entry.
+ */
 export enum JapaneseKeymapStyle {
   ATOK = 'Atok',
   MS_IME = 'MsIme',
@@ -151,6 +192,9 @@ export enum JapaneseKeymapStyle {
   CHROME_OS = 'ChromeOs',
 }
 
+/**
+ * Values persisted in OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE CrOS-Prefs entry
+ */
 export enum JapaneseShiftKeyModeStyle {
   OFF = 'Off',
   ALPHANUMERIC = 'Alphanumeric',
