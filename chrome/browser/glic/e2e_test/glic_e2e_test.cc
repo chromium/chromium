@@ -82,7 +82,6 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
 GlicE2ETest::GlicE2ETest() {
   // TODO(crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
   // due to the associated bug and should be removed here once fixed.
-  // TODO(crbug.com/453696965): Broken in multi-instance.
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                             features::kGlicKeyboardShortcutNewBadge,

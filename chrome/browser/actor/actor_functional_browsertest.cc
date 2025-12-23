@@ -98,9 +98,9 @@ base::expected<base::Value, std::string> ToExpected(
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  public:
   ActorFunctionalBrowserTest() {
-    // TODO(crbug.com/453696965): Broken in multi-instance.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{actor::kActorBindCreatedTabToTask},
+        /*enabled_features=*/{features::kGlicMultiInstance,
+                              actor::kActorBindCreatedTabToTask},
         /*disabled_features=*/{});
   }
   ~ActorFunctionalBrowserTest() override = default;
