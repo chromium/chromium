@@ -94,8 +94,11 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
           .SetIsUnderAdvancedProtection(false)
           .SetLocale("en")
           .Build();
-  EXPECT_EQ(signin::Tribool::kUnknown, other.is_child_account);
-  EXPECT_EQ(signin_metrics::AccessPoint::kUnknown, other.access_point);
+  EXPECT_EQ(other.IsChildAccount(), signin::Tribool::kUnknown);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(other.GetLastAuthenticationAccessPoint(),
+            signin_metrics::AccessPoint::kUnknown);
+#endif
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ(info.GetGaiaId(), GaiaId("test_id"));

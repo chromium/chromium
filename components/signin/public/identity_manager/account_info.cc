@@ -192,7 +192,7 @@ const AccountCapabilities& AccountInfo::GetAccountCapabilities() const {
 }
 
 signin::Tribool AccountInfo::IsChildAccount() const {
-  return is_child_account;
+  return is_child_account_;
 }
 
 std::optional<std::string_view> AccountInfo::GetLocale() const {
@@ -230,7 +230,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&locale, other.locale, nullptr);
   modified |=
       UpdateField(&picture_url_, other.picture_url_, kNoPictureURLFound);
-  modified |= UpdateField(&is_child_account, other.is_child_account);
+  modified |= UpdateField(&is_child_account_, other.is_child_account_);
   modified |= UpdateField(&access_point, other.access_point,
                           signin_metrics::AccessPoint::kUnknown);
   modified |= UpdateField(&is_under_advanced_protection,
@@ -281,8 +281,13 @@ AccountInfo::Builder::Builder(const GaiaId& gaia_id, std::string_view email) {
 }
 
 AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
-  CHECK(!core_account_info.gaia.empty());
-  CHECK(!core_account_info.email.empty());
+  // Ideally, this code should test that both gaia_id and email aren't empty
+  // but some flows (like `AccountFetcherService`) create `AccountInfo` objects
+  // with `account_id` only.
+  // Allow modifications of incomplete AccountInfo objects for now.
+  // TODO(crbug.com/40283608): verify that `gaia_id` and `email` aren't empty
+  // when the account fetcher case is fixed.
+  CHECK(!core_account_info.IsEmpty());
   account_info_.account_id = core_account_info.account_id;
   account_info_.gaia = core_account_info.gaia;
   account_info_.email = core_account_info.email;
@@ -292,8 +297,13 @@ AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
 
 AccountInfo::Builder::Builder(const AccountInfo& account_info)
     : account_info_(account_info) {
-  CHECK(!account_info.gaia.empty());
-  CHECK(!account_info.email.empty());
+  // Ideally, this code should test that both gaia_id and email aren't empty
+  // but some flows (like `AccountFetcherService`) create `AccountInfo` objects
+  // with `account_id` only.
+  // Allow modifications of incomplete AccountInfo objects for now.
+  // TODO(crbug.com/40283608): verify that `gaia_id` and `email` aren't empty
+  // when the account fetcher case is fixed.
+  CHECK(!account_info.IsEmpty());
 }
 
 AccountInfo::Builder::~Builder() = default;
@@ -377,8 +387,8 @@ AccountInfo::Builder& AccountInfo::Builder::SetLastAuthenticationAccessPoint(
 }
 
 AccountInfo::Builder& AccountInfo::Builder::SetIsChildAccount(
-    signin::Tribool is_child_account_val) {
-  account_info_.is_child_account = is_child_account_val;
+    signin::Tribool is_child_account) {
+  account_info_.is_child_account_ = is_child_account;
   return *this;
 }
 

@@ -191,7 +191,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       identity_manager->GetPrimaryAccountInfo(consent_level);
   signin::Tribool is_child_account =
       // Defaults to kUnknown if the account is not found.
-      identity_manager->FindExtendedAccountInfo(account).is_child_account;
+      identity_manager->FindExtendedAccountInfo(account).IsChildAccount();
 
   int incognito_mode_availability =
       prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability);

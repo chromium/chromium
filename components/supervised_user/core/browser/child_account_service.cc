@@ -201,7 +201,7 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  SetSupervisionStatusAndNotifyObservers(info.is_child_account ==
+  SetSupervisionStatusAndNotifyObservers(info.IsChildAccount() ==
                                          signin::Tribool::kTrue);
   OnAuthStateUpdated();
 }

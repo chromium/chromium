@@ -517,7 +517,7 @@ void AccountTrackerServiceTest::
   SimulateTokenAvailable(kAccountKeyChild);
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(account_info.is_child_account, signin::Tribool::kUnknown);
+  EXPECT_EQ(account_info.IsChildAccount(), signin::Tribool::kUnknown);
 
   // AccountUpdated notification requires account's gaia to be known.
   // Set account's user info first to receive an UPDATED event when capabilities
@@ -530,7 +530,7 @@ void AccountTrackerServiceTest::
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
 
-  EXPECT_EQ(account_info.is_child_account, expected_is_child_account);
+  EXPECT_EQ(account_info.IsChildAccount(), expected_is_child_account);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -995,7 +995,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   ASSERT_EQ(1u, infos.size());
   CheckAccountDetails(kAccountKeyBeta, infos[0]);
   CheckAccountCapabilities(kAccountKeyBeta, infos[0]);
-  EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
+  EXPECT_EQ(infos[0].IsChildAccount(), signin::Tribool::kTrue);
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   EXPECT_TRUE(infos[0].is_under_advanced_protection);
 #else
@@ -1421,7 +1421,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
   SimulateTokenRevoked(kAccountKeyChild);
 }
 
@@ -1437,10 +1437,10 @@ TEST_F(AccountTrackerServiceTest, ChildAccountWithSecondaryEdu) {
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
   info =
       account_tracker()->GetAccountInfo(AccountKeyToAccountId(kAccountKeyEdu));
-  EXPECT_NE(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_NE(info.IsChildAccount(), signin::Tribool::kTrue);
   SimulateTokenRevoked(kAccountKeyChild);
   SimulateTokenRevoked(kAccountKeyEdu);
 }
@@ -1459,7 +1459,7 @@ TEST_F(AccountTrackerServiceTest, UnsupervisedAccountUpdatedAndRevoked) {
   }));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kFalse, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kFalse);
   SimulateTokenRevoked(kAccountKeyChild);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1482,7 +1482,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   }));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
   SimulateTokenRevoked(kAccountKeyChild);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1523,7 +1523,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
 
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
   ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
                      net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
@@ -1540,7 +1540,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
 
   info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(signin::Tribool::kFalse, info.is_child_account);
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kFalse);
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
                     AccountKeyToGaiaId(kAccountKeyChild),

@@ -841,9 +841,10 @@ bool AccountTrackerService::UpdateAccountInfoChildStatus(
     bool is_child_account) {
   signin::Tribool new_status =
       is_child_account ? signin::Tribool::kTrue : signin::Tribool::kFalse;
-  if (account_info.is_child_account == new_status) {
+  if (account_info.IsChildAccount() == new_status) {
     return false;
   }
-  account_info.is_child_account = new_status;
+  account_info =
+      AccountInfo::Builder(account_info).SetIsChildAccount(new_status).Build();
   return true;
 }

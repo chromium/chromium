@@ -89,11 +89,16 @@ struct AccountInfo : public CoreAccountInfo {
   // 1. `AccountInfo` itself is empty.
   // 2. The account is under migration and its Gaia ID isn't known yet (ChromeOS
   // only).
+  // 3. `AccountInfo` was created by calling
+  // `AccountTrackerService::StartTrackingAccount()` without providing a Gaia
+  // ID.
   //
   // TODO(crbug.com/458409080): eliminate case 1 by replacing empty
   // `AccountInfo`s with `std::optional<AccountInfo>`.
   // TODO(crbug.com/40268200): eliminate case 2 when migration to Gaia ID
   // completes and all accounts have populated Gaia ID.
+  // TODO(crbug.com/40283608): eliminate case 3 when the account tracker stops
+  // tracking new incomplete accounts.
   const GaiaId& GetGaiaId() const;
 
   // Returns email address of the account.
@@ -102,11 +107,16 @@ struct AccountInfo : public CoreAccountInfo {
   // restricted. Please verify displayability using
   // `CanHaveEmailAddressDisplayed()`.
   //
-  // The email is always known but `GetEmail()` may return an empty string if
-  // `AccountInfo` itself is empty.
+  // The email is always known but `GetEmail()` may return an empty string in
+  // the following scenarios:
+  // 1. `AccountInfo` itself is empty.
+  // 2. `AccountInfo` was created by calling
+  // `AccountTrackerService::StartTrackingAccount()` without providing an email.
   //
-  // TODO(crbug.com/458409080): eliminate the empty string case by replacing
-  // empty `AccountInfo`s with `std::optional<AccountInfo>`.
+  // TODO(crbug.com/458409080): eliminate case 1 by replacing empty
+  // `AccountInfo`s with `std::optional<AccountInfo>`.
+  // TODO(crbug.com/40283608): eliminate case 2 when the account tracker stops
+  // tracking new incomplete accounts.
   std::string_view GetEmail() const;
 
   // Returns whether the account is under advanced protection.
@@ -216,8 +226,6 @@ struct AccountInfo : public CoreAccountInfo {
 
   // Deprecated: Use GetAccountCapabilities() instead.
   AccountCapabilities capabilities;
-  // Deprecated: Use IsChildAccount() instead.
-  signin::Tribool is_child_account = signin::Tribool::kUnknown;
   // Deprecated: Use GetLocale() instead.
   std::string locale;
 
@@ -227,6 +235,7 @@ struct AccountInfo : public CoreAccountInfo {
   std::string hosted_domain_;
   std::string picture_url_;
   std::string last_downloaded_image_url_with_size_;
+  signin::Tribool is_child_account_ = signin::Tribool::kUnknown;
 };
 
 // Builder class for constructing AccountInfo objects.
