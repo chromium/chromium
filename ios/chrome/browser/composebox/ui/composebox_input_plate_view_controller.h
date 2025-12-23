@@ -31,6 +31,10 @@
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapLensButton:(UIButton*)button;
+/// Informs the delegate that a user tapped on the QR scanner button.
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+           didTapQRScannerButton:(UIButton*)button;
 /// Informs the delegate that a user did tap on the camera button.
 - (void)composeboxViewControllerDidTapCameraButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;

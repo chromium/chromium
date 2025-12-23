@@ -1313,7 +1313,7 @@ CreateInputDataFromAnnotatedPageContent(
     trailingAction = kSend;
   } else if (showShortcuts) {
     trailingAction |= kVoice;
-    trailingAction |= lensAvailable ? kLens : kNone;
+    trailingAction |= lensAvailable ? kLens : kQRScanner;
   }
 
   ComposeboxInputPlateControls visibleControls =

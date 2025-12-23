@@ -16,6 +16,8 @@ extern NSString* const kComposeboxPlusButtonAccessibilityIdentifier;
 extern NSString* const kComposeboxMicButtonAccessibilityIdentifier;
 // Accessibility identifier for the Lens button in the composebox.
 extern NSString* const kComposeboxLensButtonAccessibilityIdentifier;
+// Accessibility identifier for the QR code button in the composebox.
+extern NSString* const kComposeboxQRCodeButtonAccessibilityIdentifier;
 // Accessibility identifier for the send button in the composebox.
 extern NSString* const kComposeboxSendButtonAccessibilityIdentifier;
 
