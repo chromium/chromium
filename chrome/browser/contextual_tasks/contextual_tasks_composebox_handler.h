@@ -63,7 +63,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
-  void ClearFiles() override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void HandleFileUpload(bool is_image) override;
@@ -73,14 +72,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
-
-  // ContextualSearchboxHandler:
-  void OnFileUploadStatusChanged(
-      const base::UnguessableToken& file_token,
-      lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type)
-      override;
 
   void CreateAndSendQueryMessage(const std::string& query);
 
