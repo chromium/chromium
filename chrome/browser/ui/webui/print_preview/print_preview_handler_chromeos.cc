@@ -37,7 +37,6 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"

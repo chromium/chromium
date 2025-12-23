@@ -23,7 +23,6 @@
 #include "components/signin/core/browser/signin_internals_util.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 
 namespace signin {
 class AccountsInCookieJarInfo;

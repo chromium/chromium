@@ -69,7 +69,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"

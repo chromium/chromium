@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 
 class Profile;
 

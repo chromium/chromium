@@ -18,7 +18,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 

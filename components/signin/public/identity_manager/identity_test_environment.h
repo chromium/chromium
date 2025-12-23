@@ -19,7 +19,6 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_id.h"
 
 class FakeProfileOAuth2TokenService;

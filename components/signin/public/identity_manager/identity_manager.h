@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_mutator.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)

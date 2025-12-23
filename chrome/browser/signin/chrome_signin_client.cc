@@ -56,7 +56,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"

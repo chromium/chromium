@@ -31,7 +31,6 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/load_flags.h"

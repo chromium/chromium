@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
