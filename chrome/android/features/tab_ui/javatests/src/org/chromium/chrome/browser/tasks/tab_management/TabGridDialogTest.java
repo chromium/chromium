@@ -1753,6 +1753,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "TODO(crbug.com/468062507)")
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
