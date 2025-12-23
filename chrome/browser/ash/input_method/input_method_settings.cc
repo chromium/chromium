@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
+#include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_settings.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -29,49 +30,6 @@ namespace mojom = ::ash::ime::mojom;
 
 constexpr std::string_view kJapaneseEngineId = "nacl_mozc_jp";
 constexpr std::string_view kJapaneseUsEngineId = "nacl_mozc_us";
-
-// The values here should be kept in sync with
-// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
-// Although these strings look like UI strings, they are the actual internal
-// values stored inside prefs. Therefore, it is important to make sure these
-// strings match the settings page exactly.
-constexpr std::string_view kKoreanPrefsLayoutDubeolsik = "2 Set / 두벌식";
-constexpr std::string_view kKoreanPrefsLayoutDubeolsikOldHangeul =
-    "2 Set (Old Hangul) / 두벌식 (옛글)";
-constexpr std::string_view kKoreanPrefsLayoutSebeolsik390 =
-    "3 Set (390) / 세벌식 (390)";
-constexpr std::string_view kKoreanPrefsLayoutSebeolsikFinal =
-    "3 Set (Final) / 세벌식 (최종)";
-constexpr std::string_view kKoreanPrefsLayoutSebeolsikNoShift =
-    "3 Set (No Shift) / 세벌식 (순아래)";
-constexpr std::string_view kKoreanPrefsLayoutSebeolsikOldHangeul =
-    "3 Set (Old Hangul) / 세벌식 (옛글)";
-
-// The values here should be kept in sync with
-// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
-constexpr std::string_view kPinyinPrefsLayoutUsQwerty = "US";
-constexpr std::string_view kPinyinPrefsLayoutDvorak = "Dvorak";
-constexpr std::string_view kPinyinPrefsLayoutColemak = "Colemak";
-
-// The values here should be kept in sync with
-// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
-constexpr std::string_view kZhuyinPrefsLayoutStandard = "Default";
-constexpr std::string_view kZhuyinPrefsLayoutIbm = "IBM";
-constexpr std::string_view kZhuyinPrefsLayoutEten = "Eten";
-
-// The values here should be kept in sync with
-// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
-constexpr std::string_view kZhuyinPrefsSelectionKeys1234567890 = "1234567890";
-constexpr std::string_view kZhuyinPrefsSelectionKeysAsdfghjkl = "asdfghjkl;";
-constexpr std::string_view kZhuyinPrefsSelectionKeysAsdfzxcv89 = "asdfzxcv89";
-constexpr std::string_view kZhuyinPrefsSelectionKeysAsdfjkl789 = "asdfjkl789";
-constexpr std::string_view kZhuyinPrefsSelectionKeys1234Qweras = "1234qweras";
-
-// The values here should be kept in sync with
-// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
-constexpr std::string_view kZhuyinPrefsPageSize10 = "10";
-constexpr std::string_view kZhuyinPrefsPageSize9 = "9";
-constexpr std::string_view kZhuyinPrefsPageSize8 = "8";
 
 std::string ValueOrEmpty(const std::string* str) {
   return str ? *str : "";

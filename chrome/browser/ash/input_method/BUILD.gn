@@ -111,6 +111,7 @@ static_library("input_method") {
     "input_method_quick_settings_helpers.h",
     "input_method_settings.cc",
     "input_method_settings.h",
+    "input_method_settings_consts.h",
     "input_method_syncer.cc",
     "input_method_syncer.h",
     "input_methods_by_language.cc",
