@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.url_constants;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpGurl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,7 +20,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
-import org.chromium.url.GURL;
 
 /**
  * This factory creates and keeps a single ExtensionsUrlOverrideRegistryManager for incognito
@@ -26,11 +27,6 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class UrlConstantResolverFactory {
-    private static final String SERIALIZED_NATIVE_NTP_URL =
-            "82,1,true,0,13,0,-1,0,-1,16,6,0,-1,22,1,0,-1,0,-1,false,false,chrome-native://newtab/";
-    private static final String SERIALIZED_NTP_URL =
-            "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
-
     private static @Nullable PreNativeGurlHolder sPreNativeNtpGurl;
     private static @Nullable UrlConstantResolver sOriginalResolver;
     private static @Nullable UrlConstantResolver sIncognitoResolver;
@@ -136,12 +132,6 @@ public class UrlConstantResolverFactory {
     }
 
     private static PreNativeGurlHolder buildPreNativeNtpGurlHolder() {
-        return new PreNativeGurlHolder(
-                deserializeGurlString(SERIALIZED_NATIVE_NTP_URL),
-                deserializeGurlString(SERIALIZED_NTP_URL));
-    }
-
-    private static GURL deserializeGurlString(String serializedGurl) {
-        return GURL.deserializeLatestVersionOnly(serializedGurl.replace(',', '\0'));
+        return new PreNativeGurlHolder(getOriginalNativeNtpGurl(), getOriginalNonNativeNtpGurl());
     }
 }

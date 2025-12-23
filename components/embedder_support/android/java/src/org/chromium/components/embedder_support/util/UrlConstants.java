@@ -5,7 +5,6 @@
 package org.chromium.components.embedder_support.util;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.url.GURL;
 
 /**
  * Java side version of chrome/common/url_constants.cc
@@ -148,20 +147,4 @@ public class UrlConstants {
     public static final String PDF_URL = "chrome-native://pdf/";
     public static final String PDF_URL_PARAM = "link?url=";
     public static final String PDF_URL_QUERY_PARAM = "url";
-
-    private static class Holder {
-        private static final String SERIALIZED_NTP_URL =
-                "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
-        private static final GURL sNtpGurl =
-                GURL.deserializeLatestVersionOnly(SERIALIZED_NTP_URL.replace(',', '\0'));
-    }
-
-    /**
-     * Returns a cached GURL representation of {@link UrlConstants.NTP_NON_NATIVE_URL}. It is safe
-     * to call this method before native is loaded and doing so will not block on native loading
-     * completion since a hardcoded, serialized string is used.
-     */
-    public static GURL ntpGurl() {
-        return Holder.sNtpGurl;
-    }
 }

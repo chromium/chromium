@@ -16,6 +16,14 @@ import java.util.Map;
 /** A resolver class for resolving Chrome URL constants. */
 @NullMarked
 public class UrlConstantResolver {
+    private static final String SERIALIZED_NATIVE_NTP_URL =
+            "82,1,true,0,13,0,-1,0,-1,16,6,0,-1,22,1,0,-1,0,-1,false,false,chrome-native://newtab/";
+    private static final String SERIALIZED_NTP_URL =
+            "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
+
+    private static final GURL NATIVE_NTP_GURL = deserializeGurlString(SERIALIZED_NATIVE_NTP_URL);
+    private static final GURL NTP_GURL = deserializeGurlString(SERIALIZED_NTP_URL);
+
     public UrlConstantResolver() {}
 
     /** Represents a URL constant override. */
@@ -59,16 +67,6 @@ public class UrlConstantResolver {
         return getUrlOverrideIfPresent(getOriginalNativeHistoryUrl());
     }
 
-    private String getUrlOverrideIfPresent(String url) {
-        if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) return url;
-
-        UrlConstantOverride override = mUrlConstantOverrides.get(url);
-        if (override == null) return url;
-
-        String urlOverride = override.getUrlOverrideIfEnabled();
-        return urlOverride == null ? url : urlOverride;
-    }
-
     /**
      * Registers an override for this URL string.
      *
@@ -87,28 +85,6 @@ public class UrlConstantResolver {
      */
     /*package*/ void registerPreNativeGurl(String url, PreNativeGurlHolder holder) {
         mPreNativeGurls.put(url, holder);
-    }
-
-    /**
-     * Returns a {@link GURL} that is guaranteed to be available pre-native, or null if none was
-     * registered for the provided URL.
-     *
-     * @param url The URL string to override. This must be the original, non-overridden URL.
-     */
-    private @Nullable GURL getPreNativeGurl(String url) {
-        PreNativeGurlHolder preNativeGurlHolder = mPreNativeGurls.get(url);
-        if (preNativeGurlHolder == null) return null;
-
-        UrlConstantOverride override = mUrlConstantOverrides.get(url);
-        GURL gurl = preNativeGurlHolder.gurl;
-        if (override == null
-                || override.getUrlOverrideIfEnabled() == null
-                || !ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
-            return gurl;
-        }
-
-        GURL gurlOverride = preNativeGurlHolder.gurlOverride;
-        return gurlOverride == null ? gurl : gurlOverride;
     }
 
     /**
@@ -150,5 +126,59 @@ public class UrlConstantResolver {
     /** Returns the non-native URL for the history page, ignoring any overrides. */
     public static String getOriginalNonNativeHistoryUrl() {
         return UrlConstants.HISTORY_URL;
+    }
+
+    /**
+     * Returns the non-native {@link GURL} for the native NTP, ignoring any overrides.
+     *
+     * <p>This is guaranteed to be available pre-native.
+     */
+    public static GURL getOriginalNativeNtpGurl() {
+        return NATIVE_NTP_GURL;
+    }
+
+    /**
+     * Returns the non-native {@link GURL} for the non-native NTP, ignoring any overrides.
+     *
+     * <p>This is guaranteed to be available pre-native.
+     */
+    public static GURL getOriginalNonNativeNtpGurl() {
+        return NTP_GURL;
+    }
+
+    private String getUrlOverrideIfPresent(String url) {
+        if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) return url;
+
+        UrlConstantOverride override = mUrlConstantOverrides.get(url);
+        if (override == null) return url;
+
+        String urlOverride = override.getUrlOverrideIfEnabled();
+        return urlOverride == null ? url : urlOverride;
+    }
+
+    /**
+     * Returns a {@link GURL} that is guaranteed to be available pre-native, or null if none was
+     * registered for the provided URL.
+     *
+     * @param url The URL string to override. This must be the original, non-overridden URL.
+     */
+    private @Nullable GURL getPreNativeGurl(String url) {
+        PreNativeGurlHolder preNativeGurlHolder = mPreNativeGurls.get(url);
+        if (preNativeGurlHolder == null) return null;
+
+        UrlConstantOverride override = mUrlConstantOverrides.get(url);
+        GURL gurl = preNativeGurlHolder.gurl;
+        if (override == null
+                || override.getUrlOverrideIfEnabled() == null
+                || !ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
+            return gurl;
+        }
+
+        GURL gurlOverride = preNativeGurlHolder.gurlOverride;
+        return gurlOverride == null ? gurl : gurlOverride;
+    }
+
+    private static GURL deserializeGurlString(String serializedGurl) {
+        return GURL.deserializeLatestVersionOnly(serializedGurl.replace(',', '\0'));
     }
 }

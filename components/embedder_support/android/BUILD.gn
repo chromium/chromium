@@ -402,7 +402,6 @@ android_library("unit_device_javatests") {
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/ExtensionUrlUtilTest.java",
-    "javatests/src/org/chromium/components/embedder_support/util/UrlConstantsTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
   ]
   deps = [
