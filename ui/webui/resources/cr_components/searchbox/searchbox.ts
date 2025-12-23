@@ -8,6 +8,7 @@ import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import '//resources/cr_components/composebox/error_scrim.js';
+import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload} from '//resources/cr_components/composebox/common.js';
@@ -392,6 +393,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
       tabSuggestions_: {type: Array},
+      recentTabForChip_: {type: Object},
       isDraggingFile: {
         reflect: true,
         type: Boolean,
@@ -453,6 +455,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor recentTabForChip_: TabInfo|null = null;
   protected showVoiceSearchInExpandedRealbox: boolean =
       loadTimeData.getBoolean('expandedSearchboxShowVoiceSearch') ?? false;
 
@@ -562,6 +565,15 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (this.ntpRealboxNextEnabled) {
       if (changedPrivateProperties.has('inputFocused_')) {
         this.fire('searchbox-input-focus-changed', {value: this.inputFocused_});
+      }
+    }
+
+    if (changedPrivateProperties.has('tabSuggestions_')) {
+      this.recentTabForChip_ =
+          this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
+      if (!this.recentTabForChip_) {
+        this.recentTabForChip_ =
+            this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
       }
     }
   }
