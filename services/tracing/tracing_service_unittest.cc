@@ -5,6 +5,7 @@
 #include "services/tracing/tracing_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -280,8 +281,8 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   session->ReadTrace([&wait_for_data_loop, &tokenizer, &json](
                          perfetto::TracingSession::ReadTraceCallbackArgs args) {
     if (args.size) {
-      auto packets = tokenizer.Parse(UNSAFE_TODO(
-          base::span(reinterpret_cast<const uint8_t*>(args.data), args.size)));
+      auto packets = tokenizer.Parse(
+          base::as_bytes(base::span(std::string_view(args.data, args.size))));
       for (const auto& packet : packets) {
         for (const auto& slice : packet.slices()) {
           json += std::string(reinterpret_cast<const char*>(slice.start),
