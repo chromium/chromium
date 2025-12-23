@@ -2579,6 +2579,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.NewSequenceTransferredByOS"
+    enum="TransferredSequenceType" expires_after="2026-04-26">
+  <owner>amanvr@google.com</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Logged whenever an ACTION_UP event is received on Browser while in
+    kConsumeEventsUntilCancel state. This indicates that the OS transferred a
+    different touch sequence than the one Chrome requested.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Browser.NumEventsInDroppedSequence2"
     units="counts" expires_after="2026-04-26">
   <owner>kartarsingh@google.com</owner>
@@ -2590,7 +2602,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InputOnViz.Browser.SequenceDroppedReason2"
+<histogram name="Android.InputOnViz.Browser.SequenceDroppedReason3"
     enum="InputOnVizSequenceDroppedReason" expires_after="2026-04-26">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -2708,7 +2720,7 @@ chromium-metrics-reviews@google.com.
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
-    Viz side variant of `Android.InputOnViz.Browser.SequenceDroppedReason2`
+    Viz side variant of `Android.InputOnViz.Browser.SequenceDroppedReason3`
     histogram.
 
     The metric records whenever a touch sequence is dropped on Viz side.
