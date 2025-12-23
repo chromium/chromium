@@ -226,7 +226,9 @@
   E_CPONLY(kColorSysIlloNeutralMax) \
   /* ActorUi */ \
   E_CPONLY(kColorSysActorUiBorder) \
-  E_CPONLY(kColorSysActorUiGlow) \
+  E_CPONLY(kColorSysActorUiGradientStart) \
+  E_CPONLY(kColorSysActorUiGradientMiddle) \
+  E_CPONLY(kColorSysActorUiGradientEnd) \
   /* AI. */ \
   E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
   E_CPONLY(kColorSysAiIllustrationShapeSurface2) \
