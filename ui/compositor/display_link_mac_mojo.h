@@ -35,25 +35,27 @@ struct VSyncParamsMac;
 // browser thread, forward the VSync signals, and receive control requests
 // to/from the GPU process via IPC.
 //
-// To prevent it from increasing the Browser main thread CPU time,
-// DisplayLinkMacMojo creates a separate "VSyncThread" in the browser process
-// and adds all Display Link and IPC tasks to this thread. The CPU time increase
-// can be significant for animations @ 120Hz on many windows.
+// To avoid increasing Browser main thread CPU usage, which can be significant
+// for 120Hz animations across multiple windows, DisplayLinkMacMojo offloads all
+// IPC and Display Link tasks to a dedicated "VSyncThread" within the browser
+// process. Because CADisplayLink requires either the application's main thread
+// or a thread using MessagePumpType::NS_RUNLOOP, it is incompatible with the
+// Chrome IO thread.
 //
-// DisplayLinkMacMojo is created on the CrBrowserMain thread and is owned by
-// VizProcessTransportFactory. Except for Ctor and Dtor, all IPC and VSync tasks
-// are running on the VSync thread.
+// The responsibilities of DisplayLinkMacMojo include:
+// 1. Creating a "VSyncThread" within the browser process.
+// 2. Receiving MacOS CADisplayLink callbacks and using IPC to forward VSync
+// parameters to GPU and Viz.
+// 3. Handling VSync start/stop requests from GPU and Viz.
+// 4. Monitoring display changes.
 //
-// DisplayLinkMacMojo is responsible for:
-// (1) Receiving MacOS CADisplayLink callbacks and forward the VSync
-// parameters to Viz and GPU via IPC. (2) Responding to the start/stop VSync
-// requests from Viz and GPU via IPC. (3) Observing the display change.
-//
-// After initialization, this VSync thread does not interact with the Browser
-// main thread except for observing display/monitor changes. MacOS
-// NSNotificationCenter always runs the callbacks on the App's main thread for
-// display changes. So duplicating the display::Screen code in
-// DisplayLinkMacMojo for observation will not be more efficient.
+// DisplayLinkMacMojo is owned by VizProcessTransportFactory, and
+// is initialized on CrBrowserMain. All VSync and IPC operations occur on
+// VSyncThread, with the exception of Ctor, Dtor, observing display/monitor
+// changes, and GpuProcessLost. MacOS NSNotificationCenter always runs the
+// callbacks on the App's main thread for display changes. So duplicating the
+// display::Screen code in DisplayLinkMacMojo for observation will not be more
+// efficient.
 
 class COMPOSITOR_EXPORT DisplayLinkMacMojo
     : public viz::mojom::ExternalBeginFrameControllerClient,
