@@ -1827,6 +1827,7 @@ test("content_browsertests") {
     "../browser/webrtc/webrtc_video_capture_shared_device_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.h",
+    "../browser/webui/initial_webui_browsertest.cc",
     "../browser/webui/web_ui_browsertest.cc",
     "../browser/webui/web_ui_managed_interface_browsertest.cc",
     "../browser/webui/web_ui_mojo_browsertest.cc",
