@@ -65,7 +65,6 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -100,7 +99,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
-#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -555,14 +553,6 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kNtpToolChipsVisible,
       base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
                           base::Unretained(this)));
-
-  searchbox_shown_subscription_ =
-      ui::ElementTracker::GetElementTracker()
-          ->AddElementShownInAnyContextCallback(
-              NewTabPageUI::kRealboxContextualEntrypointElementId,
-              base::BindRepeating(
-                  &NewTabPageHandler::TryShowRealboxContextualMenuIPH,
-                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -1470,26 +1460,6 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
   }
 
   return state != MicrosoftAuthService::AuthState::kNone;
-}
-
-void NewTabPageHandler::TryShowRealboxContextualMenuIPH(
-    ui::TrackedElement* element) {
-  if (!element) {
-    return;
-  }
-
-  // If a sign-in dialog is being currently displayed, the promo should not be
-  // shown to avoid conflict. The sign-in dialog would be shown as soon as the
-  // browser is opened, before the promo.
-  bool is_signin_modal_dialog_open =
-      feature_promo_helper_->IsSigninModalDialogOpen(web_contents_.get());
-  if (is_signin_modal_dialog_open) {
-    return;
-  }
-
-  feature_promo_helper_->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
-      web_contents_.get());
 }
 
 void NewTabPageHandler::ConnectToParentDocument(
