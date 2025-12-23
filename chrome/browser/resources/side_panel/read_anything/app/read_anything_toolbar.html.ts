@@ -216,14 +216,9 @@ ${renderTextStyleOptions.call(this)}
     iron-icon="cr:more-vert"
     @click="${this.onMoreOptionsClick_}">
 </cr-icon-button>
-<!-- TODO: crbug.com/465125764: Implement the new toolbar floating menu -->
-<cr-lazy-render-lit id="moreOptionsMenu" .template='${() => html`
-<cr-action-menu id="more-options-menu-dialog"
-    @keydown="${this.onToolbarKeyDown_}"
-    role-description="$i18n{menu}">
-</cr-action-menu>
-`}'>
-</cr-lazy-render-lit>
+<settings-menu
+  id="settingsMenu">
+</settings-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }

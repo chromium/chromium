@@ -48,6 +48,21 @@ export enum ToolbarEvent {
   LINE_FOCUS = 'line-focus-change',
 }
 
+// The available menu items in Reading mode
+export enum SettingsOption {
+  COLOR = 'color',
+  FONT = 'font',
+  FONT_SIZE = 'font-size',
+  IMAGES = 'images',
+  LETTER_SPACING = 'letter-spacing',
+  LINE_FOCUS = 'line-focus',
+  LINE_SPACING = 'line-spacing',
+  LINKS = 'links',
+  VIEW = 'view',
+  VOICE_HIGHLIGHT = 'voice-highlight',
+  VOICE_SELECTION = 'voice-selection',
+}
+
 // The user settings stored in preferences and restored on re-opening Reading
 // mode. Used to set the initial values for the toolbar buttons and menus.
 export interface SettingsPrefs {

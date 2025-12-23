@@ -13,6 +13,7 @@ import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
 import '../menus/highlight_menu.js';
 import '../menus/rate_menu.js';
+import '../menus/settings_menu.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -38,6 +39,7 @@ import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
+import type {SettingsMenuElement} from '../menus/settings_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
 import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from '../shared/common.js';
@@ -62,6 +64,7 @@ export interface ReadAnythingToolbarElement {
     lineFocusMenu: LineFocusMenuElement,
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
+    settingsMenu: SettingsMenuElement,
   };
 }
 
@@ -521,8 +524,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected onMoreOptionsClick_(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.isImmersiveEnabled_) {
+      this.$.settingsMenu.open(target);
+      return;
+    }
+
     const menu = this.$.moreOptionsMenu.get();
-    openMenu(menu, event.target as HTMLElement);
+    openMenu(menu, target);
   }
 
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {

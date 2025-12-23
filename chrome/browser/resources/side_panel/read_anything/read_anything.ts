@@ -28,6 +28,7 @@ export type {LineFocusMenuElement} from './menus/line_focus_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export type {MenuStateItem} from './menus/menu_util.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
+export type {SettingsMenuElement} from './menus/settings_menu.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';
