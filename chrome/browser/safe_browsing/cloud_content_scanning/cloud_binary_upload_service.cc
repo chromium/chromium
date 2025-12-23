@@ -304,7 +304,8 @@ void CloudBinaryUploadService::MaybeCancelRequests(
   // `request_queue_`.
 }
 
-base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
+base::WeakPtr<enterprise_connectors::BinaryUploadService>
+CloudBinaryUploadService::AsWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }
 

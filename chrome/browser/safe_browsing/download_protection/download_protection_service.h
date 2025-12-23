@@ -390,7 +390,7 @@ class DownloadProtectionService {
 #if !BUILDFLAG(IS_ANDROID)
   // Get the BinaryUploadService for the given |profile|. Virtual so it can be
   // overridden in tests.
-  virtual BinaryUploadService* GetBinaryUploadService(
+  virtual enterprise_connectors::BinaryUploadService* GetBinaryUploadService(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& settings);
 #endif

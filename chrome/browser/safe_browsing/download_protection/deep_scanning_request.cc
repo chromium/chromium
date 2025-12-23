@@ -21,7 +21,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
@@ -36,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -583,7 +583,7 @@ void DeepScanningRequest::OnDownloadRequestReady(
   upload_start_times_[current_path] = base::TimeTicks::Now();
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
-  BinaryUploadService* binary_upload_service =
+  enterprise_connectors::BinaryUploadService* binary_upload_service =
       download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (binary_upload_service) {
     binary_upload_service->MaybeUploadForDeepScanning(
@@ -980,7 +980,7 @@ void DeepScanningRequest::AcknowledgeRequest(
     enterprise_connectors::EventResult event_result) {
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
-  BinaryUploadService* binary_upload_service =
+  enterprise_connectors::BinaryUploadService* binary_upload_service =
       download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (!binary_upload_service) {
     return;

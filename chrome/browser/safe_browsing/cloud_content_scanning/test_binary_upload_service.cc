@@ -10,6 +10,7 @@
 namespace safe_browsing {
 
 using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::BinaryUploadService;
 
 TestBinaryUploadService::TestBinaryUploadService() = default;
 TestBinaryUploadService::~TestBinaryUploadService() = default;

@@ -15,8 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/file_util_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -153,7 +153,8 @@ GetFileDataBlocking(const base::FilePath& path,
       "Enterprise.FileAnalysisRequest.FileSize", file_data.size / 1024, 1,
       kMaxUploadSizeMetricsKB, 50);
 
-  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
+  size_t max_file_size_bytes =
+      enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes;
   if (base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableNewUploadSizeLimit)) {
     max_file_size_bytes =

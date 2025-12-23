@@ -18,8 +18,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
@@ -35,6 +35,7 @@ namespace safe_browsing {
 namespace {
 
 using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::BinaryUploadService;
 
 // Helper to cast base::DoNothing.
 BinaryUploadRequest::ContentAnalysisCallback DoNothingConnector() {

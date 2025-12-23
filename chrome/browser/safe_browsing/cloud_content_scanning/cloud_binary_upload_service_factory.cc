@@ -14,9 +14,9 @@
 namespace safe_browsing {
 
 // static
-BinaryUploadService* CloudBinaryUploadServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<BinaryUploadService*>(
+enterprise_connectors::BinaryUploadService*
+CloudBinaryUploadServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<enterprise_connectors::BinaryUploadService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */
                                                  true));
 }

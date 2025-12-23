@@ -67,8 +67,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -859,7 +859,8 @@ void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
   deep_scanning_requests_.erase(it);
 }
 
-BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
+enterprise_connectors::BinaryUploadService*
+DownloadProtectionService::GetBinaryUploadService(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& settings) {
   return enterprise_connectors::GetBinaryUploadServiceForConnector(profile,

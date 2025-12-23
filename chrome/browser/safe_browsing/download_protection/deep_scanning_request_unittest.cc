@@ -137,7 +137,8 @@ constexpr char kScanId[] = "scan_id";
 // Enum to select item type used for deep scanning metadata.
 enum class MetadataSourceType { kDownloadItem, kFileSystemAccessWriteItem };
 
-class FakeBinaryUploadService : public BinaryUploadService {
+class FakeBinaryUploadService
+    : public enterprise_connectors::BinaryUploadService {
  public:
   void MaybeUploadForDeepScanning(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
@@ -165,7 +166,8 @@ class FakeBinaryUploadService : public BinaryUploadService {
       std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
       override {}
 
-  base::WeakPtr<BinaryUploadService> AsWeakPtr() override {
+  base::WeakPtr<enterprise_connectors::BinaryUploadService> AsWeakPtr()
+      override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -225,7 +227,7 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
   void RequestFinished(DeepScanningRequest* request) override {}
 
-  BinaryUploadService* GetBinaryUploadService(
+  enterprise_connectors::BinaryUploadService* GetBinaryUploadService(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings&) override {
     return &binary_upload_service_;

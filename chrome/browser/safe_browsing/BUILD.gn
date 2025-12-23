@@ -259,6 +259,7 @@ static_library("safe_browsing") {
       "//components/content_extraction/content/browser",
       "//components/content_settings/core/browser",
       "//components/enterprise/connectors/core",
+      "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",
       "//components/password_manager/content/browser",
