@@ -49,6 +49,9 @@ bool IsPersonalShortcutsVisible(Profile* profile);
 // Returns the set of enabled NTP tile types.
 std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile);
 
+// Updates the staleness information for shortcuts.
+void UpdateShortcutsStaleness(Profile* profile);
+
 // Updates the staleness counters for modules iff:
 // (1) It's not the first staleness update.
 // (2) Time since last update is above the staleness update threshold.

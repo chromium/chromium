@@ -874,6 +874,9 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ntp_prefs::kNtpEnterpriseShortcutsVisible,
                                 false);
   registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
+  registry->RegisterIntegerPref(ntp_prefs::kNtpShortcutsStalenessCount, 0);
+  registry->RegisterTimePref(ntp_prefs::kNtpLastShortcutsStalenessUpdate,
+                             base::Time());
   registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
                                 false);
   registry->RegisterBooleanPref(ntp_prefs::kNtpPersonalShortcutsVisible, true);
@@ -892,6 +895,8 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
   prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  prefs->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 0);
+  prefs->SetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate, base::Time());
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled, false);
   prefs->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   prefs->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles, false);

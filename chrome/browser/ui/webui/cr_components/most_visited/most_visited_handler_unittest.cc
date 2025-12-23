@@ -166,4 +166,35 @@ TEST_P(ShortcutsAutoRemovalPrefTest, UndoMostVisitedAutoRemoval) {
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
+TEST_P(ShortcutsAutoRemovalPrefTest,
+       OnMostVisitedTilesRendered_UpdatesStaleness) {
+  // Ensure conditions for staleness update are met.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+
+  // Set initial staleness time to be older than the threshold.
+  base::Time start_time =
+      base::Time::Now() -
+      ntp_features::kShortcutsMinStalenessUpdateTimeInterval.Get() -
+      base::Days(1);
+  profile_.GetPrefs()->SetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate,
+                               start_time);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 0);
+
+  // Call with non-empty tiles - staleness should be updated.
+  std::vector<most_visited::mojom::MostVisitedTilePtr> tiles;
+  tiles.push_back(most_visited::mojom::MostVisitedTile::New());
+  tiles[0]->url = GURL("https://foo.com");
+
+  handler_->OnMostVisitedTilesRendered(std::move(tiles), 0.0);
+
+  EXPECT_GT(
+      profile_.GetPrefs()->GetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate),
+      start_time);
+  EXPECT_EQ(
+      profile_.GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount),
+      1);
+}
+
 }  // namespace

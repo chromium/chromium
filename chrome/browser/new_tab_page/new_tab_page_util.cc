@@ -323,6 +323,46 @@ std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile) {
   return enabled_types;
 }
 
+// Updates the staleness info for shortcuts
+void UpdateShortcutsStaleness(Profile* profile) {
+  // Do not update staleness if shortcuts auto removal is disabled.
+  if (profile->GetPrefs()->GetBoolean(
+          ntp_prefs::kNtpShortcutsAutoRemovalDisabled)) {
+    return;
+  }
+
+  // Do not update staleness if shortcuts are not visible.
+  if (!profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
+    return;
+  }
+
+  // Update the last update time if it is null.
+  base::Time prev_update_time =
+      profile->GetPrefs()->GetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate);
+  if (prev_update_time.is_null()) {
+    profile->GetPrefs()->SetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate,
+                                 base::Time::Now());
+    return;
+  }
+
+  // Update the staleness info if time delta is above the threshold.
+  const base::Time shortcuts_load_time = base::Time::Now();
+  const base::TimeDelta time_since_last_update =
+      shortcuts_load_time - prev_update_time;
+  const base::TimeDelta staleness_threshold =
+      ntp_features::kShortcutsMinStalenessUpdateTimeInterval.Get();
+  if (time_since_last_update <= staleness_threshold) {
+    return;
+  }
+
+  const int staleness_count =
+      profile->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount);
+  profile->GetPrefs()->SetTime(ntp_prefs::kNtpLastShortcutsStalenessUpdate,
+                               shortcuts_load_time);
+  profile->GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount,
+                                  staleness_count + 1);
+}
+
 void UpdateModulesStaleness(Profile* profile,
                             const std::vector<std::string>& module_ids) {
   // (1) If it's the first update, do not update the staleness counters.
