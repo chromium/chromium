@@ -5584,6 +5584,8 @@ void NavigationRequest::OnStartChecksComplete(
     // be always stored before reaching here.
     DCHECK(last_response_head);
     cached_response_head = last_response_head->Clone();
+  } else if (IsInitialWebUISyncNavigation()) {
+    loader_type = NavigationURLLoader::LoaderType::kNoopForInitialWebUI;
   }
 
   // Sandbox flags inherited from the frame. In particular, this does not
@@ -5689,14 +5691,17 @@ void NavigationRequest::OnStartChecksComplete(
   // Try to create the speculative RFH after sending the network request
   // if DeferSpeculativeRFHCreation is enabled.
   // Only create the speculative RFH if it is a normal loading rather than
-  // a BFCache restore or prerender activation. Otherwise `OnResponseStarted`
-  // will be called instantly and the creation of the speculative RFH is
-  // redundant.
+  // a BFCache restore or prerender activation or a sync initial WebUI
+  // navigation. Otherwise, `OnResponseStarted` will have already been called
+  // instantly and the navigation would have reached READY_TO_COMMIT already
+  // with an appropriate RenderFrameHost already chosen, and the
+  // creation of the speculative RFH is redundant.
   // TODO(crbug.com/394732486): All the speculative RFH creation will be skipped
   // if kDeferSpeculativeRFHWaitUntilFinalResponse is set. The behavior can
   // be more adaptive by limiting to sites that commonly use COOP.
   if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
       !kDeferSpeculativeRFHWaitUntilFinalResponse.Get() &&
+      state_ < NavigationState::READY_TO_COMMIT &&
       GetAssociatedRFHType() == AssociatedRenderFrameHostType::NONE) {
     if (features::kCreateSpeculativeRFHFilterRestore.Get() &&
         loader_type != NavigationURLLoader::LoaderType::kRegular) {

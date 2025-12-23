@@ -14,6 +14,7 @@
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/browser/webui/initial_webui_navigation_url_loader.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "services/network/public/cpp/features.h"
 
@@ -70,6 +71,12 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     return CachedNavigationURLLoader::Create(loader_type,
                                              std::move(request_info), delegate,
                                              std::move(cached_response_head));
+  }
+
+  if (loader_type == LoaderType::kNoopForInitialWebUI) {
+    CHECK(!cached_response_head);
+    return InitialWebUINavigationURLLoader::Create(
+        browser_context, std::move(request_info), delegate);
   }
 
   return std::make_unique<NavigationURLLoaderImpl>(

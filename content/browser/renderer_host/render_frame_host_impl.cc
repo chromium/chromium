@@ -1142,7 +1142,11 @@ bool IsDocumentLoadedWithoutUrlLoaderClient(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return is_mhtml_subframe || is_same_document ||
-         url.SchemeIs(url::kDataScheme) || !IsURLHandledByNetworkStack(url);
+         url.SchemeIs(url::kDataScheme) || !IsURLHandledByNetworkStack(url) ||
+         // Initial WebUI navigations loads the body internally within the
+         // renderer process, so there is no need to create and send
+         // URLLoaderClient from the browser process.
+         navigation_request->IsInitialWebUISyncNavigation();
 }
 
 std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -18,34 +19,12 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 
 namespace content {
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
-
-// Injects an HTML body for GetDataResourceBytes() calls, so that they would
-// not actually reach into the ResourceBundle.
-class InitialWebUITestContentClient : public ContentClient {
- public:
-  InitialWebUITestContentClient() {
-    html_body_ = base::MakeRefCounted<base::RefCountedString>(
-        "<!doctype html><body>bar</body>");
-  }
-
-  InitialWebUITestContentClient(const InitialWebUITestContentClient&) = delete;
-  InitialWebUITestContentClient& operator=(
-      const InitialWebUITestContentClient&) = delete;
-
-  // ContentClient:
-  bool HasDataResource(int resource_id) const override { return true; }
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {
-    return html_body_.get();
-  }
-
- private:
-  scoped_refptr<base::RefCountedString> html_body_;
-};
 
 class InitialWebUIOverrideContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
@@ -90,11 +69,12 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
 class InitialWebUINavigationBrowserTest : public ContentBrowserTest {
  public:
   InitialWebUINavigationBrowserTest() {
-    SetContentClient(&client_);
     WebUIControllerFactory::RegisterFactory(&factory_);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kInitialWebUISyncNavStartToCommit,
+         features::kWebUIInProcessResourceLoadingV2},
+        {});
   }
-
-  ~InitialWebUINavigationBrowserTest() override { SetContentClient(nullptr); }
 
  protected:
   WebContentsImpl* contents() const {
@@ -103,7 +83,7 @@ class InitialWebUINavigationBrowserTest : public ContentBrowserTest {
 
  private:
   WebUITestWebUIControllerFactory factory_;
-  InitialWebUITestContentClient client_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, CommitInitialWebUI) {
@@ -125,13 +105,13 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, CommitInitialWebUI) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(new_web_contents->GetController());
 
-  // Setup a fake resource path for the body. Note that because we're overriding
-  // the ContentClient, we won't actually load a resource, but the mapping needs
-  // to exist so that the WebUIURLLoader can run correctly during the
-  // navigation.
+  // Setup a fake resource path for the body. Note that we're adding a direct
+  // string response instead of adding a ResourceBundle resource ID. This is
+  // different from what happens in production (which will use a resource ID),
+  // but this is significantly easier to test.
   WebUIDataSource* source =
       WebUIDataSource::CreateAndAdd(controller.GetBrowserContext(), "foo");
-  source->AddResourcePath("", 1);
+  source->SetResourcePathToResponse("", "<!doctype html><body>bar</body>");
 
   // Ensure that there are no navigations yet on the new WebContents.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(new_web_contents.get())
@@ -144,27 +124,45 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, CommitInitialWebUI) {
   navigation_observer.WatchExistingWebContents();
   controller.LoadURLWithParams(NavigationController::LoadURLParams(url));
 
-  // The navigation didn't reach commit synchronously, since it is still owned
-  // by the root FrameTreeNode instead of the RenderFrameHost.
-  // TODO(crbug.com/457618572): Make it reach commit synchronously.
-  EXPECT_TRUE(root->navigation_request());
-  EXPECT_EQ(url, root->navigation_request()->GetURL());
-  EXPECT_NE(NavigationRequest::NavigationState::READY_TO_COMMIT,
-            root->navigation_request()->state());
-  EXPECT_FALSE(
+  // The navigation reached CommitNavigation synchronously, since it is now
+  // owned by the primary main RenderFrameHost instead of the root
+  // FrameTreeNode.
+  EXPECT_FALSE(root->navigation_request());
+  EXPECT_TRUE(
       root->current_frame_host()->HasPendingCommitForCrossDocumentNavigation());
+  {
+    std::vector<base::SafeRef<NavigationHandle>>
+        committing_navigation_requests =
+            root->current_frame_host()
+                ->GetPendingCommitCrossDocumentNavigations();
+    EXPECT_EQ(1u, committing_navigation_requests.size());
+    EXPECT_EQ(url, committing_navigation_requests[0]->GetURL());
+  }
   navigation_observer.Wait();
 
   // Ensure the navigation successfully commits and loads the body HTML.
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(navigation_observer.last_navigation_url(), url);
-  EXPECT_EQ("bar", EvalJs(new_web_contents->GetPrimaryMainFrame(),
-                          "document.body.innerHTML"));
+
+  RenderFrameHostImplWrapper rfh(root->current_frame_host());
+  EXPECT_EQ("bar", EvalJs(rfh.get(), "document.body.innerHTML"));
 
   // Ensure that the process has the correct flag set.
-  EXPECT_TRUE(new_web_contents->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->IsForInitialWebUI());
+  EXPECT_TRUE(rfh->GetProcess()->IsForInitialWebUI());
+
+  // Check that CSP was set.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
+        rfh->policy_container_host()->policies().content_security_policies;
+    EXPECT_EQ(1u, root_csp.size());
+    EXPECT_EQ(
+        "child-src 'none';"
+        "object-src 'none';"
+        "require-trusted-types-for 'script';"
+        "script-src chrome://resources 'self';"
+        "trusted-types;frame-ancestors 'none';",
+        root_csp[0]->header->header_value);
+  }
 }
 #endif
 
