@@ -147,13 +147,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
-    units="bool" expires_after="2025-10-31">
+    units="bool" expires_after="2026-10-31">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether LoadFromDisk is attempting to read an empty pb file path.
     Logged whenever a component update or initial component load occurs for the
     RealTimeUrlChecksAllowlist component.
+
+    Warning: this histogram was expired from 2025-10-31 to 2025-12-23; data may
+    be missing.
   </summary>
 </histogram>
 
