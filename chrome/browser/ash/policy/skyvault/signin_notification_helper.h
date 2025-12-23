@@ -13,9 +13,10 @@ class Profile;
 
 namespace policy::skyvault_ui_utils {
 
+inline constexpr char kCameraSignInNotificationIdPrefix[] =
+    "skyvault-camera-signin-";
 inline constexpr char kDownloadSignInNotificationPrefix[] =
     "skyvault-download-signin-";
-
 inline constexpr char kMigrationSignInNotification[] = "skyvault-migration";
 inline constexpr char kScreenCaptureSignInNotificationIdPrefix[] =
     "skyvault-screencapture-signin-";

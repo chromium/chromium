@@ -12,10 +12,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/policy/skyvault/camera_notification_util.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -150,7 +152,46 @@ void ShowSignInNotification(
       break;
     }
     case local_user_files::UploadTrigger::kCamera: {
-      // TODO(crbug.com/454152412) Implement this.
+      message_center::RichNotificationData rich_notification_data;
+      rich_notification_data.vector_small_image = &chromeos::kCameraIcon;
+      if (thumbnail.has_value()) {
+        rich_notification_data.image = thumbnail.value();
+        rich_notification_data.image_path = file_path;
+      }
+      auto notification_id = base::StrCat(
+          {kCameraSignInNotificationIdPrefix, base::NumberToString(id)});
+      TitleAndMessageIds title_and_message =
+          policy::skyvault_ui_utils::GetCameraSignInStringsFromFilename(
+              file_path);
+      message_center::Notification notification(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          /*title=*/l10n_util::GetStringUTF16(title_and_message.title),
+          /*message=*/l10n_util::GetStringUTF16(title_and_message.message),
+          /*icon=*/ui::ImageModel(),
+          /*display_source=*/
+          l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_DISPLAY_SOURCE),
+          /*origin_url=*/GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+              ash::NotificationCatalogName::kCameraUpload),
+          rich_notification_data,
+          base::MakeRefCounted<SignInNotificationDelegate>(
+              profile, notification_id, std::move(signin_callback)));
+
+      notification.set_fullscreen_visibility(
+          message_center::FullscreenVisibility::OVER_USER);
+
+      message_center::ButtonInfo signin_button(
+          l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_BUTTON));
+      message_center::ButtonInfo cancel_button(l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_CANCEL_BUTTON));
+      notification.set_buttons({signin_button, cancel_button});
+
+      NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+          NotificationHandler::Type::TRANSIENT, notification,
+          /*metadata=*/nullptr);
+
       break;
     }
     case local_user_files::UploadTrigger::kScreenCapture: {
