@@ -21,9 +21,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package safe_browsing;
+
+option optimize_for = LITE_RUNTIME;
 
 // Protocol buffer describing the Chrome user population of the user reporting
 // data.
@@ -171,6 +171,14 @@ message LlamaForcedTriggerInfo {
   optional string trigger_url = 3;
 }
 
+// The model type that the client uses to perform intelligent scan.
+enum IntelligentScanModelType {
+  INTELLIGENT_SCAN_MODEL_TYPE_UNSPECIFIED = 0;
+  NOT_SUPPORTED = 1;
+  ON_DEVICE_MODEL = 2;
+  SERVER_SIDE_MODEL = 3;
+}
+
 message IntelligentScanInfo {
   optional string brand = 1;
   optional string intent = 2;
@@ -197,7 +205,11 @@ message IntelligentScanInfo {
 
   // Model package version of the last used model. This will be non-zero value
   // if it exists with a value around 1,000,000,000.
+  // This field is only populated for on-device model.
   optional int64 model_version = 4;
+
+  // The model type that the client uses to perform intelligent scan.
+  optional IntelligentScanModelType model_type = 5;
 }
 
 message ClientPhishingRequest {
@@ -648,7 +660,7 @@ message LoginReputationClientRequest {
 
     // Deprecated: simplified_url_display_enabled.
     reserved 6;
-  };
+  }
   optional UrlDisplayExperiment url_display_experiment = 14;
 
   optional ReferringAppInfo referring_app_info = 15;
@@ -967,7 +979,7 @@ message ClientDownloadRequest {
 
     // OS X Mach-O image headers.
     repeated MachOHeaders mach_o_headers = 2;
-  };
+  }
 
   // Fields 12-17 are reserved for server-side use and are never sent by the
   // client.

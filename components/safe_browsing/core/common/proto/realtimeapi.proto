@@ -121,6 +121,17 @@ message RTLookupRequest {
   // Local IP addresses of the device. This is only used for enterprise
   // requests.
   repeated string local_ips = 16;
+
+  // The capability of the client for Llama forced trigger. Server can use this
+  // to adjust the trigger logic and return different llama_forced_trigger_info
+  // accordingly.
+  message LlamaForcedTriggerCapability {
+    // The primary model capability of the client. If UNSPECIFIED, defaults to
+    // ON_DEVICE_MODEL for backward compatibility.
+    // Lower precision trigger is only appropriate for server-side model.
+    optional IntelligentScanModelType supported_model_type = 1;
+  }
+  optional LlamaForcedTriggerCapability llama_forced_trigger_capability = 18;
 }
 
 message RTLookupResponse {
