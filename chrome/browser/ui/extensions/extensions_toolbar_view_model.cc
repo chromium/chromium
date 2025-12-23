@@ -29,8 +29,28 @@ void ExtensionsToolbarViewModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionModelForId(
+    const ToolbarActionsModel::ActionId& action_id) {
+  auto it = actions_.find(action_id);
+  if (it == actions_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
 bool ExtensionsToolbarViewModel::AreActionsInitialized() {
   return actions_model_->actions_initialized();
+}
+
+bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
+    content::WebContents* web_contents) {
+  for (const auto& [action_id, model] : actions_) {
+    if (model->GetSiteInteraction(web_contents) ==
+        extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void ExtensionsToolbarViewModel::OnToolbarModelInitialized() {
@@ -57,10 +77,13 @@ void ExtensionsToolbarViewModel::OnToolbarActionAdded(
 
 void ExtensionsToolbarViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto iter =
-      std::ranges::find(actions_, action_id, &ToolbarActionViewModel::GetId);
+  auto iter = actions_.find(action_id);
   CHECK(iter != actions_.end());
-  std::unique_ptr<ToolbarActionViewModel> model = std::move(*iter);
+
+  // Transfer ownership to a local variable to ensure the model remains alive
+  // during the subsequent UI cleanup notifications.
+  std::unique_ptr<ToolbarActionViewModel> model = std::move(iter->second);
+
   actions_.erase(iter);
 
   for (Observer& obs : observers_) {
@@ -83,5 +106,5 @@ void ExtensionsToolbarViewModel::OnToolbarPinnedActionsChanged() {
 
 void ExtensionsToolbarViewModel::AppendActionModel(
     const ToolbarActionsModel::ActionId& action_id) {
-  actions_.push_back(delegate_->CreateActionViewModel(action_id));
+  actions_.emplace(action_id, delegate_->CreateActionViewModel(action_id));
 }

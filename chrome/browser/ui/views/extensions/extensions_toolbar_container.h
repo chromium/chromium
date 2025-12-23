@@ -166,9 +166,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extension_with_open_context_menu_id_;
   }
 
-  int GetNumberOfActionsForTesting() {
-    return toolbar_view_model_->GetActions().size();
-  }
+  int GetNumberOfActionsForTesting() { return model_->action_ids().size(); }
 
   ToolbarButton* GetCloseSidePanelButtonForTesting() {
     return close_side_panel_button_;

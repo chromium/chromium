@@ -159,19 +159,6 @@ std::unique_ptr<ExtensionActionViewModel> ExtensionActionViewModel::Create(
       std::move(platform_delegate)));
 }
 
-// static
-bool ExtensionActionViewModel::AnyActionHasCurrentSiteAccess(
-    const std::vector<std::unique_ptr<ToolbarActionViewModel>>& actions,
-    content::WebContents* web_contents) {
-  for (const auto& action : actions) {
-    if (action->GetSiteInteraction(web_contents) ==
-        extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
-      return true;
-    }
-  }
-  return false;
-}
-
 ExtensionActionViewModel::ExtensionActionViewModel(
     scoped_refptr<const extensions::Extension> extension,
     BrowserWindowInterface* browser,

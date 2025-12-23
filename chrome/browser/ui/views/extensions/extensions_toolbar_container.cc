@@ -248,8 +248,7 @@ void ExtensionsToolbarContainer::UpdateExtensionsButton(
                                    kBlockAllExtensions) {
     extensions_button_state =
         ExtensionsToolbarButton::State::kAllExtensionsBlocked;
-  } else if (ExtensionActionViewModel::AnyActionHasCurrentSiteAccess(
-                 toolbar_view_model_->GetActions(), web_contents)) {
+  } else if (toolbar_view_model_->AnyActionHasCurrentSiteAccess(web_contents)) {
     extensions_button_state =
         ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
   }
@@ -289,15 +288,14 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     auto site_permissions_helper =
         extensions::SitePermissionsHelper(browser_->profile());
 
-    for (const auto& action : toolbar_view_model_->GetActions()) {
-      std::string action_id = action->GetId();
+    for (const auto& action_id : model_->action_ids()) {
       bool has_active_request =
           permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
       bool can_show_access_requests_in_toolbar =
           site_permissions_helper.ShowAccessRequestsInToolbar(action_id);
 
       if (has_active_request && can_show_access_requests_in_toolbar) {
-        extensions.push_back(action->GetId());
+        extensions.push_back(action_id);
       }
     }
   }
@@ -474,12 +472,7 @@ void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
 
 ToolbarActionViewModel* ExtensionsToolbarContainer::GetActionForId(
     const std::string& action_id) {
-  for (const auto& action : toolbar_view_model_->GetActions()) {
-    if (action->GetId() == action_id) {
-      return action.get();
-    }
-  }
-  return nullptr;
+  return toolbar_view_model_->GetActionModelForId(action_id);
 }
 
 std::optional<extensions::ExtensionId>
@@ -552,7 +545,8 @@ bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
     return false;
   }
 
-  ToolbarActionViewModel* action = GetActionForId(action_id);
+  ToolbarActionViewModel* action =
+      toolbar_view_model_->GetActionModelForId(action_id);
   DCHECK(action);
   action->TriggerPopupForAPI(std::move(callback));
 
@@ -564,7 +558,7 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 }
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
-  return !toolbar_view_model_->GetActions().empty();
+  return !model_->action_ids().empty();
 }
 
 void ExtensionsToolbarContainer::ReorderAllChildViews() {
@@ -601,8 +595,10 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
 
 void ExtensionsToolbarContainer::CreateActionViewForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto icon =
-      std::make_unique<ToolbarActionView>(GetActionForId(action_id), this);
+  auto icon = std::make_unique<ToolbarActionView>(
+      toolbar_view_model_->GetActionModelForId(action_id), this);
+  CHECK(icon);
+
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
                    model_->IsActionPinned(action_id));
@@ -735,8 +731,8 @@ ExtensionsToolbarContainer::CreateActionViewModel(
 void ExtensionsToolbarContainer::OnActionsInitialized() {
   CHECK(icons_.empty());
 
-  for (const auto& action : toolbar_view_model_->GetActions()) {
-    CreateActionViewForId(action->GetId());
+  for (const auto& action_id : model_->action_ids()) {
+    CreateActionViewForId(action_id);
   }
 
   ReorderAllChildViews();
@@ -778,7 +774,8 @@ void ExtensionsToolbarContainer::OnActionRemoved(
 
 void ExtensionsToolbarContainer::OnActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  ToolbarActionViewModel* action = GetActionForId(action_id);
+  ToolbarActionViewModel* action =
+      toolbar_view_model_->GetActionModelForId(action_id);
   if (action) {
     ToolbarActionView* action_view = GetViewForId(action_id);
     action_view->UpdateState();
@@ -831,7 +828,7 @@ int ExtensionsToolbarContainer::OnDragUpdated(
 
   // Check if there is an extension for the dragged icon (e.g. an extension can
   // be de deleted while dragging its icon).
-  if (!GetActionForId(data.id())) {
+  if (!toolbar_view_model_->GetActionModelForId(data.id())) {
     return ui::DragDropTypes::DRAG_NONE;
   }
 
@@ -911,7 +908,7 @@ size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
       std::max((x_offset + element_padding) /
                    (GetToolbarActionSize().width() + element_padding),
                0);
-  return std::min(unclamped_count, toolbar_view_model_->GetActions().size());
+  return std::min(unclamped_count, model_->action_ids().size());
 }
 
 ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(

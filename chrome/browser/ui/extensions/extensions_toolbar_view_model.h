@@ -57,15 +57,18 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   ExtensionsToolbarViewModel& operator=(ExtensionsToolbarViewModel&) = delete;
   ~ExtensionsToolbarViewModel() override;
 
-  const std::vector<std::unique_ptr<ToolbarActionViewModel>>& GetActions() {
-    return actions_;
-  }
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns the view model of the action if it exists, else a nullptr.
+  ToolbarActionViewModel* GetActionModelForId(
+      const ToolbarActionsModel::ActionId& action_id);
+
   // Returns whether the actions are initialized.
   bool AreActionsInitialized();
+
+  // Returns whether any of `actions` given have access to the `web_contents`.
+  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarModelInitialized() override;
@@ -92,7 +95,9 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   base::ObserverList<Observer> observers_;
 
   // Actions for all extensions.
-  std::vector<std::unique_ptr<ToolbarActionViewModel>> actions_;
+  std::map<ToolbarActionsModel::ActionId,
+           std::unique_ptr<ToolbarActionViewModel>>
+      actions_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_TOOLBAR_VIEW_MODEL_H_

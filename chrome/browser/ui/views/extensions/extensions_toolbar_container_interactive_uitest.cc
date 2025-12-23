@@ -1051,8 +1051,9 @@ IN_PROC_BROWSER_TEST_P(
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser()->profile());
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionA->id(), extensionB->id()));
+  EXPECT_THAT(
+      request_access_button()->GetExtensionIdsForTesting(),
+      testing::UnorderedElementsAre(extensionA->id(), extensionB->id()));
 
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
             SiteInteraction::kWithheld);
@@ -1173,8 +1174,9 @@ IN_PROC_BROWSER_TEST_F(
   // Verify request access button is visible because extensions A and B have
   // site access requests.
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionA->id(), extensionB->id()));
+  EXPECT_THAT(
+      request_access_button()->GetExtensionIdsForTesting(),
+      testing::UnorderedElementsAre(extensionA->id(), extensionB->id()));
   extensions::SitePermissionsHelper permissions_helper(browser()->profile());
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser()->profile());

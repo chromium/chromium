@@ -67,11 +67,6 @@ class ExtensionActionViewModel
       BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
-  // Returns whether any of `actions` given have access to the `web_contents`.
-  static bool AnyActionHasCurrentSiteAccess(
-      const std::vector<std::unique_ptr<ToolbarActionViewModel>>& actions,
-      content::WebContents* web_contents);
-
   ExtensionActionViewModel(const ExtensionActionViewModel&) = delete;
   ExtensionActionViewModel& operator=(const ExtensionActionViewModel&) = delete;
 
