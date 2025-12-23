@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -305,11 +306,9 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   // Wait for the serialization triggered by adding the child views to flush.
   api.WaitForNextSerialization();
 
-  // Fire two events on v1, one on v2, before the first send.
+  // Fire an event on v1, one on v2, before the first send.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
   manager()->OnEvent(v1->GetViewAccessibility(), ax::mojom::Event::kFocus);
-  manager()->OnEvent(v1->GetViewAccessibility(),
-                     ax::mojom::Event::kValueChanged);
   manager()->OnEvent(v2->GetViewAccessibility(), ax::mojom::Event::kBlur);
 
   // Still just one task posted.
@@ -317,7 +316,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_TRUE(api.processing_update_posted());
 
   // pending_events has three entries, pending_data_updates has two unique IDs.
-  EXPECT_EQ(api.pending_events().size(), 3u);
+  EXPECT_EQ(api.pending_events().size(), 2u);
   EXPECT_EQ(api.pending_data_updates().size(), 2u);
 
   // After run, everything clears.
@@ -326,14 +325,25 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
 
-  ASSERT_EQ(api.last_serialization().events.size(), 3u);
+  ASSERT_EQ(api.last_serialization().events.size(), 2u);
   ASSERT_GE(api.last_serialization().updates.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
             ax::mojom::Event::kFocus);
   EXPECT_EQ(api.last_serialization().events[1].event_type,
-            ax::mojom::Event::kValueChanged);
-  EXPECT_EQ(api.last_serialization().events[2].event_type,
             ax::mojom::Event::kBlur);
+}
+
+TEST_F(WidgetAXManagerTest, DiesOnUnhandledEventRouting) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  EXPECT_DEATH(
+      {
+        manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
+                           ax::mojom::Event::kMouseMoved);
+        api.WaitForNextSerialization();
+      },
+      "Unhandled event");
 }
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
@@ -482,12 +492,12 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
   api.Enable();
 
   manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
-                     ax::mojom::Event::kLoadComplete);
+                     ax::mojom::Event::kFocus);
   api.WaitForNextSerialization();
 
   EXPECT_EQ(api.last_serialization().events.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kLoadComplete);
+            ax::mojom::Event::kFocus);
 
   EXPECT_FALSE(api.last_serialization().updates.empty());
 
