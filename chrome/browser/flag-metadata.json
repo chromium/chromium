@@ -778,6 +778,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",
+    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "autofill-and-passwords-in-same-surface",
     "owners": [
       "friedrichh@chromium.org",

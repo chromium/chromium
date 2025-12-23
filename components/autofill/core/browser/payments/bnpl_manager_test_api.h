@@ -90,6 +90,10 @@ class BnplManagerTestApi {
     return bnpl_manager_->GetSortedBnplIssuerContext();
   }
 
+  bool HasSeenAmountExtractionAiTerms() {
+    return bnpl_manager_->HasSeenAmountExtractionAiTerms();
+  }
+
  private:
   const raw_ref<BnplManager> bnpl_manager_;
 };

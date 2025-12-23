@@ -2108,6 +2108,45 @@ TEST_F(BnplManagerTest,
 
 TEST_F(
     BnplManagerTest,
+    OnSuggestionsShown_SeenTermsUpdatedWhenAiBasedAmountExtractionEnabled_TestFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableAiBasedAmountExtraction,
+       features::kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting},
+      /*disabled_features=*/{});
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm,
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  ASSERT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+  ASSERT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  EXPECT_TRUE(autofill_client()
+                  .GetPersonalDataManager()
+                  .payments_data_manager()
+                  .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+  EXPECT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+}
+
+TEST_F(
+    BnplManagerTest,
     OnSuggestionsShown_BnplPrefNotUpdatedWhenAiBasedAmountExtractionEnabledButNoBnplSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

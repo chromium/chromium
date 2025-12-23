@@ -355,6 +355,14 @@ bool BnplManager::AcceptTosActionRequired() const {
 }
 
 bool BnplManager::HasSeenAmountExtractionAiTerms() const {
+  // The testing flag acts as a testing override to force the "AI terms not
+  // seen" flow.
+  if (base::FeatureList::IsEnabled(
+          features::
+              kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)) {
+    return false;
+  }
+
   return payments_autofill_client()
       .GetPaymentsDataManager()
       .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();

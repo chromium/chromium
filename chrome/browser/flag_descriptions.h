@@ -743,6 +743,15 @@ inline constexpr char kAutofillEnableAiBasedAmountExtractionName[] =
 inline constexpr char kAutofillEnableAiBasedAmountExtractionDescription[] =
     "When enabled, Chrome will extract the checkout amount from the checkout "
     "page using server-side AI.";
+inline constexpr char
+    kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingName[] =
+        "Enable ignore AI-based Amount Extraction Terms Acknowledgement";
+inline constexpr char
+    kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingDescription[] =
+        "When enabled, the BNPL flow acts as if the user has not yet seen "
+        "or the AI terms. This allows the AI terms to be shown repeatedly "
+        "for testing purposes, regardless of the actual stored user "
+        "preference.";
 
 inline constexpr char kAutofillEnableAmountExtractionName[] =
     "Enable checkout amount extraction.";

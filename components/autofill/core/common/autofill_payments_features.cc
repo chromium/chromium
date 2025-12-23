@@ -6,6 +6,12 @@
 
 namespace autofill::features {
 
+// When enabled, the BNPL flow acts as if the user has not yet seen the AI
+// terms. This allows the AI terms to be shown as bold font repeatedly for
+// testing purposes, regardless of the actual stored user preference.
+BASE_FEATURE(kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, users are given the option to use their phone camera to scan
 // their credit card when adding it via Autofill iOS settings.

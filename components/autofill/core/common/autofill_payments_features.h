@@ -14,6 +14,8 @@ namespace autofill::features {
 
 // All features in alphabetical order.
 
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting);
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillCreditCardScannerIos);

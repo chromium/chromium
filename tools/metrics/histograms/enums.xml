@@ -11494,6 +11494,8 @@ from previous Chrome versions.
   <int value="-1010851157" label="DataSharing:disabled"/>
   <int value="-1010590882" label="MutationEvents:enabled"/>
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
+  <int value="-1010024405"
+      label="AutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting:disabled"/>
   <int value="-1009727449" label="HelpAppWelcomeTips:enabled"/>
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
@@ -14552,6 +14554,8 @@ from previous Chrome versions.
       label="VideoPictureInPictureControlsUpdate2024:enabled"/>
   <int value="62808713" label="TemplateUrlReconciliation:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
+  <int value="63198390"
+      label="AutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="63801483" label="ShimlessRMAHideGoogleSKU:disabled"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>

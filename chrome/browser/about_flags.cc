@@ -13584,6 +13584,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivateMetricsEnablePumaRcDescription, kOsAll,
      FEATURE_VALUE_TYPE(metrics::private_metrics::kPrivateMetricsPumaRc)},
 
+    {"autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",
+     flag_descriptions::
+         kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingName,
+     flag_descriptions::
+         kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
