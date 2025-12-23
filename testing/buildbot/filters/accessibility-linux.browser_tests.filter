@@ -187,8 +187,6 @@
 -SettingsTest.PaymentsSectionIban
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionIban__PaymentsSectionIban_verifyIBANErrorMessage
 -SettingsTest.PaymentsSectionIban__PaymentsSectionIban_verifyIBANErrorMessage
-# TODO(crbug.com/469757905): Consistent failures on chromium/ci/linux-blink-web-tests-force-accessibility-rel.
--SettingsTest.PeoplePageSyncControls
 # Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSSLUITestWithWebApps.InAppTestHTTPSExpiredCertAndPreviouslyProceeded
 -SSLUITestWithWebApps.InAppTestHTTPSExpiredCertAndPreviouslyProceeded
 # Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSystemNetworkContextManagerWithFirstPartySetComponentBrowserTest.ReloadsFirstPartySetsAfterCrash

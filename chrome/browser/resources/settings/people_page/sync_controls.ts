@@ -122,15 +122,9 @@ export class SettingsSyncControlsElement extends
       },
 
       // <if expr="not is_chromeos">
-      batchUploadPromoLocalDataCount_: {
-        type: Number,
-        value: 0,
-        observer: 'batchUploadPromoLocalDataCountChanged_',
-      },
-
-      batchUploadPromoString_: {
+      batchUploadPromoHTML_: {
         type: String,
-        value: '',
+        value: window.trustedTypes!.emptyHTML,
         observer: 'attachOpenBatchUploadLinkClick_',
       },
       // </if>
@@ -146,8 +140,7 @@ export class SettingsSyncControlsElement extends
   declare showSyncDisabledInformation: boolean;
   declare private isAccountSettingsPage_: boolean;
   // <if expr="not is_chromeos">
-  declare private batchUploadPromoLocalDataCount_: number;
-  declare private batchUploadPromoString_: string;
+  declare private batchUploadPromoHTML_: TrustedHTML;
   // </if>
 
   constructor() {
@@ -170,13 +163,13 @@ export class SettingsSyncControlsElement extends
     if (loadTimeData.getBoolean('unoPhase2FollowUp')) {
       BatchUploadPromoProxyImpl.getInstance()
           .callbackRouter.onLocalDataCountChanged.addListener(
-              (batchUploadPromoData: number) => {
-                this.batchUploadPromoLocalDataCount_ = batchUploadPromoData;
+              (localDataCount: number) => {
+                this.batchUploadPromoLocalDataCountChanged_(localDataCount);
               });
       BatchUploadPromoProxyImpl.getInstance()
           .handler.getBatchUploadPromoLocalDataCount()
           .then(({localDataCount}) => {
-            this.batchUploadPromoLocalDataCount_ = localDataCount;
+            this.batchUploadPromoLocalDataCountChanged_(localDataCount);
           });
     }
     // </if>
@@ -203,19 +196,25 @@ export class SettingsSyncControlsElement extends
   }
 
   // <if expr="not is_chromeos">
-  private async batchUploadPromoLocalDataCountChanged_(): Promise<void> {
+  private async batchUploadPromoLocalDataCountChanged_(localDataCount: number):
+      Promise<void> {
     if (!loadTimeData.getBoolean('unoPhase2FollowUp')) {
       return;
     }
 
-    if (!this.batchUploadPromoLocalDataCount_) {
-      this.batchUploadPromoString_ = '';
+    if (localDataCount === 0) {
+      this.batchUploadPromoHTML_ = window.trustedTypes!.emptyHTML;
       return;
     }
 
-    this.batchUploadPromoString_ =
+    const batchUploadPromoString =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'batchUploadPromoLabel', this.batchUploadPromoLocalDataCount_);
+            'batchUploadPromoLabel', localDataCount);
+
+    // We need the HTML representation instead of the string since the string
+    // holds a link.
+    this.batchUploadPromoHTML_ =
+        sanitizeInnerHtml(batchUploadPromoString, {tags: ['a'], attrs: ['id']});
   }
 
   private shouldShowBatchUploadPromo_(): boolean {
@@ -227,16 +226,7 @@ export class SettingsSyncControlsElement extends
       return false;
     }
 
-    return this.batchUploadPromoLocalDataCount_ !== 0;
-  }
-
-  /**
-   * Returns the HTML representation of the subtitle string. We need the HTML
-   * representation instead of the string since the string holds a link.
-   */
-  protected getSubtitleString_(): TrustedHTML {
-    return sanitizeInnerHtml(
-        this.batchUploadPromoString_, {tags: ['a'], attrs: ['id']});
+    return this.batchUploadPromoHTML_ !== window.trustedTypes!.emptyHTML;
   }
 
   /** Attach the click action and aria label to the batch upload promo link. */

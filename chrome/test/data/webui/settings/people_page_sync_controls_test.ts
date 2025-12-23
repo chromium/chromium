@@ -19,9 +19,10 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="not is_chromeos">
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
-import {PageStatus, routes, UserSelectableType} from 'chrome://settings/settings.js';
+import {PageStatus, routes, UserSelectableType, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {BatchUploadPromoProxyImpl} from 'chrome://settings/lazy_load.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 import {TestBatchUploadPromoProxy} from './test_batch_upload_promo_browser_proxy.js';
 // </if>
@@ -324,6 +325,7 @@ suite('SyncControlsAccountSettingsTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let batchUploadPromoProxy: TestBatchUploadPromoProxy;
+  let pluralStringProxy: TestPluralStringProxy;
 
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
@@ -331,6 +333,9 @@ suite('SyncControlsAccountSettingsTest', function() {
 
     batchUploadPromoProxy = new TestBatchUploadPromoProxy();
     BatchUploadPromoProxyImpl.setInstance(batchUploadPromoProxy);
+
+    pluralStringProxy = new TestPluralStringProxy();
+    SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
 
     loadTimeData.overrideValues(
         {replaceSyncPromosWithSignInPromos: true, unoPhase2FollowUp: true});
@@ -704,7 +709,9 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   test('BatchUploadPromoWithLocalDataItemUponInitialization', async () => {
-    batchUploadPromoProxy.handler.setBatchUploadPromoLocalDataCount(5);
+    const localDataCount = 5;
+    batchUploadPromoProxy.handler.setBatchUploadPromoLocalDataCount(
+        localDataCount);
 
     // Create the sync controls again with the initial local data count.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -715,62 +722,69 @@ suite('SyncControlsAccountSettingsTest', function() {
       statusAction: StatusAction.NO_ACTION,
     };
     await setupPrefs();
+    const pluralStringArgs =
+        await pluralStringProxy.whenCalled('getPluralString');
     await flushTasks();
-    await waitAfterNextRender(syncControls);
 
+    assertEquals(localDataCount, pluralStringArgs.itemCount);
     assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
   });
 
   test('BatchUploadPromoWithOneLocalDataItem', async () => {
+    const localDataCount = 1;
     await setupPrefs();
 
     // Notify the UI that there is one item to be uploaded and wait for the
     // batch upload promo to show.
-    batchUploadPromoProxy.page.onLocalDataCountChanged(1);
+    batchUploadPromoProxy.page.onLocalDataCountChanged(localDataCount);
+    const pluralStringArgs =
+        await pluralStringProxy.whenCalled('getPluralString');
     await flushTasks();
-    await waitAfterNextRender(syncControls);
 
     const batchUploadElement =
         syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
     assertTrue(!!batchUploadElement);
     assertTrue(isVisible(batchUploadElement));
 
-    // Check that the correct version of the string is displayed.
-    const expectedPromoString = '1 item is saved only to this device. ' +
-        'To use it on your other devices, save it in your Google Account.';
-    assertEquals(expectedPromoString, batchUploadElement.textContent);
+    // Check that the correct version of the string would be displayed.
+    assertEquals(localDataCount, pluralStringArgs.itemCount);
   });
 
   test('BatchUploadPromoWithMultipleLocalDataItems', async () => {
+    const localDataCount = 5;
     await setupPrefs();
 
     // Notify the UI that there are multiple items to be uploaded and wait for
     // the batch upload promo to show.
-    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    batchUploadPromoProxy.page.onLocalDataCountChanged(localDataCount);
+    const pluralStringArgs =
+        await pluralStringProxy.whenCalled('getPluralString');
     await flushTasks();
-    await waitAfterNextRender(syncControls);
 
     const batchUploadElement =
         syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
     assertTrue(!!batchUploadElement);
     assertTrue(isVisible(batchUploadElement));
 
-    // Check that the correct version of the string is displayed.
-    const expectedPromoString = '9 items are saved only to this device. ' +
-        'To use them on your other devices, save them in your Google Account.';
-    assertEquals(expectedPromoString, batchUploadElement.textContent);
+    // Check that the correct version of the string would be displayed.
+    assertEquals(localDataCount, pluralStringArgs.itemCount);
   });
 
   test('BatchUploadPromoClickOpensDialog', async () => {
+    const localDataCount = 5;
     await setupPrefs();
+
+    pluralStringProxy.text += ' <a id="openBatchUploadLink">link</a>';
 
     // Notify the UI that there are multiple items to be uploaded and wait for
     // the batch upload promo to show.
-    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    batchUploadPromoProxy.page.onLocalDataCountChanged(localDataCount);
+    const pluralStringArgs =
+        await pluralStringProxy.whenCalled('getPluralString');
     await flushTasks();
-    await waitAfterNextRender(syncControls);
 
     assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+    assertEquals(localDataCount, pluralStringArgs.itemCount);
 
     const batchUploadLinkElement =
         syncControls.shadowRoot!.querySelector<HTMLElement>(
