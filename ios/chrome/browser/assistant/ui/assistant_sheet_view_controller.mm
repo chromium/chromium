@@ -5,9 +5,6 @@
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
 
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
-#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
