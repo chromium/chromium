@@ -2940,6 +2940,21 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
     histogram_tester.ExpectTotalCount(
         internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated,
         1);
+    // InteractionTo* metrics are not recorded when there is no user input.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToActualNavigationStart.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToActualNavigationStart."
+        "MainFrameOnly.Duration",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "MainFrameOnly.Duration",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "ExcludingBeforeUnload.MainFrameOnly.Duration",
+        0);
   }
 
   {
@@ -2982,6 +2997,20 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
     histogram_tester.ExpectTotalCount(
         internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated,
         0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToActualNavigationStart.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToActualNavigationStart."
+        "MainFrameOnly.Duration",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "MainFrameOnly.Duration",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "ExcludingBeforeUnload.MainFrameOnly.Duration",
+        1);
   }
 }
 
