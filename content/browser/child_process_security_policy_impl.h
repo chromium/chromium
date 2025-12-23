@@ -853,7 +853,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //
   // Note: Returned object is only valid for the duration the caller holds
   // `lock_`.
-  SecurityState* GetSecurityStateForQuery(ChildProcessId child_id)
+  const SecurityState* GetSecurityStateForQuery(ChildProcessId child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Gets the SecurityState object associated with `child_id`, for callers that
@@ -930,7 +930,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //
   // This function must be called while already holding `lock_`.
   bool PerformJailAndCitadelChecks(ChildProcessId child_id,
-                                   SecurityState* security_state,
+                                   const SecurityState& security_state,
                                    const GURL& url,
                                    bool url_is_precursor_of_opaque_origin,
                                    AccessType access_type,

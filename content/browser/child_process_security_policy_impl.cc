@@ -413,7 +413,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     committed_origins_.emplace(origin);
   }
 
-  std::string GetCommittedOriginsAsStringForDebugging() {
+  std::string GetCommittedOriginsAsStringForDebugging() const {
     std::string str;
     for (auto& origin : committed_origins_) {
       base::StrAppend(&str,
@@ -423,7 +423,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   bool MatchesCommittedOrigin(const GURL& url,
-                              bool url_is_for_precursor_origin) {
+                              bool url_is_for_precursor_origin) const {
     for (auto& origin : committed_origins_) {
       // If the committed origin is non-opaque, check that the `url` has the
       // same origin.
@@ -499,7 +499,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   bool HasPermissionsForFileSystem(const std::string& filesystem_id,
-                                   int permissions) {
+                                   int permissions) const {
     FileSystemMap::const_iterator it =
         filesystem_permissions_.find(filesystem_id);
     if (it == filesystem_permissions_.end()) {
@@ -511,7 +511,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
 #if BUILDFLAG(IS_ANDROID)
   // Determine if the certain permissions have been granted to a content URI.
   bool HasPermissionsForContentUri(const base::FilePath& file,
-                                   int permissions) {
+                                   int permissions) const {
     DCHECK(!file.empty());
     DCHECK(file.IsContentUri());
     if (!permissions) {
@@ -537,7 +537,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     webview_origin_exemption_set_.insert(origin);
   }
 
-  bool HasOriginCheckExemptionForWebView(const url::Origin& origin) {
+  bool HasOriginCheckExemptionForWebView(const url::Origin& origin) const {
     // This should only be allowed for opaque origins with LoadDataWithBaseURL
     // and file origins with allow_universal_access_from_file_urls.
     CHECK(origin.opaque() || origin.scheme() == url::kFileScheme);
@@ -552,7 +552,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   // Determine whether permission has been granted to commit |url|.
-  bool CanCommitURL(const GURL& url) {
+  bool CanCommitURL(const GURL& url) const {
     DCHECK(!url.SchemeIsBlob() && !url.SchemeIsFileSystem())
         << "inner_url extraction should be done already.";
     // Having permission to a scheme implies permission to all of its URLs.
@@ -606,7 +606,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   // Determine if the certain permissions have been granted to a file.
-  bool HasPermissionsForFile(const base::FilePath& file, int permissions) {
+  bool HasPermissionsForFile(const base::FilePath& file,
+                             int permissions) const {
 #if BUILDFLAG(IS_ANDROID)
     if (file.IsContentUri()) {
       return HasPermissionsForContentUri(file, permissions);
@@ -697,7 +698,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   const ProcessLock& process_lock() const { return process_lock_; }
 
   const BrowsingInstanceDefaultIsolationStatesMap&
-  browsing_instance_default_isolation_states() {
+  browsing_instance_default_isolation_states() const {
     return browsing_instance_default_isolation_states_;
   }
 
@@ -746,7 +747,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     kCommitAndRequest,
   };
 
-  bool CanCommitOrigin(const url::Origin& origin) {
+  bool CanCommitOrigin(const url::Origin& origin) const {
     auto it = origin_map_.find(origin);
     if (it == origin_map_.end()) {
       return false;
@@ -1964,7 +1965,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
       // precursor). Remove this logic once that has been completed.
       base::AutoLock lock(lock_);
       // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-      SecurityState* security_state =
+      const SecurityState* security_state =
           GetSecurityStateForQuery(ChildProcessId::FromUnsafeValue(child_id));
       return !!security_state;
     } else {
@@ -2043,7 +2044,7 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
 
 bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     ChildProcessId child_id,
-    SecurityState* security_state,
+    const SecurityState& security_state,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type,
@@ -2051,9 +2052,9 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     std::string& out_failure_reason) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  ProcessLock actual_process_lock = security_state->process_lock();
+  ProcessLock actual_process_lock = security_state.process_lock();
 
-  BrowserContext* browser_context = security_state->browser_context();
+  BrowserContext* browser_context = security_state.browser_context();
   // The caller ensures that the `browser_context` is valid.
   CHECK(browser_context);
 
@@ -2064,7 +2065,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
   // a site-locked process).  When the BrowsingInstances do not agree, the check
   // might be slightly weaker (as the least common denominator), but the
   // differences must never violate the ProcessLock.
-  if (security_state->browsing_instance_default_isolation_states().empty()) {
+  if (security_state.browsing_instance_default_isolation_states().empty()) {
     // If no BrowsingInstances are found, then the some of the state we need to
     // perform an accurate check is unexpectedly missing, because there should
     // always be a BrowsingInstance for such requests, even from workers. Thus,
@@ -2116,7 +2117,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
   }
 
   for (auto browsing_instance_info_entry :
-       security_state->browsing_instance_default_isolation_states()) {
+       security_state.browsing_instance_default_isolation_states()) {
     auto& browsing_instance_id = browsing_instance_info_entry.first;
     auto& default_isolation_state = browsing_instance_info_entry.second;
     // In the case of multiple BrowsingInstances in the SecurityState, note that
@@ -2351,7 +2352,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 
   base::AutoLock lock(lock_);
 
-  SecurityState* security_state = GetSecurityStateForQuery(child_id);
+  const SecurityState* security_state = GetSecurityStateForQuery(child_id);
   ProcessLock expected_process_lock;
   std::string failure_reason;
 
@@ -2399,7 +2400,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
       // these checks for kHostsOrigin and kCanAccessDataForOrigin access
       // checks.
       bool passes_jail_and_citadel_checks = PerformJailAndCitadelChecks(
-          child_id, security_state, url, url_is_precursor_of_opaque_origin,
+          child_id, *security_state, url, url_is_precursor_of_opaque_origin,
           access_type, expected_process_lock, failure_reason);
 
       // Collect a DumpWithoutCrashing report when the two checks disagree. This
@@ -3294,7 +3295,7 @@ ChildProcessSecurityPolicyImpl::LookupAreV8OptimizationsDisabled(
   return origin_it->second;
 }
 
-ChildProcessSecurityPolicyImpl::SecurityState*
+const ChildProcessSecurityPolicyImpl::SecurityState*
 ChildProcessSecurityPolicyImpl::GetSecurityStateForQuery(
     ChildProcessId child_id) {
   // This function checks both `security_state_` and `pending_remove_state_` for
