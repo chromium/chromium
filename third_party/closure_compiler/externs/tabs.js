@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 // TODO(crbug.com/543822): Disable automatic extern generation until fixed.
+// s/chrome.tabs.extensionTypes.DeleteInjectionDetails/chrome.extensionTypes.DeleteInjectionDetails/
 // s/chrome.tabs.extensionTypes.ImageDetails/chrome.extensionTypes.ImageDetails/
 // s/chrome.tabs.extensionTypes.InjectDetails/chrome.extensionTypes.InjectDetails/
 // s/chrome.tabs.runtime.Port/chrome.runtime.Port/
@@ -59,7 +60,7 @@ chrome.tabs.MutedInfo;
  *   id: (number|undefined),
  *   index: number,
  *   groupId: number,
- *   splitViewId: number,
+ *   splitViewId: (number|undefined),
  *   windowId: number,
  *   openerTabId: (number|undefined),
  *   selected: boolean,
@@ -129,6 +130,15 @@ chrome.tabs.WindowType = {
 };
 
 /**
+ * The maximum number of times that $(ref:captureVisibleTab) can be called per
+ * second. $(ref:captureVisibleTab) is expensive and should not be called too
+ * often.
+ * @type {number}
+ * @see https://developer.chrome.com/extensions/tabs#type-MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND
+ */
+chrome.tabs.MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND;
+
+/**
  * An ID that represents the absence of a split tab.
  * @type {number}
  * @see https://developer.chrome.com/extensions/tabs#type-SPLIT_VIEW_ID_NONE
@@ -143,6 +153,13 @@ chrome.tabs.SPLIT_VIEW_ID_NONE;
 chrome.tabs.TAB_ID_NONE;
 
 /**
+ * An index that represents the absence of a tab index in a tab_strip.
+ * @type {number}
+ * @see https://developer.chrome.com/extensions/tabs#type-TAB_INDEX_NONE
+ */
+chrome.tabs.TAB_INDEX_NONE;
+
+/**
  * Retrieves details about the specified tab.
  * @param {number} tabId
  * @param {function(!chrome.tabs.Tab): void} callback
@@ -151,8 +168,9 @@ chrome.tabs.TAB_ID_NONE;
 chrome.tabs.get = function(tabId, callback) {};
 
 /**
- * Gets the tab that this script call is being made from. May be undefined if
- * called from a non-tab context (for example, a background page or popup view).
+ * Gets the tab that this script call is being made from. Returns
+ * <code>undefined</code> if called from a non-tab context (for example, a
+ * background page or popup view).
  * @param {function((!chrome.tabs.Tab|undefined)): void} callback
  * @see https://developer.chrome.com/extensions/tabs#method-getCurrent
  */
@@ -166,7 +184,8 @@ chrome.tabs.getCurrent = function(callback) {};
  * @param {number} tabId
  * @param {{
  *   name: (string|undefined),
- *   frameId: (number|undefined)
+ *   frameId: (number|undefined),
+ *   documentId: (string|undefined)
  * }=} connectInfo
  * @return {!chrome.runtime.Port} A port that can be used to communicate
  *     with the content scripts running in the specified tab. The port's
@@ -182,11 +201,11 @@ chrome.tabs.connect = function(tabId, connectInfo) {};
  * the specified tab for the current extension.
  * @param {number} tabId
  * @param {*} request
- * @param {function(*): void=} responseCallback
+ * @param {function(*): void=} callback
  * @deprecated Please use $(ref:runtime.sendMessage).
  * @see https://developer.chrome.com/extensions/tabs#method-sendRequest
  */
-chrome.tabs.sendRequest = function(tabId, request, responseCallback) {};
+chrome.tabs.sendRequest = function(tabId, request, callback) {};
 
 /**
  * Sends a single message to the content script(s) in the specified tab, with an
@@ -197,12 +216,13 @@ chrome.tabs.sendRequest = function(tabId, request, responseCallback) {};
  * @param {*} message The message to send. This message should be a JSON-ifiable
  *     object.
  * @param {{
- *   frameId: (number|undefined)
+ *   frameId: (number|undefined),
+ *   documentId: (string|undefined)
  * }=} options
- * @param {function(*): void=} responseCallback
+ * @param {function(*): void=} callback
  * @see https://developer.chrome.com/extensions/tabs#method-sendMessage
  */
-chrome.tabs.sendMessage = function(tabId, message, options, responseCallback) {};
+chrome.tabs.sendMessage = function(tabId, message, options, callback) {};
 
 /**
  * Gets the tab that is selected in the specified window.
@@ -382,13 +402,13 @@ chrome.tabs.detectLanguage = function(tabId, callback) {};
 /**
  * Captures the visible area of the currently active tab in the specified
  * window. In order to call this method, the extension must have either the <a
- * href='declare_permissions'>&lt;all_urls&gt;</a> permission or the <a
- * href='activeTab'>activeTab</a> permission. In addition to sites that
- * extensions can normally access, this method allows extensions to capture
- * sensitive sites that are otherwise restricted, including chrome:-scheme
- * pages, other extensions' pages, and data: URLs. These sensitive sites can
- * only be captured with the activeTab permission. File URLs may be captured
- * only if the extension has been granted file access.
+ * href='develop/concepts/declare-permissions'>&lt;all_urls&gt;</a> permission
+ * or the <a href='develop/concepts/activeTab'>activeTab</a> permission. In
+ * addition to sites that extensions can normally access, this method allows
+ * extensions to capture sensitive sites that are otherwise restricted,
+ * including chrome:-scheme pages, other extensions' pages, and data: URLs.
+ * These sensitive sites can only be captured with the activeTab permission.
+ * File URLs may be captured only if the extension has been granted file access.
  * @param {?number|undefined} windowId The target window. Defaults to the <a
  *     href='windows#current-window'>current window</a>.
  * @param {?chrome.extensionTypes.ImageDetails|undefined} options
@@ -399,33 +419,49 @@ chrome.tabs.captureVisibleTab = function(windowId, options, callback) {};
 
 /**
  * Injects JavaScript code into a page. For details, see the <a
- * href='content_scripts#pi'>programmatic injection</a> section of the content
- * scripts doc.
+ * href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.
  * @param {?number|undefined} tabId The ID of the tab in which to run the
  *     script; defaults to the active tab of the current window.
  * @param {!chrome.extensionTypes.InjectDetails} details Details of the
  *     script to run. Either the code or the file property must be set, but both
  *     may not be set at the same time.
- * @param {function((!Array<*>|undefined)): void=} callback Called after all the
- *     JavaScript has been executed.
+ * @param {function((!Array<*>|undefined)): void=} callback Resolves after all
+ *     the JavaScript has been executed.
+ * @deprecated Replaced by $(ref:scripting.executeScript) in Manifest V3.
  * @see https://developer.chrome.com/extensions/tabs#method-executeScript
  */
 chrome.tabs.executeScript = function(tabId, details, callback) {};
 
 /**
- * Injects CSS into a page. For details, see the <a
- * href='content_scripts#pi'>programmatic injection</a> section of the content
- * scripts doc.
+ * Injects CSS into a page. Styles inserted with this method can be removed with
+ * $(ref:scripting.removeCSS). For details, see the <a
+ * href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.
  * @param {?number|undefined} tabId The ID of the tab in which to insert the
  *     CSS; defaults to the active tab of the current window.
  * @param {!chrome.extensionTypes.InjectDetails} details Details of the CSS
  *     text to insert. Either the code or the file property must be set, but
  *     both may not be set at the same time.
- * @param {function(): void=} callback Called when all the CSS has been
+ * @param {function(): void=} callback Resolves when all the CSS has been
  *     inserted.
+ * @deprecated Replaced by $(ref:scripting.insertCSS) in Manifest V3.
  * @see https://developer.chrome.com/extensions/tabs#method-insertCSS
  */
 chrome.tabs.insertCSS = function(tabId, details, callback) {};
+
+/**
+ * Removes from a page CSS that was previously injected by a call to
+ * $(ref:scripting.insertCSS).
+ * @param {?number|undefined} tabId The ID of the tab from which to remove the
+ *     CSS; defaults to the active tab of the current window.
+ * @param {!chrome.extensionTypes.DeleteInjectionDetails} details Details
+ *     of the CSS text to remove. Either the code or the file property must be
+ *     set, but both may not be set at the same time.
+ * @param {function(): void=} callback Resolves when all the CSS has been
+ *     removed.
+ * @deprecated Replaced by $(ref:scripting.removeCSS) in Manifest V3.
+ * @see https://developer.chrome.com/extensions/tabs#method-removeCSS
+ */
+chrome.tabs.removeCSS = function(tabId, details, callback) {};
 
 /**
  * Zooms a specified tab.
@@ -434,7 +470,7 @@ chrome.tabs.insertCSS = function(tabId, details, callback) {};
  * @param {number} zoomFactor The new zoom factor. A value of <code>0</code>
  *     sets the tab to its current default zoom factor. Values greater than
  *     <code>0</code> specify a (possibly non-default) zoom factor for the tab.
- * @param {function(): void=} callback Called after the zoom factor has been
+ * @param {function(): void=} callback Resolves after the zoom factor has been
  *     changed.
  * @see https://developer.chrome.com/extensions/tabs#method-setZoom
  */
@@ -444,7 +480,7 @@ chrome.tabs.setZoom = function(tabId, zoomFactor, callback) {};
  * Gets the current zoom factor of a specified tab.
  * @param {?number|undefined} tabId The ID of the tab to get the current zoom
  *     factor from; defaults to the active tab of the current window.
- * @param {function(number): void} callback Called with the tab's current zoom
+ * @param {function(number): void} callback Resolves with the tab's current zoom
  *     factor after it has been fetched.
  * @see https://developer.chrome.com/extensions/tabs#method-getZoom
  */
@@ -457,7 +493,7 @@ chrome.tabs.getZoom = function(tabId, callback) {};
  *     settings for; defaults to the active tab of the current window.
  * @param {!chrome.tabs.ZoomSettings} zoomSettings Defines how zoom changes are
  *     handled and at what scope.
- * @param {function(): void=} callback Called after the zoom settings are
+ * @param {function(): void=} callback Resolves after the zoom settings are
  *     changed.
  * @see https://developer.chrome.com/extensions/tabs#method-setZoomSettings
  */
@@ -467,7 +503,7 @@ chrome.tabs.setZoomSettings = function(tabId, zoomSettings, callback) {};
  * Gets the current zoom settings of a specified tab.
  * @param {?number|undefined} tabId The ID of the tab to get the current zoom
  *     settings from; defaults to the active tab of the current window.
- * @param {function(!chrome.tabs.ZoomSettings): void} callback Called with the
+ * @param {function(!chrome.tabs.ZoomSettings): void} callback Resolves with the
  *     tab's current zoom settings.
  * @see https://developer.chrome.com/extensions/tabs#method-getZoomSettings
  */
@@ -480,8 +516,8 @@ chrome.tabs.getZoomSettings = function(tabId, callback) {};
  *     tab is discarded unless it is active or already discarded. If omitted,
  *     the browser discards the least important tab. This can fail if no
  *     discardable tabs exist.
- * @param {function((!chrome.tabs.Tab|undefined)): void=} callback Called after
- *     the operation is completed.
+ * @param {function((!chrome.tabs.Tab|undefined)): void=} callback Resolves
+ *     after the operation is completed.
  * @see https://developer.chrome.com/extensions/tabs#method-discard
  */
 chrome.tabs.discard = function(tabId, callback) {};
@@ -505,9 +541,10 @@ chrome.tabs.goForward = function(tabId, callback) {};
 chrome.tabs.goBack = function(tabId, callback) {};
 
 /**
- * Fired when a tab is created. Note that the tab's URL may not be set at the
- * time this event is fired, but you can listen to onUpdated events so as to be
- * notified when a URL is set.
+ * Fired when a tab is created. Note that the tab's URL and tab group membership
+ * may not be set at the time this event is fired, but you can listen to
+ * onUpdated events so as to be notified when a URL is set or the tab is added
+ * to a tab group.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/tabs#event-onCreated
  */

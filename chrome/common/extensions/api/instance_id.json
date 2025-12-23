@@ -14,7 +14,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when the retrieval completes. It should check $(ref:runtime.lastError) for error when instanceID is empty.",
+          "description": "Resolves when the retrieval completes.",
           "parameters": [
             {
               "name": "instanceID",
@@ -31,7 +31,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when the retrieval completes. It should check $(ref:runtime.lastError) for error when creationTime is zero.",
+          "description": "Resolves when the retrieval completes.",
           "parameters": [
             {
               "name": "creationTime",
@@ -77,7 +77,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when the retrieval completes. It should check $(ref:runtime.lastError) for error when token is empty.",
+          "description": "Resolves when the retrieval completes.",
           "parameters": [
             {
               "name": "token",
@@ -112,7 +112,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when the token deletion completes. The token was revoked successfully if $(ref:runtime.lastError) is not set.",
+          "description": "Resolves when the token deletion completes. The token was revoked successfully if the promise does not reject.",
           "parameters": []
         }
       },
@@ -123,7 +123,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when the deletion completes. The instance identifier was revoked successfully if $(ref:runtime.lastError) is not set.",
+          "description": "Resolves when the deletion completes. The instance identifier was revoked successfully if the promise does not reject.",
           "parameters": []
         }
       }

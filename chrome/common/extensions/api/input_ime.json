@@ -218,7 +218,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
+          "description": "Resolves when the operation completes with a boolean indicating if the text was accepted or not. On failure, the promise will be rejected.",
           "optional": true,
           "parameters": [
             {
@@ -248,7 +248,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
+          "description": "Resolves when the operation completes with a boolean indicating if the text was accepted or not. On failure, the promise will be rejected.",
           "parameters": [
             {
               "name": "success",
@@ -281,7 +281,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
+          "description": "Resolves when the operation completes with a boolean indicating if the text was accepted or not. On failure, the promise will be rejected.",
           "parameters": [
             {
               "name": "success",
@@ -317,7 +317,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": []
         }
       },
@@ -398,7 +398,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": [
             {
               "name": "success",
@@ -450,7 +450,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": [
             {
               "name": "success",
@@ -483,7 +483,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes",
+          "description": "Resolves when the operation completes",
           "parameters": [
             {
               "name": "success",
@@ -516,7 +516,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": [
             {
               "name": "success",
@@ -562,7 +562,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes. On failure, $(ref:runtime.lastError) is set.",
+          "description": "Resolves when the operation completes. On failure, the promise will be rejected.",
           "parameters": []
         }
       },
@@ -598,7 +598,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes",
+          "description": "Resolves when the operation completes",
           "parameters": []
         }
       },
@@ -635,7 +635,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": []
         }
       },

@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -178,9 +178,9 @@ chrome.tts.TtsVoice;
  *     strip away the tags and speak the text. The maximum length of the text is
  *     32,768 characters.
  * @param {!chrome.tts.TtsOptions=} options The speech options.
- * @param {function(): void=} callback Called right away, before speech
- *     finishes. Check $(ref:runtime.lastError) to make sure there were no
- *     errors. Use options.onEvent to get more detailed feedback.
+ * @param {function(): void=} callback Resolves right away, before speech
+ *     finishes. If an error occurs, the promise will be rejected. Use
+ *     options.onEvent to get more detailed feedback.
  * @see https://developer.chrome.com/extensions/tts#method-speak
  */
 chrome.tts.speak = function(utterance, options, callback) {};

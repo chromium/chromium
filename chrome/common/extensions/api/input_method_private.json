@@ -270,7 +270,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback which is called with the config object.",
+          "description": "Resolves with the config object.",
           "parameters": [
             {
               "name": "config",
@@ -290,7 +290,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback which is called with the input method objects.",
+          "description": "Resolves with the input method objects.",
           "parameters": [
             {
               "name": "inputMethods",
@@ -314,7 +314,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback which is called with the current input method.",
+          "description": "Resolves with the current input method.",
           "parameters": [
             {
               "name": "inputMethodId",
@@ -337,7 +337,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback which is called once the current input method is set. If unsuccessful $(ref:runtime.lastError) is set.",
+          "description": "Resolves once the current input method is set. If unsuccessful, the promise is rejected.",
           "parameters": []
         }
       }, {
@@ -348,7 +348,7 @@
           "returns_async": {
             "name": "callback",
             "optional": true,
-            "description": "Callback which is called once the input method is swapped (if applicable). If unsuccessful $(ref:runtime.lastError) is set.",
+            "description": "Resolves once the input method is swapped (if applicable). If unsuccessful, the promise is rejected.",
             "parameters": []
           }
       }, {
@@ -358,7 +358,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback which is called once the list of dictionary words are ready.",
+          "description": "Resolves once the list of dictionary words are ready.",
           "parameters": [
             {
               "name": "words",
@@ -384,7 +384,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback which is called once the word is added. If unsuccessful $(ref:runtime.lastError) is set.",
+          "description": "Resolves once the word is added. If unsuccessful, the promise is rejected.",
           "parameters": []
         }
       }, {
@@ -401,7 +401,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback which is called when the layout is set.",
+          "description": "Resolves when the layout is set.",
           "parameters": []
         }
       }, {
@@ -423,7 +423,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": []
         }
       }, {
@@ -434,7 +434,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": []
         }
       }, {
@@ -445,7 +445,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes.",
+          "description": "Resolves when the operation completes.",
           "parameters": []
         }
       }, {
@@ -477,7 +477,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback which is called to provide the result",
+          "description": "Resolves to provide the result",
           "parameters": [
             {
               "name": "surroundingInfo",
@@ -504,7 +504,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback to receive the settings",
+          "description": "Resolves with the settings",
           "parameters": [
             {
               "name": "settings",
@@ -533,7 +533,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback to notify that the new value has been set",
+          "description": "Resolves to notify that the new value has been set",
           "parameters": []
         }
       }, {
@@ -585,7 +585,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
+          "description": "Resolves when the operation completes with a boolean indicating if the text was accepted or not. On failure, the promise will be rejected.",
           "parameters": [
             {
               "name": "success",
@@ -646,7 +646,7 @@
       ],
       "returns_async": {
         "name": "callback",
-        "description": "Called with a LanguagePackStatus when the operation completes.",
+        "description": "Resolves with a LanguagePackStatus when the operation completes.",
         "parameters": [
           {
             "name": "status",

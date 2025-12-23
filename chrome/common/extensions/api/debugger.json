@@ -80,7 +80,7 @@
           "name": "callback",
           "optional": true,
           "parameters": [],
-          "description": "Called once the attach operation succeeds or fails. Callback receives no arguments. If the attach fails, $(ref:runtime.lastError) will be set to the error message."
+          "description": "Resolves once the attach operation succeeds or fails. The promise resolves with no value. If the attach fails, the promise will be rejected."
         }
       },
       {
@@ -98,7 +98,7 @@
           "name": "callback",
           "optional": true,
           "parameters": [],
-          "description": "Called once the detach operation succeeds or fails. Callback receives no arguments. If the detach fails, $(ref:runtime.lastError) will be set to the error message."
+          "description": "Resolves once the detach operation succeeds or fails. The promise resolves with no value. If the detach fails, the promise will be rejected."
         }
       },
       {
@@ -136,7 +136,7 @@
               "description": "JSON object with the response. Structure of the response varies depending on the method name and is defined by the 'returns' attribute of the command description in the remote debugging protocol."
             }
           ],
-          "description": "Response body. If an error occurs while posting the message, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
+          "description": "Response body. If an error occurs while posting the message, the promise will be rejected."
         }
       },
       {

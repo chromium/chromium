@@ -214,7 +214,7 @@
           "name": "callback",
           "optional": true,
           "parameters": [],
-          "description": "Called when the context menu has been updated."
+          "description": "Resolves when the context menu has been updated."
         }
       },
       {
@@ -240,7 +240,7 @@
           "name": "callback",
           "optional": true,
           "parameters": [],
-          "description": "Called when the context menu has been removed."
+          "description": "Resolves when the context menu has been removed."
         }
       },
       {
@@ -258,7 +258,7 @@
           "name": "callback",
           "optional": true,
           "parameters": [],
-          "description": "Called when removal is complete."
+          "description": "Resolves when removal is complete."
         }
       },
       {

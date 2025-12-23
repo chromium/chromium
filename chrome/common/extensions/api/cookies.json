@@ -158,7 +158,7 @@
           "min_version": "11.0.674.0",
           "parameters": [
             {
-              "name": "cookie", "$ref": "Cookie", "optional": true, "description": "Contains details about the cookie that's been set.  If setting failed for any reason, this will be \"null\", and $(ref:runtime.lastError) will be set."
+              "name": "cookie", "$ref": "Cookie", "optional": true, "description": "Contains details about the cookie that's been set. If setting failed for any reason, the promise will be rejected."
             }
           ]
         }
@@ -181,7 +181,7 @@
             {
               "name": "details",
               "type": "object",
-              "description": "Contains details about the cookie that's been removed.  If removal failed for any reason, this will be \"null\", and $(ref:runtime.lastError) will be set.",
+              "description": "Contains details about the cookie that's been removed. If removal failed for any reason, the promise will be rejected.",
               "optional": true,
               "properties": {
                 "url": {"type": "string", "description": "The URL associated with the cookie that's been removed."},

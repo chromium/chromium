@@ -40,7 +40,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Returns id of the launched process. If no process was launched returns -1.",
+          "description": "Resolves with the ID of the launched process. If no process was launched, the promise is rejected.",
           "parameters": [
             {
               "name": "id",
@@ -67,7 +67,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
+          "description": "Resolves with the ID of the launched vmshell process. If no process was launched, the promise is rejected.",
           "parameters": [
             {
               "name": "id",
@@ -91,7 +91,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Function that gets called when close operation is started for the process. Returns success of the function.",
+          "description": "Resolves with the success of the function.",
           "parameters": [
             {
               "name": "success",
@@ -119,7 +119,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "description": "Resolves with success.",
           "parameters": [
             {
               "name": "success",
@@ -152,7 +152,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "description": "Resolves with success.",
           "parameters": [
             {
               "name": "success",
@@ -204,7 +204,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback that will be called when complete.",
+          "description": "Promise that resolves when complete.",
           "parameters": []
         }
       },
@@ -221,7 +221,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback that will be called when complete.",
+          "description": "Promise that resolves when complete.",
           "parameters": []
         }
       },
@@ -232,7 +232,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Callback that will be called with the info object.",
+          "description": "Resolves with the info object.",
           "parameters": [
             {
               "name": "info",
@@ -264,7 +264,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback that will be called with prefs.",
+          "description": "Resolves with prefs.",
           "parameters": [
             {
               "name": "prefs",
@@ -299,7 +299,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback that will be called when complete.",
+          "description": "Resolves when complete.",
           "parameters": []
         }
       }

@@ -195,7 +195,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called right away, before speech finishes. Check $(ref:runtime.lastError) to make sure there were no errors. Use options.onEvent to get more detailed feedback.",
+          "description": "Resolves right away, before speech finishes. If an error occurs, the promise will be rejected. Use options.onEvent to get more detailed feedback.",
           "parameters": []
         }
       },

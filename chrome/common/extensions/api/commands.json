@@ -55,7 +55,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Called to return the registered commands.",
+          "description": "Resolves with a list of the registered commands.",
           "optional": true,
           "parameters": [
             {

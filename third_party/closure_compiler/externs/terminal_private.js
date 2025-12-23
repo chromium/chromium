@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,8 @@ chrome.terminalPrivate.OutputType = {
  *     'vmshell'.
  * @param {?Array<string>|undefined} args Command line arguments to pass to the
  *     process.
- * @param {function(string): void} callback Returns id of the launched process.
- *     If no process was launched returns -1.
+ * @param {function(string): void} callback Resolves with the ID of the launched
+ *     process. If no process was launched, the promise is rejected.
  */
 chrome.terminalPrivate.openTerminalProcess = function(processName, args, callback) {};
 
@@ -41,8 +41,8 @@ chrome.terminalPrivate.openTerminalProcess = function(processName, args, callbac
  * Starts new vmshell process.
  * @param {?Array<string>|undefined} args Command line arguments to pass to
  *     vmshell.
- * @param {function(string): void} callback Returns id of the launched vmshell
- *     process. If no process was launched returns -1.
+ * @param {function(string): void} callback Resolves with the ID of the launched
+ *     vmshell process. If no process was launched, the promise is rejected.
  */
 chrome.terminalPrivate.openVmshellProcess = function(args, callback) {};
 
@@ -50,8 +50,7 @@ chrome.terminalPrivate.openVmshellProcess = function(args, callback) {};
  * Closes previously opened process from either openTerminalProcess or
  * openVmshellProcess.
  * @param {string} id Unique id of the process we want to close.
- * @param {function(boolean): void=} callback Function that gets called when
- *     close operation is started for the process. Returns success of the
+ * @param {function(boolean): void=} callback Resolves with the success of the
  *     function.
  */
 chrome.terminalPrivate.closeTerminalProcess = function(id, callback) {};
@@ -61,8 +60,7 @@ chrome.terminalPrivate.closeTerminalProcess = function(id, callback) {};
  * id.
  * @param {string} id The id of the process to which we want to send input.
  * @param {string} input Input we are sending to the process.
- * @param {function(boolean): void=} callback Callback that will be called when
- *     sendInput method ends. Returns success.
+ * @param {function(boolean): void=} callback Resolves with success.
  */
 chrome.terminalPrivate.sendInput = function(id, input, callback) {};
 
@@ -71,8 +69,7 @@ chrome.terminalPrivate.sendInput = function(id, input, callback) {};
  * @param {string} id The id of the process.
  * @param {number} width New window width (as column count).
  * @param {number} height New window height (as row count).
- * @param {function(boolean): void=} callback Callback that will be called when
- *     sendInput method ends. Returns success.
+ * @param {function(boolean): void=} callback Resolves with success.
  */
 chrome.terminalPrivate.onTerminalResize = function(id, width, height, callback) {};
 
@@ -96,8 +93,7 @@ chrome.terminalPrivate.openWindow = function(data) {};
 
 /**
  * Open the Terminal Settings page.
- * @param {function(): void} callback Callback that will be called when
- *     complete.
+ * @param {function(): void} callback Promise that resolves when complete.
  */
 chrome.terminalPrivate.openOptionsPage = function(callback) {};
 
@@ -105,8 +101,7 @@ chrome.terminalPrivate.openOptionsPage = function(callback) {};
  * Open the System Settings at the specified subpage.
  * @param {string} subpage Name of subpage to open.  Currently only 'crostini'
  *     supported.
- * @param {function(): void} callback Callback that will be called when
- *     complete.
+ * @param {function(): void} callback Promise that resolves when complete.
  */
 chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
 
@@ -115,23 +110,21 @@ chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
  * Terminal, e.g. which feature flags are enabled.
  * @param {function({
  *   tast: boolean
- * }): void} callback Callback that will be called with the info object.
+ * }): void} callback Resolves with the info object.
  */
 chrome.terminalPrivate.getOSInfo = function(callback) {};
 
 /**
  * Returns specified pref values, ignoring any not in allowlist.
  * @param {!Array<string>} paths Paths of prefs to fetch.
- * @param {function(Object): void} callback Callback that will be called with
- *     prefs.
+ * @param {function(Object): void} callback Resolves with prefs.
  */
 chrome.terminalPrivate.getPrefs = function(paths, callback) {};
 
 /**
  * Sets specified prefs, ignoring any not in allowlist.
  * @param {Object} prefs Prefs to update keyed by paths.
- * @param {function(): void} callback Callback that will be called when
- *     complete.
+ * @param {function(): void} callback Resolves when complete.
  */
 chrome.terminalPrivate.setPrefs = function(prefs, callback) {};
 

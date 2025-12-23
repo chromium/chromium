@@ -556,7 +556,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Returns battery description as a string.",
+          "description": "Resolves with battery description as a string.",
           "parameters": [
             {
               "name": "batteryDescription",
@@ -572,7 +572,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Runs when Pumpkin download finishes.",
+          "description": "Resolves when Pumpkin download finishes.",
           "parameters": [
             {
               "name": "data",
@@ -588,7 +588,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Runs when the DLC download finishes.",
+          "description": "Resolves when the DLC download finishes.",
           "parameters": [
             {
               "name": "assets",
@@ -764,7 +764,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback function.",
+          "description": "Resolves with the response.",
           "parameters": [
             {
               "name": "response",
@@ -947,7 +947,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Returns whether feature is enabled.",
+          "description": "Resolves with whether the feature is enabled.",
           "parameters": [
             {
               "name": "featureEnabled",
@@ -1010,7 +1010,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the dialog is confirmed or cancelled.",
+          "description": "Resolves when the dialog is confirmed or cancelled.",
           "parameters": [
             {
               "type": "boolean",
@@ -1032,7 +1032,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called with the resulting Dom key string.",
+          "description": "Resolves with the resulting Dom key string.",
           "parameters": [
             {
               "type": "string",
@@ -1073,7 +1073,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "A callback that is run when the contents are returned.",
+          "description": "A promise that resolves when the contents are returned.",
           "parameters": [
             {
               "name": "contents",
@@ -1101,7 +1101,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "A callback that is run when the contents are returned.",
+          "description": "A promise that resolves when the contents are returned.",
           "parameters": [
             {
               "name": "contents",
@@ -1118,7 +1118,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "A callback that is run when the result is returned.",
+          "description": "A promise that resolves when the result is returned.",
           "parameters": [
             {
               "type": "array",

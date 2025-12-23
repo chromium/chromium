@@ -221,7 +221,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the user has either accepted/rejected the dialog, or some error occurred (such as invalid manifest or icon image data).",
+          "description": "Resolves when the user has either accepted/rejected the dialog, or rejects if some error occurred (such as invalid manifest or icon image data).",
           "optional": true,
           "parameters": [
             {

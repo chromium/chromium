@@ -32,7 +32,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Function called when registration completes. It should check $(ref:runtime.lastError) for error when <code>registrationId</code> is empty.",
+          "description": "Resolves when registration completes.",
           "parameters": [
             {
               "name": "registrationId",
@@ -49,7 +49,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "A function called after the unregistration completes. Unregistration was successful if $(ref:runtime.lastError) is not set.",
+          "description": "Resolves after the unregistration completes. Unregistration was successful if the promise does not reject.",
           "parameters": []
         }
       },
@@ -94,7 +94,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "A function called after the message is successfully queued for sending. $(ref:runtime.lastError) should be checked, to ensure a message was sent without problems.",
+          "description": "Resolves after the message is successfully queued for sending. If an error occurs, the promise will be rejected.",
           "parameters": [
             {
               "name": "messageId",
