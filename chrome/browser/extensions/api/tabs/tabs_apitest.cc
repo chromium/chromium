@@ -57,9 +57,6 @@ class ExtensionApiTabTest : public extensions::ExtensionApiTest {
   }
 };
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class ExtensionApiTabTestWithContextType
     : public ExtensionApiTabTest,
       public testing::WithParamInterface<ContextType> {
@@ -72,10 +69,13 @@ class ExtensionApiTabTestWithContextType
   ~ExtensionApiTabTestWithContextType() override = default;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionApiTabTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiTabTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -104,6 +104,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiTabBackForwardCacheTest,
                          ::testing::Values(ContextType::kServiceWorker));
+#endif
 
 class ExtensionApiNewTabTest : public ExtensionApiTabTestWithContextType {
  public:
@@ -141,6 +142,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, MAYBE_Tabs) {
 
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(

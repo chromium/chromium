@@ -1040,13 +1040,13 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     }
   }
 
-  // TODO(https://crbug.com/431004500): Handle moving the tab to the new window
-  // on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
   bool moved_tab = false;
+#endif
   // Move the tab into the created window only if it's an empty popup or it's
   // a tabbed window.
-  if (new_window->GetType() == Browser::TYPE_NORMAL || urls_.empty()) {
+  if (new_window->GetType() == BrowserWindowInterface::TYPE_NORMAL ||
+      urls_.empty()) {
     if (create_data_ && create_data_->tab_id) {
       std::string error;
       // -1 means "move tab to the end", which is what we want.
@@ -1056,10 +1056,11 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
               /*allow_other_window_types=*/true, &error) < 0) {
         return Error(std::move(error));
       }
+#if !BUILDFLAG(IS_ANDROID)
       moved_tab = true;
+#endif
     }
   }
-#endif
 
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
