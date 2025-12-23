@@ -179,21 +179,19 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
 TEST_F(DNRManifestTest, InvalidRulesetPath) {
   TestRulesetInfo ruleset("rules", "sub/../rules.json", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, InvalidRulesetPath2) {
   TestRulesetInfo ruleset("rules", "rules.json?param=1", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, ZeroRulesets) {
@@ -222,10 +220,10 @@ TEST_F(DNRManifestTest, MultipleRulesFileInvalidPath) {
   // Only persist |ruleset_1| on disk but include both in the manifest.
   WriteManifestAndRuleset(CreateManifest({ruleset_1, ruleset_2}), {ruleset_1});
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset_2.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset_2.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, RulesetCountExceeded) {
@@ -237,11 +235,11 @@ TEST_F(DNRManifestTest, RulesetCountExceeded) {
 
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesetCountExceeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources,
-      base::NumberToString(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS))));
+      base::NumberToString(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS)));
 }
 
 TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
@@ -253,11 +251,11 @@ TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
 
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kEnabledRulesetCountExceeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources,
-      base::NumberToString(dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS))));
+      base::NumberToString(dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS)));
 }
 
 TEST_F(DNRManifestTest, NonExistentRulesFile) {
@@ -267,10 +265,10 @@ TEST_F(DNRManifestTest, NonExistentRulesFile) {
 
   WriteManifestAndRuleset(manifest, {});
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
@@ -281,9 +279,9 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
 
   WriteManifestAndRuleset(manifest, rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kDeclarativeNetRequestPermissionNeeded,
-      dnr_api::ManifestKeys::kDeclarativeNetRequest)));
+      dnr_api::ManifestKeys::kDeclarativeNetRequest));
 }
 
 TEST_F(DNRManifestTest, RulesFileInNestedDirectory) {
@@ -303,9 +301,9 @@ TEST_F(DNRManifestTest, EmptyRulesetID) {
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "1")));
+      dnr_api::DNRInfo::kRuleResources, "1"));
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetID) {
@@ -317,9 +315,9 @@ TEST_F(DNRManifestTest, DuplicateRulesetID) {
       {ruleset_1, ruleset_2, ruleset_3, ruleset_4});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "3")));
+      dnr_api::DNRInfo::kRuleResources, "3"));
 }
 
 TEST_F(DNRManifestTest, ReservedRulesetID) {
@@ -329,9 +327,9 @@ TEST_F(DNRManifestTest, ReservedRulesetID) {
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "1")));
+      dnr_api::DNRInfo::kRuleResources, "1"));
 }
 
 // The webstore installation flow involves creation of a dummy extension with an
@@ -352,19 +350,19 @@ TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
 TEST_F(DNRManifestTest, EmptyRulesetPath1) {
   TestRulesetInfo ruleset("foo", "", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, EmptyRulesetPath2) {
   TestRulesetInfo ruleset("foo", ".", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetPath) {
