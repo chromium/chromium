@@ -153,9 +153,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     }
 
     if (this.onboardingTooltipIsVisible_ && !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
-        tooltip.hide();
-        this.onboardingTooltipIsVisible_ = false;
-    } else if(this.$.composebox.getHasAutomaticActiveTabChipToken()){
+      tooltip.hide();
+      this.onboardingTooltipIsVisible_ = false;
+    } else if (this.$.composebox.getHasAutomaticActiveTabChipToken()) {
       const shouldShow = this.shouldShowOnboardingTooltip();
       if (shouldShow) {
         tooltip.show();
@@ -168,8 +168,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   private shouldShowOnboardingTooltip(): boolean {
     return this.showOnboardingTooltip_ &&
-        this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_
-        && this.isOnboardingTooltipDismissCountBelowCap_ &&
+        this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_ &&
+        this.isOnboardingTooltipDismissCountBelowCap_ &&
         !this.userDismissedTooltip_;
   }
 
