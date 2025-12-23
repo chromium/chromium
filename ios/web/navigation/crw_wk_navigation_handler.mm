@@ -1376,8 +1376,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                            (ui::PageTransition)pageTransition {
   GURL requestURL = net::GURLWithNSURL(action.request.URL);
   DCHECK(web::GetWebClient()->IsAppSpecificURL(requestURL));
-  if (web::GetWebClient()->IsAppSpecificURL(
-          self.webStateImpl->GetLastCommittedURL())) {
+  web::NavigationItem* lastItem =
+      self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
+  if (lastItem &&
+      (web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()) ||
+       web::GetWebClient()->IsAppSpecificURL(lastItem->GetURL()))) {
     // Last committed page is also app specific and navigation should be
     // allowed.
     return YES;
