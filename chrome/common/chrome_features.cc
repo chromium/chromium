@@ -993,6 +993,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "glic-actor-autofill-maximum-timeout",
                    base::Minutes(1));
 
+BASE_FEATURE(kGlicDisableUnderlineAnimations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kActorFormFillingServiceEnableAddress,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

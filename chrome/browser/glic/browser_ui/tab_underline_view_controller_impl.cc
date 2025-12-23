@@ -373,12 +373,22 @@ void TabUnderlineViewControllerImpl::ShowAndAnimateUnderline() {
 }
 
 void TabUnderlineViewControllerImpl::HideUnderline() {
-  if (underline_view_->IsShowing()) {
+  if (!underline_view_->IsShowing()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
+    underline_view_->StopShowing();
+  } else {
     underline_view_->StartRampingDown();
   }
 }
 
 void TabUnderlineViewControllerImpl::AnimateUnderline() {
+  if (base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
+    return;
+  }
+
   if (!underline_view_->IsShowing()) {
     // There is be a chance that the underline view has already stopped showing.
     // In that case, gracefully handle the crash case in crbug.com/398319435 by

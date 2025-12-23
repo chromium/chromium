@@ -252,7 +252,8 @@ void AnimatedEffectView::Show() {
 
   skip_animation_cycle_ =
       gfx::Animation::PrefersReducedMotion() || ForceSimplifiedShader() ||
-      base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder);
+      base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder) ||
+      base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations);
 
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
@@ -345,6 +346,9 @@ std::vector<SkColor> AnimatedEffectView::GetEffectColors() {
 float AnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
   auto ramp_up_duration = skip_animation_cycle_ ? kFastOpacityRampUpDuration
                                                 : kOpacityRampUpDuration;
+  if (base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
+    ramp_up_duration = base::Milliseconds(0);
+  }
   if (!first_ramp_down_frame_.is_null()) {
     // The ramp up opacity could be any value between 0-1 during the ramp up
     // time. Thus, the ramping down opacity must be deducted from the value of
