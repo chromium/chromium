@@ -1034,12 +1034,6 @@ inline constexpr char kAutoPictureInPictureForVideoPlaybackName[] =
 inline constexpr char kAutoPictureInPictureForVideoPlaybackDescription[] =
     "Enables auto picture in picture for video playback";
 
-inline constexpr char kBackForwardTransitionsCrossDocSharedImageName[] =
-    "Back-forward transitions on cross-document navigations use SharedImage";
-inline constexpr char kBackForwardTransitionsCrossDocSharedImageDescription[] =
-    "When enabled, use a SharedImage for capturing screenshots for "
-    "back/forward transitions on cross-document navigations.";
-
 inline constexpr char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 inline constexpr char kBiometricReauthForPasswordFillingDescription[] =

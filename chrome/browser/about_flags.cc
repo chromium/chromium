@@ -8970,14 +8970,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"back-forward-transitions-cross-doc-shared-image",
-     flag_descriptions::kBackForwardTransitionsCrossDocSharedImageName,
-     flag_descriptions::kBackForwardTransitionsCrossDocSharedImageDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kBackForwardTransitionsCrossDocSharedImage)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
      flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,
