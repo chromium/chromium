@@ -918,6 +918,8 @@ void ScrollableArea::SetScrollbarsHiddenIfOverlayInternal(bool hidden) {
   if (!GetPageScrollbarTheme().UsesOverlayScrollbars())
     return;
 
+  hidden = hidden && !ShouldAvoidHidingOverlayScrollbars();
+
   if (scrollbars_hidden_if_overlay_ == static_cast<unsigned>(hidden))
     return;
 

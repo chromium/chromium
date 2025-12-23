@@ -626,6 +626,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual void UpdateScrollMarkers() {}
 
+  // Callback whenever the visual viewport changes scroll position or scale.
+  virtual void DidUpdateVisualViewport() {}
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -676,6 +679,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                             cc::SnapAxis) const {
     return nullptr;
   }
+
+  virtual bool ShouldAvoidHidingOverlayScrollbars() const { return false; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
