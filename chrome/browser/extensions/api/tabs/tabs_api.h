@@ -44,6 +44,7 @@ class BrowserWindowInterface;
 class GURL;
 class SessionID;
 class SkBitmap;
+class TabListInterface;
 class TabStripModel;
 
 namespace base {
@@ -387,16 +388,15 @@ class TabsUpdateFunction : public ExtensionFunction {
                            content::WebContents*& contents,
                            std::string& error);
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
   // Updates the active or selected tab. Returns true on success or if there was
   // nothing to do. Returns false on failure with an error message.
   bool UpdateActiveTab(const api::tabs::Update::Params& params,
-                       TabStripModel* tab_strip,
+                       TabListInterface& tab_list,
                        int tab_index,
-                       const content::WebContents* contents,
                        std::string& error);
 
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   // Updates the highlight state of the given tab. Returns true on success or if
   // there was nothing to do. Returns false on failure with an error.
   bool UpdateHighlightedTab(const api::tabs::Update::Params& params,

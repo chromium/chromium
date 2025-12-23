@@ -2131,13 +2131,16 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   // Cache the original web contents.
   content::WebContents* original_contents = contents;
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
   // Update the active (aka selected) tab.
-  if (!UpdateActiveTab(*params, tab_strip, tab_index, contents, error)) {
+  TabListInterface* tab_list =
+      TabListInterface::From(window->GetBrowserWindowInterface());
+  CHECK(tab_list);
+  if (!UpdateActiveTab(*params, *tab_list, tab_index, error)) {
     return RespondNow(Error(std::move(error)));
   }
 
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   // Update the highlighted tab.
   if (!UpdateHighlightedTab(*params, tab_strip, tab_index, error)) {
     return RespondNow(Error(std::move(error)));
@@ -2252,13 +2255,10 @@ bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
   return true;
 }
 
-// TODO(https://crbug.com/447211263): Support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 bool TabsUpdateFunction::UpdateActiveTab(
     const api::tabs::Update::Params& params,
-    TabStripModel* tab_strip,
+    TabListInterface& tab_list,
     int tab_index,
-    const content::WebContents* contents,
     std::string& error) {
   bool active = false;
   // TODO(rafaelw): Setting |active| from js doesn't make much sense.
@@ -2284,13 +2284,16 @@ bool TabsUpdateFunction::UpdateActiveTab(
     return false;
   }
 
-  if (tab_strip->active_index() != tab_index) {
-    tab_strip->ActivateTabAt(tab_index);
-    DCHECK_EQ(contents, tab_strip->GetActiveWebContents());
+  CHECK_LT(tab_index, tab_list.GetTabCount());
+  if (tab_list.GetActiveIndex() != tab_index) {
+    tab_list.ActivateTab(tab_list.GetTab(tab_index)->GetHandle());
+    DCHECK_EQ(tab_index, tab_list.GetActiveIndex());
   }
   return true;
 }
 
+// TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 bool TabsUpdateFunction::UpdateHighlightedTab(
     const api::tabs::Update::Params& params,
     TabStripModel* tab_strip,

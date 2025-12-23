@@ -241,8 +241,6 @@ const tests = [
 // The following tests don't work on desktop android (yet).
 // TODO(https://crbug.com/371432155): Enable these on desktop android.
 const skipForAndroid = [
-    'updateSelect',
-    'update',
     'openerTabId',
     'testRedirectingToAnotherWindow',
     'testOpenWindowInEmptyPopup',
