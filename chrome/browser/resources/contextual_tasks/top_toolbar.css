@@ -85,6 +85,7 @@ button > cr-icon {
 cr-icon-button {
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-icon-size: 20px;
+  color: var(--color-sys-on-surface-subtle);
 }
 
 cr-icon-button[hidden] {
@@ -93,6 +94,12 @@ cr-icon-button[hidden] {
 
 .dropdown-item cr-icon {
   margin-inline-end: 10px;
+}
+
+.dropdown-divider {
+  background-color: var(--cr-fallback-color-divider);
+  height: 1px;
+  width: 100%;
 }
 
 <if expr="_google_chrome">
