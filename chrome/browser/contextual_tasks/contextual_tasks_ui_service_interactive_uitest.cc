@@ -25,6 +25,7 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 
 using testing::_;
 using testing::SaveArg;
@@ -171,6 +172,64 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                   }),
                   WaitForShow(kContextualTasksSidePanelWebViewElementId));
   ASSERT_EQ(tab_strip_model->GetActiveTab()->GetGroup(), group_id);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       OnThreadLinkClicked_CanNavigateBack) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
+  // Add a contextual-tasks tab and add it to a group.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* task_tab = tab_strip_model->GetActiveTab();
+
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Fake a link click interception.
+  service->OnThreadLinkClicked(GURL(chrome::kChromeUIHistoryURL),
+                               task1.GetTaskId(), task_tab->GetWeakPtr(),
+                               browser()->GetWeakPtr());
+
+  // Wait for the navigation to finish.
+  {
+    content::TestNavigationObserver observer(
+        browser()->GetActiveTabInterface()->GetContents());
+    observer.WaitForNavigationFinished();
+  }
+
+  // Verify the side panel is open.
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+  // Verify the new tab can navigation back.
+  EXPECT_TRUE(browser()
+                  ->GetActiveTabInterface()
+                  ->GetContents()
+                  ->GetController()
+                  .CanGoBack());
+
+  // Trigger the back button.
+  browser()->GetActiveTabInterface()->GetContents()->GetController().GoBack();
+
+  // Wait for the navigation to finish.
+  {
+    content::TestNavigationObserver observer(
+        browser()->GetActiveTabInterface()->GetContents());
+    observer.WaitForNavigationFinished();
+  }
+
+  // Verify the side panel is closed.
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
 }
 
 IN_PROC_BROWSER_TEST_F(
