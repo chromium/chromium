@@ -53,10 +53,11 @@ enum KeyboardLayout {
 }
 
 /**
- * All possible options on options pages. Should match Gooogle3.
+ * CrOS-Prefs-backed options on option pages. Where applicable, these literal
+ * string values are persisted as entry keys in CrOS-Prefs dictionary value for
+ * input-method-specific settings of a particular CrOS 1P input method.
  */
 export enum OptionType {
-  EDIT_USER_DICT = 'editUserDict',
   ENABLE_COMPLETION = 'enableCompletion',
   ENABLE_DOUBLE_SPACE_PERIOD = 'enableDoubleSpacePeriod',
   ENABLE_GESTURE_TYPING = 'enableGestureTyping',
@@ -87,8 +88,6 @@ export enum OptionType {
   // Prefs storage so must NOT be fixed unless user data are migrated first.
   JAPANESE_SELECTION_SHORTCUT = 'JapaneseSectionShortcut',
   JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
-  JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
-  JAPANESE_DELETE_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
   JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
   // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionCategories)
   // Options for Korean input method.
@@ -132,6 +131,16 @@ export enum OptionType {
       'vietnameseTelexInsertDoubleHornOnUo',
   VIETNAMESE_TELEX_INSERT_U_HORN_ON_W = 'vietnameseTelexInsertUHornOnW',
   VIETNAMESE_TELEX_SHOW_UNDERLINE = 'vietnameseTelexShowUnderline',
+}
+
+/**
+ * UI-only items (not backed by CrOS-Prefs) on option pages. These typically
+ * correspond to action buttons or links in CrOS Settings UI.
+ */
+export enum UiOptionType {
+  EDIT_USER_DICT = 'editUserDict',
+  JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
+  JAPANESE_DELETE_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
 }
 
 /**
@@ -283,7 +292,7 @@ const Settings = {
         },
         {name: OptionType.ENABLE_GESTURE_TYPING},
         {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
-        {name: OptionType.EDIT_USER_DICT},
+        {name: UiOptionType.EDIT_USER_DICT},
       ],
     },
   ],
@@ -317,13 +326,13 @@ const Settings = {
     {
       title: SettingsHeaders.USER_DICTIONARIES,
       optionNames: [{
-        name: OptionType.JAPANESE_MANAGE_USER_DICTIONARY,
+        name: UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY,
       }],
     },
     {
       title: SettingsHeaders.PRIVACY,
       optionNames: [
-        {name: OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA},
+        {name: UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA},
         {name: OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
       ],
     },
@@ -366,7 +375,7 @@ const Settings = {
   [SettingsType.PINYIN_SETTINGS]: [
     {
       title: SettingsHeaders.ADVANCED,
-      optionNames: [{name: OptionType.EDIT_USER_DICT}],
+      optionNames: [{name: UiOptionType.EDIT_USER_DICT}],
     },
     {
       title: SettingsHeaders.PHYSICAL_KEYBOARD,
@@ -458,7 +467,7 @@ const Settings = {
 } satisfies Record<SettingsType, Array<{
                      title: SettingsHeaders,
                      optionNames: Array<{
-                       name: OptionType,
+                       name: OptionType | UiOptionType,
                        dependentOptions?: OptionType[],
                      }>,
                    }>>;
@@ -495,11 +504,13 @@ export function hasOptionsPageInSettings(
 export function generateOptions(
     engineId: string, context: SettingsContext): Array<{
   title: SettingsHeaders,
-  optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+  optionNames:
+      Array<{name: OptionType | UiOptionType, dependentOptions?: OptionType[]}>,
 }> {
   const options: Array<{
     title: SettingsHeaders,
-    optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+    optionNames: Array<
+        {name: OptionType | UiOptionType, dependentOptions?: OptionType[]}>,
   }> = [];
   const inputMethodSettings = getInputMethodSettings(context);
   const engineSettings = inputMethodSettings[engineId];
@@ -536,7 +547,7 @@ export function generateOptions(
  * @param option The option type.
  * @return The UI type of |option|.
  */
-export function getOptionUiType(option: OptionType): UiType {
+export function getOptionUiType(option: OptionType|UiOptionType): UiType {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.ENABLE_COMPLETION:
@@ -597,23 +608,25 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.ZHUYIN_SELECT_KEYS:
     case OptionType.ZHUYIN_PAGE_SIZE:
       return UiType.DROPDOWN;
-    case OptionType.EDIT_USER_DICT:
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.EDIT_USER_DICT:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return UiType.LINK;
-    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
+    case UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return UiType.SUBMENU_BUTTON;
     default:
       assertExhaustive(option);
   }
 }
 
-export function isOptionLabelTranslated(option: OptionType): option is Exclude<
-    OptionType,
-    OptionType.PINYIN_AN_ANG|OptionType.PINYIN_EN_ENG|OptionType
-        .PINYIN_IAN_IANG|OptionType.PINYIN_K_G|OptionType.PINYIN_R_L|
-    OptionType.PINYIN_UAN_UANG|OptionType.PINYIN_C_CH|
-    OptionType.PINYIN_F_H|OptionType.PINYIN_IN_ING|
-    OptionType.PINYIN_L_N|OptionType.PINYIN_S_SH|OptionType.PINYIN_Z_ZH> {
+export function isOptionLabelTranslated(option: OptionType|UiOptionType):
+    option is Exclude<
+        OptionType|UiOptionType,
+        OptionType.PINYIN_AN_ANG|OptionType.PINYIN_EN_ENG|
+        OptionType.PINYIN_IAN_IANG|OptionType.PINYIN_K_G|
+        OptionType.PINYIN_R_L|OptionType.PINYIN_UAN_UANG|
+        OptionType.PINYIN_C_CH|OptionType.PINYIN_F_H|
+        OptionType.PINYIN_IN_ING|OptionType.PINYIN_L_N|
+        OptionType.PINYIN_S_SH|OptionType.PINYIN_Z_ZH> {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.PINYIN_AN_ANG:
@@ -639,7 +652,7 @@ export function isOptionLabelTranslated(option: OptionType): option is Exclude<
  * @param option The option type.
  * @return The name of the i18n string for the label of |option|.
  */
-export function getOptionLabelName(option: OptionType): string {
+export function getOptionLabelName(option: OptionType|UiOptionType): string {
   switch (option) {
     case OptionType.ENABLE_DOUBLE_SPACE_PERIOD:
       return 'inputMethodOptionsEnableDoubleSpacePeriod';
@@ -691,15 +704,15 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsJapaneseUseSystemDictionary';
     case OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseNumberOfSuggestions';
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionary';
-    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
+    case UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return 'inputMethodOptionsJapaneseDeletePersonalizationData';
     case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseDisablePersonalizedSuggestions';
     case OptionType.XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
-    case OptionType.EDIT_USER_DICT:
+    case UiOptionType.EDIT_USER_DICT:
       return 'inputMethodOptionsEditUserDict';
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
       return 'inputMethodOptionsZhuyinKeyboardLayout';
@@ -743,7 +756,7 @@ export function getOptionLabelName(option: OptionType): string {
  * @return The name of the string for the subtitle of |option|. Returns empty
  *     string if no subtitle.
  */
-export function getOptionSubtitleName(option: OptionType): string {
+export function getOptionSubtitleName(option: OptionType|UiOptionType): string {
   switch (option) {
     // TODO(b/234790486): The subtitle is not forced to the next line if it is
     // too short. You end up with something like :
@@ -751,7 +764,7 @@ export function getOptionSubtitleName(option: OptionType): string {
     // affects the diacritics label. This is not currently an issue since both
     // string are long enough and force themself to the next line, but it may be
     // an issue in other languages or with future strings which may be shorter.
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionarySubtitle';
     case OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT:
     case OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT:
@@ -771,7 +784,8 @@ export function getOptionSubtitleName(option: OptionType): string {
 /**
  * `isOptionLabelTranslated(option)` must be false.
  */
-export function getUntranslatedOptionLabelName(option: OptionType): string {
+export function getUntranslatedOptionLabelName(option: OptionType|UiOptionType):
+    string {
   switch (option) {
     case OptionType.PINYIN_AN_ANG:
       return 'an_ang';
@@ -807,7 +821,7 @@ export function getUntranslatedOptionLabelName(option: OptionType): string {
  * @param option The option type.
  * @return The list of items to be displayed in the dropdown for |option|.
  */
-export function getOptionMenuItems(option: OptionType):
+export function getOptionMenuItems(option: OptionType|UiOptionType):
     Array<{name?: string, value: string | number}> {
   switch (option) {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
@@ -1014,7 +1028,7 @@ export function getOptionMenuItems(option: OptionType):
  */
 // TODO(b/265557721): Remove this when we remove Polymer's two-way native
 // binding of value changes.
-export function shouldStoreAsNumber(option: OptionType):
+export function shouldStoreAsNumber(option: OptionType|UiOptionType):
     option is OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
     OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
     OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS {
@@ -1027,11 +1041,11 @@ export function shouldStoreAsNumber(option: OptionType):
  * @return The url to open for |option|, returns undefined if |option| does not
  *     have a url.
  */
-export function getOptionUrl(option: OptionType): Route|undefined {
-  if (option === OptionType.EDIT_USER_DICT) {
+export function getOptionUrl(option: OptionType|UiOptionType): Route|undefined {
+  if (option === UiOptionType.EDIT_USER_DICT) {
     return routes.OS_LANGUAGES_EDIT_DICTIONARY;
   }
-  if (option === OptionType.JAPANESE_MANAGE_USER_DICTIONARY) {
+  if (option === UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY) {
     return routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY;
   }
   return undefined;
@@ -1042,9 +1056,9 @@ export function getOptionUrl(option: OptionType): Route|undefined {
  * @return The submenu button type for |option|, returns undefined if |option|
  *     does not have a submenu button type.
  */
-export function getSubmenuButtonType(option: OptionType): SubmenuButton|
-    undefined {
-  if (option === OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA) {
+export function getSubmenuButtonType(option: OptionType|UiOptionType):
+    SubmenuButton|undefined {
+  if (option === UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA) {
     return SubmenuButton.JAPANESE_DELETE_PERSONALIZATION_DATA;
   }
   return undefined;

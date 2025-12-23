@@ -29,7 +29,7 @@ import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import type {OPTION_DEFAULT} from './input_method_util.js';
+import type {OPTION_DEFAULT, UiOptionType} from './input_method_util.js';
 import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, isOptionLabelTranslated, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, SettingsHeaders, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import type {LanguageHelper} from './languages_types.js';
 
@@ -53,7 +53,7 @@ type PrefsObjectType =
  */
 // TODO(b/263829863): Use a discriminated union for better type-safety.
 interface Option {
-  name: OptionType;
+  name: OptionType|UiOptionType;
   uiType: UiType;
   value: OptionValue;
   label: string;
@@ -228,7 +228,7 @@ export class SettingsInputMethodOptionsPageElement extends
    * Get menu items for an option, and enrich the items with selected status and
    * i18n label.
    */
-  getMenuItems(name: OptionType, value: OptionValue): Array<{
+  getMenuItems(name: OptionType|UiOptionType, value: OptionValue): Array<{
     selected: boolean,
     label: string|number,
     name?: string, value: string|number,
@@ -261,7 +261,7 @@ export class SettingsInputMethodOptionsPageElement extends
     const defaultOverrides = this.getDefaultValueOverrides_(engineId);
 
     const makeOption = (option: {
-      name: OptionType,
+      name: OptionType|UiOptionType,
       dependentOptions?: OptionType[],
     }): Option => {
       const name = option.name;
@@ -395,7 +395,8 @@ export class SettingsInputMethodOptionsPageElement extends
     });
   }
 
-  private isSettingValueValid_(name: OptionType, value: OptionValue): boolean {
+  private isSettingValueValid_(
+      name: OptionType|UiOptionType, value: OptionValue): boolean {
     // TODO(b/238031866): Move this to be a function, as this method does not
     // use `this`.
     const uiType = getOptionUiType(name);
@@ -412,7 +413,8 @@ export class SettingsInputMethodOptionsPageElement extends
    * Callers must ensure that `newValue` is the value DISPLAYED for `optionName`
    * as this method maps back displayed values to stored prefs values.
    */
-  private updatePref_(optionName: OptionType, newValue: OptionValue): void {
+  private updatePref_(
+      optionName: OptionType|UiOptionType, newValue: OptionValue): void {
     // Get the existing settings dictionary, in order to update it later.
     // |PrefsMixin.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a
