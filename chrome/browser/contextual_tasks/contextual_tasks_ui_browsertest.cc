@@ -8,9 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -20,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -98,13 +97,14 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    contextual_tasks::ContextualTasksContextControllerFactory::GetInstance()
+    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
         ->SetTestingFactory(
-            context, base::BindRepeating([](content::BrowserContext*)
-                                             -> std::unique_ptr<KeyedService> {
-              return std::make_unique<testing::NiceMock<
-                  contextual_tasks::MockContextualTasksContextController>>();
-            }));
+            context,
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<testing::NiceMock<
+                      contextual_tasks::MockContextualTasksService>>();
+                }));
   }
 
   void SetUpOnMainThread() override {

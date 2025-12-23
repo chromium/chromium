@@ -8,8 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -36,10 +35,9 @@ ContextualTasksEphemeralButtonController::
           browser_window_interface->GetUnownedUserDataHost(),
           *this) {
   Profile* const profile = browser_window_interface_->GetProfile();
-  contextual_tasks::ContextualTasksContextController* const context_controller =
-      contextual_tasks::ContextualTasksContextControllerFactory::GetForProfile(
-          profile);
-  contextual_task_observation_.Observe(context_controller);
+  contextual_tasks::ContextualTasksService* const contextual_tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
+  contextual_task_observation_.Observe(contextual_tasks_service);
   tab_change_subscription_ =
       browser_window_interface_->RegisterActiveTabDidChange(base::BindRepeating(
           &ContextualTasksEphemeralButtonController::OnActiveTabChange,
@@ -147,8 +145,8 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
 
 contextual_tasks::ContextualTasksService*
 ContextualTasksEphemeralButtonController::GetContextualTasksService() {
-  return contextual_tasks::ContextualTasksContextControllerFactory::
-      GetForProfile(browser_window_interface_->GetProfile());
+  return contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+      browser_window_interface_->GetProfile());
 }
 
 std::optional<SessionID>

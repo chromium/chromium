@@ -7,8 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -87,7 +86,7 @@ bool EntryPointEligibilityManager::AreEntryPointsEligible() {
            .IsEmpty();
 
   ContextualTasksService* const contextual_task_service =
-      ContextualTasksContextControllerFactory::GetForProfile(profile_);
+      ContextualTasksServiceFactory::GetForProfile(profile_);
   CHECK(contextual_task_service);
   const bool is_feature_eligible =
       contextual_task_service->GetFeatureEligibility().IsEligible();

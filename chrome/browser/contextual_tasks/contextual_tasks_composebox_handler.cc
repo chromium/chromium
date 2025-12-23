@@ -14,8 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
@@ -155,9 +155,9 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
                                                              this)),
           std::move(get_session_callback)),
       web_ui_controller_(ui_controller),
-      context_controller_(
-          contextual_tasks::ContextualTasksContextControllerFactory::
-              GetForProfile(profile)) {
+      contextual_tasks_service_(
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile)) {
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
@@ -182,8 +182,8 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
-  auto* context_controller = GetContextController();
-  if (!task_id.has_value() || !context_controller) {
+  auto* contextual_tasks_service = GetContextualTasksService();
+  if (!task_id.has_value() || !contextual_tasks_service) {
     ContinueCreateAndSendQueryMessage(query);
     return;
   }
@@ -213,7 +213,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   }
   // TODO(crbug.com/468453630): The context needs to actually be populated
   // with tab data from the server-managed context list.
-  context_controller->GetContextForTask(
+  contextual_tasks_service->GetContextForTask(
       *task_id,
       {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},
       std::move(context_decoration_params),
@@ -221,9 +221,9 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
                      weak_factory_.GetWeakPtr(), query, active_tab_handle));
 }
 
-contextual_tasks::ContextualTasksContextController*
-ContextualTasksComposeboxHandler::GetContextController() {
-  return context_controller_;
+contextual_tasks::ContextualTasksService*
+ContextualTasksComposeboxHandler::GetContextualTasksService() {
+  return contextual_tasks_service_;
 }
 
 void ContextualTasksComposeboxHandler::OnContextRetrieved(
@@ -376,7 +376,7 @@ std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
   }
   SessionID tab_session_id = page_content_data.tab_session_id.value();
 
-  auto* controller = GetContextController();
+  auto* controller = GetContextualTasksService();
   if (!controller) {
     return std::nullopt;
   }

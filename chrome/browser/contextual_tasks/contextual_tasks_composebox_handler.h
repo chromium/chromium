@@ -30,7 +30,7 @@ class TabInterface;
 
 namespace contextual_tasks {
 struct ContextualTaskContext;
-class ContextualTasksContextController;
+class ContextualTasksService;
 }  // namespace contextual_tasks
 
 // Struct to store file data and mime type.
@@ -84,8 +84,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnFileRead(std::unique_ptr<FileData> file_data);
 
  protected:
-  virtual contextual_tasks::ContextualTasksContextController*
-  GetContextController();
+  virtual contextual_tasks::ContextualTasksService* GetContextualTasksService();
 
  private:
   void OnFileAddedToSession(searchbox::mojom::SelectedFileInfoPtr file_info,
@@ -134,8 +133,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   // The context controller for the current profile. The profile will outlive
   // this class.
-  raw_ptr<contextual_tasks::ContextualTasksContextController>
-      context_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
 
   // Map of context tokens to tab IDs for tabs that are delayed for upload.

@@ -209,12 +209,10 @@ if (!is_android) {
 
 source_set("test_support") {
   testonly = true
-
   sources = [
     "mock_contextual_tasks_context_controller.cc",
     "mock_contextual_tasks_context_controller.h",
   ]
-
   deps = [
     ":contextual_tasks",
     "//testing/gmock",
@@ -247,6 +245,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/contextual_tasks/public:feature_list",
+      "//components/contextual_tasks/public:test_support",
       "//components/optimization_guide/core:model_execution_test_support",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
@@ -295,6 +294,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public",
+    "//components/contextual_tasks/public:test_support",
     "//content/test:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",

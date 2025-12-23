@@ -10,7 +10,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
@@ -70,13 +69,13 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
     ContextualTasksUI* web_ui_controller,
     contextual_tasks::ContextualTasksUiService* ui_service,
-    contextual_tasks::ContextualTasksContextController* context_controller)
+    contextual_tasks::ContextualTasksService* contextual_tasks_service)
     : receiver_(this, std::move(receiver)),
       web_ui_controller_(web_ui_controller),
       ui_service_(ui_service),
-      context_controller_(context_controller) {
-  CHECK(context_controller_);
-  context_controller_observation_.Observe(context_controller_);
+      contextual_tasks_service_(contextual_tasks_service) {
+  CHECK(contextual_tasks_service_);
+  contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
@@ -282,7 +281,7 @@ void ContextualTasksPageHandler::UpdateContextForTask(
     web_ui_controller_->page()->OnContextUpdated({});
     return;
   }
-  context_controller_->GetContextForTask(
+  contextual_tasks_service_->GetContextForTask(
       task_id, {contextual_tasks::ContextualTaskContextSource::kTabStrip},
       std::make_unique<contextual_tasks::ContextDecorationParams>(),
       base::BindOnce(
@@ -322,5 +321,6 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   std::vector<contextual_tasks::UrlResource> committed_context =
       contextual_tasks::ConvertAiModeContextToUrlResources(message,
                                                            submitted_context);
-  context_controller_->SetUrlResourcesFromServer(*task_id, committed_context);
+  contextual_tasks_service_->SetUrlResourcesFromServer(*task_id,
+                                                       committed_context);
 }

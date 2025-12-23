@@ -24,7 +24,7 @@ class Uuid;
 class ContextualTasksUI;
 
 namespace contextual_tasks {
-class ContextualTasksContextController;
+class ContextualTasksService;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
@@ -36,7 +36,7 @@ class ContextualTasksPageHandler
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
       ContextualTasksUI* web_ui_controller,
       contextual_tasks::ContextualTasksUiService* ui_service,
-      contextual_tasks::ContextualTasksContextController* context_controller);
+      contextual_tasks::ContextualTasksService* contextual_tasks_service);
   ~ContextualTasksPageHandler() override;
 
   // contextual_tasks::mojom::PageHandler:
@@ -74,12 +74,11 @@ class ContextualTasksPageHandler
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
-  raw_ptr<contextual_tasks::ContextualTasksContextController>
-      context_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
   base::ScopedObservation<contextual_tasks::ContextualTasksService,
                           contextual_tasks::ContextualTasksService::Observer>
-      context_controller_observation_{this};
+      contextual_tasks_service_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksPageHandler> weak_ptr_factory_{this};
 };

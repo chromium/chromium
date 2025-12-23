@@ -13,8 +13,8 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -43,6 +43,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -1659,10 +1660,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
-  contextual_tasks::ContextualTasksContextController*
-      contextual_tasks_controller =
-          contextual_tasks::ContextualTasksContextControllerFactory::
-              GetForProfile(browser()->profile());
+  contextual_tasks::ContextualTasksService* contextual_tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          browser()->profile());
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {
@@ -1680,9 +1680,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
         // Associate the task from tab0 to this new tab.
         SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(0));
-        auto task =
-            contextual_tasks_controller->GetContextualTaskForTab(tab_id0);
-        contextual_tasks_controller->AssociateTabWithTask(
+        auto task = contextual_tasks_service->GetContextualTaskForTab(tab_id0);
+        contextual_tasks_service->AssociateTabWithTask(
             task->GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
                 browser()->tab_strip_model()->GetWebContentsAt(1)));
@@ -1797,10 +1796,9 @@ IN_PROC_BROWSER_TEST_F(
   browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
-  contextual_tasks::ContextualTasksContextController*
-      contextual_tasks_controller =
-          contextual_tasks::ContextualTasksContextControllerFactory::
-              GetForProfile(browser()->profile());
+  contextual_tasks::ContextualTasksService* contextual_tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          browser()->profile());
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {
@@ -1818,9 +1816,8 @@ IN_PROC_BROWSER_TEST_F(
         // Associate the task from tab0 to this new tab.
         SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(0));
-        auto task =
-            contextual_tasks_controller->GetContextualTaskForTab(tab_id0);
-        contextual_tasks_controller->AssociateTabWithTask(
+        auto task = contextual_tasks_service->GetContextualTaskForTab(tab_id0);
+        contextual_tasks_service->AssociateTabWithTask(
             task->GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
                 browser()->tab_strip_model()->GetWebContentsAt(1)));
