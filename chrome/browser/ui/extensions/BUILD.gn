@@ -60,7 +60,7 @@ source_set("extensions") {
       "accelerator_priority.h",
       "app_launch_params.h",
       "application_launch.h",
-      "extension_action_platform_delegate.h",
+      "extension_action_delegate.h",
       "extension_enable_flow.h",
       "extension_post_install_dialog_model.h",
       "extension_side_panel_utils.h",

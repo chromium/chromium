@@ -26,7 +26,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class ExtensionActionPlatformDelegate;
+class ExtensionActionDelegate;
 class IconWithBadgeImageSource;
 enum class PopupShowAction;
 class TabListInterface;
@@ -46,7 +46,7 @@ class ImageModel;
 // The View Model of an extension action UI component.
 //
 // This class contains platform-agnostic extension action UI logic. It works
-// with platform-specific `ExtensionActionPlatformDelegate` to provide extension
+// with platform-specific `ExtensionActionDelegate` to provide extension
 // action business logic across platforms.
 //
 // This class shares ownership of the extension (via scoped_refptr) to ensure
@@ -65,7 +65,7 @@ class ExtensionActionViewModel
   static std::unique_ptr<ExtensionActionViewModel> Create(
       const extensions::ExtensionId& extension_id,
       BrowserWindowInterface* browser,
-      std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
+      std::unique_ptr<ExtensionActionDelegate> delegate);
 
   ExtensionActionViewModel(const ExtensionActionViewModel&) = delete;
   ExtensionActionViewModel& operator=(const ExtensionActionViewModel&) = delete;
@@ -140,9 +140,7 @@ class ExtensionActionViewModel
   // this class.
   bool CanHandleAccelerators() const;
 
-  ExtensionActionPlatformDelegate* platform_delegate() {
-    return platform_delegate_.get();
-  }
+  ExtensionActionDelegate* delegate() { return delegate_.get(); }
 
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSourceForTesting(
       content::WebContents* web_contents,
@@ -150,12 +148,11 @@ class ExtensionActionViewModel
 
  private:
   // New instances should be instantiated with Create().
-  ExtensionActionViewModel(
-      scoped_refptr<const extensions::Extension> extension,
-      BrowserWindowInterface* browser,
-      extensions::ExtensionAction* extension_action,
-      extensions::ExtensionRegistry* extension_registry,
-      std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
+  ExtensionActionViewModel(scoped_refptr<const extensions::Extension> extension,
+                           BrowserWindowInterface* browser,
+                           extensions::ExtensionAction* extension_action,
+                           extensions::ExtensionRegistry* extension_registry,
+                           std::unique_ptr<ExtensionActionDelegate> delegate);
 
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents() const;
@@ -210,7 +207,7 @@ class ExtensionActionViewModel
   base::RepeatingClosureList observers_;
 
   // The delegate to handle platform-specific implementations.
-  std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate_;
+  std::unique_ptr<ExtensionActionDelegate> delegate_;
 
   // The object that will be used to get the browser action icon for us.
   // It may load the icon asynchronously (in which case the initial icon

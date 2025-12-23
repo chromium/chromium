@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
+#include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
@@ -40,9 +40,8 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
-class FakeExtensionActionPlatformDelegate
-    : public ExtensionActionPlatformDelegate {
+// A fake implementation of ExtensionActionDelegate that does nothing.
+class FakeExtensionActionDelegate : public ExtensionActionDelegate {
  public:
   void AttachToModel(ExtensionActionViewModel* model) override {}
   void DetachFromModel() override {}
@@ -71,7 +70,7 @@ class TestExtensionsMenuDelegate : public ExtensionsMenuViewModel::Delegate {
       const extensions::ExtensionId& extension_id) override {
     return ExtensionActionViewModel::Create(
         extension_id, browser_,
-        std::make_unique<FakeExtensionActionPlatformDelegate>());
+        std::make_unique<FakeExtensionActionDelegate>());
   }
 
  private:

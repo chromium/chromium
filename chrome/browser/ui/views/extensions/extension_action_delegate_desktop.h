@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
+#include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -26,7 +26,7 @@ class ExtensionViewHost;
 // action button in the toolbar and one in the extensions menu are different
 // types of views.
 class ExtensionActionDelegateDesktop
-    : public ExtensionActionPlatformDelegate,
+    : public ExtensionActionDelegate,
       public ui::AcceleratorTarget,
       public extensions::ExtensionHostObserver {
  public:
@@ -65,7 +65,7 @@ class ExtensionActionDelegateDesktop
   // Handles cleanup after the popup closes.
   void OnPopupClosed();
 
-  // ExtensionActionPlatformDelegate:
+  // ExtensionActionDelegate:
   void AttachToModel(ExtensionActionViewModel* model) override;
   void DetachFromModel() override;
   void RegisterCommand() override;

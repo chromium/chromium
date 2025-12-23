@@ -44,8 +44,7 @@ ExtensionActionDelegateDesktop::GetPopupOwnerDelegate() {
   ExtensionActionViewModel* owner_model =
       static_cast<ExtensionActionViewModel*>(
           extensions_container_->GetActionForId(model_->GetId()));
-  return static_cast<ExtensionActionDelegateDesktop*>(
-      owner_model->platform_delegate());
+  return static_cast<ExtensionActionDelegateDesktop*>(owner_model->delegate());
 }
 
 void ExtensionActionDelegateDesktop::DoTriggerPopup(

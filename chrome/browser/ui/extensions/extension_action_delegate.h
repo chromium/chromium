@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
-#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_DELEGATE_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_DELEGATE_H_
 
 #include <memory>
 
@@ -25,9 +25,9 @@ class ExtensionViewHost;
 //
 // Platform-agnostic extension action UI logic must go into
 // `ExtensionActionViewModel` instead.
-class ExtensionActionPlatformDelegate {
+class ExtensionActionDelegate {
  public:
-  virtual ~ExtensionActionPlatformDelegate() = default;
+  virtual ~ExtensionActionDelegate() = default;
 
   // Attaches the delegate to an ExtensionActionViewModel. It is called
   // by the model on its constructor.
@@ -70,4 +70,4 @@ class ExtensionActionPlatformDelegate {
   virtual bool CloseOverflowMenuIfOpen() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_DELEGATE_H_
