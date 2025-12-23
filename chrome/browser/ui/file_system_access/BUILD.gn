@@ -8,12 +8,16 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("file_system_access") {
   sources = [
-    "file_system_access_dangerous_file_dialog.h",
     "file_system_access_dialogs.h",
     "file_system_access_permission_dialog.h",
     "file_system_access_restricted_directory_dialog.h",
     "file_system_access_ui_helpers.h",
   ]
+
+  if (safe_browsing_mode != 0) {
+    sources += [ "file_system_access_dangerous_file_dialog.h" ]
+  }
+
   public_deps = [
     "//base",
     "//chrome/browser/file_system_access",
@@ -23,7 +27,6 @@ source_set("file_system_access") {
 
 source_set("impl") {
   sources = [
-    "file_system_access_dangerous_file_dialog.cc",
     "file_system_access_dialogs.cc",
     "file_system_access_permission_dialog.cc",
     "file_system_access_restricted_directory_dialog.cc",
@@ -36,6 +39,7 @@ source_set("impl") {
   ]
 
   if (safe_browsing_mode != 0) {
+    sources += [ "file_system_access_dangerous_file_dialog.cc" ]
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
@@ -47,7 +51,6 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "file_system_access_dangerous_file_dialog_browsertest.cc",
       "file_system_access_permission_dialog_browsertest.cc",
       "file_system_access_restricted_directory_dialog_browsertest.cc",
     ]
@@ -59,13 +62,16 @@ if (!is_android) {
       "//content/test:test_support",
       "//url",
     ]
+
+    if (safe_browsing_mode != 0) {
+      sources += [ "file_system_access_dangerous_file_dialog_browsertest.cc" ]
+    }
   }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "file_system_access_dangerous_file_dialog_unittest.cc",
     "file_system_access_permission_dialog_unittest.cc",
     "file_system_access_restricted_directory_dialog_unittest.cc",
     "file_system_access_ui_helpers_unittest.cc",
@@ -78,6 +84,10 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//url",
   ]
+
+  if (safe_browsing_mode != 0) {
+    sources += [ "file_system_access_dangerous_file_dialog_unittest.cc" ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
