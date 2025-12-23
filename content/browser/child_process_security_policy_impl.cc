@@ -3380,10 +3380,8 @@ std::string ChildProcessSecurityPolicyImpl::GetKilledProcessOriginLock(
 void ChildProcessSecurityPolicyImpl::LogKilledProcessOriginLock(int child_id) {
   base::AutoLock lock(lock_);
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  const auto itr =
-      security_state_.find(ChildProcessId::FromUnsafeValue(child_id));
   const SecurityState* security_state =
-      itr != security_state_.end() ? itr->second.get() : nullptr;
+      GetSecurityStateForQuery(ChildProcessId::FromUnsafeValue(child_id));
 
   base::debug::SetCrashKeyString(GetKilledProcessOriginLockKey(),
                                  GetKilledProcessOriginLock(security_state));
