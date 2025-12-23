@@ -13,6 +13,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -129,6 +130,11 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
 
 bool IsNtpComposeboxEnabled(Profile* profile) {
   if (!profile) {
+    return false;
+  }
+
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
     return false;
   }
 
@@ -349,6 +355,11 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
   }
 
   if (!ntp_composebox::IsNtpComposeboxEnabled(profile)) {
+    return false;
+  }
+
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
     return false;
   }
 
