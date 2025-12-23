@@ -191,6 +191,14 @@ void ReloadFromOmnibox() {
     // Test uses "split screen" (multiwindow) to force compact width.
     EARL_GREY_TEST_DISABLED(@"Test disabled when building with Xcode 26.");
   }
+  if (IsComposeboxIOSEnabled()) {
+    // TODO(crbug.com/471204653): Re-enable once event ordering is fixed.
+    // The current sequence prevents the IPH from showing:
+    // 1. TabBasedIPHBrowserAgent::PageLoaded fires.
+    // 2. BrowserViewController::popupDidCloseForPresenter fires (too late).
+    // Result: BrowserViewVisibilityState is invalid during step 1.
+    EARL_GREY_TEST_DISABLED(@"Test disabled when composebox is enabled.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
