@@ -317,11 +317,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _editView.minimumHeight = kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:editView];
-  AddSameConstraintsToSidesWithInsets(
-      _editView, _omniboxContainer,
-      LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(0, kInputPlateSidePadding, 0,
-                                  kInputPlateSidePadding));
+  [NSLayoutConstraint activateConstraints:@[
+    [_editView.leadingAnchor
+        constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
+                                    .leadingAnchor],
+    [_editView.trailingAnchor
+        constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
+                                    .trailingAnchor],
+  ]];
   AddSameConstraintsToSides(_editView, _omniboxContainer,
                             LayoutSides::kTop | LayoutSides::kBottom);
 
@@ -1427,6 +1430,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     // Ensure we do not lose the margins on the sides when in compact mode.
     _inputPlateStackView.layoutMargins =
         UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
+    // Margins are applied on the input plate, remove the margins on the
+    // omnibox.
+    _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
   } else {
     _toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
@@ -1439,6 +1445,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _inputPlateInternalContainerView.layer.cornerRadius =
         kInputPlateCornerRadius;
     _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
+    _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+        0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
   }
   [self updateInputPlateStackViewTopConstraint];
 }
