@@ -31,6 +31,9 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
 
 - (NSTimeInterval)transitionDuration:
     (id<UIViewControllerContextTransitioning>)transitionContext {
+  if (UIAccessibilityIsReduceMotionEnabled()) {
+    return 0.2;
+  }
   return kTotalDuration;
 }
 
@@ -60,6 +63,12 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
   UIView* transitionContainerView = [transitionContext containerView];
   UIView* entrypointCopy = [animationBase entrypointViewVisualCopy];
   BOOL compact = [_context inputPlateIsCompact];
+  BOOL reduceMotion = UIAccessibilityIsReduceMotionEnabled();
+  if (reduceMotion) {
+    [self animateTransitionWithReducedMotion:transitionContext];
+    return;
+  }
+
   // Where the entrypoint is not available as a shared element, fallback to
   // a different transition.
   if (!entrypointCopy || !compact) {
@@ -196,6 +205,30 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                                                    ComposeboxMode::kAIM];
                                     }
                                   }];
+      }
+      completion:^(BOOL finished) {
+        [transitionContext completeTransition:finished];
+      }];
+}
+
+- (void)animateTransitionWithReducedMotion:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+  BOOL toggleOnAIM = self.toggleOnAIM;
+  __weak id<ComposeboxAnimationContext> context = _context;
+
+  UIView* toView = [transitionContext viewForKey:UITransitionContextToViewKey];
+
+  [transitionContext.containerView addSubview:toView];
+
+  toView.alpha = 0;
+  [UIView animateWithDuration:[self transitionDuration:transitionContext]
+      delay:0
+      options:UIViewAnimationCurveLinear
+      animations:^{
+        toView.alpha = 1;
+        if (toggleOnAIM) {
+          [context setComposeboxMode:ComposeboxMode::kAIM];
+        }
       }
       completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];

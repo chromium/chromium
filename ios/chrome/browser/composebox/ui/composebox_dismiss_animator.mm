@@ -25,6 +25,9 @@
 
 - (NSTimeInterval)transitionDuration:
     (id<UIViewControllerContextTransitioning>)transitionContext {
+  if (UIAccessibilityIsReduceMotionEnabled()) {
+    return 0.2;
+  }
   return 0.3;
 }
 
@@ -36,6 +39,11 @@
 
   BOOL isLandscape = IsLandscape(fromView.window);
   BOOL compact = [_contextProvider inputPlateIsCompact];
+  BOOL reduceMotion = UIAccessibilityIsReduceMotionEnabled();
+  if (reduceMotion) {
+    [self animateTransitionWithReducedMotion:transitionContext];
+    return;
+  }
   // If the final state is too far visually from the current input plate state,
   // use the simplified animation.
   if (!entrypointCopy || isLandscape || !compact) {
@@ -132,6 +140,23 @@
                                             CGAffineTransformMakeScale(
                                                 scaleAmmount, scaleAmmount);
                                       }];
+      }
+      completion:^(BOOL finished) {
+        [transitionContext completeTransition:finished];
+      }];
+}
+
+- (void)animateTransitionWithReducedMotion:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+  UIView* fromView =
+      [transitionContext viewForKey:UITransitionContextFromViewKey];
+
+  [transitionContext.containerView addSubview:fromView];
+  [UIView animateWithDuration:[self transitionDuration:transitionContext]
+      delay:0
+      options:UIViewAnimationCurveLinear
+      animations:^{
+        fromView.alpha = 0;
       }
       completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
