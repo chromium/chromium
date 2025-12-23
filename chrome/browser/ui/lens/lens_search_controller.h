@@ -204,6 +204,11 @@ class LensSearchController {
   // Handles the creation of a new thumbnail from a bitmap.
   void HandleThumbnailCreatedBitmap(const SkBitmap& thumbnail);
 
+  // Callback used by the query controller to notify the search controller of
+  // the response of an interaction request. If this is a visual interaction
+  // request, the response will contain the text container within that image.
+  virtual void HandleInteractionResponse(lens::mojom::TextPtr text);
+
   // Clears the visual selection thumbnail on the searchbox.
   void ClearVisualSelectionThumbnail();
 
@@ -393,11 +398,6 @@ class LensSearchController {
   // opened in the results frame.
   void HandleInteractionURLResponse(
       lens::proto::LensOverlayUrlResponse response);
-
-  // Callback used by the query controller to notify the search controller of
-  // the response of an interaction request. If this is a visual interaction
-  // request, the response will contain the text container within that image.
-  void HandleInteractionResponse(lens::mojom::TextPtr text);
 
   // Callback used by the query controller to notify the search controller when
   // the suggest inputs response is ready.

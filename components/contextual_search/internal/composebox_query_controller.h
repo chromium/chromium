@@ -233,8 +233,9 @@ class ComposeboxQueryController
       std::string query_text,
       std::optional<lens::ImageCrop> image_crop,
       std::optional<lens::LensOverlayClientLogs> client_logs,
-      std::optional<lens::LensOverlaySelectionType>
-          lens_overlay_selection_type);
+      std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+      base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+          interaction_response_callback);
 
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
@@ -290,6 +291,10 @@ class ComposeboxQueryController
     // A callback to run once the request has been sent. This is optional, but
     // can be used to run some logic once the request has been sent.
     std::optional<base::OnceClosure> request_sent_callback_;
+
+    // The callback to run when the interaction response is received.
+    base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+        interaction_response_callback_;
 
     // Whether or not the request has been sent.
     bool request_sent_ = false;

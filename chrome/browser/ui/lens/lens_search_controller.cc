@@ -902,11 +902,6 @@ void LensSearchController::HandleInteractionURLResponse(
   MaybeShowMobilePromo();
 }
 
-void LensSearchController::HandleInteractionResponse(
-    lens::mojom::TextPtr text) {
-  lens_overlay_controller_->HandleInteractionResponse(std::move(text));
-}
-
 void LensSearchController::OnSuggestInputsReady() {
   if (IsOff()) {
     return;
@@ -958,6 +953,11 @@ void LensSearchController::HandleThumbnailCreatedBitmap(
       base::BindOnce(&LensSearchController::OnThumbnailProcessed,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_region_selection=*/false));
+}
+
+void LensSearchController::HandleInteractionResponse(
+    lens::mojom::TextPtr text) {
+  lens_overlay_controller_->HandleInteractionResponse(std::move(text));
 }
 
 void LensSearchController::HandleThumbnailCreated(

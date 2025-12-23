@@ -3329,4 +3329,58 @@ TEST_F(ComposeboxQueryControllerTest, ContextualTasksOverrides) {
                 .context_id(),
             context_id);
 }
+
+TEST_F(ComposeboxQueryControllerTest, HandleInteractionResponse) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Arrange: Set up the fake interaction response.
+  lens::LensOverlayServerResponse interaction_response;
+  interaction_response.mutable_interaction_response()
+      ->mutable_text()
+      ->set_content_language("en");
+  controller().set_fake_interaction_response(interaction_response);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+  search_url_request_info->image_crop = lens::ImageCrop();
+  search_url_request_info->image_crop->mutable_zoomed_crop()
+      ->mutable_crop()
+      ->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_zoom(1);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_parent_height(
+      25);
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->client_logs = lens::LensOverlayClientLogs();
+
+  // Arrange: Set up the callback to verify the response.
+  base::test::TestFuture<lens::LensOverlayInteractionResponse> response_future;
+  search_url_request_info->interaction_response_callback =
+      response_future.GetCallback();
+
+  // Act: Send the request.
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Assert: Verify the interaction response is passed to the callback.
+  lens::LensOverlayInteractionResponse actual_response = response_future.Take();
+  EXPECT_EQ(actual_response.text().content_language(), "en");
+}
+
 }  // namespace contextual_search

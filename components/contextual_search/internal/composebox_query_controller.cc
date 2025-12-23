@@ -409,7 +409,9 @@ void ComposeboxQueryController::CreateSearchUrl(
               search_url_request_info->query_text,
               search_url_request_info->image_crop,
               search_url_request_info->client_logs,
-              search_url_request_info->lens_overlay_selection_type);
+              search_url_request_info->lens_overlay_selection_type,
+              std::move(
+                  search_url_request_info->interaction_response_callback));
 
           auto* interaction_contextual_input = contextual_inputs->add_inputs();
           interaction_contextual_input->mutable_request_id()->CopyFrom(
@@ -470,7 +472,9 @@ void ComposeboxQueryController::CreateSearchUrl(
               search_url_request_info->query_text,
               search_url_request_info->image_crop,
               search_url_request_info->client_logs,
-              search_url_request_info->lens_overlay_selection_type);
+              search_url_request_info->lens_overlay_selection_type,
+              std::move(
+                  search_url_request_info->interaction_response_callback));
         }
 
         // Get the encoded visual search interaction log data after triggering
@@ -893,9 +897,13 @@ void ComposeboxQueryController::SendInteractionRequest(
     std::string query_text,
     std::optional<lens::ImageCrop> image_crop,
     std::optional<lens::LensOverlayClientLogs> client_logs,
-    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type) {
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+    base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+        interaction_response_callback) {
   latest_interaction_request_data_ =
       std::make_unique<LensServerInteractionRequest>(std::move(request_id));
+  latest_interaction_request_data_->interaction_response_callback_ =
+      std::move(interaction_response_callback);
 
   // Start getting the OAuth headers for the interaction request.
   latest_interaction_request_data_->interaction_access_token_fetcher_ =
@@ -1406,6 +1414,24 @@ void ComposeboxQueryController::OnInteractionEndpointFetcherCreated(
 void ComposeboxQueryController::HandleInteractionResponse(
     std::unique_ptr<EndpointResponse> response) {
   latest_interaction_request_data_->interaction_endpoint_fetcher_.reset();
+
+  if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    return;
+  }
+
+  lens::LensOverlayServerResponse server_response;
+  if (!server_response.ParseFromString(response->response)) {
+    return;
+  }
+
+  if (!server_response.has_interaction_response()) {
+    return;
+  }
+
+  if (latest_interaction_request_data_->interaction_response_callback_) {
+    std::move(latest_interaction_request_data_->interaction_response_callback_)
+        .Run(server_response.interaction_response());
+  }
 }
 
 void ComposeboxQueryController::OnUploadEndpointFetcherCreated(

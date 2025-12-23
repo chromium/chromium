@@ -118,6 +118,11 @@ class LensQueryFlowRouter
       contextual_search::FileUploadStatus file_upload_status,
       const std::optional<contextual_search::FileUploadErrorType>& error_type);
 
+  // Handles the interaction response from the server.
+  void HandleInteractionResponse(
+      std::optional<lens::ImageCrop> image_crop,
+      lens::LensOverlayInteractionResponse interaction_response);
+
  protected:
   // Creates a contextual search session handle. Virtual for testing.
   virtual std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
