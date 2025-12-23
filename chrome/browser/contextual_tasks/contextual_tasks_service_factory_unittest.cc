@@ -87,7 +87,7 @@ TEST_F(ContextualTasksServiceFactoryTest, UsesRealService) {
   EXPECT_NE(nullptr, service);
 
   ContextualTask task = service->CreateTask();
-  EXPECT_FALSE(task.IsEphemeral());
+  EXPECT_TRUE(task.IsEphemeral());
 }
 
 TEST_F(ContextualTasksServiceFactoryTest, ReturnsNullIfFeatureDisabled) {

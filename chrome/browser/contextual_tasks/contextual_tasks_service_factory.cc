@@ -137,8 +137,9 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<TabStripContextDecorator>(profile));
 #endif
 
-  bool supports_ephemeral_only =
-      profile->IsOffTheRecord() || profile->IsGuestSession();
+  // When sync is enabled, we should only set this to true for incognito and
+  // guest sessions.
+  bool supports_ephemeral_only = true;
 
   return std::make_unique<ContextualTasksServiceImpl>(
       chrome::GetChannel(),
