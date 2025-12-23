@@ -112,6 +112,10 @@ class TabListInterface {
   // support tab groups (e.g. legacy apps) returns an empty vector.
   virtual std::vector<tab_groups::TabGroupId> ListTabGroups() = 0;
 
+  // Creates a tab group from a list of tabs and returns the group ID.
+  virtual tab_groups::TabGroupId CreateTabGroup(
+      const std::vector<tabs::TabHandle>& tabs) = 0;
+
   // Adds `tabs` to the `group_id` if provided or creates a new tab group.
   // Returns the tab group ID of the created or added to group. Tabs will be
   // moved as necessary to make the group contiguous. Pinned tabs will no longer

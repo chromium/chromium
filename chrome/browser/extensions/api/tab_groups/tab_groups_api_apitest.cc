@@ -11,11 +11,13 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,6 +30,12 @@ namespace extensions {
 namespace {
 
 using TabGroupsApiTest = ExtensionApiTest;
+
+// TODO(crbug.com/371432155): Port to desktop Android when tabs.group() is
+// supported.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGet) {
+  ASSERT_TRUE(RunExtensionTest("tab_groups/get")) << message_;
+}
 
 // TODO(crbug.com/40910190): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
@@ -65,13 +73,20 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
             incognito_browser->profile());
 }
 
+// TODO(crbug.com/405219902): Port to desktop Android when the tab group event
+// router is supported.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
+  // Open 3 tabs.
+  NavigateToURLInNewTab(GURL("about:blank"));
+  NavigateToURLInNewTab(GURL("about:blank"));
+  NavigateToURLInNewTab(GURL("about:blank"));
 
-  tab_groups::TabGroupId group =
-      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  // Create a group with 2 tabs.
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  std::vector<tabs::TabHandle> tabs;
+  tabs.push_back(tab_list->GetTab(0)->GetHandle());
+  tabs.push_back(tab_list->GetTab(1)->GetHandle());
+  tab_groups::TabGroupId group = tab_list->CreateTabGroup(tabs);
 
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 

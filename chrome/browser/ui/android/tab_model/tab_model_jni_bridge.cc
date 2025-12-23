@@ -606,6 +606,13 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   return group_ids;
 }
 
+tab_groups::TabGroupId TabModelJniBridge::CreateTabGroup(
+    const std::vector<tabs::TabHandle>& tabs) {
+  // TODO(crbug.com/405219902): Add JNI.
+  NOTIMPLEMENTED();
+  return tab_groups::TabGroupId::CreateEmpty();
+}
+
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
