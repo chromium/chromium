@@ -7,6 +7,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
+#include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"
@@ -36,6 +38,10 @@ ChromeCameraSaveDelegate::GetDestination() const {
 base::FilePath ChromeCameraSaveDelegate::GetMyFilesFolder() const {
   return file_manager::util::GetMyFilesFolderForProfile(
       Profile::FromBrowserContext(context_));
+}
+
+base::FilePath ChromeCameraSaveDelegate::GetGoogleDriveRoot() const {
+  return policy::local_user_files::GetGoogleDriveRoot();
 }
 
 std::string ChromeCameraSaveDelegate::GetPathFromPref() const {
@@ -97,8 +103,10 @@ void ChromeCameraSaveDelegate::PerformUpload(
                          thumbnail))
             .second);
   } else {
-    // TODO(crbug.com/454152412) Implement Google Drive upload.
-    std::move(done_callback).Run(false);
+    ash::cloud_upload::DriveUploadObserver::Observe(
+        profile, upload_from_path,
+        policy::local_user_files::UploadTrigger::kCamera, file_size,
+        progress_callback, std::move(done_callback));
   }
 }
 

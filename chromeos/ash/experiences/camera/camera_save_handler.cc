@@ -59,9 +59,7 @@ base::FilePath CameraSaveHandler::GetWritableRoot() const {
       return path;
     }
     case FileSaveDestination::kGoogleDrive:
-      // TODO(crbug.com/454152412) Implement this.
-      NOTIMPLEMENTED_LOG_ONCE();
-      return base::FilePath();
+      return delegate_->GetGoogleDriveRoot();
     case FileSaveDestination::kLocal:
       return delegate_->GetMyFilesFolder();
   }
@@ -72,10 +70,13 @@ base::FilePath CameraSaveHandler::GetWritablePathRelativeToRoot() const {
   switch (delegate_->GetDestination()) {
     case FileSaveDestination::kOneDrive:
       return base::FilePath(kOneDriveCacheFolderName);
-    case FileSaveDestination::kGoogleDrive:
-      // TODO(crbug.com/454152412) Implement this.
-      NOTIMPLEMENTED_LOG_ONCE();
-      return base::FilePath();
+    case FileSaveDestination::kGoogleDrive: {
+      auto path = delegate_->GetFinalPathRelativeToRoot();
+      if (path.empty()) {
+        return base::FilePath(kDefaultCameraFolderName);
+      }
+      return path;
+    }
     case FileSaveDestination::kLocal:
       // Only support Camera folder in MyFiles for local destination.
       return base::FilePath(kDefaultCameraFolderName);

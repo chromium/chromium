@@ -36,6 +36,8 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
   CameraSaveHandler::FileSaveDestination GetDestination() const override;
   base::FilePath GetMyFilesFolder() const override;
   base::FilePath GetOneDriveUploadFolder() const override;
+  base::FilePath GetGoogleDriveRoot() const override;
+  base::FilePath GetFinalPathRelativeToRoot() const override;
   void PerformUpload(const base::FilePath& upload_from_path,
                      int64_t file_size,
                      const gfx::Image& thumbnail,
@@ -52,7 +54,6 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
   }
 
   std::string GetPathFromPref() const;
-  base::FilePath GetFinalPathRelativeToRoot() const;
   void CancelUploads(base::OnceClosure cancel_closure);
   void OnOnedriveUploadDone(
       const std::string& file_name,

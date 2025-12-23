@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/supports_user_data.h"
 #include "ui/gfx/image/image.h"
 
@@ -40,6 +41,14 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
 
     // Returns the OneDrive folder path where files will be uploaded.
     virtual base::FilePath GetOneDriveUploadFolder() const = 0;
+
+    // Returns the Google Drive root folder path where Camera app will create a
+    // subfolder and files will be saved there.
+    virtual base::FilePath GetGoogleDriveRoot() const = 0;
+
+    // Returns the final path relative to the root folder where files will be
+    // saved.
+    virtual base::FilePath GetFinalPathRelativeToRoot() const = 0;
 
     // Uploads the file with path `upload_from_path` to the cloud destination.
     // `file_size` is the size of the file in bytes.

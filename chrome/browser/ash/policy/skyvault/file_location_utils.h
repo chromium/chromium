@@ -18,6 +18,9 @@ base::FilePath GetODFSVirtualPath();
 // Returns true if `str` is a valid location string with optional placeholders.
 bool IsValidLocationString(const std::string& str);
 
+// Returns the root of Google Drive or empty path if the drive isn't mounted.
+base::FilePath GetGoogleDriveRoot();
+
 // Resolves possible path placeholders for external storages in `path_str` that
 // can be set by policies. Returns empty path if can't resolve.
 base::FilePath ResolvePath(const std::string& path_str);

@@ -58,6 +58,15 @@ bool IsValidLocationString(const std::string& str) {
   return true;
 }
 
+base::FilePath GetGoogleDriveRoot() {
+  base::FilePath drive_path = GetDriveFsMountPointPath();
+  if (drive_path.empty()) {
+    // Returning default if Google Drive can't be found.
+    return base::FilePath();
+  }
+  return drive_path.Append("root");
+}
+
 base::FilePath ResolvePath(const std::string& path_str) {
   if (!IsValidLocationString(path_str)) {
     return base::FilePath();
