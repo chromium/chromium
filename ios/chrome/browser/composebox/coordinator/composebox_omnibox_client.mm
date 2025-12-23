@@ -159,9 +159,9 @@ ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
       ([delegate_ composeboxMode] == ComposeboxMode::kAIM) ||
       ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration);
 
-  if (is_in_ai_mode && base::FeatureList::IsEnabled(
-                           omnibox::kComposeboxUsesChromeComposeClient)) {
-    return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+  if (is_in_ai_mode) {
+    return location_bar_->GetLocationBarModel()
+        ->GetOmniboxComposeboxPageClassification();
   }
 
   return location_bar_->GetLocationBarModel()->GetPageClassification(
