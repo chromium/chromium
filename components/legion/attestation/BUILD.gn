@@ -6,6 +6,8 @@ source_set("attestation") {
   sources = [
     "server_evidence.cc",
     "server_evidence.h",
+    "server_verification_key.cc",
+    "server_verification_key.h",
   ]
   deps = [ "//base" ]
 }
