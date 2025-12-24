@@ -76,9 +76,6 @@ const base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop);
 #endif
 
-BASE_DECLARE_FEATURE(kPromoBrowserCommands);
-extern const char kBrowserCommandIdParam[];
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 BASE_DECLARE_FEATURE(kInstallPlatformExperienceHelperWin);

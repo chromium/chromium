@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -184,9 +183,6 @@ void PromoService::Refresh() {
           ntp_features::kNtpMiddleSlotPromoDismissalParam) == "fake") {
     command_id = base::NumberToString(
         static_cast<int>(browser_command::mojom::Command::kNoOpCommand));
-  } else {
-    command_id = base::GetFieldTrialParamValueByFeature(
-        features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
   }
 
   if (!command_id.empty()) {

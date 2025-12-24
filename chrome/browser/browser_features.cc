@@ -141,16 +141,6 @@ BASE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Enables executing the browser commands sent by the NTP promos.
-BASE_FEATURE(kPromoBrowserCommands, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Parameter name for the promo browser command ID provided along with
-// kPromoBrowserCommands.
-// The value of this parameter should be parsable as an unsigned integer and
-// should map to one of the browser commands specified in:
-// ui/webui/resources/js/browser_command/browser_command.mojom
-const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // When this feature is enabled, Chrome will register os_update_handler with
 // Omaha, to be run on OS upgrade.
