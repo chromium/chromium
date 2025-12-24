@@ -231,22 +231,22 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSION_NEVER_ALLOW" desc="(Alternative label, to compare) label on button to permanent deny in a one-time granting use case.">
     Never allow
   </message>
-  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO" desc="Label on a radio button to select approximate geolocation permission for a site." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO" desc="Label on a radio button to select approximate geolocation permission for a site." formatter_data="android_java">
     Approximate
   </message>
-  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO" desc="Label on a radio button to select precise geolocation permission for a site." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO" desc="Label on a radio button to select precise geolocation permission for a site." formatter_data="android_java">
     Precise
   </message>
-  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO_DESCRIPTION" desc="Description for a radio button to select precise geolocation permission for a site." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO_DESCRIPTION" desc="Description for a radio button to select precise geolocation permission for a site." formatter_data="android_java">
     Exact location
   </message>
-  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO_DESCRIPTION" desc="Description for a radio button to select approximate geolocation permission for a site." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO_DESCRIPTION" desc="Description for a radio button to select approximate geolocation permission for a site." formatter_data="android_java">
     Neighborhood
   </message>
-  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO_LONG_DESCRIPTION" desc="Description for a radio button to select precise geolocation permission for a site. This is a longer version of the description used for experimentation." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO_LONG_DESCRIPTION" desc="Description for a radio button to select precise geolocation permission for a site. This is a longer version of the description used for experimentation." formatter_data="android_java">
     Often used for directions, deliveries, and more
   </message>
-  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO_LONG_DESCRIPTION" desc="Description for a radio button to select approximate geolocation permission for a site. This is a longer version of the description used for experimentation." translateable="false" formatter_data="android_java">
+  <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO_LONG_DESCRIPTION" desc="Description for a radio button to select approximate geolocation permission for a site. This is a longer version of the description used for experimentation." formatter_data="android_java">
     Often used for weather, local news, and more
   </message>
   <!-- Device Chooser -->
