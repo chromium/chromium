@@ -22,6 +22,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -160,6 +161,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
       WaitForShow(kSidePanelElementId),
       PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
       WaitForHide(kSidePanelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
+                       VisiblityUpdatesOnAimPolicyChange) {
+  RunTestSequence(
+      SignIntoEligibleAccount(),
+      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      Do([&]() {
+        PrefService* const pref_service = browser()->profile()->GetPrefs();
+        pref_service->SetInteger(omnibox::kAIModeSettings, 1);
+      }),
+      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton),
+      Do([&]() {
+        PrefService* const pref_service = browser()->profile()->GetPrefs();
+        pref_service->SetInteger(omnibox::kAIModeSettings, 0);
+      }),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

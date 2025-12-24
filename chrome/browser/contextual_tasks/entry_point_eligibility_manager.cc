@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -33,6 +35,12 @@ EntryPointEligibilityManager::EntryPointEligibilityManager(
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
+
+  aim_policy_.Init(
+      omnibox::kAIModeSettings, profile_->GetPrefs(),
+      base::BindRepeating(&EntryPointEligibilityManager::
+                              MaybeNotifyEntryPointEligibilityChanged,
+                          base::Unretained(this)));
 
   entry_points_are_eligible_ = AreEntryPointsEligible();
   AimEligibilityService* const aim_eligibility_service =
@@ -83,8 +91,11 @@ bool EntryPointEligibilityManager::AreEntryPointsEligible() {
   CHECK(contextual_task_service);
   const bool is_feature_eligible =
       contextual_task_service->GetFeatureEligibility().IsEligible();
+  const bool is_aim_allowed_by_policy =
+      AimEligibilityService::IsAimAllowedByPolicy(profile_->GetPrefs());
 
-  return is_feature_eligible && is_browser_logged_in;
+  return is_feature_eligible && is_browser_logged_in &&
+         is_aim_allowed_by_policy;
 }
 
 void EntryPointEligibilityManager::MaybeNotifyEntryPointEligibilityChanged() {
