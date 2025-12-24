@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
@@ -79,7 +81,6 @@ class SupervisedUserNavigationObserver
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
-  void OnSearchContentFiltersChanged() override;
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.
@@ -141,9 +142,17 @@ class SupervisedUserNavigationObserver
   // clear up  entries in |requested_hosts_| which have been allowed.
   void MaybeUpdateRequestedHosts();
 
+  void RecordPageLoadUKM(content::RenderFrameHost* render_frame_host);
+
   content::FrameTreeNodeId frame_tree_node_id();
 
   supervised_user::SupervisedUserService* supervised_user_service() const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Observes changes to the force google safe search pref and reloads the
+  // current page if client-side safe search was turned on for supervised users.
+  void OnForceGoogleSafeSearchChanged(std::string_view safe_search_pref_name);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::ScopedObservation<supervised_user::SupervisedUserService,
                           SupervisedUserServiceObserver>
@@ -164,10 +173,13 @@ class SupervisedUserNavigationObserver
       supervised_user::mojom::SupervisedUserCommands>
       receivers_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Observes safe search feature driver in pref service.
+  PrefChangeRegistrar pref_change_registrar_;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};
-
-  void RecordPageLoadUKM(content::RenderFrameHost* render_frame_host);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

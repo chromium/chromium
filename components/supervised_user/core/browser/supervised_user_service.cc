@@ -446,10 +446,6 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
     platform_delegate_->CloseIncognitoTabs();
   }
 
-  // Navigation observer reacts to this notification by reloading search pages
-  // and emitting WebFilterType metrics.
-  observer_list_.Notify(
-      &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
   // Required to emit WebFilterType metrics.
   UpdateURLFilter();
 }
@@ -458,11 +454,6 @@ void SupervisedUserService::OnSearchContentFiltersDisabled() {
   if (!IsSupervisedLocally()) {
     settings_service_->SetSuspended(false);
   }
-
-  // Navigation observer reacts to this notification by reloading search pages
-  // and emitting WebFilterType metrics.
-  observer_list_.Notify(
-      &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
 
 void SupervisedUserService::

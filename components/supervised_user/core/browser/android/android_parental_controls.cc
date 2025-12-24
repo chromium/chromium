@@ -59,6 +59,10 @@ bool AndroidParentalControls::IsSearchContentFiltersEnabled() const {
   return search_content_filters_observer_.IsEnabled();
 }
 
+bool AndroidParentalControls::IsSafeSearchForced() const {
+  return IsSearchContentFiltersEnabled();
+}
+
 void AndroidParentalControls::AddObserver(Observer* observer) const {
   observer_list_.AddObserver(observer);
 }

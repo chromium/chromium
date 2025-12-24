@@ -43,10 +43,12 @@ class AndroidParentalControls : public ContentFiltersObserverBridge::Observer {
   void Init();
 
   // TODO(crbug.com/470298260): replace low-level OS signals with high-level
-  // browser feature states (eg. IsWebFilteringEnabled, IsSafeSearchEnabled,
+  // browser feature states (eg. IsWebFilteringEnabled, IsSafeSearchForced,
   // IsIncognitoModeAvailable).
   bool IsBrowserContentFiltersEnabled() const;
   bool IsSearchContentFiltersEnabled() const;
+
+  bool IsSafeSearchForced() const;
 
   // Add and remove observers.
   void AddObserver(Observer* observer) const;
