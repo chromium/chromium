@@ -249,6 +249,8 @@ static_library("ui") {
     "//chrome/browser/search",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/webui/omnibox/aim_eligibility",
+    "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
   ]
 
   deps = [
