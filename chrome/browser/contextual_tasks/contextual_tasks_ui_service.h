@@ -18,6 +18,7 @@
 class BrowserWindowInterface;
 class ContextualTasksUI;
 class Profile;
+class TabStripModel;
 
 namespace base {
 class Uuid;
@@ -180,6 +181,12 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool IsSignedInToWebOrBrowser(const GURL& url);
 
  private:
+  // Focus an existing tab based on the provided URL if it exists. The URLs must
+  // be identical in order for the existing tab to be selected.
+  bool MaybeFocusExistingOpenTab(const GURL& url,
+                                 TabStripModel* tab_strip_model,
+                                 const base::Uuid& task_id);
+
   const raw_ptr<Profile> profile_;
 
   raw_ptr<contextual_tasks::ContextualTasksContextController>

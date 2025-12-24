@@ -232,6 +232,136 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       OnThreadLinkClicked_ActivateExistingTab) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Add two more tabs so there are three total.
+  const GURL version_url(chrome::kChromeUIVersionURL);
+  chrome::AddTabAt(browser(), version_url, -1, false);
+  content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(1));
+
+  const GURL settings_url(chrome::kChromeUISettingsURL);
+  chrome::AddTabAt(browser(), settings_url, -1, true);
+  content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(2));
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Associate the tabs with the task.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetWebContentsAt(0)));
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetWebContentsAt(1)));
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetWebContentsAt(2)));
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // There should only be three tabs.
+        ASSERT_EQ(3, tab_strip_model->count());
+
+        // The selected tab should be settings.
+        ASSERT_EQ(
+            settings_url,
+            tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
+
+        // Simulate a link click to a URL that's already open in a
+        // tab.
+        service->OnThreadLinkClicked(version_url, task1.GetTaskId(), nullptr,
+                                     browser()->GetWeakPtr());
+
+        // There should still only be three tabs.
+        ASSERT_EQ(3, tab_strip_model->count());
+
+        // The selected tab should have switched back to the version page.
+        ASSERT_EQ(
+            version_url,
+            tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
+      }));
+}
+
+// Ensure that an existing tab is not focused if it isn't affiliated with the
+// task.
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       OnThreadLinkClicked_ActivateExistingTab_NoAffiliation) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Add two more tabs so there are three total.
+  const GURL version_url(chrome::kChromeUIVersionURL);
+  chrome::AddTabAt(browser(), version_url, -1, false);
+  content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(1));
+
+  const GURL settings_url(chrome::kChromeUISettingsURL);
+  chrome::AddTabAt(browser(), settings_url, -1, true);
+  content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(2));
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Associate all but the version page with the task.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetWebContentsAt(0)));
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetWebContentsAt(2)));
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // There should only be three tabs.
+        ASSERT_EQ(3, tab_strip_model->count());
+
+        // The selected tab should be settings.
+        ASSERT_EQ(
+            settings_url,
+            tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
+
+        // Simulate a link click to a URL that's already open in a
+        // tab.
+        service->OnThreadLinkClicked(version_url, task1.GetTaskId(), nullptr,
+                                     browser()->GetWeakPtr());
+
+        // Another tab should have been added
+        ASSERT_EQ(4, tab_strip_model->count());
+
+        // Wait for the new tab to finish loading.
+        content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(3));
+
+        // The selected tab should now be the new version page.
+        ASSERT_EQ(
+            version_url,
+            tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksUiServiceInteractiveUiTest,
     OnTaskChangedInPanel_SwitchAllTabAffiliation_ActivatesMostRecentTab) {
