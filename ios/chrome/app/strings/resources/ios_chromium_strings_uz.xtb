@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium Face ID bilan maxfiy maʼlumotlarni xavfsiz saqlaydi.</translation>
 <translation id="1591119736686995611">Chromium varaqlar jadvalini ochadi.</translation>
 <translation id="16001233025397167">Xavfsizlik tekshiruvi maʼlumotlaringizni shubhali saytlar, axborotlar sizib chiqishi va xavfsizlikka oid muammolardan himoya qiladi. Maxfiylik va xavfsizlikka oid muammolar aniqlanganda Chromium bu haqida xabar qiladi.</translation>
+<translation id="1614362805233822594">Chiqarilgan saytlar uchun parollar va kirish kalitlari allaqachon Parollar menejerida saqlangan. Chiqarilgan kirish maʼlumotlarini saqlash va Parollar menejerida qayta yozish uchun hisobni tanlang.</translation>
 <translation id="1617663976202781617">Chromium sinxronizatsiya maʼlumotlari</translation>
 <translation id="164952285225495380">Bu joʻnatma Chromium brauzerida allaqachon kuzatilgan.</translation>
+<translation id="1703338211136118534">Talablarga javob bermagani sababli Parollar menejeriga quyidagi parollar import qilinmadi.</translation>
 <translation id="1707458603865303524">Xabarlar yoki boshqa ilovalardagi havolalar bosilganda Chromium ochilsin.</translation>
 <translation id="1722370509450468186">Parolingiz hisobingizda (<ph name="EMAIL" />) saqlanadi.</translation>
 <translation id="1747088204252710672">Siz uchun maxsus tasma</translation>
@@ -46,6 +48,7 @@
 <translation id="1847960401032164406">Chromium ichida Xaritalar</translation>
 <translation id="1867772173333403444">4. Chromium brauzerini tanlang</translation>
 <translation id="1965068424387304464">Chromium maslahati: Parollarni saqlang</translation>
+<translation id="1992653360331625459">Parollar menejerida mazkur hisoblar uchun parollar allaqachon mavjud. Quyidagi parollardan biri import qilinsa, mavjud parol yangilanadi.</translation>
 <translation id="2006345422933397527">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2042889939382983733">Chromium tarixini ochish</translation>
 <translation id="2052320862053429062">Vaqti-vaqti bilan Chromium internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
@@ -64,6 +67,7 @@
 <translation id="2326738825692478496">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
 
 Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
+<translation id="2334943301233020675">Talablarga javob bermagani sababli Parollar menejeriga quyidagi kirish kalitlari import qilinmadi.</translation>
 <translation id="2337722506862731008">Chromiumga ulashish</translation>
 <translation id="2340423701577464731">Saqlangan sahifalar bandini Chromiumga qoʻshish</translation>
 <translation id="2374627437126809292">Manzillar aniqlanganda Chromium marshrut va mahalliy axborotlarni Google Xaritalar orqali ochadi.</translation>

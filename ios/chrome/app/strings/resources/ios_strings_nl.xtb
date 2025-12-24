@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1161663161838091892">Tabbladen en geschiedenis synchroniseren om door te gaan</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} creditcard}other{{count} creditcards}}</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgend veld</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="1752547299766512813">Wachtwoorden opslaan</translation>
 <translation id="1764070164487214210">Route</translation>
+<translation id="1764511703783285459">De andere wachtwoordmanager heeft geen wachtwoorden of toegangssleutels gedeeld</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Menu Tools</translation>
 <translation id="1772468122139624049">Kan tabbladen niet opnieuw laden</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Opmerking bestaat uit meer dan 1000 tekens</translation>
 <translation id="5087098519049306025">Prijzen volgen</translation>
 <translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
+<translation id="510580293474170715">Niets geïmporteerd</translation>
 <translation id="5113960131843706315">Je items ophalen…</translation>
 <translation id="5118462200606189584">Account toevoegen…</translation>
 <translation id="5118764316110575523">Uit</translation>
@@ -1449,6 +1452,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6410390304316730527">Safe Browsing beschermt je tegen aanvallers die je proberen te misleiden zodat je iets gevaarlijks doet, zoals schadelijke software installeren of persoonlijke informatie zoals wachtwoorden, telefoonnummers of creditcards openbaar maken. Als je deze functie uitzet, moet je voorzichtig zijn als je op onbekende of onbetrouwbare sites browst.</translation>
 <translation id="6410883413783534063">Open tabbladen om verschillende pagina's tegelijk te bezoeken</translation>
 <translation id="6418346271604475326">Pdf voorbereiden</translation>
+<translation id="6420292512900923139">Problemen met het importeren van je gegevens</translation>
 <translation id="6421038304268477484">Vertaalde tekst</translation>
 <translation id="6429213933892582367">Wachtwoordopties openen</translation>
 <translation id="6435236283694032571">Toevoegen aan leeslijst</translation>
@@ -1487,6 +1491,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6537746030088321027">voorbeeld.com</translation>
 <translation id="6550675742724504774">Opties</translation>
 <translation id="6550891580932862748">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Dit heeft geen invloed op je Safe Browsing-instellingen in andere Google-producten.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Opnieuw</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark opgeslagen in {title}. Deze wordt alleen op dit apparaat opgeslagen.}other{Bookmarks opgeslagen in {title}. Deze worden alleen op dit apparaat opgeslagen.}}</translation>
 <translation id="656065428026159829">Meer bekijken</translation>

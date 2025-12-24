@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">Als deze optie aanstaat, werkt Chrome sneller en zouden functies die JavaScript gebruiken, naar behoren moeten werken. Als deze optie uitstaat, worden de prestaties slechter, maar is V8 beter bestand tegen aanvallen.</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Wijzig de positie om de browsefunctionaliteit aan te passen</translation>
 <translation id="1848033246551405023">Lettertype Sans Serif</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
 <translation id="1881806992065048905">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Hiermee worden alle sites in je lijst teruggezet naar het standaard zoomniveau</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1994173015038366702">Site-URL</translation>
+<translation id="1994558116414798016">Lettertype Lexend</translation>
 <translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2028449514182362831">Functies waarvoor bewegingssensoren nodig zijn, werken niet</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Themakleur licht</translation>
 <translation id="2096716221239095980">Alle gegevens verwijderen</translation>
 <translation id="2102396546234652240">Niet toestaan dat sites je microfoon gebruiken</translation>
+<translation id="2115808389282428160">Niet toestaan dat sites toegang krijgen tot andere apps en services op dit apparaat</translation>
 <translation id="2117655453726830283">Volgende dia</translation>
 <translation id="2146263598007866206">Sites kunnen gerelateerde bestanden automatisch samen downloaden om tijd te besparen</translation>
 <translation id="2148716181193084225">Vandaag</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Deze keer toegestaan • Exact</translation>
 <translation id="2544997614631598250">Themakleur donker</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
+<translation id="2553552004849639664">Krijg de krachtigste bescherming van Chrome tegen online dreigingen</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
 <translation id="2586657967955657006">Klembord</translation>
@@ -159,6 +163,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2621115761605608342">JavaScript toestaan voor een specfieke site.</translation>
 <translation id="2626708220538466178">Blad onderaan voor standaardbrowser is gesloten</translation>
 <translation id="2653659639078652383">Verzenden</translation>
+<translation id="2665056444046933274">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apps en services op dit apparaat</translation>
 <translation id="2670403088701171361">Niet toestaan dat sites tekst of afbeeldingen op je klembord bekijken</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2682367912565197520">Opgeslagen zoomniveau verwijderen</translation>
@@ -202,8 +207,10 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="311394601889664316">Niet toestaan dat sites bestanden of mappen op je apparaat bewerken</translation>
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Informatie bekijken</translation>
+<translation id="3120204271988747891">Sites kunnen vragen om toegang tot andere apparaten in je lokale netwerk</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
+<translation id="3134859781443140237">Lokaal netwerk</translation>
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
 <translation id="3164169438034704658">Je kunt exacte locatie aanzetten in de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Toestaan dat een site cookies van derden gebruikt</translation>
@@ -214,6 +221,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3223425961342298674">Locatie niet toegestaan</translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3232293466644486101">Browsegegevens verwijderen…</translation>
+<translation id="3241320538788585298">Loopback-netwerk</translation>
 <translation id="3242646949159196181">Als deze optie aanstaat, kunnen sites geluid afspelen. Staat de optie uit, dan kunnen sites geen geluid afspelen.</translation>
 <translation id="3273479183583863618">Prijsdalingen op tabbladen</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
@@ -409,6 +417,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5373874281522292782">Je tabbladgroepen zijn opgeslagen</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
+<translation id="5407203562970638234">Je beveiliging verbeteren</translation>
 <translation id="5438097262470833822">Met deze keuze reset je de rechten voor <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Als deze optie aanstaat, kunnen sites om je locatie vragen. Staat de optie uit, dan kunnen sites je locatie niet zien.</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> geblokkeerd</translation>
 <translation id="560980142378233747">Dit betekent dat sitefuncties werken zoals verwacht, maar dat je browser misschien minder goed beveiligd is. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Blad onderaan voor kaarten op de pagina Nieuw tabblad</translation>
+<translation id="5621413808884657932">Als deze optie aanstaat, kunnen sites vragen om toegang tot andere apps en services op dit apparaat. Als de optie uitstaat, hebben sites geen toegang tot andere apps en services op dit apparaat.</translation>
 <translation id="5632485077360054581">Laten zien</translation>
 <translation id="5649053991847567735">Automatische downloads</translation>
 <translation id="5668404140385795438">Negeer verzoek van website om inzoomen te voorkomen</translation>
@@ -543,6 +553,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6842868554183332230">Sites nemen meestal waar wanneer je je apparaat actief gebruikt zodat ze je beschikbaarheid kunnen instellen in chat-apps</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
 <translation id="6870169401250095575">Kaart Veiligheidscheck verbergen</translation>
+<translation id="6882736949427544336">Niet toestaan dat sites toegang krijgen tot andere apparaten in je lokale netwerk</translation>
 <translation id="6900883974539674431">Maak tabbladgroepen die automatisch worden opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
@@ -604,6 +615,8 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7586676035079382730">Meldingen niet toegestaan</translation>
 <translation id="7594634374516752650">Verbonden met een bluetooth-apparaat</translation>
 <translation id="7617547684249261169">Je kunt onder meer je geschiedenis, cookies en sitegegevens geheel of gedeeltelijk verwijderen</translation>
+<translation id="762200934554267613">Sites kunnen vragen om toegang tot andere apps en services op dit apparaat</translation>
+<translation id="7627749368210392160">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apparaten in je lokale netwerk</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7655411746932645568">Sites kunnen vragen of ze verbinding mogen maken met seriële poorten</translation>
 <translation id="7658239707568436148">Annuleren</translation>
@@ -659,6 +672,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Als deze optie aanstaat, kunnen sites vragen of ze toegang mogen krijgen tot andere apparaten in je lokale netwerk. Staat de optie uit, dan hebben sites geen toegang tot andere apparaten in je lokale netwerk.</translation>
 <translation id="8249310407154411074">Bovenaan zetten</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
@@ -712,6 +726,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8737426583868847403">Sites waarvoor je een aangepast zoomniveau hebt opgeslagen</translation>
+<translation id="8748714929822124637">Niet toestaan dat sites toegang krijgen tot andere apparaten in je lokale netwerk</translation>
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
 <translation id="8775741625735357092">Je kunt de bookmarkbalk aanzetten via Instellingen &gt; Vormgeving</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>

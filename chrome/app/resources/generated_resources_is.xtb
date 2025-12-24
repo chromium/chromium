@@ -1782,6 +1782,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2184272387334793084">Skráðu þig inn til að sækja aðgangsorðin og fleira í öllum tækjunum þínum</translation>
 <translation id="2184515124301515068">Leyfa Chrome að velja hvenær vefsvæði geta spilað hljóð (ráðlagt)</translation>
 <translation id="2186206192313702726">Google linsa</translation>
+<translation id="2186539124645132614">Byrja nýtt spjall við Gemini</translation>
 <translation id="2186711480981247270">Síðu deilt úr öðru tæki</translation>
 <translation id="2187675480456493911">Samstillt við önnur tæki á reikningnum. Breytingar annarra notenda á stillingum verða ekki samstilltar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Viðbætur uppfærðar</translation>
@@ -2443,6 +2444,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2627424346328942291">Ekki er hægt að deila</translation>
 <translation id="2628258844236035475">Fjarlægja heimilisfang úr sjálfvirkri útfyllingu Chrome?</translation>
 <translation id="2628770867680720336">Núllstilla þarf þetta Chromebook tæki til að kveikja á ADB-villuleit. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Byrja nýtt spjall við Gemini</translation>
 <translation id="2629227353894235473">Þróa Android forrit</translation>
 <translation id="2629437048544561682">Hreinsa striga</translation>
 <translation id="2631498379019108537">Sýna innsláttarvalkosti á hillunni</translation>
@@ -4264,6 +4266,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Opna í &amp;huliðsglugga</translation>
 <translation id="3848688783623004960">Opna á skiptum skjá</translation>
+<translation id="3849517590329855428">Draga allt saman</translation>
 <translation id="3850172593216628215">Öryggisuppfærslum er lokið. Sparaðu 50 USD eða meira þegar þú kaupir nýja Chromebook-tölvu.</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3850989673553106152">Aðgangsorði breytt</translation>
@@ -7274,6 +7277,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5945363896952315544">Öryggislykillinn þinn getur ekki vistað fleiri fingraför. Þú þarft að eyða fingrafari sem fyrir er til að geta bætt nýju við.</translation>
 <translation id="5946591249682680882">Auðkenni tilkynningar <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Tvísmellur á mús</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{Ekki tókst að þátta einn viðburð og hann er ekki sýndur}one{Ekki tókst að þátta # viðburði og þeir eru ekki sýndir}other{Ekki tókst að þátta # viðburði og þeir eru ekki sýndir}}</translation>
 <translation id="5948476936444935795">Hætta við innflutning</translation>
 <translation id="5948536763493709626">Tengdu lyklaborð eða mús eða haltu uppsetningu áfram á snertiskjánum. Ef þú ert að nota Bluetooth-tæki þarftu að tryggja að tækin séu tilbúin fyrir pörun.</translation>
 <translation id="5949795028157144515">Slökkt er á forritarastillingu. Slökkt var á einhverjum viðbótum.</translation>
@@ -8671,6 +8675,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6914812290245989348">Ekki sjá viðvaranir áður en farið er á ótrygg vefsvæði</translation>
 <translation id="6916590542764765824">Stjórna viðbótum</translation>
 <translation id="6916676294509106572">Outlook-dagatal falið</translation>
+<translation id="6916818963747321523">Stækka allt</translation>
 <translation id="6917873303492266709">Til að deila, tengjast og vinna með öðrum í flipahópum skaltu opna stillingar og kveikja á „Leyfa innskráningu í Chrome“</translation>
 <translation id="6918677045355889289">ChromeOS uppfærslu krafist</translation>
 <translation id="6918733588290914545">Fljótleg uppsetning með Android-síma</translation>
@@ -9220,6 +9225,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7312040805247765153">Ekki tókst að setja upp forrit</translation>
 <translation id="7312210124139670355">Stjórnandinn er að endurstilla eSIM. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="7313539585802573958">Litir á baklýsingu lyklaborðs</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Ekki var hægt að dagsetja einn viðburð og hann er ekki sýndur}one{Ekki var hægt að dagsetja # viðburði og þeir eru ekki sýndir}other{Ekki var hægt að dagsetja # viðburði og þeir eru ekki sýndir}}</translation>
 <translation id="7314865262803554456">Þú færð ekki tilkynningu þegar upptakan hefst.</translation>
 <translation id="7314989823816739632">Rómantískt</translation>
 <translation id="7317342082064136423">Staðfestu reikninginn þinn</translation>

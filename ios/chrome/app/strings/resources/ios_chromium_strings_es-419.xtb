@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium protege tus datos sensibles con Face ID.</translation>
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
 <translation id="16001233025397167">La Verificación de seguridad te protege de violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Recibe alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte.</translation>
+<translation id="1614362805233822594">Ya tienes contraseñas o llaves de acceso en el Administrador de contraseñas para los sitios que se muestran. Selecciona una cuenta para conservar la información de acceso que se muestra y reemplazar lo que hay en el Administrador de contraseñas.</translation>
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="164952285225495380">Ya se realizó un seguimiento de este paquete en Chromium.</translation>
+<translation id="1703338211136118534">No se importaron las siguientes contraseñas al Administrador de contraseñas porque no cumplen con los requisitos.</translation>
 <translation id="1707458603865303524">Usa Chromium cada vez que presiones vínculos en mensajes o demás apps.</translation>
 <translation id="1722370509450468186">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Un feed personalizado creado para ti</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps en Chromium</translation>
 <translation id="1867772173333403444">4. Selecciona Chromium.</translation>
 <translation id="1965068424387304464">Sugerencia de Chromium: Guardar contraseñas</translation>
+<translation id="1992653360331625459">Ya tienes contraseñas para estas cuentas en el Administrador de contraseñas. Si decides importar una de las contraseñas a continuación, se reemplazará la contraseña existente.</translation>
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="2042889939382983733">Ver tu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
 
 Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
+<translation id="2334943301233020675">No se importaron las siguientes llaves de acceso al Administrador de contraseñas porque no cumplen con los requisitos.</translation>
 <translation id="2337722506862731008">Compartir Chromium</translation>
 <translation id="2340423701577464731">Agregar el elemento de la lista de lectura a Chromium</translation>
 <translation id="2374627437126809292">Chromium usa Google Maps para brindarte instrucciones sobre cómo llegar, así como información local sobre las direcciones detectadas.</translation>

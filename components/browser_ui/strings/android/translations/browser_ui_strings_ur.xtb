@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">‏Chrome کی تجاویز</translation>
 <translation id="1816835383954230954">‏آن ہونے پر، Chrome تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے۔ آف ہونے پر، یہ کارکردگی کو کم کرتا ہے لیکن V8 کو حملوں کے خلاف زیادہ مزاحم بناتا ہے۔</translation>
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
+<translation id="1822318649925991542">اپنے براؤزنگ کے تجربے کو حسب ضرورت بنانے کے لیے پوزیشن کو تبدیل کریں</translation>
 <translation id="1848033246551405023">‏فونٹ Sans Serif</translation>
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1881806992065048905">نئے ٹیب کے صفحہ کی ہئیت کی نیچے کی شیٹ</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">یہ آپ کی فہرست میں موجود تمام سائٹس کو ڈیفالٹ زوم پر ری سیٹ کر دے گا</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
+<translation id="1994558116414798016">‏فونٹ Lexend</translation>
 <translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="2025115093177348061">افزودہ حقیقت</translation>
 <translation id="2028449514182362831">وہ خصوصیات کام نہیں کریں گی جن کے لیے موشن سینسرز کی ضرورت ہوتی ہے</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">لائٹ رنگ والی تھیم</translation>
 <translation id="2096716221239095980">سبھی ڈیٹا حذف کریں</translation>
 <translation id="2102396546234652240">سائٹس کو اپنا مائیکروفون استعمال کرنے کی اجازت نہ دیں</translation>
+<translation id="2115808389282428160">سائٹس کو اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی کی اجازت نہ دیں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
 <translation id="2146263598007866206">سائٹس آپ کا وقت بچانے کے لیے خودکار طور پر متعلقہ فائلز کو ایک ساتھ ڈاؤن لوڈ کر سکتی ہیں</translation>
 <translation id="2148716181193084225">آج</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">اس وقت اجازت ہے • قطعی</translation>
 <translation id="2544997614631598250">گہرے رنگ والی تھیم</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
+<translation id="2553552004849639664">‏آن لائن خطرات کے خلاف Chrome کا مضبوط ترین تحفظ حاصل کریں</translation>
 <translation id="2570922361219980984">‏مقام کی رسائی بھی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
 <translation id="2586657967955657006">کلپ بورڈ</translation>
@@ -159,6 +163,7 @@
 <translation id="2621115761605608342">‏کسی مخصوص سائٹ کیلئے JavaScript کی اجازت دیں۔</translation>
 <translation id="2626708220538466178">ڈیفالٹ براؤزر کی نیچے کی شیٹ بند ہے</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
+<translation id="2665056444046933274">سائٹس اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی کیلئے اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="2670403088701171361">سائٹس کو اپنے کلپ بورڈ پر ٹیکسٹ یا تصاویر دیکھنے کی اجازت نہ دیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2682367912565197520">محفوظ شدہ زوم لیول کو حذف کریں</translation>
@@ -202,8 +207,10 @@
 <translation id="311394601889664316">سائٹس کو اپنے آلے پر فاائلز یا فولڈرز میں ترمیم کرنے کی اجازت نہ دیں</translation>
 <translation id="3114012059975132928">ویڈیو پلیئر</translation>
 <translation id="3115898365077584848">معلومات دکھائیں</translation>
+<translation id="3120204271988747891">سائٹس آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی درخواست کر سکتی ہیں</translation>
 <translation id="3123473560110926937">بعض سائٹس پر مسدود ہے</translation>
 <translation id="3132996321662585180">روزانہ ریفریش کریں</translation>
+<translation id="3134859781443140237">مقامی نیٹ ورک</translation>
 <translation id="3143754809889689516">شروع سے چلائیں</translation>
 <translation id="3164169438034704658">‏آپ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں قطعی مقام کو آن کر سکتے ہیں۔</translation>
 <translation id="3165022941318558018">سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دیں</translation>
@@ -214,6 +221,7 @@
 <translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3232293466644486101">براؤزنگ ڈیٹا حذف کریں…</translation>
+<translation id="3241320538788585298">لوپ بیک نیٹ ورک</translation>
 <translation id="3242646949159196181">آن ہونے پر، سائٹس آواز چلا سکتی ہیں۔ آف ہونے پر، سائٹس آواز نہیں چلا سکتی ہیں۔</translation>
 <translation id="3273479183583863618">ٹیبز پر قیمت کی گراوٹ</translation>
 <translation id="3277252321222022663">سائٹس کو سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
@@ -409,6 +417,7 @@
 <translation id="5373874281522292782">آپ کے ٹیب گروپس محفوظ ہو گئے ہیں</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{‏(‎+1 مزید)}other{(# + مزید)}}</translation>
 <translation id="5403592356182871684">نام</translation>
+<translation id="5407203562970638234">اپنی سیکیورٹی کو بہتر بنائیں</translation>
 <translation id="5438097262470833822">یہ انتخاب <ph name="WEBSITE" /> کے لیے اجازتوں کو ری سیٹ کرے گا</translation>
 <translation id="5459413148890178711">آن ہونے پر، سائٹس آپ کے مقام کے بارے میں پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا مقام نہیں دیکھ سکتی ہیں۔</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> میں سے <ph name="ELAPSED_TIME" /> وقت گزر گیا۔</translation>
@@ -423,6 +432,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> مسدود ہے</translation>
 <translation id="560980142378233747">اس کا مطلب ہے کہ سائٹ کی خصوصیات توقع کے مطابق کام کرنی چاہیے، لیکن آپ کی براؤزنگ کا تحفظ کم ہو سکتا ہے۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">نئے ٹیب کے صفحہ کے کارڈز کی نیچے کی شیٹ</translation>
+<translation id="5621413808884657932">آن ہونے پر، سائٹس اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی حاصل کرنے کیلئے کہہ سکتی ہیں۔ آف ہونے پر، سائٹس اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی حاصل نہیں کر سکتیں۔</translation>
 <translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
 <translation id="5668404140385795438">زوم ان کرنے سے بچنے کیلئے کسی ویب سائٹ کی درخواست کو اوور رائیڈ کریں</translation>
@@ -543,6 +553,7 @@
 <translation id="6842868554183332230">سائٹس عام طور پر چیٹ ایپس پر آپ کی دستیابی سیٹ کرنے کے لئے آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں اس بات کا پتا لگاتی ہیں</translation>
 <translation id="6864395892908308021">‏یہ آلہ NFC کو نہیں پڑھ سکتا</translation>
 <translation id="6870169401250095575">سیفٹی چیک کارڈ چھپائیں</translation>
+<translation id="6882736949427544336">سائٹس کو اپنے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی اجازت نہ دیں</translation>
 <translation id="6900883974539674431">ایسے ٹیب گروپس تخلیق کریں جو آپ کے تمام آلات پر خود کار طور پر محفوظ اور اپ ڈیٹ ہو جاتے ہوں</translation>
 <translation id="6912998170423641340">سائٹس کو کلپ بورڈ سے ٹیکسٹ اور تصاویر پڑھنے سے مسدود کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
@@ -604,6 +615,8 @@
 <translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7594634374516752650">بلوٹوتھ آلے سے منسلک ہے</translation>
 <translation id="7617547684249261169">آپ اپنی بعض یا سبھی سرگزشت، کوکیز، سائٹ ڈیٹا اور مزید کو حذف کر سکتے ہیں</translation>
+<translation id="762200934554267613">سائٹس اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی کیلئے پوچھ سکتی ہیں</translation>
+<translation id="7627749368210392160">سائٹس آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی حاصل کرنے کیلئے اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7655411746932645568">سائٹس سیریل پورٹس سے منسلک ہونے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
@@ -659,6 +672,7 @@
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">آن ہونے پر، سائٹس آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی حاصل کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی حاصل نہیں کر سکتیں۔</translation>
 <translation id="8249310407154411074">اوپر منتقل کریں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
@@ -712,6 +726,7 @@
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8737426583868847403">وہ سائٹس جن کے لیے آپ حسب ضرورت زوم لیول محفوظ کرتے ہیں وہ یہاں ظاہر ہوں گی</translation>
+<translation id="8748714929822124637">سائٹس کو اپنے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی اجازت نہ دیں</translation>
 <translation id="8751914237388039244">ایک تصویر منتخب کریں</translation>
 <translation id="8775741625735357092">آپ ترتیبات &gt; موجودگی میں بُک مارکس بار کو آن کر سکتے ہیں</translation>
 <translation id="8800034312320686233">سائٹ کام نہیں کر رہی ہے؟</translation>

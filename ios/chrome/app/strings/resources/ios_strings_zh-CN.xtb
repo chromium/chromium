@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1161663161838091892">同步标签页和历史记录即可继续</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} 张信用卡}other{{count} 张信用卡}}</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1172898394251786223">下一个字段</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1764070164487214210">路线</translation>
+<translation id="1764511703783285459">其他密码管理工具未分享任何密码或通行密钥</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
 <translation id="1771016937398045251">“工具”菜单</translation>
 <translation id="1772468122139624049">无法重新加载标签页</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">备注长度超过了 1000 个字符</translation>
 <translation id="5087098519049306025">价格跟踪</translation>
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的账号。</translation>
+<translation id="510580293474170715">未导入任何内容</translation>
 <translation id="5113960131843706315">正在获取您的内容…</translation>
 <translation id="5118462200606189584">添加账号…</translation>
 <translation id="5118764316110575523">已关闭</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
 <translation id="6418346271604475326">正在准备 PDF 文件</translation>
+<translation id="6420292512900923139">导入数据时出了点问题</translation>
 <translation id="6421038304268477484">译文</translation>
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6435236283694032571">添加到阅读清单</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{这些书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="656065428026159829">查看更多</translation>

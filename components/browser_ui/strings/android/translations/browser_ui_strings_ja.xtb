@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome のおすすめの使い方</translation>
 <translation id="1816835383954230954">オンにすると、Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します。オフにすると、パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます。</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
+<translation id="1822318649925991542">位置を変更してブラウジング環境をカスタマイズ</translation>
 <translation id="1848033246551405023">フォント Sans Serif</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1881806992065048905">新しいタブページの外観のボトムシート</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">一時的に許可 • 正確</translation>
 <translation id="2544997614631598250">テーマカラー ダーク</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
+<translation id="2553552004849639664">Chrome の最高水準のセキュリティでオンラインの脅威から保護</translation>
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">タブグループを保存しました</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
+<translation id="5407203562970638234">セキュリティを強化</translation>
 <translation id="5438097262470833822">これを選択すると、<ph name="WEBSITE" /> の権限がリセットされます</translation>
 <translation id="5459413148890178711">オンにすると、サイトは位置情報を要求できます。オフにすると、サイトは位置情報を参照できません。</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>

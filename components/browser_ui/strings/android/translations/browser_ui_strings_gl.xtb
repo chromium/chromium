@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Restablecerase o zoom predeterminado en todos os sitios da túa lista</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1994173015038366702">URL do sitio</translation>
+<translation id="1994558116414798016">Tipo de letra Lexend</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2028449514182362831">As funcións que requiran sensores de movemento non estarán dispoñibles</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Cor de tema claro</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
 <translation id="2102396546234652240">Non permitir que os sitios utilicen o teu micrófono</translation>
+<translation id="2115808389282428160">Non permitir que os sitios accedan a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
 <translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
 <translation id="2148716181193084225">Hoxe</translation>
@@ -159,6 +161,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
 <translation id="2626708220538466178">Panel inferior do navegador predeterminado pechado</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2665056444046933274">Os sitios poden usar esta función para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2670403088701171361">Non permitir que os sitios accedan ao texto nin ás imaxes do portapapeis</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2682367912565197520">Eliminar o nivel de zoom gardado</translation>
@@ -202,8 +205,10 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
 <translation id="3114012059975132928">Reprodutor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
+<translation id="3120204271988747891">Os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local</translation>
 <translation id="3123473560110926937">Anuncios bloqueados nalgúns sitios</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
+<translation id="3134859781443140237">Rede local</translation>
 <translation id="3143754809889689516">Reproducir desde o principio</translation>
 <translation id="3164169438034704658">Podes activar a localización precisa en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permite que un sitio use cookies de terceiros</translation>
@@ -214,6 +219,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3223425961342298674">O acceso á localización non está permitido</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3232293466644486101">Eliminar datos de navegación…</translation>
+<translation id="3241320538788585298">Rede de bucle con retorno</translation>
 <translation id="3242646949159196181">Cando esta opción está activada, os sitios poden reproducir son. Cando esta opción está desactivada, os sitios non poden reproducir son.</translation>
 <translation id="3273479183583863618">Baixadas de prezo nas pestanas</translation>
 <translation id="3277252321222022663">Permitir que os sitios accedan aos sensores (recomendado)</translation>
@@ -423,6 +429,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
 <translation id="560980142378233747">Isto significa que as funcións do sitio deberían funcionar segundo o previsto, pero pode que teñas menos protección durante a navegación. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Panel inferior das tarxetas da páxina Nova pestana</translation>
+<translation id="5621413808884657932">Cando esta opción está activada, os sitios poden pedir permiso para acceder a outras aplicacións e servizos deste dispositivo. Cando está desactivada, non poden acceder.</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
@@ -543,6 +550,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6842868554183332230">Os sitios adoitan detectar cando estás utilizando o dispositivo de maneira activa para definir a túa dispoñibilidade nas aplicacións de chat</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
 <translation id="6870169401250095575">Ocultar tarxeta Comprobación de seguranza</translation>
+<translation id="6882736949427544336">Non permitir que os sitios accedan a outros dispositivos conectados á túa rede local</translation>
 <translation id="6900883974539674431">Crea grupos de pestanas que se gardarán e actualizarán automaticamente en todos os teus dispositivos</translation>
 <translation id="6912998170423641340">Impedir que os sitios lean texto e imaxes do portapapeis</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -604,6 +612,8 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7586676035079382730">O acceso ás notificacións non está permitido</translation>
 <translation id="7594634374516752650">Estableceuse conexión cun dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
+<translation id="762200934554267613">Os sitios poden pedir permiso para acceder a outras aplicacións e servizos deste dispositivo</translation>
+<translation id="7627749368210392160">Os sitios poden usar esta función para acceder a outros dispositivos da túa rede local</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7655411746932645568">Os sitios poden pedirche permiso para conectarse a portos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -659,6 +669,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Cando esta opción está activada, os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local. Cando está desactivada, non poden acceder.</translation>
 <translation id="8249310407154411074">Mover á parte superior</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
@@ -712,6 +723,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8737426583868847403">Os sitios para os que gardes un nivel de zoom personalizado mostraranse aquí</translation>
+<translation id="8748714929822124637">Non permitir que os sitios accedan a outros dispositivos da túa rede local</translation>
 <translation id="8751914237388039244">Selecciona unha imaxe</translation>
 <translation id="8775741625735357092">Podes activar a barra de marcadores en Configuración &gt; Aparencia</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>

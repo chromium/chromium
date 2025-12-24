@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium zagotavlja varnost občutljivih podatkov s funkcijo Face ID.</translation>
 <translation id="1591119736686995611">Odpiranje mreže zavihkov v Chromiumu.</translation>
 <translation id="16001233025397167">Varnostno preverjanje vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chromium zazna.</translation>
+<translation id="1614362805233822594">V Upravitelju gesel že imate gesla ali ključe za dostop za prikazana spletna mesta. Izberite račun, če želite ohraniti prikazane podatke za prijavo in prepisati vsebino v Upravitelju gesel.</translation>
 <translation id="1617663976202781617">Podatki iz sinhronizacije za Chromium</translation>
 <translation id="164952285225495380">Temu paketu že sledite v Chromiumu.</translation>
+<translation id="1703338211136118534">Upravitelj gesel ni mogel uvoziti naslednjih gesel, ker se ne ujemajo z zahtevami.</translation>
 <translation id="1707458603865303524">Chromium lahko uporabljate, kadar koli se dotaknete povezav v sporočilih ali drugih aplikacijah.</translation>
 <translation id="1722370509450468186">Geslo bo shranjeno v računu (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Vir po meri, ustvarjen za vas</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Google Zemljevidi v Chromiumu</translation>
 <translation id="1867772173333403444">4. Izberite Chromium.</translation>
 <translation id="1965068424387304464">Nasvet za Chromium: Shranite gesla</translation>
+<translation id="1992653360331625459">Gesla za te račune že imate v Upravitelju gesel. Če izberete uvoz enega od spodnjih gesel, bo nadomestilo obstoječe.</translation>
 <translation id="2006345422933397527">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2042889939382983733">Ogled zgodovine v Chromiumu</translation>
 <translation id="2052320862053429062">Chromium občasno preveri vaša gesla, tako da jih primerja s seznami gesel, objavljenimi v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Nekateri podatki v Chromiumu še niso shranjeni v računu Google.
 
 Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
+<translation id="2334943301233020675">Upravitelj gesel ni mogel uvoziti naslednjih ključev za dostop, ker se ne ujemajo z zahtevami.</translation>
 <translation id="2337722506862731008">Deljenje Chromiuma</translation>
 <translation id="2340423701577464731">Dodajanje elementa bralnega seznama v Chromiumu</translation>
 <translation id="2374627437126809292">Chromium z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>

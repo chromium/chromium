@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1816835383954230954">Cuando está activado, Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto. Si está desactivado, se reduce el rendimiento, pero V8 es más resistente a los ataques.</translation>
 <translation id="1818308510395330587">Para permitir el uso de la RA en <ph name="APP_NAME" />, también debes activar la cámara en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Cambia la posición para personalizar tu experiencia de navegación</translation>
 <translation id="1848033246551405023">Fuente Sans Serif</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1881806992065048905">Hoja inferior de la apariencia de la página Nueva pestaña</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Se restablecerá el zoom predeterminado de todos los sitios de tu lista</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
+<translation id="1994558116414798016">Fuente Lexend</translation>
 <translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="2025115093177348061">Realidad aumentada</translation>
 <translation id="2028449514182362831">No se habilitarán las funciones que necesitan sensores de movimiento.</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Color del tema claro</translation>
 <translation id="2096716221239095980">Borrar todos los datos</translation>
 <translation id="2102396546234652240">No permitir que los sitios usen el micrófono</translation>
+<translation id="2115808389282428160">No permitir que los sitios accedan a otros servicios y apps en este dispositivo</translation>
 <translation id="2117655453726830283">Siguiente diapositiva</translation>
 <translation id="2146263598007866206">Es posible que los sitios descarguen automáticamente archivos relacionados de forma conjunta para ahorrar tiempo.</translation>
 <translation id="2148716181193084225">Hoy</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Se permite esta vez • Precisa</translation>
 <translation id="2544997614631598250">Color del tema oscuro</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
+<translation id="2553552004849639664">Obtén la protección más sólida de Chrome contra las amenazas en línea</translation>
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido; haz clic para contraer.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
@@ -159,6 +163,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="2621115761605608342">Permitir la ejecución de JavaScript para un sitio específico</translation>
 <translation id="2626708220538466178">Se cerró la hoja inferior del navegador predeterminado</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2665056444046933274">Los sitios pueden usar esta función para acceder a otros servicios y apps en este dispositivo</translation>
 <translation id="2670403088701171361">No permitir que los sitios visualicen texto ni imágenes del portapapeles</translation>
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2682367912565197520">Borrar el nivel de zoom guardado</translation>
@@ -202,8 +207,10 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
 <translation id="3114012059975132928">Reproductor de video</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
+<translation id="3120204271988747891">Los sitios pueden solicitar acceso a otros dispositivos de tu red local</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
+<translation id="3134859781443140237">Red local</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3164169438034704658">Puedes activar la ubicación precisa en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permitir que un sitio utilice cookies de terceros</translation>
@@ -214,6 +221,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3223425961342298674">No se permite la ubicación</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3232293466644486101">Borrar datos de navegación…</translation>
+<translation id="3241320538788585298">Red de bucle invertido</translation>
 <translation id="3242646949159196181">Cuando esta opción está activada, los sitios pueden reproducir sonido. Cuando está desactivada, los sitios no pueden reproducir sonido.</translation>
 <translation id="3273479183583863618">Reducciones de precio en pestañas</translation>
 <translation id="3277252321222022663">Permitir que los sitios accedan a los sensores (recomendado)</translation>
@@ -409,6 +417,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="5373874281522292782">Se guardaron tus grupos de pestañas</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(1 más)}other{(# más)}}</translation>
 <translation id="5403592356182871684">Nombres</translation>
+<translation id="5407203562970638234">Mejora tu seguridad</translation>
 <translation id="5438097262470833822">Esta acción restablecerá los permisos de <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Cuando esta opción está activada, los sitios pueden solicitar tu ubicación. Cuando está desactivada, los sitios no pueden ver tu ubicación.</translation>
 <translation id="5489227211564503167">Tiempo transcurrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="5591840828808741583">Se bloqueó <ph name="SITE_NAME" /></translation>
 <translation id="560980142378233747">Esto significa que las funciones de los sitios deberían poder usarse como se espera, pero es posible que tengas menos protección de navegación. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Hoja inferior de las tarjetas de la página Nueva pestaña</translation>
+<translation id="5621413808884657932">Cuando esta opción está activada, los sitios pueden solicitar acceso a otros servicios y apps en este dispositivo. Cuando está desactivada, los sitios no pueden acceder a otros servicios y apps en este dispositivo.</translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anula la solicitud de un sitio web para inhabilitar los acercamientos</translation>
@@ -543,6 +553,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="6842868554183332230">Los sitios suelen detectar cuando estás usando activamente el dispositivo a fin de configurar tu disponibilidad en las apps de chat</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
 <translation id="6870169401250095575">Ocultar la tarjeta Verificación de seguridad</translation>
+<translation id="6882736949427544336">No permitir que los sitios accedan a otros dispositivos de tu red local</translation>
 <translation id="6900883974539674431">Crea grupos de pestañas que se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="6912998170423641340">Impedir que los sitios lean el texto y las imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -604,6 +615,8 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7586676035079382730">No se permiten las notificaciones</translation>
 <translation id="7594634374516752650">Conectado a un dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Puedes borrar tu historial, cookies, datos de sitios y más de forma parcial o por completo</translation>
+<translation id="762200934554267613">Los sitios pueden solicitar acceso a otros servicios y apps en este dispositivo</translation>
+<translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7655411746932645568">Permitir que los sitios soliciten permiso para conectarse a puertos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -659,6 +672,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Cuando esta opción está activada, los sitios pueden solicitar acceso a otros dispositivos de tu red local. Cuando está desactivada, los sitios no pueden acceder a otros dispositivos de tu red local.</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
@@ -712,6 +726,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8737426583868847403">Los sitios para los que guardes un nivel de zoom personalizado aparecerán aquí</translation>
+<translation id="8748714929822124637">No permitir que los sitios accedan a otros dispositivos en tu red local</translation>
 <translation id="8751914237388039244">Seleccionar una imagen</translation>
 <translation id="8775741625735357092">Puedes activar la barra de favoritos en Configuración &gt; Apariencia</translation>
 <translation id="8800034312320686233">¿No funciona el sitio?</translation>

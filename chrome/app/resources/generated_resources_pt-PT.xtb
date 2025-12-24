@@ -1672,6 +1672,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2114145607116268663">Não é possível instalar. É necessário reiniciar. Reinicie o computador e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
+<translation id="2115808389282428160">Não permitir que os sites acedam a outras apps e serviços neste dispositivo</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
 <translation id="2117655453726830283">Slide seguinte</translation>
 <translation id="211803431539496924">Confirmar as atualizações de segurança alargadas?</translation>
@@ -1771,6 +1772,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2184272387334793084">Inicie sessão para ter os seus marcadores, palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="2184515124301515068">Permitir que o Chrome escolha quando os sites podem reproduzir som (recomendado)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Iniciar novo chat com o Gemini</translation>
 <translation id="2186711480981247270">Página partilhada a partir de outro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As definições modificadas por outros utilizadores não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Extensões atualizadas.</translation>
@@ -2429,6 +2431,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2627424346328942291">Não é possível partilhar</translation>
 <translation id="2628258844236035475">Remover a sua morada de casa do preenchimento automático do Chrome?</translation>
 <translation id="2628770867680720336">Tem de efetuar a reposição de dados de fábrica deste Chromebook para ativar a depuração do adb. <ph name="BEGIN_LINK_LEARN_MORE" />Saber mais<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Iniciar novo chat com o Gemini</translation>
 <translation id="2629227353894235473">Programar aplicações para Android</translation>
 <translation id="2629437048544561682">Limpar tela</translation>
 <translation id="2631498379019108537">Mostrar opções de introdução na prateleira</translation>
@@ -2484,6 +2487,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2662876636500006917">Web Store do Chrome</translation>
 <translation id="2663253180579749458">A adicionar o perfil do eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2665056444046933274">Os sites podem usar esta funcionalidade para aceder a outras apps e serviços neste dispositivo</translation>
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
 <translation id="2665647207431876759">Expirada</translation>
 <translation id="2665919335226618153">Ah, bolas! Ocorreu um erro durante a formatação.</translation>
@@ -3158,6 +3162,7 @@ Quer pará-lo?</translation>
 <translation id="3118748462829336648">Abra o painel lateral</translation>
 <translation id="3119743309973425629">Taxa de intermitência do cursor de texto</translation>
 <translation id="3119948370277171654">Qual o conteúdo ou URL que está a transmitir?</translation>
+<translation id="3120204271988747891">Permitir que os sites acedam a outros dispositivos na sua rede local</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Falha ao criar directório de dados</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
@@ -6449,6 +6454,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5388719243178419614">Não é possível carregar. Falha ao processar o ficheiro de imagem.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5389224261615877010">Arco-íris</translation>
+<translation id="538945906186309152">Ativar atalho de teclado do Gemini</translation>
 <translation id="5389794555912875905">Ver avisos antes de aceder a sites inseguros (recomendado)</translation>
 <translation id="5389943529251318913">Reduzir a velocidade do rato em</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
@@ -7296,6 +7302,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5969364029958154283">Saiba como repor as definições</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pode ver ficheiros em <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Aviso de atalhos de teclado ignorado</translation>
+<translation id="5970443501603581692">Não pode aceder a outros dispositivos na sua rede local</translation>
 <translation id="5971037678316050792">Controlar estado e sincronização do adaptador Bluetooth</translation>
 <translation id="5971861540200650391">Ocultar durante <ph name="MODULE_TITLE" /> horas</translation>
 <translation id="597235323114979258">Ver mais destinos</translation>
@@ -8644,6 +8651,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6903022061658753260">Os seus dados são sincronizados em todos os navegadores Chrome nos quais ativou a sincronização para esta conta. Para obter as opções de sincronização do ChromeOS, aceda às <ph name="LINK_BEGIN" />definições do ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Não aceitar</translation>
 <translation id="6903590427234129279">Abra todos (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Pode aceder a outras apps e serviços neste dispositivo</translation>
 <translation id="6903907808598579934">Ativar sincronização</translation>
 <translation id="6903916726032521638">Pesquisar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Quer receber conteúdos deste dispositivo?</translation>
@@ -9158,6 +9166,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7273110280511444812">última ligação em <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Impedir sempre que <ph name="HOST" /> controle e reprograme os seus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> até ficar completa</translation>
+<translation id="7275950084263610253">Pode aceder a outros dispositivos na sua rede local</translation>
 <translation id="727595954130325265">Comprar agora</translation>
 <translation id="727952162645687754">Erro de transferência</translation>
 <translation id="7280649757394340890">Definições de voz para a conversão de texto em voz</translation>
@@ -9661,12 +9670,14 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7620616707541471029">Escolha uma conta para continuar</translation>
 <translation id="7621382409404463535">O sistema não conseguiu guardar a configuração do dispositivo.</translation>
 <translation id="7621595347123595643">Caso se esqueça da palavra-passe ou do PIN, não pode recuperar os dados locais.</translation>
+<translation id="762200934554267613">Os sites podem pedir para aceder a outras apps e serviços neste dispositivo</translation>
 <translation id="7622114377921274169">A carregar…</translation>
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
 <translation id="7622966771025050155">Mudar para o separador capturado</translation>
 <translation id="7624337243375417909">caps lock desligado</translation>
 <translation id="7625568159987162309">Ver autorizações e dados armazenados em sites</translation>
 <translation id="7625823789272218216">Novo separador à esquerda</translation>
+<translation id="7627749368210392160">Os sites podem usar esta funcionalidade para aceder a outros dispositivos na sua rede local</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecionar uma ação para cada tecla</translation>
 <translation id="7629206210984165492">Delicado</translation>
@@ -10716,6 +10727,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="831207808878314375">Definição</translation>
 <translation id="8312841338723044391">EM DIRETO</translation>
 <translation id="8313308349366087671">Opções de aplicação</translation>
+<translation id="8313599942510782709">A sua tarefa ainda está em curso</translation>
 <translation id="8314089908545021657">Sincronizar com o novo telemóvel</translation>
 <translation id="8314381333424235892">Extensão em falta ou desinstalada.</translation>
 <translation id="831440797644402910">Não é possível abrir esta pasta</translation>
@@ -10723,6 +10735,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8315018673856831477">Opções da funcionalidade Poupança de memória</translation>
 <translation id="8315514906653279104">A ativar…</translation>
 <translation id="8316480109537174997">Mostrar o Gemini no tabuleiro do sistema e ativar o atalho de teclado</translation>
+<translation id="8317291727028594010">Não pode aceder a outras apps e serviços neste dispositivo</translation>
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
 <translation id="8317965619823678157">copiar palavras-passe</translation>
 <translation id="8318266828739827371">Use uma vista de ecrã dividido para ver a área ampliada do ecrã. Use Pesquisa + Ctrl + D para ativar e desativar a lupa ancorada.</translation>
@@ -11366,6 +11379,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8745034592125932220">Sem autorização para guardar dados no seu dispositivo</translation>
 <translation id="8746654918629346731">Já solicitou a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Querr carregar um ficheiro para este site?}other{Quer carregar # ficheiros para este site?}}</translation>
+<translation id="8748714929822124637">Não permite que os sites acedam a outros dispositivos na sua rede local</translation>
 <translation id="8748916845823567967">Todos os dados e cookies armazenados pelo site <ph name="SITE" /> vão ser eliminados.</translation>
 <translation id="8749805710397399240">Não é possível transmitir o seu ecrã. Verifique a autorização Gravação de ecrã nas Preferências do sistema.</translation>
 <translation id="8749826920799243530">O dispositivo não está inscrito</translation>

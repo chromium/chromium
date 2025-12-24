@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">启用此设置后，Chrome 的运行速度会更快，并且使用 JavaScript 的功能能按预期运行。关闭此设置会降低性能，但提高 V8 防范攻击的能力。</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="1822318649925991542">调整位置，获享个性化的浏览体验</translation>
 <translation id="1848033246551405023">字体：Sans Serif</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1881806992065048905">“新标签页”页面外观底部动作条</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">这会将列表中所有网站的缩放级别重置为默认值</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1994173015038366702">网站网址</translation>
+<translation id="1994558116414798016">字体：Lexend</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2025115093177348061">增强现实</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">主题颜色：浅色</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
+<translation id="2115808389282428160">不允许网站访问此设备上的其他应用和服务</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
 <translation id="2146263598007866206">网站可能会自动将相关文件一起下载，从而为您节省时间</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">这次允许使用 • 精确位置</translation>
 <translation id="2544997614631598250">主题颜色：深色</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
+<translation id="2553552004849639664">开启 Chrome 最强防护，抵御在线威胁</translation>
 <translation id="2570922361219980984">此设备的位置信息使用权也已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
@@ -159,6 +163,7 @@
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
 <translation id="2626708220538466178">默认浏览器底部动作条已关闭</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2665056444046933274">网站可以使用此功能访问此设备上的其他应用和服务</translation>
 <translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2682367912565197520">删除已保存的缩放级别</translation>
@@ -202,8 +207,10 @@
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3114012059975132928">视频播放器</translation>
 <translation id="3115898365077584848">显示信息</translation>
+<translation id="3120204271988747891">网站可以请求访问本地网络中的其他设备</translation>
 <translation id="3123473560110926937">已禁止部分网站显示广告</translation>
 <translation id="3132996321662585180">每日刷新</translation>
+<translation id="3134859781443140237">本地网络</translation>
 <translation id="3143754809889689516">从头播放</translation>
 <translation id="3164169438034704658">您可以在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启“精确位置”。</translation>
 <translation id="3165022941318558018">允许网站使用第三方 Cookie</translation>
@@ -214,6 +221,7 @@
 <translation id="3223425961342298674">已拒绝授予位置信息使用权限</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
+<translation id="3241320538788585298">环回网络</translation>
 <translation id="3242646949159196181">开启此设置后，网站可以播放声音。关闭此设置后，网站无法播放声音。</translation>
 <translation id="3273479183583863618">在标签页上显示降价通知</translation>
 <translation id="3277252321222022663">允许网站使用传感器（推荐）</translation>
@@ -409,6 +417,7 @@
 <translation id="5373874281522292782">标签页分组已保存</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
+<translation id="5407203562970638234">增强安全性</translation>
 <translation id="5438097262470833822">此选项会重置 <ph name="WEBSITE" /> 的权限</translation>
 <translation id="5459413148890178711">开启此设置后，网站可以请求获取您的位置信息。关闭此设置后，网站无法查看您的位置信息。</translation>
 <translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
@@ -423,6 +432,7 @@
 <translation id="5591840828808741583">已为 <ph name="SITE_NAME" /> 禁用此权限</translation>
 <translation id="560980142378233747">这意味着，网站功能应该会按预期运行，但您受到的浏览保护级别可能较低。<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">“新标签页”页面卡片底部动作条</translation>
+<translation id="5621413808884657932">开启此设置后，网站可以请求访问此设备上的其他应用和服务。关闭此设置后，网站无法访问此设备上的其他应用和服务。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
@@ -543,6 +553,7 @@
 <translation id="6842868554183332230">网站通常会检测您何时在主动使用自己的设备，以便在聊天应用上设置您是否空闲</translation>
 <translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
 <translation id="6870169401250095575">隐藏“安全检查”卡片</translation>
+<translation id="6882736949427544336">不允许网站访问本地网络中的其他设备</translation>
 <translation id="6900883974539674431">创建标签页分组，这些分组会在您的所有设备上自动保存和更新</translation>
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
@@ -604,6 +615,8 @@
 <translation id="7586676035079382730">已拒绝授予通知权限</translation>
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
 <translation id="7617547684249261169">您可以删除部分或全部历史记录、Cookie、网站数据等</translation>
+<translation id="762200934554267613">网站可以请求访问此设备上的其他应用和服务</translation>
+<translation id="7627749368210392160">网站可以使用此功能访问本地网络中的其他设备</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7655411746932645568">网站可以请求连接到串行端口</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -659,6 +672,7 @@
 <translation id="8200772114523450471">继续</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">开启此设置后，网站可以请求访问本地网络中的其他设备。关闭此设置后，网站无法访问本地网络中的其他设备。</translation>
 <translation id="8249310407154411074">移至顶部</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -712,6 +726,7 @@
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8737426583868847403">您为其保存了自定义缩放级别的网站将显示在此处</translation>
+<translation id="8748714929822124637">不允许网站访问本地网络中的其他设备</translation>
 <translation id="8751914237388039244">选择图片</translation>
 <translation id="8775741625735357092">您可以在“设置”&gt;“外观”中开启书签栏</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>

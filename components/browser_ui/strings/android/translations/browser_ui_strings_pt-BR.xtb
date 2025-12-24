@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1816835383954230954">Quando a opção está ativada, o Chrome fica mais rápido, e os recursos que usam JavaScript funcionam conforme o esperado. Quando desativada, isso reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Mude a posição para personalizar sua experiência de navegação</translation>
 <translation id="1848033246551405023">Fonte Sans Serif</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1881806992065048905">Página inferior de aparência da página "Nova guia"</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Todos os sites da sua lista serão redefinidos para o zoom padrão</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
+<translation id="1994558116414798016">Fonte Lexend</translation>
 <translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2028449514182362831">Recursos que precisam de sensores de movimento não funcionarão</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Cor do tema: Claro</translation>
 <translation id="2096716221239095980">Excluir todos os dados</translation>
 <translation id="2102396546234652240">Não permitir que os sites usem o microfone</translation>
+<translation id="2115808389282428160">Não permitir que os sites acessem outros apps e serviços neste dispositivo</translation>
 <translation id="2117655453726830283">Próximo slide</translation>
 <translation id="2146263598007866206">Os sites podem fazer baixar automaticamente arquivos relacionados em conjunto para economizar tempo</translation>
 <translation id="2148716181193084225">Hoje</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Ativada desta vez • Exata</translation>
 <translation id="2544997614631598250">Cor do tema: Escuro</translation>
 <translation id="2546283357679194313">Cookies e dados de sites</translation>
+<translation id="2553552004849639664">Tenha a blindagem mais potente do Chrome contra ameaças on-line</translation>
 <translation id="2570922361219980984">O acesso ao local também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Visualização expandida. Clique para recolher</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
@@ -159,6 +163,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2621115761605608342">Permitir JavaScript para um site específico.</translation>
 <translation id="2626708220538466178">A página inferior de navegador padrão foi fechada</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2665056444046933274">Os sites podem usar esse recurso para acessar outros apps e serviços neste dispositivo</translation>
 <translation id="2670403088701171361">Não permitir que os sites acessem textos e imagens da sua área de transferência</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2682367912565197520">Excluir nível de zoom salvo</translation>
@@ -202,8 +207,10 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="311394601889664316">Não permitir que os sites editem arquivos e pastas no dispositivo</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
+<translation id="3120204271988747891">Os sites podem pedir para acessar outros dispositivos na sua rede local</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134859781443140237">Rede local</translation>
 <translation id="3143754809889689516">Reproduzir do início</translation>
 <translation id="3164169438034704658">Você pode ativar o local exato nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permitir que um site use cookies de terceiros</translation>
@@ -214,6 +221,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3232293466644486101">Excluir dados de navegação…</translation>
+<translation id="3241320538788585298">Rede de loopback</translation>
 <translation id="3242646949159196181">Quando essa configuração está ativada, os sites podem tocar sons. Quando está desativada, os sites não podem tocar sons.</translation>
 <translation id="3273479183583863618">Guias mostrando reduções no preço</translation>
 <translation id="3277252321222022663">Permitir que sites acessem os sensores (recomendado)</translation>
@@ -409,6 +417,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5373874281522292782">Seus grupos de guias foram salvos</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5407203562970638234">Aumente sua segurança</translation>
 <translation id="5438097262470833822">Essa ação redefinirá as permissões de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando essa configuração está ativada, os sites podem pedir sua localização. Quando está desativada, os sites não têm acesso à sua localização.</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
 <translation id="560980142378233747">Isso significa que os recursos do site vão funcionar conforme o esperado, mas talvez você tenha menos proteção de navegação. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Página inferior de cards da página "Nova guia"</translation>
+<translation id="5621413808884657932">Quando essa configuração está ativada, os sites podem pedir para acessar outros apps e serviços neste dispositivo. Quando essa configuração está desativada, os sites não podem acessar outros apps e serviços neste dispositivo.</translation>
 <translation id="5632485077360054581">Saiba como</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5668404140385795438">Aplicar zoom mesmo que o site tente impedir</translation>
@@ -543,6 +553,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="6842868554183332230">Geralmente, os sites detectam quando você está usando o dispositivo ativamente para definir sua disponibilidade nos apps de chat</translation>
 <translation id="6864395892908308021">Este dispositivo não consegue ler NFC</translation>
 <translation id="6870169401250095575">Ocultar o card da Confirmação de segurança</translation>
+<translation id="6882736949427544336">Não permitir que os sites acessem outros dispositivos na sua rede local</translation>
 <translation id="6900883974539674431">Crie grupos de guias que são salvos e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="6912998170423641340">Impedir que sites leiam textos e imagens da área de transferência</translation>
 <translation id="6945221475159498467">Selecionar</translation>
@@ -604,6 +615,8 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="7586676035079382730">Acesso às notificações não permitido</translation>
 <translation id="7594634374516752650">Conectado a um dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Você pode excluir alguns ou todos os dados do seu histórico, cookies, dados do sites e muito mais</translation>
+<translation id="762200934554267613">Os sites podem pedir para acessar outros apps e serviços neste dispositivo</translation>
+<translation id="7627749368210392160">Os sites podem usar esse recurso para acessar outros dispositivos na sua rede local</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7655411746932645568">Os sites podem pedir para se conectar a portas seriais</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -659,6 +672,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Quando essa configuração está ativada, os sites podem pedir para acessar outros dispositivos na sua rede local. Quando essa configuração está desativada, os sites não podem acessar outros dispositivos na sua rede local.</translation>
 <translation id="8249310407154411074">Mover para o início</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8284326494547611709">Legendas</translation>
@@ -712,6 +726,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8737426583868847403">Os sites que você salvar com um nível de zoom personalizado vão aparecer aqui</translation>
+<translation id="8748714929822124637">Não permitir que os sites acessem outros dispositivos na sua rede local</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
 <translation id="8775741625735357092">Você pode ativar a barra de favoritos em Configurações &gt; Aparência</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>

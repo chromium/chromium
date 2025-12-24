@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">მინიშნებები Chrome-ისთვის</translation>
 <translation id="1816835383954230954">როცა ჩართულია, Chrome უფრო სწრაფად, ხოლო ფუნქციები, რომლებიც JavaScript-ს იყენებს, დანიშნულებისამებრ იმუშავებს. როცა გამორთულია, მცირდება ეფექტურობა, მაგრამ V8 უფრო მდგრადი ხდება შეტევების წინააღმდეგ.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-მა AR რომ გამოიყენოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">გადართეთ პოზიცია დათვალიერების გამოცდილების მორგებისთვის</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">ეს საქაღალდე ცარიელია</translation>
 <translation id="1881806992065048905">ახალი ჩანართის გვერდის ქვედა ფურცელი</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ამჯერად დაშვებულია • ზუსტი</translation>
 <translation id="2544997614631598250">თემის ფერი მუქია</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
+<translation id="2553552004849639664">მიიღეთ ონლაინ საფრთხეებისგან უძლიერესი დაცვა Chrome-ისგან</translation>
 <translation id="2570922361219980984">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვისაც. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">გაშლილია — დააწკაპუნეთ ჩასაკეცად.</translation>
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">თქვენი ჩანართების ჯგუფები შენახულია</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 სხვა)}other{(+ # სხვა)}}</translation>
 <translation id="5403592356182871684">სახელები</translation>
+<translation id="5407203562970638234">თქვენი უსაფრთხოების გაძლიერება</translation>
 <translation id="5438097262470833822">ეს არჩევანი გადააყენებს ნებართვებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5459413148890178711">ჩართვის შემთხვევაში საიტებს შეეძლება თქვენი მდებარეობის გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება თქვენი მდებარეობის ნახვა.</translation>
 <translation id="5489227211564503167">გავიდა <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />-დან.</translation>

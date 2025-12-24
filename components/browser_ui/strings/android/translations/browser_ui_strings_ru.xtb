@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1816835383954230954">Если включить этот параметр, скорость Chrome повысится, а функции, использующие JavaScript, будут работать корректно. Если параметр отключить, производительность снизится, но движок V8 станет более устойчивым к атакам.</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Вы можете изменить ее расположение.</translation>
 <translation id="1848033246551405023">Шрифт без засечек</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1881806992065048905">Нижний экран с вариантами оформления для страницы быстрого доступа</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Разрешено в этот раз • Точное</translation>
 <translation id="2544997614631598250">Цвет темы: тёмный</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
+<translation id="2553552004849639664">Используйте надежную защиту Chrome от угроз в интернете.</translation>
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Ваши группы вкладок сохраняются</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
+<translation id="5407203562970638234">Повысьте свою безопасность</translation>
 <translation id="5438097262470833822">Будут сброшены разрешения для <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Когда этот параметр включен, сайты могут запрашивать доступ к данным о вашем местоположении. Когда параметр отключен, сайтам запрещен доступ к такой информации.</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>

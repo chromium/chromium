@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium štiti sigurnost vaših osjetljivih podataka uz Face ID.</translation>
 <translation id="1591119736686995611">Otvara rešetku kartica u Chromiumu.</translation>
 <translation id="16001233025397167">Sigurnosna provjera štiti vas od neovlaštenog pristupa podacima, nesigurnih web-lokacija i još mnogo toga. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
+<translation id="1614362805233822594">U Upravitelju zaporki već imate zaporke ili pristupne ključeve za prikazane web-lokacije. Odaberite račun da biste zadržali prikazane podatke za prijavu, čime će se izbrisati podaci u Upravitelju zaporki.</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
 <translation id="164952285225495380">Ovaj se paket već prati na Chromiumu.</translation>
+<translation id="1703338211136118534">Sljedeće zaporke nisu uvezene u Upravitelj zaporki jer ne ispunjavaju zahtjeve.</translation>
 <translation id="1707458603865303524">Upotrebljavajte Chromium svaki put kad dodirnete veze u porukama ili drugim aplikacijama.</translation>
 <translation id="1722370509450468186">Zaporka će se spremiti na vaš račun (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Prilagođeni feed izrađen za vas</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Karte u Chromiumu</translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
 <translation id="1965068424387304464">Savjet za Chromium: spremite zaporke</translation>
+<translation id="1992653360331625459">Već imate zaporke za te račune u Upravitelju zaporki. Ako odlučite uvesti jednu od zaporki u nastavku, ona će zamijeniti postojeću.</translation>
 <translation id="2006345422933397527">Chromium nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="2042889939382983733">Pregled povijesti na Chromiumu</translation>
 <translation id="2052320862053429062">Chromium povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
 
 Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
+<translation id="2334943301233020675">Sljedeći pristupni ključevi nisu uvezeni u Upravitelj zaporki jer ne ispunjavaju zahtjeve.</translation>
 <translation id="2337722506862731008">Dijeli Chromium</translation>
 <translation id="2340423701577464731">Dodavanje stavke popisa za čitanje u Chromium</translation>
 <translation id="2374627437126809292">Chromium upotrebljava Google karte kako bi vam pružio upute i lokalne informacije o otkrivenim adresama.</translation>

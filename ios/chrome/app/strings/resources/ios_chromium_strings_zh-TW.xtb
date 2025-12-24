@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium 會使用 Face ID 保護你的私密資料。</translation>
 <translation id="1591119736686995611">開啟 Chromium 分頁方格。</translation>
 <translation id="16001233025397167">安全檢查有助於確保網路安全，防範資料侵害和不安全的網站等風險。接收警示即可得知 Chromium 偵測到的隱私權/安全性問題。</translation>
+<translation id="1614362805233822594">密碼管理工具中已有這些網站的密碼或密碼金鑰。選取帳戶即可保留顯示的登入資訊，並覆寫密碼管理工具中的資訊。</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
 <translation id="164952285225495380">Chromium 已追蹤了這個包裹。</translation>
+<translation id="1703338211136118534">以下密碼不符合規定，因此未匯入密碼管理工具。</translation>
 <translation id="1707458603865303524">隨時可以使用 Chromium 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="1722370509450468186">密碼會儲存至你的帳戶 (<ph name="EMAIL" />)。</translation>
 <translation id="1747088204252710672">專為你打造的自訂動態消息</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">在 Chromium 中顯示迷你 Google 地圖</translation>
 <translation id="1867772173333403444">4. 選取 [Chromium]</translation>
 <translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
+<translation id="1992653360331625459">密碼管理工具中已有這些帳戶密碼。匯入以下任一密碼，將會取代現有密碼。</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">部分 Chromium 資料尚未儲存到 Google 帳戶，
 
 請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
+<translation id="2334943301233020675">以下密碼金鑰不符合規定，因此未匯入密碼管理工具。</translation>
 <translation id="2337722506862731008">分享 Chromium</translation>
 <translation id="2340423701577464731">將閱讀清單項目加入 Chromium</translation>
 <translation id="2374627437126809292">偵測到地址後，Chromium 會使用 Google 地圖規劃路線及提供當地資訊。</translation>

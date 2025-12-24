@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1161663161838091892">Sincronize as guias e o histórico para continuar</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} cartão de crédito}one{{count} cartão de crédito}other{{count} cartões de crédito}}</translation>
 <translation id="1164891049599601209">Inserida em fraudulento</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Próximo campo</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1752547299766512813">Salvar senhas</translation>
 <translation id="1764070164487214210">Rotas</translation>
+<translation id="1764511703783285459">O outro gerenciador de senhas não compartilhou nenhuma senha ou chave de acesso</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
 <translation id="1771016937398045251">Menu Ferramentas</translation>
 <translation id="1772468122139624049">Não foi possível recarregar as guias</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">A observação tem mais de 1.000 caracteres</translation>
 <translation id="5087098519049306025">Monitoramento de preços</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Nada importado</translation>
 <translation id="5113960131843706315">Buscando seus dados…</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
 <translation id="5118764316110575523">Desativado</translation>
@@ -1449,6 +1452,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410883413783534063">Abra guias para acessar mais páginas ao mesmo tempo</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6420292512900923139">Erro ao importar seus dados</translation>
 <translation id="6421038304268477484">Texto traduzido</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
 <translation id="6435236283694032571">Adicionar à Lista de leitura</translation>
@@ -1487,6 +1491,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações da Navegação Segura em outros produtos do Google não serão afetadas.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6559301491397835130">{count,plural, =1{Favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}one{Favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}other{Favoritos salvos em "{title}". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="656065428026159829">Ver mais</translation>

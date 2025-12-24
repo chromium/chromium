@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium Üz ID-si ilə həssas datanı güvənli saxlayır.</translation>
 <translation id="1591119736686995611">Chromium tab toru açılır.</translation>
 <translation id="16001233025397167">Təhlükəsizlik yoxlanışı sizi verilənlərin pozulmasından, güvənsiz veb-saytlardan və s. qoruyur. Chromium-un aşkar etdiyi hər hansı məxfilik və ya güvənlik məsələləri ilə bağlı xəbərdarlıqlar alın.</translation>
+<translation id="1614362805233822594">Göstərilən saytlar üçün Parol Menecerində parollarınız və ya giriş açarlarınız var. Parol Menecerindəki məlumatları əvəz edərək göstərilən giriş məlumatlarını saxlamaq üçün hesab seçin.</translation>
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="164952285225495380">Bu bağlama Chromium-da izlənib.</translation>
+<translation id="1703338211136118534">Aşağıdakı parollar tələblərə uyğun olmadığı üçün Parol Menecerinə import edilmədi.</translation>
 <translation id="1707458603865303524">Mesaj və ya digər tətbiqlərdə keçidləri Chromium ilə açın.</translation>
 <translation id="1722370509450468186">Parolunuz Hesabınızda (<ph name="EMAIL" />) saxlanacaq.</translation>
 <translation id="1747088204252710672">Sizin üçün yaradılan fərdi lent</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Chromium Xəritə</translation>
 <translation id="1867772173333403444">4. Chromium seçin</translation>
 <translation id="1965068424387304464">Chromium ipucusu: Parolları yadda saxlayın</translation>
+<translation id="1992653360331625459">Parol Menecerində bu hesabların parolları artıq var. Aşağıdakı parollardan birini import etməyi seçsəniz, mövcud olan əvəzlənəcək.</translation>
 <translation id="2006345422933397527">Chromium güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="2042889939382983733">Chromium tarixçənizə baxın</translation>
 <translation id="2052320862053429062">Chromium müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Müəyyən Chromium datası Google Hesabında yadda saxlanılmayıb.
 
 Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
+<translation id="2334943301233020675">Aşağıdakı giriş açarları tələblərə uyğun olmadığı üçün Parol Menecerinə import edilmədi.</translation>
 <translation id="2337722506862731008">Chromium-u paylaşın</translation>
 <translation id="2340423701577464731">Oxu siyahısı elementini Chromium-a əlavə edin</translation>
 <translation id="2374627437126809292">Chromium aşkarlanan ünvanlar üzrə istiqamət və yerli məlumat təqdim etmək üçün Google Xəritədən istifadə edir.</translation>

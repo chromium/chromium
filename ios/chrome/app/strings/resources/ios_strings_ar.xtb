@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150989369772528668">تقويم</translation>
 <translation id="1161663161838091892">مزامنة علامات التبويب والسجلّ لمواصلة التصفّح</translation>
+<translation id="1162834932051545794">{count,plural, =1{بطاقة ائتمان واحدة ({count})}zero{‫{count} بطاقة ائتمان}two{بطاقتا ائتمان ({count})}few{‫{count} بطاقات ائتمان}many{‫{count} بطاقة ائتمان}other{‫{count} بطاقة ائتمان}}</translation>
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1165039591588034296">الخطأ</translation>
 <translation id="1172898394251786223">الحقل التالي</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
 <translation id="1764070164487214210">الاتجاهات</translation>
+<translation id="1764511703783285459">لم يشارك مدير كلمات المرور الآخر أي كلمات أو مفاتيح مرور</translation>
 <translation id="1767766085187034454">‏ترجمة Google</translation>
 <translation id="1771016937398045251">‏قائمة "الأدوات" (Tools)</translation>
 <translation id="1772468122139624049">تتعذّر إعادة تحميل علامات التبويب</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">يجب ألّا يزيد عدد أحرف الملاحظة عن 1,000 حرف.</translation>
 <translation id="5087098519049306025">تتبُّع الأسعار</translation>
 <translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">لم يتم استيراد أي بيانات</translation>
 <translation id="5113960131843706315">جارٍ تحميل بياناتك…</translation>
 <translation id="5118462200606189584">إضافة حساب…</translation>
 <translation id="5118764316110575523">غير مفعَّل</translation>
@@ -1447,6 +1450,7 @@
 <translation id="6410390304316730527">يحميك "التصفُّح الآمن" من المهاجمين الذين قد يحاولون خداعك لاتّخاذ إجراءات خطيرة، مثل تثبيت البرامج الضارة أو الكشف عن معلومات شخصية، مثل كلمات المرور أو أرقام الهواتف أو بطاقات الائتمان. وفي حال إيقاف "التصفُّح الآمن"، ننصحك بتوخّي الحذر عند تصفُّح مواقع إلكترونية غير مألوفة أو غير آمنة.</translation>
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
+<translation id="6420292512900923139">حدثت مشكلة أثناء استيراد بياناتك</translation>
 <translation id="6421038304268477484">النص المترجَم</translation>
 <translation id="6429213933892582367">‏افتح "خيارات كلمات المرور" (Password Options).</translation>
 <translation id="6435236283694032571">الإضافة إلى قائمة القراءة</translation>
@@ -1485,6 +1489,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6550891580932862748">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. لن تتأثر إعدادات "التصفح الآمن" في منتجات Google الأخرى.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">إعادة</translation>
 <translation id="6559301491397835130">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" على هذا الجهاز فقط.}zero{تم حفظ الإشارات المرجعية في "{title}" على هذا الجهاز فقط.}two{تم حفظ الإشارتَين المرجعيتَين في "{title}" على هذا الجهاز فقط.}few{تم حفظ الإشارات المرجعية في "{title}" على هذا الجهاز فقط.}many{تم حفظ الإشارات المرجعية في "{title}" على هذا الجهاز فقط.}other{تم حفظ الإشارات المرجعية في "{title}" على هذا الجهاز فقط.}}</translation>
 <translation id="656065428026159829">عرض المزيد</translation>

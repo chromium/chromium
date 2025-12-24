@@ -1672,6 +1672,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2114145607116268663">Quraşdırmaq olmur, yenidən başlatma tələb edilir. Kompüteri yenidən başladın və təkrar cəhd edin. Xəta kodu: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Çərçivəni Yenidən Yükləyin</translation>
 <translation id="2114995631896158695">SİM kart daxil edilməyib</translation>
+<translation id="2115808389282428160">Saytlara bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq icazəsi verməyin</translation>
 <translation id="2116619964159595185">Saytlar, adətən, aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarına qoşulur</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
 <translation id="211803431539496924">Genişləndirilmiş təhlükəsizlik güncəlləmələri təsdiq edilsin?</translation>
@@ -2487,6 +2488,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2662876636500006917">Chrome Veb Market</translation>
 <translation id="2663253180579749458">eSIM profili əlavə edilir. Bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="2663302507110284145">Dil</translation>
+<translation id="2665056444046933274">Saytlar bu funksiyadan bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq üçün istifadə edə bilər</translation>
 <translation id="2665394472441560184">Yeni söz əlavə edin</translation>
 <translation id="2665647207431876759">Bitib</translation>
 <translation id="2665919335226618153">Başımıza daş! Formatlama zamanı xəta oldu!</translation>
@@ -3160,6 +3162,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3118748462829336648">Yan Paneli açın</translation>
 <translation id="3119743309973425629">Mətn kursorunun yanıb-sönmə göstəricisi</translation>
 <translation id="3119948370277171654">Hansı kontenti/URL'ni yayımlayırdınız?</translation>
+<translation id="3120204271988747891">Saytlar lokal şəbəkənizdəki digər cihazlara daxil olmaq istəyə bilər</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Data Lüğəti yaratmaq alınmadı</translation>
 <translation id="3122883569442693641">Ətraflı məlumat</translation>
@@ -7291,6 +7294,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5969364029958154283">Ayarları sıfırlamaq haqqında ətraflı məlumat əldə edin</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa bilər</translation>
 <translation id="5969728632630673489">Klaviatura qısayolu bildirişi qapadılıb</translation>
+<translation id="5970443501603581692">Lokal şəbəkənizdəki digər cihazlara daxil olmağa icazə verilmədi</translation>
 <translation id="5971037678316050792">Bluetooth adaptor durumu və cütlənməsini kontrol edin</translation>
 <translation id="5971861540200650391"><ph name="MODULE_TITLE" /> saat gizlədin</translation>
 <translation id="597235323114979258">Daha çox istiqamətə baxın</translation>
@@ -8639,6 +8643,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6903022061658753260">Datanız bu hesab üçün sinxronizasiyanı aktiv etdiyiniz bütün Chrome brauzerlərində sinxronlaşdırılacaq. ChromeOS sinxronizasiya seçimləri üçün <ph name="LINK_BEGIN" />ChromeOS ayarlarına<ph name="LINK_END" /> keçin.</translation>
 <translation id="6903437476849497868">Çıxın</translation>
 <translation id="6903590427234129279">Hamısını açın (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Bu cihazdakı digər tətbiq və xidmətlərə daxil olmağa icazə verildi</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> üzrə axtarış edin</translation>
 <translation id="6909422577741440844">Bu cihazdan alınsın?</translation>
@@ -9151,6 +9156,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7273110280511444812">son əlavə <ph name="DATE" /> tarixində olub.</translation>
 <translation id="7273894023751806510"><ph name="HOST" /> saytının MIDI cihazlarını idarə etməsini və təkrar proqramlaşdırmasını həmişə bloklayın</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - tam dolması üçün qalan vaxt <ph name="TIME" /></translation>
+<translation id="7275950084263610253">Lokal şəbəkənizdəki digər cihazlara daxil olmağa icazə verildi</translation>
 <translation id="727595954130325265">İndi alış-veriş edin</translation>
 <translation id="727952162645687754">Xətanı endirin</translation>
 <translation id="7280649757394340890">Mətndən-Nitqə səs ayarları</translation>
@@ -9653,12 +9659,14 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7620616707541471029">Davam etmək üçün hesab seçin</translation>
 <translation id="7621382409404463535">Sistem cihaz konfiqurasiyasını yadda saxlaya bimədi.</translation>
 <translation id="7621595347123595643">Parol və ya PIN kodunuzu unutsanız, lokal datanı bərpa edə bilməyəcəksiniz.</translation>
+<translation id="762200934554267613">Saytlar bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="7622114377921274169">Enerji yığır.</translation>
 <translation id="7622768823216805500">Saytlar adətən asan ödəmə kimi alış-veriş xüsusiyyətləri üçün ödəniş emalçıları quraşdırır</translation>
 <translation id="7622966771025050155">Çəkilmişlər tabına keçin</translation>
 <translation id="7624337243375417909">böyük hərflər deaktivdir</translation>
 <translation id="7625568159987162309">Saytlarda icazələrə və saxlanılan dataya baxın</translation>
 <translation id="7625823789272218216">Sola Yeni Tab</translation>
+<translation id="7627749368210392160">Saytlar bu funksiyadan lokal şəbəkənizdəki digər cihazlara daxil olmaq üçün istifadə edə bilər</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Sinif <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Hər düymə üçün əməliyyat seçin</translation>
 <translation id="7629206210984165492">Təslim olmuş</translation>
@@ -10707,6 +10715,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="831207808878314375">Təsvir</translation>
 <translation id="8312841338723044391">YAYIMLANIR</translation>
 <translation id="8313308349366087671">Tətbiq seçimləri</translation>
+<translation id="8313599942510782709">Tapşırığınız hələ də davam edir</translation>
 <translation id="8314089908545021657">Yeni telefon ilə birləşin</translation>
 <translation id="8314381333424235892">Çatışmayan və ya sistemdən silinən artırma</translation>
 <translation id="831440797644402910">Bu qovluq açılmır</translation>
@@ -10714,6 +10723,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8315018673856831477">Yaddaşa qənaət seçimləri</translation>
 <translation id="8315514906653279104">Aktiv edilir...</translation>
 <translation id="8316480109537174997">Bildiriş sahəsində Gemini-ı göstərin və klaviatura qısayolunu yandırın</translation>
+<translation id="8317291727028594010">Bu cihazdakı digər tətbiq və xidmətlərə daxil olmağa icazə verilmədi</translation>
 <translation id="8317671367883557781">Şəbəkə bağlantısı əlavə edin</translation>
 <translation id="8317965619823678157">parolları kopyalayın</translation>
 <translation id="8318266828739827371">Ekranınızın böyüdülmüş sahəsini görmək üçün bölünmüş ekran görünüşündən istifadə edin. Daxili böyüdücünü aktiv və deaktiv etmək üçün Axtarış + Ctrl + D istifadə edin.</translation>
@@ -11357,6 +11367,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8745034592125932220">Datanın cihazınızda saxlanmasına icazə verilmir</translation>
 <translation id="8746654918629346731">Artıq "<ph name="EXTENSION_NAME" />" üçün sorğu göndərmisiniz</translation>
 <translation id="874689135111202667">{0,plural, =1{Bir fayl sayta yüklənsin?}other{# fayl sayta yüklənsin?}}</translation>
+<translation id="8748714929822124637">Saytlara lokal şəbəkənizdəki digər cihazlara daxil olmaq icazəsi verməyin</translation>
 <translation id="8748916845823567967"><ph name="SITE" /> tərəfindən saxlanılan bütün data və kukilər silinəcək.</translation>
 <translation id="8749805710397399240">Ekranınızı yayımlamaq mümkün deyil. Sistem Tərcihlərində Ekran Yazma icazəsini yoxlayın.</translation>
 <translation id="8749826920799243530">Cihaz qeydiyyatdan keçməyib</translation>

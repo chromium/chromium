@@ -1672,6 +1672,7 @@
 <translation id="2114145607116268663">無法安裝，必須重新啟動。請重新啟動電腦，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新載入頁框(&amp;F)</translation>
 <translation id="2114995631896158695">未插入 SIM 卡</translation>
+<translation id="2115808389282428160">不允許網站存取這部裝置上的其他應用程式和服務</translation>
 <translation id="2116619964159595185">網站通常會連線至藍牙裝置，是因為要提供以下功能：設定或同步處理低功耗信標、健康與健身狀況追蹤器或智慧燈泡</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
 <translation id="211803431539496924">確認延長安全性更新嗎？</translation>
@@ -1771,6 +1772,7 @@
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
+<translation id="2186539124645132614">與 Gemini 展開新對話</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
 <translation id="2187675480456493911">已與你帳戶中的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">擴充功能已更新</translation>
@@ -2429,6 +2431,7 @@
 <translation id="2627424346328942291">無法分享</translation>
 <translation id="2628258844236035475">要從 Chrome 自動填入內容移除住家地址嗎？</translation>
 <translation id="2628770867680720336">如要啟用 ADB 偵錯，必須將這部 Chromebook 恢復原廠設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">與 Gemini 展開新對話</translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
 <translation id="2631498379019108537">在檔案櫃中顯示輸入選項</translation>
@@ -2484,6 +2487,7 @@
 <translation id="2662876636500006917">Chrome 線上應用程式商店</translation>
 <translation id="2663253180579749458">正在新增 eSIM 設定檔。請稍候片刻。</translation>
 <translation id="2663302507110284145">語言</translation>
+<translation id="2665056444046933274">網站可透過這項功能存取這部裝置上的其他應用程式和服務</translation>
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
 <translation id="2665919335226618153">糟糕！格式化過程中發生錯誤。</translation>
@@ -3157,6 +3161,7 @@
 <translation id="3118748462829336648">開啟側邊面板</translation>
 <translation id="3119743309973425629">文字游標閃爍速率</translation>
 <translation id="3119948370277171654">你投放的內容/網址為何？</translation>
+<translation id="3120204271988747891">網站可以要求存取區域網路上的其他裝置</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立資料目錄</translation>
 <translation id="3122883569442693641">詳細資料</translation>
@@ -4247,6 +4252,7 @@
 <translation id="3847734730889093333"><ph name="RATE" /> 倍</translation>
 <translation id="3848547754896969219">在無痕視窗中開啟(&amp;I)</translation>
 <translation id="3848688783623004960">在分割畫面中開啟</translation>
+<translation id="3849517590329855428">全部收合</translation>
 <translation id="3850172593216628215">安全性更新已終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3850989673553106152">密碼已變更</translation>
@@ -7249,6 +7255,7 @@
 <translation id="5945363896952315544">你的安全金鑰無法再儲存其他指紋。如要新增指紋，請先刪除現有的指紋。</translation>
 <translation id="5946591249682680882">報表 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">按兩下滑鼠左鍵</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{無法剖析 1 個事件，因此未顯示}other{無法剖析 # 個事件，因此未顯示}}</translation>
 <translation id="5948476936444935795">取消匯入</translation>
 <translation id="5948536763493709626">請連接鍵盤或滑鼠，或使用觸控螢幕繼續設定。如果使用藍牙裝置，請確認該裝置處於可進行配對的狀態。</translation>
 <translation id="5949795028157144515">開發人員模式已關閉，部分擴充功能已停用。</translation>
@@ -7280,6 +7287,7 @@
 <translation id="5969364029958154283">進一步瞭解重設設定</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可以查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="5969728632630673489">已關閉鍵盤快速鍵通知</translation>
+<translation id="5970443501603581692">不允許存取區域網路上的其他裝置</translation>
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
 <translation id="5971861540200650391">隱藏 <ph name="MODULE_TITLE" /> 小時</translation>
 <translation id="597235323114979258">顯示更多列印端點</translation>
@@ -8627,6 +8635,7 @@
 <translation id="6903022061658753260">只要開啟了帳戶的同步功能，你在所有 Chrome 瀏覽器上的資料都會保持同步。如要查看 Chrome OS 同步選項，請前往 <ph name="LINK_BEGIN" />Chrome OS 設定<ph name="LINK_END" />。</translation>
 <translation id="6903437476849497868">選擇退出</translation>
 <translation id="6903590427234129279">開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
+<translation id="6903619242902924848">允許存取這部裝置上的其他應用程式和服務</translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6903916726032521638">搜尋「<ph name="QUERY_CLUSTER_NAME" />」</translation>
 <translation id="6909422577741440844">要接收這部裝置所傳送的內容嗎？</translation>
@@ -8642,6 +8651,7 @@
 <translation id="6914812290245989348">前往不安全的網站前不顯示任何警告</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6916676294509106572">Outlook 行事曆已隱藏</translation>
+<translation id="6916818963747321523">全部展開</translation>
 <translation id="6917873303492266709">如要分享、加入分頁群組並在其中協作，請前往設定頁面開啟「允許登入 Chrome」</translation>
 <translation id="6918677045355889289">需要更新 Chrome OS</translation>
 <translation id="6918733588290914545">使用 Android 手機快速設定</translation>
@@ -9139,6 +9149,7 @@
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />後充飽</translation>
+<translation id="7275950084263610253">允許存取區域網路上的其他裝置</translation>
 <translation id="727595954130325265">立即選購</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
@@ -9191,6 +9202,7 @@
 <translation id="7312040805247765153">無法安裝應用程式</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM，請稍候片刻。</translation>
 <translation id="7313539585802573958">鍵盤背光顏色</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{無法為 1 個事件設定日期，因此未顯示}other{無法為 # 個事件設定日期，因此未顯示}}</translation>
 <translation id="7314865262803554456">開始錄製時，你不會收到通知。</translation>
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">驗證帳戶</translation>
@@ -9641,12 +9653,14 @@
 <translation id="7620616707541471029">請選擇帳戶繼續登入</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
+<translation id="762200934554267613">網站可以要求存取這部裝置上的其他應用程式和服務</translation>
 <translation id="7622114377921274169">充電中。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
 <translation id="7622966771025050155">切換至已擷取的分頁</translation>
 <translation id="7624337243375417909">大寫鎖定模式已關閉</translation>
 <translation id="7625568159987162309">查看各網站的權限及儲存的資料</translation>
 <translation id="7625823789272218216">新分頁位於左側</translation>
+<translation id="7627749368210392160">網站可透過這項功能存取區域網路上的其他裝置</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
 <translation id="762917478230183172">選取各個按鍵的動作</translation>
 <translation id="7629206210984165492">柔和</translation>
@@ -10696,6 +10710,7 @@
 <translation id="831207808878314375">定義</translation>
 <translation id="8312841338723044391">直播</translation>
 <translation id="8313308349366087671">應用程式選項</translation>
+<translation id="8313599942510782709">工作仍在進行中</translation>
 <translation id="8314089908545021657">與新手機配對</translation>
 <translation id="8314381333424235892">缺少或未安裝擴充功能</translation>
 <translation id="831440797644402910">無法開啟這個資料夾</translation>
@@ -10703,6 +10718,7 @@
 <translation id="8315018673856831477">記憶體節省模式選項</translation>
 <translation id="8315514906653279104">啟用中...</translation>
 <translation id="8316480109537174997">在系統匣中顯示 Gemini 並啟用鍵盤快速鍵</translation>
+<translation id="8317291727028594010">不允許存取這部裝置上的其他應用程式和服務</translation>
 <translation id="8317671367883557781">新增網路連線</translation>
 <translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割畫面檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉置頂放大鏡。</translation>
@@ -11346,6 +11362,7 @@
 <translation id="8745034592125932220">不允許將資料儲存到你的裝置</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>
+<translation id="8748714929822124637">禁止網站存取區域網路上的其他裝置</translation>
 <translation id="8748916845823567967"><ph name="SITE" /> 儲存的所有資料和 Cookie 都將遭到刪除。</translation>
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕畫面錄製」權限。</translation>
 <translation id="8749826920799243530">裝置未註冊</translation>

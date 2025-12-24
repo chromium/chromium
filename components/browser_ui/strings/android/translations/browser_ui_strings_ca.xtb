@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1816835383954230954">Quan està activat, Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar. Quan està desactivat, es redueix el rendiment, però fa que V8 sigui més resistent als atacs.</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Canvia la posició per personalitzar la teva experiència de navegació</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1881806992065048905">Full inferior de l'aparença de la pàgina Pestanya nova</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Permesa aquesta vegada • Precisa</translation>
 <translation id="2544997614631598250">Color del tema fosc</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
+<translation id="2553552004849639664">Obtén la protecció més eficaç de Chrome contra les amenaces en línia</translation>
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
@@ -224,7 +226,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3273479183583863618">Baixades de preu en pestanyes</translation>
 <translation id="3277252321222022663">Permet que els llocs web accedeixin als sensors (opció recomanada)</translation>
 <translation id="327891165872793509">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Ves a la configuració per <ph name="BEGIN_LINK" />gestionar l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
-<translation id="3285500645985761267">Permet que els llocs web relacionats vegin la teva activitat al grup</translation>
+<translation id="3285500645985761267">Permet que els llocs web relacionats vegin la meva activitat al grup</translation>
 <translation id="3295019059349372795">Capítol 11: La meravellosa Ciutat Maragda d'Oz</translation>
 <translation id="3295602654194328831">Amaga la informació</translation>
 <translation id="3333961966071413176">Tots els contactes</translation>
@@ -415,6 +417,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5373874281522292782">Els teus grups de pestanyes es desen</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
+<translation id="5407203562970638234">Millora la seguretat</translation>
 <translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quan aquesta opció està activada, els llocs web poden demanar la teva ubicació. Quan aquesta opció està desactivada, els llocs web no poden veure la teva ubicació.</translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

@@ -1683,6 +1683,7 @@
 <translation id="2114145607116268663">설치할 수 없습니다. 재부팅이 필요합니다. 컴퓨터를 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="2114326799768592691">프레임 새로고침(&amp;F)</translation>
 <translation id="2114995631896158695">삽입된 SIM 카드 없음</translation>
+<translation id="2115808389282428160">사이트에서 이 기기의 다른 앱 및 서비스에 액세스하도록 허용하지 않음</translation>
 <translation id="2116619964159595185">사이트에서는 주로 저전력 비콘, 건강 또는 피트니스 추적기, 스마트 조명 전구를 설정 또는 동기화하는 기능을 지원하기 위해 블루투스 기기에 연결합니다.</translation>
 <translation id="2117655453726830283">다음 슬라이드</translation>
 <translation id="211803431539496924">보안 업데이트 연장 사용을 확인하시겠습니까?</translation>
@@ -2499,6 +2500,7 @@
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">eSIM 프로필을 추가하는 중입니다. 이 작업은 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="2663302507110284145">언어</translation>
+<translation id="2665056444046933274">사이트에서 이 기능을 사용하여 이 기기의 다른 앱 및 서비스에 액세스할 수 있습니다.</translation>
 <translation id="2665394472441560184">새 단어 추가</translation>
 <translation id="2665647207431876759">만료됨</translation>
 <translation id="2665919335226618153">포맷 중에 오류가 발생했습니다.</translation>
@@ -3172,6 +3174,7 @@
 <translation id="3118748462829336648">측면 패널 열기</translation>
 <translation id="3119743309973425629">텍스트 커서 깜박임 속도</translation>
 <translation id="3119948370277171654">어떤 콘텐츠/URL을 전송하고 계셨나요?</translation>
+<translation id="3120204271988747891">사이트에서 로컬 네트워크의 다른 기기에 대한 액세스 권한을 요청할 수 있음</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">데이터 디렉터리 만들기 실패</translation>
 <translation id="3122883569442693641">세부정보 더보기</translation>
@@ -7306,6 +7309,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5969364029958154283">설정 재설정에 관해 자세히 알아보기</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있습니다.</translation>
 <translation id="5969728632630673489">단축키 알림 닫힘</translation>
+<translation id="5970443501603581692">로컬 네트워크의 다른 기기에 액세스하도록 허용되지 않음</translation>
 <translation id="5971037678316050792">블루투스 어댑터 상태 및 페어링을 제어합니다.</translation>
 <translation id="5971861540200650391"><ph name="MODULE_TITLE" />시간 동안 숨기기</translation>
 <translation id="597235323114979258">대상 더보기</translation>
@@ -8654,6 +8658,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6903022061658753260">이 계정에 대해 동기화를 사용 설정한 모든 Chrome 브라우저에서 데이터가 동기화됩니다. ChromeOS 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />ChromeOS 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="6903437476849497868">거부</translation>
 <translation id="6903590427234129279">모두(<ph name="URL_COUNT" />개) 열기</translation>
+<translation id="6903619242902924848">이 기기의 다른 앱 및 서비스에 액세스하도록 허용됨</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> 검색</translation>
 <translation id="6909422577741440844">이 기기에서 파일을 수신하시겠습니까?</translation>
@@ -9167,6 +9172,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7273110280511444812">최근 첨부 날짜: <ph name="DATE" /></translation>
 <translation id="7273894023751806510"><ph name="HOST" />에서 MIDI 기기를 제어하고 다시 프로그래밍하지 못하도록 항상 차단</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 충전 완료까지 <ph name="TIME" /> 남음</translation>
+<translation id="7275950084263610253">로컬 네트워크의 다른 기기에 액세스하도록 허용됨</translation>
 <translation id="727595954130325265">지금 구매</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>
@@ -9668,12 +9674,14 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7620616707541471029">계속하려면 계정을 선택하세요</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
+<translation id="762200934554267613">사이트에서 이 기기의 다른 앱 및 서비스에 대한 액세스 권한을 요청할 수 있음</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>
 <translation id="7622966771025050155">캡처된 탭으로 전환</translation>
 <translation id="7624337243375417909">Caps Lock 사용 안함</translation>
 <translation id="7625568159987162309">사이트 전체에 저장된 권한 및 데이터 보기</translation>
 <translation id="7625823789272218216">새 좌측 탭</translation>
+<translation id="7627749368210392160">사이트에서 이 기능을 사용하여 로컬 네트워크의 다른 기기에 액세스할 수 있습니다.</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
 <translation id="762917478230183172">키별로 작업 선택</translation>
 <translation id="7629206210984165492">차분함</translation>
@@ -10724,6 +10732,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="831207808878314375">정의</translation>
 <translation id="8312841338723044391">라이브</translation>
 <translation id="8313308349366087671">애플리케이션 옵션</translation>
+<translation id="8313599942510782709">작업이 아직 진행 중입니다.</translation>
 <translation id="8314089908545021657">새 스마트폰과 페어링</translation>
 <translation id="8314381333424235892">확장 프로그램이 없거나 설치되지 않음</translation>
 <translation id="831440797644402910">이 폴더를 열 수 없음</translation>
@@ -10731,6 +10740,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8315018673856831477">메모리 절약 모드 옵션</translation>
 <translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8316480109537174997">작업 표시줄에 Gemini 표시 및 단축키 사용 설정</translation>
+<translation id="8317291727028594010">이 기기의 다른 앱 및 서비스에 액세스하도록 허용되지 않음</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8317965619823678157">비밀번호 복사</translation>
 <translation id="8318266828739827371">화면 분할 뷰를 사용하여 화면의 확대 영역을 볼 수 있습니다. 고정 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + D를 사용하세요.</translation>
@@ -11374,6 +11384,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8745034592125932220">기기에 데이터를 저장할 수 없음</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>
+<translation id="8748714929822124637">사이트에서 로컬 네트워크의 다른 기기에 액세스하도록 허용하지 않음</translation>
 <translation id="8748916845823567967"><ph name="SITE" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="8749805710397399240">화면을 전송할 수 없습니다. 시스템 환경설정에서 화면 녹화 권한을 확인하세요.</translation>
 <translation id="8749826920799243530">등록되지 않은 기기입니다.</translation>

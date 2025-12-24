@@ -1665,6 +1665,7 @@
 <translation id="2114145607116268663">无法安装，需要重新启动。请重启计算机，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新加载框架(&amp;F)</translation>
 <translation id="2114995631896158695">未插入任何 SIM 卡</translation>
+<translation id="2115808389282428160">不允许网站访问此设备上的其他应用和服务</translation>
 <translation id="2116619964159595185">网站通常会连接到蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康或健身跟踪器，或智能灯泡）</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
 <translation id="211803431539496924">确认延长安全更新？</translation>
@@ -1764,6 +1765,7 @@
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
+<translation id="2186539124645132614">发起与 Gemini 的新对话</translation>
 <translation id="2186711480981247270">收到了另一设备分享的页面</translation>
 <translation id="2187675480456493911">已与您账号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
@@ -2421,6 +2423,7 @@
 <translation id="2627424346328942291">无法分享</translation>
 <translation id="2628258844236035475">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
@@ -2476,6 +2479,7 @@
 <translation id="2662876636500006917">Chrome 应用商店</translation>
 <translation id="2663253180579749458">正在添加 eSIM 卡配置文件。这可能需要几分钟时间。</translation>
 <translation id="2663302507110284145">语言</translation>
+<translation id="2665056444046933274">网站可以使用此功能访问此设备上的其他应用和服务</translation>
 <translation id="2665394472441560184">添加新字词</translation>
 <translation id="2665647207431876759">已过期</translation>
 <translation id="2665919335226618153">糟糕！格式化过程中出现错误。</translation>
@@ -3149,6 +3153,7 @@
 <translation id="3118748462829336648">打开侧边栏</translation>
 <translation id="3119743309973425629">文本光标闪烁速率</translation>
 <translation id="3119948370277171654">您当时投放的是什么内容/网址？</translation>
+<translation id="3120204271988747891">网站可以请求访问本地网络中的其他设备</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3122883569442693641">更多详情</translation>
@@ -4240,6 +4245,7 @@
 <translation id="3847734730889093333"><ph name="RATE" /> 倍</translation>
 <translation id="3848547754896969219">在无痕式窗口中打开(&amp;I)</translation>
 <translation id="3848688783623004960">在拆分视图中打开</translation>
+<translation id="3849517590329855428">全部收起</translation>
 <translation id="3850172593216628215">安全更新已终止。升级为新款 Chromebook 至少可节省 50 美元。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3850989673553106152">密码已更改</translation>
@@ -7245,6 +7251,7 @@
 <translation id="5945363896952315544">您的安全密钥存储的指纹的数量已达到上限。若要添加一个新指纹，请先删除一个现有指纹。</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">双击鼠标</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 个事件无法解析，因此未显示在日志中}other{# 个事件无法解析，因此未显示在日志中}}</translation>
 <translation id="5948476936444935795">取消导入</translation>
 <translation id="5948536763493709626">您可以连接一个键盘或鼠标，也可以继续使用触摸屏进行设置。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="5949795028157144515">开发者模式已关闭，某些扩展程序已停用。</translation>
@@ -7276,6 +7283,7 @@
 <translation id="5969364029958154283">详细了解如何重置设置</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可查看“<ph name="FOLDERNAME" />”内的文件</translation>
 <translation id="5969728632630673489">已关闭键盘快捷键通知</translation>
+<translation id="5970443501603581692">不允许访问本地网络中的其他设备</translation>
 <translation id="5971037678316050792">控制蓝牙适配器状态和配对</translation>
 <translation id="5971861540200650391">隐藏 <ph name="MODULE_TITLE" /> 小时</translation>
 <translation id="597235323114979258">查看更多目的地</translation>
@@ -8624,6 +8632,7 @@
 <translation id="6903022061658753260">您的数据将在已为该账号开启同步功能的所有 Chrome 浏览器之间同步。如需了解 Chrome 操作系统同步选项，请前往 <ph name="LINK_BEGIN" />Chrome 操作系统设置<ph name="LINK_END" />。</translation>
 <translation id="6903437476849497868">退出</translation>
 <translation id="6903590427234129279">打开全部（<ph name="URL_COUNT" /> 个）网址</translation>
+<translation id="6903619242902924848">允许访问此设备上的其他应用和服务</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6903916726032521638">搜索“<ph name="QUERY_CLUSTER_NAME" />”</translation>
 <translation id="6909422577741440844">接收此设备分享的内容？</translation>
@@ -8639,6 +8648,7 @@
 <translation id="6914812290245989348">在您访问不安全的网站前不发出任何警告</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
 <translation id="6916676294509106572">Outlook 日历已隐藏</translation>
+<translation id="6916818963747321523">全部展开</translation>
 <translation id="6917873303492266709">如需分享、加入标签页分组并在其中协作，请打开“设置”并开启“允许登录 Chrome”</translation>
 <translation id="6918677045355889289">需要更新 Chrome 操作系统</translation>
 <translation id="6918733588290914545">使用 Android 手机快速设置</translation>
@@ -9137,6 +9147,7 @@
 <translation id="7273110280511444812">上次连接日期：<ph name="DATE" /></translation>
 <translation id="7273894023751806510">始终禁止 <ph name="HOST" /> 控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 还需 <ph name="TIME" />充满</translation>
+<translation id="7275950084263610253">允许访问本地网络中的其他设备</translation>
 <translation id="727595954130325265">立即抢购</translation>
 <translation id="727952162645687754">下载错误</translation>
 <translation id="7280649757394340890">文字转语音的语音设置</translation>
@@ -9189,6 +9200,7 @@
 <translation id="7312040805247765153">无法安装应用</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313539585802573958">键盘背光颜色</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 个事件无法确定时间戳，因此未显示在日志中}other{# 个事件无法确定时间戳，因此未显示在日志中}}</translation>
 <translation id="7314865262803554456">录制开始时，您不会收到通知。</translation>
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">验证您的账号</translation>
@@ -9639,12 +9651,14 @@
 <translation id="7620616707541471029">选择账号以继续</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
+<translation id="762200934554267613">网站可以请求访问此设备上的其他应用和服务</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
 <translation id="7622966771025050155">切换到被录屏的标签页</translation>
 <translation id="7624337243375417909">已关闭大写锁定模式</translation>
 <translation id="7625568159987162309">查看各网站的权限及储存的数据</translation>
 <translation id="7625823789272218216">在左侧新增标签页</translation>
+<translation id="7627749368210392160">网站可以使用此功能访问本地网络中的其他设备</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
 <translation id="762917478230183172">为每个键选择一项操作</translation>
 <translation id="7629206210984165492">冷清</translation>
@@ -10694,6 +10708,7 @@
 <translation id="831207808878314375">定义</translation>
 <translation id="8312841338723044391">实时</translation>
 <translation id="8313308349366087671">应用选项</translation>
+<translation id="8313599942510782709">您的任务仍在进行中</translation>
 <translation id="8314089908545021657">与新手机配对</translation>
 <translation id="8314381333424235892">扩展程序缺失或已卸载</translation>
 <translation id="831440797644402910">无法打开此文件夹</translation>
@@ -10701,6 +10716,7 @@
 <translation id="8315018673856831477">省内存模式选项</translation>
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8316480109537174997">在系统任务栏中显示 Gemini 并开启键盘快捷键</translation>
+<translation id="8317291727028594010">不允许访问此设备上的其他应用和服务</translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8317965619823678157">复制密码</translation>
 <translation id="8318266828739827371">使用分屏视图查看屏幕上放大的区域。使用搜索键 + Ctrl + D 可开启和关闭固定放大镜。</translation>
@@ -11344,6 +11360,7 @@
 <translation id="8745034592125932220">此网站无权将数据保存到您设备上</translation>
 <translation id="8746654918629346731">您已请求安装“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="874689135111202667">{0,plural, =1{将 1 个文件上传到此网站？}other{将 # 个文件上传到此网站？}}</translation>
+<translation id="8748714929822124637">不允许网站访问本地网络中的其他设备</translation>
 <translation id="8748916845823567967"><ph name="SITE" /> 存储的所有数据和 Cookie 都会被删除。</translation>
 <translation id="8749805710397399240">无法投放您的屏幕。请在“系统偏好设置”中启用“屏幕录制”权限。</translation>
 <translation id="8749826920799243530">此设备尚未注册</translation>

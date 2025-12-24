@@ -1784,6 +1784,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2184272387334793084">Log ind for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="2184515124301515068">Lad Chrome bestemme, hvornår websites må afspille lyd (anbefales)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Start en ny chat med Gemini</translation>
 <translation id="2186711480981247270">Side delt fra en anden enhed</translation>
 <translation id="2187675480456493911">Synkroniseret med andre enheder på din konto. De indstillinger, der ændres af andre brugere, synkroniseres ikke. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Udvidelserne er opdateret</translation>
@@ -2445,6 +2446,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2627424346328942291">Delingen lykkedes ikke</translation>
 <translation id="2628258844236035475">Vil du fjerne din hjemmeadresse fra autofyld i Chrome?</translation>
 <translation id="2628770867680720336">Du skal gendanne fabriksindstillingerne på denne Chromebook for at aktivere ADB-fejlretning. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Start en ny chat med Gemini</translation>
 <translation id="2629227353894235473">Vær med til at udvikle Android-apps</translation>
 <translation id="2629437048544561682">Ryd lærred</translation>
 <translation id="2631498379019108537">Vis indtastningsmuligheder på hylden</translation>
@@ -4268,6 +4270,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3847734730889093333">x<ph name="RATE" /></translation>
 <translation id="3848547754896969219">Åbn i &amp;inkognitovindue</translation>
 <translation id="3848688783623004960">Åbn i opdelt visning</translation>
+<translation id="3849517590329855428">Skjul alle</translation>
 <translation id="3850172593216628215">Du modtager ikke længere sikkerhedsopdateringer. Spar 50 USD eller mere på en ny Chromebook.</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3850989673553106152">Adgangskoden er ændret</translation>
@@ -6465,6 +6468,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5388719243178419614">Det er ikke muligt at uploade. Billedfilen kunne ikke behandles.</translation>
 <translation id="5388885445722491159">Parret</translation>
 <translation id="5389224261615877010">Regnbue</translation>
+<translation id="538945906186309152">Aktivér tastaturgenvejen til Gemini</translation>
 <translation id="5389794555912875905">Få advarsler, inden du går til usikre websites (anbefales)</translation>
 <translation id="5389943529251318913">Reducer musehastigheden med</translation>
 <translation id="5390112241331447203">Medtag system_logs.txt-filen, der sendes i feedbackrapporterne.</translation>
@@ -7278,6 +7282,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5945363896952315544">Din sikkerhedsnøgle kan ikke gemme flere fingeraftryk. Hvis du vil tilføje et nyt, skal du først slette et eksisterende fingeraftryk.</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Dobbeltklik på musen</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 hændelse kunne ikke parses og vises ikke}one{# hændelse kunne ikke parses og vises ikke}other{# hændelser kunne ikke parses og vises ikke}}</translation>
 <translation id="5948476936444935795">Annuller import</translation>
 <translation id="5948536763493709626">Tilslut et tastatur eller en mus, eller fortsæt konfigurationen med din touchskærm. Hvis du bruger Bluetooth-enheder, skal du sørge for, at dine enheder er klar til parring.</translation>
 <translation id="5949795028157144515">Udviklertilstand er deaktiveret. Visse udvidelser er blevet deaktiveret.</translation>
@@ -8677,6 +8682,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6914812290245989348">Få ikke advarsler, inden du går til usikre websites</translation>
 <translation id="6916590542764765824">Administrer udvidelser</translation>
 <translation id="6916676294509106572">Outlook-kalenderen er skjult</translation>
+<translation id="6916818963747321523">Udvid alle</translation>
 <translation id="6917873303492266709">Åbn indstillingerne, og aktivér Tillad login via Chrome for at dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="6918677045355889289">ChromeOS skal opdateres</translation>
 <translation id="6918733588290914545">Hurtig konfiguration med Android-telefon</translation>
@@ -9228,6 +9234,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7312040805247765153">Appen kan ikke installeres</translation>
 <translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM-kort. Dette kan tage et par minutter.</translation>
 <translation id="7313539585802573958">Farver på tastaturets baggrundslys</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 hændelse kunne ikke dateres og vises ikke}one{# hændelse kunne ikke dateres og vises ikke}other{# hændelser kunne ikke dateres og vises ikke}}</translation>
 <translation id="7314865262803554456">Du får ikke besked, når optagelsen starter.</translation>
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Verificer din konto</translation>

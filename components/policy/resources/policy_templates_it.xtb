@@ -2476,6 +2476,11 @@ Se la policy viene impostata su 2 - "Disattivata", l'integrazione del Google Dev
 <translation id="2707733461906745082">Separazione profilo</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
+<translation id="2713265653152900248">La configurazione della policy consente di accedere in modalità Incognito agli URL elencati, sotto forma di eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Ad esempio, se imposti <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste in modalità Incognito verranno bloccate e puoi utilizzare questa policy per consentire l'accesso a un elenco limitato di URL. Utilizzala per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo (https://support.google.com/chrome/a?p=url_blocklist_filter_format). La policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza su <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Per questa policy è possibile definire al massimo 1000 voci.
+
+Se la policy non viene configurata, non sono consentite eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />.
+
+Questa policy influisce solo sulla modalità Incognito. Per consentire gli URL per tutti i profili utente, utilizza la policy <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Questo valore è obsoleto a partire dalla versione M121. Nella versione M121 e successive, i valori verranno trattati come EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Invia sempre le metriche a Google</translation>
 <translation id="2714359695399346815">Se la policy viene impostata su Attivata o se non viene configurata, viene consentito l'utilizzo di server STUN, permettendo ai client remoti di rilevare e collegarsi a questo computer anche se sono separati da un firewall.
@@ -2965,6 +2970,7 @@ Questa policy non impedisce agli utenti di scegliere file da <ph name="GOOGLE_DR
 <translation id="3030232909811556512">Se questa policy è disattivata, non è possibile impostare l'immagine dell'avatar di <ph name="PRODUCT_OS_NAME" /> utilizzando file locali, la fotocamera del dispositivo o l'immagine del profilo Google dell'utente.
 
 L'utente può impostare l'immagine avatar da una di queste opzioni se questa policy viene attivata o se non viene configurata.</translation>
+<translation id="3031370204150460535">Impedisci alle integrazioni dell'app Gemini di agire direttamente sui siti specificati</translation>
 <translation id="3031796805169553856">Consenti che i moduli WebAssembly vengano inviati tra origini</translation>
 <translation id="3032322294267258117">Consente di gestire le impostazioni degli utenti autenticati tramite GAIA senza SAML.</translation>
 <translation id="3034855514833090741">Se la policy viene impostata su Attivata, il flusso Voice Match dell'Assistente Google viene mostrato durante la configurazione iniziale. Se la policy viene impostata su Disattivata, l'Assistente Google non mostrerà il flusso Voice Match durante la configurazione iniziale.
@@ -3508,11 +3514,11 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
           Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
 
           Se questa policy non viene impostata, inizialmente il tasto principale sulla pagina di accesso sarà il tasto sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
-<translation id="3434932177006334880">Il nome di questa impostazione era EnableWebBasedSignin nelle versioni di Chrome precedenti alla versione 42 e a partire dalla versione 43 di Chrome tale impostazione non verrà più supportata.
+<translation id="3434932177006334880">Il nome di questa impostazione era EnableWebBasedSignin nelle versioni di Chrome precedenti alla versione 42 e a partire dalla versione 43 di Chrome questa impostazione non verrà più supportata.
 
       Questa impostazione è utile per i clienti aziendali che utilizzano soluzioni SSO non ancora compatibili con il nuovo flusso di accesso incorporato.
-      Se attivi questa impostazione, viene utilizzato il precedente flusso di accesso basato sul Web.
-      Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul Web tramite il flag della riga di comando --enable-web-based-signin.
+      Se attivi questa impostazione, viene utilizzato il precedente flusso di accesso basato sul web.
+      Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul web tramite il flag della riga di comando --enable-web-based-signin.
 
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
 <translation id="3435229811562571593">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui viene negata automaticamente l'autorizzazione per i caratteri locali. Ciò limiterà la capacità dei siti di vedere le informazioni sui caratteri locali.
@@ -4437,6 +4443,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se non viene impostata, per i dispositivi <ph name="PRODUCT_OS_NAME" /> viene utilizzato il periodo predefinito di 259200000 millisecondi (tre giorni).
 
       Per il rollback e altri aggiornamenti di <ph name="PRODUCT_OS_NAME" /> che eseguono il Powerwash del dispositivo, l'utente viene sempre avvisato immediatamente quando l'aggiornamento è disponibile, indipendentemente dal valore di questa policy.</translation>
+<translation id="4086132065708736174">Consenti alle integrazioni dell'app Gemini di agire direttamente sui siti specificati</translation>
 <translation id="4086150283035515220">Se la policy è impostata su Attivata, gli utenti dovranno specificare dove salvare ogni file prima del download. Se la policy è impostata su Disattivata, il download si avvierà immediatamente e agli utenti non verrà chiesto dove salvare i file.
 
       Se la policy non viene configurata, gli utenti potranno modificare questa impostazione.</translation>
@@ -4934,7 +4941,7 @@ Se la policy viene configurata, gli utenti non possono modificarla in <ph name="
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
 <translation id="4424004842303301809">Disattiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
-<translation id="4426601693403743089">Disattiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
+<translation id="4426601693403743089">Disattiva il dogfood di Registra schermo per gli utenti di Family Link</translation>
 <translation id="4426986640594727372">Consenti l'accesso alla geolocalizzazione del sistema</translation>
 <translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
@@ -7943,9 +7950,9 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Questa policy non influisce su altri tipi di utenti.
       Questa policy non influisce sulla policy <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> per gli utenti aziendali.
 
-      Se la policy viene attivata, la versione sperimentale di Registra schermo verrà attivata per gli utenti di Family Link.
-      Se viene disattivata, la versione sperimentale di Registra schermo verrà disattivata per gli utenti di Family Link.
-      Se non viene configurata, la versione sperimentale di Registra schermo sarà disattivata per impostazione predefinita per gli utenti di Family Link.</translation>
+      Se la policy viene attivata, il dogfood di Registra schermo verrà attivata per gli utenti di Family Link.
+      Se viene disattivata, il dogfood di Registra schermo verrà disattivata per gli utenti di Family Link.
+      Se non viene configurata, il dogfood di Registra schermo sarà disattivata per impostazione predefinita per gli utenti di Family Link.</translation>
 <translation id="6310223829319187614">Consente il completamento automatico del nome di dominio durante l'accesso dell'utente</translation>
 <translation id="6310756730808079944">Attiva Registra schermo</translation>
 <translation id="631081324835911099">Consente di forzare la disconnessione dell'utente quando il token di autenticazione del suo account principale non è più valido.
@@ -8933,6 +8940,9 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
+<translation id="688149562204519323">Se la policy <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate in modalità Incognito. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se la policy non viene configurata, non viene bloccato nessun URL in modalità Incognito. Nella policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Questa policy influisce solo sulla modalità Incognito. Per bloccare gli URL per tutti i profili utente, utilizza la policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">La configurazione della policy consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
       Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
@@ -9734,6 +9744,13 @@ Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le l
 
           Se questa policy non viene configurata, la funzione di correzione del colore è inizialmente disattivata, ma può essere attivata dall'utente in qualsiasi momento.</translation>
 <translation id="7323896582714668701">Parametri aggiuntivi della riga di comando per <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Consente di impostare un elenco di pattern URL che specificano i siti in cui le integrazioni dell'app Gemini non possono agire direttamente sulle pagine web.
+
+Gli URL che non corrispondono né alla lista consentita né alla lista bloccata utilizzano <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Gli URL che corrispondono sia alla lista consentita sia alla lista bloccata sono consentiti.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Chrome non può bloccare le navigazioni ai protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
 <translation id="7331098674887251788">Consente alle integrazioni dell'app Gemini di agire direttamente sulle pagine web</translation>
@@ -10075,7 +10092,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 <translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
 <translation id="7586199729147257934">Consente il provisioning dei certificati client per i browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
-<translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
+<translation id="7587921466180902617">Attiva il dogfood di Registra schermo per gli utenti di Family Link</translation>
 <translation id="7588140323025689972">Abilita i log a livello di applicazione Kiosk</translation>
 <translation id="7593286371155131669">Utilizza i gruppi supportati predefiniti di <ph name="PRODUCT_NAME" /></translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
@@ -10883,6 +10900,13 @@ Se il valore viene impostato su true o se la policy non viene configurata, dovra
 Se viene impostata su false, gli utenti potranno partecipare senza trovarsi su una rete gestita.</translation>
 <translation id="8183108371184777472">Impedisci l'avvio della finestra del browser</translation>
 <translation id="8185312100223853315">Etichetta del profilo</translation>
+<translation id="8186370194423312090">Consente di impostare un elenco di pattern URL che specificano i siti in cui le integrazioni dell'app Gemini possono agire direttamente sulle pagine web.
+
+Gli URL che non corrispondono né alla lista consentita né alla lista bloccata utilizzano <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Gli URL che corrispondono sia alla lista consentita sia alla lista bloccata sono consentiti.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Consenti il feedback degli utenti</translation>
 <translation id="8195133650230097559">Ignora richieste di wakelock per la gestione dell'alimentazione</translation>
 <translation id="8196558469954193908">Questa policy consente la coalescenza di connessioni HTTP/2 quando sono in uso i certificati client. Per ottenere la coalescenza delle connessioni, il nome host della nuova potenziale connessione e il nome host della connessione esistente devono corrispondere a uno o più schemi descritti da questa policy. La policy è un elenco di host che utilizzano il formato del filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" corrisponde a "example.com" e a tutti i sottodomini (ad esempio "sub.example.com"), mentre ".example.net" corrisponde esattamente a "example.net".

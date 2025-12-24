@@ -1769,6 +1769,7 @@
 <translation id="2184272387334793084">ログインすると、保存済みのパスワードなどをすべてのデバイスで使用できるようになります</translation>
 <translation id="2184515124301515068">サイトで音声が再生される可能性がある場合、Chrome で自動的に許可またはブロックする（推奨）</translation>
 <translation id="2186206192313702726">Google レンズ</translation>
+<translation id="2186539124645132614">Gemini との新しいチャットを開始</translation>
 <translation id="2186711480981247270">別のデバイスから共有されたページ</translation>
 <translation id="2187675480456493911">アカウントの他のデバイスと同期しています。他のユーザーが変更した設定は同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">拡張機能が更新されました</translation>
@@ -2425,6 +2426,7 @@
 <translation id="2627424346328942291">共有できません</translation>
 <translation id="2628258844236035475">Chrome の自動入力から自宅の住所を削除しますか？</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Gemini との新しいチャットを開始</translation>
 <translation id="2629227353894235473">Android アプリの開発</translation>
 <translation id="2629437048544561682">キャンバスを消去</translation>
 <translation id="2631498379019108537">シェルフに入力オプションを表示</translation>

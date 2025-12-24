@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1816835383954230954">ಆನ್ ಆಗಿರುವಾಗ, Chrome ವೇಗವಾಗಿ ರನ್ ಆಗುತ್ತದೆ ಮತ್ತು JavaScript ಅನ್ನು ಬಳಸುವ ಫೀಚರ್‌ಗಳು, ವಿನ್ಯಾಸಗೊಳಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು. ಆನ್ ಆಗಿರುವಾಗ, ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ ಆದರೆ V8 ಅನ್ನು ಅಸಿಮೆಟ್ರಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳ ವಿರುದ್ದ ಮತ್ತಷ್ಟು ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1818308510395330587">AR ಬಳಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿ ನೀಡುವುದಕ್ಕಾಗಿ, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಿ.</translation>
+<translation id="1822318649925991542">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1848033246551405023">ಫಾಂಟ್ ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1881806992065048905">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಗೋಚರಿಸುವಿಕೆಯ ಕೆಳಭಾಗದ ಶೀಟ್</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ಈ ಬಾರಿ ಅನುಮತಿಸಲಾಗಿದೆ • ನಿಖರವಾದದ್ದು</translation>
 <translation id="2544997614631598250">ಥೀಮ್ ಕಲರ್ ಡಾರ್ಕ್</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
+<translation id="2553552004849639664">ಆನ್‌ಲೈನ್ ಬೆದರಿಕೆಗಳ ವಿರುದ್ಧ Chrome ನ ಬಲಿಷ್ಠ ರಕ್ಷಣೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
 <translation id="257931822824936280">ವಿಸ್ತರಿಸಲಾಗಿದೆ - ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ಹೆಚ್ಚು)}one{(+ # ಹೆಚ್ಚು)}other{(+ # ಹೆಚ್ಚು)}}</translation>
 <translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
+<translation id="5407203562970638234">ನಿಮ್ಮ ಭದ್ರತೆಯನ್ನು ಹೆಚ್ಚಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="5438097262470833822">ಈ ಆಯ್ಕೆಯು <ph name="WEBSITE" /> ನ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5459413148890178711">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳಿಗೆ ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ನೋಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ನಲ್ಲಿ <ph name="ELAPSED_TIME" /> ಸಮಯ ಕಳೆದಿದೆ.</translation>

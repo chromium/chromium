@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1161663161838091892">Sync tabs and history to continue</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} credit card}other{{count} credit cards}}</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1764070164487214210">Directions</translation>
+<translation id="1764511703783285459">The other password manager didn't share any passwords or passkeys</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Tools menu</translation>
 <translation id="1772468122139624049">Can't reload tabs</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Note is more than 1,000 characters</translation>
 <translation id="5087098519049306025">Price tracking</translation>
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Nothing imported</translation>
 <translation id="5113960131843706315">Getting your stuff…</translation>
 <translation id="5118462200606189584">Add account…</translation>
 <translation id="5118764316110575523">Off</translation>
@@ -1449,6 +1452,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6420292512900923139">Trouble importing your data</translation>
 <translation id="6421038304268477484">Translated text</translation>
 <translation id="6429213933892582367">Open password options</translation>
 <translation id="6435236283694032571">Add to reading list</translation>
@@ -1487,6 +1491,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{Bookmarks saved to ‘{title}’. They are only saved to this device.}}</translation>
 <translation id="656065428026159829">See more</translation>

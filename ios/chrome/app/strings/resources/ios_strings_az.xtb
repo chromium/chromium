@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Bitmə ayı</translation>
 <translation id="1150989369772528668">Təqvim</translation>
 <translation id="1161663161838091892">Davam etmək üçün tabları və tarixçəni sinxronlaşdırın</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kredit kartı}other{{count} kredit kartı}}</translation>
 <translation id="1164891049599601209">Aldadıcı saytda daxil edilib</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1172898394251786223">Növbəti sahə</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Panelləri açın</translation>
 <translation id="1752547299766512813">Parolları Yadda saxlayın</translation>
 <translation id="1764070164487214210">İstiqamətlər</translation>
+<translation id="1764511703783285459">Digər parol meneceri heç bir parol və ya giriş açarı paylaşmadı</translation>
 <translation id="1767766085187034454">Google Tərcümə</translation>
 <translation id="1771016937398045251">Alətlər menyusu</translation>
 <translation id="1772468122139624049">Tabları yenidən yükləmək olmur</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Qeyd 1000 simvoldan çoxdur</translation>
 <translation id="5087098519049306025">Qiymət İzləmə</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
+<translation id="510580293474170715">Heç nə import edilmədi</translation>
 <translation id="5113960131843706315">Məlumatlarınız əldə edilir…</translation>
 <translation id="5118462200606189584">Hesab əlavə edin…</translation>
 <translation id="5118764316110575523">Deaktiv</translation>
@@ -1449,6 +1452,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6410390304316730527">Təhlükəsiz Baxış sizi zərərli proqram təminatı quraşdırmaq və ya parol, telefon nömrəsi, kredit kartı kimi şəxsi məlumatlarınızı aşkar etmək kimi təhlükəli əməliyyatlara sövq etmək üçün aldada biləcək hücumlardan qoruyur. Bu xüsusiyyəti söndürsəniz, tanış və ya məşhur olmayan saytlara baxarkən ehtiyatlı olun.</translation>
 <translation id="6410883413783534063">Müxtəlif səhifələrə eyni vaxtda daxil olmaq üçün tabları açın</translation>
 <translation id="6418346271604475326">PDF hazırlanır</translation>
+<translation id="6420292512900923139">Datanı import edərkən xəta baş verdi</translation>
 <translation id="6421038304268477484">Tərcümə olunmuş mətn</translation>
 <translation id="6429213933892582367">Parol Seçimlərini açın</translation>
 <translation id="6435236283694032571">Oxu Siyahısına əlavə edin</translation>
@@ -1487,6 +1491,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6550891580932862748">Təhlükəli veb-sayt, endirmə və artırmalardan qorumur. Digər Google məhsullarında Təhlükəsiz baxış ayarlarına təsir etmir.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
 <translation id="6559301491397835130">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı. O, yalnız bu cihazda yadda saxlanır.}other{Əlfəcinlər "{title}" bölməsində yadda saxlandı. Onlar yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="656065428026159829">Daha çoxuna baxın</translation>

@@ -1682,6 +1682,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2114145607116268663">Det gick inte att installera. Omstart krävs. Starta om datorn och försök igen. Felkoden är <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Läs in &amp;ram igen</translation>
 <translation id="2114995631896158695">Inget SIM-kort har satts i</translation>
+<translation id="2115808389282428160">Tillåt inte att webbplatser får åtkomst till andra appar och tjänster på den här enheten</translation>
 <translation id="2116619964159595185">Åtkomst till enheter via Bluetooth brukar kunna behövas för funktioner som att konfigurera eller synkronisera en energisnål beacon-sändare, hälsomätare eller smart glödlampa</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
 <translation id="211803431539496924">Vill du bekräfta utökade säkerhetsuppdateringar?</translation>
@@ -1781,6 +1782,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2184272387334793084">Logga in om du vill ha dina lösenord med mera på alla dina enheter</translation>
 <translation id="2184515124301515068">Låt Chrome välja när webbplatser kan spela upp ljud (rekommenderas)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Starta en ny chatt med Gemini</translation>
 <translation id="2186711480981247270">Sidan delas från en annan enhet</translation>
 <translation id="2187675480456493911">Synkroniseras med andra enheter i kontot. Inställningar som andra användare har ändrat synkroniseras inte. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Tillägg har uppdaterats</translation>
@@ -2442,6 +2444,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2627424346328942291">Det går inte att dela</translation>
 <translation id="2628258844236035475">Vill du ta bort din hemadress från autofyll i Chrome?</translation>
 <translation id="2628770867680720336">Du måste återställa denna Chromebook till standardinställningarna om du vill aktivera felsökning med ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Starta en ny chatt med Gemini</translation>
 <translation id="2629227353894235473">Utveckla Android-appar</translation>
 <translation id="2629437048544561682">Rensa målarduk</translation>
 <translation id="2631498379019108537">Visa inmatningsalternativ på hyllan</translation>
@@ -2497,6 +2500,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2662876636500006917">Chrome webbshop</translation>
 <translation id="2663253180579749458">eSIM-profilen läggs till. Det kan ta några minuter.</translation>
 <translation id="2663302507110284145">Språk</translation>
+<translation id="2665056444046933274">Webbplatser kan använda den här funktionen för att komma åt andra appar och tjänster på enheten</translation>
 <translation id="2665394472441560184">Lägg till ett nytt ord</translation>
 <translation id="2665647207431876759">Upphört att gälla</translation>
 <translation id="2665919335226618153">Ett fel uppstod vid formateringen.</translation>
@@ -3170,6 +3174,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3118748462829336648">Öppna sidopanel</translation>
 <translation id="3119743309973425629">Hur snabbt textmarkören ska blinka</translation>
 <translation id="3119948370277171654">Vilket innehåll eller vilken webbadress castades?</translation>
+<translation id="3120204271988747891">Webbplatser får begära åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Kunde inte skapa datakatalog</translation>
 <translation id="3122883569442693641">Mer information</translation>
@@ -4263,6 +4268,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Öppna i ett &amp;inkognitofönster</translation>
 <translation id="3848688783623004960">Öppna i delad vy</translation>
+<translation id="3849517590329855428">Komprimera alla</translation>
 <translation id="3850172593216628215">Säkerhetsuppdateringar har upphört. Spara minst 50 USD på en ny Chromebook.</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3850989673553106152">Lösenordet har ändrats</translation>
@@ -7273,6 +7279,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5945363896952315544">Det går inte att spara fler fingeravtryck på den här säkerhetsnyckeln. Ta bort ett befintligt fingeravtryck först om du vill lägga till ett nytt.</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Dubbelklicka med musen</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 händelse kunde inte analyseras och visas inte}other{# händelser kunde inte analyseras och visas inte}}</translation>
 <translation id="5948476936444935795">Avbryt import</translation>
 <translation id="5948536763493709626">Anslut ett tangentbord eller en mus eller fortsätt att konfigurera med pekskärmen. Om du använder Bluetooth-enheter kontrollerar du att de är klara att koppla.</translation>
 <translation id="5949795028157144515">Utvecklarläget är inaktiverat. Vissa tillägg har inaktiverats.</translation>
@@ -7305,6 +7312,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5969364029958154283">Läs mer om hur du återställer inställningarna</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> har läsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Aviseringen om kortkommandon ignorerades</translation>
+<translation id="5970443501603581692">Får inte komma åt andra enheter i det lokala nätverket</translation>
 <translation id="5971037678316050792">Styr status och koppling för Bluetooth-adaptern</translation>
 <translation id="5971861540200650391">Dölj i <ph name="MODULE_TITLE" /> timmar</translation>
 <translation id="597235323114979258">Se fler utskriftsmål</translation>
@@ -8653,6 +8661,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6903022061658753260">Din data synkroniseras i alla Chrome-webbläsare där du har aktiverat synkronisering för det här kontot. Synkroniseringsalternativen i ChromeOS hittar du i <ph name="LINK_BEGIN" />inställningarna för ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Välj bort</translation>
 <translation id="6903590427234129279">Öppna alla (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Får åtkomst till andra appar och tjänster på den här enheten</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6903916726032521638">Sök efter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Vill du ta emot från den här enheten?</translation>
@@ -8668,6 +8677,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6914812290245989348">Visa inga varningar innan du besöker osäkra webbplatser</translation>
 <translation id="6916590542764765824">Hantera tillägg</translation>
 <translation id="6916676294509106572">Kalendern i Outlook har dolts</translation>
+<translation id="6916818963747321523">Utöka alla</translation>
 <translation id="6917873303492266709">Om du vill dela, gå med i och samarbeta i flikgrupper öppnar du inställningarna och aktiverar Tillåt inloggning i Chrome</translation>
 <translation id="6918677045355889289">Uppdatering av ChromeOS krävs</translation>
 <translation id="6918733588290914545">Snabb konfigurering med Android-telefon</translation>
@@ -9166,6 +9176,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7273110280511444812">senast ansluten den <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Blockera alltid <ph name="HOST" /> från att styra och omprogrammera dina MIDI-enheter</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> tills batteriet är fulladdat</translation>
+<translation id="7275950084263610253">Får åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="727595954130325265">Köp nu</translation>
 <translation id="727952162645687754">Nedladdningsfel</translation>
 <translation id="7280649757394340890">Röstinställningar för text till tal</translation>
@@ -9218,6 +9229,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7312040805247765153">Det gick inte att installera appen</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
 <translation id="7313539585802573958">Färger på bakgrundsbelysningen för tangentbordet</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 händelse kunde inte dateras och visas inte}other{# händelser kunde inte dateras och visas inte}}</translation>
 <translation id="7314865262803554456">Du får ingen avisering när inspelningen startar.</translation>
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Verifiera ditt konto</translation>
@@ -9668,12 +9680,14 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7620616707541471029">Välj ett konto för att fortsätta</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
+<translation id="762200934554267613">Webbplatser kan begära åtkomst till andra appar och tjänster på den här enheten</translation>
 <translation id="7622114377921274169">Laddas.</translation>
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
 <translation id="7622966771025050155">Byt till inspelad flik</translation>
 <translation id="7624337243375417909">caps lock av</translation>
 <translation id="7625568159987162309">Visa behörigheter och data som har lagrats på webbplatser</translation>
 <translation id="7625823789272218216">Ny flik till vänster</translation>
+<translation id="7627749368210392160">Webbplatser kan använda den här funktionen för att komma åt andra enheter i det lokala nätverket</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Välj en åtgärd för varje nyckel</translation>
 <translation id="7629206210984165492">Dämpad</translation>
@@ -10723,6 +10737,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Appalternativ</translation>
+<translation id="8313599942510782709">Uppgiften pågår fortfarande</translation>
 <translation id="8314089908545021657">Parkoppla med en ny telefon</translation>
 <translation id="8314381333424235892">Tillägget saknas eller har avinstallerats</translation>
 <translation id="831440797644402910">Det går inte att öppna den här mappen</translation>
@@ -10730,6 +10745,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8315018673856831477">Alternativ för minnessparläge</translation>
 <translation id="8315514906653279104">Aktiverar …</translation>
 <translation id="8316480109537174997">Visa Gemini i systemfältet och aktivera kortkommandot</translation>
+<translation id="8317291727028594010">Får inte komma åt andra appar och tjänster på den här enheten</translation>
 <translation id="8317671367883557781">Lägg till nätverksanslutning</translation>
 <translation id="8317965619823678157">kopiera lösenord</translation>
 <translation id="8318266828739827371">Använd vyn delad skärm för att se det förstorade området av skärmen. Aktivera och inaktivera dockad skärmförstoring med Sök + Ctrl + D.</translation>
@@ -11373,6 +11389,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8745034592125932220">Får inte spara data på enheten</translation>
 <translation id="8746654918629346731">Du har redan begärt <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Vill du ladda upp en fil på webbplatsen?}other{Vill du ladda upp # filer på webbplatsen?}}</translation>
+<translation id="8748714929822124637">Tillåt inte att webbplatser får åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="8748916845823567967">All data och alla cookies som sparats av <ph name="SITE" /> raderas.</translation>
 <translation id="8749805710397399240">Det gick inte att casta skärmen. Kontrollera behörigheten för skärminspelning i systeminställningarna.</translation>
 <translation id="8749826920799243530">Enheten är inte registrerad</translation>

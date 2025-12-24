@@ -114,6 +114,7 @@
 <translation id="1178821169867863726">12 x 16 дюйм.</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181381397492575884">Chrome забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті. Перейдіть у налаштування, щоб <ph name="LINK" />.</translation>
+<translation id="1185331130467528132">Сайт <ph name="URL" /> хоче отримати доступ до інших пристроїв у вашій локальній мережі</translation>
 <translation id="1185343831726846924">Підтвердити, що віртуальну картку не вдалося ввімкнути</translation>
 <translation id="1186201132766001848">Перевірити паролі</translation>
 <translation id="1187430513518041110">Автомобілі й інший транспорт</translation>
@@ -166,6 +167,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="1257553931232494454">рівні масштабування</translation>
+<translation id="1257714792349895570">локальна мережа</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати налаштуваннями Chrome</translation>
 <translation id="1264309058268477500">Альтернативний</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2690699652723742414">Останні 30 днів</translation>
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Попередження щодо безпеки</translation>
+<translation id="2694088736180584846">петльова мережа</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core дає змогу керувати правилами, додатками й розширеннями вебпереглядача з хмари</translation>
 <translation id="2697248912349197812">Запитати <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступне підменю. Щоб переглянути додаткові опції, натисніть <ph name="SHORTCUT" />.</translation>
@@ -1318,6 +1321,7 @@
 <translation id="3122696783148405307">Показати результати за останні 30 днів</translation>
 <translation id="3126023634486644099">Етикетки (перманентні)</translation>
 <translation id="3133565499688974786">Тепер <ph name="SEARCH_ENGINE_NAME" /> – ваша пошукова система за умовчанням</translation>
+<translation id="3134859781443140237">Локальна мережа</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – пошук: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Немає}=1{дані для входу в 1 обліковий запис}one{дані для входу в # обліковий запис}few{дані для входу в # облікові записи}many{дані для входу в # облікових записів}other{дані для входу в # облікового запису}}</translation>
 <translation id="3140646734028448730">Бізнес-послуги</translation>
@@ -1391,6 +1395,7 @@
 <translation id="3238395604961564389">Відкрити анонімне вікно</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
+<translation id="3241320538788585298">Петльова мережа</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
 <translation id="3243650379537999343">Малювати</translation>
 <translation id="3248329428895535435">Не показувати на цьому сайті</translation>
@@ -1407,6 +1412,7 @@
 <translation id="3266793032086590337">Значення (конфліктне)</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
 <translation id="3270041629388773465">Оплачуйте покупки швидше за допомогою збережених кодів CVC</translation>
+<translation id="3270343151253360050">Щоб завершити покупку, виберіть інший спосіб оплати</translation>
 <translation id="3270847123878663523">&amp;Відмінити перевпорядкування</translation>
 <translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> хоче підключитися</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1559,6 +1565,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{Принаймні 1 запис на синхронізованих пристроях}=1{1 запис (не враховуючи записів на синхронізованих пристроях)}one{# запис (не враховуючи записів на синхронізованих пристроях)}few{# записи (не враховуючи записів на синхронізованих пристроях)}many{# записів (не враховуючи записів на синхронізованих пристроях)}other{# запису (не враховуючи записів на синхронізованих пристроях)}}</translation>
 <translation id="3531366304259615706">Використати функцію розблокування екрана</translation>
 <translation id="3531780078352352885">Аркуші вихідних даних</translation>
+<translation id="3532624859962632484">Доступ до інших пристроїв у локальній мережі</translation>
 <translation id="3532844647053365774">Сайт <ph name="HOST" /> хоче отримати доступ до вашого мікрофона</translation>
 <translation id="3533328374079021623">Поштова скринька 5</translation>
 <translation id="3536227077203206203">Надано разовий доступ</translation>
@@ -1885,6 +1892,7 @@
 <translation id="4030545038933060179">Якщо ввімкнути це налаштування, тут показуватиметься список тем, сформований на основі вашої нещодавньої історії веб-перегляду</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4036753017940930924">Земельні ділянки</translation>
+<translation id="403724377879219932">Може запитувати дозвіл на доступ до інших пристроїв у вашій локальній мережі</translation>
 <translation id="4039506337798853114">Щоб показати курсор, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4045070493270310437">Повторно відкрити вкладки</translation>
 <translation id="4045226534284799755">Перш ніж повторити спробу, увійдіть в обліковий запис Microsoft</translation>
@@ -3168,6 +3176,7 @@
 <translation id="6108702513636120202">Ваша пошукова система в Chromium</translation>
 <translation id="6108849843016142864">Плазуни й земноводні</translation>
 <translation id="611018310643025551">Щоб покращити цю функцію, ваші пошукові запити, найкращі результати й вміст сторінок надсилаються в Google, і наші спеціалісти можуть переглядати їх.</translation>
+<translation id="6111759749003439722">Може запитувати дозвіл на доступ до інших додатків і сервісів на цьому пристрої</translation>
 <translation id="6116338172782435947">Переглядати тексти й зображення в буфері обміну</translation>
 <translation id="6116500665626559298">Кнопка "Керуйте даними у своєму обліковому записі"; активуйте, щоб вибрати, які дані Chrome зберігати в обліковому записі Google</translation>
 <translation id="6117833587752089929">Фотопапір (сатиновий)</translation>
@@ -3541,6 +3550,7 @@
 <translation id="6702851555558236418">Програмне забезпечення для обробки звуку й музики</translation>
 <translation id="6702919718839027939">Презентація</translation>
 <translation id="6704458454638854812">Властивість "custom_size" визначено, значення імені має бути "custom".</translation>
+<translation id="670477556876354552">Потрібно перезапустити вебпереглядач</translation>
 <translation id="6706005862292023715">Штори й декор вікон</translation>
 <translation id="6706210727756204531">Область дії</translation>
 <translation id="6706678697074905703">Не вдалося зберегти номер IBAN у вашому обліковому записі Google. Натомість його збережено в Chrome на цьому пристрої.</translation>
@@ -4620,6 +4630,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="8433057134996913067">Ви вийдете з облікового запису на більшості веб-сайтів.</translation>
 <translation id="8434840396568290395">Домашні тварини</translation>
+<translation id="8435542599425298931">Сайт <ph name="URL" /> хоче отримати доступ до інших додатків і сервісів на цьому пристрої</translation>
 <translation id="8436623588884785770">Додати правило</translation>
 <translation id="8437238597147034694">&amp;Відмінити переміщення</translation>
 <translation id="8438786541497918448">Використовувати камеру та мікрофон?</translation>
@@ -5001,6 +5012,7 @@
 <translation id="9090548458280093580">Шукайте інформацію в історії за допомогою ШІ</translation>
 <translation id="9090993752571911635">Постачальники послуг Інтернету (ISP)</translation>
 <translation id="9093723786115107672">Одяг для сну</translation>
+<translation id="9094424186948667194">Доступ до інших додатків і сервісів на цьому пристрої</translation>
 <translation id="9094544726794842788">Якщо натиснути "Не подобається", відкриється форма, де ви зможете залишити докладний відгук про те, чому вам не подобаються ці результати</translation>
 <translation id="9094809883254050729">Наступного разу дані буде заповнено автоматично. Дані картки зберігаються в зашифрованому вигляді.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Tab, а потім – Enter</translation>

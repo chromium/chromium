@@ -4266,6 +4266,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Maak in &amp;Incognito-venster oop</translation>
 <translation id="3848688783623004960">Maak oop in verdeelde aansig</translation>
+<translation id="3849517590329855428">Vou alles in</translation>
 <translation id="3850172593216628215">Sekuriteitopdaterings het geëindig. Bespaar $50 of meer op ’n nuwe Chromebook.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3850989673553106152">Wagwoord het verander</translation>
@@ -7277,6 +7278,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5945363896952315544">Jou sekuriteitsleutel kan nie meer vingerafdrukke berg nie. Om 'n nuwe een by te voeg, moet jy eers 'n bestaande vingerafdruk uitvee.</translation>
 <translation id="5946591249682680882">Verslag-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Dubbelklik die muis</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 geleentheid kon nie ontleed word nie en word nie gewys nie}other{# geleenthede kon nie ontleed word nie en word nie gewys nie}}</translation>
 <translation id="5948476936444935795">Kanselleer invoer</translation>
 <translation id="5948536763493709626">Koppel 'n sleutelbord of 'n muis, of gebruik jou raakskerm om voort te gaan met opstelling. As jy Bluetooth-toestelle gebruik, moet jy seker maak dat jou toestelle gereed is om saam te bind.</translation>
 <translation id="5949795028157144515">Ontwikkelaarmodus is af. Sommige uitbreidings is gedeaktiveer.</translation>
@@ -8674,6 +8676,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6914812290245989348">Moenie enige waarskuwings wys voordat daar na onveilige werwe gegaan word nie</translation>
 <translation id="6916590542764765824">Bestuur uitbreidings</translation>
 <translation id="6916676294509106572">Outlook Kalender is versteek</translation>
+<translation id="6916818963747321523">Vou alles uit</translation>
 <translation id="6917873303492266709">Maak instellings oop en skakel Laat Chrome-aanmelding toe aan om oortjiegroepe te deel, by hulle aan te sluit of om saam met hulle te werk</translation>
 <translation id="6918677045355889289">Opdatering van Chrome-bedryfstelsel word vereis</translation>
 <translation id="6918733588290914545">Vinnige opstelling met Android-foon</translation>
@@ -9224,6 +9227,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7312040805247765153">Kan nie app installeer nie</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7313539585802573958">Sleutelbordligkleure</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 geleentheid kon nie gedateer word nie en word nie gewys nie}other{# geleenthede kon nie gedateer word nie en word nie gewys nie}}</translation>
 <translation id="7314865262803554456">Jy sal nie in kennis gestel word wanneer die opname begin nie.</translation>
 <translation id="7314989823816739632">Romanties</translation>
 <translation id="7317342082064136423">Verifieer jou rekening</translation>

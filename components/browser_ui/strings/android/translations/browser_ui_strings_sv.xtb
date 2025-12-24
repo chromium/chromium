@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">När den är aktiverad körs Chrome snabbare och funktioner som använder JavaScript bör fungera som de ska. När den är inaktiverad sänks prestandan men V8 blir mer motståndskraftig mot attacker.</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Ändra positionen för att anpassa surfupplevelsen</translation>
 <translation id="1848033246551405023">Teckensnitt Sans Serif</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1881806992065048905">Ark på nedre delen av skärmen för utseende på sidan Ny flik</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Detta återställer alla webbplatser på listan till standardzoomen</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="1994173015038366702">Webbadress</translation>
+<translation id="1994558116414798016">Lexend-font</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2025115093177348061">Förstärkt verklighet</translation>
 <translation id="2028449514182362831">Funktioner som kräver rörelsesensorer slutar fungera</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Temafärg: ljus</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2102396546234652240">Tillåt inte att webbplatser använder mikrofonen</translation>
+<translation id="2115808389282428160">Tillåt inte att webbplatser får åtkomst till andra appar och tjänster på den här enheten</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
 <translation id="2146263598007866206">Webbplatser kan automatiskt ladda ned relaterade filer samtidigt så att du sparar tid</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Tillåts den här gången • Exakt</translation>
 <translation id="2544997614631598250">Temafärg: mörk</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
+<translation id="2553552004849639664">Få det bästa skyddet i Chrome mot onlinehot</translation>
 <translation id="2570922361219980984">Platsåtkomst har inaktiverats på enheten också. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
 <translation id="2586657967955657006">Urklipp</translation>
@@ -159,6 +163,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2621115761605608342">Tillåt JavaScript på en specifik webbplats.</translation>
 <translation id="2626708220538466178">Ark på nedre delen av standardwebbläsaren har stängts</translation>
 <translation id="2653659639078652383">Skicka</translation>
+<translation id="2665056444046933274">Webbplatser kan använda den här funktionen för att komma åt andra appar och tjänster på enheten</translation>
 <translation id="2670403088701171361">Tillåt inte att webbplatser ser text eller bilder i Urklipp</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2682367912565197520">Ta bort sparad zoomnivå</translation>
@@ -202,8 +207,10 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
 <translation id="3114012059975132928">Videospelare</translation>
 <translation id="3115898365077584848">Visa info</translation>
+<translation id="3120204271988747891">Webbplatser får begära åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
 <translation id="3132996321662585180">Uppdatera dagligen</translation>
+<translation id="3134859781443140237">Lokalt nätverk</translation>
 <translation id="3143754809889689516">Spela upp från början</translation>
 <translation id="3164169438034704658">Du kan aktivera exakt plats i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Tillåt att en webbplats använder tredjepartscookies</translation>
@@ -214,6 +221,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3223425961342298674">Plats tillåts inte</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Radera webbinformation …</translation>
+<translation id="3241320538788585298">Loopback-nätverk</translation>
 <translation id="3242646949159196181">När detta är aktiverat kan webbplatser spela upp ljud. När detta är inaktiverat får webbplatser inte spela upp ljud.</translation>
 <translation id="3273479183583863618">Sänkta priser på flikar</translation>
 <translation id="3277252321222022663">Tillåt att webbplatser får åtkomst till enhetens sensorer (rekommenderas)</translation>
@@ -409,6 +417,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5373874281522292782">Dina flikgrupper sparas</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 till)}other{(+ # till)}}</translation>
 <translation id="5403592356182871684">Namn</translation>
+<translation id="5407203562970638234">Förbättra säkerheten</translation>
 <translation id="5438097262470833822">Detta återställer behörigheter för <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">När detta är aktiverat kan webbplatser fråga efter din plats. När detta är inaktiverat får webbplatser inte se din plats.</translation>
 <translation id="5489227211564503167">Förfluten tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blockeras</translation>
 <translation id="560980142378233747">Detta innebär att webbplatsfunktionerna ska fungera som förväntat, men du kan ha mindre surfskydd. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Arket på nedre delen av skärmen för kort på sidan Ny flik</translation>
+<translation id="5621413808884657932">När detta är aktiverat kan webbplatser be om att få åtkomst till andra appar och tjänster på den här enheten. När detta är inaktiverat får webbplatser inte komma åt andra appar och tjänster på den här enheten.</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
 <translation id="5668404140385795438">Åsidosätt en webbplats begäran att hindra inzoomning</translation>
@@ -543,6 +553,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6842868554183332230">Webbplatser kan normalt se om du använder din enhet aktivt för att ange din tillgänglighet i chattappar</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
 <translation id="6870169401250095575">Dölj kortet Säkerhetskontroll</translation>
+<translation id="6882736949427544336">Tillåt inte att webbplatser får åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="6900883974539674431">Skapa flikgrupper som automatiskt sparas och uppdateras på alla dina enheter</translation>
 <translation id="6912998170423641340">Webbplatser ges inte tillgång till text och bilder i Urklipp</translation>
 <translation id="6945221475159498467">Välj</translation>
@@ -604,6 +615,8 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7586676035079382730">Aviseringar tillåts inte</translation>
 <translation id="7594634374516752650">Ansluten till en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan radera all eller delar av din historik, dina cookies, webbplatsdata med mera</translation>
+<translation id="762200934554267613">Webbplatser kan begära åtkomst till andra appar och tjänster på den här enheten</translation>
+<translation id="7627749368210392160">Webbplatser kan använda den här funktionen för att komma åt andra enheter i det lokala nätverket</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7655411746932645568">Webbplatser får begära tillstånd att ansluta till en serieport</translation>
 <translation id="7658239707568436148">Avbryt</translation>
@@ -659,6 +672,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8211406090763984747">Anslutningen är säker</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">När detta är aktiverat kan webbplatser begära åtkomst till andra enheter i det lokala nätverket. När detta är inaktiverat får webbplatser inte komma åt andra enheter i det lokala nätverket.</translation>
 <translation id="8249310407154411074">Flytta högst upp</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8284326494547611709">Textning</translation>
@@ -712,6 +726,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8737426583868847403">Webbplatser som du har sparat en anpassad zoomnivå för visas här</translation>
+<translation id="8748714929822124637">Tillåt inte att webbplatser får åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="8751914237388039244">Välj en bild</translation>
 <translation id="8775741625735357092">Du kan aktivera bokmärkesfältet i Inställningar &gt; Utseende</translation>
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1816835383954230954">Įjungus „Chrome“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta. Išjungus sumažėja našumas, bet V8 tampa atsparesnė atakoms.</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Pakeiskite adreso juostos poziciją, kad būtų patogiau naršyti</translation>
 <translation id="1848033246551405023">Šriftas: be užraitų</translation>
 <translation id="1861262398884155592">Šis aplankas tuščias</translation>
 <translation id="1881806992065048905">Naujo skirtuko puslapio išvaizdos apatinis lapas</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Bus iš naujo nustatytas numatytasis visų sąraše esančių svetainių mastelis</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="1994173015038366702">Svetainės URL</translation>
+<translation id="1994558116414798016">Šriftas „Lexend“</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2025115093177348061">Išplėstoji realybė</translation>
 <translation id="2028449514182362831">Funkcijos, kurioms reikalingi judesio jutikliai, neveiks</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Temos spalva: šviesi</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
 <translation id="2102396546234652240">Neleisti svetainėms naudoti mikrofono</translation>
+<translation id="2115808389282428160">Neleisti svetainėms pasiekti kitų programų ir paslaugų šiame įrenginyje</translation>
 <translation id="2117655453726830283">Kita skaidrė</translation>
 <translation id="2146263598007866206">Svetainėse galima automatiškai kartu atsisiųsti susijusius failus, kad sutaupytumėte laiko</translation>
 <translation id="2148716181193084225">Šiandien</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Leidžiama šį kartą • Tiksli</translation>
 <translation id="2544997614631598250">Temos spalva: tamsi</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
+<translation id="2553552004849639664">Gaukite itin patikimą „Chrome“ apsaugą nuo grėsmių internete</translation>
 <translation id="2570922361219980984">Vietos prieiga taip pat išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Išskleista – spustelėkite, kad sutrauktumėte</translation>
 <translation id="2586657967955657006">Iškarpinė</translation>
@@ -159,6 +163,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2621115761605608342">Leisti „JavaScript“ konkrečioje svetainėje.</translation>
 <translation id="2626708220538466178">Numatytosios naršyklės apatinis lapas uždarytas</translation>
 <translation id="2653659639078652383">Pateikti</translation>
+<translation id="2665056444046933274">Svetainės gali naudoti šią funkciją, kad galėtų pasiekti kitas programas ir paslaugas šiame įrenginyje</translation>
 <translation id="2670403088701171361">Neleisti svetainėms peržiūrėti teksto ar vaizdų jūsų iškarpinėje</translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2682367912565197520">Ištrinti išsaugotą mastelio lygį</translation>
@@ -202,8 +207,10 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="311394601889664316">Neleisti svetainėms redaguoti failų ar aplankų jūsų įrenginyje</translation>
 <translation id="3114012059975132928">Vaizdo įrašų leistuvė</translation>
 <translation id="3115898365077584848">Rodyti informaciją</translation>
+<translation id="3120204271988747891">Svetainės gali prašyti pasiekti kitus įrenginius vietiniame tinkle</translation>
 <translation id="3123473560110926937">Užblokuota kai kuriose svetainėse</translation>
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
+<translation id="3134859781443140237">Vietinis tinklas</translation>
 <translation id="3143754809889689516">Paleisti nuo pradžios</translation>
 <translation id="3164169438034704658">Tikslią vietovę galite įjungti <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Leisti svetainėje naudoti trečiųjų šalių slapukus</translation>
@@ -214,6 +221,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3223425961342298674">Vietovė neleidžiama</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3232293466644486101">Ištrinti naršymo duomenis…</translation>
+<translation id="3241320538788585298">Atgalinio ciklo tinklas</translation>
 <translation id="3242646949159196181">Įjungus svetainėse galima leisti garsą. Išjungus svetainėse negalima leisti garso.</translation>
 <translation id="3273479183583863618">Sumažintos kainos skirtukuose</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
@@ -409,6 +417,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5373874281522292782">Skirtukų grupės išsaugotos</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
+<translation id="5407203562970638234">Pagerinkite saugą</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
 <translation id="5459413148890178711">Įjungus svetainėse gali būti prašoma jūsų vietovės informacijos. Išjungus svetainės negali matyti jūsų vietovės.</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5591840828808741583">Užblokuota: <ph name="SITE_NAME" /></translation>
 <translation id="560980142378233747">Tai reiškia, kad svetainės funkcijos turėtų veikti taip, kaip numatyta, bet gali būti teikiama silpnesnė naršymo apsauga. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Naujo skirtuko puslapio kortelių apatinis lapas</translation>
+<translation id="5621413808884657932">Įjungus svetainės gali prašyti pasiekti kitas programas ir paslaugas šiame įrenginyje. Išjungus svetainės negali pasiekti kitų programų ir paslaugų šiame įrenginyje.</translation>
 <translation id="5632485077360054581">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="5649053991847567735">Automatiškai atsisiųsti</translation>
 <translation id="5668404140385795438">Nepaisyti svetainės mastelio keitimo vengimo užklausos</translation>
@@ -543,6 +553,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6842868554183332230">Svetainės paprastai aptinka, kada aktyviai naudojate įrenginį, kad galėtų nustatyti, kada esate pasiekiami pokalbių programose</translation>
 <translation id="6864395892908308021">Šis įrenginys negali nuskaityti ALR</translation>
 <translation id="6870169401250095575">Slėpti saugos patikros kortelę</translation>
+<translation id="6882736949427544336">Neleisti svetainėms pasiekti kitų įrenginių vietiniame tinkle</translation>
 <translation id="6900883974539674431">Kurkite skirtukų grupes, kurios automatiškai išsaugomos ir atnaujinamos visuose įrenginiuose</translation>
 <translation id="6912998170423641340">Neleisti svetainėms skaityti teksto ir vaizdų iš iškarpinės</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
@@ -604,6 +615,8 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7586676035079382730">Pranešimai neleidžiami</translation>
 <translation id="7594634374516752650">Prijungta prie „Bluetooth“ įrenginio</translation>
 <translation id="7617547684249261169">Galite ištrinti visą istoriją ar jos dalį, slapukus, svetainės duomenis ir kt.</translation>
+<translation id="762200934554267613">Svetainės gali prašyti pasiekti kitas programas ir paslaugas šiame įrenginyje</translation>
+<translation id="7627749368210392160">Svetainės gali naudoti šią funkciją, kad galėtų pasiekti kitus įrenginius vietiniame tinkle</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7655411746932645568">Svetainėse gali būti prašoma prisijungti prie nuosekliųjų prievadų</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
@@ -659,6 +672,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8211406090763984747">Ryšys saugus</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Įjungus svetainės gali prašyti pasiekti kitus įrenginius vietiniame tinkle. Išjungus svetainės negali pasiekti kitų įrenginių vietiniame tinkle.</translation>
 <translation id="8249310407154411074">Perkelti į viršų</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8284326494547611709">Subtitrai</translation>
@@ -712,6 +726,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8737426583868847403">Čia bus rodomos svetainės, kurioms išsaugote tinkintą mastelio lygį</translation>
+<translation id="8748714929822124637">Neleisti svetainėms pasiekti kitų įrenginių vietiniame tinkle</translation>
 <translation id="8751914237388039244">Pasirinkti vaizdą</translation>
 <translation id="8775741625735357092">Žymių juostą galite įjungti skiltyje „Nustatymai“ &gt; „Išvaizda“</translation>
 <translation id="8800034312320686233">Neveikia svetainė?</translation>

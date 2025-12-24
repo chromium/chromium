@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Vinkkejä Chromen käyttöön</translation>
 <translation id="1816835383954230954">Kun tämä on päällä, Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti. Kun tämä on poissa päältä, suorituskyky on rajoitettu, mutta V8 on suojatumpi hyökkäyksiä vastaan.</translation>
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
+<translation id="1822318649925991542">Personoi selauskokemusta vaihtamalla osoitepalkin paikkaa</translation>
 <translation id="1848033246551405023">Sans Serif ‑fontti</translation>
 <translation id="1861262398884155592">Tämä kansio on tyhjä</translation>
 <translation id="1881806992065048905">Uusi välilehti ‐sivun ulkoasun alapaneeli</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Sallittu tällä kertaa • Tarkka</translation>
 <translation id="2544997614631598250">Teeman väri: tumma</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
+<translation id="2553552004849639664">Saat Chromen tehokkaimman suojauksen verkkouhkia vastaan</translation>
 <translation id="2570922361219980984">Sijainti on poissa käytöstä myös tällä laitteella. Voit ottaa sen käyttöön <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laajennettu – tiivistä klikkaamalla.</translation>
 <translation id="2586657967955657006">Leikepöytä</translation>
@@ -415,6 +417,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5373874281522292782">Välilehtiryhmät on tallennettu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
+<translation id="5407203562970638234">Paranna suojausta</translation>
 <translation id="5438097262470833822">Valinta nollaa luvat osoitteessa <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kun tämä on päällä, sivustot voivat kysyä sijaintiasi. Kun tämä on pois päältä, sivustot eivät voi nähdä sijaintiasi.</translation>
 <translation id="5489227211564503167">Kulunut aika: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>

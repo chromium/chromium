@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Pinapanatiling secure ng Chromium ang iyong sensitibong data gamit ang Face ID.</translation>
 <translation id="1591119736686995611">Mabubuksan ang Tab Grid sa Chromium.</translation>
 <translation id="16001233025397167">Pinapanatili kang ligtas ng Pag-check sa Kaligtasan mula sa mga breach sa data, hindi ligtas na website, at higit pa. Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na dine-detect ng Chromium para sa iyo.</translation>
+<translation id="1614362805233822594">Mayroon ka nang mga password o passkey sa Password Manager para sa mga ipinapakitang site. Pumili ng account para panatilihin ang ipinapakitang impormasyon sa pag-sign in, na mag-o-overwrite sa kung ano ang nasa Password Manager.</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="164952285225495380">Sinusubaybayan na ang package na ito sa Chromium.</translation>
+<translation id="1703338211136118534">Hindi na-import ang mga sumusunod na password sa Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>
 <translation id="1707458603865303524">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe o iba pang app.</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1747088204252710672">Isang custom na feed na ginawa para sa iyo</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps sa Chromium</translation>
 <translation id="1867772173333403444">4. Piliin ang Chromium</translation>
 <translation id="1965068424387304464">Tip sa Chromium: Mag-save ng Mga Password</translation>
+<translation id="1992653360331625459">Mayroon ka nang mga password para sa mga account na ito sa iyong Password Manager. Kung pipiliin mong i-import ang isa sa mga password sa ibaba, papalitan nito ang kasalukuyang password.</translation>
 <translation id="2006345422933397527">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2042889939382983733">Tingnan ang Iyong History sa Chromium</translation>
 <translation id="2052320862053429062">Pana-panahong sinusuri ng Chromium ang iyong mga password sa mga listahang na-publish online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
 
 Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
+<translation id="2334943301233020675">Hindi na-import ang mga sumusunod na passkey sa Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>
 <translation id="2337722506862731008">I-share ang Chromium</translation>
 <translation id="2340423701577464731">Magdagdag ng item sa listahan ng babasahin sa Chromium</translation>
 <translation id="2374627437126809292">Gumagamit ang Chromium ng Google Maps para mabigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>

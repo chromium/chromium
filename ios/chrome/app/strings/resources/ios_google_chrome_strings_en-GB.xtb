@@ -116,6 +116,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="3460369101684070455">To easily get your saved passwords in your other apps, choose Chrome for Autofill</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3482807551645716768">Access Chrome faster from your iPad's Home Screen.</translation>
+<translation id="3491067552520121605">You already have passwords or passkeys in Google Password Manager for the sites shown. Select an account to keep the shown sign-in info, overwriting what's in Google Password Manager.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="364480321352456989">Your Chrome is out of date.</translation>
@@ -135,6 +136,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="4167555379306984168">Check out what's new in Chrome</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
+<translation id="4409545895715116037">The following passkeys were not imported to Google Password Manager, because they don't match with the requirements.</translation>
 <translation id="4430797724889237570">Open links from Gmail, Maps, YouTube and other apps in Chrome</translation>
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>

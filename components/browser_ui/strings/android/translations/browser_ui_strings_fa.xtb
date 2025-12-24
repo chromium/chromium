@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1816835383954230954">‏وقتی روشن باشد، Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند. وقتی خاموش باشد، عملکرد کاهش می‌یابد اما V8 دربرابر حملات مقاوم‌تر می‌شود.</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="1822318649925991542">برای سفارشی‌سازی کردن تجربه مرورتان، موقعیت را عوض کنید</translation>
 <translation id="1848033246551405023">قلم سن‌سریف</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
 <translation id="1881806992065048905">برگ زیرین نمایش صفحه زبانه جدید</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">این بار اجازه هست • دقیق</translation>
 <translation id="2544997614631598250">رنگ زمینه تیره</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
+<translation id="2553552004849639664">‏قوی‌ترین محافظت Chrome دربرابر تهدیدهای آنلاین را دریافت کنید</translation>
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="257931822824936280">بزرگ‌شده - برای کوچک کردن کلیک کنید.</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">گروه‌های زبانه شما ذخیره می‌شوند</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
 <translation id="5403592356182871684">نام‌ها</translation>
+<translation id="5407203562970638234">امنیت خود را بهبود دهید</translation>
 <translation id="5438097262470833822">این گزینه همه اجازه‌های <ph name="WEBSITE" /> را بازنشانی خواهد کرد</translation>
 <translation id="5459413148890178711">هرگاه روشن باشد، سایت‌ها می‌توانند مکان شما را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند مکان شما را ببینند.</translation>
 <translation id="5489227211564503167">زمان سپری‌شده: <ph name="ELAPSED_TIME" /> از <ph name="TOTAL_TIME" />.</translation>

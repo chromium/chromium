@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome നുറുങ്ങുകൾ</translation>
 <translation id="1816835383954230954">ഓണായിരിക്കുമ്പോൾ, Chrome വേഗത്തിൽ റൺ ചെയ്യുകയും JavaScript ഉപയോഗിക്കുന്ന ഫീച്ചറുകൾ ഡിസൈൻ ചെയ്തിരിക്കുന്നത് പോലെ പ്രവർത്തിക്കുകയും വേണം. ഓഫായിരിക്കുമ്പോൾ, ഇതിന്റെ പ്രകടനം കുറയുന്നു, എന്നാൽ V8-nn ആക്രമണങ്ങളിൽ നിന്ന് കൂടുതൽ പ്രതിരോധം നൽകും.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ആപ്പിനെ AR ഉപയോഗിക്കാൻ അനുവദിക്കുന്നതിന് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ക്യാമറ ഓണാക്കുക.</translation>
+<translation id="1822318649925991542">നിങ്ങളുടെ ബ്രൗസിംഗ് അനുഭവം ഇഷ്ടാനുസൃതമാക്കാൻ സ്ഥാനം മാറ്റുക</translation>
 <translation id="1848033246551405023">ഫോണ്ട് Sans Serif</translation>
 <translation id="1861262398884155592">ഈ ഫോൾഡറിൽ ഒന്നുമില്ല</translation>
 <translation id="1881806992065048905">പുതിയ ടാബ് പേജ് ദൃശ്യമാകുന്നതിന്റെ ബോട്ടം ഷീറ്റ്</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ഇപ്പോൾ അനുവദിച്ചിരിക്കുന്നു • കൃത്യം</translation>
 <translation id="2544997614631598250">തീം കളർ ഡാർക്ക്</translation>
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
+<translation id="2553552004849639664">ഓൺലൈൻ ഭീഷണികൾക്കെതിരെ Chrome-ന്റെ ഏറ്റവും ശക്തമായ പരിരക്ഷ നേടുക</translation>
 <translation id="2570922361219980984">ഈ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ആക്‌സസും ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="257931822824936280">വിപുലീകരിച്ചത് - ചുരുക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ സംരക്ഷിച്ചു</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ഒരെണ്ണം കൂടി)}other{(+ # എണ്ണം കൂടി)}}</translation>
 <translation id="5403592356182871684">പേരുകൾ</translation>
+<translation id="5407203562970638234">നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്തൂ</translation>
 <translation id="5438097262470833822">ഇത് തിരഞ്ഞെടുക്കുന്നതിലൂടെ <ph name="WEBSITE" /> എന്നതിനുള്ള അനുമതികൾ റീസെറ്റ് ചെയ്യും</translation>
 <translation id="5459413148890178711">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് നിങ്ങളുടെ ലൊക്കേഷൻ കാണാനാകില്ല.</translation>
 <translation id="5489227211564503167">ആകെ <ph name="TOTAL_TIME" />-ൽ <ph name="ELAPSED_TIME" /> കഴിഞ്ഞു.</translation>

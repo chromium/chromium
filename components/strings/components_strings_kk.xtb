@@ -114,6 +114,7 @@
 <translation id="1178821169867863726">12 x 16 дюйм</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1181381397492575884">Chrome сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
+<translation id="1185331130467528132"><ph name="URL" /> қолданбасы жергілікті желідегі басқа құрылғыларды пайдаланғысы келеді.</translation>
 <translation id="1185343831726846924">Виртуалдық картаны қосу мүмкін еместігін растау</translation>
 <translation id="1186201132766001848">Құпия сөздерді тексеру</translation>
 <translation id="1187430513518041110">Көліктер мен оларға қызмет көрсету</translation>
@@ -166,6 +167,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Құпия сөзіңізді ұйымыңыз басқармайтын сайтта енгіздіңіз. Аккаунтты қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда қолданбаңыз.</translation>
 <translation id="1257553931232494454">масштабтау деңгейлері</translation>
+<translation id="1257714792349895570">жергілікті желі</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерін басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1264309058268477500">Басқа</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2690699652723742414">Соңғы 30 күн</translation>
 <translation id="2691385045260836588">Моделі</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
+<translation id="2694088736180584846">кері байланыс желісі</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core браузер саясаттарын, қолданбалар мен кеңейтімдерді бұлттан басқаруға мүмкіндік береді.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
@@ -1318,6 +1321,7 @@
 <translation id="3122696783148405307">Соңғы 30 күндегі нәтижелерді көрсету</translation>
 <translation id="3126023634486644099">Белгілер (тұрақты)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> – енді сіздің әдепкі іздеу жүйеңіз.</translation>
+<translation id="3134859781443140237">Жергілікті желі</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> іздеу</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Жоқ}=1{1 аккаунтқа кіру деректері}other{# аккаунтқа кіру деректері}}</translation>
 <translation id="3140646734028448730">Іскери қызметтер</translation>
@@ -1390,6 +1394,7 @@
 <translation id="3238395604961564389">Сілтемені инкогнито терезесінде ашу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
+<translation id="3241320538788585298">Кері байланыс желісі</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері блокталған</translation>
 <translation id="3243650379537999343">Сурет салу</translation>
 <translation id="3248329428895535435">Бұл сайтта көрсетпеу</translation>
@@ -1558,6 +1563,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{синхрондалған құрылғыларда кемінде 1 элемент}=1{1 элемент (синхрондалған құрылғыларда тағы бар)}other{# элемент (синхрондалған құрылғыларда тағы бар)}}</translation>
 <translation id="3531366304259615706">Экран құлпын пайдалану</translation>
 <translation id="3531780078352352885">Тапсырма парақтары</translation>
+<translation id="3532624859962632484">Жергілікті желідегі басқа құрылғыларды пайдалану</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> хосты микрофоныңызды пайдаланғысы келеді</translation>
 <translation id="3533328374079021623">5-ші пошта жәшігі</translation>
 <translation id="3536227077203206203">Бұл жолы рұқсат берілген.</translation>
@@ -1884,6 +1890,7 @@
 <translation id="4030545038933060179">Қосылған кезде, соңғы браузерді қолдану тарихыңызға негізделген тақырыптар тізімі осы жерде пайда болады</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4036753017940930924">Жер телімдері</translation>
+<translation id="403724377879219932">Жергілікті желідегі басқа құрылғыларды пайдалануға рұқсат сұрай алады.</translation>
 <translation id="4039506337798853114">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="4045070493270310437">Қойындыларды қайта ашу</translation>
 <translation id="4045226534284799755">Әрекетті қайталамас бұрын, Microsoft аккаунтына кіріңіз.</translation>
@@ -3167,6 +3174,7 @@
 <translation id="6108702513636120202">Chromium-дегі іздеу жүйеңіз</translation>
 <translation id="6108849843016142864">Бауырымен жорғалаушылар мен қосмекенділер</translation>
 <translation id="611018310643025551">Іздеу сұрауларыңыз, ең қолайлы сәйкестіктер және олардың бет контенттері Google-ға жіберіліп, оларды тексерушілер осы функцияны жақсарту үшін көруі мүмкін.</translation>
+<translation id="6111759749003439722">Осы құрылғыдағы басқа қолданбалар мен қызметтерді пайдалануға рұқсат сұрай алады.</translation>
 <translation id="6116338172782435947">Буферге көшірілетін мәтіндер мен кескіндерді көру</translation>
 <translation id="6116500665626559298">Аккаунтыңыздағы деректерді басқару түймесі. Google аккаунтында сақталатын Chrome ақпаратын басқару үшін іске қосыңыз.</translation>
 <translation id="6117833587752089929">Фотосурет (сәтен)</translation>
@@ -4618,6 +4626,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, cookie файлдарын басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="8433057134996913067">Бұл — көп веб-сайттардан шығарады.</translation>
 <translation id="8434840396568290395">Үй жануарлары</translation>
+<translation id="8435542599425298931"><ph name="URL" /> осы құрылғыдағы басқа қолданбалар мен қызметтерді пайдаланғысы келеді.</translation>
 <translation id="8436623588884785770">Саясат қосу</translation>
 <translation id="8437238597147034694">&amp;Жылжытуды болдырмау</translation>
 <translation id="8438786541497918448">Камера және микрофон пайдаланылсын ба?</translation>
@@ -4998,6 +5007,7 @@
 <translation id="9090548458280093580">Тарихыңыздан жасанды интеллектінің көмегімен іздеңіз</translation>
 <translation id="9090993752571911635">Интернет провайдерлері</translation>
 <translation id="9093723786115107672">Түнгі көйлек</translation>
+<translation id="9094424186948667194">Осы құрылғыдағы басқа қолданбалар мен қызметтерді пайдалану</translation>
 <translation id="9094544726794842788">"Ұнамайды" белгішесін бассаңыз, бұл нәтижелердің ұнамау себебін толықтай жазуға арналған үлгі ашылады</translation>
 <translation id="9094809883254050729">Келесі жолы автоматты түрде толтыруға болады. Карта шифрланып сақталады.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. iOS параметрлерінде Chrome-ды жүйенің әдепкі браузері етіп орнату үшін Tab, кейін Enter пернесін басыңыз.</translation>

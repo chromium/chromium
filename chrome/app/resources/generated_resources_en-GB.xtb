@@ -1682,6 +1682,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2114145607116268663">Unable to install, reboot is required. Please restart your computer and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Reload &amp;Frame</translation>
 <translation id="2114995631896158695">No SIM card inserted</translation>
+<translation id="2115808389282428160">Don't allow sites to access other apps and services on this device</translation>
 <translation id="2116619964159595185">Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb</translation>
 <translation id="2117655453726830283">Next slide</translation>
 <translation id="211803431539496924">Confirm extended security updates?</translation>
@@ -2497,6 +2498,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Adding eSIM profile. This may take a few minutes.</translation>
 <translation id="2663302507110284145">Language</translation>
+<translation id="2665056444046933274">Sites can use this feature to access other apps and services on this device</translation>
 <translation id="2665394472441560184">Add a new word</translation>
 <translation id="2665647207431876759">Expired</translation>
 <translation id="2665919335226618153">Oh no! There was an error during formatting.</translation>
@@ -3170,6 +3172,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3118748462829336648">Open side panel</translation>
 <translation id="3119743309973425629">Text cursor blink rate</translation>
 <translation id="3119948370277171654">What content/URL were you casting?</translation>
+<translation id="3120204271988747891">Sites can ask to access other devices on your local network</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Failed to create data directory</translation>
 <translation id="3122883569442693641">More details</translation>
@@ -7305,6 +7308,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5969364029958154283">Learn more about resetting settings</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> can view files in <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Keyboard shortcut notice dismissed</translation>
+<translation id="5970443501603581692">Not allowed to access other devices on your local network</translation>
 <translation id="5971037678316050792">Control Bluetooth adaptor state and pairing</translation>
 <translation id="5971861540200650391">Hide for <ph name="MODULE_TITLE" /> hours</translation>
 <translation id="597235323114979258">See more destinations</translation>
@@ -8653,6 +8657,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6903022061658753260">Your data will be synced across all Chrome browsers where you have turned on sync for this account. For Chrome OS sync options, go to <ph name="LINK_BEGIN" />Chrome OS settings<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Opt out</translation>
 <translation id="6903590427234129279">Open all (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Allowed to access other apps and services on this device</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6903916726032521638">Search for <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Receive from this device?</translation>
@@ -9166,6 +9171,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7273110280511444812">last attached on <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Always block <ph name="HOST" /> from controlling and reprogramming your MIDI devices</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> until full</translation>
+<translation id="7275950084263610253">Allowed to access other devices on your local network</translation>
 <translation id="727595954130325265">Shop now</translation>
 <translation id="727952162645687754">Download error</translation>
 <translation id="7280649757394340890">Text-to-speech voice settings</translation>
@@ -9668,12 +9674,14 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7620616707541471029">Choose an account to continue</translation>
 <translation id="7621382409404463535">The system failed to save device configuration.</translation>
 <translation id="7621595347123595643">You will not be able to recover local data if you forget your password or PIN.</translation>
+<translation id="762200934554267613">Sites can ask to access other apps and services on this device</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
 <translation id="7622966771025050155">Switch to captured tab</translation>
 <translation id="7624337243375417909">caps lock off</translation>
 <translation id="7625568159987162309">View permissions and data stored across sites</translation>
 <translation id="7625823789272218216">New Tab to the Left</translation>
+<translation id="7627749368210392160">Sites can use this feature to access other devices on your local network</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grade <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Select an action for each key</translation>
 <translation id="7629206210984165492">Subdued</translation>
@@ -10723,6 +10731,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Application options</translation>
+<translation id="8313599942510782709">Your task is still in progress</translation>
 <translation id="8314089908545021657">Pair with new phone</translation>
 <translation id="8314381333424235892">Missing or uninstalled extension</translation>
 <translation id="831440797644402910">Can't open this folder</translation>
@@ -10730,6 +10739,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8315018673856831477">Memory saver options</translation>
 <translation id="8315514906653279104">Turning on…</translation>
 <translation id="8316480109537174997">Show Gemini in system tray and turn on keyboard shortcut</translation>
+<translation id="8317291727028594010">Not allowed to access other apps and services on this device</translation>
 <translation id="8317671367883557781">Add network connection</translation>
 <translation id="8317965619823678157">copy passwords</translation>
 <translation id="8318266828739827371">Use a split-screen view to see the magnified area of your screen. Use Search + Ctrl + D to turn docked magnifier on and off.</translation>
@@ -11373,6 +11383,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8745034592125932220">Not allowed to save data to your device</translation>
 <translation id="8746654918629346731">You already requested '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="874689135111202667">{0,plural, =1{Upload one file to this site?}other{Upload # files to this site?}}</translation>
+<translation id="8748714929822124637">Don't allow sites to access other devices on your local network</translation>
 <translation id="8748916845823567967">All data and cookies stored by <ph name="SITE" /> will be deleted.</translation>
 <translation id="8749805710397399240">Unable to cast your screen. Check the Screen recording permission in system preferences.</translation>
 <translation id="8749826920799243530">Device is not enrolled</translation>

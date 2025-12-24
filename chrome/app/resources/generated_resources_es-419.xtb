@@ -1669,6 +1669,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2114145607116268663">No se puede instalar. Debes reiniciar el dispositivo. Reinicia la computadora y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
 <translation id="2114995631896158695">No se insertó ninguna tarjeta SIM</translation>
+<translation id="2115808389282428160">No permitir que los sitios accedan a otros servicios y apps en este dispositivo</translation>
 <translation id="2116619964159595185">Por lo general, los sitios se conectan a dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una lámpara inteligente.</translation>
 <translation id="2117655453726830283">Siguiente diapositiva</translation>
 <translation id="211803431539496924">¿Confirmas las actualizaciones de seguridad extendidas?</translation>
@@ -1768,6 +1769,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2184272387334793084">Accede para obtener tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonido (recomendado)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Iniciar un nuevo chat con Gemini</translation>
 <translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. No se sincronizarán las opciones de configuración que modifiquen otros usuarios. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Se actualizaron las extensiones</translation>
@@ -2426,6 +2428,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2627424346328942291">No se puede compartir</translation>
 <translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Iniciar un nuevo chat con Gemini</translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la biblioteca</translation>
@@ -2481,6 +2484,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2662876636500006917">Tienda virtual de Chrome</translation>
 <translation id="2663253180579749458">Se está agregando el perfil de eSIM. Esto podría demorar unos minutos.</translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2665056444046933274">Los sitios pueden usar esta función para acceder a otros servicios y apps en este dispositivo</translation>
 <translation id="2665394472441560184">Agregar una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">Se produjo un error durante la aplicación de formato.</translation>
@@ -3154,6 +3158,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3118748462829336648">Abrir el panel lateral</translation>
 <translation id="3119743309973425629">Velocidad de parpadeo del cursor de texto</translation>
 <translation id="3119948370277171654">¿Qué contenido o URL estabas transmitiendo?</translation>
+<translation id="3120204271988747891">Los sitios pueden solicitar acceso a otros dispositivos de tu red local</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Se ha producido un error al crear el directorio de datos.</translation>
 <translation id="3122883569442693641">Más detalles</translation>
@@ -7289,6 +7294,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5969364029958154283">Más información para restablecer la configuración</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> puede ver archivos en <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Se descartó la notificación de combinaciones de teclas</translation>
+<translation id="5970443501603581692">No pueden acceder a otros dispositivos de tu red local</translation>
 <translation id="5971037678316050792">Controlar el estado y la sincronización del adaptador Bluetooth</translation>
 <translation id="5971861540200650391">Ocultar durante <ph name="MODULE_TITLE" /> horas</translation>
 <translation id="597235323114979258">Ver más destinos</translation>
@@ -8637,6 +8643,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6903022061658753260">Tu información se sincronizará en todos los navegadores Chrome donde hayas activado la sincronización con esta cuenta. Para acceder a las opciones de sincronización de ChromeOS, ve a la <ph name="LINK_BEGIN" />configuración de ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Inhabilitar</translation>
 <translation id="6903590427234129279">Abrir todo (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Pueden acceder a otros servicios y apps en este dispositivo</translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">¿Deseas recibir contenido de este dispositivo?</translation>
@@ -9150,6 +9157,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7273110280511444812">conectado por última vez el <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Impedir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
+<translation id="7275950084263610253">Pueden acceder a otros dispositivos de tu red local</translation>
 <translation id="727595954130325265">Comprar ahora</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280649757394340890">Configuración de la voz en la función de texto a voz</translation>
@@ -9652,12 +9660,14 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7620616707541471029">Elige una cuenta para continuar</translation>
 <translation id="7621382409404463535">El sistema no pudo guardar la configuración del dispositivo.</translation>
 <translation id="7621595347123595643">No podrás recuperar datos locales si olvidas tu contraseña o PIN.</translation>
+<translation id="762200934554267613">Los sitios pueden solicitar acceso a otros servicios y apps en este dispositivo</translation>
 <translation id="7622114377921274169">Cargando</translation>
 <translation id="7622768823216805500">Por lo general los sitios instalan controladores de pago para habilitar funciones de compra, por ejemplo, a fin de facilitar la confirmación de las compras.</translation>
 <translation id="7622966771025050155">Cambiar a la pestaña capturada</translation>
 <translation id="7624337243375417909">bloqueo de mayúscula desactivado</translation>
 <translation id="7625568159987162309">Ver permisos y datos almacenados de los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
+<translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -10707,6 +10717,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="831207808878314375">Definición</translation>
 <translation id="8312841338723044391">EN VIVO</translation>
 <translation id="8313308349366087671">Opciones de la aplicación</translation>
+<translation id="8313599942510782709">Tu tarea aún está en curso</translation>
 <translation id="8314089908545021657">Sincronizar con un nuevo teléfono</translation>
 <translation id="8314381333424235892">Falta la extensión o no está instalada</translation>
 <translation id="831440797644402910">No se puede abrir esta carpeta</translation>
@@ -10714,6 +10725,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8315018673856831477">Opciones de Ahorro de memoria</translation>
 <translation id="8315514906653279104">Activando…</translation>
 <translation id="8316480109537174997">Mostrar Gemini en la bandeja del sistema y activar la combinación de teclas</translation>
+<translation id="8317291727028594010">No pueden acceder a otros servicios y apps en este dispositivo</translation>
 <translation id="8317671367883557781">Agregar conexión de red</translation>
 <translation id="8317965619823678157">copiar contraseñas</translation>
 <translation id="8318266828739827371">Usa una vista de pantalla dividida para ver el área ampliada. Usa Búsqueda + Ctrl + D para activar y desactivar la lupa fijada.</translation>
@@ -11357,6 +11369,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8745034592125932220">No tiene permiso para guardar datos en tu dispositivo</translation>
 <translation id="8746654918629346731">Ya solicitaste "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{¿Deseas cargar un archivo a este sitio?}other{¿Deseas cargar # archivos a este sitio?}}</translation>
+<translation id="8748714929822124637">No permitir que los sitios accedan a otros dispositivos en tu red local</translation>
 <translation id="8748916845823567967">Se borrarán todos los datos y las cookies almacenados por <ph name="SITE" />.</translation>
 <translation id="8749805710397399240">No se puede transmitir tu pantalla. Revisa el permiso de grabación de pantallas en las preferencias del sistema.</translation>
 <translation id="8749826920799243530">El dispositivo no está inscrito</translation>

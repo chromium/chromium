@@ -34,8 +34,10 @@
 <translation id="159029779861043703">„Chromium“ apsaugo neskelbtinus duomenis, kai naudodamas „Face ID“.</translation>
 <translation id="1591119736686995611">Atidaromas „Chromium“ skirtukų tinklelis.</translation>
 <translation id="16001233025397167">Saugos patikra padeda apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chromium“ aptinka.</translation>
+<translation id="1614362805233822594">Slaptažodžių tvarkyklėje jau turite rodomų svetainių slaptažodžių arba prieigos raktų. Pasirinkite paskyrą, kad išsaugotumėte rodomą prisijungimo informaciją, perrašydami tai, kas yra slaptažodžių tvarkyklėje.</translation>
 <translation id="1617663976202781617">„Chromium“ sinchronizavimo duomenys</translation>
 <translation id="164952285225495380">Šis siuntinys jau buvo stebimas naršyklėje „Chromium“.</translation>
+<translation id="1703338211136118534">Toliau nurodyti slaptažodžiai nebuvo importuoti į slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
 <translation id="1707458603865303524">Naudokite „Chromium“ bet kada palietę nuorodas pranešimuose ar kitose programose.</translation>
 <translation id="1722370509450468186">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Tinkintas jums skirtas sklaidos kanalas</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Žemėlapiai naršyklėje „Chromium“</translation>
 <translation id="1867772173333403444">4. Pasirinkite „Chromium“</translation>
 <translation id="1965068424387304464">„Chromium“ patarimas: išsaugokite slaptažodžius</translation>
+<translation id="1992653360331625459">Slaptažodžių tvarkyklėje jau yra šių paskyrų slaptažodžiai. Jei pasirinksite importuoti vieną iš toliau nurodytų slaptažodžių, jis pakeis esamą.</translation>
 <translation id="2006345422933397527">„Chromium“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2042889939382983733">„Chromium“ istorijos peržiūra</translation>
 <translation id="2052320862053429062">„Chromium“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
 
 Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
+<translation id="2334943301233020675">Toliau nurodyti prieigos raktai nebuvo importuoti į slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
 <translation id="2337722506862731008">Bendrinti „Chromium“</translation>
 <translation id="2340423701577464731">Pridėti skaitymo sąrašo elementą prie „Chromium“</translation>
 <translation id="2374627437126809292">„Chromium“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>

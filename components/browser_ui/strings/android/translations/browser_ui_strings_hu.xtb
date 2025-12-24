@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Ezzel a listán szereplő összes webhelyen visszaállítja az alapértelmezett nagyítást</translation>
 <translation id="1989112275319619282">Böngészés</translation>
 <translation id="1994173015038366702">Webhely URL-je</translation>
+<translation id="1994558116414798016">Lexend betűtípus</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
 <translation id="2025115093177348061">Kiterjesztett valóság</translation>
 <translation id="2028449514182362831">A mozgásérzékelőket igénylő funkciók nem működnek</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Világos színű téma</translation>
 <translation id="2096716221239095980">Minden adat törlése</translation>
 <translation id="2102396546234652240">A webhelyek nem használhatják a mikrofont</translation>
+<translation id="2115808389282428160">A webhelyek nem férhetnek hozzá más alkalmazásokhoz és szolgáltatásokhoz ezen az eszközön</translation>
 <translation id="2117655453726830283">Következő dia</translation>
 <translation id="2146263598007866206">Előfordulhat, hogy a webhelyek automatikusan együtt töltik le a kapcsolódó fájlokat, hogy időt takarítsanak meg Önnek</translation>
 <translation id="2148716181193084225">Ma</translation>
@@ -159,6 +161,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2621115761605608342">A JavaScript engedélyezése egy adott webhelyen.</translation>
 <translation id="2626708220538466178">Alapértelmezett böngésző alsó lapja bezárva</translation>
 <translation id="2653659639078652383">Küldés</translation>
+<translation id="2665056444046933274">A webhelyek ezt a funkciót használhatják az eszközön lévő más alkalmazásokhoz és szolgáltatásokhoz való hozzáféréshez</translation>
 <translation id="2670403088701171361">A webhelyek nem tekinthetik meg a vágólapon szereplő szövegeket és képeket</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2682367912565197520">Mentett nagyítási szint törlése</translation>
@@ -202,8 +205,10 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="311394601889664316">A webhelyek nem szerkeszthetik az eszközén lévő fájlokat és mappákat</translation>
 <translation id="3114012059975132928">Videólejátszó</translation>
 <translation id="3115898365077584848">Információk megjelenítése</translation>
+<translation id="3120204271988747891">A webhelyek engedélyt kérhetnek a helyi hálózaton lévő más eszközökhöz való hozzáférésre</translation>
 <translation id="3123473560110926937">Letiltva egyes webhelyeken</translation>
 <translation id="3132996321662585180">Frissítés naponta</translation>
+<translation id="3134859781443140237">Helyi hálózat</translation>
 <translation id="3143754809889689516">Lejátszás az elejétől</translation>
 <translation id="3164169438034704658">A pontos helyet az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között kapcsolhatja be.</translation>
 <translation id="3165022941318558018">Annak engedélyezése egy webhely számára, hogy harmadik féltől származó cookie-t használjon</translation>
@@ -214,6 +219,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3223425961342298674">Helyadatok nem engedélyezettek</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Böngészési adatok törlése…</translation>
+<translation id="3241320538788585298">Visszacsatolási hálózat</translation>
 <translation id="3242646949159196181">Ha be van kapcsolva, a webhelyek lejátszhatnak hangot. Ha ki van kapcsolva, a webhelyek nem játszhatnak le hangot.</translation>
 <translation id="3273479183583863618">Árcsökkenések a lapokon</translation>
 <translation id="3277252321222022663">Az érzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
@@ -423,6 +429,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> letiltva</translation>
 <translation id="560980142378233747">Ez azt jelenti, hogy a webhely funkciói valószínűleg a várt módon fognak működni, de előfordulhat, hogy kevésbé lesz hatékony a böngészési védelem. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Az Új lap oldal kártyáinak alsó lapja</translation>
+<translation id="5621413808884657932">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek az eszközön lévő más alkalmazásokhoz és szolgáltatásokhoz való hozzáférésre. Ha ki van kapcsolva, a webhelyek nem férhetnek hozzá az eszközön lévő más alkalmazásokhoz és szolgáltatásokhoz.</translation>
 <translation id="5632485077360054581">Bemutató</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
 <translation id="5668404140385795438">Felülbírálja a webhely kérelmét, mely megakadályozná a nagyítást</translation>
@@ -543,6 +550,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6842868554183332230">A webhelyek általában észlelhetik, hogy Ön mikor használja aktívan az eszközt, hogy be tudják állítani az Ön elérhetőségét a csevegőalkalmazásokban</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
 <translation id="6870169401250095575">A Biztonsági ellenőrzés kártya elrejtése</translation>
+<translation id="6882736949427544336">A webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz</translation>
 <translation id="6900883974539674431">Létrehozhat lapcsoportokat, amelyeket a böngésző automatikusan ment és frissít az összes eszközén</translation>
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
@@ -604,6 +612,8 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7586676035079382730">Értesítések nem engedélyezettek</translation>
 <translation id="7594634374516752650">Bluetooth-eszközhöz csatlakoztatva</translation>
 <translation id="7617547684249261169">Törölheti az előzmények, a cookie-k, a webhelyadatok és egyebek egy részét vagy egészét</translation>
+<translation id="762200934554267613">A webhelyek engedélyt kérhetnek arra, hogy hozzáférjenek az eszközön található egyéb alkalmazásokhoz és szolgáltatásokhoz</translation>
+<translation id="7627749368210392160">A webhelyek ezt a funkciót használhatják a helyi hálózaton lévő más eszközökhöz való hozzáféréshez</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7655411746932645568">A webhelyek engedélyt kérhetnek a soros portokhoz való csatlakozásra</translation>
 <translation id="7658239707568436148">Mégse</translation>
@@ -659,6 +669,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> és <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő más eszközökhöz való hozzáférésre. Ha ki van kapcsolva, a webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz.</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8284326494547611709">Feliratok</translation>
@@ -712,6 +723,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8737426583868847403">Itt jelennek meg azok a webhelyek, amelyeknél egyéni nagyítási szintet mentett el</translation>
+<translation id="8748714929822124637">A webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz</translation>
 <translation id="8751914237388039244">Válasszon képet</translation>
 <translation id="8775741625735357092">A Beállítások &gt; Megjelenés menüpontban kapcsolhatja be a könyvjelzősort</translation>
 <translation id="8800034312320686233">Nem működik a webhely?</translation>

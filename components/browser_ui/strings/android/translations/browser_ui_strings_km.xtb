@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">គន្លឹះ Chrome</translation>
 <translation id="1816835383954230954">នៅពេល​បើក, Chrome ដំណើរការ​លឿន​ជាងមុន ហើយ​មុខងារ​ដែលប្រើ JavaScript គួរតែ​ដំណើរការ​ដូចដែល​បានរចនាឡើង។ នៅពេល​បិទ វា​កាត់បន្ថយ​ប្រតិបត្តិការ ប៉ុន្តែ​ធ្វើឱ្យ V8 កាន់តែមាន​ភាពធន់នឹង​ការវាយ​ប្រហារ។</translation>
 <translation id="1818308510395330587">ដើម្បី​អនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ប្រើ AR អ្នកក៏ត្រូវបើក​កាមេរ៉ា​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
+<translation id="1822318649925991542">ប្ដូរ​ទីតាំង ដើម្បី​ប្ដូរបទពិសោធរុករក​របស់អ្នក​តាមបំណង</translation>
 <translation id="1848033246551405023">ពុម្ព​អក្សរ Sans Serif</translation>
 <translation id="1861262398884155592">ថត​នេះ​ទទេ</translation>
 <translation id="1881806992065048905">សន្លឹក​ខាងក្រោមនៃ​រូបរាង​ទំព័រ​ផ្ទាំងថ្មី</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">អនុញ្ញាត​លើកនេះ • ជាក់លាក់</translation>
 <translation id="2544997614631598250">ទម្រង់រចនា​ពណ៌​ងងឹត</translation>
 <translation id="2546283357679194313">ខុកឃី និងទិន្នន័យគេហទំព័រ</translation>
+<translation id="2553552004849639664">ទទួលបាន​ការការពារ​ខ្លាំងបំផុត​របស់ Chrome ប្រឆាំងនឹង​ការគំរាម​កំហែង​លើអ៊ីនធឺណិត</translation>
 <translation id="2570922361219980984">ការចូល​ប្រើ​ទីតាំងក៏ត្រូវបាន​បិទ​សម្រាប់​ឧបករណ៍​នេះដែរ។ សូម​បើក​វា​នៅក្នុង<ph name="BEGIN_LINK" />ការ​កំណត់ Android<ph name="END_LINK" /> ។</translation>
 <translation id="257931822824936280">បានពង្រីក - ចុចដើម្បីបំបែក</translation>
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">ក្រុមផ្ទាំង​របស់អ្នក​ត្រូវបាន​រក្សាទុក</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ទៀត)}other{(+ # ទៀត)}}</translation>
 <translation id="5403592356182871684">ឈ្មោះ</translation>
+<translation id="5407203562970638234">ធ្វើឱ្យ​សុវត្ថិភាព​របស់អ្នក​ប្រសើរឡើង</translation>
 <translation id="5438097262470833822">ជម្រើសនេះនឹងកំណត់ការ​អនុញ្ញាតឡើងវិញសម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">នៅពេល​បើក គេហទំព័រ​អាចស្នើសុំ​ទីតាំង​របស់អ្នក​បាន។ នៅពេល​បិទ គេហទំព័រ​មិនអាច​មើលឃើញ​ទីតាំង​របស់អ្នក​បានទេ។</translation>
 <translation id="5489227211564503167">រយៈពេល​ដែលកន្លងផុត <ph name="ELAPSED_TIME" /> នៃ <ph name="TOTAL_TIME" />។</translation>

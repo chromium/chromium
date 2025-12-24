@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium štiti vaše osjetljive podatke putem Face ID-a.</translation>
 <translation id="1591119736686995611">Otvaranje mreže kartica u Chromiumu.</translation>
 <translation id="16001233025397167">Sigurnosna provjera vas štiti od narušavanja podataka, nesigurnih web lokacija i drugih prijetnji. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
+<translation id="1614362805233822594">Već imate lozinke ili pristupne ključeve na Upravitelju lozinki za prikazane web lokacije. Odaberite račun da zadržite prikazane podatke za prijavu, čime ćete nadjačati podatke na Upravitelju lozinki.</translation>
 <translation id="1617663976202781617">Sinhronizacija podataka s Chromiuma</translation>
 <translation id="164952285225495380">Ovaj paket se već prati u Chromiumu.</translation>
+<translation id="1703338211136118534">Sljedeće lozinke nisu uvezene na Upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>
 <translation id="1707458603865303524">Koristite Chromium svaki put kada dodirnete linkove u porukama ili drugim aplikacijama.</translation>
 <translation id="1722370509450468186">Vaša lozinka će se sačuvati na vašem računu (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Prilagođeni sažetak sadržaja za vas</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Mape u Chromiumu</translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
 <translation id="1965068424387304464">Savjet za Chromium: sačuvajte lozinke</translation>
+<translation id="1992653360331625459">Već imate lozinke za ove račune na Upravitelju lozinki. Ako uvezete jednu od lozinki u nastavku, ona će zamijeniti postojeću.</translation>
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun.
 
 Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
+<translation id="2334943301233020675">Sljedeći pristupni ključevi nisu uvezeni na Upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>
 <translation id="2337722506862731008">Dijelite Chromium</translation>
 <translation id="2340423701577464731">Dodavanje stavke na listu za čitanje u Chromiumu</translation>
 <translation id="2374627437126809292">Chromium koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>

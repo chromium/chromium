@@ -1671,6 +1671,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2114145607116268663">Non se puido levar a cabo a instalación. Cómpre reiniciares o ordenador. Despois de facelo, téntao de novo. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Volver cargar &amp;marco</translation>
 <translation id="2114995631896158695">Non se inseriu ningunha tarxeta SIM</translation>
+<translation id="2115808389282428160">Non permitir que os sitios accedan a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2116619964159595185">Os sitios adoitan conectarse a dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
 <translation id="211803431539496924">Queres confirmar as actualizacións de seguranza ampliadas?</translation>
@@ -2483,6 +2484,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Engadindo perfil de eSIM. Esta acción pode tardar uns minutos.</translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2665056444046933274">Os sitios poden usar esta función para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2665394472441560184">Engadir unha palabra nova</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">Produciuse un erro durante o formatado.</translation>
@@ -3156,6 +3158,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3118748462829336648">Abrir o panel lateral</translation>
 <translation id="3119743309973425629">Velocidade de intermitencia do cursor de texto</translation>
 <translation id="3119948370277171654">Que contido ou URL estabas emitindo?</translation>
+<translation id="3120204271988747891">Os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Non se puido crear o directorio de datos</translation>
 <translation id="3122883569442693641">Máis detalles</translation>
@@ -7291,6 +7294,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5969364029958154283">Máis información sobre o restablecemento da configuración</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pode ver os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Ignorouse o báner sobre os atallos de teclado</translation>
+<translation id="5970443501603581692">Permiso denegado para acceder a outros dispositivos da túa rede local</translation>
 <translation id="5971037678316050792">Controlar sincronización e estado do adaptador Bluetooth</translation>
 <translation id="5971861540200650391">Ocultar durante <ph name="MODULE_TITLE" /> horas</translation>
 <translation id="597235323114979258">Ver máis destinos</translation>
@@ -8639,6 +8643,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6903022061658753260">Os teus datos sincronizaranse en todos os navegadores Chrome nos que activases a sincronización para esta conta. Para ver as opcións de sincronización de Chrome OS, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Desactivar</translation>
 <translation id="6903590427234129279">Abrir todos os URL (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Permiso concedido para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Queres recibir o que está compartindo este dispositivo?</translation>
@@ -9151,6 +9156,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7273110280511444812">anexouse por última vez o <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Impedir sempre que <ph name="HOST" /> controle e volva programar os teus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> %. <ph name="TIME" /> para completar a carga</translation>
+<translation id="7275950084263610253">Permiso concedido para acceder a outros dispositivos da túa rede local</translation>
 <translation id="727595954130325265">Comprar agora</translation>
 <translation id="727952162645687754">Erro de descarga</translation>
 <translation id="7280649757394340890">Configuración da conversión de texto a voz</translation>
@@ -9653,12 +9659,14 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7620616707541471029">Escolle unha conta para continuar</translation>
 <translation id="7621382409404463535">Produciuse un erro no sistema e non se puido gardar a configuración do dispositivo.</translation>
 <translation id="7621595347123595643">Non poderás recuperar os datos locais se esqueces o contrasinal ou o PIN.</translation>
+<translation id="762200934554267613">Os sitios poden pedir permiso para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="7622114377921274169">Cargando.</translation>
 <translation id="7622768823216805500">Os sitios adoitan instalar controladores de pago para ofrecerche determinadas funcións relacionadas coas compras (por exemplo, procesar as compras de forma máis fácil)</translation>
 <translation id="7622966771025050155">Cambiar á pestana mostrada</translation>
 <translation id="7624337243375417909">desactivouse o bloqueo de maiúsculas</translation>
 <translation id="7625568159987162309">Ver permisos e datos almacenados dos sitios</translation>
 <translation id="7625823789272218216">Pestana nova á esquerda</translation>
+<translation id="7627749368210392160">Os sitios poden usar esta función para acceder a outros dispositivos da túa rede local</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grao <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Seleccionar unha acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -10707,6 +10715,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="831207808878314375">Definición</translation>
 <translation id="8312841338723044391">DIRECTO</translation>
 <translation id="8313308349366087671">Opcións da aplicación</translation>
+<translation id="8313599942510782709">A túa tarefa aínda está en curso</translation>
 <translation id="8314089908545021657">Vincular cun novo teléfono</translation>
 <translation id="8314381333424235892">Falta a extensión ou non se instalou</translation>
 <translation id="831440797644402910">Non se pode abrir este cartafol</translation>
@@ -10714,6 +10723,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8315018673856831477">Opcións de aforro de memoria</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8316480109537174997">Mostrar Gemini na bandexa do sistema e activar o atallo de teclado</translation>
+<translation id="8317291727028594010">Permiso denegado para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="8317671367883557781">Engadir conexión de rede</translation>
 <translation id="8317965619823678157">copiar os contrasinais</translation>
 <translation id="8318266828739827371">Utiliza unha vista de pantalla dividida para ver a área ampliada da pantalla. Para activar e desactivar a lupa ancorada, preme Buscar + Control + D.</translation>
@@ -11357,6 +11367,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8745034592125932220">Permiso denegado para gardar datos no teu dispositivo</translation>
 <translation id="8746654918629346731">Xa solicitaches a extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Queres cargar un ficheiro neste sitio?}other{Queres cargar # ficheiros neste sitio?}}</translation>
+<translation id="8748714929822124637">Non permitir que os sitios accedan a outros dispositivos da túa rede local</translation>
 <translation id="8748916845823567967">Eliminaranse todos os datos e as cookies almacenados por <ph name="SITE" />.</translation>
 <translation id="8749805710397399240">Non se pode emitir o contido da túa pantalla. Vai a System Preferences (preferencias do sistema) e comproba o permiso Screen Recording (gravación de pantalla).</translation>
 <translation id="8749826920799243530">O dispositivo non está inscrito</translation>

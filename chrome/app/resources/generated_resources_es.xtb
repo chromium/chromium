@@ -1672,6 +1672,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2114145607116268663">No se puede realizar la instalación. Es necesario reiniciar el ordenador. Hazlo y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
 <translation id="2114995631896158695">No hay ninguna tarjeta SIM insertada.</translation>
+<translation id="2115808389282428160">No permitir que los sitios accedan a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="2116619964159595185">Los sitios se suelen conectar a dispositivos Bluetooth para usarlos en funciones como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="2117655453726830283">Diapositiva siguiente</translation>
 <translation id="211803431539496924">¿Confirmar actualizaciones de seguridad ampliadas?</translation>
@@ -1771,6 +1772,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2184272387334793084">Inicia sesión para acceder a tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Iniciar nueva conversación con Gemini</translation>
 <translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. Los ajustes modificados por otros usuarios no se sincronizarán. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Se han actualizado las extensiones</translation>
@@ -2430,6 +2432,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2627424346328942291">No se puede compartir</translation>
 <translation id="2628258844236035475">¿Quitar dirección de casa de Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración ADB, deben restablecerse los ajustes de fábrica de este Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Iniciar nueva conversación con Gemini</translation>
 <translation id="2629227353894235473">Desarrollar aplicaciones de Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la estantería</translation>
@@ -2485,6 +2488,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Añadiendo perfil de eSIM. Este proceso puede durar unos minutos.</translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2665056444046933274">Los sitios pueden usar esta función para acceder a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="2665394472441560184">Añade una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">¡Vaya! Se ha producido un error dando formato.</translation>
@@ -3158,6 +3162,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3118748462829336648">Abrir panel lateral</translation>
 <translation id="3119743309973425629">Frecuencia de parpadeo del cursor de texto</translation>
 <translation id="3119948370277171654">¿Qué contenido o URL estabas enviando?</translation>
+<translation id="3120204271988747891">Los sitios pueden solicitar permiso para acceder a otros dispositivos de tu red local</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Se ha producido un error al crear el directorio de datos.</translation>
 <translation id="3122883569442693641">Más detalles</translation>
@@ -4251,6 +4256,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3847734730889093333">x<ph name="RATE" /></translation>
 <translation id="3848547754896969219">Abrir en una ventana de &amp;incógnito</translation>
 <translation id="3848688783623004960">Abrir en vista dividida</translation>
+<translation id="3849517590329855428">Ocultar todo</translation>
 <translation id="3850172593216628215">Este dispositivo no recibirá más actualizaciones de seguridad. Ahorra 50 $ o más al adquirir un Chromebook nuevo.</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3850989673553106152">Se ha cambiado la contraseña</translation>
@@ -6445,6 +6451,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5388719243178419614">No se puede subir. No se ha podido procesar el archivo de imagen.</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
 <translation id="5389224261615877010">Arcoíris</translation>
+<translation id="538945906186309152">Activar combinación de teclas de Gemini</translation>
 <translation id="5389794555912875905">Mostrar advertencias antes de acceder a sitios no seguros (recomendado)</translation>
 <translation id="5389943529251318913">Reducir la velocidad del ratón en un</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt enviado en los informes de comentarios.</translation>
@@ -7258,6 +7265,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5945363896952315544">Tu llave de seguridad no puede almacenar más huellas digitales. Para añadir una huella nueva, elimina alguna de las que hay.</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Hacer doble clic con el ratón</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{No se ha podido analizar 1 evento y no se muestra}other{No se han podido analizar # eventos y no se muestran}}</translation>
 <translation id="5948476936444935795">Cancelar importación</translation>
 <translation id="5948536763493709626">Conecta un teclado o un ratón, o continúa la configuración con tu pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que tus dispositivos estén listos para emparejarse.</translation>
 <translation id="5949795028157144515">Modo Desarrollador desactivado. Se han inhabilitado algunas extensiones.</translation>
@@ -7290,6 +7298,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5969364029958154283">Más información sobre cómo restablecer la configuración</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> puede ver los archivos que haya en <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Notificación de combinación de teclas cerrada</translation>
+<translation id="5970443501603581692">No tiene permiso para acceder a otros dispositivos de tu red local</translation>
 <translation id="5971037678316050792">Controlar el estado y la vinculación del adaptador de Bluetooth</translation>
 <translation id="5971861540200650391">Ocultar durante <ph name="MODULE_TITLE" /> horas</translation>
 <translation id="597235323114979258">Ver más destinos</translation>
@@ -8638,6 +8647,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6903022061658753260">Tus datos se sincronizarán en todos los navegadores Chrome en los que hayas activado la sincronización para esta cuenta. Para consultar las opciones de sincronización de ChromeOS, ve a la <ph name="LINK_BEGIN" />configuración de ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Rechazar</translation>
 <translation id="6903590427234129279">Abrir todas (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Tiene permiso para acceder a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">¿Recibir lo que comparte este dispositivo?</translation>
@@ -8653,6 +8663,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6914812290245989348">No mostrar ninguna advertencia antes de acceder a sitios no seguros</translation>
 <translation id="6916590542764765824">Gestionar extensiones</translation>
 <translation id="6916676294509106572">Calendario de Outlook oculto</translation>
+<translation id="6916818963747321523">Mostrar todo</translation>
 <translation id="6917873303492266709">Para compartir, unirte y colaborar en grupos de pestañas, abre la configuración y activa Permitir el inicio de sesión en Chrome</translation>
 <translation id="6918677045355889289">Es necesario actualizar ChromeOS</translation>
 <translation id="6918733588290914545">Configuración rápida con un teléfono Android</translation>
@@ -9151,6 +9162,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7273110280511444812">fecha de última conexión: <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Impedir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
+<translation id="7275950084263610253">Tiene permiso para acceder a otros dispositivos de tu red local</translation>
 <translation id="727595954130325265">Ver ahora</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280649757394340890">Ajustes de voz de conversión de texto a voz</translation>
@@ -9203,6 +9215,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7312040805247765153">No se puede instalar la aplicación</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7313539585802573958">Colores de retroiluminación del teclado</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{No se ha podido establecer la fecha de 1 evento y no se muestra}other{No se ha podido establecer la fecha de # eventos y no se muestran}}</translation>
 <translation id="7314865262803554456">No recibirás ninguna notificación cuando se inicie la grabación.</translation>
 <translation id="7314989823816739632">Romántico</translation>
 <translation id="7317342082064136423">Verifica tu cuenta</translation>
@@ -9653,12 +9666,14 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7620616707541471029">Selecciona una cuenta para continuar</translation>
 <translation id="7621382409404463535">El sistema no ha podido guardar la configuración del dispositivo.</translation>
 <translation id="7621595347123595643">No podrás recuperar los datos locales si olvidas tu contraseña o PIN.</translation>
+<translation id="762200934554267613">Los sitios pueden solicitar permiso para acceder a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="7622114377921274169">Cargando.</translation>
 <translation id="7622768823216805500">Los sitios suelen instalar controladores de pago para utilizarlos en funciones relacionadas con compras, como facilitar los pagos.</translation>
 <translation id="7622966771025050155">Cambiar a pestaña capturada</translation>
 <translation id="7624337243375417909">bloqueo de mayúsculas desactivado</translation>
 <translation id="7625568159987162309">Ver permisos y datos almacenados en todos los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
+<translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -10708,6 +10723,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="831207808878314375">Definición</translation>
 <translation id="8312841338723044391">EN DIRECTO</translation>
 <translation id="8313308349366087671">Opciones de la aplicación</translation>
+<translation id="8313599942510782709">Tu tarea aún está en curso</translation>
 <translation id="8314089908545021657">Emparejar con nuevo teléfono</translation>
 <translation id="8314381333424235892">Falta la extensión o no está instalada</translation>
 <translation id="831440797644402910">Esta carpeta no se puede abrir</translation>
@@ -10715,6 +10731,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8315018673856831477">Opciones de Ahorro de memoria</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8316480109537174997">Mostrar Gemini en la bandeja del sistema y activar la combinación de teclas</translation>
+<translation id="8317291727028594010">No tiene permiso para acceder a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="8317671367883557781">Añadir conexión de red</translation>
 <translation id="8317965619823678157">copiar contraseñas</translation>
 <translation id="8318266828739827371">Utiliza una vista de pantalla dividida para ver la zona ampliada de tu pantalla. Pulsa la tecla de búsqueda + Ctrl + D para activar o desactivar la lupa fijada.</translation>
@@ -11358,6 +11375,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8745034592125932220">No tiene permiso para guardar datos en tu dispositivo</translation>
 <translation id="8746654918629346731">Ya has solicitado "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{¿Quieres subir un archivo a este sitio web?}other{¿Quieres subir # archivos a este sitio web?}}</translation>
+<translation id="8748714929822124637">No permitir que los sitios accedan a otros dispositivos de tu red local</translation>
 <translation id="8748916845823567967">Se eliminarán todos los datos y las cookies almacenados por <ph name="SITE" />.</translation>
 <translation id="8749805710397399240">No se puede enviar tu pantalla. Comprueba el permiso de grabación de pantalla en Preferencias del Sistema.</translation>
 <translation id="8749826920799243530">El dispositivo no está registrado</translation>

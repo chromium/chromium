@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Lejárat hónapja</translation>
 <translation id="1150989369772528668">Naptár</translation>
 <translation id="1161663161838091892">A folytatáshoz szinkronizálja a lapokat és az előzményeket</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} bankkártya}other{{count} bankkártya}}</translation>
 <translation id="1164891049599601209">Megtévesztő webhelyen lett megadva</translation>
 <translation id="1165039591588034296">Hiba</translation>
 <translation id="1172898394251786223">Következő mező</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Megnyitott lapok</translation>
 <translation id="1752547299766512813">Jelszómentés</translation>
 <translation id="1764070164487214210">Útvonalak</translation>
+<translation id="1764511703783285459">A másik jelszókezelő nem osztott meg jelszavakat vagy azonosítókulcsokat.</translation>
 <translation id="1767766085187034454">Google Fordító</translation>
 <translation id="1771016937398045251">Eszközök menü</translation>
 <translation id="1772468122139624049">Nem sikerült újratölteni a lapokat</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">A megjegyzés több mint 1000 karakterből áll</translation>
 <translation id="5087098519049306025">Árfigyelés</translation>
 <translation id="5090832849094901128">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Semmi sem lett importálva</translation>
 <translation id="5113960131843706315">Adatainak betöltése folyamatban van…</translation>
 <translation id="5118462200606189584">Fiók hozzáadása…</translation>
 <translation id="5118764316110575523">Ki</translation>
@@ -1449,6 +1452,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6410390304316730527">A Biztonságos Böngészés megvédi azoktól a támadóktól, akik megpróbálják csellel rávenni Önt valamilyen kockázatos dologra, például arra, hogy rosszindulatú szoftvert telepítsen, vagy felfedje személyes adatait (jelszavakat, telefonszámokat, bankkártyaadatokat stb). Ha kikapcsolja, legyen óvatos, amikor ismeretlen vagy kétes hírű webhelyeket keres fel.</translation>
 <translation id="6410883413783534063">Lapok megnyitásával egyszerre több oldalt is felkereshet.</translation>
 <translation id="6418346271604475326">PDF előkészítése</translation>
+<translation id="6420292512900923139">Probléma az adatok importálásakor</translation>
 <translation id="6421038304268477484">Lefordított szöveg</translation>
 <translation id="6429213933892582367">A Jelszóbeállítások megnyitása</translation>
 <translation id="6435236283694032571">Hozzáadás az Olvasólistához</translation>
@@ -1487,6 +1491,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="6550891580932862748">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. A Biztonságos Böngészés beállításait más Google-termékekben nem érinti a módosítás.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Újra</translation>
 <translation id="6559301491397835130">{count,plural, =1{Könyvjelző mentve ide: „{title}”. Csak erre az eszközre van mentve.}other{Könyvjelzők mentve ide: „{title}”. Csak erre az eszközre vannak mentve.}}</translation>
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>

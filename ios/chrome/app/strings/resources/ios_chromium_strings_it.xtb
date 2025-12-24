@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium protegge i tuoi dati sensibili con Face ID.</translation>
 <translation id="1591119736686995611">Apre la griglia delle schede di Chromium.</translation>
 <translation id="16001233025397167">Il controllo di sicurezza ti protegge da violazioni dei dati, siti web non sicuri e altro ancora. Ricevi avvisi su eventuali problemi di privacy o di sicurezza rilevati da Chromium.</translation>
+<translation id="1614362805233822594">Hai già password o passkey nel Gestore delle password per i siti mostrati. Seleziona un account per conservare i dati di accesso mostrati, sovrascrivendo quelli presenti nel Gestore delle password.</translation>
 <translation id="1617663976202781617">Dati dalla Sincronizzazione Chromium</translation>
 <translation id="164952285225495380">Questo pacchetto è già stato monitorato su Chromium.</translation>
+<translation id="1703338211136118534">Le seguenti password non sono state importate nel Gestore delle password perché non soddisfano i requisiti.</translation>
 <translation id="1707458603865303524">Usa Chromium ogni volta che tocchi i link nei messaggi o in altre app.</translation>
 <translation id="1722370509450468186">La password verrà salvata nel tuo Account (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Un feed personalizzato creato per te</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps in Chromium</translation>
 <translation id="1867772173333403444">4. Seleziona Chromium</translation>
 <translation id="1965068424387304464">Suggerimento per Chromium: salva le password</translation>
+<translation id="1992653360331625459">Hai già le password per questi account nel Gestore delle password. Se scegli di importare una delle password seguenti, sostituirà quella esistente.</translation>
 <translation id="2006345422933397527">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
 <translation id="2042889939382983733">Visualizza la cronologia di Chromium</translation>
 <translation id="2052320862053429062">Chromium confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
 
 Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
+<translation id="2334943301233020675">Le seguenti passkey non sono state importate nel Gestore delle password perché non soddisfano i requisiti.</translation>
 <translation id="2337722506862731008">Condividi Chromium</translation>
 <translation id="2340423701577464731">Aggiungi l'elemento dell'elenco di lettura a Chromium</translation>
 <translation id="2374627437126809292">Chromium utilizza Google Maps per fornirti indicazioni stradali e informazioni locali sugli indirizzi rilevati.</translation>

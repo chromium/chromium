@@ -1412,6 +1412,7 @@
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3270041629388773465">CVC を保存するとすばやくお支払いできます</translation>
+<translation id="3270343151253360050">この購入を完了するには、別のお支払い方法を選択してください</translation>
 <translation id="3270847123878663523">順序変更の取り消し（&amp;U）</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> が接続を要求しています</translation>
 <translation id="3272091146646336650">スーパー B</translation>
@@ -3549,6 +3550,7 @@
 <translation id="6702851555558236418">オーディオ、音楽ソフトウェア</translation>
 <translation id="6702919718839027939">プレゼンテーション</translation>
 <translation id="6704458454638854812">プロパティ「custom_size」が設定されているため、名前は「custom」である必要があります。</translation>
+<translation id="670477556876354552">再起動が必要です</translation>
 <translation id="6706005862292023715">カーテン、窓装飾品</translation>
 <translation id="6706210727756204531">範囲</translation>
 <translation id="6706678697074905703">この IBAN は Google アカウントに保存できず、代わりにこのデバイスの Chrome に保存されました。</translation>

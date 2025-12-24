@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Këshilla për Chrome</translation>
 <translation id="1816835383954230954">Kur është aktiv, Chrome funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet. Kur është joaktiv, kjo zvogëlon performancën, por e bën V8 më rezistente ndaj sulmeve.</translation>
 <translation id="1818308510395330587">Për të lejuar që <ph name="APP_NAME" /> të përdorë AR, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Ndërroje pozicionin për të personalizuar përvojën tënde të shfletimit</translation>
 <translation id="1848033246551405023">Fonti sans serif</translation>
 <translation id="1861262398884155592">Kjo dosje është bosh</translation>
 <translation id="1881806992065048905">Fleta e poshtme e pamjes së faqeve të skedave të reja</translation>
@@ -145,6 +146,7 @@
 <translation id="2536779053640817375">Lejohet këtë herë • E saktë</translation>
 <translation id="2544997614631598250">Ngjyra e temës e errët</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
+<translation id="2553552004849639664">Merr mbrojtjen më të fortë të Chrome ndaj kërcënimeve online</translation>
 <translation id="2570922361219980984">Qasja te vendndodhja është po ashtu joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">I zgjeruar - kliko për ta palosur.</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
@@ -409,6 +411,7 @@
 <translation id="5373874281522292782">Grupet e tua të skedave janë ruajtur</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
 <translation id="5403592356182871684">Emrat</translation>
+<translation id="5407203562970638234">Përmirëso sigurinë tënde</translation>
 <translation id="5438097262470833822">Kjo zgjedhje do të rivendosë autorizimet për <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kur cilësimi është aktiv, sajtet mund të kërkojnë vendndodhjen tënde. Kur cilësimi është joaktiv, sajtet nuk mund të shikojnë vendndodhjen tënde.</translation>
 <translation id="5489227211564503167">Koha e kaluar: <ph name="ELAPSED_TIME" /> nga <ph name="TOTAL_TIME" />.</translation>

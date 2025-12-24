@@ -87,6 +87,7 @@
 <translation id="1985716030964443178">Bu, siyahınızdakı bütün saytları defolt zuma sıfırlayacaq</translation>
 <translation id="1989112275319619282">Baxın</translation>
 <translation id="1994173015038366702">Sayt URL-i</translation>
+<translation id="1994558116414798016">Lexend şrifti</translation>
 <translation id="2004697686368036666">Bəzi saytlardakı funksiyalar işləməyə bilər</translation>
 <translation id="2025115093177348061">Artırılmış reallıq</translation>
 <translation id="2028449514182362831">Hərəkət sensoru tələb edən xüsusiyyətlər işləməyəcək</translation>
@@ -97,6 +98,7 @@
 <translation id="2094208275686143364">Tema rəngi açıq</translation>
 <translation id="2096716221239095980">Bütün datanı silin</translation>
 <translation id="2102396546234652240">Saytlara mikrofonunuzdan istifadə etmək icazəsi verməyin</translation>
+<translation id="2115808389282428160">Saytlara bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq icazəsi verməyin</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
 <translation id="2146263598007866206">Saytlar vaxtınıza qənaət etmək üçün əlaqəli faylları birlikdə avtomatik olaraq endirə bilər</translation>
 <translation id="2148716181193084225">Bu gün</translation>
@@ -159,6 +161,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
 <translation id="2626708220538466178">Defolt brauzerin aşağıdakı vərəqi bağlandı</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
+<translation id="2665056444046933274">Saytlar bu funksiyadan bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq üçün istifadə edə bilər</translation>
 <translation id="2670403088701171361">Saytlara mübadilə buferinizdəki mətnə və ya şəkillərə baxmaq icazəsi verməyin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2682367912565197520">Yadda saxlanılmış zum səviyyəsini silin</translation>
@@ -202,8 +205,10 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="311394601889664316">Saytlara cihazınızdakı faylları və ya qovluqları redaktə etmək icazəsi verməyin</translation>
 <translation id="3114012059975132928">Video pleyer</translation>
 <translation id="3115898365077584848">Məlumatı göstərin</translation>
+<translation id="3120204271988747891">Saytlar lokal şəbəkənizdəki digər cihazlara daxil olmaq istəyə bilər</translation>
 <translation id="3123473560110926937">Bəzi saytlarda bloklandı</translation>
 <translation id="3132996321662585180">Gündəlik yeniləyin</translation>
+<translation id="3134859781443140237">Lokal şəbəkə</translation>
 <translation id="3143754809889689516">Başdan oxudun</translation>
 <translation id="3164169438034704658"><ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> dəqiq məkanı aktiv edə bilərsiniz.</translation>
 <translation id="3165022941318558018">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verin</translation>
@@ -214,6 +219,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3223425961342298674">Məkana icazə verilmir</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Baxış datasını silin…</translation>
+<translation id="3241320538788585298">Geri dönmə şəbəkəsi</translation>
 <translation id="3242646949159196181">Aktiv ediləndə saytlar səs oxuda bilər. Aktiv ediləndə saytlar səs oxuda bilməz.</translation>
 <translation id="3273479183583863618">Tablarda qiymətin enməsi</translation>
 <translation id="3277252321222022663">Saytların sensorlara daxil olmasına icazə verin (tövsiyə edilir)</translation>
@@ -423,6 +429,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> - bloklanıb</translation>
 <translation id="560980142378233747">Sayt funksiyaları düzgün işləməlidir, lakin axtarış zamanı qoruma səviyyəsi aşağı ola bilər. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Yeni tab səhifəsi kartları üzrə aşağıdakı vərəq</translation>
+<translation id="5621413808884657932">Aktiv olduqda saytlar bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq üçün icazə istəyə bilər. Deaktiv olduqda saytlar bu cihazdakı digər tətbiq və xidmətlərə daxil ola bilməz.</translation>
 <translation id="5632485077360054581">İstifadə qaydasını göstərin</translation>
 <translation id="5649053991847567735">Avtomatik endirmələr</translation>
 <translation id="5668404140385795438">Böyüdülmənin qarşısını almaq üçün saytın sorğusunu kənarlaşdırın</translation>
@@ -543,6 +550,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6842868554183332230">Söhbət tətbiqlərində əlçatanlığınızı ayarlamaq üçün saytlar adətən cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi aşkarlayır</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
 <translation id="6870169401250095575">Təhlükəsizlik yoxlanışı kartını gizlədin</translation>
+<translation id="6882736949427544336">Saytlara lokal şəbəkənizdəki digər cihazlara daxil olmaq icazəsi verməyin</translation>
 <translation id="6900883974539674431">Bütün cihazlarınızda avtomatik yadda saxlanılan və güncəllənən tab qrupları yaradın</translation>
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
@@ -604,6 +612,8 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7586676035079382730">Bildirişlərə icazə verilmir</translation>
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
 <translation id="7617547684249261169">Tarixçə, kukilər, sayt məlumatları və digərlərinin bir qismini və ya hamısını silə bilərsiniz</translation>
+<translation id="762200934554267613">Saytlar bu cihazdakı digər tətbiq və xidmətlərə daxil olmaq üçün icazə istəyə bilər</translation>
+<translation id="7627749368210392160">Saytlar bu funksiyadan lokal şəbəkənizdəki digər cihazlara daxil olmaq üçün istifadə edə bilər</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7655411746932645568">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
@@ -659,6 +669,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Aktiv olduqda saytlar yerli şəbəkənizdəki digər cihazlara daxil olmaq istəyə bilər. Deaktiv olduqda saytlar lokal şəbəkənizdəki digər cihazlara daxil ola bilməz.</translation>
 <translation id="8249310407154411074">Ən yuxarı</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8284326494547611709">Başlıqlar</translation>
@@ -712,6 +723,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8737426583868847403">Fərdi zum səviyyəsini yadda saxladığınız saytlar burada görünəcək</translation>
+<translation id="8748714929822124637">Saytlara lokal şəbəkənizdəki digər cihazlara daxil olmaq icazəsi verməyin</translation>
 <translation id="8751914237388039244">Şəkil seçin</translation>
 <translation id="8775741625735357092">Parametrlər &gt; Görünüş bölməsində əlfəcinlər panelini aktivləşdirə bilərsiniz</translation>
 <translation id="8800034312320686233">Sayt işləmir?</translation>

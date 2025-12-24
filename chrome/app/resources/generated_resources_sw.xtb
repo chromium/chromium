@@ -4263,6 +4263,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3847734730889093333">Mara <ph name="RATE" /></translation>
 <translation id="3848547754896969219">Fungua katika &amp;dirisha fiche</translation>
 <translation id="3848688783623004960">Fungua Katika Mwonekano Wa Madirisha Yaliyogawanywa</translation>
+<translation id="3849517590329855428">Kunja Zote</translation>
 <translation id="3850172593216628215">Muda wa masasisho ya usalama umeisha. Okoa $50 au zaidi kwenye Chromebook mpya.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3850989673553106152">Nenosiri limebadilishwa</translation>
@@ -7271,6 +7272,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5945363896952315544">Ufunguo wako wa usalama hauwezi kuhifadhi alama zingine za vidole. Ili uweke alama mpya ya kidole, futa alama ya kidole iliyopo kwanza.</translation>
 <translation id="5946591249682680882">Kitambulisho cha ripoti <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Bofya kipanya mara mbili</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{Tukio 1 halikuweza kuchanganuliwa na halionyeshwi}other{Matukio # hayakuweza kuchanganuliwa na hayaonyeshwi}}</translation>
 <translation id="5948476936444935795">Ghairi kupakia</translation>
 <translation id="5948536763493709626">Unganisha kibodi au kipanya au uendelee kuweka mipangilio kwa kutumia skrini yako ya kugusa. Ikiwa unatumia vifaa vyenye Bluetooth, hakikisha kwamba vifaa vyako viko tayari kuoanisha.</translation>
 <translation id="5949795028157144515">Hali ya Wasanidi Programu Imezimwa. Baadhi ya viendelezi vimezimwa.</translation>
@@ -8668,6 +8670,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6914812290245989348">Usione tahadhari zozote kabla ya kwenda kwenye tovuti zisizo salama</translation>
 <translation id="6916590542764765824">Simamia Viendelezi</translation>
 <translation id="6916676294509106572">Kalenda ya Outlook imefichwa</translation>
+<translation id="6916818963747321523">Panua Zote</translation>
 <translation id="6917873303492266709">Fungua mipangilio na uwashe ‘Ruhusu kuingia katika akaunti ukitumia Chrome’ ili uruhusu ufikiaji, ujiunge na ushirikiane katika vikundi vya vichupo</translation>
 <translation id="6918677045355889289">Unahitaji kusasisha Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="6918733588290914545">Weka mipangilio ya haraka ukitumia simu ya Android</translation>
@@ -9219,6 +9222,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7312040805247765153">Imeshindwa kuweka programu kwenye kifaa</translation>
 <translation id="7312210124139670355">Msimamizi wako anabadilisha mipangilio ya eSIM yako. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="7313539585802573958">Rangi za mwanga chini ya kibodi</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Tukio 1 halikuweza kuwekewa tarehe na halionyeshwi}other{Matukio # hayakuweza kuwekewa tarehe na hayaonyeshwi}}</translation>
 <translation id="7314865262803554456">Hutaarifiwa anapoanza kurekodi.</translation>
 <translation id="7314989823816739632">Mahaba</translation>
 <translation id="7317342082064136423">Thibitisha akaunti yako</translation>

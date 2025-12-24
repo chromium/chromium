@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium skyddar dina känsliga uppgifter med Face ID.</translation>
 <translation id="1591119736686995611">Öppnar rutnätet med flikar i Chromium.</translation>
 <translation id="16001233025397167">Med säkerhetskontrollen skyddas du från dataintrång, osäkra webbplatser med mera. Få varningar om integritets- eller säkerhetsproblem som identifieras av Chromium.</translation>
+<translation id="1614362805233822594">Du har redan lösenord eller nycklar i Lösenordshantering för webbplatserna som visas. Välj ett konto för att behålla inloggningsuppgifterna som visas och skriva över det som finns i Lösenordshantering.</translation>
 <translation id="1617663976202781617">Data från Chromium-synkronisering</translation>
 <translation id="164952285225495380">Den här försändelsen spåras redan i Chromium.</translation>
+<translation id="1703338211136118534">Följande lösenord importerades inte till Lösenordshantering eftersom de inte uppfyller kraven.</translation>
 <translation id="1707458603865303524">Använd Chromium varje gång du trycker på länkar i meddelanden eller andra appar.</translation>
 <translation id="1722370509450468186">Lösenordet sparas i kontot (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Ett flöde som anpassats för dig</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps i Chromium</translation>
 <translation id="1867772173333403444">4. Välj Chromium</translation>
 <translation id="1965068424387304464">Tips för Chromium: Spara lösenord</translation>
+<translation id="1992653360331625459">Du har redan lösenord för dessa konton i Lösenordshantering. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
 <translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Viss Chromium-data har inte sparats i ditt Google-konto ännu.
 
 Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
+<translation id="2334943301233020675">Följande nycklar importerades inte till Lösenordshantering eftersom de inte uppfyller kraven.</translation>
 <translation id="2337722506862731008">Dela Chromium</translation>
 <translation id="2340423701577464731">Lägg till ett objekt från läslistan i Chromium</translation>
 <translation id="2374627437126809292">Google Maps används i Chromium för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>

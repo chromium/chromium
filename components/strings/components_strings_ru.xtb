@@ -247,7 +247,7 @@
 <translation id="138218114945450791">Голубой</translation>
 <translation id="1382194467192730611">Это устройство USB входит в список разрешенных</translation>
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
-<translation id="1386623374109090026">Заметки</translation>
+<translation id="1386623374109090026">Аннотации</translation>
 <translation id="138810468159004008">Разрешить, когда я на сайте</translation>
 <translation id="1391145880481608015">Подробнее об этом уведомлении…</translation>
 <translation id="139161720020179799">Темно-серый 1</translation>
@@ -1411,6 +1411,7 @@
 <translation id="3266793032086590337">Значение (конфликтующее)</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3270041629388773465">Разрешив сохранять CVC-коды, вы сможете быстрее оформлять покупки</translation>
+<translation id="3270343151253360050">Чтобы оформить покупку, выберите другой способ оплаты.</translation>
 <translation id="3270847123878663523">&amp;Отменить изменение порядка</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> запрашивает разрешение на подключение</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -3548,6 +3549,7 @@
 <translation id="6702851555558236418">ПО для работы со звуком и музыкой</translation>
 <translation id="6702919718839027939">Режим презентации</translation>
 <translation id="6704458454638854812">Установлено свойство custom_size. Название должно быть "custom".</translation>
+<translation id="670477556876354552">Требуется перезагрузка</translation>
 <translation id="6706005862292023715">Шторы и декорирование окон</translation>
 <translation id="6706210727756204531">Область применения</translation>
 <translation id="6706678697074905703">Не удалось сохранить код IBAN в аккаунте Google. Вместо этого код был сохранен в Chrome на устройстве.</translation>

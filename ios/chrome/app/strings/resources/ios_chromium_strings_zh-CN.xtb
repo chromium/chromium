@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium 可利用面容 ID 确保您的敏感数据安全。</translation>
 <translation id="1591119736686995611">打开 Chromium 标签页网格。</translation>
 <translation id="16001233025397167">安全检查可保护您免受数据泄露、不安全网站等问题的影响。接收有关 Chromium 为您检测到的任何隐私或安全问题的提醒。</translation>
+<translation id="1614362805233822594">密码管理工具中已有所列网站的密码或通行密钥。请选择一个账号以保留显示的登录信息，这会覆盖密码管理工具中的信息。</translation>
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
 <translation id="164952285225495380">已在 Chromium 上跟踪此包裹。</translation>
+<translation id="1703338211136118534">以下密码不符合要求，因此未导入密码管理工具。</translation>
 <translation id="1707458603865303524">每次点按消息或其他应用中的链接时，都使用 Chromium 打开。</translation>
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1747088204252710672">专为您打造的自定义信息流</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Chromium 中的地图</translation>
 <translation id="1867772173333403444">4. 选择“Chromium”</translation>
 <translation id="1965068424387304464">Chromium 提示：保存密码</translation>
+<translation id="1992653360331625459">密码管理工具中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="2042889939382983733">查看您的 Chromium 历史记录</translation>
 <translation id="2052320862053429062">Chromium 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">部分 Chromium 数据尚未保存到您的 Google 账号。
 
 请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
+<translation id="2334943301233020675">以下通行密钥不符合要求，因此未导入密码管理工具。</translation>
 <translation id="2337722506862731008">共享 Chromium</translation>
 <translation id="2340423701577464731">将阅读清单项添加到 Chromium</translation>
 <translation id="2374627437126809292">Chromium 会使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>

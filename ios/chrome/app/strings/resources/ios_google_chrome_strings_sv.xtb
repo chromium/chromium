@@ -116,6 +116,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="3460369101684070455">Välj Chrome för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar</translation>
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3482807551645716768">Kom åt Chrome snabbare från startskärmen på iPad.</translation>
+<translation id="3491067552520121605">Du har redan lösenord eller nycklar i Google Lösenordshantering för webbplatserna som visas. Välj ett konto för att behålla inloggningsuppgifterna som visas och skriva över det som finns i Google Lösenordshantering.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="364480321352456989">Den här versionen av Chrome är inaktuell.</translation>
@@ -135,6 +136,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="4167555379306984168">Se nyheterna i Chrome</translation>
 <translation id="417201473131094001">Stöds inte på Chrome Canary</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
+<translation id="4409545895715116037">Följande nycklar importerades inte till Google Lösenordshantering eftersom de inte uppfyller kraven.</translation>
 <translation id="4430797724889237570">Öppna länkar från Gmail, Maps, YouTube och andra appar i Chrome</translation>
 <translation id="447252321002412580">Bidra till att förbättra Chromes funktioner och prestanda</translation>
 <translation id="4523886039239821078">Några tillägg har fått Chrome att krascha. Avinstallera följande:</translation>

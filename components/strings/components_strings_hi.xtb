@@ -114,6 +114,7 @@
 <translation id="1178821169867863726">12 x 16 इंच</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1181381397492575884">Chrome, साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से रोकता है, ताकि वे आपको ब्राउज़ करते समय ट्रैक न कर सकें. <ph name="LINK" /> के लिए सेटिंग पर जाएं.</translation>
+<translation id="1185331130467528132"><ph name="URL" /> को आपके लोकल नेटवर्क पर मौजूद अन्य डिवाइस ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="1185343831726846924">वर्चुअल कार्ड की पुष्टि करने की सुविधा चालू नहीं की जा सकती</translation>
 <translation id="1186201132766001848">पासवर्ड जांचें</translation>
 <translation id="1187430513518041110">ऑटो और वाहन</translation>
@@ -166,6 +167,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">आपने अपना पासवर्ड ऐसी साइट पर डाला है जिसे आपका संगठन प्रबंधित नहीं करता है. अपना खाता सुरक्षित करने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपना पासवर्ड दोबारा इस्तेमाल न करें.</translation>
 <translation id="1257553931232494454">ज़ूम लेवल</translation>
+<translation id="1257714792349895570">लोकल नेटवर्क</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1264309058268477500">वैकल्पिक ट्रे</translation>
 <translation id="1264974993859112054">खेल-कूद</translation>
@@ -1061,6 +1063,7 @@
 <translation id="2690699652723742414">पिछले 30 दिन</translation>
 <translation id="2691385045260836588">मॉडल</translation>
 <translation id="2691924980723297736">सुरक्षा की चेतावनी</translation>
+<translation id="2694088736180584846">लूपबैक नेटवर्क</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core की मदद से, ब्राउज़र की नीतियों, ऐप्लिकेशन, और एक्सटेंशन को क्लाउड से मैनेज किया जा सकता है</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> से पूछें</translation>
 <translation id="2699273987028089219">सबमेन्यू उपलब्ध है. ज़्यादा विकल्पों पर जाने के लिए <ph name="SHORTCUT" /> का इस्तेमाल करें.</translation>
@@ -1319,6 +1322,7 @@
 <translation id="3122696783148405307">पिछले 30 दिनों में की गई खोजों की जानकारी दिखाएं</translation>
 <translation id="3126023634486644099">लेबल (पर्मानेंट)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> अब आपका डिफ़ॉल्ट सर्च इंजन है</translation>
+<translation id="3134859781443140237">लोकल नेटवर्क</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> खोजें</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{कोई नहीं}=1{एक खाते का साइन-इन डेटा}one{# खातों का साइन-इन डेटा}other{# खातों का साइन-इन डेटा}}</translation>
 <translation id="3140646734028448730">कारोबारी सेवाएं</translation>
@@ -1391,6 +1395,7 @@
 <translation id="3238395604961564389">लिंक को गुप्त विंडो में खोलें</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
+<translation id="3241320538788585298">लूपबैक नेटवर्क</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
 <translation id="3243650379537999343">ड्रॉ</translation>
 <translation id="3248329428895535435">इस साइट पर न दिखाएं</translation>
@@ -1407,6 +1412,7 @@
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पेमेंट किया जा सकता है</translation>
+<translation id="3270343151253360050">इस खरीदारी को पूरा करने के लिए, पेमेंट का कोई दूसरा तरीका चुनें</translation>
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
 <translation id="3272091146646336650">सुपर बी</translation>
@@ -1559,6 +1565,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{सिंक किए हुए डिवाइस पर कम से कम 1 आइटम}=1{1 आइटम (सिंक किए हुए डिवाइस पर और भी बहुत कुछ)}one{# आइटम (सिंक किए हुए डिवाइस पर और भी बहुत कुछ)}other{# आइटम (सिंक किए हुए डिवाइस पर और भी बहुत कुछ)}}</translation>
 <translation id="3531366304259615706">स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="3531780078352352885">जॉब की शीट</translation>
+<translation id="3532624859962632484">अपने लोकल नेटवर्क पर मौजूद अन्य डिवाइस ऐक्सेस करने की अनुमति दें</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> वेबसाइट आपके माइक्रोफ़ोन का इस्तेमाल करना चाहती है</translation>
 <translation id="3533328374079021623">मेलबॉक्स 5</translation>
 <translation id="3536227077203206203">इस बार अनुमति दी गई</translation>
@@ -1885,6 +1892,7 @@
 <translation id="4030545038933060179">इस सेटिंग के चालू होने पर, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, यहां विषयों की सूची दिखती है</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
 <translation id="4036753017940930924">प्लॉट और ज़मीन</translation>
+<translation id="403724377879219932">साइट, आपके लोकल नेटवर्क पर मौजूद अन्य डिवाइस ऐक्सेस करने की अनुमति मांग सकती है</translation>
 <translation id="4039506337798853114">अपना कर्सर देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="4045070493270310437">टैब फिर से खोलें</translation>
 <translation id="4045226534284799755">फिर से कोशिश करने से पहले, अपने Microsoft खाते में साइन इन करें</translation>
@@ -3168,6 +3176,7 @@
 <translation id="6108702513636120202">Chromium में आपका सर्च इंजन</translation>
 <translation id="6108849843016142864">रेपटाइल और एम्फ़ीबियंस</translation>
 <translation id="611018310643025551">आपकी खोजों, उनसे सबसे ज़्यादा मेल खाने वाले नतीजों, और उनके पेज पर मौजूद कॉन्टेंट की जानकारी, Google को भेजी जाती है. समीक्षा करने वाले लोग इस जानकारी की समीक्षा कर सकते हैं, ताकि यह सुविधा बेहतर बनाई जा सके.</translation>
+<translation id="6111759749003439722">साइट, इस डिवाइस पर मौजूद अन्य ऐप्लिकेशन और सेवाएं ऐक्सेस करने की अनुमति मांग सकती है</translation>
 <translation id="6116338172782435947">क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखें</translation>
 <translation id="6116500665626559298">'अपने खाते में डेटा मैनेज करें' बटन. इसे चालू करके यह मैनेज करें कि आपके Google खाते में, Chrome के इस्तेमाल से जुड़ी कौनसी जानकारी सेव की जाएगी</translation>
 <translation id="6117833587752089929">फ़ोटो (सैटिन)</translation>
@@ -3541,6 +3550,7 @@
 <translation id="6702851555558236418">ऑडियो और म्यूज़िक सॉफ़्टवेयर</translation>
 <translation id="6702919718839027939">प्रज़ेंट</translation>
 <translation id="6704458454638854812">प्रॉपर्टी "custom_size" सेट है, लेकिन इसका नाम "custom" पर सेट होना चाहिए.</translation>
+<translation id="670477556876354552">फिर से चालू करना ज़रूरी है</translation>
 <translation id="6706005862292023715">पर्दे और खिड़की लगाने की सेवाएं</translation>
 <translation id="6706210727756204531">दायरा</translation>
 <translation id="6706678697074905703">इस IBAN को आपके Google खाते में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है.</translation>
@@ -4620,6 +4630,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपनी कुकी सेटिंग मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8433057134996913067">इससे आप ज़्यादातर वेबसाइट से प्रस्थान कर जाएंगे.</translation>
 <translation id="8434840396568290395">पालतू जानवर</translation>
+<translation id="8435542599425298931"><ph name="URL" /> को इस डिवाइस पर मौजूद अन्य ऐप्लिकेशन और सेवाएं ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="8436623588884785770">नीति जोड़ें</translation>
 <translation id="8437238597147034694">&amp;ले जाना वापस लाएं</translation>
 <translation id="8438786541497918448">क्या आप कैमरे और माइक्रोफ़ोन का इस्तेमाल करना चाहते हैं?</translation>
@@ -5001,6 +5012,7 @@
 <translation id="9090548458280093580">एआई की मदद से, अपना ब्राउज़िंग इतिहास खोजें</translation>
 <translation id="9090993752571911635">इंटरनेट सेवा देने वाली कंपनियां (आईएसपी)</translation>
 <translation id="9093723786115107672">नाइटवियर</translation>
+<translation id="9094424186948667194">इस डिवाइस पर अन्य ऐप्लिकेशन और सेवाएं ऐक्सेस करें</translation>
 <translation id="9094544726794842788">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं</translation>
 <translation id="9094809883254050729">अगली बार, ऑटोमैटिक भरने की सुविधा इस्तेमाल करें. क्रेडिट कार्ड की जानकारी सेव करने पर, उसे एन्क्रिप्ट (सुरक्षित) किया जाता है.</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>

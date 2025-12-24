@@ -1673,6 +1673,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2114145607116268663">Nie można zainstalować. Wymagane jest ponowne uruchomienie. Uruchom komputer ponownie i spróbuj jeszcze raz. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Załaduj ponownie &amp;ramkę</translation>
 <translation id="2114995631896158695">Brak karty SIM</translation>
+<translation id="2115808389282428160">Nie zezwalaj stronom na dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="2116619964159595185">Witryny łączą się z urządzeniami Bluetooth na przykład po to, żeby skonfigurować lub zsynchronizować niskoenergetyczne moduły beacon, inteligentne żarówki albo monitory stanu zdrowia lub aktywności fizycznej</translation>
 <translation id="2117655453726830283">Następny slajd</translation>
 <translation id="211803431539496924">Potwierdzasz rozszerzone aktualizacje zabezpieczeń?</translation>
@@ -2470,6 +2471,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Dodaję profil eSIM. Może to potrwać kilka minut.</translation>
 <translation id="2663302507110284145">Język</translation>
+<translation id="2665056444046933274">Witryny mogą korzystać z tej funkcji, aby uzyskiwać dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="2665394472441560184">Dodaj nowe słowo</translation>
 <translation id="2665647207431876759">Ważność wygasła</translation>
 <translation id="2665919335226618153">Kurza twarz! Podczas formatowania wystąpił błąd.</translation>
@@ -3143,6 +3145,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3118748462829336648">Otwórz panel boczny</translation>
 <translation id="3119743309973425629">Szybkość migania kursora tekstowego</translation>
 <translation id="3119948370277171654">Jaki materiał/URL był przesyłany?</translation>
+<translation id="3120204271988747891">Strony mogą prosić o dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3122496702278727796">Nie można utworzyć katalogu danych</translation>
 <translation id="3122883569442693641">Więcej szczegółów</translation>
@@ -7269,6 +7272,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5969364029958154283">Więcej informacji o resetowaniu ustawień</translation>
 <translation id="5969419185858894314">Strona <ph name="ORIGIN" /> może przeglądać pliki w folderze <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Powiadomienie dotyczące skrótów klawiszowych zostało zamknięte</translation>
+<translation id="5970443501603581692">Nie ma dostępu do innych urządzeń w sieci lokalnej</translation>
 <translation id="5971037678316050792">Kontrolowanie stanu adaptera Bluetooth i parowania</translation>
 <translation id="5971861540200650391">Ukryj na <ph name="MODULE_TITLE" /> godz.</translation>
 <translation id="597235323114979258">Zobacz więcej lokalizacji docelowych</translation>
@@ -8619,6 +8623,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6903022061658753260">Twoje dane zostaną zsynchronizowane w przeglądarkach Chrome na wszystkich urządzeniach, na których masz włączoną synchronizację dla tego konta. Opcje synchronizacji Chrome OS znajdziesz w <ph name="LINK_BEGIN" />jego ustawieniach<ph name="LINK_END" />.</translation>
 <translation id="6903437476849497868">Zrezygnuj</translation>
 <translation id="6903590427234129279">Otwórz wszystkie (<ph name="URL_COUNT" />)</translation>
+<translation id="6903619242902924848">Ma dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6903916726032521638">Wyszukaj: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">Odebrać z tego urządzenia?</translation>
@@ -9132,6 +9137,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7273110280511444812">ostatnio podłączone w dniu <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Nigdy nie zezwalaj stronie <ph name="HOST" /> na sterowanie urządzeniami MIDI ani na ich przeprogramowywanie</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – pełne naładowanie za <ph name="TIME" /></translation>
+<translation id="7275950084263610253">Ma dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="727595954130325265">Kup teraz</translation>
 <translation id="727952162645687754">Błąd pobierania</translation>
 <translation id="7280649757394340890">Ustawienia głosu przy zamianie tekstu na mowę</translation>
@@ -9633,12 +9639,14 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7620616707541471029">Wybierz konto, aby kontynuować</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
 <translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
+<translation id="762200934554267613">Strony mogą prosić o dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
 <translation id="7622966771025050155">Przełącz na przechwyconą kartę</translation>
 <translation id="7624337243375417909">caps lock wyłączony</translation>
 <translation id="7625568159987162309">Pokaż uprawnienia i zapisane dane wszystkich witryn</translation>
 <translation id="7625823789272218216">Nowa karta po lewej</translation>
+<translation id="7627749368210392160">Strony mogą korzystać z tej funkcji, aby uzyskiwać dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klasa <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Wybierz działanie dla każdego klawisza</translation>
 <translation id="7629206210984165492">Przygaszony</translation>
@@ -10688,6 +10696,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="831207808878314375">Definicja</translation>
 <translation id="8312841338723044391">NA ŻYWO</translation>
 <translation id="8313308349366087671">Opcje aplikacji</translation>
+<translation id="8313599942510782709">Zadanie jest nadal w toku</translation>
 <translation id="8314089908545021657">Sparuj z nowym telefonem</translation>
 <translation id="8314381333424235892">Brakujące lub odinstalowane rozszerzenie</translation>
 <translation id="831440797644402910">Nie można otworzyć tego folderu</translation>
@@ -10695,6 +10704,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8315018673856831477">Opcje Oszczędzania pamięci</translation>
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8316480109537174997">Pokaż Gemini w obszarze powiadomień i włącz skrót klawiszowy</translation>
+<translation id="8317291727028594010">Nie ma dostępu do innych aplikacji ani usług na tym urządzeniu</translation>
 <translation id="8317671367883557781">Dodaj połączenie sieciowe</translation>
 <translation id="8317965619823678157">skopiować hasła</translation>
 <translation id="8318266828739827371">Aby zobaczyć powiększony obszar ekranu, użyj widoku podzielonego ekranu. Aby włączyć lub wyłączyć lupę zadokowaną, użyj klawisza wyszukiwania + Ctrl + D.</translation>
@@ -11334,6 +11344,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8745034592125932220">Nie może zapisywać danych na urządzeniu</translation>
 <translation id="8746654918629346731">Prośba o zainstalowanie „<ph name="EXTENSION_NAME" />” już została przez Ciebie wysłana</translation>
 <translation id="874689135111202667">{0,plural, =1{Przesłać jeden plik do tej witryny?}few{Przesłać # pliki do tej witryny?}many{Przesłać # plików do tej witryny?}other{Przesłać # pliku do tej witryny?}}</translation>
+<translation id="8748714929822124637">Nie zezwalaj stronom na dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="8748916845823567967">Wszystkie dane i pliki cookie zapisane przez stronę <ph name="SITE" /> zostaną usunięte.</translation>
 <translation id="8749805710397399240">Nie można przesłać ekranu Twojego urządzenia. Sprawdź uprawnienia rejestrowania zawartości ekranu w Preferencjach systemowych.</translation>
 <translation id="8749826920799243530">Urządzenie nie jest zarejestrowane</translation>
