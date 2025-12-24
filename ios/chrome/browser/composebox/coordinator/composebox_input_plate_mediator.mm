@@ -432,6 +432,8 @@ CreateInputDataFromAnnotatedPageContent(
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->additional_params = additionalParams;
+  search_url_request_info->invocation_source =
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
   if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
     search_url_request_info->additional_params["imgn"] = "1";
   }
