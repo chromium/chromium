@@ -3484,6 +3484,31 @@ using UserFeedbackDataCallback =
     }
   }
 
+  // TODO(crbug.com/471130344): This branch addresses a privacy leak where
+  // Composebox UI interactions were exposed from incognito to non-incognito
+  // sessions.
+  //
+  // While the legacy Omnibox UI was also affected by this bug, it was
+  // incidentally dismissed because it was presented as a BVC subview.
+  // Since the Composebox is presented independently on top of the view stack,
+  // the dismissal logic must be explicitly addressed here.
+  //
+  // Refer to crbug.com/470968439 for additional context.
+  if (IsComposeboxIOSEnabled()) {
+    BOOL alreadyInIncognito = self.currentInterface.profile->IsOffTheRecord();
+    BOOL targetModeIncognito =
+        targetMode == ApplicationModeForTabOpening::INCOGNITO;
+    // The composebox UI and its dependencies are browser-scoped and
+    // instantiated upon creation.
+    //
+    // When the context changes (e.g., transitioning to Incognito mode), any
+    // preexisting Composebox UI must be dismissed and recreated to ensure its
+    // underlying dependencies remain synchronized with the new environment.
+    if (alreadyInIncognito != targetModeIncognito) {
+      dismissOmnibox = YES;
+    }
+  }
+
   [self dismissModalDialogsWithCompletion:dismissModalsCompletion
                            dismissOmnibox:dismissOmnibox];
 }
@@ -3494,6 +3519,20 @@ using UserFeedbackDataCallback =
                                       completion:(ProceduralBlock)completion {
   __weak SceneController* weakSelf = self;
   std::vector<GURL> copyURLs = URLs;
+
+  if (IsComposeboxIOSEnabled()) {
+    BOOL alreadyInIncognito = self.currentInterface.profile->IsOffTheRecord();
+    // The composebox UI and its dependencies are browser-scoped and
+    // instantiated upon creation.
+    //
+    // When the context changes (e.g., transitioning to Incognito mode), any
+    // preexisting Composebox UI must be dismissed and recreated to ensure its
+    // underlying dependencies remain synchronized with the new environment.
+    if (alreadyInIncognito != incognitoMode) {
+      dismissOmnibox = YES;
+    }
+  }
+
   [self
       dismissModalDialogsWithCompletion:^{
         [weakSelf openMultipleTabsWithURLs:copyURLs
