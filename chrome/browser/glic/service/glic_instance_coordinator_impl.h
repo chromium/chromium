@@ -98,6 +98,12 @@ class GlicInstanceCoordinatorImpl
   HostManager& host_manager() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
 
+  // Creates a new conversation and pins the given tabs.
+  // This overrides any conversation that was already associated with any
+  // of the given tabs.
+  void CreateNewConversationForTabs(
+      const std::vector<tabs::TabInterface*>& tabs) override;
+
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
   // to the new panel when opening through toggle since it is assumed all toggle
