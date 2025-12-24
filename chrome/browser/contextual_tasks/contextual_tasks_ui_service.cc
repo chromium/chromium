@@ -238,7 +238,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
   // Copy navigation entries from the current tab to the new tab to support back
   // button navigation. See crbug.com/467042329 for detail.
-  if (tab) {
+  if (tab && kOpenSidePanelOnLinkClicked.Get()) {
     new_contents->GetController().CopyStateFrom(
         &tab->GetContents()->GetController(), /*needs_reload=*/false);
   }
@@ -275,6 +275,14 @@ void ContextualTasksUiService::OnThreadLinkClicked(
                                         tab->GetGroup().value());
   }
 
+  CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
+  AssociateWebContentsToTask(new_contents_ptr, task_id);
+
+  // Do not open side panel if kOpenSidePanelOnLinkClicked is not set.
+  if (!kOpenSidePanelOnLinkClicked.Get()) {
+    return;
+  }
+
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(
@@ -282,9 +290,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
           TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
   content::WebContents* contextual_task_contents_ptr =
       contextual_task_contents.get();
-
-  CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
-  AssociateWebContentsToTask(new_contents_ptr, task_id);
 
   // Transfer the contextual task contents into the side panel cache.
   ContextualTasksSidePanelCoordinator::From(browser.get())
