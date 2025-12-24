@@ -304,6 +304,21 @@ void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
   submitted_context_tokens_.clear();
 }
 
+bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
+  ContextualSearchContextController* controller = GetController();
+  if (!controller) {
+    return false;
+  }
+
+  for (const auto& file_info : GetController()->GetFileInfoList()) {
+    if (file_info && file_info->tab_session_id.has_value() &&
+        file_info->tab_session_id.value() == session_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 base::WeakPtr<ContextualSearchSessionHandle>
 ContextualSearchSessionHandle::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

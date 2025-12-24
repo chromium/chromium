@@ -25,6 +25,7 @@ namespace proto {
 class LensOverlaySuggestInputs;
 }  // namespace proto
 }  // namespace lens
+class SessionID;
 
 namespace contextual_search {
 using SessionId = base::UnguessableToken;
@@ -141,6 +142,9 @@ class ContextualSearchSessionHandle {
   // of the session. These are uploaded and submitted, but we have not received
   // confirmation that they are available on the server.
   std::vector<FileInfo> GetSubmittedContextFileInfos() const;
+
+  // Returns whether the current session_id is part of the uploaded context.
+  bool IsTabInContext(SessionID session_id) const;
 
  private:
   friend class ContextualSearchService;
