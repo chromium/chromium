@@ -35,7 +35,6 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_span.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -50,7 +49,7 @@ class WTF_EXPORT StringUtf8Adaptor final {
   DISALLOW_NEW();
 
  public:
-  using iterator = base::raw_span<const char>::iterator;
+  using iterator = base::span<const char>::iterator;
 
   explicit StringUtf8Adaptor(
       StringView string,
@@ -69,7 +68,7 @@ class WTF_EXPORT StringUtf8Adaptor final {
 
  private:
   std::string utf8_buffer_;
-  base::raw_span<const char> span_;
+  base::span<const char> span_;
 };
 
 }  // namespace blink
