@@ -144,7 +144,6 @@ _CONFIG = [
             'base::Process',
             'base::RadToDeg',
             'base::RangeAsRvalues',
-            'base::raw_span',
             'base::RefCountedData',
             'base::RemoveChars',
             'base::RepeatingTimer',
@@ -2891,7 +2890,27 @@ _CONFIG = [
             'device::ResidentKeyRequirement',
             'device::UserVerificationRequirement',
         ]
-    }
+    },
+    {
+        # Disallow MiraclePtr and MiraclePtr-backed types in these
+        # performance-sensitive paths. These paths should match the
+        # corresponding presubmit check and the relevant section of the
+        # MiraclePtr style guide (`//base/memory/raw_ptr.md`).
+        #
+        # For reference, see the (Google-internal) breadcrumbs in
+        # https://crbug.com/469901660.
+        'paths': [
+            'third_party/blink/renderer/core/',
+            'third_party/blink/renderer/platform/fonts/',
+            'third_party/blink/renderer/platform/heap/',
+            'third_party/blink/renderer/platform/wtf/',
+        ],
+        'disallowed': [
+            'raw_ptr',
+            'raw_ref',
+            'base::raw_span',
+        ],
+    },
 ]
 
 
