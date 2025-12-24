@@ -245,6 +245,11 @@ source_set("cronet_static") {
 }
 
 _cronet_shared_lib_name = "cronet.$chrome_version_full"
+if (is_cronet_for_aosp_build) {
+  # We must have a unique name in Android builds to correctly collect afdo samples and improve
+  # the performance of the library (https://source.android.com/docs/core/perf/autofdo).
+  _cronet_shared_lib_name = "httpengine"
+}
 
 shared_library("cronet") {
   output_name = _cronet_shared_lib_name

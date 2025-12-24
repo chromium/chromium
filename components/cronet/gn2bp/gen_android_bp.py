@@ -3013,11 +3013,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       if output_name is None:
         module.stem = 'lib' + target.get_target_name().removesuffix(
             gn_utils.TESTING_SUFFIX)
-      elif output_name.startswith("cronet."):
-        # The AOSP version of CronetLibraryLoader looks for the libcronet so
-        # with an extra suffix. Make sure the shared library name matches what
-        # the loader expects.
-        module.stem = 'libmainline' + output_name
       else:
         module.stem = 'lib' + output_name
 
