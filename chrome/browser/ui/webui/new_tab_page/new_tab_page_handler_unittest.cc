@@ -60,6 +60,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -1023,6 +1024,157 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
                                       "microsoft_authentication",
                                       "outlook_calendar", "microsoft_files",
                                       "google_calendar", "tab_resumption"));
+}
+
+TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalFeatureDisabled) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {}, {
+              {ntp_features::kNtpFeatureOptimizationModuleRemoval},
+          });
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  // Assert.
+  EXPECT_EQ(0u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+}
+
+TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalIsManagedPreference) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpFeatureOptimizationModuleRemoval,
+           {
+               {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+               {"StaleModulesCountThreshold", "14"},
+           }},
+      },
+      {});
+
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kNtpModulesVisible,
+                                                    base::Value(true));
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  // Assert.
+  EXPECT_EQ(0u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+}
+
+TEST_F(NewTabPageHandlerTest,
+       ModulesEligibleForRemovalAllModulesForceDisabled) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpFeatureOptimizationModuleRemoval,
+           {
+               {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+               {"StaleModulesCountThreshold", "14"},
+           }},
+      },
+      {});
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  update->Set(ntp_modules::kAllModulesId, true);
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  // Assert.
+  EXPECT_EQ(0u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+}
+
+TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalModuleForceDisabled) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpFeatureOptimizationModuleRemoval,
+           {
+               {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+               {"StaleModulesCountThreshold", "14"},
+           }},
+      },
+      {});
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  update->Set(ntp_modules::kDriveModuleId, true);
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  // Assert.
+  EXPECT_EQ(0u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+}
+
+TEST_F(NewTabPageHandlerTest,
+       ModulesEligibleForRemovalModuleBelowStalenessThreshold) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpFeatureOptimizationModuleRemoval,
+           {
+               {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+               {"StaleModulesCountThreshold", "14"},
+           }},
+      },
+      {});
+
+  const int below_staleness_threshold = 1;
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              ntp_prefs::kNtpModuleStalenessCountDict);
+  update->Set(ntp_modules::kDriveModuleId, below_staleness_threshold);
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  EXPECT_EQ(0u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+}
+
+TEST_F(NewTabPageHandlerTest,
+       ModulesEligibleForRemovalModuleAboveStalenessThreshold) {
+  // Arrange.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpFeatureOptimizationModuleRemoval,
+           {
+               {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+               {"StaleModulesCountThreshold", "14"},
+           }},
+      },
+      {});
+
+  const int above_staleness_threshold = 100;
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              ntp_prefs::kNtpModuleStalenessCountDict);
+  update->Set(ntp_modules::kDriveModuleId, above_staleness_threshold);
+
+  // Act.
+  handler_->GetModulesIdNames(base::DoNothing());
+
+  // Assert.
+  EXPECT_EQ(1u,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  EXPECT_TRUE(
+      base::Contains(profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules),
+                     ntp_modules::kDriveModuleId));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
