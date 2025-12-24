@@ -153,7 +153,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                             isIncognito:NO
                              modeHolder:[[ComposeboxModeHolder alloc] init]
                      templateURLService:template_url_service()
-                  aimEligibilityService:aim_eligibility_service_.get()];
+                  aimEligibilityService:aim_eligibility_service_.get()
+                            prefService:&pref_service_];
     consumer_ = [[TestComposeboxInputPlateConsumer alloc] init];
     mediator_.consumer = consumer_;
 

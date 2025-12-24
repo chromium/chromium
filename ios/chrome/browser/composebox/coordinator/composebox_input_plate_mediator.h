@@ -24,6 +24,7 @@ class AimEligibilityService;
 class FaviconLoader;
 class GURL;
 class PersistTabContextBrowserAgent;
+class PrefService;
 class TemplateURLService;
 class WebStateList;
 
@@ -70,7 +71,8 @@ class ContextualSearchSessionHandle;
                          modeHolder:(ComposeboxModeHolder*)modeHolder
                  templateURLService:(TemplateURLService*)templateURLService
               aimEligibilityService:
-                  (AimEligibilityService*)aimEligibilityService;
+                  (AimEligibilityService*)aimEligibilityService
+                        prefService:(PrefService*)prefService;
 
 - (void)disconnect;
 

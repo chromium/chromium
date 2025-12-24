@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/contextual_search/contextual_search_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
@@ -1814,10 +1815,12 @@
 }
 
 - (void)openMIA {
-  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
+  [self.NTPMetricsRecorder recordMIATapped];
+  if (contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          self.prefService) &&
+      MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
-  [self.NTPMetricsRecorder recordMIATapped];
 
   GURL URL = GetUrlForAim(self.templateURLService,
                           /*query_start_time=*/base::Time::Now());

@@ -123,6 +123,7 @@ source_set("coordinator") {
     ":theme",
     ":ui_bundled",
     "//base",
+    "//components/contextual_search:public",
     "//components/feature_engagement/public",
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
