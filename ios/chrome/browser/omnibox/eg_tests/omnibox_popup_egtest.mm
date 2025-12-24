@@ -541,22 +541,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 - (void)testScrollingDismissesKeyboard {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [ChromeEarlGreyUI replaceTextInOmnibox:@"abc"];
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
 
-  // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> textMatcher = grey_descendant(
-      chrome_test_util::StaticTextWithAccessibilityLabel(@"abc"));
-  id<GREYMatcher> row =
-      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
-                 grey_sufficientlyVisible(), nil);
+  // Clears the url and replace it with local url host.
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"abc"];
 
-  // Omnibox can reorder itself in multiple animations, so add an extra wait
-  // here.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:row];
+  id<GREYMatcher> row = chrome_test_util::OmniboxPopupRowWithString(@"abcdef");
+
+  // Wait for the suggestions to show.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:row];
+  // Wait for the keyboard to appear.
   [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Scroll the popup. This swipes from the point located at 50% of the width of
