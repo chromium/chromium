@@ -98,5 +98,8 @@ TEST(AutofillMessageModelTest, AutofillMessageTypeToString) {
   EXPECT_EQ(AutofillMessageModel::TypeToString(
                 AutofillMessageModel::Type::kEntitySaveUpdateFlow),
             "EntitySaveUpdateFlow");
+  EXPECT_EQ(AutofillMessageModel::TypeToString(
+                AutofillMessageModel::Type::kAddressSaveUpdateFlow),
+            "AddressSaveUpdateFlow");
 }
 }  // namespace autofill

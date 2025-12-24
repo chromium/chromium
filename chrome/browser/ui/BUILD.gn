@@ -5779,7 +5779,11 @@ static_library("test_support") {
     }
   }
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [
+      "android/autofill/save_update_address_profile_flow_manager_test_api.h",
+    ]
+  } else {
     sources += [
       "browser_window/test/mock_browser_window_interface.cc",
       "browser_window/test/mock_browser_window_interface.h",

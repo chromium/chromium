@@ -88,6 +88,8 @@ std::string_view AutofillMessageModel::TypeToString(Type message_type) {
       return "VirtualCardEnrollFailure";
     case Type::kEntitySaveUpdateFlow:
       return "EntitySaveUpdateFlow";
+    case Type::kAddressSaveUpdateFlow:
+      return "AddressSaveUpdateFlow";
   }
 }
 

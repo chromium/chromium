@@ -106,8 +106,6 @@ static_library("autofill") {
       "android/personal_data_manager_android.cc",
       "android/personal_data_manager_android.h",
       "android/phone_number_util_android.cc",
-      "android/save_update_address_profile_message_controller.cc",
-      "android/save_update_address_profile_message_controller.h",
       "android/save_update_address_profile_prompt_controller.cc",
       "android/save_update_address_profile_prompt_controller.h",
       "android/save_update_address_profile_prompt_mode.h",

@@ -31,6 +31,8 @@ class AutofillMessageModel {
     // Used when the user is prompted to save a new or update an existing
     // `EntityInstance`.
     kEntitySaveUpdateFlow = 3,
+    // Used to ask the user to save or update an address profile.
+    kAddressSaveUpdateFlow = 4,
   };
 
   AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,

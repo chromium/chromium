@@ -5,13 +5,14 @@
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
+#include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager_test_api.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +35,11 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
 
   // AndroidBrowserTest:
   void SetUpOnMainThread() override {
-    flow_manager_ = std::make_unique<SaveUpdateAddressProfileFlowManager>();
+    autofill_message_controller_ =
+        std::make_unique<AutofillMessageControllerImpl>(GetWebContents());
+    flow_manager_ = std::make_unique<SaveUpdateAddressProfileFlowManager>(
+        ContentAutofillClient::FromWebContents(GetWebContents()),
+        autofill_message_controller_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -47,22 +52,26 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
   }
 
   bool IsMessageDisplayed() {
-    return flow_manager_->GetMessageControllerForTest()->IsMessageDisplayed();
+    return SaveUpdateAddressProfileFlowManagerTestApi(*flow_manager_)
+        .IsMessageDisplayed();
   }
 
   bool IsPromptDisplayed() {
-    return !!flow_manager_->GetPromptControllerForTest();
+    return !!SaveUpdateAddressProfileFlowManagerTestApi(*flow_manager_)
+                 .GetPromptController();
   }
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
+  std::unique_ptr<AutofillMessageController> autofill_message_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfMessageIsDisplayed) {
   AutofillProfile submitted_profile = test::GetFullProfile();
   AutofillProfile original_profile = test::GetFullProfile2();
-  flow_manager_->OfferSave(GetWebContents(), submitted_profile,
-                           &original_profile, kNotMigrationToAccount,
+  flow_manager_->OfferSave(submitted_profile, &original_profile,
+                           kNotMigrationToAccount,
                            /*callback=*/base::DoNothing());
   EXPECT_TRUE(IsMessageDisplayed());
   EXPECT_FALSE(IsPromptDisplayed());
@@ -73,22 +82,22 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   EXPECT_CALL(another_save_callback,
               Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
                   Property(&profile_ref::has_value, false)));
-  flow_manager_->OfferSave(GetWebContents(), another_profile,
-                           /*original_profile=*/nullptr, kNotMigrationToAccount,
-                           another_save_callback.Get());
+  flow_manager_->OfferSave(another_profile, /*original_profile=*/nullptr,
+                           kNotMigrationToAccount, another_save_callback.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfPromptIsDisplayed) {
   AutofillProfile submitted_profile = test::GetFullProfile();
   AutofillProfile original_profile = test::GetFullProfile2();
-  flow_manager_->OfferSave(GetWebContents(), submitted_profile,
-                           &original_profile, kNotMigrationToAccount,
+  flow_manager_->OfferSave(submitted_profile, &original_profile,
+                           kNotMigrationToAccount,
                            /*callback=*/base::DoNothing());
   // Proceed with message to prompt.
-  flow_manager_->GetMessageControllerForTest()->OnPrimaryActionForTest();
-  flow_manager_->GetMessageControllerForTest()->DismissMessageForTest(
-      messages::DismissReason::PRIMARY_ACTION);
+  SaveUpdateAddressProfileFlowManagerTestApi(*flow_manager_)
+      .OnMessagePrimaryAction();
+  SaveUpdateAddressProfileFlowManagerTestApi(*flow_manager_)
+      .OnMessageDismissed(messages::DismissReason::PRIMARY_ACTION);
   EXPECT_FALSE(IsMessageDisplayed());
   EXPECT_TRUE(IsPromptDisplayed());
 
@@ -98,9 +107,8 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   EXPECT_CALL(another_save_callback,
               Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
                   Property(&profile_ref::has_value, false)));
-  flow_manager_->OfferSave(GetWebContents(), another_profile,
-                           /*original_profile=*/nullptr, kNotMigrationToAccount,
-                           another_save_callback.Get());
+  flow_manager_->OfferSave(another_profile, /*original_profile=*/nullptr,
+                           kNotMigrationToAccount, another_save_callback.Get());
 }
 
 }  // namespace autofill

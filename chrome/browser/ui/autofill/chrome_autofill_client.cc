@@ -833,7 +833,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
     AddressProfileSavePromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   save_update_address_profile_flow_manager_->OfferSave(
-      web_contents(), profile, original_profile,
+      profile, original_profile,
       save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount
           ? SaveUpdateAddressProfilePromptMode::kMigrateProfile
           : SaveUpdateAddressProfilePromptMode::kSaveNewProfile,
@@ -1253,7 +1253,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
             web_contents, GetAutofillMessageController());
   }
   save_update_address_profile_flow_manager_ =
-      std::make_unique<SaveUpdateAddressProfileFlowManager>();
+      std::make_unique<SaveUpdateAddressProfileFlowManager>(
+          this, GetAutofillMessageController());
   fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
 #endif
 }
