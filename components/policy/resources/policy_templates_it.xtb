@@ -3555,11 +3555,11 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
           Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
 
           Se questa policy non viene impostata, inizialmente il tasto principale sulla pagina di accesso sarà il tasto sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
-<translation id="3434932177006334880">Il nome di questa impostazione era EnableWebBasedSignin nelle versioni di Chrome precedenti alla versione 42 e a partire dalla versione 43 di Chrome tale impostazione non verrà più supportata.
+<translation id="3434932177006334880">Il nome di questa impostazione era EnableWebBasedSignin nelle versioni di Chrome precedenti alla versione 42 e a partire dalla versione 43 di Chrome questa impostazione non verrà più supportata.
 
       Questa impostazione è utile per i clienti aziendali che utilizzano soluzioni SSO non ancora compatibili con il nuovo flusso di accesso incorporato.
-      Se attivi questa impostazione, viene utilizzato il precedente flusso di accesso basato sul Web.
-      Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul Web tramite il flag della riga di comando --enable-web-based-signin.
+      Se attivi questa impostazione, viene utilizzato il precedente flusso di accesso basato sul web.
+      Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul web tramite il flag della riga di comando --enable-web-based-signin.
 
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
 <translation id="3435229811562571593">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui viene negata automaticamente l'autorizzazione per i caratteri locali. Ciò limiterà la capacità dei siti di vedere le informazioni sui caratteri locali.
@@ -4981,7 +4981,7 @@ Se la policy viene configurata, gli utenti non possono modificarla in <ph name="
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
 <translation id="4424004842303301809">Disattiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
-<translation id="4426601693403743089">Disattiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
+<translation id="4426601693403743089">Disattiva il dogfood di Registra schermo per gli utenti di Family Link</translation>
 <translation id="4426986640594727372">Consenti l'accesso alla geolocalizzazione del sistema</translation>
 <translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
@@ -8012,9 +8012,9 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Questa policy non influisce su altri tipi di utenti.
       Questa policy non influisce sulla policy <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> per gli utenti aziendali.
 
-      Se la policy viene attivata, la versione sperimentale di Registra schermo verrà attivata per gli utenti di Family Link.
-      Se viene disattivata, la versione sperimentale di Registra schermo verrà disattivata per gli utenti di Family Link.
-      Se non viene configurata, la versione sperimentale di Registra schermo sarà disattivata per impostazione predefinita per gli utenti di Family Link.</translation>
+      Se la policy viene attivata, il dogfood di Registra schermo verrà attivata per gli utenti di Family Link.
+      Se viene disattivata, il dogfood di Registra schermo verrà disattivata per gli utenti di Family Link.
+      Se non viene configurata, il dogfood di Registra schermo sarà disattivata per impostazione predefinita per gli utenti di Family Link.</translation>
 <translation id="6310223829319187614">Consente il completamento automatico del nome di dominio durante l'accesso dell'utente</translation>
 <translation id="6310756730808079944">Attiva Registra schermo</translation>
 <translation id="631081324835911099">Consente di forzare la disconnessione dell'utente quando il token di autenticazione del suo account principale non è più valido.
@@ -10093,7 +10093,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 <translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
 <translation id="7586199729147257934">Consente il provisioning dei certificati client per i browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
-<translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
+<translation id="7587921466180902617">Attiva il dogfood di Registra schermo per gli utenti di Family Link</translation>
 <translation id="7588140323025689972">Abilita i log a livello di applicazione Kiosk</translation>
 <translation id="7593286371155131669">Utilizza i gruppi supportati predefiniti di <ph name="PRODUCT_NAME" /></translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
