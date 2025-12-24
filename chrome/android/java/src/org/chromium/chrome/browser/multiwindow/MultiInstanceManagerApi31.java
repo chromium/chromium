@@ -243,7 +243,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void openNewWindow(boolean isIncognito) {
         openNewWindow(
-                "Android.WindowManager.NewWindow", isIncognito, NewWindowAppSource.WINDOW_MANAGER);
+                "Android.WindowManager.NewWindow2", isIncognito, NewWindowAppSource.WINDOW_MANAGER);
     }
 
     @Override
@@ -1730,8 +1730,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // Just try to launch a Chrome window to inform user that maximum number of instances
             // limit is exceeded. This will pop up a toast message and the tab will not be removed
             // from the exiting window.
-            // TODO(crbug.com/451683614): Add UMA user action for this case.
-            openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false, source);
+            openNewWindow(
+                    "Android.MultiInstance.InstanceLimitReached", /* incognito= */ false, source);
         }
     }
 

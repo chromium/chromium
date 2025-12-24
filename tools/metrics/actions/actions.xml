@@ -4801,6 +4801,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.WindowManager.InstanceLimitReached">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User attempted to create a new Chrome window when the maximum number of
+    instances is reached.
+  </description>
+</action>
+
 <action name="Android.WindowManager.NameWindow">
   <owner>aishwaryarj@google.com</owner>
   <owner>rathomas@google.com</owner>
@@ -4811,6 +4820,20 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.WindowManager.NewWindow">
+  <obsolete>
+    Deprecated as of 12/2025. This action was replaced by either
+    Android.WindowManager.InstanceLimitReached or
+    Android.WindowManager.NewWindow2.
+  </obsolete>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User tapped the 'New window' button in Chrome's in-app window manager to
+    create a new Chrome window.
+  </description>
+</action>
+
+<action name="Android.WindowManager.NewWindow2">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -27276,6 +27299,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuNewIncognitoWindow">
+  <obsolete>
+    Deprecated as of 12/2025. This action is replaced by
+    Android.WindowManager.NewWindow2.
+  </obsolete>
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
@@ -27320,6 +27347,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuNewWindow">
+  <obsolete>
+    Deprecated as of 12/2025. This action was replaced by
+    Android.WindowManager.NewWindow2.
+  </obsolete>
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>User pressed 'New Window' in the app menu.</description>

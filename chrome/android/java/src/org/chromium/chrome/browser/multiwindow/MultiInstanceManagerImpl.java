@@ -354,7 +354,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow", /* incognito= */ false, appSource);
+            openNewWindow("Android.WindowManager.NewWindow2", /* incognito= */ false, appSource);
             return true;
         } else if (id == R.id.new_incognito_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
@@ -363,7 +363,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
-                openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true, appSource);
+                openNewWindow("Android.WindowManager.NewWindow2", /* incognito= */ true, appSource);
             }
             return true;
         }
@@ -499,7 +499,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         return intent;
     }
-    // TODO(crbug.com/455922432): Clean up the umaAction param.
     protected void openNewWindow(
             String umaAction, boolean incognito, @NewWindowAppSource int source) {
         Intent intent = createNewWindowIntent(incognito);

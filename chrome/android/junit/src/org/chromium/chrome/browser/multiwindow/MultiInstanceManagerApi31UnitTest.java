@@ -396,6 +396,31 @@ public class MultiInstanceManagerApi31UnitTest {
         Intent getReparentingTabsIntent() {
             return mReparentingTabsIntent;
         }
+
+        @Override
+        public @Nullable Intent createNewWindowIntent(boolean isIncognito) {
+            Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
+            MultiWindowUtils.setOpenInOtherWindowIntentExtras(
+                    intent, mActivity, ChromeTabbedActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
+            if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                    || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                    || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+            }
+
+            // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false and if the
+            // Activity is in a full screen window.
+            if (!mActivity.isInMultiWindowMode()
+                    && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
+                intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+            }
+
+            return intent;
+        }
     }
 
     @Before
@@ -1518,7 +1543,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .openNewWindow(eq("Android.WindowManager.NewWindow"), eq(false), anyInt());
+                .openNewWindow(eq("Android.WindowManager.NewWindow2"), eq(false), anyInt());
     }
 
     @Test
