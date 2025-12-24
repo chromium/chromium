@@ -225,12 +225,6 @@ crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTr
 crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
-crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # Win/AMD RX 7600 failures
 crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
@@ -293,7 +287,7 @@ crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
 
 # TreesInViz damage calculation issues
-crbug.com/454680865 [ android ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure ]
+crbug.com/454680865 [ android-pixel-2 android-q angle-opengles graphite-disabled mobile no-clang-coverage qualcomm renderer-skia-gl target-cpu-64 ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure ]
 
 ###############################
 # Permanent Slow Expectations #
