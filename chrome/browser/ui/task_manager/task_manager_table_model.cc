@@ -259,16 +259,18 @@ class TaskManagerValuesStringifier {
                                       base::FormatNumber(peak));
   }
 
-  std::u16string GetNetworkUsageText(base::ByteCount network_usage) {
-    if (network_usage.is_negative()) {
+  std::u16string GetNetworkUsageText(
+      std::optional<base::ByteSize> network_usage) {
+    if (!network_usage.has_value()) {
       return n_a_string_;
     }
 
-    if (network_usage.is_zero()) {
+    if (network_usage->is_zero()) {
       return zero_string_;
     }
 
-    std::u16string net_byte = ui::FormatSpeed(network_usage);
+    std::u16string net_byte =
+        ui::FormatSpeed(network_usage->AsDeprecatedByteCount());
     // Force number string to have LTR directionality.
     return base::i18n::GetDisplayStringInLTRDirectionality(net_byte);
   }

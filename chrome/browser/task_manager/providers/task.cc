@@ -82,14 +82,14 @@ void Task::Refresh(const base::TimeDelta& update_interval,
       update_interval == base::TimeDelta())
     return;
 
-  base::ByteCount current_cycle_read_byte_count =
+  base::ByteSizeDelta current_cycle_read_byte_count =
       cumulative_bytes_read_ - last_refresh_cumulative_bytes_read_;
-  network_read_rate_ = base::ByteCount(base::ClampRound<int64_t>(
+  network_read_rate_ = base::ByteSize(base::ClampRound<uint64_t>(
       current_cycle_read_byte_count.InBytesF() / update_interval.InSecondsF()));
 
-  base::ByteCount current_cycle_sent_byte_count =
+  base::ByteSizeDelta current_cycle_sent_byte_count =
       cumulative_bytes_sent_ - last_refresh_cumulative_bytes_sent_;
-  network_sent_rate_ = base::ByteCount(base::ClampRound<int64_t>(
+  network_sent_rate_ = base::ByteSize(base::ClampRound<uint64_t>(
       current_cycle_sent_byte_count.InBytesF() / update_interval.InSecondsF()));
 
   last_refresh_cumulative_bytes_read_ = cumulative_bytes_read_;
@@ -114,11 +114,11 @@ void Task::UpdateProcessInfo(base::ProcessHandle handle,
   observer->TaskAdded(this);
 }
 
-void Task::OnNetworkBytesRead(base::ByteCount bytes_read) {
+void Task::OnNetworkBytesRead(base::ByteSize bytes_read) {
   cumulative_bytes_read_ += bytes_read;
 }
 
-void Task::OnNetworkBytesSent(base::ByteCount bytes_sent) {
+void Task::OnNetworkBytesSent(base::ByteSize bytes_sent) {
   cumulative_bytes_sent_ += bytes_sent;
 }
 
@@ -183,11 +183,11 @@ bool Task::IsRunningInVM() const {
   return false;
 }
 
-base::ByteCount Task::GetNetworkUsageRate() const {
+base::ByteSize Task::GetNetworkUsageRate() const {
   return network_sent_rate_ + network_read_rate_;
 }
 
-base::ByteCount Task::GetCumulativeNetworkUsage() const {
+base::ByteSize Task::GetCumulativeNetworkUsage() const {
   return cumulative_bytes_sent_ + cumulative_bytes_read_;
 }
 

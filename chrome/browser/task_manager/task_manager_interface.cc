@@ -47,8 +47,8 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
 // static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
     content::GlobalRenderFrameHostId render_frame_host_id,
-    base::ByteCount recv_bytes,
-    base::ByteCount sent_bytes) {
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {
   // Don't create a task manager if it hasn't already been created.
   if (TaskManagerImpl::IsCreated()) {
     TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(

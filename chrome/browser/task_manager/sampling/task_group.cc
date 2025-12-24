@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/byte_count.h"
@@ -142,15 +143,15 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
       TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_NETWORK_USAGE,
                                                     refresh_flags);
 
-  per_process_network_usage_rate_ =
-      network_usage_refresh_enabled ? base::ByteCount(0) : base::ByteCount(-1);
-  cumulative_per_process_network_usage_ = base::ByteCount(0);
+  per_process_network_usage_rate_.reset();
+  if (network_usage_refresh_enabled) {
+    per_process_network_usage_rate_ = base::ByteSize(0);
+  }
+
   for (Task* task : tasks_) {
     task->Refresh(update_interval, refresh_flags);
     if (network_usage_refresh_enabled) {
-      per_process_network_usage_rate_ += task->GetNetworkUsageRate();
-      cumulative_per_process_network_usage_ +=
-          task->GetCumulativeNetworkUsage();
+      per_process_network_usage_rate_.value() += task->GetNetworkUsageRate();
     }
   }
 

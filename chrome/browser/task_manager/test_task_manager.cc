@@ -127,23 +127,18 @@ void TestTaskManager::GetTerminationStatus(TaskId task_id,
   *out_error_code = 0;
 }
 
-base::ByteCount TestTaskManager::GetNetworkUsage(TaskId task_id) const {
-  return base::ByteCount(0);
+base::ByteSize TestTaskManager::GetNetworkUsage(TaskId task_id) const {
+  return base::ByteSize(0);
 }
 
-base::ByteCount TestTaskManager::GetProcessTotalNetworkUsage(
+std::optional<base::ByteSize> TestTaskManager::GetProcessTotalNetworkUsage(
     TaskId task_id) const {
-  return base::ByteCount(-1);
+  return std::nullopt;
 }
 
-base::ByteCount TestTaskManager::GetCumulativeNetworkUsage(
+base::ByteSize TestTaskManager::GetCumulativeNetworkUsage(
     TaskId task_id) const {
-  return base::ByteCount(0);
-}
-
-base::ByteCount TestTaskManager::GetCumulativeProcessTotalNetworkUsage(
-    TaskId task_id) const {
-  return base::ByteCount(0);
+  return base::ByteSize(0);
 }
 
 base::ByteCount TestTaskManager::GetSqliteMemoryUsed(TaskId task_id) const {

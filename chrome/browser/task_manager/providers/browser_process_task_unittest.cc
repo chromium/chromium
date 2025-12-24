@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -77,7 +77,7 @@ TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
             provided_task_->title());
   EXPECT_EQ(Task::BROWSER, provided_task_->GetType());
   EXPECT_EQ(0, provided_task_->GetChildProcessUniqueID());
-  const base::ByteCount received_bytes = base::KiB(1);
+  constexpr base::ByteSize received_bytes = base::KiBU(1);
   EXPECT_TRUE(provided_task_->GetNetworkUsageRate().is_zero());
   provided_task_->OnNetworkBytesRead(received_bytes);
   // Do a refresh with a 1-second update time.

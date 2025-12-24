@@ -90,7 +90,7 @@ RendererTask::RendererTask(const std::u16string& title,
           CreateRendererResourcesSampler(render_process_host_)),
       render_process_id_(render_process_host_->GetDeprecatedID()),
       profile_name_(GetRendererProfileName(render_process_host_)) {
-  OnNetworkBytesRead(base::ByteCount(0));
+  OnNetworkBytesRead(base::ByteSize(0));
 
   // Tag the web_contents with a |ContentFaviconDriver| (if needed) so that
   // we can use it to observe favicons changes.

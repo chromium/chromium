@@ -287,23 +287,18 @@ void TaskManagerImpl::GetTerminationStatus(TaskId task_id,
   GetTaskByTaskId(task_id)->GetTerminationStatus(out_status, out_error_code);
 }
 
-base::ByteCount TaskManagerImpl::GetNetworkUsage(TaskId task_id) const {
+base::ByteSize TaskManagerImpl::GetNetworkUsage(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetNetworkUsageRate();
 }
 
-base::ByteCount TaskManagerImpl::GetCumulativeNetworkUsage(
+base::ByteSize TaskManagerImpl::GetCumulativeNetworkUsage(
     TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetCumulativeNetworkUsage();
 }
 
-base::ByteCount TaskManagerImpl::GetProcessTotalNetworkUsage(
+std::optional<base::ByteSize> TaskManagerImpl::GetProcessTotalNetworkUsage(
     TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->per_process_network_usage_rate();
-}
-
-base::ByteCount TaskManagerImpl::GetCumulativeProcessTotalNetworkUsage(
-    TaskId task_id) const {
-  return GetTaskGroupByTaskId(task_id)->cumulative_per_process_network_usage();
 }
 
 base::ByteCount TaskManagerImpl::GetSqliteMemoryUsed(TaskId task_id) const {
@@ -576,8 +571,8 @@ void TaskManagerImpl::TaskIdsListToBeInvalidated() {
 
 void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
     content::GlobalRenderFrameHostId render_frame_host_id,
-    base::ByteCount recv_bytes,
-    base::ByteCount sent_bytes) {
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_running_)
     return;

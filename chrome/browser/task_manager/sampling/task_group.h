@@ -121,11 +121,8 @@ class TaskGroup {
   void set_gpu_memory_has_duplicates(bool has_duplicates) {
     gpu_memory_has_duplicates_ = has_duplicates;
   }
-  base::ByteCount per_process_network_usage_rate() const {
+  std::optional<base::ByteSize> per_process_network_usage_rate() const {
     return per_process_network_usage_rate_;
-  }
-  base::ByteCount cumulative_per_process_network_usage() const {
-    return cumulative_per_process_network_usage_;
   }
   bool is_backgrounded() const { return is_backgrounded_; }
   void set_is_backgrounded(bool is_backgrounded) {
@@ -211,11 +208,7 @@ class TaskGroup {
 
   // The network usage in bytes per second as the sum of all network usages of
   // the individual tasks sharing the same process.
-  base::ByteCount per_process_network_usage_rate_ = base::ByteCount(-1);
-
-  // A continuously updating sum of all bytes that have been downloaded and
-  // uploaded by all tasks in this process.
-  base::ByteCount cumulative_per_process_network_usage_ = base::ByteCount(0);
+  std::optional<base::ByteSize> per_process_network_usage_rate_;
 
 #if BUILDFLAG(IS_WIN)
   // Windows GDI and USER Handles.

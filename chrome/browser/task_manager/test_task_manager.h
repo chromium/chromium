@@ -57,11 +57,10 @@ class TestTaskManager : public TaskManagerInterface {
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;
-  base::ByteCount GetNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+  base::ByteSize GetNetworkUsage(TaskId task_id) const override;
+  std::optional<base::ByteSize> GetProcessTotalNetworkUsage(
       TaskId task_id) const override;
+  base::ByteSize GetCumulativeNetworkUsage(TaskId task_id) const override;
   base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const override;
   bool GetV8Memory(TaskId task_id,
                    base::ByteCount* allocated,

@@ -142,10 +142,10 @@ void FillProcessData(
   if (!std::isnan(cpu_usage))
     out_process->cpu = cpu_usage;
 
-  const base::ByteCount network_usage =
+  const std::optional<base::ByteSize> network_usage =
       task_manager->GetProcessTotalNetworkUsage(id);
-  if (!network_usage.is_negative()) {
-    out_process->network = network_usage.InBytes();
+  if (network_usage.has_value()) {
+    out_process->network = network_usage->InBytes();
   }
 
   base::ByteCount v8_allocated;

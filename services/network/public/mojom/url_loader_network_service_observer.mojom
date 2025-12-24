@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -188,8 +189,9 @@ interface URLLoaderNetworkServiceObserver {
   // ID, and the total bytes received and sent.
   // |network_traffic_annotation_id_hash| represents the hash of unique tag that
   // identifies the annotation of the request.
-  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
-                  int64 sent_bytes);
+  OnDataUseUpdate(int32 network_traffic_annotation_id_hash,
+                  mojo_base.mojom.ByteSize recv_bytes,
+                  mojo_base.mojom.ByteSize sent_bytes);
 
   // The syntactic parsing of "Shared-Storage-Write" response headers occurs in
   // the network service for security and privacy; this method then notifies

@@ -7223,11 +7223,10 @@ bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
     content::GlobalRenderFrameHostId render_frame_host_id,
     int32_t network_traffic_annotation_id_hash,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
-      render_frame_host_id, base::ByteCount(recv_bytes),
-      base::ByteCount(sent_bytes));
+      render_frame_host_id, recv_bytes, sent_bytes);
 }
 
 base::FilePath

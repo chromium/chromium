@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -107,12 +108,12 @@ class Task {
   // Will receive this notification through the task manager from
   // |ChromeNetworkDelegate::OnNetworkBytesReceived()|. The task will add to the
   // |cumulative_bytes_read_|.
-  void OnNetworkBytesRead(base::ByteCount bytes_read);
+  void OnNetworkBytesRead(base::ByteSize bytes_read);
 
   // Will receive this notification through the task manager from
   // |ChromeNetworkDelegate::OnNetworkBytesSent()|. The task will add to the
   // |cumulative_bytes_sent_| in this refresh cycle.
-  void OnNetworkBytesSent(base::ByteCount bytes_sent);
+  void OnNetworkBytesSent(base::ByteSize bytes_sent);
 
   // Returns the task type.
   virtual Type GetType() const = 0;
@@ -170,13 +171,13 @@ class Task {
 
   // Returns the instantaneous rate, in bytes per second, of network usage
   // (sent and received), as measured over the last refresh cycle.
-  virtual base::ByteCount GetNetworkUsageRate() const;
+  virtual base::ByteSize GetNetworkUsageRate() const;
 
   // Returns the cumulative number of bytes of network use (sent and received)
   // over the tasks lifetime. It is calculated independently of refreshes and
   // is based on the current |cumulative_bytes_read_| and
   // |cumulative_bytes_sent_|.
-  virtual base::ByteCount GetCumulativeNetworkUsage() const;
+  virtual base::ByteSize GetCumulativeNetworkUsage() const;
 
   int64_t task_id() const { return task_id_; }
   const std::u16string& title() const { return title_; }
@@ -200,29 +201,29 @@ class Task {
 
   // The sum of all bytes that have been uploaded from this task calculated at
   // the last refresh.
-  base::ByteCount last_refresh_cumulative_bytes_sent_;
+  base::ByteSize last_refresh_cumulative_bytes_sent_;
 
   // The sum of all bytes that have been downloaded from this task calculated
   // at the last refresh.
-  base::ByteCount last_refresh_cumulative_bytes_read_;
+  base::ByteSize last_refresh_cumulative_bytes_read_;
 
   // A continuously updating sum of all bytes that have been uploaded from this
   // task. It is assigned to |last_refresh_cumulative_bytes_sent_| at the end
   // of a refresh.
-  base::ByteCount cumulative_bytes_sent_;
+  base::ByteSize cumulative_bytes_sent_;
 
   // A continuously updating sum of all bytes that have been downloaded from
   // this task. It is assigned to |last_refresh_cumulative_bytes_sent_| at the
   // end of a refresh.
-  base::ByteCount cumulative_bytes_read_;
+  base::ByteSize cumulative_bytes_read_;
 
   // The upload rate (in bytes per second) for this task during the latest
   // refresh.
-  base::ByteCount network_sent_rate_;
+  base::ByteSize network_sent_rate_;
 
   // The download rate (in bytes per second) for this task during the latest
   // refresh.
-  base::ByteCount network_read_rate_;
+  base::ByteSize network_read_rate_;
 
   // The title of the task.
   std::u16string title_;

@@ -9,9 +9,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -53,8 +55,8 @@ class TaskManagerInterface {
   // task cannot be found it will be attributed to the browser process task.
   static void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      base::ByteCount recv_bytes,
-      base::ByteCount sent_bytes);
+      base::ByteSize recv_bytes,
+      base::ByteSize sent_bytes);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);
@@ -171,24 +173,17 @@ class TaskManagerInterface {
 
   // Returns the network usage (in bytes per second) during the current refresh
   // cycle for the task with |task_id|.
-  virtual base::ByteCount GetNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteSize GetNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the network usage during the current lifetime of the task
   // for the task with |task_id|.
-  virtual base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteSize GetCumulativeNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the total network usage (in bytes per second) during the current
   // refresh cycle for the process on which the task with |task_id| is running.
   // This is the sum of all the network usage of the individual tasks (that
-  // can be gotten by the above GetNetworkUsage()). A value of -1 means network
-  // usage calculation refresh is currently not available.
-  virtual base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const = 0;
-
-  // Returns the total network usage during the lifetime of the process
-  // on which the task with |task_id| is running.
-  // This is the sum of all the network usage of the individual tasks (that
-  // can be gotten by the above GetTotalNetworkUsage()).
-  virtual base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+  // can be gotten by the above GetNetworkUsage()).
+  virtual std::optional<base::ByteSize> GetProcessTotalNetworkUsage(
       TaskId task_id) const = 0;
 
   // Returns the Sqlite used memory (in bytes) for the task with |task_id|.

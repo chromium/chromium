@@ -1977,7 +1977,8 @@ void URLLoader::NotifyCompleted(int error_code) {
     if (url_loader_network_observer_ && provide_data_use_updates_) {
       url_loader_network_observer_->OnDataUseUpdate(
           url_request_->traffic_annotation().unique_id_hash_code,
-          total_received, total_sent);
+          base::ByteSize(base::checked_cast<uint64_t>(total_received)),
+          base::ByteSize(base::checked_cast<uint64_t>(total_sent)));
     }
   }
 
