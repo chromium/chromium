@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
-import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionType;
+import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -42,21 +42,21 @@ public class SuggestionEventObserver {
                         Tab tab,
                         @org.chromium.chrome.browser.tab.TabSelectionType int type,
                         int lastId) {
-                    @TabSelectionType
+                    @TabSelectionCause
                     int selectionType =
                             switch (type) {
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_CLOSE -> TabSelectionType.FROM_CLOSE_ACTIVE_TAB;
+                                        .FROM_CLOSE -> TabSelectionCause.FROM_CLOSE_ACTIVE_TAB;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_EXIT -> TabSelectionType.FROM_APP_EXIT;
+                                        .FROM_EXIT -> TabSelectionCause.FROM_APP_EXIT;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_NEW -> TabSelectionType.FROM_NEW_TAB;
+                                        .FROM_NEW -> TabSelectionCause.FROM_NEW_TAB;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_USER -> TabSelectionType.FROM_USER;
+                                        .FROM_USER -> TabSelectionCause.FROM_USER;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_OMNIBOX -> TabSelectionType.FROM_OMNIBOX;
+                                        .FROM_OMNIBOX -> TabSelectionCause.FROM_OMNIBOX;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_UNDO -> TabSelectionType.FROM_UNDO_CLOSURE;
+                                        .FROM_UNDO -> TabSelectionCause.FROM_UNDO_CLOSURE;
                                 default -> throw new IllegalArgumentException(
                                         "Unknown selection typ: " + type);
                             };
@@ -130,7 +130,7 @@ public class SuggestionEventObserver {
                                 mGroupSuggestionsService.didSelectTab(
                                         tab.getId(),
                                         tab.getUrl(),
-                                        TabSelectionType.FROM_NEW_TAB,
+                                        TabSelectionCause.FROM_NEW_TAB,
                                         Tab.INVALID_TAB_ID);
 
                                 // TODO(crbug.com/389129271): Get rid of redundant cast after

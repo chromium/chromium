@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionType;
+import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 
 import java.util.Collections;
 import java.util.List;
@@ -351,7 +351,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         TabCollectionTabModelImpl model = getModel(mProfile, mTabModelDelegate);
 
-        model.setIndex(0, TabSelectionType.FROM_USER);
+        model.setIndex(0, TabSelectionCause.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ false);
         verifyBatchedAndReset();
 
@@ -362,7 +362,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         TabCollectionTabModelImpl incognitoModel = getModel(mProfile, mTabModelDelegate);
 
-        incognitoModel.setIndex(0, TabSelectionType.FROM_USER);
+        incognitoModel.setIndex(0, TabSelectionCause.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ true);
         verifyBatchedAndReset();
 
@@ -373,7 +373,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         TabCollectionTabModelImpl ephemeralModel = getModel(mProfile, mTabModelDelegate);
 
-        ephemeralModel.setIndex(0, TabSelectionType.FROM_USER);
+        ephemeralModel.setIndex(0, TabSelectionCause.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ true);
         verifyBatchedAndReset();
     }

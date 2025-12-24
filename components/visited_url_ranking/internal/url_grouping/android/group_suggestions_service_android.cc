@@ -39,23 +39,24 @@ const char kGroupSuggestionsServiceBridgeKey[] =
 
 // TODO(crbug.com/397221723): Rethink the conversion plan. Maybe update the Java
 // API to do the conversion at call site.
-TabEventTracker::TabSelectionType ConvertIntToTabSelectionType(
-    int tab_selection_type) {
-  switch (tab_selection_type) {
+
+TabEventTracker::TabSelectionCause ConvertIntToTabSelectionCause(
+    int tab_selection_cause) {
+  switch (tab_selection_cause) {
     case 0:
-      return TabEventTracker::TabSelectionType::kFromCloseActiveTab;
+      return TabEventTracker::TabSelectionCause::kFromCloseActiveTab;
     case 1:
-      return TabEventTracker::TabSelectionType::kFromAppExit;
+      return TabEventTracker::TabSelectionCause::kFromAppExit;
     case 2:
-      return TabEventTracker::TabSelectionType::kFromNewTab;
+      return TabEventTracker::TabSelectionCause::kFromNewTab;
     case 3:
-      return TabEventTracker::TabSelectionType::kFromUser;
+      return TabEventTracker::TabSelectionCause::kFromUser;
     case 4:
-      return TabEventTracker::TabSelectionType::kFromOmnibox;
+      return TabEventTracker::TabSelectionCause::kFromOmnibox;
     case 5:
-      return TabEventTracker::TabSelectionType::kFromUndoClosure;
+      return TabEventTracker::TabSelectionCause::kFromUndoClosure;
     default:
-      return TabEventTracker::TabSelectionType::kUnknown;
+      return TabEventTracker::TabSelectionCause::kUnknown;
   }
 }
 
@@ -234,11 +235,11 @@ void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
 void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
                                                   int tab_id,
                                                   const JavaRef<jobject>& url,
-                                                  int tab_selection_type,
+                                                  int tab_selection_cause,
                                                   int last_id) {
   group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
       tab_id, url::GURLAndroid::ToNativeGURL(env, url),
-      ConvertIntToTabSelectionType(tab_selection_type), last_id);
+      ConvertIntToTabSelectionCause(tab_selection_cause), last_id);
 }
 
 void GroupSuggestionsServiceAndroid::WillCloseTab(JNIEnv* env, int tab_id) {

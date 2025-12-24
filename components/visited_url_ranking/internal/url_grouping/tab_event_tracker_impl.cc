@@ -33,9 +33,9 @@ TabEventTrackerImpl::~TabEventTrackerImpl() = default;
 TabEventTrackerImpl::TabSelection::TabSelection() = default;
 TabEventTrackerImpl::TabSelection::TabSelection(
     int tab_id,
-    TabSelectionType tab_selection_type,
+    TabSelectionCause tab_selection_cause,
     base::Time time)
-    : tab_id(tab_id), tab_selection_type(tab_selection_type), time(time) {}
+    : tab_id(tab_id), tab_selection_cause(tab_selection_cause), time(time) {}
 TabEventTrackerImpl::TabSelection::~TabSelection() = default;
 
 void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
@@ -49,12 +49,12 @@ void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
 
 void TabEventTrackerImpl::DidSelectTab(int tab_id,
                                        const GURL& url,
-                                       TabSelectionType tab_selection_type,
+                                       TabSelectionCause tab_selection_cause,
                                        int last_tab_id) {
   current_selection_ =
-      TabSelection(tab_id, tab_selection_type, base::Time::Now());
-  if ((tab_selection_type != TabSelectionType::kFromUser &&
-       tab_selection_type != TabSelectionType::kFromOmnibox) ||
+      TabSelection(tab_id, tab_selection_cause, base::Time::Now());
+  if ((tab_selection_cause != TabSelectionCause::kFromUser &&
+       tab_selection_cause != TabSelectionCause::kFromOmnibox) ||
       last_tab_id == tab_id || url.spec() == kAndroidNativeNewTabPageURL) {
     return;
   }

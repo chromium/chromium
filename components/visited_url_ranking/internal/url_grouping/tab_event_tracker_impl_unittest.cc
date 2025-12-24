@@ -52,7 +52,7 @@ TEST_F(TabEventTrackerImplTest, CallbackCalled) {
   // DidSelectTab should only trigger the main event callback.
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
 
   // TabClosureUndone should trigger invalidation.
   EXPECT_CALL(mock_invalidate_callback_, Run());
@@ -78,12 +78,12 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount) {
 
   // Selection with no current tab change does not change counts.
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 1);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 1);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
@@ -92,7 +92,7 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount) {
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 }
@@ -105,14 +105,14 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreOldSwitch) {
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   task_environment_.FastForwardBy(base::Minutes(6));
 
   tab_event_tracker_->DidSelectTab(
-      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 1);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
@@ -132,9 +132,9 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_CloseTab) {
   const int kTabId2 = 2;
 
   tab_event_tracker_->DidSelectTab(
-      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 1);
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
 
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
@@ -164,10 +164,10 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreNTP) {
 
   tab_event_tracker_->DidSelectTab(
       1, GURL(TabEventTrackerImpl::kAndroidNativeNewTabPageURL),
-      TabEventTracker::TabSelectionType::kFromUser, 2);
+      TabEventTracker::TabSelectionCause::kFromUser, 2);
   tab_event_tracker_->DidSelectTab(
       2, GURL(TabEventTrackerImpl::kAndroidNativeNewTabPageURL),
-      TabEventTracker::TabSelectionType::kFromUser, 1);
+      TabEventTracker::TabSelectionCause::kFromUser, 1);
 
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
@@ -196,19 +196,19 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreTypes) {
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromCloseActiveTab,
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromCloseActiveTab,
       2);
   tab_event_tracker_->DidSelectTab(
-      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUndoClosure,
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUndoClosure,
       1);
 
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
   tab_event_tracker_->DidSelectTab(
-      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromOmnibox, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromOmnibox, 1);
 
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
@@ -218,7 +218,7 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_CommitsSelection) {
   const int kTabId = 1;
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
-      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+      TabEventTracker::TabSelectionCause::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
@@ -232,7 +232,7 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_IgnoreNavigationTypes) {
   const int kTabId = 1;
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
-      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+      TabEventTracker::TabSelectionCause::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_RELOAD);
@@ -251,7 +251,7 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_IgnoreNavigationTypes) {
 TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NoRepeatCommit) {
   const int kTabId = 1;
   tab_event_tracker_->DidSelectTab(
-      kTabId, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+      kTabId, GURL(kTestUrl), TabEventTracker::TabSelectionCause::kFromUser, 2);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
 
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
@@ -271,7 +271,7 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_TriggerCallback) {
 
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
-      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+      TabEventTracker::TabSelectionCause::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
   EXPECT_CALL(mock_callback_, Run());
 
@@ -290,7 +290,7 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NotTriggerCallback) {
 
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
-      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+      TabEventTracker::TabSelectionCause::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
   EXPECT_CALL(mock_callback_, Run()).Times(0);
 

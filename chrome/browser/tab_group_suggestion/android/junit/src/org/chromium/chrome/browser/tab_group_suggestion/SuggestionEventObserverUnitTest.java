@@ -190,7 +190,7 @@ public class SuggestionEventObserverUnitTest {
                         eq(TEST_URL),
                         eq(
                                 org.chromium.components.visited_url_ranking.url_grouping
-                                        .TabSelectionType.FROM_NEW_TAB),
+                                        .TabSelectionCause.FROM_NEW_TAB),
                         eq(Tab.INVALID_TAB_ID));
     }
 
