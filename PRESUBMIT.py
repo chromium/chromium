@@ -1665,10 +1665,34 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
-        r'/\bTRACE_EVENT(_NESTABLE)?_ASYNC_',
+        r'/\bTRACE_EVENT(_COPY)?(_NESTABLE)?_ASYNC_',
         (
-            'Please use TRACE_EVENT_BEGIN/END/INSTANT macros instead',
-            'of TRACE_EVENT_ASYNC_.. and TRACE_EVENT_NESTABLE_ASYNC_... (crbug.com/432427382).',
+            'Please use TRACE_EVENT_BEGIN/END/INSTANT macros instead of ',
+            'TRACE_EVENT_ASYNC_.. and TRACE_EVENT_NESTABLE_ASYNC_... (crbug.com/432427382).',
+        ),
+        False,
+        (
+            r'^base/trace_event/.*',
+            r'^base/tracing/.*',
+        ),
+    ),
+    BanRule(
+        r'/\bTRACE_EVENT_WITH_FLOW',
+        (
+            'Please use perfetto::Flow instead of TRACE_EVENT_WITH_FLOW.. ',
+            '(crbug.com/432427382).',
+        ),
+        False,
+        (
+            r'^base/trace_event/.*',
+            r'^base/tracing/.*',
+        ),
+    ),
+    BanRule(
+        r'/\bTRACE_EVENT_SCOPE_',
+        (
+            'Please use perfetto Track API instead of '
+            'TRACE_EVENT_SCOPE_GLOBAL/PROCESS/THREAD (crbug.com/432427382).',
         ),
         False,
         (
