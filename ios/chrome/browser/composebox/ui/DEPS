@@ -1,5 +1,6 @@
 include_rules = [
+  "+ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/public/omnibox_constants.h",
-  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h",
 ]

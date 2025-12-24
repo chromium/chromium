@@ -14,6 +14,8 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar",
   "+ios/chrome/browser/location_bar/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h",
   "+ios/chrome/browser/omnibox",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h",

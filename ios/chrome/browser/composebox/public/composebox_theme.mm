@@ -10,17 +10,23 @@
 
 - (instancetype)initWithInputPlatePosition:
                     (ComposeboxInputPlatePosition)position
-                                 incognito:(BOOL)incognito {
+                                 incognito:(BOOL)incognito
+                                     isNTP:(BOOL)isNTP {
   self = [super init];
   if (self) {
     _inputPlatePosition = position;
     _incognito = incognito;
+    _isNTP = isNTP;
   }
 
   return self;
 }
 
 #pragma mark - Public
+
+- (BOOL)useIncognitoViewFallback {
+  return _isNTP && _incognito;
+}
 
 - (BOOL)isTopInputPlate {
   return _inputPlatePosition == ComposeboxInputPlatePosition::kTop;

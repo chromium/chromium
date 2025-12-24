@@ -171,6 +171,7 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
 
   context.inputPlateViewForAnimation.alpha = 0;
   context.closeButtonForAnimation.alpha = 0;
+  context.incognitoViewForAnimation.alpha = 0;
   context.inputPlateViewForAnimation.transform = CGAffineTransformMakeScale(
       kInitialScaleForAppear, kInitialScaleForAppear);
   context.closeButtonForAnimation.transform = CGAffineTransformMakeScale(
@@ -194,6 +195,7 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                                     context.inputPlateViewForAnimation
                                         .transform =
                                         CGAffineTransformMakeScale(1, 1);
+                                    context.incognitoViewForAnimation.alpha = 1;
                                   }];
         // Enables AIM if needed.
         [UIView

@@ -38,6 +38,9 @@
 // Delegate to load urls in the current tab.
 @property(nonatomic, weak) id<NewTabPageURLLoaderDelegate> URLLoaderDelegate;
 
+// The insets added by the view to the inner content inside the scroll view.
+@property(nonatomic, readonly) UIEdgeInsets intrinsicContentVisualInsets;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_INCOGNITO_INCOGNITO_VIEW_H_

@@ -22,6 +22,9 @@
 // The suggestions popup to be animated.
 @property(nonatomic, readonly) UIView* popupViewForAnimation;
 
+// The incognito view to be animated. `nil` if not in incognito.
+@property(nonatomic, readonly) UIView* incognitoViewForAnimation;
+
 // Informs the composebox to update its visual mode to the given `mode`.
 - (void)setComposeboxMode:(ComposeboxMode)mode;
 

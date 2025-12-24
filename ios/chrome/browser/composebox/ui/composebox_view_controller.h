@@ -41,6 +41,9 @@
 // Container for the omnibox popup.
 @property(nonatomic, readonly) UIView* omniboxPopupContainer;
 
+// The optional fallback incognito view.
+@property(nonatomic, readonly) UIView* incognitoView;
+
 // Adds the input view controller to this ViewController.
 - (void)addInputViewController:
     (ComposeboxInputPlateViewController*)inputViewController;
