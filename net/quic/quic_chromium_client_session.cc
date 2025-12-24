@@ -1467,7 +1467,7 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->signed_certificate_timestamps = cert_verify_result_->scts;
   ssl_info->ct_policy_compliance = cert_verify_result_->policy_compliance;
 
-  DCHECK(connection()->version().UsesTls());
+  DCHECK(connection()->version().IsIetfQuic());
   const auto& crypto_params = crypto_stream_->crypto_negotiated_params();
   uint16_t cipher_suite = crypto_params.cipher_suite;
   int ssl_connection_status = 0;
@@ -2134,7 +2134,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
         session_creation_initiator_);
 
     // KeyUpdates are used in TLS, but we no longer support pre-TLS QUIC.
-    DCHECK(connection()->version().UsesTls());
+    DCHECK(connection()->version().IsIetfQuic());
     base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                 connection()->GetStats().key_update_count);
     base::UmaHistogramCounts100(

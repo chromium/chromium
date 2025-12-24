@@ -519,7 +519,7 @@ class BidirectionalStreamQuicImplTest
         new QuicChromiumPacketWriter(socket.get(), runner_.get()),
         true /* owns_writer */, quic::Perspective::IS_CLIENT,
         quic::test::SupportedVersions(version_), connection_id_generator_);
-    if (connection_->version().KnowsWhichDecrypterToUse()) {
+    if (connection_->version().IsIetfQuic()) {
       connection_->InstallDecrypter(
           quic::ENCRYPTION_FORWARD_SECURE,
           std::make_unique<quic::test::StrictTaggingDecrypter>(

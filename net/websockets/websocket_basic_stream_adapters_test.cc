@@ -1220,7 +1220,7 @@ class WebSocketQuicStreamAdapterTest
 
   std::string ConstructDataFrameForVersion(std::string_view body,
                                            quic::ParsedQuicVersion version) {
-    DCHECK(version.HasIetfQuicFrames());
+    DCHECK(version.IsIetfQuic());
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         body.size(), quiche::SimpleBufferAllocator::Get());
     return base::StrCat({std::string_view(buffer.data(), buffer.size()), body});

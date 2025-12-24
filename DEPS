@@ -428,7 +428,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': '901d0a7b4dbb141f2ad4eb8e1f00eb87f945044e',
+  'quiche_revision': '5d51e078453caf66cdc7f3b6abcf3c5b1926720a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
@@ -2587,7 +2587,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + '652bdb7719f30b52b08e506645a7322ff1b2cc6f',
 
   'src/third_party/openscreen/src':
-    Var('chromium_git') + '/openscreen' + '@' + '592c8867ca7ff2be80c2ab0af244642f602f8647',
+    Var('chromium_git') + '/openscreen' + '@' + 'c2f2047e07f3ac12c07a217f5f1229536492d808',
 
   'src/third_party/openxr/src': {
     'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + '75c53b6e853dc12c7b3c771edc9c9c841b15faaa',

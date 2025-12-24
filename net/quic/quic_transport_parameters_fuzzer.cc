@@ -20,7 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<uint8_t> remaining_bytes =
       data_provider.ConsumeRemainingBytes<uint8_t>();
   quic::ParsedQuicVersion version = quic::AllSupportedVersionsWithTls().front();
-  CHECK(version.UsesTls());
+  CHECK(version.IsIetfQuic());
   std::string error_details;
   quic::ParseTransportParameters(version, perspective, remaining_bytes.data(),
                                  remaining_bytes.size(), &transport_parameters,

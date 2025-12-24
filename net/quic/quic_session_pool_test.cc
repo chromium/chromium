@@ -2560,7 +2560,7 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
   MockQuicData socket_data(version_);
   socket_data.AddReadPauseForever();
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
+  if (VersionIsIetfQuic(version_.transport_version)) {
     socket_data.AddWrite(SYNCHRONOUS,
                          ConstructInitialSettingsPacket(packet_num++));
   }

@@ -1036,7 +1036,7 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeStreamRequest) {
 }
 
 TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeHandshakeConfirmed) {
-  if (version_.UsesTls()) {
+  if (version_.IsIetfQuic()) {
     // TODO(nharper, b/112643533): Figure out why this test fails when TLS is
     // enabled and fix it.
     return;

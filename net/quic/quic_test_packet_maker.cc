@@ -140,7 +140,7 @@ QuicTestPacketMaker::QuicTestPacketMaker(quic::ParsedQuicVersion version,
       perspective_(perspective),
       client_priority_uses_incremental_(client_priority_uses_incremental),
       use_priority_header_(use_priority_header) {
-  DCHECK(version.HasIetfQuicFrames());
+  DCHECK(version.IsIetfQuic());
   DCHECK(!(perspective_ == quic::Perspective::IS_SERVER &&
            client_priority_uses_incremental_));
 
