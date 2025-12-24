@@ -521,7 +521,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       context->set_device_bound_session_store(
           device_bound_sessions::SessionStore::Create(
               device_bound_sessions_file_path_,
-              unexportable_key_service_.get()));
+              context->unexportable_key_service()));
     }
     context->set_device_bound_session_service(
         device_bound_sessions::SessionService::Create(context.get()));
