@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -18,6 +21,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -31,6 +35,22 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  explicit TestingAimEligibilityService(
+      PrefService& pref_service,
+      TemplateURLService* template_url_service)
+      : ChromeAimEligibilityService(pref_service,
+                                    template_url_service,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*is_off_the_record=*/false) {}
+
+  ~TestingAimEligibilityService() override = default;
+
+  bool IsAimEligible() const override { return true; }
+};
 }  // namespace
 
 class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
@@ -43,6 +63,20 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
                   IdentityTestEnvironmentProfileAdaptor::
                       SetIdentityTestEnvironmentFactoriesOnBrowserContext(
                           context);
+
+                  AimEligibilityServiceFactory::GetInstance()
+                      ->SetTestingFactory(
+                          context,
+                          base::BindLambdaForTesting([](content::BrowserContext*
+                                                            context) {
+                            Profile* const profile =
+                                Profile::FromBrowserContext(context);
+                            return static_cast<std::unique_ptr<KeyedService>>(
+                                std::make_unique<TestingAimEligibilityService>(
+                                    *profile->GetPrefs(),
+                                    TemplateURLServiceFactory::GetForProfile(
+                                        profile)));
+                          }));
                 }));
   }
 
