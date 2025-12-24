@@ -230,6 +230,9 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
       *url_filtering_service_.get(),
+#if BUILDFLAG(IS_ANDROID)
+      android_parental_controls_,
+#endif
       std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
       std::move(metrics_service_accessor_delegate));
 }

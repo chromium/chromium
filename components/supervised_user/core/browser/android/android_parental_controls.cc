@@ -29,23 +29,23 @@ AndroidParentalControls::~AndroidParentalControls() = default;
 
 void AndroidParentalControls::OnContentFiltersObserverEnabled(
     std::string_view setting_name) {
-  if (setting_name == browser_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(&Observer::OnBrowserContentFiltersEnabled);
-  } else if (setting_name ==
-             search_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(&Observer::OnSearchContentFiltersEnabled);
-  } else {
-    NOTREACHED() << "Unexpected setting name: " << setting_name;
-  }
+  OnContentFiltersObserverChanged(setting_name);
 }
 
 void AndroidParentalControls::OnContentFiltersObserverDisabled(
     std::string_view setting_name) {
+  OnContentFiltersObserverChanged(setting_name);
+}
+
+void AndroidParentalControls::OnContentFiltersObserverChanged(
+    std::string_view setting_name) {
   if (setting_name == browser_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(&Observer::OnBrowserContentFiltersDisabled);
+    observer_list_.Notify(
+        &Observer::OnAndroidParentalControlsBrowserContentFiltersChanged);
   } else if (setting_name ==
              search_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(&Observer::OnSearchContentFiltersDisabled);
+    observer_list_.Notify(
+        &Observer::OnAndroidParentalControlsSearchContentFiltersChanged);
   } else {
     NOTREACHED() << "Unexpected setting name: " << setting_name;
   }

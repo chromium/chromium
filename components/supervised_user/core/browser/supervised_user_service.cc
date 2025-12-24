@@ -425,6 +425,15 @@ bool IsEligibleForContentFilters(const PrefService& user_prefs) {
 }
 }  // namespace
 
+void SupervisedUserService::
+    OnAndroidParentalControlsSearchContentFiltersChanged() {
+  if (android_parental_controls_->IsSearchContentFiltersEnabled()) {
+    OnSearchContentFiltersEnabled();
+  } else {
+    OnSearchContentFiltersDisabled();
+  }
+}
+
 void SupervisedUserService::OnSearchContentFiltersEnabled() {
   if (!IsEligibleForContentFilters(user_prefs_.get())) {
     RecordSupervisionConflict();
@@ -437,8 +446,8 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
     platform_delegate_->CloseIncognitoTabs();
   }
 
-  // OnSearchContentFiltersChanged reattributes the synthetic field trial
-  // groups and then reloads search pages.
+  // Navigation observer reacts to this notification by reloading search pages
+  // and emitting WebFilterType metrics.
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
   // Required to emit WebFilterType metrics.
@@ -450,11 +459,21 @@ void SupervisedUserService::OnSearchContentFiltersDisabled() {
     settings_service_->SetSuspended(false);
   }
 
-  // OnSearchContentFiltersChanged reattributes the synthetic field trial
-  // groups and then reloads search pages.
+  // Navigation observer reacts to this notification by reloading search pages
+  // and emitting WebFilterType metrics.
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
+
+void SupervisedUserService::
+    OnAndroidParentalControlsBrowserContentFiltersChanged() {
+  if (android_parental_controls_->IsBrowserContentFiltersEnabled()) {
+    OnBrowserContentFiltersEnabled();
+  } else {
+    OnBrowserContentFiltersDisabled();
+  }
+}
+
 void SupervisedUserService::OnBrowserContentFiltersEnabled() {
   if (!IsEligibleForContentFilters(user_prefs_.get())) {
     RecordSupervisionConflict();
@@ -471,10 +490,6 @@ void SupervisedUserService::OnBrowserContentFiltersEnabled() {
   // Add handlers that will prevent unsupported url filter changes.
   AddURLFilterPrefChangeSentinels();
 
-  // OnBrowserContentFiltersChanged reattributes the synthetic field trial
-  // groups
-  observer_list_.Notify(
-      &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
   // Required to emit WebFilterType metrics and reclassifies the observed
   // navigations.
   UpdateURLFilter();
@@ -487,10 +502,6 @@ void SupervisedUserService::OnBrowserContentFiltersDisabled() {
     settings_service_->SetSuspended(false);
   }
 
-  // OnBrowserContentFiltersChanged reattributes the synthetic field trial
-  // groups
-  observer_list_.Notify(
-      &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
   // Required to emit WebFilterType metrics and reclassifies the observed
   // navigations.
   UpdateURLFilter();

@@ -29,10 +29,8 @@ class AndroidParentalControls : public ContentFiltersObserverBridge::Observer {
     // the existing interface is just duplicated.
     // TODO(crbug.com/470298260): replace low-level OS signals with high-level
     // browser feature states.
-    virtual void OnSearchContentFiltersEnabled() {}
-    virtual void OnSearchContentFiltersDisabled() {}
-    virtual void OnBrowserContentFiltersEnabled() {}
-    virtual void OnBrowserContentFiltersDisabled() {}
+    virtual void OnAndroidParentalControlsSearchContentFiltersChanged() {}
+    virtual void OnAndroidParentalControlsBrowserContentFiltersChanged() {}
   };
 
   AndroidParentalControls();
@@ -61,6 +59,7 @@ class AndroidParentalControls : public ContentFiltersObserverBridge::Observer {
   // ContentFiltersObserverBridge::Observer:
   void OnContentFiltersObserverEnabled(std::string_view setting_name) override;
   void OnContentFiltersObserverDisabled(std::string_view setting_name) override;
+  void OnContentFiltersObserverChanged(std::string_view setting_name);
 
   ContentFiltersObserverBridge browser_content_filters_observer_{
       kBrowserContentFiltersSettingName};

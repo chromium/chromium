@@ -20,6 +20,13 @@
 #include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/check_deref.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif
+
 // static
 supervised_user::SupervisedUserMetricsService*
 SupervisedUserMetricsServiceFactory::GetForBrowserContext(
@@ -78,6 +85,10 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
       *SupervisedUserServiceFactory::GetForProfile(profile),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
+#if BUILDFLAG(IS_ANDROID)
+      CHECK_DEREF(
+          g_browser_process->GetFeatures()->GetAndroidParentalControls()),
+#endif
       std::move(extensions_metrics_delegate),
       std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>());
 }

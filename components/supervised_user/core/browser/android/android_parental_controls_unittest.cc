@@ -14,20 +14,24 @@ class AndroidParentalControlsTest : public testing::Test {};
 
 class MockObserver : public AndroidParentalControls::Observer {
  public:
-  MOCK_METHOD(void, OnSearchContentFiltersEnabled, (), (override));
-  MOCK_METHOD(void, OnSearchContentFiltersDisabled, (), (override));
-  MOCK_METHOD(void, OnBrowserContentFiltersEnabled, (), (override));
-  MOCK_METHOD(void, OnBrowserContentFiltersDisabled, (), (override));
+  MOCK_METHOD(void,
+              OnAndroidParentalControlsBrowserContentFiltersChanged,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              OnAndroidParentalControlsSearchContentFiltersChanged,
+              (),
+              (override));
 };
 
 TEST(AndroidParentalControlsTest, CheckNotificationsAreSent) {
   AndroidParentalControls android_parental_controls;
   MockObserver observer;
 
-  EXPECT_CALL(observer, OnSearchContentFiltersEnabled()).Times(1);
-  EXPECT_CALL(observer, OnSearchContentFiltersDisabled()).Times(1);
-  EXPECT_CALL(observer, OnBrowserContentFiltersEnabled()).Times(1);
-  EXPECT_CALL(observer, OnBrowserContentFiltersDisabled()).Times(1);
+  EXPECT_CALL(observer, OnAndroidParentalControlsBrowserContentFiltersChanged())
+      .Times(2);
+  EXPECT_CALL(observer, OnAndroidParentalControlsSearchContentFiltersChanged())
+      .Times(2);
 
   android_parental_controls.AddObserver(&observer);
   android_parental_controls.SetBrowserContentFiltersEnabledForTesting(true);

@@ -211,10 +211,13 @@ class SupervisedUserService : public KeyedService
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidParentalControlsService::Observer:
-  void OnSearchContentFiltersEnabled() override;
-  void OnSearchContentFiltersDisabled() override;
-  void OnBrowserContentFiltersEnabled() override;
-  void OnBrowserContentFiltersDisabled() override;
+  void OnAndroidParentalControlsBrowserContentFiltersChanged() override;
+  void OnAndroidParentalControlsSearchContentFiltersChanged() override;
+
+  void OnSearchContentFiltersEnabled();
+  void OnSearchContentFiltersDisabled();
+  void OnBrowserContentFiltersEnabled();
+  void OnBrowserContentFiltersDisabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   const raw_ref<PrefService> user_prefs_;

@@ -95,6 +95,9 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
     PrefService* pref_service,
     SupervisedUserService& supervised_user_service,
     const SupervisedUserUrlFilteringService& url_filtering_service,
+#if BUILDFLAG(IS_ANDROID)
+    AndroidParentalControls& android_parental_controls,
+#endif
     std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
         extensions_metrics_delegate,
     std::unique_ptr<MetricsServiceAccessorDelegate>
@@ -102,6 +105,9 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
     : pref_service_(pref_service),
       supervised_user_service_(supervised_user_service),
       url_filtering_service_(url_filtering_service),
+#if BUILDFLAG(IS_ANDROID)
+      android_parental_controls_(android_parental_controls),
+#endif
       extensions_metrics_delegate_(std::move(extensions_metrics_delegate)),
       metrics_service_accessor_delegate_(
           std::move(metrics_service_accessor_delegate)) {
@@ -120,8 +126,10 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
 #if BUILDFLAG(IS_ANDROID)
   CHECK(metrics_service_accessor_delegate_)
       << "Metrics service accessor delegate must exist on Android";
-  OnBrowserContentFiltersChanged();
-  OnSearchContentFiltersChanged();
+  android_parental_controls_service_observation_.Observe(
+      &android_parental_controls);
+  OnAndroidParentalControlsBrowserContentFiltersChanged();
+  OnAndroidParentalControlsSearchContentFiltersChanged();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -158,23 +166,23 @@ void SupervisedUserMetricsService::RecordCurrentDay() {
                             GetDayId(base::Time::Now()));
 }
 
-void SupervisedUserMetricsService::OnBrowserContentFiltersChanged() {
 #if BUILDFLAG(IS_ANDROID)
+void SupervisedUserMetricsService::
+    OnAndroidParentalControlsBrowserContentFiltersChanged() {
   metrics_service_accessor_delegate_->RegisterSyntheticFieldTrial(
       kDeviceBrowserContentFiltersSyntheticFieldTrialName,
       GetDeviceFiltersSynthenticFieldTrialGroupName(
-          supervised_user_service_->IsLocalBrowserFilteringEnabled()));
-#endif  // BUILDFLAG(IS_ANDROID)
+          android_parental_controls_->IsBrowserContentFiltersEnabled()));
 }
 
-void SupervisedUserMetricsService::OnSearchContentFiltersChanged() {
-#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserMetricsService::
+    OnAndroidParentalControlsSearchContentFiltersChanged() {
   metrics_service_accessor_delegate_->RegisterSyntheticFieldTrial(
       kDeviceSearchContentFiltersSyntheticFieldTrialName,
       GetDeviceFiltersSynthenticFieldTrialGroupName(
-          supervised_user_service_->IsLocalSearchFilteringEnabled()));
-#endif  // BUILDFLAG(IS_ANDROID)
+          android_parental_controls_->IsSearchContentFiltersEnabled()));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
   TryEmittingMetricsAndRecordCurrentDay();
