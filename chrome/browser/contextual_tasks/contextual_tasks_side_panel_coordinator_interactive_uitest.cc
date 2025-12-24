@@ -562,8 +562,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
+// TODO(crbug.com/470086449): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       UpdateActiveTabContextStatusOnTabSwitch) {
+                       DISABLED_UpdateActiveTabContextStatusOnTabSwitch) {
   SetUpTasks();
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
