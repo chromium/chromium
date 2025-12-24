@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -41,17 +42,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
+#include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
-
-using SidePanelWebUIViewT_ContextualTasksUI =
-    SidePanelWebUIViewT<ContextualTasksUI>;
-BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ContextualTasksUI,
-                        SidePanelWebUIViewT)
-END_METADATA
 
 namespace {
 inline constexpr int kSidePanelPreferredDefaultWidth = 440;
@@ -117,6 +113,28 @@ class ContextualTasksWebView : public views::WebView {
 
   base::WeakPtr<ContextualTasksWebView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void SetWebContents(content::WebContents* web_contents) override {
+    views::WebView::SetWebContents(web_contents);
+    if (web_contents) {
+      // Set `this` as the delegate to handle media access permissions.
+      web_contents->SetDelegate(this);
+      // Set ViewType::kComponent for voice recognition to work.
+      extensions::SetViewType(web_contents,
+                              extensions::mojom::ViewType::kComponent);
+    }
+  }
+
+  // content::WebContentsDelegate:
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override {
+    // Forward directly to MediaCaptureDevicesDispatcher. This bypasses the
+    // origin check that would incorrectly use the main tab's origin.
+    MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+        web_contents, request, std::move(callback), /*extension=*/nullptr);
   }
 
  private:
