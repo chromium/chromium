@@ -206,6 +206,10 @@ class SupervisedUserService : public KeyedService
   void AddCustodianPrefChangeHandlers();
   void RemoveCustodianPrefChangeHandlers();
 
+  // Closes incognito tabs on each availability change, under condition that
+  // any parental controls are enabled and incognito mode is not available.
+  void OnIncognitoModeAvailabilityChanged();
+
 #if BUILDFLAG(IS_ANDROID)
   // AndroidParentalControlsService::Observer:
   void OnAndroidParentalControlsBrowserContentFiltersChanged() override;

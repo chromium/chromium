@@ -244,6 +244,11 @@ SupervisedUserService::SupervisedUserService(
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
+  main_pref_change_registrar_.Add(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::BindRepeating(
+          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
+          base::Unretained(this)));
 
   OnSupervisedUserIdChanged();
 }
@@ -309,10 +314,6 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
 
   // Also disables incognito mode.
   SetSettingsServiceActive(true);
-  // TODO(crbug.com/447414264): Check if tabs should be closed in the first
-  // place.
-  platform_delegate_->CloseIncognitoTabs();
-
   remote_web_approvals_manager_.AddApprovalRequestCreator(
       std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
                                                      url_loader_factory_));
@@ -371,6 +372,14 @@ void SupervisedUserService::RemoveURLFilterPrefChangeHandlers() {
 
 void SupervisedUserService::RemoveCustodianPrefChangeHandlers() {
   custodian_pref_change_registrar_.RemoveAll();
+}
+
+void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
+  bool is_supervised =
+      IsSupervisedLocally() || IsSubjectToParentalControls(user_prefs_.get());
+  if (is_supervised && platform_delegate_->ShouldCloseIncognitoTabs()) {
+    platform_delegate_->CloseIncognitoTabs();
+  }
 }
 
 void SupervisedUserService::OnCustodianInfoChanged() {
@@ -442,9 +451,6 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
 
   settings_service_->SetSuspended(true);
   content_filters_service_->SetSearchFiltersEnabled(true);
-  if (platform_delegate_->ShouldCloseIncognitoTabs()) {
-    platform_delegate_->CloseIncognitoTabs();
-  }
 
   // Required to emit WebFilterType metrics.
   UpdateURLFilter();
@@ -474,9 +480,6 @@ void SupervisedUserService::OnBrowserContentFiltersEnabled() {
   RemoveURLFilterPrefChangeHandlers();
   settings_service_->SetSuspended(true);
   content_filters_service_->SetBrowserFiltersEnabled(true);
-  if (platform_delegate_->ShouldCloseIncognitoTabs()) {
-    platform_delegate_->CloseIncognitoTabs();
-  }
 
   // Add handlers that will prevent unsupported url filter changes.
   AddURLFilterPrefChangeSentinels();
