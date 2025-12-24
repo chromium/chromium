@@ -751,6 +751,21 @@
             ]
         }
     ],
+    "AndroidCaretBrowsing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidCaretBrowsing"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWebPrefsLargeDisplays": [
         {
             "platforms": [
