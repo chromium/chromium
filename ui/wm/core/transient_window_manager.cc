@@ -167,6 +167,9 @@ void TransientWindowManager::RestackTransientDescendants() {
       Window::Windows(parent->children().rbegin(), parent->children().rend()));
   while (!tracker.windows().empty()) {
     auto* child_window = tracker.Pop();
+    if (!base::Contains(parent->children(), child_window)) {
+      continue;
+    }
     if (child_window != window_ &&
         HasTransientAncestor(child_window, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(child_window);
