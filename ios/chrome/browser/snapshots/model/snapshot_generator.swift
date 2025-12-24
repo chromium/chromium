@@ -118,9 +118,11 @@ import UIKit
       format.opaque = true
 
       let renderer = UIGraphicsImageRenderer(size: frameInBaseView.size, format: format)
-      let image = renderer.image { (context) in
-        backgroundImage.draw(in: CGRect(origin: CGPoint.zero, size: backgroundImage.size))
-        image.draw(in: CGRect(origin: CGPoint.zero, size: image.size))
+      let image = autoreleasepool {
+        return renderer.image { (context) in
+          backgroundImage.draw(in: CGRect(origin: CGPoint.zero, size: backgroundImage.size))
+          image.draw(in: CGRect(origin: CGPoint.zero, size: image.size))
+        }
       }
 
       return self.addOverlays(baseImage: image)
@@ -142,25 +144,27 @@ import UIKit
     let renderer = UIGraphicsImageRenderer(bounds: baseView.bounds, format: format)
 
     var snapshotSuccess = true
-    let image = renderer.image { context in
-      if #available(iOS 26, *) {
-        // A translucent background starting from iOS 26 only works well with drawHierarchy.
-        snapshotSuccess = baseView.drawHierarchy(in: baseView.bounds, afterScreenUpdates: false)
-      } else {
-        // Take animations into account by rendering the presentation layer.
-        // Fallback to the rendering the layer if not possible.
-        let layerToRender = baseView.layer.presentation() ?? baseView.layer
+    let image = autoreleasepool {
+      return renderer.image { context in
+        if #available(iOS 26, *) {
+          // A translucent background starting from iOS 26 only works well with drawHierarchy.
+          snapshotSuccess = baseView.drawHierarchy(in: baseView.bounds, afterScreenUpdates: false)
+        } else {
+          // Take animations into account by rendering the presentation layer.
+          // Fallback to the rendering the layer if not possible.
+          let layerToRender = baseView.layer.presentation() ?? baseView.layer
 
-        // To mitigate against crashes like crbug.com/1429512, ensure that the
-        // layer's position is valid. Otherwise mark the snapshotting as failed.
-        let position = layerToRender.position
-        let validPosition = !position.x.isNaN && !position.y.isNaN
-        guard validPosition else {
-          snapshotSuccess = false
-          return
+          // To mitigate against crashes like crbug.com/1429512, ensure that the
+          // layer's position is valid. Otherwise mark the snapshotting as failed.
+          let position = layerToRender.position
+          let validPosition = !position.x.isNaN && !position.y.isNaN
+          guard validPosition else {
+            snapshotSuccess = false
+            return
+          }
+
+          layerToRender.render(in: context.cgContext)
         }
-
-        layerToRender.render(in: context.cgContext)
       }
     }
 
@@ -237,33 +241,35 @@ import UIKit
 
     let renderer = UIGraphicsImageRenderer(size: snapshotFrameInWindow.size, format: format)
 
-    return renderer.image { (context) in
-      let cgContextRef = context.cgContext
+    return autoreleasepool {
+      return renderer.image { (context) in
+        let cgContextRef = context.cgContext
 
-      // The base image is already a cropped snapshot so it is drawn at the origin of the new image.
-      baseImage.draw(in: CGRect(origin: CGPoint.zero, size: snapshotFrameInWindow.size))
+        // The base image is already a cropped snapshot so it is drawn at the origin of the new image.
+        baseImage.draw(in: CGRect(origin: CGPoint.zero, size: snapshotFrameInWindow.size))
 
-      // This shifts the origin of the context so that future drawings can be in window coordinates.
-      // For example, suppose that the desired snapshot area is at (0, 99) in the window coordinate
-      // space. Drawing at (0, 99) will appear as (0, 0) in the resulting image.
-      cgContextRef.translateBy(
-        x: -snapshotFrameInWindow.origin.x, y: -snapshotFrameInWindow.origin.y)
+        // This shifts the origin of the context so that future drawings can be in window coordinates.
+        // For example, suppose that the desired snapshot area is at (0, 99) in the window coordinate
+        // space. Drawing at (0, 99) will appear as (0, 0) in the resulting image.
+        cgContextRef.translateBy(
+          x: -snapshotFrameInWindow.origin.x, y: -snapshotFrameInWindow.origin.y)
 
-      for overlay in overlays {
-        if #available(iOS 26, *) {
-          // A translucent background starting from iOS 26 only works well with drawHierarchy.
-          overlay.drawHierarchy(in: overlay.bounds, afterScreenUpdates: false)
-        } else {
-          cgContextRef.saveGState()
-          let superview = overlay.superview ?? baseView
-          // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
-          // is defined as "the view’s location and size in its superview’s coordinate system".
-          // However it appears that some overlays do not have any superviews.
-          let frameInWindow = superview.convert(overlay.frame, to: nil)
-          overlay.layer.render(in: cgContextRef)
-          // This shifts the context so that drawing starts at the overlay's offset.
-          cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
-          cgContextRef.restoreGState()
+        for overlay in overlays {
+          if #available(iOS 26, *) {
+            // A translucent background starting from iOS 26 only works well with drawHierarchy.
+            overlay.drawHierarchy(in: overlay.bounds, afterScreenUpdates: false)
+          } else {
+            cgContextRef.saveGState()
+            let superview = overlay.superview ?? baseView
+            // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
+            // is defined as "the view’s location and size in its superview’s coordinate system".
+            // However it appears that some overlays do not have any superviews.
+            let frameInWindow = superview.convert(overlay.frame, to: nil)
+            overlay.layer.render(in: cgContextRef)
+            // This shifts the context so that drawing starts at the overlay's offset.
+            cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
+            cgContextRef.restoreGState()
+          }
         }
       }
     }
