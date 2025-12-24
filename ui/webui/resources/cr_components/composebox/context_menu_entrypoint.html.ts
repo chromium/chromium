@@ -8,7 +8,8 @@ import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_m
 
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
-  const entrypointButton = this.showContextMenuDescription ? html`
+  const entrypointButton = !this.hideEntrypointButton ? html`
+    ${this.showContextMenuDescription ? html`
     <cr-button id="entrypoint"
         class="ai-mode-button"
         @click="${this.onEntrypointClick_}"
@@ -31,7 +32,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         ?disabled="${this.inputsDisabled}"
         title="${this.i18n('addContextTitle')}"
         noink>
-    </cr-icon-button>`;
+    </cr-icon-button>`}
+  ` : html`<div id="entrypointPlaceholder" aria-hidden="true"></div>`;
   return html`<!--_html_template_start_-->
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
     <div id="glowWrapper" class="glow-container">

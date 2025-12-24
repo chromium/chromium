@@ -260,6 +260,11 @@ cr-button#entrypoint.ai-mode-button {
   background-color: var(--cr-icon-button-hover-background-color);
 }
 
+#entrypointPlaceholder {
+  display: inline-block;
+  width: 36px;
+}
+
 #description {
   display: block;
   font-size: 13px;

@@ -75,6 +75,7 @@ export class ContextMenuEntrypointElement extends
         reflect: true,
         type: Boolean,
       },
+      hideEntrypointButton: {type: Boolean},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
@@ -109,6 +110,7 @@ export class ContextMenuEntrypointElement extends
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
   accessor hasImageFiles: boolean = false;
+  accessor hideEntrypointButton: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';

@@ -117,6 +117,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       contextMenuGlifAnimationState: {type: String, reflect: true},
+      // Determines if the entrypoint button should be hidden. This applies
+      // specifically to Omnibox Searchbox in compact mode, as opposed to the
+      // AIM composebox where the entrypoint is always visible.
+      hideEntrypointButton: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -188,6 +192,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor submitButtonShown: boolean = false;
+  protected accessor hideEntrypointButton: boolean = false;
 
   hasAutomaticActiveTabChipToken(): boolean {
     return this.automaticActiveTabChipToken_ !== null;
@@ -209,6 +214,29 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get shouldShowLensSearchChip_(): boolean {
     return this.shouldShowContextualSearchChips_() && this.showLensSearchChip;
+  }
+
+  protected get shouldShowContextualChipsForCompactMode_(): boolean {
+    return this.searchboxLayoutMode === 'Compact' &&
+        (this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_);
+  }
+
+  protected get shouldShowToolChips_(): boolean {
+    return this.searchboxLayoutMode !== 'Compact' ||
+        this.shouldShowContextualChipsForCompactMode_;
+  }
+
+  protected get shouldShowDivider_(): boolean {
+    return this.shouldShowContextualChipsForCompactMode_ ||
+        (this.showDropdown &&
+         (this.showFileCarousel_ ||
+          this.searchboxLayoutMode === 'TallTopContext' ||
+          this.submitButtonShown));
+  }
+
+  protected get shouldHideEntrypointButton_(): boolean {
+    return this.shouldShowContextualChipsForCompactMode_ ||
+        this.hideEntrypointButton;
   }
 
   private maxFileCount_: number =
