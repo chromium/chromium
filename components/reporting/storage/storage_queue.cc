@@ -61,8 +61,8 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
+#include "crypto/hash.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace reporting {
@@ -777,7 +777,7 @@ Status StorageQueue::ReadMetadata(
   // - last record digest (crypto::kSHA256Length bytes)
   // Read generation id.
   constexpr size_t max_buffer_size =
-      sizeof(generation_id_) + crypto::kSHA256Length;
+      sizeof(generation_id_) + crypto::hash::kSha256Size;
   auto read_result =
       meta_file->Read(/*pos=*/0, sizeof(generation_id_), max_buffer_size);
   if (!read_result.has_value() ||
@@ -818,9 +818,9 @@ Status StorageQueue::ReadMetadata(
   }
   // Read last record digest.
   read_result = meta_file->Read(/*pos=*/sizeof(generation_id),
-                                crypto::kSHA256Length, max_buffer_size);
+                                crypto::hash::kSha256Size, max_buffer_size);
   if (!read_result.has_value() ||
-      read_result.value().size() != crypto::kSHA256Length) {
+      read_result.value().size() != crypto::hash::kSha256Size) {
     base::UmaHistogramEnumeration(
         reporting::kUmaDataLossErrorReason,
         DataLossErrorReason::METADATA_LAST_RECORD_DIGEST_IS_CORRUPT,
@@ -1633,8 +1633,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     {
       std::string serialized_record;
       wrapped_record.record().SerializeToString(&serialized_record);
-      current_record_digest_ = crypto::SHA256HashString(serialized_record);
-      CHECK_EQ(current_record_digest_.size(), crypto::kSHA256Length);
+      current_record_digest_ = std::string(
+          base::as_string_view(crypto::hash::Sha256(serialized_record)));
       *wrapped_record.mutable_record_digest() = current_record_digest_;
     }
 
