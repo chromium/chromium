@@ -146,13 +146,13 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kShowSmartCompose.Get());
   source->AddBoolean("expandedComposeboxShowVoiceSearch",
                      omnibox::kShowVoiceSearchInExpandedComposebox.Get());
-  source->AddBoolean("expandedSearchboxShowVoiceSearch",
-                     false);
+  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   const std::string searchbox_layout_mode =
       AddContextButtonVariantToSearchboxLayoutMode(
           omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
   source->AddString("searchboxLayoutMode", searchbox_layout_mode);
-  source->AddBoolean("steadyComposeboxShowVoiceSearch", omnibox::kShowVoiceSearchInSteadyComposebox.Get());
+  source->AddBoolean("steadyComposeboxShowVoiceSearch",
+                     omnibox::kShowVoiceSearchInSteadyComposebox.Get());
   source->AddString(
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::
@@ -214,6 +214,10 @@ OmniboxPopupUI::GetContextualSessionHandle() {
       shared_session_handle_ = contextual_search_service->CreateSession(
           omnibox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kOmnibox);
+      // TODO(crbug.com/469875271): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      shared_session_handle_->CheckSearchContentSharingSettings(
+          profile_->GetPrefs());
     }
   }
   return shared_session_handle_.get();

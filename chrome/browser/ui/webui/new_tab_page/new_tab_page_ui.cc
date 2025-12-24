@@ -1281,6 +1281,10 @@ NewTabPageUI::GetContextualSessionHandle() {
       shared_session_handle_ = contextual_search_service->CreateSession(
           ntp_composebox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kNewTabPage);
+      // TODO(crbug.com/469875247): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      shared_session_handle_->CheckSearchContentSharingSettings(
+          profile_->GetPrefs());
     }
   }
   return shared_session_handle_.get();

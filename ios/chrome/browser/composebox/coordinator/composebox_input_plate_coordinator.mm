@@ -67,7 +67,7 @@
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 const CGFloat kSnackbarBottomMargin = 10;
-}
+}  // namespace
 
 @interface ComposeboxInputPlateCoordinator () <
     ComposeboxInputPlateMediatorDelegate,
@@ -155,6 +155,11 @@ const CGFloat kSnackbarBottomMargin = 10;
       contextualSearchSession = _contextualService->CreateSession(
           std::move(query_controller_config_params),
           contextual_search::ContextualSearchSource::kOmnibox);
+
+  // TODO(crbug.com/470072061): Determine what to do with the return value
+  // of this call, or move this call to a different location.
+  contextualSearchSession->CheckSearchContentSharingSettings(
+      self.profile->GetPrefs());
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
@@ -296,8 +301,7 @@ const CGFloat kSnackbarBottomMargin = 10;
     [self showMaxAttachmentSnackbarError];
     return;
   }
-    [self
-        composeboxViewControllerMayShowGalleryPicker:composeboxViewController];
+  [self composeboxViewControllerMayShowGalleryPicker:composeboxViewController];
   [_viewController presentViewController:_picker animated:YES completion:nil];
 }
 

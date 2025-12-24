@@ -150,6 +150,12 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
         // handle).
         session_handle =
             service->GetSession(helper->session_handle()->session_id());
+        if (session_handle) {
+          // TODO(crbug.com/469877869): Determine what to do with the return
+          // value of this call, or move this call to a different location.
+          session_handle->CheckSearchContentSharingSettings(
+              profile_->GetPrefs());
+        }
       }
     }
   }

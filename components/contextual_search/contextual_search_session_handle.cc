@@ -13,8 +13,10 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/prefs/pref_service.h"
 #include "contextual_search_context_controller.h"
 #include "contextual_search_types.h"
+#include "pref_names.h"
 
 namespace contextual_search {
 
@@ -77,6 +79,15 @@ void ContextualSearchSessionHandle::NotifySessionAbandoned() {
   }
 }
 
+bool ContextualSearchSessionHandle::CheckSearchContentSharingSettings(
+    const PrefService* prefs) {
+  if (!prefs) {
+    return false;
+  }
+  policy_checked_ = true;
+  return ContextualSearchService::IsContextSharingEnabled(prefs);
+}
+
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ContextualSearchSessionHandle::GetSuggestInputs() const {
   auto* controller = GetController();
@@ -98,6 +109,7 @@ void ContextualSearchSessionHandle::AddFileContext(
     mojo_base::BigBuffer file_bytes,
     std::optional<lens::ImageEncodingOptions> image_options,
     AddFileContextCallback callback) {
+  CHECK(policy_checked_);
   auto* context_controller = GetController();
   auto* metrics_recorder = GetMetricsRecorder();
   if (!context_controller) {
@@ -139,6 +151,7 @@ void ContextualSearchSessionHandle::AddFileContext(
 void ContextualSearchSessionHandle::AddTabContext(
     int32_t tab_id,
     AddTabContextCallback callback) {
+  CHECK(policy_checked_);
   // Create the file token and add it to the list of uploaded context tokens so
   // that it is referenced in the search url.
   base::UnguessableToken file_token = base::UnguessableToken::Create();

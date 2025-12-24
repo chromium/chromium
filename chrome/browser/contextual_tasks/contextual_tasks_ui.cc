@@ -280,6 +280,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       session_handle_ = service->CreateSession(
           ntp_composebox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kContextualTasks);
+      // TODO(crbug.com/469875164): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      session_handle_->CheckSearchContentSharingSettings(
+          Profile::FromWebUI(web_ui)->GetPrefs());
     }
   }
 }

@@ -105,6 +105,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     omnibox::RegisterProfilePrefs(pref_service_.registry());
+    contextual_search::ContextualSearchService::RegisterProfilePrefs(
+        pref_service_.registry());
     AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
     profile_ = TestProfileIOS::Builder().Build();
     shared_url_loader_factory_ =
@@ -137,11 +139,14 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         .WillOnce(
             testing::DoAll(testing::SaveArg<0>(&aim_callback_),
                            testing::Return(base::CallbackListSubscription())));
+    auto session_handle = service_->CreateSession(
+        std::move(config_params),
+        contextual_search::ContextualSearchSource::kUnknown);
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    session_handle->CheckSearchContentSharingSettings(&pref_service_);
     mediator_ = [[ComposeboxInputPlateMediator alloc]
-        initWithContextualSearchSession:
-            service_->CreateSession(
-                std::move(config_params),
-                contextual_search::ContextualSearchSource::kUnknown)
+        initWithContextualSearchSession:std::move(session_handle)
                            webStateList:web_state_list_.get()
                           faviconLoader:nullptr
                  persistTabContextAgent:nullptr

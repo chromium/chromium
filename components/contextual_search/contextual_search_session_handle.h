@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 
 class GURL;
+class PrefService;
 
 namespace lens {
 enum class MimeType;
@@ -66,6 +67,12 @@ class ContextualSearchSessionHandle {
 
   // Notifies the session handle that the session has been abandoned.
   void NotifySessionAbandoned();
+
+  // Checks the SearchContentSharingSettings policy. Returns true if sharing is
+  // allowed, false otherwise. Clients MUST call this method at least once
+  // during the lifetime of the session handle before uploading any context, to
+  // indicate that the policy has been checked.
+  bool CheckSearchContentSharingSettings(const PrefService* prefs);
 
   // Returns the suggest inputs for the current session.
   virtual std::optional<lens::proto::LensOverlaySuggestInputs>
@@ -164,6 +171,9 @@ class ContextualSearchSessionHandle {
   // instance of the session handle, meaning that it is unique per instance of
   // the contextual tasks ui.
   std::vector<base::UnguessableToken> submitted_context_tokens_;
+
+  // Whether the SearchContentSharingSettings policy has been checked.
+  bool policy_checked_ = false;
 
   // The service that vended this handle. This is a weak pointer because a
   // handle may outlive the service.
