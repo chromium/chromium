@@ -430,7 +430,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/443182226 [ fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
+crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
 
