@@ -29,7 +29,6 @@
 #include <string>
 
 #include "base/types/expected_macros.h"
-#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/context_provider_dml.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/context_provider_ort.h"
@@ -451,23 +450,11 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
 
   base::expected<scoped_refptr<ort::Environment>, std::string>
       env_creation_results =
-          ort::Environment::GetInstance(gpu_info_, ep_package_info);
+          ort::Environment::GetInstance(gpu_feature_info_, ep_package_info);
   if (!env_creation_results.has_value()) {
     LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime context: "
                << env_creation_results.error();
   } else {
-    mojom::Device device_type = options->device;
-    // Falls back to GPU if the device type is NPU but NPU is disabled.
-    if (device_type == mojom::Device::kNpu &&
-        gpu_feature_info_.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU)) {
-      device_type = mojom::Device::kGpu;
-      LOG(WARNING) << "[WebNN] [WARNING] NPU device is disabled to create "
-                      "ONNX Runtime context. Falling back to GPU.";
-    }
-
-    const EpWorkarounds ep_workarounds =
-        env_creation_results.value()->GetEpWorkarounds(device_type);
-
     if (!task_runner->BelongsToCurrentThread()) {
       // Re-create gpu sequence for the new task runner. Destroying the old
       // gpu sequence is safe since it has no scheduled tasks yet.
@@ -485,8 +472,8 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
           FROM_HERE,
           base::BindOnce(
               &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
-              ep_workarounds, std::move(options), device_type,
-              std::move(write_tensor_consumer), std::move(read_tensor_producer),
+              std::move(options), std::move(write_tensor_consumer),
+              std::move(read_tensor_producer),
               std::move(env_creation_results.value()), std::move(gpu_sequence),
               std::move(memory_tracker_), task_runner,
               base::Unretained(shared_image_manager_.get()),
@@ -498,9 +485,8 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
       return;
     }
     context_impl = ort::ContextImplOrt::Create(
-        std::move(receiver), AsWeakPtr(), ep_workarounds, std::move(options),
-        device_type, std::move(write_tensor_consumer),
-        std::move(read_tensor_producer),
+        std::move(receiver), AsWeakPtr(), std::move(options),
+        std::move(write_tensor_consumer), std::move(read_tensor_producer),
         std::move(env_creation_results.value()), std::move(gpu_sequence),
         memory_tracker_, std::move(task_runner), shared_image_manager_,
         main_thread_task_runner_, std::move(scoped_trace));

@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -297,15 +298,21 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
   return selected_devices;
 }
 
-// Select the first NPU device with CPU fallback. If no NPU device is selected,
-// delegate to GPU device selection logic which selects the first GPU device
-// with CPU fallback.
+// Select the first NPU device with CPU fallback. If no NPU device is found or
+// blocklisted, delegate to GPU device selection logic which selects the first
+// GPU device with CPU fallback.
 std::vector<const OrtEpDevice*> SelectEpDevicesForNpu(
     base::span<const OrtEpDevice* const> sorted_devices) {
   const OrtEpDevice* first_npu = SelectFirstEpDeviceForDeviceType(
       sorted_devices, OrtHardwareDeviceType_NPU);
 
   if (!first_npu) {
+    return SelectEpDevicesForGpu(sorted_devices);
+  }
+
+  if (Environment::is_npu_blocklisted()) {
+    LOG(WARNING) << "[WebNN] [WARNING] NPU device is disabled to create "
+                    "ONNX Runtime context. Falling back to GPU.";
     return SelectEpDevicesForGpu(sorted_devices);
   }
 
@@ -517,19 +524,19 @@ const OrtEpDevice* SelectUserSpecifiedEpDevice(
 // static
 base::expected<scoped_refptr<Environment>, std::string>
 Environment::GetInstance(
-    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
         ep_package_info_map) {
   base::AutoLock auto_lock(GetLock());
   if (instance_) {
     return base::WrapRefCounted(instance_);
   }
-  return Create(gpu_info, ep_package_info_map);
+  return Create(gpu_feature_info, ep_package_info_map);
 }
 
 // static
 base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
-    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
         ep_package_info_map) {
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.CreateEnvironment");
@@ -600,6 +607,8 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
                  "Registered OrtEpDevice");
   }
 
+  is_npu_blocklisted_ =
+      gpu_feature_info.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU);
   return base::MakeRefCounted<Environment>(base::PassKey<Environment>(),
                                            std::move(env));
 }
@@ -632,7 +641,7 @@ void Environment::Release() const {
 // static
 std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
     base::span<const OrtEpDevice* const> available_devices,
-    mojom::Device device_type) {
+    OrtHardwareDeviceType device_type) {
   // Try to select only one EP device by user switch first.
   std::vector<const OrtEpDevice*> selected_devices;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -651,13 +660,13 @@ std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
         SortEpDevices(available_devices);
     // Select devices based on the requested device type.
     switch (device_type) {
-      case mojom::Device::kCpu:
+      case OrtHardwareDeviceType_CPU:
         selected_devices = SelectEpDevicesForCpu(sorted_devices);
         break;
-      case mojom::Device::kGpu:
+      case OrtHardwareDeviceType_GPU:
         selected_devices = SelectEpDevicesForGpu(sorted_devices);
         break;
-      case mojom::Device::kNpu:
+      case OrtHardwareDeviceType_NPU:
         selected_devices = SelectEpDevicesForNpu(sorted_devices);
         break;
     }
@@ -673,7 +682,8 @@ base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
   return GetRegisteredEpDevicesImpl(ort_api, this->get());
 }
 
-EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
+EpWorkarounds Environment::GetEpWorkarounds(
+    OrtHardwareDeviceType device_type) const {
   EpWorkarounds workarounds;
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =
@@ -694,7 +704,7 @@ EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
 }
 
 std::vector<SessionConfigEntry> Environment::GetEpConfigEntries(
-    mojom::Device device_type) const {
+    OrtHardwareDeviceType device_type) const {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =
       GetRegisteredEpDevicesImpl(ort_api, this->get());
@@ -745,5 +755,7 @@ base::flat_set<std::wstring>& Environment::GetDependentEpPackages() {
   static base::NoDestructor<base::flat_set<std::wstring>> packages;
   return *packages;
 }
+
+bool Environment::is_npu_blocklisted_ = false;
 
 }  // namespace webnn::ort

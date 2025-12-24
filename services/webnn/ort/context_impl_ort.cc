@@ -27,15 +27,25 @@ using Microsoft::WRL::ComPtr;
 // tensors for EPs, e.g. OpenVINO EP.
 BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Maps WebNN device type to ORT hardware device type.
+OrtHardwareDeviceType ToOrtDeviceType(mojom::Device device_type) {
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      return OrtHardwareDeviceType_CPU;
+    case mojom::Device::kGpu:
+      return OrtHardwareDeviceType_GPU;
+    case mojom::Device::kNpu:
+      return OrtHardwareDeviceType_NPU;
+  }
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
-    const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
-    mojom::Device device_type,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     scoped_refptr<Environment> env,
@@ -47,10 +57,21 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
     ScopedTrace scoped_trace) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
+
+  // Currently，only device type from WebNN context options is used to
+  // determine ORT device type.
+  // TODO(crbug.com/469455162): Use power preference and accelerated
+  // attributes from WebNN context options to determine ORT device type.
+  OrtHardwareDeviceType device_type = ToOrtDeviceType(options->device);
+  const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+  scoped_refptr<SessionOptions> session_options =
+      SessionOptions::Create(device_type, env);
+
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
       new ContextImplOrt(std::move(receiver), std::move(context_provider),
                          std::move(ep_workarounds), std::move(options),
-                         device_type, std::move(write_tensor_consumer),
+                         std::move(session_options),
+                         std::move(write_tensor_consumer),
                          std::move(read_tensor_producer), std::move(env),
                          std::move(gpu_sequence), std::move(memory_tracker),
                          std::move(owning_task_runner), shared_image_manager,
@@ -64,7 +85,7 @@ ContextImplOrt::ContextImplOrt(
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
-    mojom::Device device_type,
+    scoped_refptr<SessionOptions> session_options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     scoped_refptr<Environment> env,
@@ -86,10 +107,9 @@ ContextImplOrt::ContextImplOrt(
           shared_image_manager,
           std::move(main_task_runner)),
       env_(std::move(env)),
-      session_options_(SessionOptions::Create(device_type, env_)) {
+      session_options_(std::move(session_options)) {
   if (base::FeatureList::IsEnabled(kUseDeviceTensor)) {
-    device_allocator_ = DeviceAllocator::Create(this->options().device,
-                                                session_options_->get(), env_);
+    device_allocator_ = DeviceAllocator::Create(session_options_, env_);
   }
 }
 

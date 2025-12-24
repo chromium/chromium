@@ -51,15 +51,15 @@ ScopedOrtMemoryInfo CreateMemoryInfo(const OrtApi* ort_api,
 
 // static
 scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
-    mojom::Device device_type,
-    const OrtSessionOptions* session_options,
+    scoped_refptr<SessionOptions> session_options,
     scoped_refptr<Environment> env) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   base::span<const OrtEpDevice* const> registered_ep_devices =
       env->GetRegisteredEpDevices();
   std::vector<const OrtEpDevice*> selected_ep_devices =
-      Environment::SelectEpDevices(registered_ep_devices, device_type);
+      Environment::SelectEpDevices(registered_ep_devices,
+                                   session_options->device_type());
   if (selected_ep_devices.empty()) {
     LOG(ERROR)
         << "[WebNN] No suitable EP device found for creating DeviceAllocator.";
@@ -93,7 +93,7 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
 
   ScopedOrtSession trivial_session;
   CHECK_STATUS(ort_api->CreateSessionFromArray(
-      env->get(), kTrivialModel, sizeof(kTrivialModel), session_options,
+      env->get(), kTrivialModel, sizeof(kTrivialModel), session_options->get(),
       ScopedOrtSession::Receiver(trivial_session).get()));
   CHECK(trivial_session.get());
 

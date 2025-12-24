@@ -29,9 +29,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
-      const EpWorkarounds& ep_workarounds,
       mojom::CreateContextOptionsPtr options,
-      mojom::Device device_type,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       scoped_refptr<Environment> env,
@@ -46,7 +44,7 @@ class ContextImplOrt final : public WebNNContextImpl {
                  base::WeakPtr<WebNNContextProviderImpl> context_provider,
                  const EpWorkarounds& ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
-                 mojom::Device device_type,
+                 scoped_refptr<SessionOptions> session_options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
                  mojo::ScopedDataPipeProducerHandle read_tensor_producer,
                  scoped_refptr<Environment> env,

@@ -22,17 +22,19 @@ class Environment;
 class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
  public:
   // The `device_type` would be used to configure ONNX Runtime EP.
-  static scoped_refptr<SessionOptions> Create(mojom::Device device_type,
+  static scoped_refptr<SessionOptions> Create(OrtHardwareDeviceType device_type,
                                               scoped_refptr<Environment> env);
 
   SessionOptions(base::PassKey<SessionOptions>,
                  ScopedOrtSessionOptions session_options,
-                 mojom::Device device_type);
+                 OrtHardwareDeviceType device_type);
 
   SessionOptions(const SessionOptions&) = delete;
   SessionOptions& operator=(const SessionOptions&) = delete;
 
   const OrtSessionOptions* get() const { return session_options_.get(); }
+
+  OrtHardwareDeviceType device_type() const { return device_type_; }
 
  private:
   friend class base::RefCountedThreadSafe<SessionOptions>;
@@ -40,7 +42,7 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   ~SessionOptions();
 
   ScopedOrtSessionOptions session_options_;
-  const mojom::Device device_type_;
+  const OrtHardwareDeviceType device_type_;
 };
 
 }  // namespace webnn::ort

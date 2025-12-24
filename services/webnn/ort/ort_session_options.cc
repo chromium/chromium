@@ -15,7 +15,6 @@
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
-#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_switches.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h"
@@ -25,7 +24,7 @@ namespace webnn::ort {
 namespace {
 
 // Execution Provider selection delegate function that selects EPs based on
-// WebNN device type.
+// device type.
 // TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
 OrtStatus* ORT_API_CALL
 EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
@@ -42,9 +41,10 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
     return nullptr;
   }
 
-  mojom::Device* device_type_ptr = static_cast<mojom::Device*>(state);
+  OrtHardwareDeviceType* device_type_ptr =
+      static_cast<OrtHardwareDeviceType*>(state);
   CHECK(device_type_ptr) << "Device type must be provided in state parameter";
-  mojom::Device device_type = *device_type_ptr;
+  OrtHardwareDeviceType device_type = *device_type_ptr;
 
   // SAFETY: ORT guarantees that `ep_devices` is valid and contains
   // `num_devices` elements.
@@ -64,7 +64,7 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
   OrtLoggingLevel ort_logging_level = GetOrtLoggingLevel();
   if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
       ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
-    // Logs selected EP devices for the given WebNN device type.
+    // Logs selected EP devices for the given device type.
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
     LogEpDevices(ort_api, selected_devices, "Selected OrtEpDevice");
   }
@@ -105,7 +105,7 @@ std::optional<GraphOptimizationLevel> StringToOrtGraphOptimizationLevel(
 
 // static
 scoped_refptr<SessionOptions> SessionOptions::Create(
-    mojom::Device device_type,
+    OrtHardwareDeviceType device_type,
     scoped_refptr<Environment> env) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
@@ -184,7 +184,7 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
 
 SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
                                ScopedOrtSessionOptions session_options,
-                               mojom::Device device_type)
+                               OrtHardwareDeviceType device_type)
     : session_options_(std::move(session_options)), device_type_(device_type) {
   CHECK(session_options_.get());
 
@@ -198,7 +198,7 @@ SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
   // is a C API limitation that doesn't preserve const-correctness.
   CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicyDelegate(
       session_options_.get(), EpSelectionPolicyDelegate,
-      const_cast<mojom::Device*>(&device_type_)));
+      const_cast<OrtHardwareDeviceType*>(&device_type_)));
 }
 
 SessionOptions::~SessionOptions() = default;
