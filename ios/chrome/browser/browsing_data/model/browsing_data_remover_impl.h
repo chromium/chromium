@@ -45,8 +45,6 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
 
   // BrowsingDataRemover implementation.
   bool IsRemoving() const override;
-  // TODO(crbug.com/335387869): Consider deprecating this method after the Quick
-  // Delete is fully launched.
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
               base::OnceClosure callback,

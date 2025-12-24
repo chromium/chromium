@@ -181,8 +181,6 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   // Get the active and inactive WebStates and the TabGroups of WebStates with a
   // last navigation timestamp between `beginTime` and `endTime`. This
   // information will be used by the radial wipe animation.
-  // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups
-  // for `activeTabsToClose`.
   std::set<web::WebStateID> activeTabsToClose =
       tabs_closure_util::GetTabsToClose(webStateList, beginTime, endTime,
                                         cachedTabsInfo);

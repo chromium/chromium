@@ -78,7 +78,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry);
 // Quick Delete. For users who have previously changed their time period pref
 // from the default value, then that value is still kept. If the migration has
 // already happened, then no-op.
-// TODO(crbug.com/335387869): When MaybeMigrateToQuickDeletePrefValues is
+// TODO(crbug.com/471197613): When MaybeMigrateToQuickDeletePrefValues is
 // removed, set default value in iOS for the `kDeleteTimePeriod` pref to 15
 // minutes.
 void MaybeMigrateToQuickDeletePrefValues(PrefService* pref_service);

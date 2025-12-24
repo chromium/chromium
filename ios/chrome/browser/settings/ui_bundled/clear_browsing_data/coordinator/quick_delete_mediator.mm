@@ -305,8 +305,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   // deletion is trigger with timestamps.
   browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
 
-  // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
-  DUMP_WILL_BE_CHECK(!_deletionTriggered);
+  CHECK(!_deletionTriggered);
   _deletionTriggered = YES;
 
   // Only update the time range pref on deletion.
@@ -675,8 +674,6 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   } else if (prefName == browsing_data::prefs::kDeleteCache) {
     // Do nothing as we don't display the calculated cache result in the summary
     // on the bottom sheet.
-    // TODO(crbug.com/353211728): Construct the summary on the VC using the new
-    // result methods provided on the mediator.
   } else {
     NOTREACHED();
   }
