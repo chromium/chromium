@@ -24,10 +24,12 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       id="composebox"
       ?autofocus="${false}"
       carousel-on-top_
-      lens-button-disabled_$="${false}"
       entrypoint-name="ContextualTasks"
       searchbox-layout-mode="TallBottomContext"
       .tabSuggestions="${this.tabSuggestions_}"
+      lens-button-disabled_$="${false}"
+      .showLensButton="${this.isSidePanel}"
+      .lensButtonTriggersOverlay="${true}"
     >
     </cr-composebox>
   </div>

@@ -87,6 +87,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      showLensButton: {type: Boolean},
+      lensButtonTriggersOverlay: {type: Boolean},
       input_: {type: String},
       isCollapsible: {
         reflect: true,
@@ -195,7 +197,9 @@ export class ComposeboxElement extends I18nMixinLit
     };
   }
 
+  accessor lensButtonTriggersOverlay: boolean = false;
   accessor maxSuggestions: number|null = null;
+  accessor showLensButton: boolean = true;
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor searchboxNextEnabled: boolean = false;
   accessor searchboxLayoutMode: string = '';
@@ -790,7 +794,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onLensClick_() {
-    this.pageHandler_.handleFileUpload(/*is_image=*/ true);
+    if (this.lensButtonTriggersOverlay) {
+      this.pageHandler_.handleLensButtonClick();
+    } else {
+      this.pageHandler_.handleFileUpload(/*is_image=*/ true);
+    }
   }
 
   protected onOpenFileDialog_(e: CustomEvent<{isImage: boolean}>) {

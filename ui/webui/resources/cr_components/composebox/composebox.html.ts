@@ -129,7 +129,7 @@ export function getHtml(this: ComposeboxElement) {
           ?disabled="${this.isCollapsible && !this.submitEnabled_}">
       </cr-icon-button>
     </div>
-    <cr-icon-button
+    ${this.showLensButton ? html`<cr-icon-button
         class="action-icon"
         id="lensIcon"
         part="action-icon lens-icon"
@@ -137,7 +137,7 @@ export function getHtml(this: ComposeboxElement) {
         @click="${this.onLensClick_}"
         ?disabled="${this.lensButtonDisabled_}"
         @mousedown="${this.onLensIconMouseDown_}">
-    </cr-icon-button>
+    </cr-icon-button>` : ''}
     <!-- Elements rendered under the input container. -->
     <!-- TODO: Move the submit button and Lens icon into this slot. -->
     <slot name="footer"></slot>
