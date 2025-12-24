@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 
 import java.util.function.Supplier;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class ToolbarProgressBarLayer implements TopControlLayer {
 
-    private final ControlContainer mControlContainer;
+    private final ToolbarControlContainer mControlContainer;
     private final View mProgressBarContainer;
     private final ToolbarProgressBar mProgressBarView;
     private final View mToolbarHairline;
@@ -56,7 +57,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
      * @param isToolbarPositionCustomizationEnabled Whether the toolbar position is customizable.
      */
     public ToolbarProgressBarLayer(
-            ControlContainer controlContainer,
+            ToolbarControlContainer controlContainer,
             View progressBarContainer,
             ToolbarProgressBar toolbarProgressBar,
             View hairlineView,
@@ -147,12 +148,21 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
             // explicitly account for its height after calling getHeightFromLayerToX.
             int toolbarPosition = mControlsPositionSupplier.get();
             int hairlineHeight = mToolbarHairline.getHeight();
-            if (toolbarPosition == ControlsPosition.TOP) {
+            // TODO(https://crbug.com/471284846): Default position should be TOP instead of NONE on
+            // large form factors.
+            if (toolbarPosition == ControlsPosition.TOP
+                    || toolbarPosition == ControlsPosition.NONE) {
                 yOffset =
                         mTopControlsStacker.getHeightFromLayerToTop(TopControlType.PROGRESS_BAR)
                                 - mTopControlsStacker.getHeightFromLayerToTop(
                                         TopControlType.TOOLBAR)
                                 + hairlineHeight;
+
+                int captureHeightDiff =
+                        mControlContainer.getToolbarCaptureHeight()
+                                - mControlContainer.getToolbarHeight()
+                                - mControlContainer.getToolbarHairlineHeight();
+                yOffset += captureHeightDiff;
             } else if (toolbarPosition == ControlsPosition.BOTTOM) {
                 yOffset =
                         -(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.PROGRESS_BAR)
