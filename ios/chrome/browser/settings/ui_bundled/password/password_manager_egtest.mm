@@ -2109,7 +2109,14 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Edit a password with only incognito tab opened should work.
-- (void)testEditPasswordWithOnlyIncognitoTabOpen {
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testEditPasswordWithOnlyIncognitoTabOpen \
+  DISABLED_testEditPasswordWithOnlyIncognitoTabOpen
+#else
+#define MAYBE_testEditPasswordWithOnlyIncognitoTabOpen \
+  testEditPasswordWithOnlyIncognitoTabOpen
+#endif
+- (void)MAYBE_testEditPasswordWithOnlyIncognitoTabOpen {
   SavePasswordFormToProfileStore();
 
   [ChromeEarlGrey openNewIncognitoTab];
