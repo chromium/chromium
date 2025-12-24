@@ -69,8 +69,9 @@
 /// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 
+/// Sets additional insets on the popup.
 - (void)setAdditionalVerticalContentInset:
-    (CGFloat)additionalVerticalContentInset;
+    (UIEdgeInsets)additionalVerticalContentInset;
 
 - (instancetype)
     initWithPopupPresenterDelegate:

@@ -216,7 +216,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
   if ([self currentInputPlatePosition] == ComposeboxInputPlatePosition::kTop) {
     [_presenter
-        setAdditionalVerticalContentInset:_inputViewController.inputHeight];
+        setAdditionalVerticalContentInset:UIEdgeInsetsMake(
+                                              _inputViewController.inputHeight,
+                                              0, 0, 0)];
 
     CGFloat thresholdOffset = inputPlateFrame.size.height +
                               inputPlateFrame.origin.y -
@@ -226,6 +228,13 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     _incognitoView.contentInset = UIEdgeInsetsMake(requiredOffset, 0, 0, 0);
   } else if ([self currentInputPlatePosition] ==
              ComposeboxInputPlatePosition::kBottom) {
+    // Add inset so the first suggestion is not covered by the close button.
+    [_presenter
+        setAdditionalVerticalContentInset:UIEdgeInsetsMake(
+                                              kCloseButtonSize, 0,
+                                              _inputViewController.inputHeight,
+                                              0)];
+
     CGFloat paddingBottom = self.view.frame.size.height -
                             inputPlateFrame.size.height -
                             inputPlateFrame.origin.y;

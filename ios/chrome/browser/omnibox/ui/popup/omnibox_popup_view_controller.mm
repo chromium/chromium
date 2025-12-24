@@ -178,9 +178,10 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
 // Sets the additional vertical content inset for the suggestion list.
 - (void)setAdditionalVerticalContentInset:
-    (CGFloat)additionalVerticalContentInset {
+    (UIEdgeInsets)additionalVerticalContentInset {
   self.tableView.contentInset =
-      UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset, 0, 0, 0);
+      UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset.top, 0,
+                       additionalVerticalContentInset.bottom, 0);
   [self.tableView
       setContentOffset:CGPointMake(0, -self.tableView.contentInset.top)
               animated:YES];
