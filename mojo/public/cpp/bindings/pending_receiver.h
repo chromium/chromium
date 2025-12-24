@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_PENDING_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_PENDING_RECEIVER_H_
 
-#include <type_traits>
+#include <concepts>
 #include <utility>
 
 #include "base/check_op.h"
@@ -65,15 +65,15 @@ class PendingReceiver {
 
   // Move conversion operator for custom receiver types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <typename T,
-            std::enable_if_t<std::is_same<
-                PendingReceiver<Interface>,
-                std::invoke_result_t<decltype(&PendingReceiverConverter<
-                                              T>::template To<Interface>),
-                                     T&&>>::value>* = nullptr>
-  PendingReceiver(T&& other)
+  template <typename T>
+    requires requires(T t) {
+      {
+        PendingReceiverConverter<T>::template To<Interface>(std::move(t))
+      } -> std::same_as<PendingReceiver>;
+    }
+  PendingReceiver(T other)
       : PendingReceiver(PendingReceiverConverter<T>::template To<Interface>(
-            std::forward<T>(other))) {}
+            std::move(other))) {}
 
   PendingReceiver(const PendingReceiver&) = delete;
   PendingReceiver& operator=(const PendingReceiver&) = delete;

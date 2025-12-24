@@ -88,20 +88,16 @@ class ArrayIterator<Traits, MaybeConstUserType, false> {
 // difference between ArrayTraits and MapTraits.
 template <typename MojomType,
           typename MaybeConstUserType,
-          typename UserTypeIterator,
-          typename EnableType = void>
+          typename UserTypeIterator>
 struct ArraySerializer;
 
 // Handles serialization and deserialization of arrays of pod types.
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-struct ArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    UserTypeIterator,
-    std::enable_if_t<BelongsTo<typename MojomType::Element,
-                               MojomTypeCategory::kPOD>::value>> {
+  requires(
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kPOD>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -175,13 +171,10 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(!base::is_instantiation<typename MojomType::Element, std::optional>)
-struct ArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    UserTypeIterator,
-    typename std::enable_if<BelongsTo<typename MojomType::Element,
-                                      MojomTypeCategory::kEnum>::value>::type> {
+  requires(
+      !base::is_instantiation<typename MojomType::Element, std::optional> &&
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kEnum>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -227,13 +220,10 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(base::is_instantiation<typename MojomType::Element, std::optional>)
-struct ArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    UserTypeIterator,
-    std::enable_if_t<BelongsTo<typename MojomType::Element,
-                               MojomTypeCategory::kEnum>::value>> {
+  requires(
+      base::is_instantiation<typename MojomType::Element, std::optional> &&
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kEnum>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -294,12 +284,9 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-struct ArraySerializer<MojomType,
-                       MaybeConstUserType,
-                       UserTypeIterator,
-                       typename std::enable_if<BelongsTo<
-                           typename MojomType::Element,
-                           MojomTypeCategory::kBoolean>::value>::type> {
+  requires(BelongsTo<typename MojomType::Element,
+                     MojomTypeCategory::kBoolean>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = ArrayTraits<UserType>;
   using Data = typename MojomTypeTraits<MojomType>::Data;
@@ -340,16 +327,13 @@ struct ArraySerializer<MojomType,
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-struct ArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    UserTypeIterator,
-    typename std::enable_if<BelongsTo<
-        typename MojomType::Element,
-        MojomTypeCategory::kAssociatedInterface |
-            MojomTypeCategory::kAssociatedInterfaceRequest |
-            MojomTypeCategory::kHandle | MojomTypeCategory::kInterface |
-            MojomTypeCategory::kInterfaceRequest>::value>::type> {
+  requires(
+      BelongsTo<typename MojomType::Element,
+                MojomTypeCategory::kAssociatedInterface |
+                    MojomTypeCategory::kAssociatedInterfaceRequest |
+                    MojomTypeCategory::kHandle | MojomTypeCategory::kInterface |
+                    MojomTypeCategory::kInterfaceRequest>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;
@@ -406,14 +390,11 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-struct ArraySerializer<MojomType,
-                       MaybeConstUserType,
-                       UserTypeIterator,
-                       typename std::enable_if<BelongsTo<
-                           typename MojomType::Element,
-                           MojomTypeCategory::kArray | MojomTypeCategory::kMap |
-                               MojomTypeCategory::kString |
-                               MojomTypeCategory::kStruct>::value>::type> {
+  requires(BelongsTo<typename MojomType::Element,
+                     MojomTypeCategory::kArray | MojomTypeCategory::kMap |
+                         MojomTypeCategory::kString |
+                         MojomTypeCategory::kStruct>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;
@@ -487,12 +468,9 @@ struct ArraySerializer<MojomType,
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-struct ArraySerializer<MojomType,
-                       MaybeConstUserType,
-                       UserTypeIterator,
-                       typename std::enable_if<
-                           BelongsTo<typename MojomType::Element,
-                                     MojomTypeCategory::kUnion>::value>::type> {
+  requires(
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kUnion>::value)
+struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;

@@ -27,14 +27,12 @@
 namespace mojo {
 namespace internal {
 
-template <typename MojomType, typename EnableType = void>
+template <typename MojomType>
 struct MojomSerializationImplTraits;
 
 template <typename MojomType>
-struct MojomSerializationImplTraits<
-    MojomType,
-    typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value)
+struct MojomSerializationImplTraits<MojomType> {
   template <typename MaybeConstUserType, typename FragmentType>
   static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
     mojo::internal::Serialize<MojomType>(input, fragment);
@@ -42,10 +40,8 @@ struct MojomSerializationImplTraits<
 };
 
 template <typename MojomType>
-struct MojomSerializationImplTraits<
-    MojomType,
-    typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kUnion>::value)
+struct MojomSerializationImplTraits<MojomType> {
   template <typename MaybeConstUserType, typename FragmentType>
   static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
     mojo::internal::Serialize<MojomType>(input, fragment, false /* inline */);

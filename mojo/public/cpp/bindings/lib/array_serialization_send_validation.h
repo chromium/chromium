@@ -23,8 +23,7 @@ namespace mojo::internal {
 template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
-          typename UserTypeIterator,
-          typename EnableType = void>
+          typename UserTypeIterator>
 struct SendValidationArraySerializer;
 
 // Helper to detect if a specialization of SendValidationArraySerializer exists
@@ -70,14 +69,13 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-  requires(!base::is_instantiation<typename MojomType::Element, std::optional>)
-struct SendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    typename std::enable_if<BelongsTo<typename MojomType::Element,
-                                      MojomTypeCategory::kEnum>::value>::type> {
+  requires(
+      !base::is_instantiation<typename MojomType::Element, std::optional> &&
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kEnum>::value)
+struct SendValidationArraySerializer<MojomType,
+                                     MaybeConstUserType,
+                                     send_validation,
+                                     UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -117,14 +115,13 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-  requires(base::is_instantiation<typename MojomType::Element, std::optional>)
-struct SendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    std::enable_if_t<BelongsTo<typename MojomType::Element,
-                               MojomTypeCategory::kEnum>::value>> {
+  requires(
+      base::is_instantiation<typename MojomType::Element, std::optional> &&
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kEnum>::value)
+struct SendValidationArraySerializer<MojomType,
+                                     MaybeConstUserType,
+                                     send_validation,
+                                     UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using DataElement = typename Data::Element;
@@ -169,17 +166,16 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-struct SendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    typename std::enable_if<BelongsTo<
-        typename MojomType::Element,
-        MojomTypeCategory::kAssociatedInterface |
-            MojomTypeCategory::kAssociatedInterfaceRequest |
-            MojomTypeCategory::kHandle | MojomTypeCategory::kInterface |
-            MojomTypeCategory::kInterfaceRequest>::value>::type> {
+  requires(
+      BelongsTo<typename MojomType::Element,
+                MojomTypeCategory::kAssociatedInterface |
+                    MojomTypeCategory::kAssociatedInterfaceRequest |
+                    MojomTypeCategory::kHandle | MojomTypeCategory::kInterface |
+                    MojomTypeCategory::kInterfaceRequest>::value)
+struct SendValidationArraySerializer<MojomType,
+                                     MaybeConstUserType,
+                                     send_validation,
+                                     UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;
@@ -229,16 +225,14 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-struct SendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    typename std::enable_if<
-        BelongsTo<typename MojomType::Element,
-                  MojomTypeCategory::kArray | MojomTypeCategory::kMap |
-                      MojomTypeCategory::kString |
-                      MojomTypeCategory::kStruct>::value>::type> {
+  requires(BelongsTo<typename MojomType::Element,
+                     MojomTypeCategory::kArray | MojomTypeCategory::kMap |
+                         MojomTypeCategory::kString |
+                         MojomTypeCategory::kStruct>::value)
+struct SendValidationArraySerializer<MojomType,
+                                     MaybeConstUserType,
+                                     send_validation,
+                                     UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;
@@ -299,14 +293,12 @@ template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
           typename UserTypeIterator>
-struct SendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    typename std::enable_if<
-        BelongsTo<typename MojomType::Element,
-                  MojomTypeCategory::kUnion>::value>::type> {
+  requires(
+      BelongsTo<typename MojomType::Element, MojomTypeCategory::kUnion>::value)
+struct SendValidationArraySerializer<MojomType,
+                                     MaybeConstUserType,
+                                     send_validation,
+                                     UserTypeIterator> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Data = typename MojomTypeTraits<MojomType>::Data;
   using Element = typename MojomType::Element;

@@ -14,16 +14,12 @@
 namespace mojo::internal {
 
 template <typename MojomType,
-          SendValidation send_validation = SendValidation::kDefault,
-          typename EnableType = void>
+          SendValidation send_validation = SendValidation::kDefault>
 struct MojomSendValidationSerializationImplTraits;
 
 template <typename MojomType, SendValidation send_validation>
-struct MojomSendValidationSerializationImplTraits<
-    MojomType,
-    send_validation,
-    typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value)
+struct MojomSendValidationSerializationImplTraits<MojomType, send_validation> {
   template <typename MaybeConstUserType, typename FragmentType>
   static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
     mojo::internal::Serialize<MojomType, send_validation>(input, fragment);
@@ -31,11 +27,8 @@ struct MojomSendValidationSerializationImplTraits<
 };
 
 template <typename MojomType, SendValidation send_validation>
-struct MojomSendValidationSerializationImplTraits<
-    MojomType,
-    send_validation,
-    typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kUnion>::value)
+struct MojomSendValidationSerializationImplTraits<MojomType, send_validation> {
   template <typename MaybeConstUserType, typename FragmentType>
   static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
     mojo::internal::Serialize<MojomType, send_validation>(input, fragment,

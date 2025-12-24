@@ -65,16 +65,14 @@ bool CallSetToNullIfExists(UserType* output) {
   return true;
 }
 
-template <typename MojomType, typename UserType, typename = void>
+template <typename MojomType, typename UserType>
 struct TraitsFinder {
   using Traits = StructTraits<MojomType, UserType>;
 };
 
 template <typename MojomType, typename UserType>
-struct TraitsFinder<
-    MojomType,
-    UserType,
-    std::enable_if_t<BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kUnion>::value)
+struct TraitsFinder<MojomType, UserType> {
   using Traits = UnionTraits<MojomType, UserType>;
 };
 

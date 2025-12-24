@@ -340,19 +340,22 @@ struct IsStructPtrImpl<InlinedStructPtr<S>> : std::true_type {};
 template <typename T>
 constexpr bool IsStructPtrV = internal::IsStructPtrImpl<std::decay_t<T>>::value;
 
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator==(const Ptr& lhs, const Ptr& rhs) {
   return lhs.Equals(rhs);
 }
 
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator!=(const Ptr& lhs, const Ptr& rhs) {
   return !(lhs == rhs);
 }
 
 // Perform a deep comparison if possible. Otherwise treat null pointers less
 // than valid pointers.
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator<(const Ptr& lhs, const Ptr& rhs) {
   if (!lhs || !rhs) {
     return bool{lhs} < bool{rhs};
@@ -360,17 +363,20 @@ bool operator<(const Ptr& lhs, const Ptr& rhs) {
   return *lhs < *rhs;
 }
 
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator<=(const Ptr& lhs, const Ptr& rhs) {
   return !(rhs < lhs);
 }
 
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator>(const Ptr& lhs, const Ptr& rhs) {
   return rhs < lhs;
 }
 
-template <typename Ptr, std::enable_if_t<IsStructPtrV<Ptr>>* = nullptr>
+template <typename Ptr>
+  requires(IsStructPtrV<Ptr>)
 bool operator>=(const Ptr& lhs, const Ptr& rhs) {
   return !(lhs < rhs);
 }

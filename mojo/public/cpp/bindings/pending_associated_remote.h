@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <type_traits>
+#include <concepts>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -42,13 +42,14 @@ class PendingAssociatedRemote {
 
   // Move conversion operator for custom remote types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <typename T,
-            std::enable_if_t<std::is_same<
-                PendingAssociatedRemote<Interface>,
-                std::invoke_result_t<decltype(&PendingAssociatedRemoteConverter<
-                                              T>::template To<Interface>),
-                                     T&&>>::value>* = nullptr>
-  PendingAssociatedRemote(T&& other)
+  template <typename T>
+    requires requires(T t) {
+      {
+        PendingAssociatedRemoteConverter<T>::template To<Interface>(
+            std::move(t))
+      } -> std::same_as<PendingAssociatedRemote>;
+    }
+  PendingAssociatedRemote(T other)
       : PendingAssociatedRemote(
             PendingAssociatedRemoteConverter<T>::template To<Interface>(
                 std::move(other))) {}
