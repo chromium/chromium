@@ -113,6 +113,12 @@ class CORE_EXPORT ScrollAnchor final {
   // This anchor is not active because we are applying scroll-start.
   void CancelAdjustment() { queued_ = false; }
 
+  void BeginSuppressAdjustment() { suppress_adjustment_count_++; }
+  void EndSuppressAdjustment() {
+    DCHECK_GT(suppress_adjustment_count_, 0);
+    suppress_adjustment_count_--;
+  }
+
  private:
   enum WalkStatus { kSkip = 0, kConstrain, kContinue, kReturn };
 
@@ -196,6 +202,21 @@ class CORE_EXPORT ScrollAnchor final {
   // 'content-visibility: auto' element that did not yet have a layout after
   // becoming visible.
   bool anchor_is_cv_auto_without_layout_ = false;
+
+  int suppress_adjustment_count_ = 0;
+};
+
+// Suppresses scroll anchoring adjustments on the given scroller while the scope
+// is active.
+class CORE_EXPORT SuppressScrollAnchorScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SuppressScrollAnchorScope(ScrollableArea* scroller);
+  ~SuppressScrollAnchorScope();
+
+ private:
+  ScrollAnchor* anchor_;
 };
 
 }  // namespace blink

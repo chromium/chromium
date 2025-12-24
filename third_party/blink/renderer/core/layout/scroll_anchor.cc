@@ -591,6 +591,20 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   return kSkip;
 }
 
+SuppressScrollAnchorScope::SuppressScrollAnchorScope(ScrollableArea* scroller) {
+  if (scroller) {
+    anchor_ = scroller->GetScrollAnchor();
+    DCHECK(anchor_);
+    anchor_->BeginSuppressAdjustment();
+  }
+}
+
+SuppressScrollAnchorScope::~SuppressScrollAnchorScope() {
+  if (anchor_) {
+    anchor_->EndSuppressAdjustment();
+  }
+}
+
 bool ScrollAnchor::ComputeScrollAnchorDisablingStyleChanged() {
   LayoutObject* current = AnchorObject();
   if (!current)
@@ -708,6 +722,10 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
 void ScrollAnchor::Adjust() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                "ScrollAnchor::Adjust");
+  if (suppress_adjustment_count_ > 0) {
+    return;
+  }
+
   if (!queued_)
     return;
   queued_ = false;

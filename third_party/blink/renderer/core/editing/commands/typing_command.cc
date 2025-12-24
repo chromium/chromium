@@ -56,7 +56,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -573,6 +575,16 @@ void TypingCommand::DoApply(EditingState* editing_state) {
     if (commands_.empty())
       opened_by_backward_delete_ = true;
   }
+
+  ScrollableArea* scrollable_area = nullptr;
+  Node* anchor_node = EndingSelection().Anchor().ComputeContainerNode();
+  if (anchor_node && anchor_node->GetLayoutObject()) {
+    if (const LayoutBox* scroll_container =
+            anchor_node->GetLayoutObject()->ContainingScrollContainer()) {
+      scrollable_area = scroll_container->GetScrollableArea();
+    }
+  }
+  SuppressScrollAnchorScope suppress_scope(scrollable_area);
 
   switch (command_type_) {
     case kDeleteSelection:
