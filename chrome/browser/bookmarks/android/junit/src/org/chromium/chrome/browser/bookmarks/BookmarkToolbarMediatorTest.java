@@ -51,11 +51,14 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -91,6 +94,8 @@ public class BookmarkToolbarMediatorTest {
     @Mock private Runnable mEndSearchRunnable;
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Clipboard mClipboard;
 
     @Spy private Context mContext;
 
@@ -148,7 +153,9 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mIncognitoEnabledSupplier,
-                        mBookmarkManagerOpener);
+                        mBookmarkManagerOpener,
+                        mSnackbarManager,
+                        mClipboard);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -183,7 +190,9 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
                         mIncognitoEnabledSupplier,
-                        mBookmarkManagerOpener);
+                        mBookmarkManagerOpener,
+                        mSnackbarManager,
+                        mClipboard);
     }
 
     @Test
@@ -346,6 +355,27 @@ public class BookmarkToolbarMediatorTest {
         setCurrentSelection(new BookmarkId(7, BookmarkType.NORMAL));
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
         verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(true));
+    }
+
+    @Test
+    public void testOnMenuItemClick_selectionCopyLink() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(7, BookmarkType.NORMAL),
+                        0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        setCurrentSelection(bookmarkId);
+        assertTrue(mMediator.onMenuIdClick(R.id.selection_mode_copy_link));
+
+        verify(mClipboard).setText(JUnitTestGURLs.EXAMPLE_URL.getSpec());
+        verify(mSelectionDelegate).clearSelection();
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
+        assertEquals(mContext.getString(R.string.copied), snackbar.getTextForTesting());
+        assertEquals(Snackbar.UMA_BOOKMARK_LINK_COPIED, snackbar.getIdentifierForTesting());
     }
 
     @Test
@@ -577,6 +607,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -586,6 +617,7 @@ public class BookmarkToolbarMediatorTest {
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -601,6 +633,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -616,6 +649,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -631,6 +665,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -643,6 +678,7 @@ public class BookmarkToolbarMediatorTest {
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -658,6 +694,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -683,6 +720,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -698,6 +736,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -714,6 +753,7 @@ public class BookmarkToolbarMediatorTest {
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -729,6 +769,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -746,6 +787,7 @@ public class BookmarkToolbarMediatorTest {
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -761,6 +803,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -772,6 +815,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -787,6 +831,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -817,6 +862,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -832,6 +878,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -862,6 +909,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -877,6 +925,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 
@@ -907,6 +956,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
     }
@@ -922,6 +972,7 @@ public class BookmarkToolbarMediatorTest {
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
                                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
 

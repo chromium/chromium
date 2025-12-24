@@ -25155,6 +25155,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerCopyLink">
+  <owner>wylieb@google.com</owner>
+  <owner>hocheung@chromium.org</owner>
+  <description>
+    Recorded when a user copies the link of a selected bookmark in the Android
+    bookmarks manager.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerDeleteBulk">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>

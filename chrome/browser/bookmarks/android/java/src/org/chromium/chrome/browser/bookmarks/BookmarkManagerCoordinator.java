@@ -232,6 +232,7 @@ public class BookmarkManagerCoordinator
                         this::onEndSearch,
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile),
                         bookmarkManagerOpener,
+                        mSnackbarManager,
                         /* nextFocusableView= */ mMainView.findViewById(R.id.list_content));
         mSelectableListLayout.configureWideDisplayStyle();
 

@@ -62,6 +62,8 @@ class BookmarkToolbarProperties {
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MOVE =
             new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_COPY_LINK =
+            new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_READ =
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_UNREAD =
@@ -103,6 +105,7 @@ class BookmarkToolbarProperties {
         SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
         SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
         SELECTION_MODE_SHOW_MOVE,
+        SELECTION_MODE_SHOW_COPY_LINK,
         SELECTION_MODE_SHOW_MARK_READ,
         SELECTION_MODE_SHOW_MARK_UNREAD,
         NEXT_FOCUSABLE_VIEW

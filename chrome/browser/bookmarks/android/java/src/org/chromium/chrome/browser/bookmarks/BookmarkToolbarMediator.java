@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrde
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -31,6 +33,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -83,6 +86,8 @@ class BookmarkToolbarMediator
     private final Runnable mEndSearchRunnable;
     private final BooleanSupplier mIncognitoEnabledSupplier;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
+    private final SnackbarManager mSnackbarManager;
+    private final Clipboard mClipboard;
 
     // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -103,7 +108,9 @@ class BookmarkToolbarMediator
             BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
             Runnable endSearchRunnable,
             BooleanSupplier incognitoEnabledSupplier,
-            BookmarkManagerOpener bookmarkManagerOpener) {
+            BookmarkManagerOpener bookmarkManagerOpener,
+            SnackbarManager snackbarManager,
+            Clipboard clipboard) {
         mContext = context;
         mProfile = profile;
         mModel = model;
@@ -121,6 +128,8 @@ class BookmarkToolbarMediator
         mEndSearchRunnable = endSearchRunnable;
         mIncognitoEnabledSupplier = incognitoEnabledSupplier;
         mBookmarkManagerOpener = bookmarkManagerOpener;
+        mSnackbarManager = snackbarManager;
+        mClipboard = clipboard;
 
         mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
         mModel.set(
@@ -232,6 +241,22 @@ class BookmarkToolbarMediator
                     mSelectionDelegate.getSelectedItems().size());
             mBookmarkOpener.openBookmarksInNewTabs(
                     mSelectionDelegate.getSelectedItemsAsList(), /* incognito= */ true);
+            return true;
+        } else if (id == R.id.selection_mode_copy_link) {
+            RecordUserAction.record("MobileBookmarkManagerCopyLink");
+            List<BookmarkId> selectedItems = mSelectionDelegate.getSelectedItemsAsList();
+            assert selectedItems.size() == 1;
+            BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(selectedItems.get(0));
+            assumeNonNull(bookmarkItem);
+            mClipboard.setText(bookmarkItem.getUrl().getSpec());
+            mSelectionDelegate.clearSelection();
+            Snackbar snackbar =
+                    Snackbar.make(
+                            mContext.getString(R.string.copied),
+                            null,
+                            Snackbar.TYPE_NOTIFICATION,
+                            Snackbar.UMA_BOOKMARK_LINK_COPIED);
+            mSnackbarManager.showSnackbar(snackbar);
             return true;
         } else if (id == R.id.reading_list_mark_as_read_id
                 || id == R.id.reading_list_mark_as_unread_id) {
@@ -387,15 +412,17 @@ class BookmarkToolbarMediator
         boolean showOpenInIncognito =
                 selectedBookmarks.size() > 0 && mIncognitoEnabledSupplier.getAsBoolean();
         boolean showMove = selectedBookmarks.size() > 0;
+        boolean showCopyLink = selectedBookmarks.size() == 1;
         boolean showMarkRead;
         boolean showMarkUnread;
 
-        // It does not make sense to open a folder in new tab.
+        // It does not make sense to open a folder in new tab or copy a folder link.
         for (BookmarkId bookmark : selectedBookmarks) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(bookmark);
             if (item != null && item.isFolder()) {
                 showOpenInNewTab = false;
                 showOpenInIncognito = false;
+                showCopyLink = false;
                 break;
             }
         }
@@ -442,6 +469,7 @@ class BookmarkToolbarMediator
                 BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
                 showOpenInIncognito);
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE, showMove);
+        mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK, showCopyLink);
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ, showMarkRead);
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD, showMarkUnread);
     }
