@@ -40,8 +40,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
@@ -52,6 +54,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -472,6 +475,47 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
   embedded_web_contents_ = inner_contents->GetWeakPtr();
 }
 
+void ContextualTasksUI::OnContextRetrievedForActiveTab(
+    int32_t tab_id,
+    const GURL& last_committed_url,
+    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+  // Do nothing is the webUI is no longer in side panel.
+  if (IsShownInTab()) {
+    return;
+  }
+
+  // If active tab or tab URL changed since the GetContextForTask() call, do
+  // nothing.
+  tabs::TabInterface* tab = GetBrowser()->GetActiveTabInterface();
+  if (!tab || tab->GetHandle().raw_value() != tab_id ||
+      tab->GetContents()->GetLastCommittedURL() != last_committed_url) {
+    return;
+  }
+
+  // If last_committed_url is already in the context, clear the suggested tab
+  // context.
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      url_duplication_helper =
+          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
+  if (context->ContainsURL(last_committed_url, url_duplication_helper.get())) {
+    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    return;
+  }
+
+  UpdateSuggestedTabContext(tab);
+}
+
+void ContextualTasksUI::UpdateSuggestedTabContext(tabs::TabInterface* tab) {
+  content::WebContents* web_contents = tab->GetContents();
+  auto tab_data = searchbox::mojom::TabInfo::New();
+  tab_data->tab_id = tab->GetHandle().raw_value();
+  tab_data->title = base::UTF16ToUTF8(web_contents->GetTitle());
+  tab_data->url = web_contents->GetLastCommittedURL();
+  tab_data->last_active = std::max(web_contents->GetLastActiveTimeTicks(),
+                                   web_contents->GetLastInteractionTimeTicks());
+  composebox_handler_->UpdateSuggestedTabContext(std::move(tab_data));
+}
+
 void ContextualTasksUI::OnSidePanelStateChanged() {
   page_->OnSidePanelStateChanged();
 
@@ -492,9 +536,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
       // The WebUI starts showing in the side panel, show the auto suggested
       // chip if possible.
       previous_web_ui_state_ = WebUIState::kShownInSidePanel;
-      // TODO(https://crbug.com/467696560): Get the correct upload status of the
-      // current tab.
-      OnActiveTabContextStatusChanged(TabContextStatus::kNotUploaded);
+      OnActiveTabContextStatusChanged();
     }
     display_mode_msg->mutable_payload()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
@@ -507,8 +549,7 @@ void ContextualTasksUI::DisableActiveTabContextSuggestion() {
   ui_service_->set_auto_tab_context_suggestion_enabled(false);
 }
 
-void ContextualTasksUI::OnActiveTabContextStatusChanged(
-    TabContextStatus status) {
+void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   if (!GetBrowser()) {
     return;
   }
@@ -518,11 +559,6 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged(
   }
 
   if (!ui_service_->auto_tab_context_suggestion_enabled()) {
-    return;
-  }
-
-  if (status != TabContextStatus::kNotUploaded) {
-    composebox_handler_->UpdateSuggestedTabContext(nullptr);
     return;
   }
 
@@ -541,13 +577,21 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged(
     return;
   }
 
-  auto tab_data = searchbox::mojom::TabInfo::New();
-  tab_data->tab_id = tab->GetHandle().raw_value();
-  tab_data->title = base::UTF16ToUTF8(web_contents->GetTitle());
-  tab_data->url = last_committed_url;
-  tab_data->last_active = std::max(web_contents->GetLastActiveTimeTicks(),
-                                   web_contents->GetLastInteractionTimeTicks());
-  composebox_handler_->UpdateSuggestedTabContext(std::move(tab_data));
+  if (!GetContextualSessionHandle()) {
+    return;
+  }
+
+  auto context_decoration_params =
+      std::make_unique<contextual_tasks::ContextDecorationParams>();
+  context_decoration_params->contextual_search_session_handle =
+      GetContextualSessionHandle()->AsWeakPtr();
+  context_controller_->GetContextForTask(
+      GetTaskId().value(),
+      {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},
+      std::move(context_decoration_params),
+      base::BindOnce(&ContextualTasksUI::OnContextRetrievedForActiveTab,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     tab->GetHandle().raw_value(), last_committed_url));
 }
 
 void ContextualTasksUI::TransferNavigationToEmbeddedPage(
