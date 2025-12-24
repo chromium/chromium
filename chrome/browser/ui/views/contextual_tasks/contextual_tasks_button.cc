@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,7 +54,6 @@ ContextualTasksButton::ContextualTasksButton(
         browser_window_interface->GetProfile()->GetPrefs(),
         base::BindRepeating(&ContextualTasksButton::OnPinStateChanged,
                             base::Unretained(this)));
-    OnPinStateChanged();
   } else {
     CHECK_EQ(contextual_tasks::kShowEntryPoint.Get(),
              contextual_tasks::EntryPointOption::kToolbarRevisit);
@@ -64,10 +64,15 @@ ContextualTasksButton::ContextualTasksButton(
         controller->RegisterShouldUpdateButtonVisibility(base::BindRepeating(
             &ContextualTasksButton::OnShouldUpdateVisibility,
             base::Unretained(this)));
-    // The button should not be visible until the active tab is associated with
-    // a task.
-    SetVisible(false);
   }
+
+  eligibility_change_subscription_ =
+      contextual_tasks::EntryPointEligibilityManager::From(
+          browser_window_interface_)
+          ->RegisterOnEntryPointEligibilityChanged(
+              base::BindRepeating(&ContextualTasksButton::OnEligibilityChange,
+                                  base::Unretained(this)));
+  MaybeUpdateVisibility();
 }
 
 ContextualTasksButton::~ContextualTasksButton() = default;
@@ -96,11 +101,32 @@ void ContextualTasksButton::OnButtonPress() {
 }
 
 void ContextualTasksButton::OnPinStateChanged() {
-  SetVisible(pin_state_.GetValue());
+  MaybeUpdateVisibility();
 }
 
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
-  SetVisible(should_show);
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::OnEligibilityChange(bool is_eligible) {
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::MaybeUpdateVisibility() {
+  const bool is_button_eligible =
+      contextual_tasks::EntryPointEligibilityManager::From(
+          browser_window_interface_)
+          ->AreEntryPointsEligible();
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarPermanent) {
+    SetVisible(is_button_eligible && pin_state_.GetValue());
+  } else if (contextual_tasks::kShowEntryPoint.Get() ==
+             contextual_tasks::EntryPointOption::kToolbarRevisit) {
+    ContextualTasksEphemeralButtonController* const controller =
+        ContextualTasksEphemeralButtonController::From(
+            browser_window_interface_);
+    SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
+  }
 }
 
 BEGIN_METADATA(ContextualTasksButton)

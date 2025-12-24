@@ -145,6 +145,7 @@ class ProductSpecificationsEntryPointController;
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
+class EntryPointEligibilityManager;
 }  // namespace contextual_tasks
 
 namespace tabs {
@@ -643,6 +644,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<session_restore_infobar::SessionRestoreInfobarController>
       session_restore_infobar_controller_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  std::unique_ptr<contextual_tasks::EntryPointEligibilityManager>
+      contextual_tasks_entry_point_eligibility_manager_;
 
   std::unique_ptr<ContextualTasksEphemeralButtonController>
       contextual_tasks_ephemeral_button_controller_;

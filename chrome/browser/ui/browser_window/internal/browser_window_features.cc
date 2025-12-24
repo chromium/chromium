@@ -19,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -698,6 +699,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory()
             .CreateInstance<
                 contextual_tasks::ContextualTasksSidePanelCoordinator>(
+                *browser_, browser_);
+
+    contextual_tasks_entry_point_eligibility_manager_ =
+        GetUserDataFactory()
+            .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
                 *browser_, browser_);
 
     if (contextual_tasks::kShowEntryPoint.Get() ==
