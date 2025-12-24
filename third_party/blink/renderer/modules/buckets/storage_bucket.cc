@@ -183,7 +183,7 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
     remote_->GetCaches(cache_storage.InitWithNewPipeAndPassReceiver());
     caches_ = MakeGarbageCollected<CacheStorage>(
         GetExecutionContext(),
-        GlobalFetch::ScopedFetcher::From(*navigator_base_),
+        GlobalFetch::ScopedFetcher::From(*GetExecutionContext()),
         std::move(cache_storage));
   }
 
