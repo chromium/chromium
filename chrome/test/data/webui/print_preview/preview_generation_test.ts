@@ -588,6 +588,65 @@ suite('PreviewGenerationTest', function() {
             expectedScalingValue: '100',
             expectedScalingType: ScalingType.DEFAULT,
           });
+          nativeLayer.resetResolver('getPreview');
+          // DEFAULT -> ACTUAL_SIZE
+          page.setSetting('scalingTypePdf', ScalingType.ACTUAL_SIZE);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 3,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '100',
+            expectedScalingType: ScalingType.ACTUAL_SIZE,
+          });
+          nativeLayer.resetResolver('getPreview');
+          // ACTUAL_SIZE -> CUSTOM
+          page.setSetting('scalingTypePdf', ScalingType.CUSTOM);
+          // ACTUAL_SIZE is equal to CUSTOM with scaling value 100, to
+          // regenerate preview, we need to make scaling value != 100.
+          page.setSetting('scaling', '120');
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 4,
+            expectedTicketScaleFactor: 120,
+            expectedScalingValue: '120',
+            expectedScalingType: ScalingType.CUSTOM,
+          });
+          nativeLayer.resetResolver('getPreview');
+          // CUSTOM -> ACTUAL_SIZE
+          page.setSetting('scalingTypePdf', ScalingType.ACTUAL_SIZE);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 5,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '120',
+            expectedScalingType: ScalingType.ACTUAL_SIZE,
+          });
+          nativeLayer.resetResolver('getPreview');
+          // ACTUAL_SIZE -> DEFAULT
+          page.setSetting('scalingTypePdf', ScalingType.DEFAULT);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 6,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '120',
+            expectedScalingType: ScalingType.DEFAULT,
+          });
         });
   });
 

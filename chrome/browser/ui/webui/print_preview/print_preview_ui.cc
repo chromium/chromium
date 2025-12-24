@@ -203,6 +203,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
       {"nonIsotropicDpiItemLabel",
        IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
+      {"optionActualSize", IDS_PRINT_PREVIEW_OPTION_ACTUAL_SIZE},
       {"optionAllPages", IDS_PRINT_PREVIEW_OPTION_ALL_PAGES},
       {"optionBackgroundColorsAndImages",
        IDS_PRINT_PREVIEW_OPTION_BACKGROUND_COLORS_AND_IMAGES},

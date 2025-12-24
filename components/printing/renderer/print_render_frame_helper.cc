@@ -496,7 +496,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     ScalingType scaling_type = ScalingTypeFromJobSettings(job_settings);
     // The following conditions are ordered for an optimization that avoids
     // calling PDFShouldDisableScaling(), which has to make a call using PPAPI.
-    if (scaling_type == CUSTOM) {
+    if (scaling_type == CUSTOM || scaling_type == ACTUAL_SIZE) {
       return mojom::PrintScalingOption::kNone;
     }
 

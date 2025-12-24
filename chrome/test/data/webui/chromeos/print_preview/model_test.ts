@@ -244,6 +244,10 @@ suite('ModelTest', function() {
     model.set('settings.rasterize.available', true);
   }
 
+  function initializeScalingTypePdf(initialScalingType: ScalingType) {
+    model.setSetting('scalingTypePdf', initialScalingType);
+  }
+
   /**
    * Tests that toggling each setting results in the expected change to the
    * print ticket.
@@ -775,6 +779,46 @@ suite('ModelTest', function() {
     }));
     model.applyStickySettings();
     assertMarginsSettingsResetToDefault(model.settings);
+  });
+
+  /**
+   * When the value of `scalingTypePdf` is `ACTUAL_SIZE` in sticky settings,
+   * if `alignPdfDefaultPrintSettingsWithHTML` is off, print preview should
+   * show "Default" instead of "Actual size" option.
+   */
+  test('ScalingTypeActualSizeOptionIsHidden', function() {
+    loadTimeData.overrideValues({alignPdfDefaultPrintSettingsWithHTML: false});
+    // The initial value of scalingTypePdf is ACTUAL_SIZE.
+    initializeScalingTypePdf(ScalingType.ACTUAL_SIZE);
+    // Because `alignPdfDefaultPrintSettingsWithHTML` is off, the value is
+    // changed to DEFAULT.
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      scalingTypePdf: ScalingType.ACTUAL_SIZE,
+    }));
+    model.applyStickySettings();
+    assertEquals(model.getSettingValue('scalingTypePdf'), ScalingType.DEFAULT);
+  });
+
+  /**
+   * This test is the inverse of the previous one: when the value of
+   * `scalingTypePdf` is `ACTUAL_SIZE` in sticky settings and
+   * `alignPdfDefaultPrintSettingsWithHTML` is on, print preview should
+   * show the "Actual size" option.
+   */
+  test('ScalingTypeActualSizeOptionIsShown', function() {
+    loadTimeData.overrideValues({alignPdfDefaultPrintSettingsWithHTML: true});
+    // The initial value of scalingTypePdf is DEFAULT.
+    initializeScalingTypePdf(ScalingType.DEFAULT);
+    // Because `alignPdfDefaultPrintSettingsWithHTML` is on, the value could be
+    // changed to ACTUAL_SIZE.
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      scalingTypePdf: ScalingType.ACTUAL_SIZE,
+    }));
+    model.applyStickySettings();
+    assertEquals(
+        model.getSettingValue('scalingTypePdf'), ScalingType.ACTUAL_SIZE);
   });
 
   // Tests that printToGoogleDrive is set correctly on the print ticket for Save

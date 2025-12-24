@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -1165,6 +1166,17 @@ export class PrintPreviewModelElement extends CrLitElement {
         const value =
             (this.stickySettings_ as {[key: string]: any})[stickySettingsKey];
         if (value !== undefined) {
+          if (settingName === 'scalingTypePdf') {
+            // If the flag "alignPdfDefaultPrintSettingsWithHTML" is off,
+            // hide the `ACTUAL_SIZE` option, and show the `DEFAULT` option
+            // instead.
+            if (!loadTimeData.getBoolean(
+                    'alignPdfDefaultPrintSettingsWithHTML') &&
+                value === ScalingType.ACTUAL_SIZE) {
+              this.setSetting(settingName, ScalingType.DEFAULT);
+              return;
+            }
+          }
           this.setSetting(settingName, value);
         } else {
           this.applyScalingStickySettings_(settingName);

@@ -10,5 +10,6 @@ export enum ScalingType {
   DEFAULT = 0,
   FIT_TO_PAGE = 1,
   FIT_TO_PAPER = 2,
-  CUSTOM = 3,
+  ACTUAL_SIZE = 3,
+  CUSTOM = 4,
 }

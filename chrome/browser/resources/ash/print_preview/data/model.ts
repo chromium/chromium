@@ -1424,6 +1424,17 @@ export class PrintPreviewModelElement extends PolymerElement {
         const value =
             (this.stickySettings_ as {[key: string]: any})[setting.key];
         if (value !== undefined) {
+          if (settingName === 'scalingTypePdf') {
+            // If the flag "alignPdfDefaultPrintSettingsWithHTML" is off,
+            // hide the `ACTUAL_SIZE` option, and show the `DEFAULT` option
+            // instead.
+            if (!loadTimeData.getBoolean(
+                    'alignPdfDefaultPrintSettingsWithHTML') &&
+                value === ScalingType.ACTUAL_SIZE) {
+              this.setSetting(settingName, ScalingType.DEFAULT);
+              return;
+            }
+          }
           this.setSetting(settingName, value);
         } else {
           this.applyScalingStickySettings_(settingName);
