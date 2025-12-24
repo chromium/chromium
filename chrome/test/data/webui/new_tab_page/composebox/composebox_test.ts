@@ -2635,10 +2635,7 @@ suite('NewTabPageComposeboxTest', () => {
     test('setSearchContext sets input and queries autocomplete', async () => {
       loadTimeData.overrideValues({composeboxShowZps: true});
       composeboxElement = new ComposeboxElement();
-      // TODO(crbug.com/460551908): Replace `ntpRealboxNextEnabled` with
-      // whatever is used to delineate the Omnibox's composebox from the
-      // NTP's.
-      composeboxElement.ntpRealboxNextEnabled = true;
+      composeboxElement.searchboxNextEnabled = true;
       document.body.appendChild(composeboxElement);
 
       await microtasksFinished();
