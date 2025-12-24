@@ -164,7 +164,7 @@ bool IsDeepSearchEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get()) {
     return true;
   }
 
@@ -183,8 +183,7 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
-      kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get()) {
     return true;
   }
 
@@ -289,10 +288,6 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
 const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
                                                  "ShowSmartCompose",
                                                  true);
-
-const base::FeatureParam<bool> kForceToolsAndModels(&kNtpComposebox,
-                                                    "ForceToolsAndModels",
-                                                    false);
 
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,

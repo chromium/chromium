@@ -59,8 +59,6 @@ extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
 // Whether or not to enable viewport images with page context uploads.
 extern const base::FeatureParam<bool> kEnableViewportImages;
-// Whether to force tools and models to show in the composebox context menu.
-extern const base::FeatureParam<bool> kForceToolsAndModels;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
 // Whether to show image suggestions under the composebox.

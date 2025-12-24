@@ -185,8 +185,7 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
-      kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get()) {
     return true;
   }
 
@@ -206,7 +205,7 @@ bool IsDeepSearchEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get()) {
     return true;
   }
 
@@ -253,10 +252,6 @@ const base::FeatureParam<bool> kEnableViewportImages(
     &internal::kWebUIOmniboxAimPopup,
     "EnableViewportImages",
     true);
-const base::FeatureParam<bool> kForceToolsAndModels(
-    &internal::kWebUIOmniboxAimPopup,
-    "ForceToolsAndModels",
-    false);
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
                                            1);
