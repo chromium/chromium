@@ -33,6 +33,10 @@
 #include "extensions/common/utils/extension_types_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -93,10 +97,20 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.
-  if (!script.name().empty())
-    root.Set(manifest_keys::kName, script.name());
-  else
-    root.Set(manifest_keys::kName, original_url.ExtractFileName());
+  std::string name = script.name();
+#if BUILDFLAG(IS_ANDROID)
+  if (name.empty()) {
+    std::u16string display_name;
+    if (base::MaybeGetFileDisplayName(user_script_path, &display_name) &&
+        !display_name.empty()) {
+      name = base::UTF16ToUTF8(display_name);
+    }
+  }
+#endif
+  if (name.empty()) {
+    name = original_url.ExtractFileName();
+  }
+  root.Set(manifest_keys::kName, name);
 
   // Not all scripts have a version, but we need one. Default to 1.0 if it is
   // missing.
