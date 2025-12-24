@@ -124,11 +124,10 @@ class AndroidNetworkLibrary {
         try {
             return X509Util.verifyServerCertificates(
                     certChain, authType, host, ocspResponse, sctList);
-        } catch (KeyStoreException e) {
-            return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
-        } catch (NoSuchAlgorithmException e) {
-            return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
-        } catch (IllegalArgumentException e) {
+        } catch (KeyStoreException
+                | CertificateException
+                | NoSuchAlgorithmException
+                | IllegalArgumentException e) {
             return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
         }
     }
