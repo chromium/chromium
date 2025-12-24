@@ -4015,6 +4015,8 @@ static_library("ui") {
       "views/omnibox/omnibox_popup_presenter.h",
       "views/omnibox/omnibox_popup_presenter_base.cc",
       "views/omnibox/omnibox_popup_presenter_base.h",
+      "views/omnibox/omnibox_popup_tab_selection_listener.cc",
+      "views/omnibox/omnibox_popup_tab_selection_listener.h",
       "views/omnibox/omnibox_popup_view_views.cc",
       "views/omnibox/omnibox_popup_view_views.h",
       "views/omnibox/omnibox_popup_view_webui.cc",

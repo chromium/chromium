@@ -20,6 +20,7 @@ class LocationBarView;
 class OmniboxContextMenu;
 class OmniboxController;
 class OmniboxPopupPresenterBase;
+class OmniboxPopupTabSelectionListener;
 class OmniboxPopupUI;
 
 namespace content {
@@ -109,6 +110,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents_wrapper_;
   std::unique_ptr<OmniboxContextMenu> context_menu_;
+
+  std::unique_ptr<OmniboxPopupTabSelectionListener> tab_selection_listener_;
 
   // The URL used to load the WebUI. Cached here so the content can be reloaded
   // if the renderer crashes.
