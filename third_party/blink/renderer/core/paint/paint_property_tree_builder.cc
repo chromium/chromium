@@ -2590,32 +2590,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   if (object_.HasLayer() || properties_ || IsLinkHighlighted(object_) ||
       object_.CanContainFixedPositionObjects() ||
       object_.CanContainAbsolutePositionObjects()) {
-    // The ::view-transition pseudo is a child of the scoped element; however,
-    // it and its children must be able to paint outside any overflow clip
-    // imposed by the scoped element. Otherwise, the border and box-shadow on
-    // the scoped element disappear. The ::view-transition pseudo must also
-    // escape any scroll translation if the scoped element is a scroll
-    // container.
-    // See https://github.com/w3c/csswg-drafts/issues/12324.
-    const ClipPaintPropertyNodeOrAlias* transition_clip = nullptr;
-    const TransformPaintPropertyNodeOrAlias* transition_transform = nullptr;
-    if (object_.GetNode() &&
-        IsTransitionPseudoElement(object_.GetNode()->GetPseudoId())) {
-      Element& scope =
-          To<PseudoElement>(object_.GetNode())->UltimateOriginatingElement();
-      auto* scope_properties =
-          scope.GetLayoutObject()->FirstFragment().PaintProperties();
-      if (scope_properties && scope_properties->OverflowClip()) {
-        transition_clip = context_.current.clip->Parent();
-      }
-      if (scope_properties && scope_properties->ScrollTranslation()) {
-        transition_transform = scope_properties->ScrollTranslation()->Parent();
-      }
-    }
-
-    new_transform = transition_transform ? transition_transform
-                                         : context_.current.transform;
-    new_clip = transition_clip ? transition_clip : context_.current.clip;
+    new_transform = context_.current.transform;
+    new_clip = context_.current.clip;
     new_effect = context_.current_effect;
     fragment_data_.SetLocalBorderBoxProperties(
         PropertyTreeStateOrAlias(*new_transform, *new_clip, *new_effect));
@@ -3477,6 +3453,22 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // can be stored on PaintPropertyTreeBuilderFragmentContext instead of
       // recomputing them.
       context_.current.paint_offset += box->PhysicalLocation();
+
+      if (object_.IsPseudo(kPseudoIdViewTransition)) {
+        auto* scope = DynamicTo<LayoutBox>(To<PseudoElement>(object_.GetNode())
+                                               ->UltimateOriginatingElement()
+                                               .GetLayoutObject());
+        if (scope) {
+          LayoutBlock* containing_block = object_.ContainingBlock();
+          CHECK(containing_block == scope ||
+                containing_block->IsViewTransitionRoot());
+
+          // Undo the scroll origin offset that was applied during
+          // UpdateScrollAndScrollTranslation().
+          context_.current.paint_offset -=
+              PhysicalOffset(containing_block->ScrollOrigin());
+        }
+      }
     }
   }
 
@@ -3652,6 +3644,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   std::optional<gfx::Vector2d> paint_offset_translation;
   PhysicalOffset sticky_offset;
   UpdateForObjectLocation(paint_offset_translation, sticky_offset);
+
+  if (object_.IsPseudo(kPseudoIdViewTransition)) {
+    // The transition pseudos escape the scope's clip and scroll translation.
+    context_.current.clip = context_.clip_ancestor_for_transition_pseudo_root;
+    context_.current.transform =
+        context_.transform_ancestor_for_transition_pseudo_root;
+  }
+
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 
@@ -3740,6 +3740,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
   // perspective itself doesn't affect backface visibility inheritance.
   context_.can_inherit_backface_visibility =
       context_.should_flatten_inherited_transform;
+
+  // The code below generates transform/clip nodes which should apply to all
+  // descendants of this layout object except the ::view-transition pseudo.
+  // That's why we cache the transform and clip to be used by the ::v-t here.
+  context_.clip_ancestor_for_transition_pseudo_root = context_.current.clip;
+  context_.transform_ancestor_for_transition_pseudo_root =
+      context_.current.transform;
 
   if (properties_) {
     UpdateInnerBorderRadiusClip();

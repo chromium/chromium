@@ -171,6 +171,16 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // The delta between the old and new accumulated offsets of 2d translation
   // transforms to the layout shift root.
   gfx::Vector2dF translation_2d_to_layout_shift_root_delta;
+
+  // These node pointers provide the transform/clip space to be used by the
+  // ::view-transition pseudo element. The transform/clip ancestor for ::v-t is
+  // distinct from other descendants of the scope element. This is because some
+  // of the scope element's paint properties, like Transform, should apply to
+  // the ::v-t, but others like ScrollTranslation and OverflowClip should not.
+  const ClipPaintPropertyNodeOrAlias* clip_ancestor_for_transition_pseudo_root =
+      nullptr;
+  const TransformPaintPropertyNodeOrAlias*
+      transform_ancestor_for_transition_pseudo_root = nullptr;
 };
 
 struct PaintPropertyTreeBuilderContext final {
