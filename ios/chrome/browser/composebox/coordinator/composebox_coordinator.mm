@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
@@ -76,8 +77,8 @@
 }
 
 - (void)start {
-  _viewController =
-      [[ComposeboxViewController alloc] initWithTheme:[self createTheme]];
+  ComposeboxTheme* theme = [self createTheme];
+  _viewController = [[ComposeboxViewController alloc] initWithTheme:theme];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
   if (self.isOffTheRecord) {
@@ -114,6 +115,10 @@
 
   [_viewController
       addInputViewController:_aimComposeboxCoordinator.inputViewController];
+
+  if (theme.useIncognitoViewFallback) {
+    [self checkClipboardContent];
+  }
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -245,6 +250,33 @@
   }
 
   return ComposeboxInputPlatePosition::kTop;
+}
+
+#pragma mark - Clipboard checks
+
+- (void)checkClipboardContent {
+  ClipboardRecentContent* clipboardRecentContent =
+      ClipboardRecentContent::GetInstance();
+  if (!clipboardRecentContent) {
+    [self onClipboardMatchedTypesReceived:{}];
+    return;
+  }
+
+  std::set<ClipboardContentType> desired_types = {ClipboardContentType::URL,
+                                                  ClipboardContentType::Text,
+                                                  ClipboardContentType::Image};
+  __weak __typeof(self) weakSelf = self;
+  clipboardRecentContent->HasRecentContentFromClipboard(
+      desired_types,
+      base::BindOnce(^(std::set<ClipboardContentType> matched_types) {
+        [weakSelf onClipboardMatchedTypesReceived:matched_types];
+      }));
+}
+
+- (void)onClipboardMatchedTypesReceived:
+    (std::set<ClipboardContentType>)matchedTypes {
+  BOOL hasClipboardContent = !matchedTypes.empty();
+  [_viewController setExpectsClipboardSuggestion:hasClipboardContent];
 }
 
 #pragma mark - ComposeboxAnimationContext

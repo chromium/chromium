@@ -51,6 +51,10 @@
 // Requests the input plate to expand beyond to full width when dismissing.
 - (void)expandInputPlateForDismissal;
 
+// Whether the system anticipates a clipboard suggestion causing the incognito
+// view to remain hidden.
+- (void)setExpectsClipboardSuggestion:(BOOL)expectsClipboardSuggestion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_VIEW_CONTROLLER_H_

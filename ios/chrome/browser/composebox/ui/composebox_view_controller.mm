@@ -147,7 +147,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     _incognitoView = [[IncognitoView alloc] init];
     _incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
     _incognitoView.delegate = self;
-    _incognitoView.hidden = NO;
+    _incognitoView.hidden = YES;
 
     [self.view insertSubview:_incognitoView atIndex:0];
   }
@@ -481,6 +481,15 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
 - (void)expandInputPlateForDismissal {
   _constraintToCloseButton.active = NO;
+}
+
+- (void)setExpectsClipboardSuggestion:(BOOL)expectsClipboardSuggestion {
+  // To avoid UI flickering during the loading of the Incognito view, this logic
+  // implements a conditional delay. Since the Incognito NTP is limited to
+  // clipboard-based suggestions, we proactively check the clipboard status.
+  // The view remains hidden until the presence or absence of clipboard content
+  // is verified, preventing a jumping UI state.
+  _incognitoView.hidden = expectsClipboardSuggestion;
 }
 
 - (ComposeboxInputPlatePosition)currentInputPlatePosition {
