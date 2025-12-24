@@ -458,11 +458,6 @@ GlicInstance* GlicWindowControllerImpl::GetInstanceForTab(
   return const_cast<GlicWindowControllerImpl*>(this);
 }
 
-void GlicWindowControllerImpl::CreateNewConversationForTabs(
-    const std::vector<tabs::TabInterface*>& tabs) {
-  NOTIMPLEMENTED();
-}
-
 bool GlicWindowControllerImpl::BeforeViewCreated(
     Browser* browser,
     mojom::InvocationSource source,

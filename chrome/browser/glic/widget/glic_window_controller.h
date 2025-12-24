@@ -71,8 +71,6 @@ class GlicWindowController {
   virtual std::vector<GlicInstance*> GetInstances() = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
-  virtual void CreateNewConversationForTabs(
-      const std::vector<tabs::TabInterface*>& tabs) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.

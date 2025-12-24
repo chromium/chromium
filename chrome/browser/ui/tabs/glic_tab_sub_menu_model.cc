@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,29 +30,6 @@ bool GlicTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  if (command_id == TabStripModel::CommandGlicCreateNewChat) {
-    std::vector<int> indices;
-    if (tab_strip_model_->IsTabSelected(context_index_)) {
-      const auto& selected_indices =
-          tab_strip_model_->selection_model().selected_indices();
-      indices.assign(selected_indices.begin(), selected_indices.end());
-    } else {
-      indices.push_back(context_index_);
-    }
-
-    std::vector<tabs::TabInterface*> tabs =
-        tab_strip_model_->GetTabsAtIndices(indices);
-
-    GlicKeyedService* service =
-        GlicKeyedService::Get(tab_strip_model_->profile());
-    if (!service) {
-      return;
-    }
-
-    service->window_controller().CreateNewConversationForTabs(tabs);
-    return;
-  }
-
   tab_strip_model_->ExecuteContextMenuCommand(
       context_index_,
       static_cast<TabStripModel::ContextMenuCommand>(command_id));
