@@ -260,17 +260,14 @@ BASE_FEATURE(kNtpTabGroupsModuleZeroState,
 
 // If enabled, stale modules will be auto-removed from the NTP.
 BASE_FEATURE(kNtpFeatureOptimizationModuleRemoval,
-             "kNtpFeatureOptimizationModuleRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, stale shortcuts will be auto-removed from the NTP.
 BASE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval,
-             "kNtpFeatureOptimizationShortcutsRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the dismiss module buttons will be removed from the NTP modules.
 BASE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval,
-             "kNtpFeatureOptimizationDismissModulesRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kNtpModuleIgnoredCriteriaThreshold[] =

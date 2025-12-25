@@ -9334,6 +9334,8 @@ from previous Chrome versions.
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
   <int value="-1761695937"
       label="NtpPhotosModuleCustomizedOptInArtWork:enabled"/>
+  <int value="-1761652779"
+      label="NtpFeatureOptimizationDismissModulesRemoval:disabled"/>
   <int value="-1761623485" label="RequestDesktopSiteDefaultsDowngrade:enabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
@@ -12604,8 +12606,6 @@ from previous Chrome versions.
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
   <int value="-620801681" label="EnableCertManagementUIV2:disabled"/>
-  <int value="-620156989"
-      label="kNtpFeatureOptimizationModuleRemoval:disabled"/>
   <int value="-620030047" label="CrosCompUpdates:disabled"/>
   <int value="-619967827" label="CrosWebAppShortcutUiUpdate:disabled"/>
   <int value="-619740638" label="ListAllDisplayModes:enabled"/>
@@ -12957,6 +12957,8 @@ from previous Chrome versions.
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
+  <int value="-500187265"
+      label="NtpFeatureOptimizationDismissModulesRemoval:enabled"/>
   <int value="-500107766" label="OmniboxShortcutsAndroid:disabled"/>
   <int value="-500044371" label="ShowFeaturedEnterpriseSiteSearchIPH:enabled"/>
   <int value="-499923792" label="MigrateSyncingUserToSignedIn:disabled"/>
@@ -13091,8 +13093,6 @@ from previous Chrome versions.
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-450917820" label="EnableCbdSignOut:enabled"/>
-  <int value="-450646079"
-      label="kNtpFeatureOptimizationShortcutsRemoval:enabled"/>
   <int value="-450578554" label="WGIGamepadTriggerRumble:enabled"/>
   <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
@@ -13383,8 +13383,6 @@ from previous Chrome versions.
   <int value="-343769596" label="ServiceWorkerScriptStreaming:disabled"/>
   <int value="-343314036" label="WebBluetooth:enabled"/>
   <int value="-342421456" label="EnableOverviewRoundedCorners:disabled"/>
-  <int value="-342343375"
-      label="kNtpFeatureOptimizationShortcutsRemoval:disabled"/>
   <int value="-342243498" label="EnableWebHidInWebView:enabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>
@@ -14077,8 +14075,6 @@ from previous Chrome versions.
   <int value="-102227288" label="PasswordExport:disabled"/>
   <int value="-102008534" label="AppInstallServiceUri:disabled"/>
   <int value="-101679300" label="AndroidKeyboardA11y:disabled"/>
-  <int value="-101573526"
-      label="kNtpFeatureOptimizationDismissModulesRemoval:disabled"/>
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
@@ -15623,8 +15619,6 @@ from previous Chrome versions.
   <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
-  <int value="431550531"
-      label="kNtpFeatureOptimizationDismissModulesRemoval:enabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
   <int value="432772847"
       label="AutofillEnableVcnGrayOutForMerchantOptOut:disabled"/>
@@ -16756,6 +16750,7 @@ from previous Chrome versions.
   <int value="824620391" label="AndroidTabDeclutter:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
+  <int value="825381037" label="NtpFeatureOptimizationModuleRemoval:disabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="826748470" label="NtpCalendarModule:enabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
@@ -17106,6 +17101,7 @@ from previous Chrome versions.
   <int value="957191538" label="EcheSWADebugMode:enabled"/>
   <int value="957333504" label="OmniboxSteadyStateHeight:enabled"/>
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
+  <int value="958232083" label="NtpFeatureOptimizationModuleRemoval:enabled"/>
   <int value="958310554" label="LensOverlayEntrypointLabelAlt:disabled"/>
   <int value="958620603" label="AndroidAudioDeviceListener:enabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
@@ -18092,6 +18088,8 @@ from previous Chrome versions.
   <int value="1295868587" label="CastStreamingHardwareHevc:disabled"/>
   <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
   <int value="1296035069" label="CCTResetTimeoutEnabled:enabled"/>
+  <int value="1296094788"
+      label="NtpFeatureOptimizationShortcutsRemoval:enabled"/>
   <int value="1296474231" label="SafetyHubAndroidSurvey:disabled"/>
   <int value="1296512860" label="AndroidAppIntegrationV2:disabled"/>
   <int value="1296559064" label="FeedAudioOverviews:enabled"/>
@@ -18209,6 +18207,8 @@ from previous Chrome versions.
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1334953166" label="AllowNonFamilyLinkUrlFilterMode:enabled"/>
   <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
+  <int value="1335072054"
+      label="NtpFeatureOptimizationShortcutsRemoval:disabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
@@ -18916,7 +18916,6 @@ from previous Chrome versions.
   <int value="1582771017" label="kDiagnosticsAppJelly:disabled"/>
   <int value="1583509900" label="ClearLoginDatabaseForUPMUsers:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
-  <int value="1583766562" label="kNtpFeatureOptimizationModuleRemoval:enabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
   <int value="1584111738" label="NtpChromeCartHistoryClusterCoexist:enabled"/>
   <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
