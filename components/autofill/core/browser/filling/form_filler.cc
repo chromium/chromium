@@ -1237,7 +1237,13 @@ std::optional<FieldType> FormFiller::FillField(
   if (allow_suggestion_swapping) {
     field_data.set_value(filling_content.value);
     field_data.set_force_override(true);
-    field_data.set_is_autofilled(!filling_content.value.empty());
+
+    bool is_autofilled_after_swapping = !filling_content.value.empty();
+    field_data.set_is_autofilled(is_autofilled_after_swapping);
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      autofill_field.set_is_autofilled(is_autofilled_after_swapping);
+    }
+
     return filling_content.type;
   }
 

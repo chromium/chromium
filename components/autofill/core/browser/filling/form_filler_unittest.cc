@@ -631,8 +631,9 @@ TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
                           "4234-5678-9012-3456",  // Visa
                           "04", "", "1");
 
-  std::vector<FormFieldData> filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_full).fields();
+  FormData filled_form =
+      AutofillForm(form, form.fields().front(), &credit_card_full);
+  std::vector<FormFieldData> filled_fields = filled_form.fields();
 
   EXPECT_THAT(filled_fields[0], AutofilledWith(credit_card_full.GetInfo(
                                     CREDIT_CARD_NAME_FULL, kAppLocale)));
@@ -640,14 +641,49 @@ TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
                                     CREDIT_CARD_EXP_4_DIGIT_YEAR, kAppLocale)));
   EXPECT_TRUE(filled_fields[3].is_autofilled());
 
-  filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_with_empty_data)
+  std::vector<FormFieldData> updated_fields =
+      AutofillForm(filled_form, filled_form.fields().front(),
+                   &credit_card_with_empty_data)
           .fields();
-  EXPECT_THAT(filled_fields[0],
+  EXPECT_THAT(updated_fields[0],
               AutofilledWith(credit_card_with_empty_data.GetInfo(
                   CREDIT_CARD_NAME_FULL, kAppLocale)));
-  EXPECT_EQ(filled_fields[3].value(), u"");
-  EXPECT_FALSE(filled_fields[3].is_autofilled());
+  EXPECT_EQ(updated_fields[3].value(), u"");
+  EXPECT_FALSE(updated_fields[3].is_autofilled());
+}
+
+// Tests that when payment form fields are autofilled and payment swapping is
+// enabled, the cached AutofillField is updated correctly.
+TEST_F(FormFillerTest, PaymentsSwappingUpdatesAutofillField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard credit_card_full;
+  test::SetCreditCardInfo(&credit_card_full, "Elvis Presley",
+                          "4234 5678 9012 3456",  // Visa
+                          "04", "2999", "1");
+
+  CreditCard credit_card_with_empty_data;
+  test::SetCreditCardInfo(&credit_card_with_empty_data, "Elvis Presley New",
+                          "4234-5678-9012-3456",  // Visa
+                          "04", "", "1");
+
+  FormData filled_form =
+      AutofillForm(form, form.fields().front(), &credit_card_full);
+  FormStructure* filled_form_structure = GetFormStructure(filled_form);
+  EXPECT_TRUE(filled_form_structure->field(0)->is_autofilled());
+  EXPECT_TRUE(filled_form_structure->field(3)->is_autofilled());
+
+  FormData updated_form = AutofillForm(
+      filled_form, filled_form.fields().front(), &credit_card_with_empty_data);
+  FormStructure* updated_form_structure = GetFormStructure(updated_form);
+  EXPECT_TRUE(updated_form_structure->field(0)->is_autofilled());
+  EXPECT_FALSE(updated_form_structure->field(3)->is_autofilled());
 }
 
 struct PartialCreditCardDateParams {
