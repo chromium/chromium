@@ -51,6 +51,9 @@ namespace {
 
 ATOM g_video_window_class = 0;
 
+constexpr int kVirtualWindowDefaultWidth = 1;
+constexpr int kVirtualWindowDefaultHeight = 1;
+
 // GPU vendor IDs
 constexpr uint32_t kGpuVendorIdIntel = 0x8086;
 constexpr uint32_t kGpuVendorIdNvidia = 0x10de;
@@ -875,7 +878,8 @@ HRESULT MediaFoundationRenderer::InitializeVirtualVideoWindow() {
       CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
                          WS_EX_NOREDIRECTIONBITMAP,
                      reinterpret_cast<wchar_t*>(g_video_window_class), L"",
-                     WS_POPUP | WS_DISABLED | WS_CLIPSIBLINGS, 0, 0, 1, 1,
+                     WS_POPUP | WS_DISABLED | WS_CLIPSIBLINGS, 0, 0,
+                     kVirtualWindowDefaultWidth, kVirtualWindowDefaultHeight,
                      nullptr, nullptr, nullptr, nullptr);
   if (!virtual_video_window_) {
     HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
@@ -1090,6 +1094,17 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
                 << PrintHr(HRESULT_FROM_WIN32(GetLastError()));
     std::move(callback).Run(false);
     return;
+  }
+
+  // Report multi-gpu UMAs only once when the virtual video window size is the
+  // correct one (the output rect is larger than default size) since the window
+  // handle is required to determine where the video is displayed.
+  if (!has_reported_multi_gpu_histogram_ &&
+      output_rect.width() > kVirtualWindowDefaultWidth &&
+      output_rect.height() > kVirtualWindowDefaultHeight) {
+    has_reported_multi_gpu_histogram_ = true;
+    ReportGpuInfoUma("Media.MediaFoundationRenderer.MultiGpu",
+                     dxgi_device_manager_.Get(), virtual_video_window_);
   }
 
   if (FAILED(UpdateVideoStream(output_rect.size()))) {

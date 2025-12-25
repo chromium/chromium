@@ -257,6 +257,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Start time for the rendered video frame detection.
   std::optional<base::TimeTicks> rendered_video_frame_detection_start_time_;
 
+  // Whether reporting for multi-GPU histogram has been done or not.
+  bool has_reported_multi_gpu_histogram_ = false;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRenderer> weak_factory_{this};
 };
