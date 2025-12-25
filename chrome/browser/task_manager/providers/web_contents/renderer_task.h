@@ -63,8 +63,8 @@ class RendererTask : public Task,
                             int* out_error_code) const override;
   std::u16string GetProfileName() const override;
   SessionID GetTabId() const override;
-  base::ByteCount GetV8MemoryAllocated() const override;
-  base::ByteCount GetV8MemoryUsed() const override;
+  std::optional<base::ByteSize> GetV8MemoryAllocated() const override;
+  std::optional<base::ByteSize> GetV8MemoryUsed() const override;
   bool ReportsWebCacheStats() const override;
   blink::WebCacheResourceTypeStats GetWebCacheStats() const override;
 
@@ -129,8 +129,8 @@ class RendererTask : public Task,
   const int render_process_id_;
 
   // The allocated and used V8 memory (in bytes).
-  base::ByteCount v8_memory_allocated_;
-  base::ByteCount v8_memory_used_;
+  base::ByteSize v8_memory_allocated_;
+  base::ByteSize v8_memory_used_;
 
   // The WebKit resource cache statistics for this renderer.
   blink::WebCacheResourceTypeStats webcache_stats_ = {};

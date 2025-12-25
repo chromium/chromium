@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "chrome/browser/browser_process.h"
@@ -152,19 +154,19 @@ base::WeakPtr<Task> Task::GetParentTask() const {
 }
 
 bool Task::ReportsSqliteMemory() const {
-  return !GetSqliteMemoryUsed().is_negative();
+  return GetSqliteMemoryUsed().has_value();
 }
 
-base::ByteCount Task::GetSqliteMemoryUsed() const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> Task::GetSqliteMemoryUsed() const {
+  return std::nullopt;
 }
 
-base::ByteCount Task::GetV8MemoryAllocated() const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> Task::GetV8MemoryAllocated() const {
+  return std::nullopt;
 }
 
-base::ByteCount Task::GetV8MemoryUsed() const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> Task::GetV8MemoryUsed() const {
+  return std::nullopt;
 }
 
 bool Task::ReportsWebCacheStats() const {

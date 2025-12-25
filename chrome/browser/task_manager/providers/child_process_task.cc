@@ -189,9 +189,9 @@ void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
   process_resources_sampler_->Refresh(base::DoNothing());
 
   v8_memory_allocated_ =
-      base::ByteCount(process_resources_sampler_->GetV8MemoryAllocated());
+      base::ByteSize(process_resources_sampler_->GetV8MemoryAllocated());
   v8_memory_used_ =
-      base::ByteCount(process_resources_sampler_->GetV8MemoryUsed());
+      base::ByteSize(process_resources_sampler_->GetV8MemoryUsed());
 }
 
 Task::Type ChildProcessTask::GetType() const {
@@ -234,11 +234,11 @@ int ChildProcessTask::GetChildProcessUniqueID() const {
   return unique_child_process_id_;
 }
 
-base::ByteCount ChildProcessTask::GetV8MemoryAllocated() const {
+std::optional<base::ByteSize> ChildProcessTask::GetV8MemoryAllocated() const {
   return v8_memory_allocated_;
 }
 
-base::ByteCount ChildProcessTask::GetV8MemoryUsed() const {
+std::optional<base::ByteSize> ChildProcessTask::GetV8MemoryUsed() const {
   return v8_memory_used_;
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -168,23 +169,27 @@ base::TimeDelta TaskManagerImpl::GetCpuTime(TaskId task_id) const {
 #endif
 }
 
-base::ByteCount TaskManagerImpl::GetMemoryFootprintUsage(TaskId task_id) const {
+std::optional<base::ByteSize> TaskManagerImpl::GetMemoryFootprintUsage(
+    TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->footprint_bytes();
 }
 
-base::ByteCount TaskManagerImpl::GetSwappedMemoryUsage(TaskId task_id) const {
+std::optional<base::ByteSize> TaskManagerImpl::GetSwappedMemoryUsage(
+    TaskId task_id) const {
 #if BUILDFLAG(IS_CHROMEOS)
   return GetTaskGroupByTaskId(task_id)->swapped_bytes();
 #else
-  return base::ByteCount(-1);
+  return std::nullopt;
 #endif
 }
 
-base::ByteCount TaskManagerImpl::GetGpuMemoryUsage(TaskId task_id,
-                                                   bool* has_duplicates) const {
+std::optional<base::ByteSize> TaskManagerImpl::GetGpuMemoryUsage(
+    TaskId task_id,
+    bool* has_duplicates) const {
   const TaskGroup* task_group = GetTaskGroupByTaskId(task_id);
-  if (has_duplicates)
+  if (has_duplicates) {
     *has_duplicates = task_group->gpu_memory_has_duplicates();
+  }
   return task_group->gpu_memory();
 }
 
@@ -301,22 +306,24 @@ std::optional<base::ByteSize> TaskManagerImpl::GetProcessTotalNetworkUsage(
   return GetTaskGroupByTaskId(task_id)->per_process_network_usage_rate();
 }
 
-base::ByteCount TaskManagerImpl::GetSqliteMemoryUsed(TaskId task_id) const {
+std::optional<base::ByteSize> TaskManagerImpl::GetSqliteMemoryUsed(
+    TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetSqliteMemoryUsed();
 }
 
 bool TaskManagerImpl::GetV8Memory(TaskId task_id,
-                                  base::ByteCount* allocated,
-                                  base::ByteCount* used) const {
+                                  base::ByteSize* allocated,
+                                  base::ByteSize* used) const {
   const Task* task = GetTaskByTaskId(task_id);
-  const base::ByteCount allocated_memory = task->GetV8MemoryAllocated();
-  const base::ByteCount used_memory = task->GetV8MemoryUsed();
-  if (allocated_memory.is_negative() || used_memory.is_negative()) {
+  const std::optional<base::ByteSize> allocated_memory =
+      task->GetV8MemoryAllocated();
+  const std::optional<base::ByteSize> used_memory = task->GetV8MemoryUsed();
+  if (!allocated_memory.has_value() || !used_memory.has_value()) {
     return false;
   }
 
-  *allocated = allocated_memory;
-  *used = used_memory;
+  *allocated = allocated_memory.value();
+  *used = used_memory.value();
 
   return true;
 }
@@ -610,7 +617,7 @@ void TaskManagerImpl::OnReceivedMemoryDump(
     if (it == task_groups_by_proc_id_.end()) {
       continue;
     }
-    it->second->set_footprint(base::KiB(pmd.os_dump().private_footprint_kb));
+    it->second->set_footprint(base::KiBU(pmd.os_dump().private_footprint_kb));
   }
 }
 

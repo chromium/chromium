@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/test_task_manager.h"
 
+#include <optional>
+
 #include "base/timer/mock_timer.h"
 
 namespace task_manager {
@@ -39,17 +41,20 @@ base::TimeDelta TestTaskManager::GetCpuTime(TaskId task_id) const {
   return base::TimeDelta();
 }
 
-base::ByteCount TestTaskManager::GetMemoryFootprintUsage(TaskId task_id) const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> TestTaskManager::GetMemoryFootprintUsage(
+    TaskId task_id) const {
+  return std::nullopt;
 }
 
-base::ByteCount TestTaskManager::GetSwappedMemoryUsage(TaskId task_id) const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> TestTaskManager::GetSwappedMemoryUsage(
+    TaskId task_id) const {
+  return std::nullopt;
 }
 
-base::ByteCount TestTaskManager::GetGpuMemoryUsage(TaskId task_id,
-                                                   bool* has_duplicates) const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> TestTaskManager::GetGpuMemoryUsage(
+    TaskId task_id,
+    bool* has_duplicates) const {
+  return std::nullopt;
 }
 
 int TestTaskManager::GetIdleWakeupsPerSecond(TaskId task_id) const {
@@ -141,13 +146,14 @@ base::ByteSize TestTaskManager::GetCumulativeNetworkUsage(
   return base::ByteSize(0);
 }
 
-base::ByteCount TestTaskManager::GetSqliteMemoryUsed(TaskId task_id) const {
-  return base::ByteCount(-1);
+std::optional<base::ByteSize> TestTaskManager::GetSqliteMemoryUsed(
+    TaskId task_id) const {
+  return std::nullopt;
 }
 
 bool TestTaskManager::GetV8Memory(TaskId task_id,
-                                  base::ByteCount* allocated,
-                                  base::ByteCount* used) const {
+                                  base::ByteSize* allocated,
+                                  base::ByteSize* used) const {
   return false;
 }
 

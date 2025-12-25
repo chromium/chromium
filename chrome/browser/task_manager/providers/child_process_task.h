@@ -64,8 +64,8 @@ class ChildProcessTask : public Task {
   Type GetType() const override;
   SubType GetSubType() const override;
   int GetChildProcessUniqueID() const override;
-  base::ByteCount GetV8MemoryAllocated() const override;
-  base::ByteCount GetV8MemoryUsed() const override;
+  std::optional<base::ByteSize> GetV8MemoryAllocated() const override;
+  std::optional<base::ByteSize> GetV8MemoryUsed() const override;
 
  private:
   static gfx::ImageSkia* s_icon_;
@@ -74,9 +74,9 @@ class ChildProcessTask : public Task {
   // the browser child process represented by this object.
   std::unique_ptr<ProcessResourceUsage> process_resources_sampler_;
 
-  // The allocated and used V8 memory (in bytes).
-  base::ByteCount v8_memory_allocated_ = base::ByteCount(-1);
-  base::ByteCount v8_memory_used_ = base::ByteCount(-1);
+  // The allocated and used V8 memory.
+  std::optional<base::ByteSize> v8_memory_allocated_;
+  std::optional<base::ByteSize> v8_memory_used_;
 
   // The unique ID of the child process. It is not the PID of the process.
   // See |content::ChildProcessData::id|.

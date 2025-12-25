@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/byte_count.h"
@@ -148,15 +149,15 @@ class Task {
   virtual base::WeakPtr<Task> GetParentTask() const;
 
   // Getting the Sqlite used memory (in bytes). Not all tasks reports Sqlite
-  // memory, in this case a default invalid value of -1 will be returned.
+  // memory, in this case a nullopt will be returned.
   // Check for whether the task reports it or not first.
   bool ReportsSqliteMemory() const;
-  virtual base::ByteCount GetSqliteMemoryUsed() const;
+  virtual std::optional<base::ByteSize> GetSqliteMemoryUsed() const;
 
   // Getting the allocated and used V8 memory (in bytes). Not all tasks reports
-  // V8 memory, in this case a default invalid value of -1 will be returned.
-  virtual base::ByteCount GetV8MemoryAllocated() const;
-  virtual base::ByteCount GetV8MemoryUsed() const;
+  // V8 memory, in this case a nullopt will be returned.
+  virtual std::optional<base::ByteSize> GetV8MemoryAllocated() const;
+  virtual std::optional<base::ByteSize> GetV8MemoryUsed() const;
 
   // Checking if the task reports Webkit resource cache statistics and getting
   // them if it does.

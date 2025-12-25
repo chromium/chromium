@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/android/jni_string.h"
+#include "base/byte_size.h"
 #include "chrome/browser/task_manager/android/task_manager_observer_android.h"
 #include "chrome/browser/task_manager/internal/android/jni/TaskManagerServiceBridge_jni.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -52,9 +55,9 @@ JNI_TaskManagerServiceBridge_GetIcon(JNIEnv* env, TaskId task_id) {
 static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
     JNIEnv* env,
     TaskId task_id) {
-  return TaskManagerInterface::GetTaskManager()
-      ->GetMemoryFootprintUsage(task_id)
-      .InBytes();
+  std::optional<base::ByteSize> usage =
+      TaskManagerInterface::GetTaskManager()->GetMemoryFootprintUsage(task_id);
+  return usage ? usage->InBytes() : -1;
 }
 
 static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
@@ -79,9 +82,10 @@ static jlong JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
 static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
   bool has_duplicates;
-  jlong bytes = TaskManagerInterface::GetTaskManager()
-                    ->GetGpuMemoryUsage(task_id, &has_duplicates)
-                    .InBytes();
+  std::optional<base::ByteSize> usage =
+      TaskManagerInterface::GetTaskManager()->GetGpuMemoryUsage(
+          task_id, &has_duplicates);
+  jlong bytes = usage ? usage->InBytes() : -1;
   return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
 }
 

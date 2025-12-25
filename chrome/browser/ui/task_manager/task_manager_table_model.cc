@@ -213,17 +213,18 @@ class TaskManagerValuesStringifier {
                : n_a_string_;
   }
 
-  std::u16string GetMemoryUsageText(base::ByteCount memory_usage,
+  std::u16string GetMemoryUsageText(std::optional<base::ByteSize> memory_usage,
                                     bool has_duplicates) {
-    if (memory_usage.is_negative()) {
+    if (!memory_usage.has_value()) {
       return n_a_string_;
     }
 
 #if BUILDFLAG(IS_MAC)
     // System expectation is to show "100 kB", "200 MB", etc.
-    std::u16string memory_text = ui::FormatBytes(memory_usage);
+    std::u16string memory_text =
+        ui::FormatBytes(memory_usage->AsDeprecatedByteCount());
 #else
-    std::u16string memory_text = base::FormatNumber(memory_usage.InKiB());
+    std::u16string memory_text = base::FormatNumber(memory_usage->InKiB());
     // Adjust number string if necessary.
     base::i18n::AdjustStringForLocaleDirection(&memory_text);
     memory_text =
@@ -270,7 +271,7 @@ class TaskManagerValuesStringifier {
     }
 
     std::u16string net_byte =
-        ui::FormatSpeed(network_usage->AsDeprecatedByteCount());
+        ui::FormatSpeed(network_usage.value().AsDeprecatedByteCount());
     // Force number string to have LTR directionality.
     return base::i18n::GetDisplayStringInLTRDirectionality(net_byte);
   }
@@ -280,17 +281,19 @@ class TaskManagerValuesStringifier {
     return base::NumberToString16(proc_id);
   }
 
-  std::u16string FormatAllocatedAndUsedMemory(base::ByteCount allocated,
-                                              base::ByteCount used) {
+  std::u16string FormatAllocatedAndUsedMemory(base::ByteSize allocated,
+                                              base::ByteSize used) {
     return l10n_util::GetStringFUTF16(
         IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT,
-        ui::FormatBytesWithUnits(allocated, ui::DataUnits::kKibibyte, false),
-        ui::FormatBytesWithUnits(used, ui::DataUnits::kKibibyte, false));
+        ui::FormatBytesWithUnits(allocated.AsDeprecatedByteCount(),
+                                 ui::DataUnits::kKibibyte, false),
+        ui::FormatBytesWithUnits(used.AsDeprecatedByteCount(),
+                                 ui::DataUnits::kKibibyte, false));
   }
 
   std::u16string GetWebCacheStatText(
       const blink::WebCacheResourceTypeStat& stat) {
-    return GetMemoryUsageText(base::ByteCount(stat.size), false);
+    return GetMemoryUsageText(base::ByteSize(stat.size), false);
   }
 
   std::u16string GetKeepaliveCountText(int keepalive_count) const {
@@ -310,7 +313,7 @@ class TaskManagerValuesStringifier {
   const std::u16string& asterisk_string() const { return asterisk_string_; }
 
  private:
-  // The localized string "N/A".
+  // The localized "N/A" string, usually "–".
   const std::u16string n_a_string_;
 
   // The localized string for a value 0.
@@ -495,11 +498,11 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
           observed_task_manager()->GetSqliteMemoryUsed(tasks_[row]), false);
 
     case IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN: {
-      base::ByteCount v8_allocated, v8_used;
+      base::ByteSize v8_allocated, v8_used;
       if (observed_task_manager()->GetV8Memory(tasks_[row], &v8_allocated,
                                                &v8_used)) {
         return stringifier_->FormatAllocatedAndUsedMemory(
-            base::ByteCount(v8_allocated), base::ByteCount(v8_used));
+            base::ByteSize(v8_allocated), base::ByteSize(v8_used));
       }
       return stringifier_->n_a_string();
     }
@@ -642,7 +645,7 @@ int TaskManagerTableModel::CompareValues(size_t row1,
     }
 
     case IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN: {
-      base::ByteCount allocated1, allocated2, used1, used2;
+      base::ByteSize allocated1, allocated2, used1, used2;
       bool row1_valid = observed_task_manager()->GetV8Memory(
           tasks_[row1], &allocated1, &used1);
       bool row2_valid = observed_task_manager()->GetV8Memory(

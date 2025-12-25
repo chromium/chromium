@@ -221,12 +221,12 @@ void TaskGroup::RefreshGpuMemory(
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
   auto itr = gpu_memory_stats.process_map.find(process_id_);
   if (itr == gpu_memory_stats.process_map.end()) {
-    gpu_memory_ = base::ByteCount(-1);
+    gpu_memory_ = std::nullopt;
     gpu_memory_has_duplicates_ = false;
     return;
   }
 
-  gpu_memory_ = base::ByteCount(itr->second.video_memory);
+  gpu_memory_ = base::ByteSize(itr->second.video_memory);
   gpu_memory_has_duplicates_ = itr->second.has_duplicates;
 }
 
@@ -253,7 +253,7 @@ void TaskGroup::OnCpuRefreshDone(double cpu_usage) {
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_CPU);
 }
 
-void TaskGroup::OnSwappedMemRefreshDone(base::ByteCount swapped_mem_bytes) {
+void TaskGroup::OnSwappedMemRefreshDone(base::ByteSize swapped_mem_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   swapped_mem_ = swapped_mem_bytes;
@@ -306,7 +306,7 @@ void TaskGroup::OnSamplerRefreshDone(
 void TaskGroup::OnArcSamplerRefreshDone(
     std::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
   if (memory_footprint.has_value()) {
-    set_footprint(base::ByteCount(memory_footprint.value()));
+    set_footprint(base::ByteSize(memory_footprint.value()));
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

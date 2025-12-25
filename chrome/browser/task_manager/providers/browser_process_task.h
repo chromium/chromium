@@ -27,12 +27,12 @@ class BrowserProcessTask : public Task {
                int64_t refresh_flags) override;
   Type GetType() const override;
   int GetChildProcessUniqueID() const override;
-  base::ByteCount GetSqliteMemoryUsed() const override;
+  std::optional<base::ByteSize> GetSqliteMemoryUsed() const override;
 
  private:
   static gfx::ImageSkia* s_icon_;
 
-  base::ByteCount used_sqlite_memory_ = base::ByteCount(-1);
+  std::optional<base::ByteSize> used_sqlite_memory_;
 };
 
 }  // namespace task_manager
