@@ -144,6 +144,7 @@ _CONFIG = [
             'base::Process',
             'base::RadToDeg',
             'base::RangeAsRvalues',
+            'base::raw_span',
             'base::RefCountedData',
             'base::RemoveChars',
             'base::RepeatingTimer',
