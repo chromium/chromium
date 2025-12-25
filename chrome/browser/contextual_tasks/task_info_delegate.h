@@ -25,6 +25,7 @@ class TaskInfoDelegate {
   virtual bool IsShownInTab() = 0;
   virtual BrowserWindowInterface* GetBrowser() = 0;
   virtual content::WebContents* GetWebUIWebContents() = 0;
+  virtual void OnZeroStateChange(bool is_zero_state) = 0;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_TASK_INFO_DELEGATE_H_

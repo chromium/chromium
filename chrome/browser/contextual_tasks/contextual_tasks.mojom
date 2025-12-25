@@ -121,6 +121,10 @@ interface Page {
   // Called by the browser process (C++) when the AIM server sends a
   // RestoreInput command to show the compose box.
   RestoreInput();
+
+  // Communicates to WebUI that the AIM page that is loaded is the zero state.
+  // Zero state means no queries have been submitted yet in this thread.
+  OnZeroStateChange(bool is_zero_state);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

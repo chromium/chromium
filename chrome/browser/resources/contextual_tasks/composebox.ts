@@ -36,9 +36,20 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   static override get properties() {
     return {
+      isZeroState: {
+        type: Boolean,
+        reflect: true,
+      },
+      isSidePanel: {
+        type: Boolean,
+        reflect: true,
+      },
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
-      isComposeboxFocused_: {type: Boolean, reflect: true},
+      isComposeboxFocused_: {
+        type: Boolean,
+        reflect: true,
+      },
       showContextMenu_: {
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
@@ -51,6 +62,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     };
   }
 
+  accessor isZeroState: boolean = false;
+  accessor isSidePanel: boolean = false;
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
   protected accessor isComposeboxFocused_: boolean = false;

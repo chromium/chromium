@@ -2639,6 +2639,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/startup",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
@@ -4595,6 +4596,10 @@ static_library("browser") {
       # TODO(crbug.com/441649482): Remove this circular dependency with cleaning up
       # - c/b/apps/app_service/publishers.
       "//chrome/browser/apps/app_service/publishers",
+
+      # TODO(crbug.com/469850388): Decouple profile manager dependencies
+      # For contextual tasks usage here:
+      "//chrome/browser/contextual_tasks:ui_impl",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",

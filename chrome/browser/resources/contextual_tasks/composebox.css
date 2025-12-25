@@ -155,6 +155,18 @@
   width: var(--thumbnail-size_);
 }
 
+:host([is-zero-state]) #composebox {
+  --inset-start-indent_: 0px;
+  bottom: auto;
+  width: 100%;
+}
+
+:host([is-zero-state]) #composeboxContainer {
+  background: transparent;
+  display: block;
+  position: relative;
+}
+
 #composebox::part(error-scrim) {
   display: none;
 }
