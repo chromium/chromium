@@ -27,6 +27,11 @@ void AppendStickinessSignalForFormula(
     std::map<std::string, std::string>& params,
     const std::string& formula);
 
+void AppendLensOverlaySidePanelParams(
+    std::map<std::string, std::string>& params,
+    bool has_text,
+    bool has_image);
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode);
 

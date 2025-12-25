@@ -197,6 +197,24 @@ void AppendStickinessSignalForFormula(
   params[kSrpStickinessSignalKey] = CompressAndEncode(serialized_proto);
 }
 
+void AppendLensOverlaySidePanelParams(
+    std::map<std::string, std::string>& params,
+    bool has_text,
+    bool has_image) {
+  if (!params.contains(kLensFootprintParameterKey)) {
+    params[kLensFootprintParameterKey] = kLensFootprintParameterValue;
+  }
+  if (!params.contains(kLensModeParameterKey)) {
+    if (has_text && has_image) {
+      params[kLensModeParameterKey] = kLensModeParameterMultimodalValue;
+    } else if (has_text) {
+      params[kLensModeParameterKey] = kLensModeParameterTextValue;
+    } else if (has_image) {
+      params[kLensModeParameterKey] = kLensModeParameterUnimodalValue;
+    }
+  }
+}
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
   return AppendCommonSearchParametersToURL(

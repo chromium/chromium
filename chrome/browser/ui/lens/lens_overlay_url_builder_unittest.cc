@@ -105,6 +105,40 @@ class LensOverlayUrlBuilderTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(LensOverlayUrlBuilderTest, AppendLensOverlaySidePanelParams) {
+  std::map<std::string, std::string> params;
+
+  // Test multimodal
+  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/true,
+                                         /*has_image=*/true);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "mu");
+
+  params.clear();
+
+  // Test text only
+  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/true,
+                                         /*has_image=*/false);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "text");
+
+  params.clear();
+
+  // Test image only
+  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/false,
+                                         /*has_image=*/true);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "un");
+
+  params.clear();
+
+  // Test no input (should not crash, but also not set mode)
+  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/false,
+                                         /*has_image=*/false);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_FALSE(params.contains("lns_mode"));
+}
+
 TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {
   std::string query = "test";
   std::map<std::string, std::string> params;

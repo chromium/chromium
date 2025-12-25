@@ -561,6 +561,9 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   lens::LensOverlaySelectionType selection_type =
       lens::LensOverlaySelectionType::REGION_SEARCH;
   std::map<std::string, std::string> additional_params;
+  additional_params["lns_fp"] = "1";
+  additional_params["lns_mode"] = "un";
+
   SkBitmap region_bytes;
   region_bytes.allocN32Pixels(10, 10);
 
@@ -627,6 +630,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   lens::LensOverlaySelectionType selection_type =
       lens::LensOverlaySelectionType::TRANSLATE_CHIP;
   std::map<std::string, std::string> additional_params;
+  additional_params["lns_fp"] = "1";
+  additional_params["lns_mode"] = "text";
 
   // Arrange: Create expected request info.
   auto expected_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
@@ -688,6 +693,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   lens::LensOverlaySelectionType selection_type =
       lens::LensOverlaySelectionType::MULTIMODAL_SUGGEST_TYPEAHEAD;
   std::map<std::string, std::string> additional_params;
+  additional_params["lns_fp"] = "1";
+  additional_params["lns_mode"] = "text";
 
   // Arrange: Create expected request info.
   auto expected_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
@@ -750,6 +757,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   lens::LensOverlaySelectionType selection_type =
       lens::LensOverlaySelectionType::MULTIMODAL_SEARCH;
   std::map<std::string, std::string> additional_params;
+  additional_params["lns_fp"] = "1";
+  additional_params["lns_mode"] = "mu";
   SkBitmap region_bytes;
   region_bytes.allocN32Pixels(10, 10);
 
