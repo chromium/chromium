@@ -1070,9 +1070,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
 
     // Trigger pending upload requests.
     for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
-      if (file_info->upload_requests_[i]->request_body) {
-        SendUploadNetworkRequest(file_info.get(), i);
-      }
+      MaybeSendUploadNetworkRequest(file_token, i);
     }
   }
 
