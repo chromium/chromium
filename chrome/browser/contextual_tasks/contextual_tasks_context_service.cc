@@ -49,27 +49,39 @@ struct TabSignals {
   std::optional<int> num_query_title_matching_words;
 };
 
-std::optional<float> GetBestEmbeddingScore(
+struct TabSimilarityScores {
+  std::pair<float, std::string> best_similarity_score =
+      std::make_pair(0.0f, "");
+  std::pair<float, std::string> worst_similarity_score =
+      std::make_pair(1.0f, "");
+};
+
+std::optional<TabSimilarityScores> GetEmbeddingScores(
     content::WebContents* web_contents,
     const passage_embeddings::Embedding& query_embedding,
     const std::vector<passage_embeddings::PassageEmbedding>&
         web_contents_embeddings) {
-  float best_similarity_score = 0.0f;
   if (web_contents_embeddings.empty()) {
     return std::nullopt;
   }
 
+  TabSimilarityScores similarity_scores;
   for (const auto& embedding : web_contents_embeddings) {
     if (kOnlyUseTitlesForSimilarity.Get() &&
         embedding.passage.second != passage_embeddings::PassageType::kTitle) {
       continue;
     }
     float similarity_score = embedding.embedding.ScoreWith(query_embedding);
-    if (similarity_score > best_similarity_score) {
-      best_similarity_score = similarity_score;
+    if (similarity_score > similarity_scores.best_similarity_score.first) {
+      similarity_scores.best_similarity_score =
+          std::make_pair(similarity_score, embedding.passage.first);
+    }
+    if (similarity_score < similarity_scores.worst_similarity_score.first) {
+      similarity_scores.worst_similarity_score =
+          std::make_pair(similarity_score, embedding.passage.first);
     }
   }
-  return best_similarity_score;
+  return similarity_scores;
 }
 
 // Probabilistic OR - any high score leads to high score.
@@ -360,15 +372,29 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
     // Collect tab signals.
     TabSignals tab_signals;
     tab_signals.web_contents = web_contents;
-    tab_signals.embedding_score = GetBestEmbeddingScore(
+    std::optional<TabSimilarityScores> similarity_scores = GetEmbeddingScores(
         web_contents, query_embedding,
         page_embeddings_service_->GetEmbeddings(web_contents));
+    tab_signals.embedding_score =
+        similarity_scores
+            ? std::make_optional(similarity_scores->best_similarity_score.first)
+            : std::nullopt;
     tab_signals.duration_since_last_active =
         GetDurationSinceLastActive(web_contents);
     tab_signals.num_query_title_matching_words = GetMatchingWordsCount(
         query, base::UTF16ToUTF8(web_contents->GetTitle()));
 
     // Collect metrics.
+    if (similarity_scores) {
+      AUTO_CONTEXT_LOG(base::StringPrintf(
+          "Passage with highest similarity with query %s: %f",
+          similarity_scores->best_similarity_score.second,
+          similarity_scores->best_similarity_score.first));
+      AUTO_CONTEXT_LOG(
+          base::StringPrintf("Passage with lowest similarity with query %s: %f",
+                             similarity_scores->worst_similarity_score.second,
+                             similarity_scores->worst_similarity_score.first));
+    }
     if (tab_signals.embedding_score.has_value()) {
       base::UmaHistogramCounts100(
           "ContextualTasks.Context.EmbeddingSimilarityScore",
@@ -431,23 +457,26 @@ ContextualTasksContextService::SelectTabsByEmbeddingsMatch(
         "Comparing query embedding to %llu embeddings for %s",
         web_contents_embeddings.size(),
         web_contents->GetLastCommittedURL().spec()));
-    for (const auto& embedding : web_contents_embeddings) {
-      if (kOnlyUseTitlesForSimilarity.Get() &&
-          embedding.passage.second != passage_embeddings::PassageType::kTitle) {
-        continue;
-      }
-      float similarity_score = embedding.embedding.ScoreWith(query_embedding);
+    std::optional<TabSimilarityScores> similarity_scores = GetEmbeddingScores(
+        web_contents, query_embedding, web_contents_embeddings);
+    if (!similarity_scores) {
+      continue;
+    }
+
+    AUTO_CONTEXT_LOG(
+        base::StringPrintf("Passage with highest similarity with query %s: %f",
+                           similarity_scores->best_similarity_score.second,
+                           similarity_scores->best_similarity_score.first));
+    AUTO_CONTEXT_LOG(
+        base::StringPrintf("Passage with lowest similarity with query %s: %f",
+                           similarity_scores->worst_similarity_score.second,
+                           similarity_scores->worst_similarity_score.first));
+    if (similarity_scores->best_similarity_score.first >
+        options.min_model_score.value_or(kMinEmbeddingSimilarityScore.Get())) {
+      relevant_tabs.push_back(web_contents);
       AUTO_CONTEXT_LOG(
-          base::StringPrintf("Similarity with passage %s and query %s: %f",
-                             embedding.passage.first, query, similarity_score));
-      if (similarity_score >= options.min_model_score.value_or(
-                                  kMinEmbeddingSimilarityScore.Get())) {
-        relevant_tabs.push_back(web_contents);
-        AUTO_CONTEXT_LOG(
-            base::StringPrintf("Adding %s to relevant set",
-                               web_contents->GetLastCommittedURL().spec()));
-        break;
-      }
+          base::StringPrintf("Adding %s to relevant set",
+                             web_contents->GetLastCommittedURL().spec()));
     }
   }
   return relevant_tabs;
