@@ -198,12 +198,18 @@ bool SplitIntoTwo(std::string_view text,
                   std::string* second) {
   std::vector<std::string_view> parts =
       SplitStringPiece(text, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
-  if (parts.size() == 2) {
-    *second = std::string(parts[1]);
-  } else if (parts.size() > 2) {
+  if (parts.empty()) {
+    DLOG(ERROR) << "Using '" << separator << "' to split '" << text
+                << "' failed.";
+    return false;
+  }
+  if (parts.size() > 2) {
     DLOG(ERROR) << "Only one '" << separator
                 << "' is allowed but got: " << text;
     return false;
+  }
+  if (parts.size() == 2) {
+    *second = std::string(parts[1]);
   }
   *first = parts[0];
   return true;
