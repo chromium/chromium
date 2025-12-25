@@ -40,6 +40,7 @@ class VerticalTabView : public views::View,
   VerticalTabView& operator=(const VerticalTabView&) = delete;
   ~VerticalTabView() override;
 
+  void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
   void UpdateHovered(bool hovered);
 
   void OnTabDragOver();

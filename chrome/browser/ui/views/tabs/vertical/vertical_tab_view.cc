@@ -138,6 +138,13 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
 
 VerticalTabView::~VerticalTabView() = default;
 
+void VerticalTabView::StepLoadingAnimation(
+    const base::TimeDelta& elapsed_time) {
+  // TODO(crbug.com/467710547): Paint favicon to a layer when tab strip isn't
+  // animating or when dragging isn't in progress or in full screen mode.
+  icon_->StepLoadingAnimation(elapsed_time);
+}
+
 void VerticalTabView::UpdateHovered(bool hovered) {
   if (hovered_ == hovered) {
     return;

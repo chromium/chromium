@@ -178,10 +178,14 @@ void VerticalTabStripRegionView::StopAnimating() {
 
 void VerticalTabStripRegionView::UpdateLoadingAnimations(
     const base::TimeDelta& elapsed_time) {
-  // TODO(crbug.com/467710547): Update the time-step for any loading animations.
-  // This is typically done for the tab icons. TBD if this is needed for
-  // vertical tabs.
-  NOTIMPLEMENTED();
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
+    const TabCollectionNode* node =
+        root_node_->GetNodeForHandle(tab->GetHandle());
+    VerticalTabView* tab_view =
+        views::AsViewClass<VerticalTabView>(node->view());
+    CHECK(tab_view);
+    tab_view->StepLoadingAnimation(elapsed_time);
+  }
 }
 
 std::optional<int> VerticalTabStripRegionView::GetFocusedTabIndex() const {
