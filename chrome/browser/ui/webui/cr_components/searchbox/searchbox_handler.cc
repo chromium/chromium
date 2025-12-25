@@ -1101,8 +1101,9 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
-const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
-                                                           const GURL& url) {
+const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
+    size_t index,
+    const GURL& url) const {
   const AutocompleteResult& result = autocomplete_controller()->result();
   if (index >= result.size()) {
     // This can happen due to asynchronous updates changing the result while
@@ -1119,15 +1120,15 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
   return &match;
 }
 
-omnibox::ChromeAimToolsAndModels SearchboxHandler::GetAimToolMode() {
+omnibox::ChromeAimToolsAndModels SearchboxHandler::GetAimToolMode() const {
   return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 }
 
-OmniboxController* SearchboxHandler::omnibox_controller() {
+OmniboxController* SearchboxHandler::omnibox_controller() const {
   return controller_;
 }
 
-AutocompleteController* SearchboxHandler::autocomplete_controller() {
+AutocompleteController* SearchboxHandler::autocomplete_controller() const {
   return omnibox_controller()->autocomplete_controller();
 }
 
@@ -1140,6 +1141,6 @@ void SearchboxHandler::set_page_is_bound_callback_for_testing(
   page_is_bound_callback_for_testing_ = std::move(callback);
 }
 
-OmniboxEditModel* SearchboxHandler::edit_model() {
+OmniboxEditModel* SearchboxHandler::edit_model() const {
   return omnibox_controller()->edit_model();
 }

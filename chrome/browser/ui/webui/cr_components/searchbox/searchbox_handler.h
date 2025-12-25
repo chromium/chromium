@@ -143,13 +143,13 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       std::unique_ptr<OmniboxController> controller);
   ~SearchboxHandler() override;
 
-  OmniboxController* omnibox_controller();
-  AutocompleteController* autocomplete_controller();
-  OmniboxEditModel* edit_model();
+  OmniboxController* omnibox_controller() const;
+  AutocompleteController* autocomplete_controller() const;
+  OmniboxEditModel* edit_model() const;
 
-  const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
+  const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url) const;
 
-  virtual omnibox::ChromeAimToolsAndModels GetAimToolMode();
+  virtual omnibox::ChromeAimToolsAndModels GetAimToolMode() const;
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

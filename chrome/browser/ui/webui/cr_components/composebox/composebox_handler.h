@@ -82,7 +82,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    omnibox::ChromeAimEntryPoint aim_entrypoint,
                    std::map<std::string, std::string> additional_params);
 
-  omnibox::ChromeAimToolsAndModels GetAimToolMode() override;
+  omnibox::ChromeAimToolsAndModels GetAimToolMode() const override;
 
   // Called to update the suggested tab context chip in the compose box.
   virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
