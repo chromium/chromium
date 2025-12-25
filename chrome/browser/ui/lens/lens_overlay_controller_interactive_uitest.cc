@@ -1678,9 +1678,10 @@ class TabScopedContextualTasksLensOverlayControllerInteractiveUiTest
 
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
-                              {contextual_tasks::kContextualTasksContext,
-                               {{"TaskScopedSidePanel", "false"}}}},
+        /*enabled_features=*/{{
+            contextual_tasks::kContextualTasks,
+            {{"TaskScopedSidePanel", "false"}},
+        }},
         /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 };
