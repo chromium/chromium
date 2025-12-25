@@ -3268,7 +3268,7 @@
     'sampling_profiler': ['thiabaud@google.com', 'spvm@chromium.org'],
     'scanning': ['gavinwill+scanning-watch@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
-    'search_engine_choice_screen': ['chrome-waffle-eng+watch@google.com'],
+    'search_engine_choice_screen': ['chrome-regionalcapabilities+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
     'security_interstitials': ['drubery+watch@chromium.org'],

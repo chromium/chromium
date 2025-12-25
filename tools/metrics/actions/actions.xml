@@ -7945,7 +7945,7 @@ should be able to be added at any place in this file.
 
 <action name="ChooseDefaultSearchEngine">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Action indicating that the user clicked on the &quot;Change&quot; button in
     the search settings page to view the search engines list dialog and choose a
@@ -12230,7 +12230,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="EditSearchEngines">
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <description>
     Action indicating that the user navigated to the search engines settings
@@ -12371,7 +12371,7 @@ should be able to be added at any place in this file.
 
 <action name="ExpandSearchEngineDescription">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Action indicating that the user expanded the chevron in the search engine
     choice page to view the search engine description.
@@ -35237,7 +35237,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogClosed">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is closed. In rare
@@ -35248,7 +35248,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogShown" not_user_triggered="true">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is shown.
@@ -35258,7 +35258,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogUnblocked" not_user_triggered="true">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is unblocked.
@@ -38785,7 +38785,7 @@ should be able to be added at any place in this file.
 
 <action name="SearchEngineChoiceScreenShown">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when the search engine choice screen is displayed. The screen could
     be displayed in the modal dialog (or promo) and the first run experience on
