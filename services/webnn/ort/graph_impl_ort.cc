@@ -119,7 +119,7 @@ void GraphImplOrt::CreateAndBuild(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_BLOCKING,
+      {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), context->session_options(),
