@@ -143,6 +143,8 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPage);
     } else if (scaling_type == ScalingType::FIT_TO_PAPER) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPaper);
+    } else if (scaling_type == ScalingType::ACTUAL_SIZE) {
+      ReportPrintSettingHistogram(PrintSettingsBuckets::kActualSize);
     }
   }
 
