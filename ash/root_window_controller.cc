@@ -392,7 +392,7 @@ class RootWindowTargeter : public aura::WindowTargeter {
   }
 
   // Stop-gap workaround for telemetry tests that send events far outside of the
-  // display (e.g. 512, -4711). Fix the test and remove this (crbgu.com/904623).
+  // display (e.g. 512, -4711). Fix the test and remove this (crbug.com/904623).
   bool IsEventInsideDisplayForTelemetryHack(aura::Window* window,
                                             ui::LocatedEvent* event) {
     constexpr int ExtraMarginForTelemetryTest = -10;

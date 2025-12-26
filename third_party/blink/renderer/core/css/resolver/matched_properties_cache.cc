@@ -355,7 +355,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // didn't allow for MPC cache hits across instances of the same web component.
   // That also caused an ever-growing cache because the TreeScopes were not
   // handled in CleanMatchedPropertiesCache().
-  // See: https://crbug,com/1473836
+  // See: https://crbug.com/1473836
   if (state.HasTreeScopedReference()) {
     return false;
   }

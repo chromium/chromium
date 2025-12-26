@@ -87,7 +87,7 @@ AttemptLoginTool::~AttemptLoginTool() {
   Profile* profile =
       tab ? Profile::FromBrowserContext(tab->GetContents()->GetBrowserContext())
           : nullptr;
-  // TODO(crbug,com/459397449): Update where the log is uploaded and
+  // TODO(crbug.com/459397449): Update where the log is uploaded and
   // send a pointer to the profile/service when creating the log instead
   // of at the moment of uploading.
   if (!profile) {

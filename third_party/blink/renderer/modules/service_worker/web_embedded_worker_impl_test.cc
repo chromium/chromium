@@ -616,7 +616,7 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
   void TearDown() override {
     // Drain queued tasks posted from the worker thread in order to avoid tasks
     // bound with unretained objects from running after tear down. Worker
-    // termination may post such tasks (see https://crbug,com/1007616).
+    // termination may post such tasks (see https://crbug.com/1007616).
     // TODO(nhiroki): Stop using synchronous WaitableEvent, and instead use
     // QuitClosure to wait until all the tasks run before test completion.
     test::RunPendingTasks();

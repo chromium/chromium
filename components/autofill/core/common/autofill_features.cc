@@ -607,7 +607,7 @@ BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, chrome will support name and email address profile.
-// TODO(cbug.com/356845298): Clean up when launched.
+// TODO(crbug.com/356845298): Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForNameAndEmail,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -170,7 +170,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         shownHistogram.assertExpected();
 
-        // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
+        // TODO(https://crbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.
         RecyclerView recyclerView =
                 getBookmarkHostActivity().findViewById(R.id.selectable_list_recycler_view);

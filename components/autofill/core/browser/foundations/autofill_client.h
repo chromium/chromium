@@ -310,7 +310,7 @@ class AutofillClient {
 
   // Returns whether the client has a PersonalDataManager.
   //
-  // TODO(crbug.cm/455121491) This is a temporary fix to avoid crashes when
+  // TODO(crbug.com/455121491) This is a temporary fix to avoid crashes when
   // AutofillAnnotationsProviderImpl::AddAutofillInformation tries to query
   // autofillable data but deals with an AndroidAutofillClient.
   virtual bool HasPersonalDataManager() const;

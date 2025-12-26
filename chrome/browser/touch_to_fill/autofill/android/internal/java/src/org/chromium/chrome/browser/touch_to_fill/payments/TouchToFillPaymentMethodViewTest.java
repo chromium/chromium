@@ -1436,7 +1436,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     /**
      * Verifies that the bottom sheet doesn't crash when it contains a lot of items, see
-     * crrbug.com/429676830.
+     * crbug.com/429676830.
      */
     @Test
     @MediumTest

@@ -4,7 +4,7 @@
 
 // Codemod for adding a "declare" keyword before every Polymer property
 // declaration in a class. To be used to update remaining Polymer UIs for the
-// purposes of fixing cbug.com/389737066.
+// purposes of fixing crbug.com/389737066.
 
 module.exports = function transformer(file, api) {
   const source = file.source;
