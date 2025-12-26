@@ -123,9 +123,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   const extensions::ExtensionId extension_id_;
   raw_ptr<chromeos::VpnService> controller_;
 
-  // Configuration that is currently in use.
-  raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
-
   base::ScopedObservation<ash::NetworkConfigurationHandler,
                           ash::NetworkConfigurationObserver>
       network_configuration_observer_{this};

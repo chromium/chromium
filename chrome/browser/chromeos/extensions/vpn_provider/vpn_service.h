@@ -220,6 +220,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   raw_ptr<content::BrowserContext> browser_context_;
 
+  // Configuration that is currently in use.
+  raw_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>
+      active_configuration_ = nullptr;
+
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};

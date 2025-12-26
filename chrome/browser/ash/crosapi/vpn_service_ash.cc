@@ -101,7 +101,7 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
     return;
   }
 
-  if (active_configuration_ == configuration) {
+  if (controller_->active_configuration_ == configuration) {
     configuration->OnPlatformMessage(
         std::to_underlying(api_vpn::PlatformMessage::kDisconnected));
   }
@@ -140,8 +140,10 @@ void VpnServiceForExtensionAsh::OnConfigurationRemoved(
 
 std::optional<std::string>
 VpnServiceForExtensionAsh::GetActiveConfigurationObjectPath() const {
-  if (active_configuration_) {
-    return active_configuration_->object_path();
+  VpnConfiguration* active_configuration = controller_->active_configuration_;
+  if (active_configuration &&
+      active_configuration->extension_id() == extension_id()) {
+    return active_configuration->object_path();
   }
   return std::nullopt;
 }
@@ -198,7 +200,7 @@ void VpnServiceForExtensionAsh::DestroyConfigurationInternal(
   auto owned_configuration =
       std::move(controller_->key_to_configuration_map_[configuration->key()]);
   controller_->key_to_configuration_map_.erase(configuration->key());
-  if (active_configuration_ == configuration) {
+  if (controller_->active_configuration_ == configuration) {
     SetActiveConfiguration(nullptr);
   }
 
@@ -231,7 +233,7 @@ void VpnServiceForExtensionAsh::OnRemoveConfigurationFailure(
 
 void VpnServiceForExtensionAsh::SetActiveConfiguration(
     VpnConfiguration* configuration) {
-  active_configuration_ = configuration;
+  controller_->active_configuration_ = configuration;
 }
 
 VpnServiceAsh::VpnServiceAsh() = default;
