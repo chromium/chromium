@@ -33,9 +33,18 @@ void BlobReader::ReadRange(
     uint64_t offset,
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle handle,
-    mojo::PendingRemote<blink::mojom::BlobReaderClient> client) {
-  OpenFileAndReadIntoPipe(file_path_, blob_length_, offset, length,
-                          std::move(handle), std::move(client));
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> pending_client) {
+  uint64_t read_length = std::min(blob_length_, length);
+  mojo::Remote<blink::mojom::BlobReaderClient> client;
+  if (pending_client) {
+    client.Bind(std::move(pending_client));
+    client->OnCalculatedSize(blob_length_, read_length);
+  }
+  OpenFileAndReadIntoPipe(
+      file_path_, offset, read_length, std::move(handle),
+      client ? base::BindOnce(&blink::mojom::BlobReaderClient::OnComplete,
+                              std::move(client))
+             : base::DoNothing());
 }
 
 void BlobReader::ReadAll(
@@ -95,8 +104,14 @@ void BlobReader::Read(
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
-  OpenFileAndReadIntoPipe(file_path_, offset, length, std::move(pipe),
-                          std::move(callback));
+  OpenFileAndReadIntoPipe(
+      file_path_, offset, length, std::move(pipe),
+      base::BindOnce(
+          [](storage::mojom::BlobDataItemReader::ReadCallback callback,
+             int result, uint64_t /*transferred_bytes*/) {
+            std::move(callback).Run(result);
+          },
+          std::move(callback)));
 }
 
 void BlobReader::ReadSideData(

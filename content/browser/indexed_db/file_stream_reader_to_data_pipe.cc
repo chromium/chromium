@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -20,22 +19,17 @@
 namespace content::indexed_db {
 
 namespace {
+using TransferCompletionCallback =
+    base::OnceCallback<void(int /*result*/, uint64_t /*transferred_bytes*/)>;
 
 // TODO(estade): rename this class and this file.
 class FileStreamReaderToDataPipe {
  public:
-  FileStreamReaderToDataPipe(
-      const base::FilePath& file_path,
-      uint64_t expected_file_size,
-      uint64_t offset,
-      uint64_t read_length,
-      mojo::ScopedDataPipeProducerHandle dest,
-      mojo::PendingRemote<blink::mojom::BlobReaderClient> client);
   FileStreamReaderToDataPipe(const base::FilePath& file_path,
                              uint64_t offset,
                              uint64_t read_length,
                              mojo::ScopedDataPipeProducerHandle dest,
-                             base::OnceCallback<void(int)> completion_callback);
+                             TransferCompletionCallback completion_callback);
 
   ~FileStreamReaderToDataPipe();
 
@@ -51,9 +45,7 @@ class FileStreamReaderToDataPipe {
   base::File file_;
   mojo::ScopedDataPipeProducerHandle dest_;
 
-  // Exactly one of these two members will be non-null.
-  mojo::Remote<blink::mojom::BlobReaderClient> client_;
-  base::OnceCallback<void(int)> completion_callback_;
+  TransferCompletionCallback completion_callback_;
 
   uint64_t transferred_bytes_ = 0;
   uint64_t offset_;
@@ -66,23 +58,10 @@ class FileStreamReaderToDataPipe {
 
 FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
     const base::FilePath& file_path,
-    uint64_t expected_file_size,
     uint64_t offset,
     uint64_t read_length,
     mojo::ScopedDataPipeProducerHandle dest,
-    mojo::PendingRemote<blink::mojom::BlobReaderClient> client)
-    : dest_(std::move(dest)), client_(std::move(client)), offset_(offset) {
-  read_length_ = std::min(expected_file_size, read_length);
-  client_->OnCalculatedSize(expected_file_size, read_length_);
-  file_.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-}
-
-FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
-    const base::FilePath& file_path,
-    uint64_t offset,
-    uint64_t read_length,
-    mojo::ScopedDataPipeProducerHandle dest,
-    base::OnceCallback<void(int)> completion_callback)
+    TransferCompletionCallback completion_callback)
     : dest_(std::move(dest)),
       completion_callback_(std::move(completion_callback)),
       offset_(offset),
@@ -190,11 +169,7 @@ void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
   pending_write_ = nullptr;
   dest_.reset();
 
-  if (client_) {
-    client_->OnComplete(result, transferred_bytes_);
-  } else {
-    std::move(completion_callback_).Run(result);
-  }
+  std::move(completion_callback_).Run(result, transferred_bytes_);
   // `this` is only used by on-disk backing stores.
   LogNetError("IndexedDB.BackingStore.ReadBlob", /*in_memory=*/false, result);
   delete this;
@@ -202,25 +177,11 @@ void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
 
 }  // namespace
 
-void OpenFileAndReadIntoPipe(
-    const base::FilePath& file_path,
-    uint64_t expected_file_size,
-    uint64_t offset,
-    uint64_t read_length,
-    mojo::ScopedDataPipeProducerHandle dest,
-    mojo::PendingRemote<blink::mojom::BlobReaderClient> client) {
-  (new FileStreamReaderToDataPipe(file_path, expected_file_size, offset,
-                                  read_length, std::move(dest),
-                                  std::move(client)))
-      ->Start();
-}
-
-void OpenFileAndReadIntoPipe(
-    const base::FilePath& file_path,
-    uint64_t offset,
-    uint64_t read_length,
-    mojo::ScopedDataPipeProducerHandle dest,
-    base::OnceCallback<void(int)> completion_callback) {
+void OpenFileAndReadIntoPipe(const base::FilePath& file_path,
+                             uint64_t offset,
+                             uint64_t read_length,
+                             mojo::ScopedDataPipeProducerHandle dest,
+                             TransferCompletionCallback completion_callback) {
   (new FileStreamReaderToDataPipe(file_path, offset, read_length,
                                   std::move(dest),
                                   std::move(completion_callback)))
