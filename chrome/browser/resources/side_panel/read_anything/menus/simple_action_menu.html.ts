@@ -13,6 +13,7 @@ export function getHtml(this: SimpleActionMenuElement) {
   <cr-action-menu
       accessibility-label="${this.label}"
       role-description="$i18n{menu}"
+      ?non-modal="${this.nonModal}"
       tabindex="-1">
     ${this.menuItems.map((item, index) => html`
       <hr class="sp-hr has-header-${this.doesItemHaveHeader_(item)}">

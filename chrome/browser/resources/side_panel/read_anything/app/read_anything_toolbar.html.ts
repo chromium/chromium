@@ -100,6 +100,7 @@ ${getToolbarAudioControlsHtml.call(this)}
     @click="${this.onVoiceSelectionMenuClick_}">
 </cr-icon-button>
 <voice-selection-menu id="voiceSelectionMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
     .selectedVoice="${this.selectedVoice}"
     .availableVoices="${this.availableVoices}"
     .enabledLangs="${this.enabledLangs}"
@@ -178,27 +179,37 @@ ${renderTextStyleOptions.call(this)}
 </cr-lazy-render-lit>
 <highlight-menu
     id="highlightMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
     .settingsPrefs="${this.settingsPrefs}"
     @highlight-change="${this.onHighlightChange_}">
 </highlight-menu>
-<color-menu id="colorMenu" .settingsPrefs="${this.settingsPrefs}">
+<color-menu
+    id="colorMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
+    .settingsPrefs="${this.settingsPrefs}">
 </color-menu>
 <line-spacing-menu
     id="lineSpacingMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
     .settingsPrefs="${this.settingsPrefs}">
 </line-spacing-menu>
 <letter-spacing-menu
     id="letterSpacingMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
     .settingsPrefs="${this.settingsPrefs}">
 </letter-spacing-menu>
 <font-menu
     id="fontMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
     .areFontsLoaded="${this.areFontsLoaded_}"
     .settingsPrefs="${this.settingsPrefs}"
     .pageLanguage="${this.pageLanguage}"
     @font-change="${this.onFontChange_}">
 </font-menu>
-<line-focus-menu id="lineFocusMenu" .settingsPrefs="${this.settingsPrefs}">
+<line-focus-menu
+    id="lineFocusMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
+    .settingsPrefs="${this.settingsPrefs}">
 </line-focus-menu>
 <!--_html_template_end_-->`;
   // clang-format on

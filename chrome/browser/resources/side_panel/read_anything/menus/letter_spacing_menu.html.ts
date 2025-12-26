@@ -15,6 +15,7 @@ export function getHtml(this: LetterSpacingMenuElement) {
     id="menu"
     label="$i18n{letterSpacingTitle}"
     .menuItems="${this.options_}"
+    .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.LETTER_SPACING}"
     current-selected-index="${this.restoredLetterSpacingIndex_()}"
     @letter-spacing-change="${this.onLetterSpacingChange_}">

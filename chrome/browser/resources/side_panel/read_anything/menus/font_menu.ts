@@ -44,6 +44,7 @@ export class FontMenuElement extends FontMenuElementBase {
       pageLanguage: {type: String},
       areFontsLoaded: {type: Boolean},
       options_: {type: Array},
+      nonModal: {type: Boolean},
     };
   }
 
@@ -60,6 +61,7 @@ export class FontMenuElement extends FontMenuElementBase {
     highlightGranularity: 0,
     lineFocus: 0,
   };
+  accessor nonModal: boolean = false;
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 

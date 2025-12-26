@@ -16,6 +16,7 @@ export function getHtml(this: LineSpacingMenuElement) {
     label="$i18n{lineSpacingTitle}"
     event-name="${ToolbarEvent.LINE_SPACING}"
     .menuItems="${this.options_}"
+    .nonModal="${this.nonModal}"
     current-selected-index="${this.restoredLineSpacingIndex_()}"
     @line-spacing-change="${this.onLineSpacingChange_}">
 </simple-action-menu>

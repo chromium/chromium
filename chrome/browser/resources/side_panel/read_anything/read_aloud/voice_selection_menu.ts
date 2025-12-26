@@ -89,6 +89,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       showLanguageMenuDialog_: {type: Boolean},
       downloadingMessages_: {type: Boolean},
       voiceGroups_: {type: Object},
+      nonModal: {type: Boolean},
     };
   }
 
@@ -97,6 +98,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor enabledLangs: string[] = [];
   accessor availableVoices: SpeechSynthesisVoice[] = [];
+  accessor nonModal: boolean = false;
 
   // The current notifications that should be used in the voice menu.
   private accessor currentNotifications_:

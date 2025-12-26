@@ -14,6 +14,7 @@ export function getHtml(this: FontMenuElement) {
     id="menu"
     label="$i18n{fontNameTitle}"
     .menuItems="${this.options_}"
+    .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.FONT}"
     current-selected-index="${this.currentFontIndex_()}"
     @font-change="${this.onFontChange_}">

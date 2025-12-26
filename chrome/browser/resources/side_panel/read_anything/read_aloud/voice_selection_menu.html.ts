@@ -17,6 +17,7 @@ export function getHtml(this: VoiceSelectionMenuElement) {
         @keydown="${this.onVoiceMenuKeyDown_}"
         accessibility-label="$i18n{voiceSelectionLabel}"
         role-description="$i18n{menu}"
+        ?non-modal="${this.nonModal}"
     >
       ${this.errorMessages_.map((item) => html`
         <p class="dropdown-line notification error-message">${item}</p>

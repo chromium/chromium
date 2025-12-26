@@ -51,11 +51,13 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
       menuItems: {type: Array},
       eventName: {type: String},
       label: {type: String},
+      nonModal: {type: Boolean},
     };
   }
 
   accessor currentSelectedIndex: number = 0;
   accessor menuItems: Array<MenuStateItem<any>> = [];
+  accessor nonModal: boolean = false;
 
   // Initializing to random value, but this is set by the parent.
   accessor eventName: ToolbarEvent = ToolbarEvent.THEME;

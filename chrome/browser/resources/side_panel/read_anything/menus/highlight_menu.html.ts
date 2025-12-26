@@ -15,6 +15,7 @@ export function getHtml(this: HighlightMenuElement) {
     id="menu"
     label="$i18n{voiceHighlightLabel}"
     .menuItems="${this.options_}"
+    .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.HIGHLIGHT_CHANGE}"
     current-selected-index="${this.restoredHighlightIndex_()}"
     @highlight-change="${this.onHighlightChange_}">

@@ -36,7 +36,10 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
   }
 
   static override get properties() {
-    return {settingsPrefs: {type: Object}};
+    return {
+      settingsPrefs: {type: Object},
+      nonModal: {type: Boolean},
+    };
   }
 
   accessor settingsPrefs: SettingsPrefs = {
@@ -48,6 +51,7 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
     highlightGranularity: 0,
     lineFocus: 0,
   };
+  accessor nonModal: boolean = false;
 
   protected options_: Array<MenuStateItem<number>> = [
     {
