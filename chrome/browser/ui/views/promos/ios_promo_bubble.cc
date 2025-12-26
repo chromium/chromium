@@ -212,7 +212,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
     case BubbleType::kQRCode:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR;
       config.promo_description_id =
-          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       config.promo_image =
@@ -222,7 +222,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
     case BubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;
       config.promo_description_id =
-          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

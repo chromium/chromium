@@ -10452,38 +10452,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: download Chrome for iOS and sign in to their account.">
             To use your saved passwords on your phone, download Chrome for iOS and sign in to your Google Account.
           </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sign in to your Google Account.
-          </message>
         </if>
       </if>
 
       <!--Desktop to iOS promo strings-->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the iOS promo bubble button allowing the user to decline.">
-            No Thanks
-          </message>
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE" desc="The title text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their iOS device.">
-            Reminder Sent to Your <ph name="DEVICE_TYPE">$1<ex>iPad</ex></ph>
-          </message>
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON" desc="The button text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their phone.">
-            Got It
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the iOS promo bubble button allowing the user to decline.">
-            No thanks
-          </message>
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE" desc="The title text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their iOS device.">
-            Reminder sent to your <ph name="DEVICE_TYPE">$1<ex>iPad</ex></ph>
-          </message>
-          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON" desc="The button text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their phone.">
-            Got it
-          </message>
-        </if>
-        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
-          Get the app
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the iOS promo bubble button allowing the user to decline.">
+          No thanks
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE" desc="The title text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their iOS device.">
+          Reminder sent to your <ph name="DEVICE_TYPE">$1<ex>iPad</ex></ph>
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON" desc="The button text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their phone.">
+          Got it
         </message>
         <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER" desc="The text inside the iOS promo bubble button allowing the user to accept by getting a reminder.">
           Remind me on iOS
@@ -10504,39 +10485,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!--Desktop to iOS password promo strings-->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop password promo bubble letting users know their password is saved.">
-            Your Password Is Saved
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-            Use This Password On Your iPhone
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE_REMINDER" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble.">
-            Use Your Passwords On Your iOS Devices
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-            No Thanks
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
-            Your password is saved
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-            Use this password on your iPhone
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE_REMINDER" desc="The title for the footer of the iOS desktop password promo bubble.">
-            Use your passwords on your iOS devices
-          </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-            No thanks
-          </message>
-        </if>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
+          Your password is saved
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE_REMINDER" desc="The title for the footer of the iOS desktop password promo bubble.">
+          Use your passwords on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+          No thanks
+        </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
           You can access it on Google Password Manager.
-        </message>
-        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-          Download Chrome with this QR code, and sign in to your Google Account.
         </message>
       </if>
 
@@ -10606,34 +10565,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!--Desktop to iOS Enhanced Browsing promo strings-->
       <if expr="not is_android">
-        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop ESB promo bubble with a QR code.">
-          Extend Enhanced Safe Browsing
+        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop ESB promo bubble with a QR code.">
+          Add an extra layer of protection when you're on the go
         </message>
         <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop ESB promo bubble with a reminder button.">
-          Enhanced Safe Browsing
+          Enhance Safe Browsing on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
         </message>
       </if>
 
       <!--Desktop to iOS Lens promo strings-->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR" desc="In Title Case: The title for the iOS desktop Lens promo bubble with a QR code.">
-            Try Google Lens On Your Phone
-          </message>
-          <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER" desc="In Title Case: The title for the iOS desktop Lens promo bubble with a reminder button.">
-            Try Google Lens On iOS
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Lens promo bubble with a QR code.">
-            Try Google Lens on your phone
-          </message>
-          <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Lens promo bubble with a reminder button.">
-            Try Google Lens on iOS
-          </message>
-        </if>
-        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION" desc="The description for the iOS desktop Lens promo bubble.">
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Lens promo bubble with a QR Code.">
           Shop, translate and identify what you see with your camera on the go
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Lens promo bubble with a reminder button.">
+          Try Google Lens on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
         </message>
       </if>
 

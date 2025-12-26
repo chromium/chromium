@@ -150,12 +150,25 @@ IOSPromoBubbleView::IOSPromoBubbleView(Profile* profile,
       promo_type_(promo_type),
       promo_bubble_type_(promo_bubble_type),
       config_(IOSPromoBubble::SetUpBubble(promo_type_, promo_bubble_type_)) {
+  IOSPromoTriggerService* service =
+      IOSPromoTriggerServiceFactory::GetForProfile(profile_);
+  if (service) {
+    ios_device_info_ = service->GetIOSDeviceToRemind();
+  }
+
   // Set up the Dialog.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBackgroundColor(ui::kColorSysSurface2);
   SetShowCloseButton(true);
   SetShowTitle(true);
-  SetTitle(config_.promo_title_id);
+
+  if (promo_bubble_type_ == BubbleType::kReminder) {
+    SetTitle(
+        l10n_util::GetStringFUTF16(config_.promo_title_id, GetDeviceName()));
+  } else {
+    SetTitle(config_.promo_title_id);
+  }
+
   SetWidth(config_.with_header ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
                                : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   AddChildView(
@@ -275,17 +288,7 @@ void IOSPromoBubbleView::ShowReminderConfirmation() {
   config_ = IOSPromoBubble::SetUpBubble(promo_type_,
                                         BubbleType::kReminderConfirmation);
 
-  std::u16string device_name;
-  switch (ios_device_info_->form_factor()) {
-    case syncer::DeviceInfo::FormFactor::kTablet:
-      device_name = l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPAD);
-      break;
-    case syncer::DeviceInfo::FormFactor::kPhone:
-      device_name = l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPHONE);
-      break;
-    default:
-      NOTREACHED();
-  }
+  std::u16string device_name = GetDeviceName();
 
   // Update the title.
   SetTitle(l10n_util::GetStringFUTF16(config_.promo_title_id, device_name));
@@ -331,6 +334,22 @@ std::u16string IOSPromoBubbleView::GetConfirmationDescriptionText(
     case PromoType::kAddress:
     case PromoType::kPayment:
       // These types do not have a reminder flow.
+      NOTREACHED();
+  }
+}
+
+std::u16string IOSPromoBubbleView::GetDeviceName() const {
+  // If the device info is not available, default to iPhone.
+  if (!ios_device_info_) {
+    return l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPHONE);
+  }
+
+  switch (ios_device_info_->form_factor()) {
+    case syncer::DeviceInfo::FormFactor::kTablet:
+      return l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPAD);
+    case syncer::DeviceInfo::FormFactor::kPhone:
+      return l10n_util::GetStringUTF16(IDS_IOS_DEVICE_TYPE_IPHONE);
+    default:
       NOTREACHED();
   }
 }
