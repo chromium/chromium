@@ -48,6 +48,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
@@ -255,6 +256,15 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "showOnboardingTooltip",
       base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksShowOnboardingTooltip));
+  source->AddInteger(
+      "composeboxShowOnboardingTooltipSessionImpressionCap",
+      contextual_tasks::
+          GetContextualTasksShowOnboardingTooltipSessionImpressionCap());
+  source->AddBoolean(
+      "isOnboardingTooltipDismissCountBelowCap",
+      Profile::FromWebUI(web_ui)->GetPrefs()->GetInteger(
+          contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount) <
+          contextual_tasks::GetContextualTasksOnboardingTooltipDismissedCap());
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(
       "forceHideEllipsis",

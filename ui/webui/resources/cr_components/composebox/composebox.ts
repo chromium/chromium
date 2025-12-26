@@ -488,6 +488,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.$.matches;
   }
 
+  getHasAutomaticActiveTabChipToken() {
+    return this.$.context.hasAutomaticActiveTabChipToken();
+  }
+
   protected initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ComposeboxMode = ComposeboxMode.DEFAULT) {

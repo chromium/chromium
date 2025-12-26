@@ -190,6 +190,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor submitButtonShown: boolean = false;
 
+  hasAutomaticActiveTabChipToken(): boolean {
+    return this.automaticActiveTabChipToken_ !== null;
+  }
   protected get inToolMode_(): boolean {
     return this.inDeepSearchMode_ || this.inCreateImageMode_;
   }

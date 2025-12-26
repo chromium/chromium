@@ -58,6 +58,7 @@ class ContextualTasksPageHandler
   void GetCommonSearchParams(bool is_dark_mode,
                              bool is_side_panel,
                              GetCommonSearchParamsCallback callback) override;
+  void OnboardingTooltipDismissed() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

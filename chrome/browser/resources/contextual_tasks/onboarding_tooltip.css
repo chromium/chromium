@@ -12,7 +12,7 @@ cr-tooltip {
   --paper-tooltip-delay-in: 300ms;
   --paper-tooltip-delay-out: 0ms;
   --paper-tooltip-opacity: 1.0;
-  margin-top: -175px;
+  margin-top: -120px;
   margin-inline-start: var(--composebox-start-indent, 24px);
 }
 

@@ -89,6 +89,14 @@ extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 extern const base::FeatureParam<std::string>
     kContextualTasksOnboardingTooltipHelpUrl;
 
+// The maximum number of times the onboarding tooltip can be shown to the user
+// in a single session before it no longer shows up.
+extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
+
+// The maximum number of times the onboarding tooltip can be dismissed by the
+// user before it no longer shows up.
+extern int GetContextualTasksOnboardingTooltipDismissedCap();
+
 // Returns if voice search is allowed in expanded composebox.
 extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 

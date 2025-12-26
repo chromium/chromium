@@ -24,6 +24,8 @@ source_set("public") {
     "contextual_task_context.h",
     "contextual_tasks_service.cc",
     "contextual_tasks_service.h",
+    "prefs.cc",
+    "prefs.h",
     "utils.cc",
     "utils.h",
   ]

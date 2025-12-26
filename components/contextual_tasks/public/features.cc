@@ -131,6 +131,31 @@ const base::FeatureParam<std::string> kContextualTasksOnboardingTooltipHelpUrl(
     "ContextualTasksOnboardingTooltipHelpUrl",
     "https://support.google.com/chrome?p=AI_tab_share");
 
+const base::FeatureParam<int>
+    kContextualTasksShowOnboardingTooltipSessionImpressionCap(
+        &kContextualTasksShowOnboardingTooltip,
+        "ContextualTasksShowOnboardingTooltipSessionImpressionCap",
+        3);
+
+const base::FeatureParam<int> kContextualTasksOnboardingTooltipDismissedCap(
+    &kContextualTasksShowOnboardingTooltip,
+    "ContextualTasksOnboardingTooltipDismissedCap",
+    3);
+
+int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
+  if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
+    return 0;
+  }
+  return kContextualTasksShowOnboardingTooltipSessionImpressionCap.Get();
+}
+
+int GetContextualTasksOnboardingTooltipDismissedCap() {
+  if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
+    return 0;
+  }
+  return kContextualTasksOnboardingTooltipDismissedCap.Get();
+}
+
 bool GetIsExpandedComposeboxVoiceSearchEnabled() {
   return kEnableExpandedComposeboxVoiceSearch.Get();
 }
