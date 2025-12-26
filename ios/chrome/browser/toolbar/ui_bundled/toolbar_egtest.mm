@@ -412,7 +412,7 @@ void WaitForEmpyOmnibox() {
 
 // Tests typing in the omnibox using the keyboard accessory view.
 - (void)testToolbarOmniboxKeyboardAccessoryView {
-  if (IsComposeboxIOSEnabled()) {
+  if ([ChromeEarlGrey isComposeboxIOSEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Test is not relevant when composebox is enabled "
                            @"as the accessory view is disabled.");
   }

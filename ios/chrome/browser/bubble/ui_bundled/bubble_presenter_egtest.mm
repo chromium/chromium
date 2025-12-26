@@ -191,7 +191,7 @@ void ReloadFromOmnibox() {
     // Test uses "split screen" (multiwindow) to force compact width.
     EARL_GREY_TEST_DISABLED(@"Test disabled when building with Xcode 26.");
   }
-  if (IsComposeboxIOSEnabled()) {
+  if ([ChromeEarlGrey isComposeboxIOSEnabled]) {
     // TODO(crbug.com/471204653): Re-enable once event ordering is fixed.
     // The current sequence prevents the IPH from showing:
     // 1. TabBasedIPHBrowserAgent::PageLoaded fires.
