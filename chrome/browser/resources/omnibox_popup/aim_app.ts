@@ -143,7 +143,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   private onPopupHidden_(): Promise<{input: string}> {
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
-      this.$.composebox.clearAllInputs();
+      this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
       this.$.composebox.clearAutocompleteMatches();
       this.$.composebox.resetModes();
     }
@@ -151,7 +151,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   protected onComposeboxSubmit_() {
-    this.$.composebox.clearAllInputs();
+    this.$.composebox.clearAllInputs(/* querySubmitted= */ true);
   }
 
   private onLinkClick_(e: Event) {

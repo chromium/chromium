@@ -261,7 +261,14 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
       contextual_search::SessionState::kNavigationOccurred);
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
-  search_url_request_info->file_tokens = uploaded_context_tokens_;
+  // Move the uploaded tokens to the request's file_tokens.
+  search_url_request_info->file_tokens =
+      std::exchange(uploaded_context_tokens_, {});
+
+  // Copy the tokens from this request to the list of all submitted tokens.
+  submitted_context_tokens_.insert(submitted_context_tokens_.end(),
+                                   search_url_request_info->file_tokens.begin(),
+                                   search_url_request_info->file_tokens.end());
 
   context_controller->CreateSearchUrl(std::move(search_url_request_info),
                                       std::move(callback));
