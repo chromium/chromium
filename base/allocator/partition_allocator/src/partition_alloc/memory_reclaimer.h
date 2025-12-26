@@ -5,8 +5,8 @@
 #ifndef PARTITION_ALLOC_MEMORY_RECLAIMER_H_
 #define PARTITION_ALLOC_MEMORY_RECLAIMER_H_
 
+#include <map>
 #include <memory>
-#include <set>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
@@ -58,7 +58,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   void ResetForTesting() PA_LOCKS_EXCLUDED(lock_);
 
   internal::Lock lock_;
-  std::set<PartitionRoot*> partitions_ PA_GUARDED_BY(lock_);
+  std::map<PartitionRoot*, PurgeState> partitions_ PA_GUARDED_BY(lock_);
 
   friend class internal::base::NoDestructor<MemoryReclaimer>;
   friend class MemoryReclaimerTest;

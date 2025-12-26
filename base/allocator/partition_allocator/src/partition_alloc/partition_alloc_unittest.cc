@@ -6246,35 +6246,37 @@ TEST_P(PartitionAllocTest, FastReclaim) {
     return now;
   };
 
+  PurgeState purge_state;
+
   constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
                          PurgeFlags::kDiscardUnusedSystemPages;
-  allocator.root()->PurgeMemory(kFlags);
+  allocator.root()->PurgeMemory(kFlags, purge_state);
   ASSERT_GT(now, base::TimeTicks());
   // Here and below, using PA_TS_UNCHECKED_READ since the root is not used
   // conccurently.
   //
   // Went around all buckets.
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            0u);
+  EXPECT_EQ(purge_state.next_bucket_index, 0u);
 
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Ran out of time.
-  unsigned int next_bucket =
-      PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
+  unsigned int next_bucket = purge_state.next_bucket_index;
   EXPECT_NE(next_bucket, 0u);
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Make some progress, but not through all buckets yet.
-  EXPECT_GT(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            next_bucket);
+  EXPECT_GT(purge_state.next_bucket_index, next_bucket);
 
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Ran out of time.
-  EXPECT_NE(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            0u);
+  EXPECT_NE(purge_state.next_bucket_index, 0u);
 
   // But eventually we make it through all buckets.
-  while (PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index) != 0) {
-    allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  while (purge_state.next_bucket_index != 0) {
+    allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                  purge_state);
   }
   // No expectation, test will time out if it's incorrect.
 
@@ -6289,40 +6291,38 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
     return now;
   };
 
+  PurgeState purge_state;
+
   constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
                          PurgeFlags::kDiscardUnusedSystemPages;
-  allocator.root()->PurgeMemory(kFlags);
+  allocator.root()->PurgeMemory(kFlags, purge_state);
   ASSERT_GT(now, base::TimeTicks());
-  // Here and below, using PA_TS_UNCHECKED_READ since the root is not used
-  // conccurently.
-  //
   // Went around all buckets, generation is incremented.
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            0u);
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
+  EXPECT_EQ(purge_state.next_bucket_index, 0u);
+  EXPECT_EQ(purge_state.generation, 1u);
 
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Ran out of time.
-  unsigned int next_bucket =
-      PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
+  unsigned int next_bucket = purge_state.next_bucket_index;
   EXPECT_NE(next_bucket, 0u);
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Make some progress, but not through all buckets yet.
-  EXPECT_GT(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            next_bucket);
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
+  EXPECT_GT(purge_state.next_bucket_index, next_bucket);
+  EXPECT_EQ(purge_state.generation, 1u);
 
-  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                purge_state);
   // Ran out of time.
-  EXPECT_NE(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            0u);
+  EXPECT_NE(purge_state.next_bucket_index, 0u);
 
   // But eventually we make it through all generations.
-  while (PA_TS_UNCHECKED_READ(allocator.root()->purge_generation) != 0) {
-    allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  while (purge_state.generation != 0) {
+    allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
+                                  purge_state);
   }
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
-            0u);
+  EXPECT_EQ(purge_state.next_bucket_index, 0u);
 
   allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
 }

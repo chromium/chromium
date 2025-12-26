@@ -1420,15 +1420,13 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   return object;
 }
 
-void PartitionRoot::PurgeMemory(int flags) {
+void PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
+  uint16_t& purge_generation = purge_state.generation;
+  uint16_t& purge_next_bucket_index = purge_state.next_bucket_index;
   auto start = now_maybe_overridden_for_testing();
-  unsigned int local_purge_generation, local_purge_next_bucket_index;
-
   {
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    local_purge_next_bucket_index = purge_next_bucket_index;
-    local_purge_generation = purge_generation;
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans) {
       DecommitEmptySlotSpans();
@@ -1450,11 +1448,11 @@ void PartitionRoot::PurgeMemory(int flags) {
     // Note that in the latter case, we still limit total reclaim duration.
     size_t min_bucket_size_to_purge =
         internal::MinConservativePurgeableSlotSize();
-    if (!(flags & PurgeFlags::kLimitDuration) || !local_purge_generation) {
+    if (!(flags & PurgeFlags::kLimitDuration) || !purge_generation) {
       min_bucket_size_to_purge = internal::MinPurgeableSlotSize();
     }
 
-    for (unsigned int bucket_index = local_purge_next_bucket_index;
+    for (unsigned int bucket_index = purge_next_bucket_index;
          bucket_index < BucketIndexLookup::kNumBuckets; bucket_index++) {
       // Only acquire the lock for a single iteration, so that if there is a
       // waiter blocked on it, it can steal it from us before the next
@@ -1490,17 +1488,8 @@ void PartitionRoot::PurgeMemory(int flags) {
       }
     }
 
-    {
-      ::partition_alloc::internal::ScopedGuard guard{
-          internal::PartitionRootLock(this)};
-      // In theory, these may have been modified since we last read them into
-      // the local variables at the beginning of the function. This should not
-      // happen (since Purge() runs on a single thread), and also does not
-      // matter since we just want to make sure to not do too much work and to
-      // make some progress.
-      purge_next_bucket_index = 0;
-      purge_generation = (purge_generation + 1) % 16;
-    }
+    purge_next_bucket_index = 0;
+    purge_generation = (purge_generation + 1) % 16;
   }
 }
 

@@ -378,10 +378,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   int16_t global_empty_slot_span_ring_size
       PA_GUARDED_BY(internal::PartitionRootLock(this)) =
           internal::kDefaultEmptySlotSpanRingSize;
-  uint16_t purge_generation PA_GUARDED_BY(internal::PartitionRootLock(this)) =
-      0;
-  uint16_t purge_next_bucket_index
-      PA_GUARDED_BY(internal::PartitionRootLock(this)) = 0;
   static_assert(BucketIndexLookup::kNumBuckets <
                 std::numeric_limits<uint16_t>::max());
 
@@ -646,8 +642,15 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   memory_tagging_reporting_mode() const;
 
   // Frees memory from this partition, if possible, by decommitting pages or
-  // even entire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
-  void PurgeMemory(int flags);
+  // even entire slot spans. `flags` is an OR of base::PartitionPurgeFlags.
+  // Caller is responsible to persist `purge_state` when calling this
+  // periodically.
+  // For single-time use, prefer one-param version.
+  void PurgeMemory(int flags, PurgeState& purge_state);
+  PA_ALWAYS_INLINE void PurgeMemory(int flags) {
+    PurgeState purge_state;
+    PurgeMemory(flags, purge_state);
+  }
 
   // Reduces the size of the empty slot spans ring, until the dirty size is <=
   // |limit|.

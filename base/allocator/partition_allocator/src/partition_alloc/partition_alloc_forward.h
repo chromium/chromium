@@ -66,6 +66,11 @@ class PartitionStatsDumper;
 
 struct PartitionRoot;
 
+struct PurgeState {
+  uint16_t generation = 0;
+  uint16_t next_bucket_index = 0;
+};
+
 namespace internal {
 // Declare PartitionRootLock() for thread analysis. Its implementation
 // is defined in partition_root.h.
