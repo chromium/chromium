@@ -54,7 +54,8 @@ struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationEagerness eagerness;
   blink::mojom::SpeculationAction action;
   bool is_target_blank;
-  FrameTreeNodeId prerender_host_id;
+  FrameTreeNodeId prerender_frame_tree_node_id;
+  PrerenderHostId prerender_host_id;
   GURL url;
 
   PrerenderInfo() = default;
@@ -210,7 +211,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
     // Decide what started prerenders to cancel.
     for (PrerenderInfo& prerender : matching_prerenders) {
-      if (prerender.prerender_host_id.is_null()) {
+      if (prerender.prerender_frame_tree_node_id.is_null()) {
         continue;
       }
       // TODO(jbroman): This doesn't currently care about other aspects, like
@@ -218,7 +219,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
       // want to cancel if there are candidates which match by PrerenderInfo but
       // none of which permit this prerender.
       if (matching_candidates.empty()) {
-        removed_prerender_rules.push_back(prerender.prerender_host_id);
+        removed_prerender_rules.push_back(
+            prerender.prerender_frame_tree_node_id);
       }
     }
 
@@ -279,7 +281,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   CHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                      [&](const PrerenderInfo& x) {
                        return base::Contains(canceled_prerender_rules_set,
-                                             x.prerender_host_id);
+                                             x.prerender_frame_tree_node_id);
                      }) == started_prerenders_.end());
 
   // Actually start the candidates in their original order once the diffing is
@@ -476,6 +478,9 @@ bool PrerendererImpl::MaybePrerender(
     }
   }();
 
+  prerender_info.prerender_frame_tree_node_id =
+      PrerenderHost::GetFrameTreeNodeIdForId(prerender_info.prerender_host_id);
+
   // An existing prerender may be canceled to start a new prerender, and
   // `started_prerenders_` may be modified through this cancellation. Therefore,
   // it is needed to re-calculate the right place here on `started_prerenders_`
@@ -499,7 +504,7 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
       started_prerenders_.begin(), started_prerenders_.end(), url,
       std::less<>(), &PrerenderInfo::url);
   for (auto it = begin; it != end; ++it) {
-    if (it->prerender_host_id.is_null()) {
+    if (it->prerender_frame_tree_node_id.is_null()) {
       return false;
     }
   }
@@ -513,11 +518,12 @@ void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
     case PrerenderFinalStatus::kTimeoutBackgrounded:
     case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
     case PrerenderFinalStatus::kSpeculationRuleRemoved: {
-      auto erasing_prerender_it = std::find_if(
-          started_prerenders_.begin(), started_prerenders_.end(),
-          [&](const PrerenderInfo& prerender_info) {
-            return prerender_info.prerender_host_id == host_frame_tree_node_id;
-          });
+      auto erasing_prerender_it =
+          std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
+                       [&](const PrerenderInfo& prerender_info) {
+                         return prerender_info.prerender_frame_tree_node_id ==
+                                host_frame_tree_node_id;
+                       });
 
       if (erasing_prerender_it != started_prerenders_.end()) {
         auto url = erasing_prerender_it->url;
@@ -547,7 +553,8 @@ void PrerendererImpl::CancelStartedPrerenders() {
   if (registry_) {
     std::vector<FrameTreeNodeId> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
-      started_prerender_ids.push_back(prerender_info.prerender_host_id);
+      started_prerender_ids.push_back(
+          prerender_info.prerender_frame_tree_node_id);
     }
     registry_->CancelHosts(
         started_prerender_ids,

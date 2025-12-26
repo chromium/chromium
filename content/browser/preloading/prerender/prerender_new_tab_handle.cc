@@ -64,7 +64,7 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
     web_contents_->SetDelegate(nullptr);
 }
 
-FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
+PrerenderHostId PrerenderNewTabHandle::StartPrerendering(
     const PreloadingPredictor& creating_predictor,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence) {
@@ -105,7 +105,12 @@ FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
 
 void PrerenderNewTabHandle::CancelPrerendering(
     const PrerenderCancellationReason& reason) {
-  GetPrerenderHostRegistry().CancelHost(prerender_host_id_, reason);
+  if (!prerender_host_id_) {
+    return;
+  }
+  FrameTreeNodeId frame_tree_node_id =
+      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id_);
+  GetPrerenderHostRegistry().CancelHost(frame_tree_node_id, reason);
 }
 
 std::unique_ptr<WebContentsImpl>

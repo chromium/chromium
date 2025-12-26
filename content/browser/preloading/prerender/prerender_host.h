@@ -174,6 +174,10 @@ class CONTENT_EXPORT PrerenderHost {
   static PrerenderHost& GetFromFrameTreeNode(FrameTreeNode& frame_tree_node);
   static PrerenderHost& GetFromFrameTree(FrameTree* frame_tree);
 
+  // Returns the root FrameTreeNodeId of the prerendered page corresponding to
+  // `id`. Returns an invalid FrameTreeNodeId if it is not found.
+  static FrameTreeNodeId GetFrameTreeNodeIdForId(PrerenderHostId id);
+
   // Checks whether two headers are the same in a case-insensitive and
   // order-insensitive way.
   // TODO(crbug.com/40267487): Migrate this method into

@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -57,6 +58,14 @@
 namespace content {
 
 namespace {
+
+// Returns the map from PrerenderHostId to FrameTreeNodeId. Entries are added in
+// the PrerenderHost constructor and removed in the destructor.
+base::flat_map<PrerenderHostId, FrameTreeNodeId>& GetPrerenderHostIdMap() {
+  static base::NoDestructor<base::flat_map<PrerenderHostId, FrameTreeNodeId>>
+      g_prerender_host_id_map;
+  return *g_prerender_host_id_map;
+}
 
 // When enabled, the SiteInstance used to initialize a prerender frame tree is
 // associated with a SiteInfo derived from the prerendering URL, rather than an
@@ -315,6 +324,16 @@ PrerenderHost& PrerenderHost::GetFromFrameTree(FrameTree* frame_tree) {
 }
 
 // static
+FrameTreeNodeId PrerenderHost::GetFrameTreeNodeIdForId(PrerenderHostId id) {
+  auto& map = GetPrerenderHostIdMap();
+  auto it = map.find(id);
+  if (it == map.end()) {
+    return FrameTreeNodeId();
+  }
+  return it->second;
+}
+
+// static
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
 #if BUILDFLAG(IS_ANDROID)
@@ -477,6 +496,7 @@ PrerenderHost::PrerenderHost(
   }
 
   frame_tree_node_id_ = GetFrameTree()->root()->frame_tree_node_id();
+  GetPrerenderHostIdMap()[prerender_host_id_] = frame_tree_node_id_;
 
   if (GetHostCreationCallback()) {
     CHECK_IS_TEST();
@@ -561,6 +581,7 @@ bool PrerenderHost::IsActivationHeaderMatch(
 }
 
 PrerenderHost::~PrerenderHost() {
+  GetPrerenderHostIdMap().erase(prerender_host_id_);
   if (!final_status_.has_value()) {
     RecordFailedFinalStatusImpl(
         PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));

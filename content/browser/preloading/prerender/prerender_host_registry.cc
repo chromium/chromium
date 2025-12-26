@@ -535,7 +535,7 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
+PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
     PreloadingAttempt* attempt) {
   std::string recorded_url =
@@ -580,14 +580,14 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     if (initiator_web_contents.GetDelegate() == nullptr) {
       // Note that return without consuming `builder` is exceptional.
       builder.Drop();
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Check the about://flags toggle.
     if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
       builder.RejectAsNotEligible(attributes,
                                   PrerenderFinalStatus::kPreloadingDisabled);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Check whether preloading is enabled. If it is not enabled, report the
@@ -600,20 +600,20 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       case PreloadingEligibility::kPreloadingDisabled:
         builder.RejectAsNotEligible(attributes,
                                     PrerenderFinalStatus::kPreloadingDisabled);
-        return FrameTreeNodeId();
+        return PrerenderHostId();
       case PreloadingEligibility::kDataSaverEnabled:
         builder.RejectAsNotEligible(attributes,
                                     PrerenderFinalStatus::kDataSaverEnabled);
-        return FrameTreeNodeId();
+        return PrerenderHostId();
       case PreloadingEligibility::kBatterySaverEnabled:
         builder.RejectAsNotEligible(attributes,
                                     PrerenderFinalStatus::kBatterySaverEnabled);
-        return FrameTreeNodeId();
+        return PrerenderHostId();
       case PreloadingEligibility::kPreloadingUnsupportedByWebContents:
         builder.RejectAsNotEligible(
             attributes,
             PrerenderFinalStatus::kPreloadingUnsupportedByWebContents);
-        return FrameTreeNodeId();
+        return PrerenderHostId();
       default:
         NOTREACHED();
     }
@@ -629,14 +629,14 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
         initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
       builder.RejectAsNotEligible(attributes,
                                   PrerenderFinalStatus::kTriggerBackgrounded);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Don't prerender on low-end devices.
     if (!DeviceHasEnoughMemoryForPrerender()) {
       builder.RejectAsNotEligible(attributes,
                                   PrerenderFinalStatus::kLowEndDevice);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Don't prerender under critical memory pressure.
@@ -647,7 +647,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
         builder.RejectAsNotEligible(
             attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
-        return FrameTreeNodeId();
+        return PrerenderHostId();
     }
 
     // Disable prerendering on slow network.
@@ -658,7 +658,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
         IsSlowNetwork(web_contents())) {
       builder.RejectAsNotEligible(attributes,
                                   PrerenderFinalStatus::kSlowNetwork);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Allow prerendering only for same-site. The initiator origin is nullopt
@@ -671,7 +671,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       builder.RejectAsNotEligible(
           attributes,
           PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Allow prerendering only HTTP(S) scheme URLs. For redirection, this will
@@ -679,7 +679,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     if (!attributes.prerendering_url.SchemeIsHTTPOrHTTPS()) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kInvalidSchemeNavigation);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Disallow all pages that have an effective URL like hosted apps and NTP.
@@ -688,13 +688,13 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
                                           initiator_web_contents.GetURL())) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
     if (SiteInstanceImpl::HasEffectiveURL(browser_context,
                                           attributes.prerendering_url)) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     if (initiator_rfh && initiator_rfh->frame_tree() &&
@@ -702,7 +702,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
             *initiator_rfh->frame_tree())) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kPrerenderingDisabledByDevTools);
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Once all eligibility checks are completed, set the status to kEligible.
@@ -731,14 +731,14 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     // PreloadingConfig.
     if (builder.CheckIfShouldHoldback()) {
       builder.RejectDueToHoldback();
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
       if (iter.second->GetInitialUrl() == attributes.prerendering_url) {
         builder.RejectAsDuplicate();
-        return FrameTreeNodeId();
+        return PrerenderHostId();
       }
     }
 
@@ -793,7 +793,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
                                                   ->frame_tree_node_id()] =
             std::move(reuse_host);
       }
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
 
     // If we find a reusable prerender host under the same site. We will
@@ -845,7 +845,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
           // TODO(crbug.com/350785853): Add queue
           // mechanism and update test expectation.
           if (web_contents() != &initiator_web_contents) {
-            return FrameTreeNodeId();
+            return PrerenderHostId();
           }
           break;
         }
@@ -866,10 +866,14 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       break;
   }
 
-  return frame_tree_node_id;
+  auto it = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (it == prerender_host_by_frame_tree_node_id_.end()) {
+    return PrerenderHostId();
+  }
+  return it->second->prerender_host_id();
 }
 
-FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHostForNewTab(
+PrerenderHostId PrerenderHostRegistry::CreateAndStartHostForNewTab(
     const PrerenderAttributes& attributes,
     const PreloadingPredictor& creating_predictor,
     const PreloadingPredictor& enacting_predictor,
@@ -885,19 +889,21 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHostForNewTab(
 
   auto handle = std::make_unique<PrerenderNewTabHandle>(
       attributes, *web_contents()->GetBrowserContext());
-  FrameTreeNodeId prerender_host_id = handle->StartPrerendering(
+  PrerenderHostId prerender_host_id = handle->StartPrerendering(
       creating_predictor, enacting_predictor, confidence);
-  if (prerender_host_id.is_null()) {
-    return FrameTreeNodeId();
+  if (!prerender_host_id) {
+    return PrerenderHostId();
   }
-  prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =
+  FrameTreeNodeId frame_tree_node_id =
+      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
+  prerender_new_tab_handle_by_frame_tree_node_id_[frame_tree_node_id] =
       std::move(handle);
 
   if (GetPrerenderLimitGroup(attributes.trigger_type,
                              attributes.GetEagerness()) ==
       PrerenderLimitGroup::kSpeculationRulesNonImmediate) {
     non_immediate_prerender_host_id_by_arrival_order_.push_back(
-        prerender_host_id);
+        frame_tree_node_id);
   }
   return prerender_host_id;
 }
@@ -1329,6 +1335,12 @@ PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
   if (id_iter == prerender_host_by_frame_tree_node_id_.end())
     return nullptr;
   return id_iter->second.get();
+}
+
+PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
+    PrerenderHostId prerender_host_id) {
+  return FindNonReservedHostById(
+      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id));
 }
 
 bool PrerenderHostRegistry::HasReservedHost() const {

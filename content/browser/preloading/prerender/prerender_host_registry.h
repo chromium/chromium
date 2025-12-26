@@ -133,15 +133,14 @@ class CONTENT_EXPORT PrerenderHostRegistry
   void RemoveObserver(Observer* observer);
 
   // For triggers.
-  // Creates and starts a host. Returns the root frame tree node id of the
-  // prerendered page, which can be used as the id of the host.
+  // Creates and starts a host. Returns the PrerenderHostId of the created host.
   // `preloading_attempt` is the attempt corresponding to this prerender, the
   // default value is set to nullptr as every case of prerendering trigger is
   // not yet integrated with PreloadingAttempt.
   // TODO(crbug.com/40234240): Remove the default value as nullptr for
   // preloading_attempt once new-tab-prerender is integrated with Preloading
   // APIs.
-  FrameTreeNodeId CreateAndStartHost(
+  PrerenderHostId CreateAndStartHost(
       const PrerenderAttributes& attributes,
       PreloadingAttempt* preloading_attempt = nullptr);
 
@@ -150,7 +149,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
   // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
-  FrameTreeNodeId CreateAndStartHostForNewTab(
+  PrerenderHostId CreateAndStartHostForNewTab(
       const PrerenderAttributes& attributes,
       const PreloadingPredictor& creating_predictor,
       const PreloadingPredictor& enacting_predictor,
@@ -216,6 +215,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.
   PrerenderHost* FindNonReservedHostById(FrameTreeNodeId frame_tree_node_id);
+  PrerenderHost* FindNonReservedHostById(PrerenderHostId prerender_host_id);
 
   // Returns true if this registry reserves a host for activation.
   bool HasReservedHost() const;

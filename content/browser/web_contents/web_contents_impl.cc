@@ -12164,11 +12164,13 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
 #endif  // BUILDFLAG(IS_ANDROID)
   attributes.holdback_status_override = holdback_status_override;
 
-  FrameTreeNodeId frame_tree_node_id =
+  PrerenderHostId prerender_host_id =
       GetPrerenderHostRegistry()->CreateAndStartHost(attributes,
                                                      preloading_attempt);
 
-  if (frame_tree_node_id) {
+  if (prerender_host_id) {
+    FrameTreeNodeId frame_tree_node_id =
+        PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
     return std::make_unique<PrerenderHandleImpl>(
         GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
         prerendering_url, std::move(no_vary_search_hint));

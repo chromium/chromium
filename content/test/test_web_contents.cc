@@ -512,20 +512,23 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       blink::features::kPrerender2MemoryControls));
 
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
-  return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
-      url, PreloadingTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"", SpeculationRulesParams(), Referrer(),
-      /*no_vary_search_hint=*/std::nullopt, rfhi, GetWeakPtr(),
-      ui::PAGE_TRANSITION_LINK,
-      /*should_warm_up_compositor=*/false,
-      /*should_prepare_paint_tree=*/false,
-      blink::mojom::SpeculationAction::kPrerender,
-      /*url_match_predicate=*/{},
-      /*prerender_navigation_handle_callback=*/{},
-      PreloadPipelineInfoImpl::Create(
-          /*planned_max_preloading_type=*/PreloadingType::kPrerender),
-      /*allow_reuse=*/false,
-      /*form_submission=*/false));
+  PrerenderHostId prerender_host_id =
+      GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
+          url, PreloadingTriggerType::kSpeculationRule,
+          /*embedder_histogram_suffix=*/"", SpeculationRulesParams(),
+          Referrer(),
+          /*no_vary_search_hint=*/std::nullopt, rfhi, GetWeakPtr(),
+          ui::PAGE_TRANSITION_LINK,
+          /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/false,
+          blink::mojom::SpeculationAction::kPrerender,
+          /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{},
+          PreloadPipelineInfoImpl::Create(
+              /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+          /*allow_reuse=*/false,
+          /*form_submission=*/false));
+  return PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
