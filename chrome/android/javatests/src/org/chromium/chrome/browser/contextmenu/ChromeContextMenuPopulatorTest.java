@@ -260,25 +260,25 @@ public class ChromeContextMenuPopulatorTest {
             }
 
             if (!Arrays.equals(expectedItemsInGroup, availableInTab)) {
-                StringBuilder generated_info = new StringBuilder();
+                StringBuilder generatedInfo = new StringBuilder();
                 for (int j = 0; j < contextMenuState.get(i).size(); j++) {
-                    generated_info.append("'");
-                    generated_info.append(contextMenuState.get(i).get(j).model.get(MENU_ITEM_ID));
-                    generated_info.append("' ");
+                    generatedInfo.append("'");
+                    generatedInfo.append(contextMenuState.get(i).get(j).model.get(MENU_ITEM_ID));
+                    generatedInfo.append("' ");
                 }
-                StringBuilder expected_info = new StringBuilder();
+                StringBuilder expectedInfo = new StringBuilder();
                 for (int j = 0; j < expectedItemsInGroup.length; j++) {
-                    expected_info.append("'");
-                    expected_info.append(expectedItemsInGroup[j]);
-                    expected_info.append("' ");
+                    expectedInfo.append("'");
+                    expectedInfo.append(expectedItemsInGroup[j]);
+                    expectedInfo.append("' ");
                 }
                 fail(
                         "Items in group "
                                 + i
                                 + " don't match, expecting: "
-                                + expected_info.toString()
+                                + expectedInfo.toString()
                                 + ", generated: "
-                                + generated_info.toString());
+                                + generatedInfo.toString());
             }
         }
     }
@@ -1741,23 +1741,23 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
 
         // In normal mode, there should be three options: share, remove and learn more.
-        int[] normal_expected = {
+        int[] normalExpected = {
             R.id.contextmenu_share_highlight,
             R.id.contextmenu_remove_highlight,
             R.id.contextmenu_learn_more
         };
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(normal_expected);
+        checkMenuOptions(normalExpected);
 
         // In custom tab, network bound tab or web app mode, only the remove option should be
         // present.
-        int[] other_expected = {R.id.contextmenu_remove_highlight};
+        int[] otherExpected = {R.id.contextmenu_remove_highlight};
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        checkMenuOptions(other_expected);
+        checkMenuOptions(otherExpected);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
-        checkMenuOptions(other_expected);
+        checkMenuOptions(otherExpected);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
-        checkMenuOptions(other_expected);
+        checkMenuOptions(otherExpected);
     }
 
     @Test
@@ -1976,19 +1976,19 @@ public class ChromeContextMenuPopulatorTest {
         int[] expectedPage = {
             R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page
         };
-        List<Integer> expected_disabled = Arrays.asList(R.id.contextmenu_save_page);
+        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_save_page);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected_disabled, expectedPage);
+        checkMenuOptions(expectedDisabled, expectedPage);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        checkMenuOptions(expected_disabled, expectedPage);
+        checkMenuOptions(expectedDisabled, expectedPage);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
-        checkMenuOptions(expected_disabled, expectedPage);
+        checkMenuOptions(expectedDisabled, expectedPage);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
-        checkMenuOptions(expected_disabled, expectedPage);
+        checkMenuOptions(expectedDisabled, expectedPage);
     }
 
     @Test
