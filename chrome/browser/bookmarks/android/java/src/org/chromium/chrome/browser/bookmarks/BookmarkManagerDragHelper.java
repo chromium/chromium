@@ -285,6 +285,66 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         return false;
     }
 
+    /**
+     * Handles hover events to manage the visibility of the grab handle. Shows the handle when the
+     * pointer enters the row and hides it after small delay upon exit. Returns false to allow the
+     * default hover visual state (e.g. background highlight) to render.
+     *
+     * @param v The view receiving the hover event (ImprovedBookmarkRow).
+     * @param event The MotionEvent describing the hover action.
+     * @return False to allow the event to propagate to default handlers (for visual feedback).
+     */
+    public boolean onRowBodyHover(View v, MotionEvent event) {
+        // The mobile bookmarks folder, bookmarks bar folder, etc. are not draggable.
+        if (!mIsDragEnabled) return false;
+
+        int action = event.getActionMasked();
+        View dragHandle = mViewHolder.itemView.findViewById(R.id.drag_handle);
+        if (dragHandle == null) return false;
+
+        // The mouse is inside the row boundaries.
+        if (action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_MOVE) {
+            // The handle should always be visible.
+            mHandler.removeCallbacks(mHideHandleRunnable);
+            dragHandle.setVisibility(View.VISIBLE);
+
+            // Return false to let the event "bubble up" to the View's default handler, which shows
+            // the grey highlight background on hover.
+            return false;
+
+        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+            // The mouse has now left the row boundaries.
+            boolean isSelected = mSelectionDelegate.isItemSelected(mBookmarkId);
+
+            // If selected, the grab handle should always visible. If not, hide the handle.
+            if (!isSelected) {
+                // 50ms delay to prevent flickering.
+                mHandler.postDelayed(mHideHandleRunnable, HIDE_HANDLE_DELAY_MS);
+            }
+            // This allows the system to remove the grey background highlight on hover.
+            return false;
+        }
+        return false;
+    }
+
+    /** Handles hover events for the Drag Handle itself. */
+    public boolean onDragHandleHover(View v, MotionEvent event) {
+        if (!mIsDragEnabled) return false;
+
+        // Set the cursor to be an open hand.
+        v.setPointerIcon(PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRAB));
+
+        // Call the ImprovedBookmarkRow onHoverListener, which shows the handle on
+        // hover. This line is needed because it avoids flickering by forcing the parent
+        // (Row) to cancel the hide handle logic.
+        onRowBodyHover(mViewHolder.itemView, event);
+
+        // This tells the system to allow the Handle's default behavior to run.
+        // The default behavior is what draws the circular grey background on the
+        // handle on hover.
+        return false;
+    }
+
     @Override
     public void onViewAttachedToWindow(View v) {
         // No-op.
