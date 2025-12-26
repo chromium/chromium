@@ -4,6 +4,9 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,6 +52,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
@@ -173,6 +177,10 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
+  active_task_context_provider_->SetSessionHandleGetter(
+      base::BindRepeating(&ContextualTasksSidePanelCoordinator::
+                              GetSessionHandleForActiveTabOrSidePanel,
+                          base::Unretained(this)));
   browser_window_->GetTabStripModel()->AddObserver(this);
 }
 
@@ -878,33 +886,38 @@ void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
   }
 }
 
-void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
-  contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
-  if (IsSidePanelOpenForContextualTask()) {
-    session_handle = GetContextualSearchSessionHandleForSidePanel();
+std::pair<std::optional<base::Uuid>,
+          contextual_search::ContextualSearchSessionHandle*>
+ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
+  content::WebContents* web_contents = nullptr;
+  if (ShouldBeOpen()) {
+    if (web_view_ && web_view_->GetWebContents()) {
+      web_contents = web_view_->GetWebContents();
+    }
   } else {
     tabs::TabInterface* active_tab_interface =
         browser_window_->GetActiveTabInterface();
     if (active_tab_interface) {
-      content::WebContents* active_web_contents =
-          active_tab_interface->GetContents();
-      if (active_web_contents &&
-          active_web_contents->GetLastCommittedURL().host() ==
-              chrome::kChromeUIContextualTasksHost &&
-          active_web_contents->GetWebUI() &&
-          active_web_contents->GetWebUI()->GetController()) {
-        ContextualTasksUI* contextual_tasks_ui =
-            active_web_contents->GetWebUI()
-                ->GetController()
-                ->GetAs<ContextualTasksUI>();
-        if (contextual_tasks_ui) {
-          session_handle =
-              contextual_tasks_ui->GetOrCreateContextualSessionHandle();
-        }
-      }
+      web_contents = active_tab_interface->GetContents();
     }
   }
-  active_task_context_provider_->OnSidePanelStateUpdated(session_handle);
+
+  if (!web_contents) {
+    return {std::nullopt, nullptr};
+  }
+
+  ContextualSearchWebContentsHelper* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents);
+  auto task_id = helper ? helper->task_id() : std::nullopt;
+  if (!task_id.has_value()) {
+    return {std::nullopt, nullptr};
+  }
+
+  return {task_id, helper->GetSessionForTask(task_id.value())};
+}
+
+void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
+  active_task_context_provider_->OnSidePanelStateUpdated();
 }
 
 size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {

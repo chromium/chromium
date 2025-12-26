@@ -66,6 +66,12 @@ ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
       contextual_tasks_service_(contextual_tasks_service) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
+  active_tab_change_subscription_ = browser_window_->RegisterActiveTabDidChange(
+      base::BindRepeating(&ActiveTaskContextProviderImpl::OnActiveTabChanged,
+                          base::Unretained(this)));
+
+  // Observe the active tab's WebContents on startup.
+  OnActiveTabChanged(browser_window);
 }
 
 ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() = default;
@@ -80,64 +86,58 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated(
-    contextual_search::ContextualSearchSessionHandle* session_handle) {
-  // The side panel was just opened or closed or we might have switched to a
-  // different tab. Update the context.
-  active_session_handle_ =
-      session_handle ? session_handle->AsWeakPtr() : nullptr;
+void ActiveTaskContextProviderImpl::SetSessionHandleGetter(
+    SessionHandleGetter session_handle_getter) {
+  session_handle_getter_ = session_handle_getter;
+}
+
+void ActiveTaskContextProviderImpl::OnActiveTabChanged(
+    BrowserWindowInterface* browser_window_interface) {
+  // Start observing the new active tab's WebContents.
+  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+  Observe(active_tab ? active_tab->GetContents() : nullptr);
+
+  // Update the context based on the new active tab.
   RefreshContext();
 }
 
-void ActiveTaskContextProviderImpl::OnPendingContextUpdated(
-    const contextual_search::ContextualSearchSessionHandle& session_handle) {
-  // Ignore the update if it is not for the task in the active tab.
-  if (last_session_id_ != session_handle.session_id()) {
-    return;
-  }
+void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
+  RefreshContext();
+}
+
+void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated() {
+  // The side panel was just opened or closed or we might have switched to a
+  // different tab. Update the context.
+  RefreshContext();
+}
+
+void ActiveTaskContextProviderImpl::OnTaskAdded(
+    const ContextualTask& task,
+    ContextualTasksService::TriggerSource source) {
   RefreshContext();
 }
 
 void ActiveTaskContextProviderImpl::OnTaskUpdated(
     const ContextualTask& task,
     ContextualTasksService::TriggerSource source) {
-  // Ignore the update if it is not for the task in the active tab.
-  if (!active_task_id_ || active_task_id_ != task.GetTaskId()) {
-    return;
-  }
-
   RefreshContext();
 }
 
 void ActiveTaskContextProviderImpl::OnTaskRemoved(
     const base::Uuid& task_id,
     ContextualTasksService::TriggerSource source) {
-  if (active_task_id_ == task_id) {
-    // The task that was last shown was just removed. Refresh the tabs.
-    active_task_id_ = std::nullopt;
-    RefreshContext();
-  }
+  RefreshContext();
 }
 
 void ActiveTaskContextProviderImpl::OnTaskAssociatedToTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
-  // Ignore the event if it is not for the task in the active tab.
-  if (!active_task_id_ || active_task_id_ != task_id) {
-    return;
-  }
-
   RefreshContext();
 }
 
 void ActiveTaskContextProviderImpl::OnTaskDisassociatedFromTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
-  // Ignore the event if it is not for the task in the active tab.
-  if (!active_task_id_ || active_task_id_ != task_id) {
-    return;
-  }
-
   RefreshContext();
 }
 
@@ -145,45 +145,23 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
   // Increment the callback ID to invalidate any outstanding callbacks.
   callback_id_++;
 
-  if (!active_session_handle_) {
+  contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
+  if (session_handle_getter_) {
+    auto [task_id, handle] = session_handle_getter_.value().Run();
+    session_handle = handle;
+    active_task_id_ = task_id;
+  } else {
     ResetStateAndNotifyObservers();
-    return;
   }
-
-  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
-  if (!active_tab) {
-    ResetStateAndNotifyObservers();
-    return;
-  }
-
-  content::WebContents* web_contents = active_tab->GetContents();
-  if (!web_contents) {
-    ResetStateAndNotifyObservers();
-    return;
-  }
-
-  auto* session_handle = active_session_handle_.get();
-
-  bool session_handle_changed =
-      last_session_id_ != session_handle->session_id();
-  last_session_id_ = session_handle->session_id();
-
-  auto task = contextual_tasks_service_->GetContextualTaskForTab(
-      sessions::SessionTabHelper::IdForTab(web_contents));
-  active_task_id_ =
-      task.has_value() ? std::make_optional(task->GetTaskId()) : std::nullopt;
 
   if (!active_task_id_.has_value()) {
     ResetStateAndNotifyObservers();
     return;
   }
 
-  if (session_handle_changed) {
-    // The session handle has changed. The observers need to reset their state
-    // first.
-    for (auto& observer : observers_) {
-      observer.OnContextTabsChanged({});
-    }
+  if (!session_handle) {
+    ResetStateAndNotifyObservers();
+    return;
   }
 
   auto context_decoration_params = std::make_unique<ContextDecorationParams>();
@@ -245,7 +223,6 @@ void ActiveTaskContextProviderImpl::AddAssociatedTabsToSet(
 
 void ActiveTaskContextProviderImpl::ResetStateAndNotifyObservers() {
   active_task_id_ = std::nullopt;
-  last_session_id_ = std::nullopt;
   for (auto& observer : observers_) {
     observer.OnContextTabsChanged({});
   }
