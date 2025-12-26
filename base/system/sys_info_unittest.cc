@@ -499,7 +499,8 @@ TEST_F(SysInfoTest, NumberOfEfficientProcessors) {
   // Can be 0, if this is not a big.LITTLE architecture.
   EXPECT_LE(static_cast<int>(SysInfo::NumberOfEfficientProcessors()),
             SysInfo::NumberOfProcessors());
-  uint64_t min_frequency = *std::min(frequencies.begin(), frequencies.end());
+  uint64_t min_frequency =
+      *std::min_element(frequencies.begin(), frequencies.end());
   size_t expected_count = SysInfo::NumberOfEfficientProcessors() == 0
                               ? frequencies.size()
                               : SysInfo::NumberOfEfficientProcessors();
