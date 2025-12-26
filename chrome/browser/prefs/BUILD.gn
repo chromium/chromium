@@ -131,7 +131,6 @@ source_set("impl") {
     "//components/plus_addresses/core/common:prefs",
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tpcd",
     "//components/proxy_config",
     "//components/reading_list/core",
     "//components/regional_capabilities",

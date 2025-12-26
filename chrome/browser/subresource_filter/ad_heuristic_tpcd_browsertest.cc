@@ -31,8 +31,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tpcd_pref_names.h"
-#include "components/privacy_sandbox/tpcd_utils.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/user_prefs/user_prefs.h"

@@ -9,13 +9,6 @@ class PrefRegistrySimple;
 
 namespace prefs {
 
-// Onboarding prefs
-
-// Unsynced pref that indicates what status the profile is at with regards to
-// tracking protections (3PCD Onboarding Notice).
-inline constexpr char kTrackingProtectionOnboardingStatus[] =
-    "tracking_protection.tracking_protection_onboarding_status";
-
 // Tracking Protection prefs
 
 // Unsynced boolean that indicates whether 3PCD tracking protection (prefs + UI)
@@ -31,15 +24,6 @@ inline constexpr char kBlockAll3pcToggleEnabled[] =
 }  // namespace prefs
 
 namespace privacy_sandbox::tracking_protection {
-
-// Different tracking protection onboarding statuses stored in the pref above.
-enum class TrackingProtectionOnboardingStatus {
-  kIneligible = 0,
-  kEligible = 1,
-  kOnboarded = 2,
-  kRequested = 3,
-  kMaxValue = kRequested,
-};
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

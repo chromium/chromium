@@ -16,10 +16,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kBlockAll3pcToggleEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kTrackingProtection3pcdEnabled, false);
-  // TODO: b/465758965 - Deprecate after removing usage.
-  registry->RegisterIntegerPref(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
 }
 
 }  // namespace privacy_sandbox::tracking_protection

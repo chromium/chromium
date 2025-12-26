@@ -158,7 +158,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tpcd_pref_names.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/safe_browsing/buildflags.h"
@@ -944,6 +943,12 @@ constexpr char kTrackingProtectionSilentOnboardingStatus[] =
     "tracking_protection.tracking_protection_silent_onboarding_status";
 constexpr char kFingerprintingProtectionEnabled[] =
     "tracking_protection.fingerprinting_protection_enabled";
+constexpr char kTrackingProtectionOnboardingStatus[] =
+    "tracking_protection.tracking_protection_onboarding_status";
+constexpr char kTPCDExperimentClientState[] = "tpcd_experiment.client_state";
+constexpr char kTPCDExperimentClientStateVersion[] =
+    "tpcd_experiment.client_state_version";
+constexpr char kTPCDExperimentProfileState[] = "tpcd_experiment.profile_state";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1057,6 +1062,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrackingProtectionOnboardingAckAction, 0);
   registry->RegisterBooleanPref(kIpProtectionInitializedByDogfood, false);
   registry->RegisterIntegerPref(kTrackingProtectionSilentOnboardingStatus, 0);
+  registry->RegisterIntegerPref(kTrackingProtectionOnboardingStatus, 0);
+  registry->RegisterIntegerPref(kTPCDExperimentClientState, 0);
+  registry->RegisterIntegerPref(kTPCDExperimentClientStateVersion, 0);
+  registry->RegisterIntegerPref(kTPCDExperimentProfileState, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1380,7 +1389,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(
       registry, subresource_filter::kSafeBrowsingRulesetConfig.filter_tag);
   SystemNetworkContextManager::RegisterPrefs(registry);
-  tpcd::experiment::RegisterLocalStatePrefs(registry);
   tpcd::metadata::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
@@ -1724,7 +1732,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   syncer::SyncTransportDataPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   tab_groups::prefs::RegisterProfilePrefs(registry);
-  tpcd::experiment::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   visited_url_ranking::GroupSuggestionsServiceImpl::RegisterProfilePrefs(
       registry);
@@ -2245,6 +2252,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kTrackingProtectionOnboardingAckAction);
   local_state->ClearPref(kIpProtectionInitializedByDogfood);
   local_state->ClearPref(kTrackingProtectionSilentOnboardingStatus);
+  local_state->ClearPref(kTrackingProtectionOnboardingStatus);
+  local_state->ClearPref(kTPCDExperimentClientState);
+  local_state->ClearPref(kTPCDExperimentClientStateVersion);
+  local_state->ClearPref(kTPCDExperimentProfileState);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

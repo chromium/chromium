@@ -37,24 +37,6 @@ source_set("privacy_sandbox_survey_service") {
   public = [ "privacy_sandbox_survey_service.h" ]
 }
 
-source_set("tracking_protection_onboarding") {
-  sources = [
-    "tracking_protection_onboarding.cc",
-    "tracking_protection_onboarding.h",
-  ]
-
-  deps = [
-    ":features",
-    ":tracking_protection_prefs",
-    "//components/keyed_service/core",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//components/version_info",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 source_set("tracking_protection_settings") {
   sources = [
     "tracking_protection_settings.cc",
@@ -81,21 +63,6 @@ static_library("tracking_protection_prefs") {
   sources = [
     "tracking_protection_prefs.cc",
     "tracking_protection_prefs.h",
-  ]
-
-  deps = [
-    "//components/pref_registry",
-    "//components/prefs",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
-source_set("tpcd") {
-  sources = [
-    "tpcd_pref_names.cc",
-    "tpcd_pref_names.h",
-    "tpcd_utils.h",
   ]
 
   deps = [
@@ -204,29 +171,22 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "tracking_protection_onboarding_unittest.cc",
-    "tracking_protection_settings_unittest.cc",
-  ]
+  sources = [ "tracking_protection_settings_unittest.cc" ]
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
 
   deps = [
     ":features",
     ":privacy_sandbox_prefs",
-    ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
     ":tracking_protection_settings",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
-    "//components/content_settings/core/test:test_support",
-    "//components/policy/core/common",
     "//components/prefs:test_support",
-    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
-    "//components/version_info",
     "//testing/gtest",
   ]
 
@@ -242,6 +202,7 @@ source_set("unit_tests") {
       ":privacy_sandbox",
       ":test_support",
       "//components/browsing_topics:test_support",
+      "//components/content_settings/core/test:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/strings:components_strings_grit",
