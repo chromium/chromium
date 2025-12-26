@@ -694,7 +694,6 @@ void ContextualSearchboxHandler::OpenUrl(
           contextual_session_handle->session_id());
   new_contextual_session_handle->set_submitted_context_tokens(
       contextual_session_handle->GetSubmittedContextTokens());
-  contextual_session_handle->ClearSubmittedContextTokens();
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.
@@ -748,6 +747,7 @@ void ContextualSearchboxHandler::OpenUrl(
                 : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
             /*is_zero_prefix_suggestion=*/query_text.empty());
         active_web_contents->Focus();
+        contextual_session_handle->ClearSubmittedContextTokens();
         return;
       }
     }
@@ -767,4 +767,5 @@ void ContextualSearchboxHandler::OpenUrl(
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
+  contextual_session_handle->ClearSubmittedContextTokens();
 }
