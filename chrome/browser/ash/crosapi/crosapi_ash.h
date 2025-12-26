@@ -95,8 +95,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionController(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override;
-  void BindNetworkChange(
-      mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;

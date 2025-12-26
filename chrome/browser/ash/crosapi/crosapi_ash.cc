@@ -37,7 +37,6 @@
 #include "chromeos/components/in_session_auth/in_session_auth.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -189,11 +188,6 @@ void CrosapiAsh::BindMediaSessionController(
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindNetworkChange(
-    mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
-  NOTREACHED();
 }
 
 void CrosapiAsh::BindReceiver(

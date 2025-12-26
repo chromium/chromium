@@ -12,36 +12,26 @@ mojom("mojom") {
     "clipboard_history.mojom",
     "cros_display_config.mojom",
     "crosapi.mojom",
-    "desk_profiles.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
-    "file_change_service_bridge.mojom",
-    "full_restore.mojom",
     "guest_os_sk_forwarder.mojom",
-    "identity_manager.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",
     "magic_boost.mojom",
     "mahi.mojom",
-    "network_change.mojom",
-    "networking_private.mojom",
     "nullable_primitives.mojom",
-    "policy_service.mojom",
     "print_preview_cros.mojom",
     "probe_service.mojom",
     "remoting.mojom",
-    "synced_session_client.mojom",
     "telemetry_diagnostic_routine_service.mojom",
     "telemetry_event_service.mojom",
     "telemetry_extension_exception.mojom",
     "telemetry_keyboard_event.mojom",
     "telemetry_management_service.mojom",
-    "ui_constants.mojom",
     "video_conference.mojom",
     "vpn_service.mojom",
-    "web_app_types.mojom",
   ]
   disable_variants = true
   enable_js_fuzzing = false
@@ -78,50 +68,6 @@ mojom("mojom") {
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
-  ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "crosapi.mojom.WebAppInstallResultCode"
-          cpp = "::webapps::InstallResultCode"
-        },
-        {
-          mojom = "crosapi.mojom.WebAppUninstallResultCode"
-          cpp = "::webapps::UninstallResultCode"
-        },
-        {
-          mojom = "crosapi.mojom.ResourceScaleFactor"
-          cpp = "::ui::ResourceScaleFactor"
-        },
-      ]
-      traits_headers = [
-        "//chromeos/crosapi/mojom/ui_constants_mojom_traits.h",
-        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
-        "//components/services/app_service/public/cpp/app_launch_util.h",
-        "//components/services/app_service/public/cpp/app_types.h",
-        "//components/services/app_service/public/cpp/shortcut/shortcut.h",
-        "//components/services/app_service/public/cpp/capability_access.h",
-        "//components/services/app_service/public/cpp/icon_types.h",
-        "//components/services/app_service/public/cpp/package_id.h",
-        "//components/services/app_service/public/cpp/permission.h",
-        "//components/services/app_service/public/cpp/preferred_app.h",
-      ]
-      traits_sources = [
-        "//chromeos/crosapi/mojom/ui_constants_mojom_traits.cc",
-        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
-      ]
-      traits_public_deps = [
-        "//base",
-        "//components/services/app_service/public/cpp:app_types",
-        "//components/services/app_service/public/cpp/shortcut",
-        "//components/tab_groups",
-        "//components/webapps/browser:constants",
-        "//ui/base:ui_data_pack",
-        "//ui/gfx/range",
-      ]
-    },
   ]
 }
 

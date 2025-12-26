@@ -98,7 +98,6 @@ source_set("unit_tests") {
     "//chromeos/ash/services/device_sync:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/ash/services/secure_channel/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//components/account_id",
     "//components/favicon/core",
     "//components/favicon_base",
