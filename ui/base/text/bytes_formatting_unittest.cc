@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,17 +14,17 @@ namespace ui {
 
 TEST(BytesFormattingTest, GetByteDisplayUnits) {
   struct Cases {
-    base::ByteCount bytes;
+    base::ByteSize bytes;
     DataUnits expected;
   };
   static const auto cases = std::to_array<Cases>({
-      {base::ByteCount(0), DataUnits::kByte},
-      {base::ByteCount(512), DataUnits::kByte},
-      {base::KiB(10), DataUnits::kKibibyte},
-      {base::MiB(10), DataUnits::kMebibyte},
-      {base::GiB(10), DataUnits::kGibibyte},
-      {base::TiB(10), DataUnits::kTebibyte},
-      {base::ByteCount::Max(), DataUnits::kPebibyte},
+      {base::ByteSize(0), DataUnits::kByte},
+      {base::ByteSize(512), DataUnits::kByte},
+      {base::KiBU(10), DataUnits::kKibibyte},
+      {base::MiBU(10), DataUnits::kMebibyte},
+      {base::GiBU(10), DataUnits::kGibibyte},
+      {base::TiBU(10), DataUnits::kTebibyte},
+      {base::ByteSize::Max(), DataUnits::kPebibyte},
   });
 
   for (const auto& test_case : cases) {
@@ -34,7 +34,7 @@ TEST(BytesFormattingTest, GetByteDisplayUnits) {
 
 TEST(BytesFormattingTest, FormatBytes) {
   struct Cases {
-    base::ByteCount bytes;
+    base::ByteSize bytes;
     DataUnits units;
     const char* expected;
     const char* expected_with_units;
@@ -46,27 +46,28 @@ TEST(BytesFormattingTest, FormatBytes) {
       //
       // Since we switch units once we cross the 1000 mark, this keeps the
       // display of file sizes or bytes consistently around three digits.
-      {base::ByteCount(0), DataUnits::kByte, "0", "0 B"},
-      {base::ByteCount(512), DataUnits::kByte, "512", "512 B"},
-      {base::ByteCount(512), DataUnits::kKibibyte, "0.5", "0.5 KB"},
-      {base::MiB(1), DataUnits::kKibibyte, "1,024", "1,024 KB"},
-      {base::MiB(1), DataUnits::kMebibyte, "1.0", "1.0 MB"},
-      {base::GiB(1), DataUnits::kGibibyte, "1.0", "1.0 GB"},
-      {base::GiB(10), DataUnits::kGibibyte, "10.0", "10.0 GB"},
-      {base::GiB(99), DataUnits::kGibibyte, "99.0", "99.0 GB"},
-      {base::GiB(105), DataUnits::kGibibyte, "105", "105 GB"},
-      {base::GiB(105) + base::MiB(500), DataUnits::kGibibyte, "105", "105 GB"},
-      {base::ByteCount::Max(), DataUnits::kGibibyte, "8,589,934,592",
+      {base::ByteSize(0), DataUnits::kByte, "0", "0 B"},
+      {base::ByteSize(512), DataUnits::kByte, "512", "512 B"},
+      {base::ByteSize(512), DataUnits::kKibibyte, "0.5", "0.5 KB"},
+      {base::MiBU(1), DataUnits::kKibibyte, "1,024", "1,024 KB"},
+      {base::MiBU(1), DataUnits::kMebibyte, "1.0", "1.0 MB"},
+      {base::GiBU(1), DataUnits::kGibibyte, "1.0", "1.0 GB"},
+      {base::GiBU(10), DataUnits::kGibibyte, "10.0", "10.0 GB"},
+      {base::GiBU(99), DataUnits::kGibibyte, "99.0", "99.0 GB"},
+      {base::GiBU(105), DataUnits::kGibibyte, "105", "105 GB"},
+      {base::GiBU(105) + base::MiBU(500), DataUnits::kGibibyte, "105",
+       "105 GB"},
+      {base::ByteSize::Max(), DataUnits::kGibibyte, "8,589,934,592",
        "8,589,934,592 GB"},
-      {base::ByteCount::Max(), DataUnits::kPebibyte, "8,192", "8,192 PB"},
+      {base::ByteSize::Max(), DataUnits::kPebibyte, "8,192", "8,192 PB"},
 
-      {base::KiB(99) + base::ByteCount(103), DataUnits::kKibibyte, "99.1",
+      {base::KiBU(99) + base::ByteSize(103), DataUnits::kKibibyte, "99.1",
        "99.1 KB"},
-      {base::MiB(1) + base::ByteCount(103), DataUnits::kKibibyte, "1,024",
+      {base::MiBU(1) + base::ByteSize(103), DataUnits::kKibibyte, "1,024",
        "1,024 KB"},
-      {base::MiB(1) + base::KiB(205), DataUnits::kMebibyte, "1.2", "1.2 MB"},
-      {base::GiB(1) + base::MiB(927), DataUnits::kGibibyte, "1.9", "1.9 GB"},
-      {base::GiB(100), DataUnits::kGibibyte, "100", "100 GB"},
+      {base::MiBU(1) + base::KiBU(205), DataUnits::kMebibyte, "1.2", "1.2 MB"},
+      {base::GiBU(1) + base::MiBU(927), DataUnits::kGibibyte, "1.9", "1.9 GB"},
+      {base::GiBU(100), DataUnits::kGibibyte, "100", "100 GB"},
   });
 
   for (const auto& test_case : cases) {

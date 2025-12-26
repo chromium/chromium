@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -22,21 +22,20 @@ namespace ui {
 namespace {
 
 // Byte suffix string constants. These both must match the DataUnits enum.
-const int kByteStrings[] = {IDS_APP_BYTES,     IDS_APP_KIBIBYTES,
-                            IDS_APP_MEBIBYTES, IDS_APP_GIBIBYTES,
-                            IDS_APP_TEBIBYTES, IDS_APP_PEBIBYTES};
+constexpr int kByteStrings[] = {IDS_APP_BYTES,     IDS_APP_KIBIBYTES,
+                                IDS_APP_MEBIBYTES, IDS_APP_GIBIBYTES,
+                                IDS_APP_TEBIBYTES, IDS_APP_PEBIBYTES};
 
-const int kSpeedStrings[] = {
+constexpr int kSpeedStrings[] = {
     IDS_APP_BYTES_PER_SECOND,     IDS_APP_KIBIBYTES_PER_SECOND,
     IDS_APP_MEBIBYTES_PER_SECOND, IDS_APP_GIBIBYTES_PER_SECOND,
     IDS_APP_TEBIBYTES_PER_SECOND, IDS_APP_PEBIBYTES_PER_SECOND};
 
-std::u16string FormatBytesInternal(base::ByteCount bytes,
+std::u16string FormatBytesInternal(base::ByteSize bytes,
                                    DataUnits units,
                                    bool show_units,
                                    const base::span<const int> suffix) {
   DCHECK(units >= DataUnits::kByte && units <= DataUnits::kPebibyte);
-  CHECK_GE(bytes, base::ByteCount(0));
 
   // Put the quantity in the right units.
   double unit_amount = bytes.InBytesF();
@@ -61,21 +60,19 @@ std::u16string FormatBytesInternal(base::ByteCount bytes,
 
 }  // namespace
 
-DataUnits GetByteDisplayUnits(base::ByteCount bytes) {
+DataUnits GetByteDisplayUnits(base::ByteSize bytes) {
   // The byte thresholds at which we display amounts. A byte count is displayed
   // in unit U when kUnitThresholds[U] <= bytes < kUnitThresholds[U+1].
   // This must match the DataUnits enum.
-  static const auto kUnitThresholds = std::to_array<base::ByteCount>({
-      base::ByteCount(0),  // DataUnits::kByte,
-      base::KiB(3),        // DataUnits::kKibibyte,
-      base::MiB(2),        // DataUnits::kMebibyte,
-      base::GiB(1),        // DataUnits::kGibibyte,
-      base::TiB(1),        // DataUnits::kTebibyte,
-      base::PiB(1)         // DataUnits::kPebibyte,
+  static constexpr auto kUnitThresholds = std::to_array<base::ByteSize>({
+      base::ByteSize(0),  // DataUnits::kByte,
+      base::KiBU(3),      // DataUnits::kKibibyte,
+      base::MiBU(2),      // DataUnits::kMebibyte,
+      base::GiBU(1),      // DataUnits::kGibibyte,
+      base::TiBU(1),      // DataUnits::kTebibyte,
+      base::PiBU(1)       // DataUnits::kPebibyte,
   });
-  static const auto kUnitThresholdsSpan = base::span(kUnitThresholds);
-
-  CHECK_GE(bytes, base::ByteCount(0));
+  static constexpr auto kUnitThresholdsSpan = base::span(kUnitThresholds);
 
   size_t unit_index = kUnitThresholdsSpan.size();
   while (--unit_index > 0) {
@@ -89,24 +86,54 @@ DataUnits GetByteDisplayUnits(base::ByteCount bytes) {
   return units;
 }
 
-std::u16string FormatBytesWithUnits(base::ByteCount bytes,
+std::u16string FormatBytesWithUnits(base::ByteSize bytes,
                                     DataUnits units,
                                     bool show_units) {
   return FormatBytesInternal(bytes, units, show_units, kByteStrings);
 }
 
-std::u16string FormatSpeedWithUnits(base::ByteCount bytes,
+std::u16string FormatSpeedWithUnits(base::ByteSize bytes,
                                     DataUnits units,
                                     bool show_units) {
   return FormatBytesInternal(bytes, units, show_units, kSpeedStrings);
 }
 
-std::u16string FormatBytes(base::ByteCount bytes) {
-  return FormatBytesWithUnits(bytes, GetByteDisplayUnits(bytes), true);
+std::u16string FormatBytes(base::ByteSize bytes) {
+  return FormatBytesWithUnits(bytes, GetByteDisplayUnits(bytes),
+                              /*show_units=*/true);
 }
 
-std::u16string FormatSpeed(base::ByteCount bytes) {
-  return FormatSpeedWithUnits(bytes, GetByteDisplayUnits(bytes), true);
+std::u16string FormatSpeed(base::ByteSize bytes) {
+  return FormatSpeedWithUnits(bytes, GetByteDisplayUnits(bytes),
+                              /*show_units=*/true);
 }
+
+// BEGIN DEPRECATED SHIMS
+
+std::u16string FormatBytes(base::ByteCount bytes) {
+  return FormatBytes(base::ByteSize::FromDeprecatedByteCount(bytes));
+}
+std::u16string FormatSpeed(base::ByteCount bytes) {
+  return FormatSpeed(base::ByteSize::FromDeprecatedByteCount(bytes));
+}
+DataUnits GetByteDisplayUnits(base::ByteCount bytes) {
+  return GetByteDisplayUnits(base::ByteSize::FromDeprecatedByteCount(bytes));
+}
+
+std::u16string FormatBytesWithUnits(base::ByteCount bytes,
+                                    DataUnits units,
+                                    bool show_units) {
+  return FormatBytesWithUnits(base::ByteSize::FromDeprecatedByteCount(bytes),
+                              units, show_units);
+}
+
+std::u16string FormatSpeedWithUnits(base::ByteCount bytes,
+                                    DataUnits units,
+                                    bool show_units) {
+  return FormatSpeedWithUnits(base::ByteSize::FromDeprecatedByteCount(bytes),
+                              units, show_units);
+}
+
+// END DEPRECATED SHIMS
 
 }  // namespace ui
