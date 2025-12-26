@@ -4,15 +4,20 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import <optional>
+
 #import "base/check.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/time/time.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_utils.h"
+#import "ios/chrome/browser/intelligence/actuation/actuation_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -409,4 +414,39 @@ BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiDynamicSettingsEnabled() {
   return base::FeatureList::IsEnabled(kGeminiDynamicSettings);
+}
+
+BASE_FEATURE(kActuationTools, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsActuationEnabled() {
+  return base::FeatureList::IsEnabled(kActuationTools);
+}
+
+bool IsActionDisabled(optimization_guide::proto::Action::ActionCase action) {
+  if (!IsActuationEnabled()) {
+    return true;
+  }
+
+  std::optional<std::string> action_name = ActuationActionCaseToString(action);
+  if (!action_name) {
+    // Don't support actions that aren't in the proto.
+    return true;
+  }
+
+  std::string disabled_actions = base::GetFieldTrialParamValueByFeature(
+      kActuationTools, "DisabledActions");
+  if (disabled_actions.empty()) {
+    return false;
+  }
+
+  std::vector<std::string> disabled_list = base::SplitString(
+      disabled_actions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& disabled_action : disabled_list) {
+    if (disabled_action == *action_name) {
+      return true;
+    }
+  }
+
+  return false;
 }

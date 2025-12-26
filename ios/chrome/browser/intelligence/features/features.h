@@ -6,10 +6,15 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
 #import "base/feature_list.h"
+#import "ios/chrome/browser/intelligence/actuation/actuation_util.h"
 
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace optimization_guide::proto {
+class Action;
+}  // namespace optimization_guide::proto
 
 class PrefService;
 
@@ -292,8 +297,16 @@ bool IsGeminiPersonalizationEnabled();
 BASE_DECLARE_FEATURE(kGeminiCopresence);
 bool IsGeminiCopresenceEnabled();
 
-// Feature flag for  Gemini Dynamic Settings.
+// Feature flag for Gemini Dynamic Settings.
 BASE_DECLARE_FEATURE(kGeminiDynamicSettings);
 bool IsGeminiDynamicSettingsEnabled();
+
+// Feature flag for Actuation tools.
+BASE_DECLARE_FEATURE(kActuationTools);
+bool IsActuationEnabled();
+
+// Returns true if the specified action is disabled via the "DisabledActions"
+// feature parameter of the `kActuationTools` feature.
+bool IsActionDisabled(optimization_guide::proto::Action::ActionCase action);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

@@ -324,6 +324,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/intelligence/bwg/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/model:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/ui:unit_tests",
+    "//ios/chrome/browser/intelligence/features:unit_tests",
     "//ios/chrome/browser/intelligence/persist_tab_context/model:unit_tests",
     "//ios/chrome/browser/intelligence/proto_wrappers:unit_tests",
     "//ios/chrome/browser/intents/model:unit_tests",
