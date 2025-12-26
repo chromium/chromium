@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -226,6 +227,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       threadUrl = url.url;
       this.$.composebox.clearInputAndFocus();
     }
+
+    // Check if the initial render should be zero state.
+    const threadUrlAsUrl = new URL(threadUrl);
+    const {isZeroState} = await this.browserProxy_.handler.isZeroState(
+        {url: threadUrlAsUrl.href} as Url);
+    this.isZeroState_ = isZeroState;
 
     // The thread URL is considered pending (not loaded immediately in the
     // webview) until oauth tokens are received from the WebUI controller. This

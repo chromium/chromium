@@ -715,21 +715,6 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
       contextual_tasks_service_(contextual_tasks_service),
       task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
 
-void ContextualTasksUI::FrameNavObserver::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!ui_service_ || !contextual_tasks_service_) {
-    return;
-  }
-
-  const GURL& url = navigation_handle->GetURL();
-
-  // This is a zero state if there is no query in the AIM page.
-  std::string query_value;
-  net::GetValueForKeyInQuery(url, "q", &query_value);
-  task_info_delegate_->OnZeroStateChange(
-      /*is_zero_state=*/query_value.empty() && ui_service_->IsAiUrl(url));
-}
-
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!ui_service_ || !contextual_tasks_service_) {
@@ -747,6 +732,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   const GURL& url = navigation_handle->GetURL();
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
+
+  // Set whether this navigation is to a zero state so the UI can adjust
+  // accordingly.
+  const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
+  task_info_delegate_->OnZeroStateChange(is_zero_state);
 
   bool is_url_changed = false;
   if (url != last_committed_url_) {
@@ -841,6 +831,14 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
                                task_info_delegate_->GetTaskId().value(),
                                task_info_delegate_->IsShownInTab());
   }
+}
+
+bool ContextualTasksUI::IsZeroState(
+    const GURL& url,
+    contextual_tasks::ContextualTasksUiService* ui_service) {
+  std::string query_value;
+  net::GetValueForKeyInQuery(url, "q", &query_value);
+  return ui_service->IsAiUrl(url) && query_value.empty();
 }
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(

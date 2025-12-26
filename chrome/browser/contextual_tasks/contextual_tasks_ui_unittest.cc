@@ -553,13 +553,16 @@ TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
         embedded_web_contents_.get(), service_for_nav_.get(),
         contextual_tasks_service_.get(), &delegate);
 
+    EXPECT_EQ(
+        ContextualTasksUI::IsZeroState(test_case.url, service_for_nav_.get()),
+        test_case.expected_is_zero_state);
     EXPECT_CALL(delegate, OnZeroStateChange(test_case.expected_is_zero_state))
         .Times(1);
 
     std::unique_ptr<content::MockNavigationHandle> nav_handle =
         CreateMockNavigationHandle(test_case.url);
 
-    observer->DidStartNavigation(nav_handle.get());
+    observer->DidFinishNavigation(nav_handle.get());
   }
 }
 

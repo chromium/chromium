@@ -108,6 +108,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'getThreadUrl',
       'getUrlForTask',
       'isShownInTab',
+      'isZeroState',
       'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
       'onTabClickedFromSourcesMenu',
@@ -158,6 +159,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   isShownInTab() {
     this.methodCalled('isShownInTab');
     return Promise.resolve({isInTab: this.isInTab_});
+  }
+
+  isZeroState(url: Url) {
+    this.methodCalled('isZeroState', url);
+    return Promise.resolve({isZeroState: false});
   }
 
   openMyActivityUi() {
