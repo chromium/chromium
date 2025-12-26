@@ -73,7 +73,7 @@ constexpr char kVisualRequestIdQueryParameterKey[] = "vsrid";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
-constexpr char kLnsSurfaceParameterValue[] = "47";
+constexpr char kLnsSurfaceParameterValue[] = "42";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("ntp_composebox_query_controller", R"(
@@ -727,7 +727,7 @@ ComposeboxQueryController::CreateEndpointFetcher(
 lens::LensOverlayClientContext ComposeboxQueryController::CreateClientContext()
     const {
   lens::LensOverlayClientContext context;
-  context.set_surface(lens::SURFACE_CHROME_NTP);
+  context.set_surface(lens::SURFACE_LENS_OVERLAY);
   context.set_platform(lens::PLATFORM_LENS_OVERLAY);
   context.mutable_client_filters()->add_filter()->set_filter_type(
       lens::AUTO_FILTER);
