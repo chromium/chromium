@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 // Tests the menu item state for an extension that did not request access to
 // the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_RestrictedSite) {
+                       GetMenuEntryState_RestrictedSite) {
   // Add an extension that requests site access.
   auto extension = AddExtensionWithHostPermission("Extension", "<all_urls>");
 
@@ -751,17 +751,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // User cannot customize the extension's site access. Thus site access toggle
   // and site permissions button are always hidden.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an extension that did not request access to
 // the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_PolicyBlockedSite) {
+                       GetMenuEntryState_PolicyBlockedSite) {
   // Add an extension that requests site access.
   auto extension = AddExtensionWithHostPermission("Extension", "<all_urls>");
 
@@ -774,21 +774,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is disabled. We leave them visible because
   //   enterprise extensions can still have access to the site, but disabled
   //   because site access cannot be changed.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text, u"No access needed");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text, u"No access needed");
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"No access needed");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text, u"");
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text, u"");
 }
 
 // Tests the menu item state for an extension that did not request access to
 // the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_NoSiteAccess) {
+                       GetMenuEntryState_NoSiteAccess) {
   // Add an extension that doesn't request access to the current site.
   auto extension = AddExtension("Simple Extension");
 
@@ -797,32 +797,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is hidden.
   //   - site permissions button is disabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text, u"No access needed");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text, u"No access needed");
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"No access needed");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text, u"");
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text, u"");
 
   // When site setting is set to 'block all extensions':
   //   - site access toggle is hidden.
   //   - site permissions button is hidden
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an extension that has withheld access to the
 // current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_WithheldSiteAccess) {
+                       GetMenuEntryState_WithheldSiteAccess) {
   // Add an extension that requests access, and withhold its access.
   auto extension =
       AddExtensionWithHostPermission("Extension", "*://example.com/*");
@@ -834,19 +834,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is enabled and off.
   //   - site permissions button is enabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_FALSE(menu_item_state.site_access_toggle.is_on);
-  EXPECT_EQ(menu_item_state.site_access_toggle.tooltip_text,
+  EXPECT_FALSE(menu_entry_state.site_access_toggle.is_on);
+  EXPECT_EQ(menu_entry_state.site_access_toggle.tooltip_text,
             u"Not allowed on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Ask on every visit");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Ask on every visit. Select to change site permissions");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Change site permissions");
 
   // When site setting is set to 'block all extensions':
@@ -854,17 +854,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is hidden
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an extension that has granted access to the
 // current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_GrantedSiteAccess) {
+                       GetMenuEntryState_GrantedSiteAccess) {
   // Add an extension that requests access to a specific site.
   auto extension =
       AddExtensionWithHostPermission("Extension", "*://example.com/*");
@@ -874,19 +874,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is enabled and on.
   //   - site permissions button is enabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_TRUE(menu_item_state.site_access_toggle.is_on);
-  EXPECT_EQ(menu_item_state.site_access_toggle.tooltip_text,
+  EXPECT_TRUE(menu_entry_state.site_access_toggle.is_on);
+  EXPECT_EQ(menu_entry_state.site_access_toggle.tooltip_text,
             u"Allowed on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on this site. Select to change site permissions");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Change site permissions");
 
   // When site setting is set to 'block all extensions':
@@ -894,17 +894,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is hidden
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an extension that has grant access to all
 // sites.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_GrantedBroadSiteAccess) {
+                       GetMenuEntryState_GrantedBroadSiteAccess) {
   // Add an extension that requests access to a specific site.
   auto extension = AddExtensionWithHostPermission("Extension", "<all_urls>");
 
@@ -913,19 +913,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is enabled and on.
   //   - site permissions button is enabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_TRUE(menu_item_state.site_access_toggle.is_on);
-  EXPECT_EQ(menu_item_state.site_access_toggle.tooltip_text,
+  EXPECT_TRUE(menu_entry_state.site_access_toggle.is_on);
+  EXPECT_EQ(menu_entry_state.site_access_toggle.tooltip_text,
             u"Allowed on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on all sites");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on all sites. Select to change site permissions");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Change site permissions");
 
   // When site setting is set to 'block all extensions':
@@ -933,17 +933,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is hidden
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an extension that did not requested access to
 // the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_NoSiteAccess_Enterprise) {
+                       GetMenuEntryState_NoSiteAccess_Enterprise) {
   // Add an extension that doesn't request access to the current site.
   auto extension = AddEnterpriseExtension("Extension", /*permissions=*/{},
                                           /*host_permissions=*/{});
@@ -953,15 +953,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is hidden
   //   - site permissions button is disabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text, u"No access needed");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text, u"No access needed");
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"No access needed. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 
   // When site setting is set to 'block all extensions':
@@ -969,17 +969,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is hidden
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
 }
 
 // Tests the menu item state for an enterprise extension that has withheld
 // access to a specific site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_WithheldSiteAccess_Enterprise) {
+                       GetMenuEntryState_WithheldSiteAccess_Enterprise) {
   // Add an extension that request access active tab access.
   auto extension = AddEnterpriseExtension(
       "Extension", /*permissions=*/{"activeTab"}, /*host_permissions=*/{});
@@ -989,16 +989,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is hidden
   //   - site permissions button is disabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Ask on every visit");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Ask on every visit. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 
   // When site setting is set to 'block all extensions':
@@ -1006,23 +1006,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is disabled.
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Ask on every visit");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Ask on every visit. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 }
 
 // Tests the menu item state for an enterprise extension that requests access to
 // a specific site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_GrantedSiteAccess_Enterprise) {
+                       GetMenuEntryState_GrantedSiteAccess_Enterprise) {
   // Add an extension that request access to all sites.
   auto extension =
       AddEnterpriseExtension("Extension", /*permissions=*/{},
@@ -1033,16 +1033,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is hidden
   //   - site permissions button is disabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on this site. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 
   // When site setting is set to 'block all extensions':
@@ -1050,23 +1050,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is disabled.
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on this site");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on this site. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 }
 
 // Tests the menu item state for an enterprise extension that requests access to
 // all sites.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
-                       GetMenuItemState_GrantedBroadSiteAccess_Enterprise) {
+                       GetMenuEntryState_GrantedBroadSiteAccess_Enterprise) {
   // Add an extension that request access to all sites.
   auto extension = AddEnterpriseExtension("Extension", /*permissions=*/{},
                                           /*host_permissions=*/{"<all_urls>"});
@@ -1076,16 +1076,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // When site setting is set to 'customize by extension' (default):
   //   - site access toggle is hidden
   //   - site permissions button is disabled.
-  auto menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  auto menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on all sites");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on all sites. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 
   // When site setting is set to 'block all extensions':
@@ -1093,16 +1093,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   //   - site permissions button is disabled.
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  menu_item_state = menu_model()->GetMenuItemState(extension->id());
-  EXPECT_EQ(menu_item_state.site_access_toggle.status,
+  menu_entry_state = menu_model()->GetMenuEntryState(extension->id());
+  EXPECT_EQ(menu_entry_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  EXPECT_EQ(menu_item_state.site_permissions_button.status,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.status,
             ExtensionsMenuViewModel::ControlState::Status::kDisabled);
-  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.text,
             u"Always on all sites");
-  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"Always on all sites. Installed by your administrator");
-  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+  EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Installed by your administrator");
 }
 

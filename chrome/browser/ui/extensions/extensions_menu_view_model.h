@@ -177,13 +177,13 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     ControlState toggle;
   };
 
-  // Holds the information about how the extension's menu item should look like.
-  // This will be used by the platform delegate as needed.
-  struct MenuItemState {
-    MenuItemState();
-    MenuItemState(const MenuItemState&);
-    MenuItemState& operator=(const MenuItemState&);
-    ~MenuItemState();
+  // Holds the information about how the extension's menu entry should look
+  // like. This will be used by the platform delegate as needed.
+  struct MenuEntryState {
+    MenuEntryState();
+    MenuEntryState(const MenuEntryState&);
+    MenuEntryState& operator=(const MenuEntryState&);
+    ~MenuEntryState();
 
     // The state for the context menu button.
     ControlState context_menu_button;
@@ -255,7 +255,7 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
       const extensions::ExtensionId& extension_id);
 
   // Returns the menu item state for an extension.
-  MenuItemState GetMenuItemState(const extensions::ExtensionId& extension_id);
+  MenuEntryState GetMenuEntryState(const extensions::ExtensionId& extension_id);
 
   // Returns the optional section to display in the menu.
   OptionalSection GetOptionalSection();

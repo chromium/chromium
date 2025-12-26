@@ -45,11 +45,12 @@ class ExtensionsMenuMainPageView : public views::View {
   const ExtensionsMenuMainPageView& operator=(
       const ExtensionsMenuMainPageView&) = delete;
 
-  // Creates and adds a menu item for `model` at `index` for a newly-added
-  // extension.
-  void CreateAndInsertMenuItem(ExtensionActionViewModel* model,
-                               ExtensionsMenuViewModel::MenuItemState menu_item,
-                               int index);
+  // Creates and adds a menu entry for `action_model` with `entry_state` at
+  // `index` for a newly-added extension.
+  void CreateAndInsertMenuEntry(
+      ExtensionActionViewModel* action_model,
+      ExtensionsMenuViewModel::MenuEntryState entry_state,
+      int index);
 
   // Removes the menu item at `index`.
   void RemoveMenuItem(int index);

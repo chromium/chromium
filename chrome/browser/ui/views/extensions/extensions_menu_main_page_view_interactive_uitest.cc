@@ -163,8 +163,8 @@ class ExtensionsMenuMainPageViewInteractiveUITest
   // Opens menu on "main page" by default.
   void ShowMenu();
 
-  // Asserts there is exactly one menu item and then returns it.
-  ExtensionsMenuEntryView* GetOnlyMenuItem();
+  // Asserts there is exactly one menu entry and then returns it.
+  ExtensionsMenuEntryView* GetOnlyMenuEntry();
 
   // Returns the extension ids in the message section. If it's empty,
   // the section displaying the extensions requesting site access is not
@@ -199,13 +199,13 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
 }
 
 ExtensionsMenuEntryView*
-ExtensionsMenuMainPageViewInteractiveUITest::GetOnlyMenuItem() {
-  std::vector<ExtensionsMenuEntryView*> items = menu_entries();
-  if (items.size() != 1u) {
-    ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
+ExtensionsMenuMainPageViewInteractiveUITest::GetOnlyMenuEntry() {
+  std::vector<ExtensionsMenuEntryView*> entries = menu_entries();
+  if (entries.size() != 1u) {
+    ADD_FAILURE() << "Not exactly one entry; size is: " << entries.size();
     return nullptr;
   }
-  return *items.begin();
+  return *entries.begin();
 }
 
 std::vector<extensions::ExtensionId>
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   ShowUi("");
   const views::View* reload_section = main_page()->reload_section();
   const views::View* requests_section = main_page()->requests_section();
-  ExtensionsMenuEntryView* menu_item = GetOnlyMenuItem();
+  ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
 
   // Verify user site setting is "customize by extension" (default) and
   // the extension has "on click" site access.
@@ -417,8 +417,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   //   - reload section is hidden.
   //   - requests section is visible and has extension.
   //   - request access button, in the toolbar, includes extension.
-  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
@@ -431,9 +431,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   //   - reload section is hidden.
   //   - requests section is hidden
   //   - request access button, in the toolbar, does not include extension.
-  ClickButton(menu_item->primary_action_button_for_testing());
-  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  ClickButton(menu_entry->primary_action_button_for_testing());
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
@@ -450,15 +450,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   reload_section = main_page()->reload_section();
   requests_section = main_page()->requests_section();
-  menu_item = GetOnlyMenuItem();
+  menu_entry = GetOnlyMenuEntry();
 
   // When navigating back to the original site, after a cross-origin navigation:
   //   - site access toggle is visible and off.
   //   - reload section is hidden.
   //   - requests section is hidden.
   //   - request access button, in the toolbar, does not include extension.
-  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
@@ -632,14 +632,14 @@ class ExtensionsMenuMainPageViewInteractiveTest
   }
 
   // Opens the context menu for `extension_id` by pressing the context menu
-  // button on `menu_item_element_id` corresponding to the given extension.
+  // button on `menu_entry_element_id` corresponding to the given extension.
   auto OpenContextMenu(const extensions::ExtensionId& extension_id,
-                       ui::ElementIdentifier menu_item_element_id) {
+                       ui::ElementIdentifier menu_entry_element_id) {
     constexpr char kExtensionContextMenuButton[] =
         "extension_context_menu_button";
     return Steps(
-        // Open the extension's context menu from its menu item.
-        NameDescendantViewByType<HoverButton>(menu_item_element_id,
+        // Open the extension's context menu from its menu entry.
+        NameDescendantViewByType<HoverButton>(menu_entry_element_id,
                                               kExtensionContextMenuButton, 1u),
         PressButton(kExtensionContextMenuButton),
 
@@ -653,30 +653,30 @@ class ExtensionsMenuMainPageViewInteractiveTest
             true));
   }
 
-  // Clicks on the menu item button corresponding to `extension`.
-  auto PressExtensionMenuItemButton(const extensions::Extension& extension) {
-    constexpr char kExtensionMenuItemActionButton[] =
-        "extension_menu_item_action_button";
+  // Clicks on the menu entry button corresponding to `extension`.
+  auto PressExtensionMenuEntryButton(const extensions::Extension& extension) {
+    constexpr char kExtensionMenuEntryActionButton[] =
+        "extension_menu_entry_action_button";
 
     return Steps(
         CheckView(kExtensionsMenuEntryViewElementId,
-                  [&extension](ExtensionsMenuEntryView* menu_item) {
-                    return menu_item->extension_id() == extension.id();
+                  [&extension](ExtensionsMenuEntryView* menu_entry) {
+                    return menu_entry->extension_id() == extension.id();
                   }),
         NameDescendantViewByType<ExtensionsMenuButton>(
-            kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
-        PressButton(kExtensionMenuItemActionButton));
+            kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+        PressButton(kExtensionMenuEntryActionButton));
   }
 
   // Selects the `page_access_command_id` in the extension's context menu opened
-  // from `menu_item_element_id` corresponding to the given extension.
+  // from `menu_entry_element_id` corresponding to the given extension.
   auto SelectSiteAccessUsingContextMenu(
       const extensions::ExtensionId& extension_id,
-      ui::ElementIdentifier menu_item_element_id,
+      ui::ElementIdentifier menu_entry_element_id,
       extensions::PermissionsManager::UserSiteAccess site_access,
       ui::test::StateIdentifier<PermissionsUpdatesObserver> state_identifier) {
     return Steps(
-        OpenContextMenu(extension_id, menu_item_element_id),
+        OpenContextMenu(extension_id, menu_entry_element_id),
         SelectMenuItem(
             extensions::ExtensionContextMenuModel::kPageAccessMenuItem),
         SelectMenuItem(GetSiteAccessCommandId(site_access)),
@@ -739,7 +739,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
         expected_site_interaction);
   }
 
-  // Returns the menu item entry for `extension_id` in the menu's main page, if
+  // Returns the menu entry entry for `extension_id` in the menu's main page, if
   // existent.
   ExtensionsMenuEntryView* GetMenuEntryViewFor(
       const extensions::ExtensionId& extension_id) {
@@ -821,8 +821,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Open the extension's context menu.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionsMenuEntryViewElementId),
 
@@ -842,8 +842,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        TriggeringExtensionClosesMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
 
   // This test should not use a popped-out action, as we want to make sure that
   // the menu closes on its own and not because a popup dialog replaces it.
@@ -856,12 +856,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       OpenExtensionsMenu(),
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
-      PressButton(kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension menu is closed.
       WaitForHide(kExtensionsMenuMainPageElementId),
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        InvocationSourceMetrics) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kMenuItemActionButton[] = "menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] = "menu_entry_action_button";
 
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("uitest/extension_with_action_and_command"));
@@ -891,12 +891,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       OpenExtensionsMenu(),
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kMenuItemActionButton),
-      PressButton(kMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       Do([&]() {
         histogram_tester.ExpectTotalCount("Extensions.Toolbar.InvocationSource",
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   // fixed.
 }
 
-// Tests that clicking on the extension menu item for an extension with a popup
+// Tests that clicking on the extension menu entry for an extension with a popup
 // pops out its action on the toolbar and loads the popup, and when the popup
 // is dismissed the popup is closed and the action pops in on the toolbar.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
@@ -920,8 +920,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ExtensionHostObserver,
                                       kExtensionHostState);
 
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
 
@@ -931,15 +931,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu
       // entry.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
       ObserveState(kExtensionHostState,
                    extensions::ExtensionHostRegistry::Get(profile()),
                    extension->id()),
-      PressButton(kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension's action is popped out, and the extension's popup is
       // loaded on the toolbar.
@@ -962,8 +962,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        RemoveExtensionShowingPopup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
@@ -973,12 +973,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
-      PressButton(kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension's action is popped out.
       WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
@@ -998,8 +998,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        RemoveMultipleExtensionsWhileShowingPopup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
 
   const extensions::Extension* extension_A =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
@@ -1013,12 +1013,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // are in alphabetical order, therefore the first
       // kExtensionsMenuEntryViewElementId match should be extension A.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension_A](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension_A->id();
+                [extension_A](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension_A->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
-      PressButton(kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension A action is popped out.
       WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
@@ -1051,8 +1051,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ExtensionHostObserver,
                                       kExtensionHostState);
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
@@ -1062,15 +1062,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
       ObserveState(kExtensionHostState,
                    extensions::ExtensionHostRegistry::Get(profile()),
                    extension->id()),
-      PressButton(kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension's action is popped out and its popup is loaded.
       WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
@@ -1112,8 +1112,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       InstrumentTab(kTab), OpenExtensionsMenu(),
       // Open the extension's context menu from the extensions menu.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionsMenuEntryViewElementId),
 
@@ -1154,8 +1154,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        UnpinnedExtensionShowsCorrectContextMenuPinOption) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionMenuItemActionButton[] =
-      "extension_menu_item_action_button";
+  constexpr char kExtensionMenuEntryActionButton[] =
+      "PressExtensionMenuEntryButton";
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
@@ -1165,12 +1165,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
-      PressButton(kExtensionMenuItemActionButton),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+      PressButton(kExtensionMenuEntryActionButton),
 
       // Verify extension appears on the toolbar and is stored as the popped out
       // action.
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        ReloadPageDialog) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionMenuItemToggle[] = "extension_menu_item_toggle";
+  constexpr char kExtensionMenuEntryToggle[] = "extension_menu_entry_toggle";
 
   // Load an extension that injects a script.
   extensions::TestExtensionDir extension_dir;
@@ -1261,12 +1261,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Revoke site access for the extension by toggling the extension off.
       CheckView(kExtensionsMenuEntryViewElementId,
-                [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->extension_id() == extension->id();
+                [extension](ExtensionsMenuEntryView* menu_entry) {
+                  return menu_entry->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<views::ToggleButton>(
-          kExtensionsMenuEntryViewElementId, kExtensionMenuItemToggle),
-      PressButton(kExtensionMenuItemToggle),
+          kExtensionsMenuEntryViewElementId, kExtensionMenuEntryToggle),
+      PressButton(kExtensionMenuEntryToggle),
 
       // Verify this causes the extension menu to close, extension's action to
       // pop out on the toolbar and the reload page dialog to appear.
@@ -1298,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       CheckActionWantsToRun(*extension, true),
 
       // Trigger the extension's action by clicking on its menu entry.
-      OpenExtensionsMenu(), PressExtensionMenuItemButton(*extension),
+      OpenExtensionsMenu(), PressExtensionMenuEntryButton(*extension),
 
       // Accept the reload dialog.
       WaitForShow(extensions::kReloadPageDialogOkButtonElementId),
@@ -1345,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
           true),
 
       // Trigger the extension's action by clicking on its menu entry.
-      OpenExtensionsMenu(), PressExtensionMenuItemButton(*extension),
+      OpenExtensionsMenu(), PressExtensionMenuEntryButton(*extension),
 
       // Accept the reload dialog.
       WaitForShow(extensions::kReloadPageDialogCancelButtonElementId),
@@ -1418,8 +1418,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       OpenExtensionsMenu(),
       CheckView(
           kExtensionsMenuEntryViewElementId,
-          [extension](ExtensionsMenuEntryView* menu_item) {
-            return menu_item->extension_id();
+          [extension](ExtensionsMenuEntryView* menu_entry) {
+            return menu_entry->extension_id();
           },
           extension->id()),
       NameDescendantViewByType<HoverButton>(kExtensionsMenuEntryViewElementId,

@@ -42,7 +42,7 @@ class ExtensionsMenuEntryView
   ~ExtensionsMenuEntryView() override;
 
   // Updates the view with the `menu_item_state`.
-  void Update(ExtensionsMenuViewModel::MenuItemState menu_item_state);
+  void Update(ExtensionsMenuViewModel::MenuEntryState menu_item_state);
 
   // Updates the context menu button given `is_action_pinned`.
   void UpdateContextMenuButton(

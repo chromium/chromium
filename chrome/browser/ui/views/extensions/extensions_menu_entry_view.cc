@@ -198,7 +198,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
 ExtensionsMenuEntryView::~ExtensionsMenuEntryView() = default;
 
 void ExtensionsMenuEntryView::Update(
-    ExtensionsMenuViewModel::MenuItemState menu_item_state) {
+    ExtensionsMenuViewModel::MenuEntryState menu_item_state) {
   site_access_toggle_->SetVisible(
       menu_item_state.site_access_toggle.status !=
       ExtensionsMenuViewModel::ControlState::Status::kHidden);

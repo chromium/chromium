@@ -184,20 +184,20 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 
 ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 
-void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
+void ExtensionsMenuMainPageView::CreateAndInsertMenuEntry(
     ExtensionActionViewModel* action_model,
-    ExtensionsMenuViewModel::MenuItemState menu_item,
+    ExtensionsMenuViewModel::MenuEntryState entry_state,
     int index) {
   auto extension_id = action_model->GetId();
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionsMenuEntryView>(
-      browser_, menu_item.is_enterprise, action_model,
+      browser_, entry_state.is_enterprise, action_model,
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
-  item->Update(menu_item);
+  item->Update(entry_state);
 
   // Add vertical spacing in between menu items.
   if (index > 0) {

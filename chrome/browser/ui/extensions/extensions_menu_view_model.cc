@@ -524,13 +524,13 @@ ExtensionsMenuViewModel::ExtensionSitePermissionsState::operator=(
 ExtensionsMenuViewModel::ExtensionSitePermissionsState::
     ~ExtensionSitePermissionsState() = default;
 
-ExtensionsMenuViewModel::MenuItemState::MenuItemState() = default;
-ExtensionsMenuViewModel::MenuItemState::MenuItemState(
-    const MenuItemState& other) = default;
-ExtensionsMenuViewModel::MenuItemState&
-ExtensionsMenuViewModel::MenuItemState::operator=(const MenuItemState&) =
+ExtensionsMenuViewModel::MenuEntryState::MenuEntryState() = default;
+ExtensionsMenuViewModel::MenuEntryState::MenuEntryState(
+    const MenuEntryState& other) = default;
+ExtensionsMenuViewModel::MenuEntryState&
+ExtensionsMenuViewModel::MenuEntryState::operator=(const MenuEntryState&) =
     default;
-ExtensionsMenuViewModel::MenuItemState::~MenuItemState() = default;
+ExtensionsMenuViewModel::MenuEntryState::~MenuEntryState() = default;
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
@@ -838,8 +838,8 @@ ExtensionsMenuViewModel::GetExtensionShowRequestsToggleState(
   return show_requests_toggle;
 }
 
-ExtensionsMenuViewModel::MenuItemState
-ExtensionsMenuViewModel::GetMenuItemState(
+ExtensionsMenuViewModel::MenuEntryState
+ExtensionsMenuViewModel::GetMenuEntryState(
     const extensions::ExtensionId& extension_id) {
   Profile* profile = browser_->GetProfile();
   ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
@@ -847,7 +847,7 @@ ExtensionsMenuViewModel::GetMenuItemState(
   CHECK(extension);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  MenuItemState menu_item;
+  MenuEntryState menu_item;
   menu_item.context_menu_button = GetContextMenuButtonState(action_model);
   menu_item.site_access_toggle = GetSiteAccessToggleState(
       *extension, *profile, *toolbar_model_, *web_contents);
