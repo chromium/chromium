@@ -95,6 +95,7 @@ export function getHtml(this: ComposeboxElement) {
           @context-menu-container-click="${this.searchboxLayoutMode === 'Compact' ?  nothing : this.focusInput}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"
+          ?show-recent-tab-chip="${false}"
           searchbox-layout-mode="${this.searchboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"

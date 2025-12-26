@@ -29,10 +29,11 @@ ${this.showContextEntrypoint_ ? html`
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
-      @add-tab-context="${this.addTabContext_}"
       .tabSuggestions="${this.tabSuggestions_}"
       ?show-dropdown="${this.hasVisibleMatches_}"
       ?show-lens-search-chip="${this.isLensSearchEligible_}"
+      ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
+      @add-tab-context="${this.addTabContext_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
       @lens-search-click="${this.onLensSearchChipClicked_}">
     ${searchboxDropdown}

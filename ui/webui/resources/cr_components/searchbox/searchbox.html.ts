@@ -43,6 +43,7 @@ export function getHtml(this: SearchboxElement) {
         @get-tab-preview="${this.getTabPreview_}"
         @context-menu-container-click="${this.onContextMenuContainerClick_}"
         ?show-dropdown="${this.dropdownIsVisible}"
+        ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
         ?show-voice-search="${this.shouldShowVoiceSearch_}"
         searchbox-layout-mode="${this.searchboxLayoutMode}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">

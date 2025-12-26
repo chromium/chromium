@@ -272,6 +272,20 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }>) {
     this.pageHandler_.addTabContext(e.detail.id, e.detail.delayUpload);
   }
+
+  protected computeShowRecentTabChip_() {
+    const input = this.result_?.input;
+    let recentTabForChip =
+        this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
+    if (!recentTabForChip) {
+      recentTabForChip =
+          this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
+    }
+    return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
+        (input?.length === 0 || recentTabForChip?.showInPreviousTabChip ||
+         input ===
+             recentTabForChip?.url.url.replace(/^https?:\/\/(?:www\.)?/, ''));
+  }
 }
 
 declare global {

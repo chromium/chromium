@@ -1224,6 +1224,11 @@ export class SearchboxElement extends SearchboxElementBase implements
     return this.result_.matches[this.selectedMatchIndex_] || null;
   }
 
+  protected computeShowRecentTabChip_(): boolean {
+    return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
+        this.result_?.input.length === 0;
+  }
+
   protected computePlaceholderText_(placeholderText: string): string {
     if (placeholderText) {
       return placeholderText;
