@@ -126,6 +126,11 @@ const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
     "EnableExpandedComposeboxVoiceSearch",
     true);
 
+const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
+    &kContextualTasks,
+    "AutoSubmitVoiceSearchQuery",
+    false);
+
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
     "ContextualTasksHelpUrl",
@@ -167,6 +172,10 @@ bool GetIsExpandedComposeboxVoiceSearchEnabled() {
 
 bool GetIsSteadyComposeboxVoiceSearchEnabled() {
   return kEnableSteadyComposeboxVoiceSearch.Get();
+}
+
+bool GetAutoSubmitVoiceSearchQuery() {
+  return kAutoSubmitVoiceSearchQuery.Get();
 }
 
 bool ShouldForceGscInTabMode() {

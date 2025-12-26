@@ -2470,6 +2470,37 @@ suite('NewTabPageComposeboxTest', () => {
         'Non-collapsible should be expanded');
   });
 
+  test(
+      'voice search result with auto-submit disabled updates input',
+      async () => {
+        // Set loadTimeData so that voice search does not auto submit.
+        loadTimeData.overrideValues({
+          autoSubmitVoiceSearchQuery: false,
+          expandedComposeboxShowVoiceSearch: true,
+          steadyComposeboxShowVoiceSearch: true,
+          composeboxShowZps: true,  // For predictable queryAutocomplete count.
+        });
+        createComposeboxElement();
+        await microtasksFinished();
+        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        const voiceQuery = 'hello';
+        composeboxElement.$.voiceSearch.dispatchEvent(new CustomEvent(
+            'voice-search-final-result',
+            {detail: voiceQuery, bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        // Assertions.
+        assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+        assertEquals(composeboxElement.$.input.value, voiceQuery);
+        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+        assertFalse(composeboxElement.$.input.hidden);
+        assertEquals(
+            composeboxElement.shadowRoot.activeElement,
+            composeboxElement.$.input);
+        assertTrue((composeboxElement as any).submitEnabled_);
+      });
+
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
