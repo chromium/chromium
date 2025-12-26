@@ -192,7 +192,7 @@ void OmniboxPopupUI::BindInterface(
       std::move(pending_page_handler),
       metrics_reporter_service->metrics_reporter(), omnibox_controller,
       web_ui(),
-      base::BindRepeating(&OmniboxPopupUI::GetContextualSessionHandle,
+      base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
   omnibox_handler_->SetEmbedder(embedder());
 }
@@ -206,7 +206,7 @@ void OmniboxPopupUI::BindInterface(
 }
 
 contextual_search::ContextualSearchSessionHandle*
-OmniboxPopupUI::GetContextualSessionHandle() {
+OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
   if (!shared_session_handle_) {
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_);
@@ -242,7 +242,7 @@ void OmniboxPopupUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler), profile_,
       web_ui()->GetWebContents(),
-      base::BindRepeating(&OmniboxPopupUI::GetContextualSessionHandle,
+      base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.

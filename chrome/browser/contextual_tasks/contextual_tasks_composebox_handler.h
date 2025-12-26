@@ -51,7 +51,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
-          pending_searchbox_handler);
+          pending_searchbox_handler,
+      GetSessionHandleCallback get_session_callback);
   ~ContextualTasksComposeboxHandler() override;
 
   // composebox::mojom::PageHandler:

@@ -995,7 +995,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), profile_, web_contents(),
-      base::BindRepeating(&NewTabPageUI::GetContextualSessionHandle,
+      base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 }
 
@@ -1205,7 +1205,7 @@ void NewTabPageUI::CreatePageHandler(
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler), profile_, web_contents(),
-      base::BindRepeating(&NewTabPageUI::GetContextualSessionHandle,
+      base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
@@ -1273,7 +1273,7 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
 }
 
 contextual_search::ContextualSearchSessionHandle*
-NewTabPageUI::GetContextualSessionHandle() {
+NewTabPageUI::GetOrCreateContextualSessionHandle() {
   if (!shared_session_handle_) {
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_);

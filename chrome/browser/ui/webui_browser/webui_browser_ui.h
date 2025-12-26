@@ -98,10 +98,10 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-  // Returns a reference to the owned contextual search session handle for
-  // `realbox_handler_`.
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for `realbox_handler_`.
   contextual_search::ContextualSearchSessionHandle*
-  GetContextualSessionHandle();
+  GetOrCreateContextualSessionHandle();
   // webui_browser::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<webui_browser::mojom::Page> page,

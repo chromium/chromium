@@ -110,6 +110,19 @@ std::string GetEncodedHandshakeMessage() {
   message.SerializeToArray(&serialized_message[0], size);
   return base::Base64Encode(serialized_message);
 }
+
+// Attempts to take ownership of a session handle from the WebContents helper
+// and return it. Returns nullptr if no helper or session handle is available.
+std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+TryTakeSessionHandleFromWebContents(content::WebUI* web_ui) {
+  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+      web_ui->GetWebContents());
+  if (helper && helper->session_handle()) {
+    return helper->TakeSessionHandle();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 void AddDefaultZeroStateStrings(content::WebUIDataSource* source) {
@@ -316,25 +329,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   AddZeroStateStrings(source, profile);
 
-  // Check if a session handle was provided through the web contents. If so,
-  // take ownership. Otherwise create a new session.
-  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-      web_ui->GetWebContents());
-  if (helper && helper->session_handle()) {
-    session_handle_ = helper->TakeSessionHandle();
-  } else {
-    auto* service = ContextualSearchServiceFactory::GetForProfile(
-        Profile::FromWebUI(web_ui));
-    if (service) {
-      session_handle_ = service->CreateSession(
-          ntp_composebox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kContextualTasks);
-      // TODO(crbug.com/469875164): Determine what to do with the return value
-      // of this call, or move this call to a different location.
-      session_handle_->CheckSearchContentSharingSettings(
-          Profile::FromWebUI(web_ui)->GetPrefs());
-    }
-  }
+  // Take ownership of a session handle if one was already provided. Otherwise,
+  // one will be lazily created in GetOrCreateContextualSessionHandle().
+  session_handle_ = TryTakeSessionHandleFromWebContents(web_ui);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -506,12 +503,34 @@ void ContextualTasksUI::CreatePageHandler(
   composebox_handler_ = std::make_unique<ContextualTasksComposeboxHandler>(
       this, Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler));
+      std::move(pending_searchbox_handler),
+      base::BindRepeating(
+          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+          base::Unretained(this)));
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
 contextual_search::ContextualSearchSessionHandle*
-ContextualTasksUI::GetContextualSessionHandle() {
+ContextualTasksUI::GetOrCreateContextualSessionHandle() {
+  if (!session_handle_) {
+    // Take ownership of a session handle if one was already provided. The
+    // session handle may have been set in the WebContents helper by Lens after
+    // `this` is initialized. Otherwise, create a new session.
+    session_handle_ = TryTakeSessionHandleFromWebContents(web_ui());
+    if (!session_handle_) {
+      auto* service = ContextualSearchServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()));
+      if (service) {
+        session_handle_ = service->CreateSession(
+            ntp_composebox::CreateQueryControllerConfigParams(),
+            contextual_search::ContextualSearchSource::kContextualTasks);
+        // TODO(crbug.com/469875164): Determine what to do with the return value
+        // of this call, or move this call to a different location.
+        session_handle_->CheckSearchContentSharingSettings(
+            Profile::FromWebUI(web_ui())->GetPrefs());
+      }
+    }
+  }
   return session_handle_.get();
 }
 
@@ -633,14 +652,14 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
     return;
   }
 
-  if (!GetContextualSessionHandle()) {
+  if (!GetOrCreateContextualSessionHandle()) {
     return;
   }
 
   auto context_decoration_params =
       std::make_unique<contextual_tasks::ContextDecorationParams>();
   context_decoration_params->contextual_search_session_handle =
-      GetContextualSessionHandle()->AsWeakPtr();
+      GetOrCreateContextualSessionHandle()->AsWeakPtr();
   context_controller_->GetContextForTask(
       GetTaskId().value(),
       {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},

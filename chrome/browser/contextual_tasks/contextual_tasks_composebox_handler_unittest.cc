@@ -187,7 +187,10 @@ class ContextualTasksComposeboxHandlerTest
         mock_ui_.get(), profile(), web_contents(),
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mojo::PendingRemote<composebox::mojom::Page>(),
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>());
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        base::BindRepeating(
+            &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+            base::Unretained(mock_ui_.get())));
     handler_->SetMockController(mock_tasks_controller_ptr_);
 
     // Setup MockTabContextualizationController

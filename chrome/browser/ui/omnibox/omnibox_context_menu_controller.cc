@@ -173,9 +173,10 @@ OmniboxContextMenuController::GetRecentTabs() {
   std::vector<OmniboxContextMenuController::TabInfo> tabs;
 
   std::vector<contextual_search::FileInfo> uploaded_file_infos;
-  auto* session_handle = GetOmniboxPopupUI()
-                             ? GetOmniboxPopupUI()->GetContextualSessionHandle()
-                             : nullptr;
+  auto* session_handle =
+      GetOmniboxPopupUI()
+          ? GetOmniboxPopupUI()->GetOrCreateContextualSessionHandle()
+          : nullptr;
   if (session_handle) {
     uploaded_file_infos = session_handle->GetUploadedContextFileInfos();
   }
@@ -450,7 +451,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   const omnibox::ChromeAimToolsAndModels aim_tool_mode =
       omnibox_popup_ui->composebox_handler()->GetAimToolMode();
 
-  auto* session_handle = omnibox_popup_ui->GetContextualSessionHandle();
+  auto* session_handle = omnibox_popup_ui->GetOrCreateContextualSessionHandle();
   std::vector<contextual_search::FileInfo> file_infos;
   if (session_handle) {
     file_infos = session_handle->GetUploadedContextFileInfos();

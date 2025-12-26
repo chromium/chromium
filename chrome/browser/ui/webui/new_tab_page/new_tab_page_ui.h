@@ -325,10 +325,10 @@ class NewTabPageUI
   // type of NTP promos can be shown, if any.
   std::string_view GetNtpPromoType();
 
-  // Returns a reference to the owned contextual search session handle for
-  // `realbox_handler_` and `composebox_handler_`.
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for `realbox_handler_` and `composebox_handler_`.
   contextual_search::ContextualSearchSessionHandle*
-  GetContextualSessionHandle();
+  GetOrCreateContextualSessionHandle();
 
   // The counter for NewTabPage.Count UMA metrics.
   static int instance_count_;

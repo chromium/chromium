@@ -284,7 +284,7 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   }
 
   contextual_search::ContextualSearchSessionHandle* handle =
-      web_ui_controller_->GetContextualSessionHandle();
+      web_ui_controller_->GetOrCreateContextualSessionHandle();
 
   std::vector<contextual_search::FileInfo> submitted_context;
   if (handle) {
