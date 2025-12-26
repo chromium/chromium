@@ -7127,7 +7127,6 @@
     "ContextualTasksContext": [
         {
             "platforms": [
-                "chromeos",
                 "linux",
                 "mac",
                 "windows"
@@ -7136,7 +7135,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ContextualTasksContext"
+                        "ContextualTasksContext",
+                        "ContextualTasksContextLogging",
+                        "ContextualTasksContextMqlsLogging"
                     ]
                 }
             ]
