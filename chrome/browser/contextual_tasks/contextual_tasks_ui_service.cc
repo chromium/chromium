@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/account_utils.h"
@@ -395,14 +396,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   bool is_nav_to_sign_in = IsSignInDomain(url_params.url);
 
-  BrowserWindowInterface* browser = nullptr;
-  if (source_contents) {
-    BrowserWindow* window =
-        BrowserWindow::FindBrowserWindowWithWebContents(source_contents);
-    if (window) {
-      browser = window->AsBrowserView()->browser();
-    }
-  }
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface()
+          : webui::GetBrowserWindowInterface(source_contents);
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
