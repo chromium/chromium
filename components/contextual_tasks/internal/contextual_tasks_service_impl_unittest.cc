@@ -1737,4 +1737,24 @@ TEST_F(ContextualTasksServiceImplEphemeralOnlyTest, CreateTask) {
   EXPECT_TRUE(GetTasks().empty());
 }
 
+// Regression test for https://crbug.com/470110337
+TEST_F(ContextualTasksServiceImplTest,
+       AssociateTabWithTask_SelfAssociationCrash_crbug_470110337) {
+  ContextualTask task = service_->CreateTask();
+  SessionID tab_id = SessionID::FromSerializedValue(1);
+
+  // 1. Associate tab.
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+
+  // The original bug relied on the task being "empty" (no threads) so that
+  // disassociation would trigger deletion. If this assertion fails in the
+  // future, the test is no longer valid for this regression.
+  ASSERT_FALSE(GetTaskById(task.GetTaskId())->GetThread().has_value());
+
+  // 2. Re-associate same tab.
+  // Previously, re-associating an empty task triggered a disassociate -> delete
+  // cycle while holding an iterator, causing a Use-After-Free.
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+}
+
 }  // namespace contextual_tasks
