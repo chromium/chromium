@@ -218,12 +218,6 @@ cr-button#entrypoint.ai-mode-button {
   }
 }
 
-@media (forced-colors: active) {
-  #entrypoint {
-    background-color: ButtonText;
-  }
-}
-
 @keyframes hover-background-delay {
   to {
     --cr-hover-background-color: var(
@@ -387,4 +381,16 @@ cr-button#entrypoint.ai-mode-button {
 #multi-tab-check {
   --iron-icon-fill-color: white;
   background-color: var(--color-composebox-tab-selector-button-selected);
+}
+
+@media (forced-colors: active) {
+  #entrypoint:not([disabled]) {
+    --cr-button-text-color: ButtonText;
+    --cr-icon-button-fill-color: ButtonText;
+  }
+  #entrypoint {
+    background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    box-sizing: border-box;
+  }
 }
