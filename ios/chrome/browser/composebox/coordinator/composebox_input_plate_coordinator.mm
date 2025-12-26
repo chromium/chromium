@@ -503,7 +503,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 
   _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:self.browser];
+                         browser:self.browser
+                           theme:_theme];
   _tabPickerCoordinator.delegate = _mediator;
   _tabPickerCoordinator.composeboxTabPickerHandler = self;
   [_tabPickerCoordinator start];

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
@@ -23,6 +24,19 @@
   ComposeboxTabPickerViewController* _viewController;
   // The navigation controller displaying the tab picker.
   UINavigationController* _navigationController;
+  // The theme for the composebox.
+  ComposeboxTheme* _theme;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                     theme:(ComposeboxTheme*)theme {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _theme = theme;
+  }
+
+  return self;
 }
 
 - (void)start {
@@ -39,6 +53,10 @@
   _viewController.gridViewController.mutator = _mediator;
   _viewController.gridViewController.gridProvider = _mediator;
   _viewController.composeboxTabPickerHandler = self.composeboxTabPickerHandler;
+
+  if (_theme.incognito) {
+    _viewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];

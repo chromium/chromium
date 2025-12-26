@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state.h"
 
 @protocol ComposeboxTabPickerCommands;
+@class ComposeboxTheme;
 
 // Responsible for processing the selection of tab picker.
 @protocol ComposeboxTabPickerSelectionDelegate
@@ -34,6 +35,10 @@
 // The tab picker coordinator for AIM.
 @interface ComposeboxTabPickerCoordinator
     : ChromeCoordinator <ComposeboxTabsAttachmentDelegate>
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                     theme:(ComposeboxTheme*)theme;
 
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
