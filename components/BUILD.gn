@@ -752,6 +752,8 @@ test("components_unittests") {
       "//components/headless/screen_info:unit_tests",
       "//components/legion:unit_tests",
       "//components/live_caption:unit_tests",
+
+      # TODO(crbug.com/470475787): Enable this test on Android.
       "//components/password_manager/core/browser/actor_login/internal:unit_tests",
       "//components/soda:unit_tests",
       "//components/storage_monitor:unit_tests",

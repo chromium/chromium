@@ -4,7 +4,6 @@
 
 module chrome.mojom;
 
-[EnableIfNot=is_android]
 import "chrome/common/actor.mojom";
 import "components/lens/lens_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -102,7 +101,6 @@ interface ChromeRenderFrame {
   //
   // Issuing InvokeTool() when a prior InvokeTool() request is outstanding will
   // result in kExecutorBusy.
-  [EnableIfNot=is_android]
   InvokeTool(actor.mojom.ToolInvocation request) =>
       (actor.mojom.ActionResult result);
 
@@ -117,14 +115,13 @@ interface ChromeRenderFrame {
   // or paused). (CancelTool() causes in-progress InvokeTool() calls to end with
   // kInvokeCanceled status -- it's also possible the tool finished right as
   // CancelTool() is invoked).
-  [EnableIfNot=is_android]
   CancelTool(actor.mojom.TaskId task_id);
 
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated
   // remote here to keep this consistent with navigation events. The
   // journal will record the last committed URL in the logs.
-  [EnableIfNot=is_android] StartActorJournal(
+  StartActorJournal(
     pending_associated_remote<actor.mojom.JournalClient> client);
 
   // Creates page stability monitor in the renderer to monitor for page
@@ -138,7 +135,6 @@ interface ChromeRenderFrame {
   // `task_id` identifies the ID of the active actor tool.
   // `supports_paint_stability` indicates whether to include paint stability in
   // page stability heuristics.
-  [EnableIfNot=is_android]
   CreatePageStabilityMonitor(
     pending_receiver<actor.mojom.PageStabilityMonitor> monitor,
     actor.mojom.TaskId task_id, bool supports_paint_stability);

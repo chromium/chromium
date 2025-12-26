@@ -29,6 +29,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/renderer/actor/journal.h"
+#include "chrome/renderer/actor/page_stability_monitor.h"
+#include "chrome/renderer/actor/tool_executor.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "chrome/renderer/process_state.h"
@@ -74,9 +77,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
-#include "chrome/renderer/actor/journal.h"
-#include "chrome/renderer/actor/page_stability_monitor.h"
-#include "chrome/renderer/actor/tool_executor.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -190,9 +190,7 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     : content::RenderFrameObserver(render_frame),
       translate_agent_(nullptr),
       page_text_agent_(new optimization_guide::PageTextAgent(render_frame)),
-#if !BUILDFLAG(IS_ANDROID)
       actor_journal_(std::make_unique<actor::Journal>()),
-#endif
       web_cache_impl_(web_cache_impl) {
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<chrome::mojom::ChromeRenderFrame>(base::BindRepeating(
@@ -254,7 +252,6 @@ void ChromeRenderFrameObserver::DidSetPageLifecycleState(
       translate_agent_) {
     translate_agent_->RenewPageRegistration();
   }
-#if !BUILDFLAG(IS_ANDROID)
   if (bfcache_change == blink::BFCacheStateChange::kStoredToBFCache) {
     // Reset actor state if entering the BFCache
     page_stability_monitor_.reset();
@@ -265,7 +262,6 @@ void ChromeRenderFrameObserver::DidSetPageLifecycleState(
     // from the constructor.
     actor_journal_->SendLogBuffer();
   }
-#endif
 }
 
 void ChromeRenderFrameObserver::DidFinishLoad() {
@@ -626,7 +622,6 @@ void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
   prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeRenderFrameObserver::InvokeTool(
     actor::mojom::ToolInvocationPtr request,
     InvokeToolCallback callback) {
@@ -657,8 +652,6 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
       *render_frame(), supports_paint_stability, task_id, *actor_journal_);
   page_stability_monitor_->Bind(std::move(monitor));
 }
-
-#endif
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

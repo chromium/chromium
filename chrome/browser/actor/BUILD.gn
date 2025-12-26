@@ -7,11 +7,19 @@ import("//chrome/common/features.gni")
 source_set("actor") {
   public = [
     "actor_features.h",
+    "actor_metrics.h",
     "actor_switches.h",
+    "actor_task.h",
+    "aggregated_journal.h",
   ]
   public_deps = [
+    ":types",
     "//base",
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//chrome/common:actor_webui_mojom",
+    "//components/tabs:public",
   ]
 
   if (!skip_android_unmigrated_actor_files) {
@@ -22,14 +30,11 @@ source_set("actor") {
     public += [
       "actor_keyed_service.h",
       "actor_keyed_service_factory.h",
-      "actor_metrics.h",
       "actor_navigation_throttle.h",
       "actor_policy_checker.h",
       "actor_tab_data.h",
-      "actor_task.h",
       "actor_task_metadata.h",
       "actor_util.h",
-      "aggregated_journal.h",
       "aggregated_journal_file_serializer.h",
       "aggregated_journal_in_memory_serializer.h",
       "aggregated_journal_serializer.h",
@@ -60,22 +65,17 @@ source_set("actor") {
       "tools/window_management_tool_request.h",
     ]
     public_deps += [
-      ":types",
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui:dom_node_geometry",
       "//chrome/browser/actor/ui:states",
       "//chrome/browser/password_manager/actor_login:service",
-      "//chrome/browser/profiles",
       "//chrome/browser/search",
       "//chrome/browser/subscription_eligibility",
-      "//chrome/common",
-      "//chrome/common:actor_webui_mojom",
       "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
       "//components/download/content/public",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/password_manager/core/browser/actor_login:common",
-      "//components/tabs:public",
       "//content/public/browser",
       "//content/public/common:buildflags",
       "//ui/base/unowned_user_data",
@@ -86,12 +86,17 @@ source_set("actor") {
 source_set("impl") {
   sources = [
     "actor_features.cc",
+    "actor_metrics.cc",
     "actor_switches.cc",
+    "actor_task.cc",
+    "aggregated_journal.cc",
   ]
   deps = [
     ":actor",
     "//chrome/browser/page_content_annotations:fetcher",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!skip_android_unmigrated_actor_files) {
     sources += [
@@ -99,14 +104,11 @@ source_set("impl") {
       "action_tracker_for_metrics.h",
       "actor_keyed_service.cc",
       "actor_keyed_service_factory.cc",
-      "actor_metrics.cc",
       "actor_navigation_throttle.cc",
       "actor_policy_checker.cc",
       "actor_tab_data.cc",
-      "actor_task.cc",
       "actor_task_metadata.cc",
       "actor_util.cc",
-      "aggregated_journal.cc",
       "aggregated_journal_file_serializer.cc",
       "aggregated_journal_in_memory_serializer.cc",
       "aggregated_journal_serializer.cc",
@@ -164,8 +166,6 @@ source_set("impl") {
       "tools/window_management_tool.h",
       "tools/window_management_tool_request.cc",
     ]
-
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps += [
       ":variants",
@@ -225,31 +225,33 @@ if (!skip_android_unmigrated_actor_files) {
       "//base",
     ]
   }
+}
 
-  # This target contains only type definitions that may be depended on by other
-  # headers without depending on all of :actor.
-  # This avoids dependency cycles.
-  source_set("types") {
-    sources = [
-      "actor_task_delegate.h",
-      "shared_types.cc",
-      "shared_types.h",
-    ]
-    public_deps = [
-      "//base",
-      "//chrome/common:mojo_bindings",
-      "//ui/gfx/geometry",
-    ]
-    deps = [
-      "//chrome/common",
-      "//chrome/common:actor_webui_mojom",
-      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-      "//components/password_manager/core/browser/actor_login:common",
-      "//components/tabs:public",
-      "//third_party/abseil-cpp:absl",
-    ]
-  }
+# This target contains only type definitions that may be depended on by other
+# headers without depending on all of :actor.
+# This avoids dependency cycles.
+source_set("types") {
+  sources = [
+    "actor_task_delegate.h",
+    "shared_types.cc",
+    "shared_types.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+    "//ui/gfx/geometry",
+  ]
+  deps = [
+    "//chrome/common",
+    "//chrome/common:actor_webui_mojom",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/tabs:public",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
 
+if (!skip_android_unmigrated_actor_files) {
   source_set("impl_test_support") {
     testonly = true
     sources = [

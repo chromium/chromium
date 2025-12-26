@@ -630,6 +630,7 @@ if (is_android) {
       "//base",
       "//chrome/common:actor_webui_mojom",
       "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+      "//components/password_manager/core/browser/actor_login:common",
       "//components/tabs:public",
       "//ui/gfx",
       "//url",

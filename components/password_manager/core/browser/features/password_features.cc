@@ -9,7 +9,7 @@
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 namespace password_manager::features {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+#if !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kActorActiveDisablesFillingOnPageLoad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -24,7 +24,7 @@ BASE_FEATURE(kActorLoginReauthTaskRefocus, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginQualityLogs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginSameSiteIframeSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAndroidSmsOtpFilling, base::FEATURE_DISABLED_BY_DEFAULT);

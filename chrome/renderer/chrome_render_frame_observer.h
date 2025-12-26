@@ -11,20 +11,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"  // nogncheck
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "chrome/renderer/actor/tool_executor.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/task_id.h"  // nogncheck
-#include "chrome/renderer/actor/tool_executor.h"
-#endif
 
 class SkBitmap;
 
@@ -128,7 +125,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void LoadBlockedPlugins(const std::string& identifier) override;
   void SetShouldDeferMediaLoad(bool should_defer) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override;
   void CancelTool(const actor::TaskId& task_id) override;
@@ -146,7 +142,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
       const actor::TaskId& task_id,
       bool supports_paint_stability) override;
-#endif
 
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();
@@ -196,9 +191,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       phishing_image_embedder_ = nullptr;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<actor::Journal> actor_journal_;
-#endif
 
   // Owned by ChromeContentRendererClient and outlive us.
   raw_ptr<web_cache::WebCacheImpl> web_cache_impl_;
@@ -208,10 +201,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   std::vector<std::u16string> webui_javascript_;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<actor::ToolExecutor> tool_executor_;
   std::unique_ptr<actor::PageStabilityMonitor> page_stability_monitor_;
-#endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 

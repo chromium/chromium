@@ -125,6 +125,14 @@ static_library("common_lib") {
     "//chrome/common/win:eventlog_messages",
   ]
   sources = [
+    "actor/action_result.cc",
+    "actor/action_result.h",
+    "actor/actor_constants.h",
+    "actor/actor_logging.h",
+    "actor/journal_details_builder.cc",
+    "actor/journal_details_builder.h",
+    "actor/page_stability_metrics_common.cc",
+    "actor/page_stability_metrics_common.h",
     "actor/task_id.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",
@@ -346,14 +354,6 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
-      "actor/action_result.cc",
-      "actor/action_result.h",
-      "actor/actor_constants.h",
-      "actor/actor_logging.h",
-      "actor/journal_details_builder.cc",
-      "actor/journal_details_builder.h",
-      "actor/page_stability_metrics_common.cc",
-      "actor/page_stability_metrics_common.h",
       "media_galleries/metadata_types.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",

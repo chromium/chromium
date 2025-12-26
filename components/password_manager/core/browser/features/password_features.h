@@ -16,7 +16,7 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Filling on pageload is disabled if an actor task is active on the tab.
 BASE_DECLARE_FEATURE(kActorActiveDisablesFillingOnPageLoad);
 BASE_DECLARE_FEATURE(kActorLogin);
@@ -34,7 +34,7 @@ BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 // Enables finding and filling forms in same-site iframes for actor login.
 BASE_DECLARE_FEATURE(kActorLoginSameSiteIframeSupport);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables filling of OTPs received via SMS on Android.

@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The code can theoretically be used on mobile too, it's just currently
+# The code can theoretically be used on iOS too, it's just currently
 # not needed. Remove the asserts if using it on mobile and remember
 # to also modify components/BUILD.gn to start building the tests.
-assert(!is_android && !is_ios)
+assert(!is_ios)
 
 # All actor_login code should be able to depend on this.
 source_set("common") {
