@@ -622,7 +622,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
         return 'os-settings:about-update-error';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-        // TODO(crbug.com/40637166): Don't use browser icons here. Fork them.
         return 'os-settings:about-update-complete';
       case UpdateStatus.DEFERRED:
       case UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
