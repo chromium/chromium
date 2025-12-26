@@ -187,16 +187,17 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       delete;
 
   void SetUp() override {
+    can_configure_network_for_testing_ =
+        NetworkUiController::SetCanConfigureNetworkForTesting(true);
     SetDeviceEnterpriseManaged();
+
+    extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
         policy_service());
 
     keyboard_controller_client_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
-
-    can_configure_network_for_testing_ =
-        NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
     auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
     network_monitor_ = network_monitor_unique->GetWeakPtr();
@@ -223,14 +224,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
     SetUpKioskAppId();
 
-    extensions::ExtensionServiceTestBase::SetUp();
-
     LoginFakeUser();
   }
 
   void TearDown() override {
+    app_launcher_ = nullptr;
+    network_monitor_.reset();
+    accelerator_controller_ = nullptr;
+    controller_.reset();
+    keyboard_controller_client_.reset();
     extensions::ExtensionServiceTestBase::TearDown();
-
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
   }
 
@@ -323,6 +326,11 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   auto& launch_done_future() { return launch_done_future_; }
 
+  void WillResetController() {
+    app_launcher_ = nullptr;
+    accelerator_controller_ = nullptr;
+  }
+
  private:
   void SetDeviceEnterpriseManaged() {
     cros_settings_test_helper().InstallAttributes()->SetCloudManaged(
@@ -380,10 +388,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<KioskLaunchController> controller_;
 
   // owned by `controller_`.
-  raw_ptr<FakeKioskAppLauncher, DanglingUntriaged> app_launcher_ = nullptr;
-  // owned by `controller_`.
+  raw_ptr<FakeKioskAppLauncher> app_launcher_ = nullptr;
   base::WeakPtr<FakeNetworkMonitor> network_monitor_;
-  // owned by `controller_`.
   raw_ptr<FakeAcceleratorController> accelerator_controller_ = nullptr;
 
   KioskAppId kiosk_app_id_;
@@ -519,7 +525,14 @@ TEST_F(KioskLaunchControllerTest, AppWindowCreatedShouldInvokeOnDoneCallback) {
   ASSERT_FALSE(app_launched_future().IsReady());
   ASSERT_FALSE(launch_done_future().IsReady());
 
-  launcher().observers().NotifyAppWindowCreated("app-name");
+  // In NotifyAppWindowCreated, controller that fixture holds will be released
+  // so we have to release just before calling the method to avoid a dangling
+  // pointer.
+  {
+    auto* launcher_ptr = &launcher();
+    WillResetController();
+    launcher_ptr->observers().NotifyAppWindowCreated("app-name");
+  }
 
   ASSERT_TRUE(app_launched_future().IsReady());
   ASSERT_TRUE(launch_done_future().IsReady());
@@ -543,6 +556,7 @@ TEST_F(KioskLaunchControllerTest, SplashScreenTimerShouldInvokeOnDoneCallback) {
   ASSERT_TRUE(app_launched_future().IsReady());
   ASSERT_FALSE(launch_done_future().IsReady());
 
+  WillResetController();
   FireSplashScreenTimer();
 
   ASSERT_TRUE(launch_done_future().IsReady());
@@ -615,6 +629,7 @@ TEST_F(KioskLaunchControllerTest,
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork));
 
+  WillResetController();
   task_environment()->FastForwardBy(base::Seconds(10));
 
   EXPECT_THAT(controller(),
@@ -653,6 +668,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
   launcher().observers().NotifyAppInstalling();
 
   // User presses the hotkey, current installation is canceled.
+  WillResetController();
   OnNetworkConfigRequested();
 
   EXPECT_THAT(controller(),
