@@ -583,7 +583,8 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
       url_duplication_helper =
           contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
-  if (context->ContainsURL(last_committed_url, url_duplication_helper.get())) {
+  if (context &&
+      context->ContainsURL(last_committed_url, url_duplication_helper.get())) {
     composebox_handler_->UpdateSuggestedTabContext(nullptr);
     return;
   }
