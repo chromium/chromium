@@ -201,13 +201,11 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxPublicKeyHash() {
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetDictPolicies(
     const base::Value::Dict& dict_policies) {
   overrides_.Set(kDevOverrideKeyDictPolicies, dict_policies.Clone());
-  overrides_.Set(kDevOverrideKeyGroupPolicies, dict_policies.Clone());
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDictPolicies() {
   overrides_.Remove(kDevOverrideKeyDictPolicies);
-  overrides_.Remove(kDevOverrideKeyGroupPolicies);
   return *this;
 }
 

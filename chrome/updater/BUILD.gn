@@ -437,10 +437,6 @@ if (is_win || is_mac || is_linux) {
         "systemd",
       ]
     }
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   if (is_mac) {
@@ -733,7 +729,6 @@ if (is_win || is_mac || is_linux) {
         deps = [ "//chrome/updater/win/installer:installer_test" ]
 
         if (is_asan) {
-          # TODO(crbug.com/367746304): Get the inputs from //build/win:runtime.
           deps += [ "//build/config/sanitizers:copy_sanitizer_runtime" ]
           inputs += [ "$root_build_dir/clang_rt.asan_dynamic-x86_64.dll" ]
         }

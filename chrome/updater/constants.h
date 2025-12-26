@@ -285,10 +285,6 @@ inline constexpr char
 #endif
 inline constexpr char kDevOverrideKeyDictPolicies[] = "dict_policies";
 
-// TODO(crbug.com/389965546): remove this once the checked-in old updater builds
-// recognize "dict_policies".
-inline constexpr char kDevOverrideKeyGroupPolicies[] = "group_policies";
-
 inline constexpr char kDevOverrideKeyOverinstallTimeout[] =
     "overinstall_timeout";
 inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =

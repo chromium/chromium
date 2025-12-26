@@ -182,12 +182,7 @@ void UninstallInThreadPool(UpdaterScope scope,
             }
             if (int result = UninstallOtherVersions(scope);
                 result != kErrorOk) {
-#if !BUILDFLAG(IS_LINUX)
-              // TODO(crbug.com/366249606): Ignores the errors when uninstalls
-              // the other versions, because currently older Linux updater on
-              // CIPD exits with error `kErrorFailedToDeleteFolder`.
               error_code = result;
-#endif
             }
             if (int result = Uninstall(scope); result != kErrorOk) {
               error_code = result;

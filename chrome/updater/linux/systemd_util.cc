@@ -33,6 +33,7 @@
 #include "chrome/updater/util/posix_util.h"
 
 namespace updater {
+
 // Allows the utility functions below to join processes. To avoid overzealously
 // granting access to |base::ScopedAllowBaseSyncPrimitives|, this class must
 // continue to live in a `.cc`.
@@ -40,13 +41,19 @@ class [[maybe_unused, nodiscard]] SystemctlLauncherScopedAllowBaseSyncPrimitives
     : public base::ScopedAllowBaseSyncPrimitives {};
 
 namespace {
+
 // Location of system-scoped unit files.
-const base::FilePath kSystemUnitDirectory("/etc/systemd/system");
+const base::FilePath::StringViewType kSystemUnitDirectory(
+    "/etc/systemd/system");
+
 // Location of user-scoped unit files relative to the user's home directory.
-const base::FilePath kUserUnitRelativeDirectory(".local/share/systemd/user");
+const base::FilePath::StringViewType kUserUnitRelativeDirectory(
+    ".local/share/systemd/user");
+
 // Systemd unit names.
 constexpr char kUpdaterServiceName[] = PRODUCT_FULLNAME_STRING ".service";
 constexpr char kUpdaterSocketName[] = PRODUCT_FULLNAME_STRING ".socket";
+
 // Systemd unit definition templates.
 constexpr char kUpdaterServiceDefinitionTemplate[] =
     "[Service]\n"
