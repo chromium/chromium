@@ -119,6 +119,7 @@ source_set("impl") {
       "//chrome/app/theme:theme_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/favicon",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",

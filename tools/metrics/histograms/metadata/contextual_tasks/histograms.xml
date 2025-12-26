@@ -235,20 +235,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContextualTasks.ToolbarButton.UserAction{ActionType}"
-    enum="Boolean" expires_after="2026-03-22">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-contextual-tasks-eng@google.com</owner>
-  <summary>
-    Recorded every time the user interacted with the contextual tasks toolbar
-    button. {ActionType} Always recorded as true.
-  </summary>
-  <token key="ActionType">
-    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
-    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
-  </token>
-</histogram>
-
 <histogram name="ContextualTasks.WebUI.UserAction{ActionType}" enum="Boolean"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
@@ -269,6 +255,25 @@ chromium-metrics-reviews@google.com.
         summary="The user opened the thread history."/>
     <variant name=".TabFromSourcesMenuClicked"
         summary="The user clicked on a tab from the sources menu."/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.{EntrypointType}.UserAction{ActionType}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the user interacted with the {EntrypointType}.
+    {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
+  </token>
+  <token key="EntrypointType">
+    <variant name="AppMenu" summary="the app menu"/>
+    <variant name="ToolbarButton"
+        summary="the contextual tasks toolbar button"/>
   </token>
 </histogram>
 

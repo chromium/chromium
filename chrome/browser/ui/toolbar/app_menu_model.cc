@@ -25,6 +25,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -1833,6 +1834,28 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS);
       break;
+    case IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL: {
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowContextualTasksSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL);
+      const auto* coordinator =
+          contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser_);
+      CHECK(coordinator);
+      if (coordinator->IsSidePanelOpenForContextualTask()) {
+        base::RecordAction(base::UserMetricsAction(
+            "ContextualTasks.AppMenu.UserAction.CloseSidePanel"));
+        base::UmaHistogramBoolean(
+            "ContextualTasks.AppMenu.UserAction.CloseSidePanel", true);
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "ContextualTasks.AppMenu.UserAction.OpenSidePanel"));
+        base::UmaHistogramBoolean(
+            "ContextualTasks.AppMenu.UserAction.OpenSidePanel", true);
+      }
+      break;
+    }
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
