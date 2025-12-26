@@ -92,9 +92,18 @@ void ExtensionsToolbarViewModel::OnToolbarModelInitialized() {
   CHECK(actions_.empty());
   CHECK(actions_model_->actions_initialized());
 
+  // Create a vector first to initialize flat_map more efficiently.
+  std::vector<std::pair<ToolbarActionsModel::ActionId,
+                        std::unique_ptr<ToolbarActionViewModel>>>
+      initial_actions;
+  initial_actions.reserve(actions_model_->action_ids().size());
   for (const auto& action_id : actions_model_->action_ids()) {
-    AppendActionModel(action_id);
+    initial_actions.emplace_back(action_id,
+                                 delegate_->CreateActionViewModel(action_id));
   }
+  actions_ = base::flat_map<ToolbarActionsModel::ActionId,
+                            std::unique_ptr<ToolbarActionViewModel>>(
+      std::move(initial_actions));
 
   for (Observer& obs : observers_) {
     obs.OnActionsInitialized();

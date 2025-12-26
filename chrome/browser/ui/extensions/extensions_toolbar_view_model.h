@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_TOOLBAR_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_TOOLBAR_VIEW_MODEL_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -108,8 +109,8 @@ class ExtensionsToolbarViewModel : public ToolbarActionsModel::Observer {
   base::ObserverList<Observer> observers_;
 
   // Actions for all extensions.
-  std::map<ToolbarActionsModel::ActionId,
-           std::unique_ptr<ToolbarActionViewModel>>
+  base::flat_map<ToolbarActionsModel::ActionId,
+                 std::unique_ptr<ToolbarActionViewModel>>
       actions_;
 };
 
