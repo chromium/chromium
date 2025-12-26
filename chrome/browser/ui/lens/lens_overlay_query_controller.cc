@@ -235,6 +235,10 @@ LenOverlayEntryPointFromInvocationSource(
       return lens::LensOverlayClientLogs::TOOLBAR_BUTTON;
     case lens::LensOverlayInvocationSource::kFindInPage:
       return lens::LensOverlayClientLogs::FIND_IN_PAGE;
+    case lens::LensOverlayInvocationSource::kContextualTasksComposebox:
+      // TODO(crbug.com/469463485): This should be contextual tasks specific,
+      // not unknown.
+      return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:
     case lens::LensOverlayInvocationSource::kContextMenu:

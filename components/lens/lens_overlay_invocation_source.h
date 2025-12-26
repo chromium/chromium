@@ -76,7 +76,10 @@ enum class LensOverlayInvocationSource {
   // The compose flow in the omnibox.
   kOmniboxContextualQuery = 17,
 
-  kMaxValue = kOmniboxContextualQuery
+  // The composebox on the Contextual Tasks page.
+  kContextualTasksComposebox = 18,
+
+  kMaxValue = kContextualTasksComposebox
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

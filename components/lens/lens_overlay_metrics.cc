@@ -59,6 +59,8 @@ std::string InvocationSourceToString(
       return "NtpContextualQuery";
     case LensOverlayInvocationSource::kOmniboxContextualQuery:
       return "OmniboxContextualQuery";
+    case LensOverlayInvocationSource::kContextualTasksComposebox:
+      return "ContextualTasksComposebox";
   }
 }
 
@@ -487,6 +489,10 @@ void RecordTimeToFirstInteraction(
     case lens::LensOverlayInvocationSource::kOmniboxContextualQuery:
       // Not recorded since the ntp and omnibox contextual query flows do not
       // use the Lens Overlay Controller.
+      break;
+    case LensOverlayInvocationSource::kContextualTasksComposebox:
+      // TODO(crbug.com/469460311): Add metrics for Contextual Tasks lens
+      // button.
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

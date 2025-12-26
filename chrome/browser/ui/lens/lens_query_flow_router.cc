@@ -416,6 +416,14 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
 }
 
 void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
+  // If the invocation source was the contextual tasks composebox, avoid
+  // navigating the side panel URL to preserve the current
+  // conversation.
+  if (lens_search_controller_->invocation_source() ==
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+    url = GURL();
+  }
+
   // Show the side panel. This will create a new task and associate it with the
   // active tab.
   contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(

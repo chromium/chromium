@@ -398,9 +398,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns the current thumbnail URI for testing.
   const std::string& GetThumbnailForTesting();
 
-  // Clears the region selection for testing.
-  void ClearRegionSelectionForTesting();
-
   // Handles the event where text was modified in the searchbox for testing.
   void OnTextModifiedForTesting();
 
@@ -420,6 +417,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Sets the invocation time for WebUI binding.
   void SetInvocationTimeForWebUIBinding(base::TimeTicks time);
+
+  // Clears the selected region.
+  void ClearRegionSelection();
 
   // Returns the lens suggest inputs stored in this controller for testing.
   lens::proto::LensOverlaySuggestInputs GetLensSuggestInputsForTesting();
@@ -512,9 +512,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Clears the selected text from the overlay if there is any.
   void ClearTextSelection();
-
-  // Clears the selected region.
-  void ClearRegionSelection();
 
   // Called by the searchbox controller when the focus on the searchbox changes.
   void OnSearchboxFocusChanged(bool focused);
@@ -966,7 +963,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // For the current session only, grants the permissions needed for
   // contextualization if the non-blocking privacy notice is being used and the
   // permissions have not already been permanently granted.
-  void MaybeGrantLensOverlayPermissionsForSession();
+  virtual void MaybeGrantLensOverlayPermissionsForSession();
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();

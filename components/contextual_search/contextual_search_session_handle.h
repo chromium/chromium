@@ -79,10 +79,11 @@ class ContextualSearchSessionHandle {
   GetSuggestInputs() const;
 
   // Adds a file to the context controller and starts the file upload flow.
-  void AddFileContext(std::string file_mime_type,
-                      mojo_base::BigBuffer file_bytes,
-                      std::optional<lens::ImageEncodingOptions> image_options,
-                      AddFileContextCallback callback);
+  virtual void AddFileContext(
+      std::string file_mime_type,
+      mojo_base::BigBuffer file_bytes,
+      std::optional<lens::ImageEncodingOptions> image_options,
+      AddFileContextCallback callback);
 
   // Adds a tab context to the context controller, generating a token and adding
   // it to the list of uploaded context tokens. A followup call to

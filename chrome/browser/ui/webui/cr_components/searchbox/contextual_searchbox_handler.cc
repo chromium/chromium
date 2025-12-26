@@ -552,11 +552,13 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
     lens::MimeType mime_type,
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
-  page_->OnContextualInputStatusChanged(
-      file_token, contextual_search::ToMojom(file_upload_status),
-      error_type.has_value()
-          ? std::make_optional(contextual_search::ToMojom(error_type.value()))
-          : std::nullopt);
+  if (IsRemoteBound()) {
+    page_->OnContextualInputStatusChanged(
+        file_token, contextual_search::ToMojom(file_upload_status),
+        error_type.has_value()
+            ? std::make_optional(contextual_search::ToMojom(error_type.value()))
+            : std::nullopt);
+  }
 }
 
 std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(

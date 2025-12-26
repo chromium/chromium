@@ -7,18 +7,24 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -30,6 +36,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
 
@@ -72,6 +79,18 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
 
  private:
   mojo::Receiver<contextual_tasks::mojom::Page> receiver_{this};
+};
+
+class MockLensSearchController : public LensSearchController {
+ public:
+  explicit MockLensSearchController(tabs::TabInterface* tab)
+      : LensSearchController(tab) {}
+  ~MockLensSearchController() override = default;
+
+  MOCK_METHOD(void,
+              OpenLensOverlay,
+              (lens::LensOverlayInvocationSource invocation_source),
+              (override));
 };
 
 }  // namespace
@@ -269,4 +288,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 
   side_panel_controller->OnSidePanelStateChanged();
   run_loop.Run();
+}
+
+class ContextualTasksLensBrowserTest : public ContextualTasksUIBrowserTest {
+ public:
+  ContextualTasksLensBrowserTest() {
+    feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensBrowserTest, HandleLensButtonClick) {
+  // Setup LensController
+  auto override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindLambdaForTesting([&](tabs::TabInterface& tab) {
+            auto mock = std::make_unique<MockLensSearchController>(&tab);
+            EXPECT_CALL(*mock,
+                        OpenLensOverlay(lens::LensOverlayInvocationSource::
+                                            kContextualTasksComposebox))
+                .Times(1);
+            return std::unique_ptr<LensSearchController>(std::move(mock));
+          }));
+
+  chrome::NewTab(browser());
+
+  // Bind pipes
+  mojo::PendingReceiver<composebox::mojom::PageHandler> handler_receiver;
+  mojo::Remote<composebox::mojom::PageHandler> handler_remote(
+      handler_receiver.InitWithNewPipeAndPassRemote());
+
+  mojo::PendingRemote<composebox::mojom::Page> composebox_page;
+  std::ignore = composebox_page.InitWithNewPipeAndPassReceiver();
+
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      searchbox_handler_receiver;
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page;
+  std::ignore = searchbox_page.InitWithNewPipeAndPassReceiver();
+
+  // Create PageHandler
+  controller_->CreatePageHandler(
+      std::move(composebox_page), std::move(handler_receiver),
+      std::move(searchbox_page), std::move(searchbox_handler_receiver));
+
+  // Invoke button click
+  handler_remote->HandleLensButtonClick();
+
+  // Flush to ensure message processing on UI thread
+  handler_remote.FlushForTesting();
 }

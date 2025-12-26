@@ -171,6 +171,8 @@ class ComposeboxQueryController
     // StartFileUploadFlow() is called.
     std::unique_ptr<std::vector<std::string>> request_headers_;
 
+    std::vector<uint8_t> file_content;
+
     // The access token fetcher used for getting OAuth for the file upload
     // request. Will be discarded after the OAuth headers are created.
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
