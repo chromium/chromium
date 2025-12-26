@@ -709,7 +709,7 @@ void ContextualSearchboxHandler::OpenUrl(
             navigation_handle.GetWebContents();
         ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
             new_web_contents)
-            ->set_session_handle(std::move(handle));
+            ->SetTaskSession(std::nullopt, std::move(handle));
       },
       std::move(new_contextual_session_handle));
   // TODO(crbug.com/469137247): Consider moving this logic to the specific

@@ -9,7 +9,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
+#include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -31,10 +34,14 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/prefs/pref_service.h"
@@ -155,7 +162,8 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     ActiveTaskContextProvider* active_task_context_provider)
     : browser_window_(browser_window),
       contextual_tasks_service_(ContextualTasksServiceFactory::GetForProfile(
-
+          browser_window->GetProfile())),
+      contextual_search_service_(ContextualSearchServiceFactory::GetForProfile(
           browser_window->GetProfile())),
       ui_service_(ContextualTasksUiServiceFactory::GetForBrowserContext(
           browser_window->GetProfile())),
@@ -373,20 +381,59 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     }
   }
 
-  if (!cache_item) {
-    return;
+  if (cache_item) {
+    // If found, update the found WebContents with new_task_id.
+    // This will potentially kick out the existing WebContents with new_task_id
+    // since only 1 WebContents per task is kept in the cache.
+    auto it = task_id_to_web_contents_cache_.find(new_task_id);
+    if (it != task_id_to_web_contents_cache_.end()) {
+      MaybeDetachWebContentsFromWebView(it->second->web_contents.get());
+    }
+    task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
   }
 
-  // If found, update the found WebContents with new_task_id
-  // This will potentially kick out the existing WebContents with new_task_id
-  // since only 1 WebContents per task is kept in the cache.
-  auto it = task_id_to_web_contents_cache_.find(new_task_id);
-  if (it != task_id_to_web_contents_cache_.end()) {
-    MaybeDetachWebContentsFromWebView(it->second->web_contents.get());
-  }
-  task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
+  // Since the task has just changed, ensure that
+  // ContextualSearchWebContentsHelper is updated with the task ID and session
+  // handle. Note that it ContextualSearchWebContentsHelper can be from an
+  // existing WebContents or a newly created one.
+  UpdateContextualSearchWebContentsHelperForTask(web_contents, new_task_id);
+
   // Updates the automated chip if needed.
   UpdateContextualTaskUI();
+}
+
+void ContextualTasksSidePanelCoordinator::
+    UpdateContextualSearchWebContentsHelperForTask(
+        content::WebContents* web_contents,
+        const base::Uuid& task_id) {
+  // Since the task has just changed, find if the task has an existing session,
+  // i.e. if the task is already open anywhere in the browser.
+  // If not found, create a new session for the task.
+  // Either way, update the ContextualSearchWebContentsHelper with the task ID
+  // and session handle.
+  contextual_search::ContextualSearchSessionHandle* existing_session =
+      contextual_tasks::FindSessionForTask(task_id, contextual_tasks_service_,
+                                           browser_window_, this);
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle;
+  if (existing_session) {
+    session_handle =
+        contextual_search_service_->GetSession(existing_session->session_id());
+  } else {
+    session_handle = contextual_search_service_->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kContextualTasks);
+  }
+
+  // Update the session handle with the new task ID.
+  if (session_handle) {
+    session_handle->CheckSearchContentSharingSettings(
+        browser_window_->GetProfile()->GetPrefs());
+    auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+        web_contents);
+    helper->SetTaskSession(task_id, std::move(session_handle));
+  }
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -405,6 +452,15 @@ ContextualTasksSidePanelCoordinator::
   return contextual_tasks_ui
              ? contextual_tasks_ui->GetOrCreateContextualSessionHandle()
              : nullptr;
+}
+
+std::vector<content::WebContents*>
+ContextualTasksSidePanelCoordinator::GetSidePanelWebContentsList() const {
+  std::vector<content::WebContents*> result;
+  for (const auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
+    result.push_back(cache_item->web_contents.get());
+  }
+  return result;
 }
 
 std::optional<ContextualTask>

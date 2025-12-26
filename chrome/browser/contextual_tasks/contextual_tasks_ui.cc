@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
@@ -112,18 +113,6 @@ std::string GetEncodedHandshakeMessage() {
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(&serialized_message[0], size);
   return base::Base64Encode(serialized_message);
-}
-
-// Attempts to take ownership of a session handle from the WebContents helper
-// and return it. Returns nullptr if no helper or session handle is available.
-std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-TryTakeSessionHandleFromWebContents(content::WebUI* web_ui) {
-  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-      web_ui->GetWebContents());
-  if (helper && helper->session_handle()) {
-    return helper->TakeSessionHandle();
-  }
-  return nullptr;
 }
 
 }  // namespace
@@ -342,10 +331,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   Profile* profile = Profile::FromWebUI(web_ui);
   AddZeroStateStrings(source, profile);
-
-  // Take ownership of a session handle if one was already provided. Otherwise,
-  // one will be lazily created in GetOrCreateContextualSessionHandle().
-  session_handle_ = TryTakeSessionHandleFromWebContents(web_ui);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -484,10 +469,11 @@ content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
 }
 
 void ContextualTasksUI::CloseSidePanel() {
-  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
-  CHECK(coordinator);
+  auto* coordinator = GetSidePanelCoordinator();
+  if (!coordinator) {
+    return;
+  }
+
   coordinator->Close();
 }
 
@@ -535,20 +521,28 @@ void ContextualTasksUI::CreatePageHandler(
 
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksUI::GetOrCreateContextualSessionHandle() {
-  if (!session_handle_) {
-    auto* service = ContextualSearchServiceFactory::GetForProfile(
-        Profile::FromWebUI(web_ui()));
-    if (service) {
-      session_handle_ = service->CreateSession(
-          ntp_composebox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kContextualTasks);
-      // TODO(crbug.com/469875164): Determine what to do with the return value
-      // of this call, or move this call to a different location.
-      session_handle_->CheckSearchContentSharingSettings(
-          Profile::FromWebUI(web_ui())->GetPrefs());
-    }
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents);
+
+  // Check if a session exists for the current task.
+  contextual_search::ContextualSearchSessionHandle* existing_session =
+      task_id_.has_value() ? helper->GetSessionForTask(task_id_.value())
+                           : helper->session_handle();
+  if (existing_session) {
+    return existing_session;
   }
-  return session_handle_.get();
+
+  // If no valid session exists, maintains context continuity by trying to find
+  // one from affiliated tabs or side panel WebContents.
+  auto* coordinator = GetSidePanelCoordinator();
+  if (!coordinator || !task_id_.has_value()) {
+    return nullptr;
+  }
+
+  coordinator->UpdateContextualSearchWebContentsHelperForTask(web_contents,
+                                                              task_id_.value());
+  return helper->session_handle();
 }
 
 void ContextualTasksUI::PostMessageToWebview(
@@ -707,6 +701,20 @@ void ContextualTasksUI::PushTaskDetailsToPage() {
                         thread_id_.value_or(""), thread_turn_id_.value_or(""));
 }
 
+contextual_tasks::ContextualTasksSidePanelCoordinator*
+ContextualTasksUI::GetSidePanelCoordinator() {
+  if (!web_ui()->GetWebContents()) {
+    return nullptr;
+  }
+
+  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (!browser) {
+    return nullptr;
+  }
+
+  return contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
+}
+
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,
@@ -792,7 +800,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     if (existing_task) {
       task_changed =
           task_info_delegate_->GetTaskId() &&
-          existing_task.value().GetTaskId() == task_info_delegate_->GetTaskId();
+          existing_task.value().GetTaskId() != task_info_delegate_->GetTaskId();
       task_info_delegate_->SetTaskId(existing_task.value().GetTaskId());
       task_info_delegate_->SetThreadTitle(existing_task.value().GetTitle());
     } else {
@@ -802,10 +810,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     }
   }
   task_info_delegate_->SetThreadId(url_thread_id);
-
-  // TODO(crbug.com/456793138): Update the contextual search session handle on
-  // the webcontents, reusing sessions if the thread already has a corresponding
-  // session entry, based on the mtid, once mtid is reliably set by the server.
 
   // If we don't yet have a title, try to pull one from the query.
   if (!task_info_delegate_->GetThreadTitle()) {
