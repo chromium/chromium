@@ -28,6 +28,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'onContextUpdated',
       'hideInput',
       'restoreInput',
+      'onAiPageStatusChanged',
     ]);
   }
 
@@ -76,6 +77,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   onZeroStateChange() {
     this.methodCalled('onZeroStateChange');
+  }
+
+  onAiPageStatusChanged(isAiPage: boolean) {
+    this.methodCalled('onAiPageStatusChanged', isAiPage);
   }
 }
 

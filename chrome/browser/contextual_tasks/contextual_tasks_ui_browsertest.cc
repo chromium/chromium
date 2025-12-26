@@ -61,6 +61,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, HideInput, (), (override));
   MOCK_METHOD(void, RestoreInput, (), (override));
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
+  MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();

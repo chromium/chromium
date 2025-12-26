@@ -61,6 +61,40 @@
   background-color: var(--search-background-color);
 }
 
+
+:host([is-ai-page_]) {
+  /* Only set this transition for AIM results so it only applies when going
+    * from All tab to AIM results and not the reverse. */
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  transition-property: --search-background-color,
+                       --cr-composebox-background-color;
+}
+
+/* Light mode not on AI page */
+:host(:not([is-ai-page_]):not([dark-mode_])) {
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --search-background-color: white;
+}
+
+/* Light mode on AI page */
+:host([is-ai-page_]:not([dark-mode_])) {
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --search-background-color: white;
+}
+
+/* Dark mode not on AI page */
+:host(:not([is-ai-page_])[dark-mode_]) {
+  --cr-composebox-background-color: rgba(40, 41, 42, 1);
+  --search-background-color: rgba(31, 31, 31, 1);
+}
+
+/* Dark mode on AI page */
+:host([is-ai-page_][dark-mode_]) {
+  --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --search-background-color: rgba(16, 18, 24, 1);
+}
+
 :host([dark-mode_]) {
   --color-composebox-background: rgba(31, 31, 31, 1);
   --color-composebox-cancel-button: rgba(191, 191, 191, 1);
@@ -83,7 +117,6 @@
   --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
-  --cr-composebox-background-color: rgba(29, 30, 38, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(54, 54, 54, 1);
   --cr-fallback-color-surface: var(--search-background-color-dark);

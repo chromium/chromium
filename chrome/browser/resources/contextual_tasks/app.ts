@@ -68,11 +68,13 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      isAiPage_: {type: Boolean, reflect: true},
     };
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   // Indicates if in tab mode. Most start in a tab.
+  protected accessor isAiPage_: boolean = false;
   accessor isShownInTab_: boolean = true;
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   private pendingUrl_: string = '';
@@ -141,6 +143,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.restoreInput.addListener(() => {
           this.showComposebox_ = true;
         }),
+        this.browserProxy_.callbackRouter.onAiPageStatusChanged.addListener(
+            (isAiPage: boolean) => {
+              this.isAiPage_ = isAiPage;
+            }),
         this.browserProxy_.callbackRouter.onZeroStateChange.addListener(
             (isZeroState: boolean) => {
               this.isZeroState_ = isZeroState;

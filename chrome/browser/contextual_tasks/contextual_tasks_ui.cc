@@ -437,6 +437,12 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   }
 }
 
+void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
+  if (page_) {
+    page_->OnAiPageStatusChanged(is_ai_page);
+  }
+}
+
 const GURL& ContextualTasksUI::GetInnerFrameUrl() const {
   if (!nav_observer_ || !nav_observer_->web_contents()) {
     return GURL::EmptyGURL();
@@ -700,10 +706,14 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
-  // TODO(456245130): Consider making this next part a CHECK since it should be
-  //                  impossible for this to not be an AI URL.
+  // Notify the WebUI if the new page is an AI page so it can adjust the UI
+  // accordingly.
   const GURL& url = navigation_handle->GetURL();
-  if (!ui_service_->IsAiUrl(url)) {
+  bool is_ai_page = ui_service_->IsAiUrl(url);
+  task_info_delegate_->SetIsAiPage(is_ai_page);
+
+  // The below logic is only relevant for the AI page.
+  if (!is_ai_page) {
     return;
   }
 
