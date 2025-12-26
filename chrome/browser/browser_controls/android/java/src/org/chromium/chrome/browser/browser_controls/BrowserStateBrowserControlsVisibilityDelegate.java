@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -126,6 +127,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     /** Disable any browser visibility overrides for testing. */
     public static void disableForTesting() {
         sDisableOverridesForTesting = true;
+        ResettersForTesting.register(() -> sDisableOverridesForTesting = false);
     }
 
     /** Performs clean-up. */
