@@ -149,6 +149,9 @@ enum class RealboxLayoutMode {
 // Flag to control the realbox layout mode (Tall, Compact).
 extern const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode;
 
+// Whether to enable multi-line input in the searchbox.
+extern const base::FeatureParam<bool> kMultiLineEnabled;
+
 bool IsNtpRealboxNextEnabled(Profile* profile);
 
 // String constants for RealboxLayoutMode.
