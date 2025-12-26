@@ -229,9 +229,9 @@ void ExtensionsMenuDelegateDesktop::OnToolbarPinnedActionsChanged() {
   std::vector<ExtensionsMenuEntryView*> menu_entries =
       main_page->GetMenuEntries();
   for (auto* menu_entry : menu_entries) {
-    bool is_action_pinned =
-        toolbar_model_->IsActionPinned(menu_entry->view_model()->GetId());
-    menu_entry->UpdateContextMenuButton(is_action_pinned);
+    auto button_state =
+        menu_model_->GetContextMenuButtonState(menu_entry->extension_id());
+    menu_entry->UpdateContextMenuButton(button_state);
   }
 }
 
@@ -412,7 +412,7 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
       main_page->GetMenuEntries();
   for (auto* menu_entry : menu_entries) {
     ExtensionsMenuViewModel::MenuItemState menu_item_state =
-        menu_model_->GetMenuItemState(menu_entry->view_model()->GetId());
+        menu_model_->GetMenuItemState(menu_entry->extension_id());
     menu_entry->Update(menu_item_state);
   }
 }

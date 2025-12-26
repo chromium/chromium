@@ -537,6 +537,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
       extension_with_permissions->id()));
 }
 
+// Tests that GetContextMenuButtonState returns the correct state based on
+// the extension's pinning status.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetContextMenuButtonState) {
+  auto extension = AddExtension("Test Extension");
+
+  // Verify the context menu button state when the extension is unpinned (by
+  // default).
+  ExtensionsMenuViewModel::ControlState state =
+      menu_model()->GetContextMenuButtonState(extension->id());
+  EXPECT_FALSE(state.is_on);
+  EXPECT_EQ(state.accessible_name, u"See more options for Test Extension");
+
+  // Verify the context menu button state when the extension is pinned.
+  ToolbarActionsModel::Get(profile())->SetActionVisibility(extension->id(),
+                                                           true);
+  state = menu_model()->GetContextMenuButtonState(extension->id());
+  EXPECT_TRUE(state.is_on);
+  EXPECT_EQ(state.accessible_name,
+            u"Test Extension is pinned. See more options.");
+}
+
 // Tests that the extensions menu view model correctly gets the site settings
 // for the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,

@@ -45,9 +45,10 @@ class ExtensionsMenuEntryView
   void Update(ExtensionsMenuViewModel::MenuItemState menu_item_state);
 
   // Updates the context menu button given `is_action_pinned`.
-  void UpdateContextMenuButton(bool is_action_pinned);
+  void UpdateContextMenuButton(
+      ExtensionsMenuViewModel::ControlState button_state);
 
-  ToolbarActionViewModel* view_model() { return view_model_.get(); }
+  const extensions::ExtensionId& extension_id() { return extension_id_; }
 
   // Accessors for testing.
   bool IsContextMenuRunningForTesting() const;
@@ -67,7 +68,8 @@ class ExtensionsMenuEntryView
  private:
   // Sets ups the context menu button controllers. Must be called by the
   // constructor.
-  void SetupContextMenuButton(Browser* browser);
+  void SetupContextMenuButton(Browser* browser,
+                              ToolbarActionViewModel* view_model);
 
   // Handles the context menu button press. This is passed as a callback to
   // `context_menu_button_`.
@@ -77,10 +79,8 @@ class ExtensionsMenuEntryView
   void OnContextMenuShown() override;
   void OnContextMenuClosed() override;
 
-  // View Model for an action that is shown in the toolbar.
-  // TODO(crbug.com/471045053): Store extension id instead of the action view
-  // model.
-  raw_ptr<ToolbarActionViewModel> view_model_;
+  // The id of the extension the entry corresponds to.
+  const extensions::ExtensionId extension_id_;
 
   // Controller responsible for showing the context menu for an extension.
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;

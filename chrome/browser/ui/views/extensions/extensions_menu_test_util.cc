@@ -194,7 +194,7 @@ ExtensionsMenuButton* ExtensionsMenuTestUtil::GetPrimaryButton(
 
     auto iter = std::find_if(menu_entries.begin(), menu_entries.end(),
                              [&id](ExtensionsMenuEntryView* entry) {
-                               return entry->view_model()->GetId() == id;
+                               return entry->extension_id() == id;
                              });
 
     return (iter == menu_entries.end())

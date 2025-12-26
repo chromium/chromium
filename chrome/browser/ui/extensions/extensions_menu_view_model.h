@@ -180,6 +180,13 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Holds the information about how the extension's menu item should look like.
   // This will be used by the platform delegate as needed.
   struct MenuItemState {
+    MenuItemState();
+    MenuItemState(const MenuItemState&);
+    MenuItemState& operator=(const MenuItemState&);
+    ~MenuItemState();
+
+    // The state for the context menu button.
+    ControlState context_menu_button;
     // The state for the site access toggle.
     ControlState site_access_toggle;
     // The state for the site permissions button.
@@ -229,6 +236,12 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns true if the site permissions page can be shown for the given
   // `extension_id`.
   bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
+
+  // Returns the state for the extension's context menu button.
+  ControlState GetContextMenuButtonState(
+      const extensions::ExtensionId& extension_id);
+  ControlState GetContextMenuButtonState(
+      ExtensionActionViewModel* action_model);
 
   // Returns the site access permissions state for an extension. This will crash
   // if called when the user cannot modify the extension site permissions, as

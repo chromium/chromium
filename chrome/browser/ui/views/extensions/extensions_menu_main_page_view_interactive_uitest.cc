@@ -661,7 +661,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return Steps(
         CheckView(kExtensionsMenuEntryViewElementId,
                   [&extension](ExtensionsMenuEntryView* menu_item) {
-                    return menu_item->view_model()->GetId() == extension.id();
+                    return menu_item->extension_id() == extension.id();
                   }),
         NameDescendantViewByType<ExtensionsMenuButton>(
             kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -755,10 +755,9 @@ class ExtensionsMenuMainPageViewInteractiveTest
     std::vector<ExtensionsMenuEntryView*> menu_entries =
         main_page->GetMenuEntries();
 
-    auto iter = std::ranges::find(menu_entries, extension_id,
-                                  [](ExtensionsMenuEntryView* view) {
-                                    return view->view_model()->GetId();
-                                  });
+    auto iter = std::ranges::find(
+        menu_entries, extension_id,
+        [](ExtensionsMenuEntryView* view) { return view->extension_id(); });
     return (iter == menu_entries.end()) ? nullptr : *iter;
   }
 
@@ -823,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Open the extension's context menu.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionsMenuEntryViewElementId),
 
@@ -858,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       OpenExtensionsMenu(),
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -893,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       OpenExtensionsMenu(),
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kMenuItemActionButton),
@@ -933,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // entry.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -975,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -1015,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // kExtensionsMenuEntryViewElementId match should be extension A.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension_A](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension_A->id();
+                  return menu_item->extension_id() == extension_A->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -1064,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -1114,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Open the extension's context menu from the extensions menu.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionsMenuEntryViewElementId),
 
@@ -1167,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemActionButton),
@@ -1263,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Revoke site access for the extension by toggling the extension off.
       CheckView(kExtensionsMenuEntryViewElementId,
                 [extension](ExtensionsMenuEntryView* menu_item) {
-                  return menu_item->view_model()->GetId() == extension->id();
+                  return menu_item->extension_id() == extension->id();
                 }),
       NameDescendantViewByType<views::ToggleButton>(
           kExtensionsMenuEntryViewElementId, kExtensionMenuItemToggle),
@@ -1420,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       CheckView(
           kExtensionsMenuEntryViewElementId,
           [extension](ExtensionsMenuEntryView* menu_item) {
-            return menu_item->view_model()->GetId();
+            return menu_item->extension_id();
           },
           extension->id()),
       NameDescendantViewByType<HoverButton>(kExtensionsMenuEntryViewElementId,

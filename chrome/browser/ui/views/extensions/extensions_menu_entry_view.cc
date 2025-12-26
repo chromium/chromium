@@ -73,16 +73,6 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
   return button_builder;
 }
 
-std::u16string GetContextMenuAccessibleName(
-    bool is_pinned,
-    const std::u16string& extension_name) {
-  int tooltip_id =
-      is_pinned
-          ? IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_PINNED_ACCESSIBLE_NAME
-          : IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME;
-  return l10n_util::GetStringFUTF16(tooltip_id, extension_name);
-}
-
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuEntryViewElementId);
@@ -93,7 +83,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
     ToolbarActionViewModel* view_model,
     base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
-    : view_model_(view_model) {
+    : extension_id_(view_model->GetId()) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -128,7 +118,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   // Primary action button.
                   views::Builder<ExtensionsMenuButton>(
                       std::make_unique<ExtensionsMenuButton>(browser,
-                                                             view_model_.get()))
+                                                             view_model))
                       .CopyAddressTo(&primary_action_button_)
                       .SetTitleTextStyle(views::style::STYLE_BODY_3_EMPHASIS,
                                          ui::kColorDialogBackground,
@@ -146,7 +136,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
                       .SetAccessibleName(l10n_util::GetStringFUTF16(
                           IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ACCESSIBLE_NAME,
-                          view_model_->GetActionName()))
+                          view_model->GetActionName()))
                       .SetCallback(base::BindRepeating(
                           [](views::ToggleButton* toggle_button,
                              base::RepeatingCallback<void(bool)>
@@ -188,7 +178,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
-  SetupContextMenuButton(browser);
+  SetupContextMenuButton(browser, view_model);
 
   // By default, the button's accessible description is set to the button's
   // tooltip text. This is the accepted workaround to ensure only accessible
@@ -232,9 +222,12 @@ void ExtensionsMenuEntryView::Update(
   // Update button size after changing its contents so it fits in the menu
   // item row.
   site_permissions_button_->PreferredSizeChanged();
+
+  UpdateContextMenuButton(menu_item_state.context_menu_button);
 }
 
-void ExtensionsMenuEntryView::UpdateContextMenuButton(bool is_action_pinned) {
+void ExtensionsMenuEntryView::UpdateContextMenuButton(
+    ExtensionsMenuViewModel::ControlState button_state) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
@@ -244,22 +237,23 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(bool is_action_pinned) {
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      is_action_pinned ? ui::ImageModel::FromVectorIcon(
-                             kKeepIcon, kColorExtensionMenuIcon, icon_size)
-                       : three_dot_icon);
+      button_state.is_on ? ui::ImageModel::FromVectorIcon(
+                               kKeepIcon, kColorExtensionMenuIcon, icon_size)
+                         : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
                                       three_dot_icon);
   context_menu_button_->GetViewAccessibility().SetName(
-      GetContextMenuAccessibleName(is_action_pinned,
-                                   view_model_->GetActionName()));
+      button_state.accessible_name);
 }
 
-void ExtensionsMenuEntryView::SetupContextMenuButton(Browser* browser) {
+void ExtensionsMenuEntryView::SetupContextMenuButton(
+    Browser* browser,
+    ToolbarActionViewModel* view_model) {
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      view_model_.get(), this,
+      view_model, this,
       extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
 
   context_menu_button_->SetButtonController(
@@ -276,10 +270,6 @@ void ExtensionsMenuEntryView::SetupContextMenuButton(Browser* browser) {
   // accessible name.
   context_menu_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
-
-  bool is_action_pinned = ToolbarActionsModel::Get(browser->profile())
-                              ->IsActionPinned(view_model_->GetId());
-  UpdateContextMenuButton(is_action_pinned);
 }
 
 void ExtensionsMenuEntryView::OnContextMenuPressed() {
