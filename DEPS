@@ -3769,7 +3769,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '094e1a4d31d582ddec51502b7692bbd507b9e2af',
+        'b8f8c7686ca22a2da46ee95933f2e1f86c79f663',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
