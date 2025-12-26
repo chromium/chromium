@@ -100,7 +100,6 @@ FontCache::~FontCache() = default;
 void FontCache::Trace(Visitor* visitor) const {
   visitor->Trace(font_cache_clients_);
   visitor->Trace(font_platform_data_cache_);
-  visitor->Trace(fallback_list_shaper_cache_);
   visitor->Trace(font_data_cache_);
   visitor->Trace(font_fallback_map_);
 #if BUILDFLAG(IS_MAC)
@@ -144,14 +143,6 @@ const FontPlatformData* FontCache::GetFontPlatformData(
 
   return font_platform_data_cache_.GetOrCreateFontPlatformData(
       this, font_description, creation_params, alternate_font_name);
-}
-
-ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
-  auto result = fallback_list_shaper_cache_.insert(key, nullptr);
-  if (result.is_new_entry) {
-    result.stored_value->value = MakeGarbageCollected<ShapeCache>();
-  }
-  return result.stored_value->value.Get();
 }
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
@@ -273,9 +264,9 @@ void FontCache::DumpShapeResultCache(
   base::trace_event::MemoryAllocatorDump* dump =
       memory_dump->CreateAllocatorDump("font_caches/shape_caches");
   size_t shape_result_cache_size = 0;
-  for (const auto& shape_cache : fallback_list_shaper_cache_.Values()) {
-    shape_result_cache_size += shape_cache->ByteSize();
-  }
+  // TODO(layout-dev): We had a logic to compute the memory amount consumed
+  // by the legacy ShapeCache.  Should we update this for NGShapeCache and
+  // FrameShapeCache?
   dump->AddScalar("size", "bytes", shape_result_cache_size);
   memory_dump->AddSuballocation(dump->guid(),
                                 Partitions::kAllocatedObjectPoolName);

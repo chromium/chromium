@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 
 using blink::test::CreateTestFont;
 

@@ -71,6 +71,7 @@ class KURL;
 class PaintController;
 class Path;
 class StrokeData;
+class TextRun;
 
 // Tiling parameters for the DrawImageTiled() method.
 struct ImageTilingInfo {

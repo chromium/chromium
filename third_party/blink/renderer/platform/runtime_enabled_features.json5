@@ -2176,10 +2176,6 @@
       status: "experimental"
     },
     {
-      name: "EmphasisMarkShapeCache",
-      status: "stable",
-    },
-    {
       name: "EndpointInclusiveCommitStyles",
       status: "stable",
     },
