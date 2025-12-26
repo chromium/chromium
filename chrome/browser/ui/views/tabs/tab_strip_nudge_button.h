@@ -44,8 +44,7 @@ class TabStripNudgeButton : public TabStripControlButton {
   float GetWidthFactor() const { return width_factor_; }
 
   virtual void SetIsShowingNudge(bool is_showing);
-
-  bool GetIsShowingNudge() { return is_showing_nudge_; }
+  virtual bool GetIsShowingNudge() const;
 
   virtual gfx::SlideAnimation* GetExpansionAnimationForTesting();
 

@@ -45,6 +45,18 @@ class GlicButton : public TabStripNudgeButton,
 
   static GlicButton* FromBrowser(BrowserWindowInterface* browser);
 
+  // These states represent the button's width and label contents.
+  enum class WidthState {
+    // Spark icon and "Gemini".
+    kNormal,
+
+    // Spark icon, contextual nudge text and "X" close button.
+    kNudge,
+
+    // Just the spark icon.
+    kCollapsed
+  };
+
   // These functions below work together to hide the nudge label on the static
   // button when another nudge occupies the display space.
   // TODO(crbug.com/460400955): This is a temporary fix for 143, ideally a
@@ -62,6 +74,7 @@ class GlicButton : public TabStripNudgeButton,
 
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
+  bool GetIsShowingNudge() const override;
 
   void SetDropToAttachIndicator(bool indicate);
 
@@ -134,8 +147,8 @@ class GlicButton : public TabStripNudgeButton,
   void CreateIconAndLabelContainer();
   void SetCloseButtonVisible(bool visible);
 
-  void StartShowAnimation();
-  void StartHideAnimation();
+  void ShowNudge();
+  void HideNudge();
   void ApplyTextAndFadeIn(std::optional<std::u16string> text,
                           base::TimeDelta delay,
                           base::TimeDelta duration);
@@ -146,6 +159,12 @@ class GlicButton : public TabStripNudgeButton,
                                 base::TimeDelta close_button_fade_duration);
   void StartSlidingTextAnimation(bool show);
   int CalculateExpandedWidth();
+
+  bool IsAnimatingTextVisibility() const;
+
+  bool IsHidingNudge() const;
+
+  void SetWidthState(WidthState state);
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
@@ -218,8 +237,10 @@ class GlicButton : public TabStripNudgeButton,
   // process of being shown.
   // TODO(crbug.com/460400955): This is a temporary fix for 143, this code
   // should be refactored to use the new solution in 144.
-  bool is_animating_text_ = false;
   int default_label_width_ = 0;
+
+  WidthState last_width_state_ = WidthState::kNormal;
+  WidthState width_state_ = WidthState::kNormal;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };

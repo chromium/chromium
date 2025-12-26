@@ -174,6 +174,10 @@ void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
   }
 }
 
+bool TabStripNudgeButton::GetIsShowingNudge() const {
+  return is_showing_nudge_;
+}
+
 void TabStripNudgeButton::SetCloseButtonFocusBehavior(
     views::View::FocusBehavior focus_behavior) {
   close_button_->SetFocusBehavior(focus_behavior);
