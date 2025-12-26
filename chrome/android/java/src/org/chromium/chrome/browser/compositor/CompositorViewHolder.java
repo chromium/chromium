@@ -370,8 +370,26 @@ public class CompositorViewHolder extends FrameLayout
 
     private PrefService mPrefService;
 
+    /**
+     * A method Android calls every time the mouse moves.
+     *
+     * @param event contains type (Down, Move, Hover), coordinates, and input device (Mouse, finger)
+     * @param pointerIndex index 0 = mouse (or first finger), index 1 = (second finger)
+     */
     @Override
     public @Nullable PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+
+        if (mView != null
+                && mView.getVisibility() == View.VISIBLE
+                && ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+
+            // Delegate to standard Android behavior (View Group). This internally loops through the
+            // children of the CompositorViewHolder and calculates the correct offsets.
+            PointerIcon icon = super.onResolvePointerIcon(event, pointerIndex);
+            if (icon != null) return icon;
+        }
+
+        // Fallback: check the current tab's web contents (the actual website being rendered).
         View activeView = getContentView();
         if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
         return activeView.onResolvePointerIcon(event, pointerIndex);

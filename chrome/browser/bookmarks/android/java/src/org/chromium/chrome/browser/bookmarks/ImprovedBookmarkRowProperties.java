@@ -78,6 +78,8 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_DRAG_ENABLED =
             new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<BookmarkManagerDragHelper> DRAG_HELPER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnTouchListener> DRAG_HANDLE_TOUCH_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnTouchListener> ROW_BODY_TOUCH_LISTENER =
@@ -134,6 +136,7 @@ public class ImprovedBookmarkRowProperties {
         SELECTION_ACTIVE,
         EDITABLE,
         IS_DRAG_ENABLED,
+        DRAG_HELPER,
         DRAG_HANDLE_TOUCH_LISTENER,
         ROW_BODY_TOUCH_LISTENER,
         DRAG_HANDLE_HOVER_LISTENER,

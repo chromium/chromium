@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.SparseArray;
+import android.view.PointerIcon;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -131,12 +132,46 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
                 mStart = viewHolder.getAdapterPosition();
                 onDragStateChange(true);
                 updateVisualState(true, viewHolder);
+                if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+                    if (mRecyclerView != null) {
+                        PointerIcon icon =
+                                PointerIcon.getSystemIcon(
+                                        mRecyclerView.getContext(), PointerIcon.TYPE_GRABBING);
+
+                        // This ensures that even when the user moves the cursor outside of the row
+                        // while dragging, the cursor will still be TYPE_GRABBING instead of
+                        // default.
+                        mRecyclerView.setPointerIcon(icon);
+
+                        // Iterate through all of the children (ImprovedBookmarkRows) and set the
+                        // cursor explicitly to TYPE_GRABBING. This is to ensure that when we drag
+                        // row A over row B, row B's grab handle's onHoverListener (open hand
+                        // cursor) does not get activated.
+                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                            View child = mRecyclerView.getChildAt(i);
+                            child.setPointerIcon(icon);
+                        }
+                    }
+                }
             }
         }
 
         @Override
         public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
+
+            if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+                if (mRecyclerView != null) {
+                    // Reset to default cursor.
+                    mRecyclerView.setPointerIcon(null);
+
+                    // Reset children to default cursor.
+                    for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                        View child = mRecyclerView.getChildAt(i);
+                        child.setPointerIcon(null);
+                    }
+                }
+            }
             // No need to commit change if recycler view is not attached to window, such as dragging
             // is terminated by destroying activity.
             if (viewHolder.getAdapterPosition() != mStart && recyclerView.isAttachedToWindow()) {

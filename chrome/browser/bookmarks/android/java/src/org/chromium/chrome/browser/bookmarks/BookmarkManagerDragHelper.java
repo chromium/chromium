@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
@@ -28,6 +29,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     private static final int DEFAULT_DRAG_START_DELAY_MS = 500;
     private static final int DRAG_START_DELAY_MS = 100;
     private static final int SELECTION_START_DELAY_MS = 500;
+    private static final int HIDE_HANDLE_DELAY_MS = 50;
 
     private final Context mContext;
     private final BookmarkId mBookmarkId;
@@ -42,9 +44,12 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     private float mHandleDownY;
     // Distinguishes between a click and a long-press.
     private boolean mIsLongPressTriggered;
+    // Tracks if the drag handle is currently being pressed (via touch or mouse down).
+    private boolean mIsHandleTouched;
 
     private final Runnable mSelectRunnable = this::selectItem;
     private final Runnable mStartDragRunnable = this::startDrag;
+    private final Runnable mHideHandleRunnable = this::hideDragHandle;
 
     /**
      * @param context Context for resources and touch slop.
@@ -169,6 +174,117 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         return false;
     }
 
+    /**
+     * Handles touch events for the Drag Handle. Bound to {@link
+     * ImprovedBookmarkRowProperties#DRAG_HANDLE_TOUCH_LISTENER}.
+     *
+     * @param v The view the touch event has been dispatched to (The Drag Handle).
+     * @param event The MotionEvent object containing full information about the event.
+     * @return True if the listener has consumed the event, false otherwise.
+     */
+    public boolean onDragHandleTouch(View v, MotionEvent event) {
+        if (!mIsDragEnabled) return false;
+
+        int action = event.getActionMasked();
+        boolean isMouse = event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE;
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            mHandleDownX = event.getRawX();
+            mHandleDownY = event.getRawY();
+
+            // While dragging, the recycler view should ignore other movements to
+            // prevent accidental scrolling.
+            if (mRecyclerView != null) {
+                mRecyclerView.requestDisallowInterceptTouchEvent(true);
+            }
+
+            // Ensure the handle is visible.
+            mIsHandleTouched = true;
+            v.setVisibility(View.VISIBLE);
+
+            if (isMouse) {
+                // Closed hand (grabbing) when mouse down over grab handle.
+                PointerIcon grabbing =
+                        PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRABBING);
+                v.setPointerIcon(grabbing);
+
+            } else {
+                // Almost-instant (100ms to distinguish tap vs long-press) drag.
+                mHandler.postDelayed(mStartDragRunnable, DRAG_START_DELAY_MS);
+            }
+            // Ensure the visual state updates (pressed state).
+            v.setPressed(true);
+            return true;
+
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            // This else-if block is only for mouse down on grab handle. This is a
+            // unique case where we want the dragging UI to only appear on movement to
+            // avoid the dragging UI flashing when the user clicks on the grab handle.
+            if (!isMouse || !mIsHandleTouched) return true;
+
+            float deltaX = Math.abs(event.getRawX() - mHandleDownX);
+            float deltaY = Math.abs(event.getRawY() - mHandleDownY);
+
+            // Check if the mouse has moved far enough to count as a "drag".
+            if (deltaX > mTouchSlop || deltaY > mTouchSlop) {
+                // Main command.
+                startDrag();
+
+                // Dispatch a fake ACTION_MOVE to the parent RecyclerView. This is because when
+                // startDrag() is called, the ItemTouchHelper attached to the RecyclerView
+                // intercepts the touch stream. This causes the framework to automatically send an
+                // ACTION_CANCEL to this child view (the drag handle). The drag handle's onTouch
+                // listener responds to ACTION_CANCEL by resetting the cursor to an "open hand"
+                // (thus reversing our "closed hand" on drag). This fake event forces the
+                // RecyclerView to immediately process a move event while dragging is active,
+                // overriding that reset and ensuring the "closed hand" cursor persists correctly
+                // during the drag.
+                long now = SystemClock.uptimeMillis();
+                MotionEvent fakeMove =
+                        MotionEvent.obtain(
+                                now,
+                                now,
+                                MotionEvent.ACTION_MOVE,
+                                event.getRawX(),
+                                event.getRawY(),
+                                0);
+
+                if (mRecyclerView != null) {
+                    mRecyclerView.dispatchTouchEvent(fakeMove);
+                }
+                fakeMove.recycle();
+
+                // Reset flag since dragging has started.
+                mIsHandleTouched = false;
+                v.setPressed(false);
+            }
+            return true;
+
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            // If the user has let go too early (before 100ms).
+            cleanupTimers();
+            v.setPressed(false);
+            mIsHandleTouched = false;
+
+            if (isMouse) {
+                // Revert the Handle's icon from closed hand to open hand.
+                PointerIcon grab = PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRAB);
+                v.setPointerIcon(grab);
+            }
+
+            boolean isSelected = mSelectionDelegate.isItemSelected(mBookmarkId);
+            if (!isSelected) {
+                mHandler.postDelayed(mHideHandleRunnable, HIDE_HANDLE_DELAY_MS);
+            }
+
+            if (mRecyclerView != null) {
+                mRecyclerView.requestDisallowInterceptTouchEvent(false);
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onViewAttachedToWindow(View v) {
         // No-op.
@@ -179,8 +295,12 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         // If the view is detached (recycled) while a timer is running, we must cancel everything to
         // prevent a drag starting on a view that is no longer on screen.
         cleanupTimers();
-        // Reset the internal state since this view will be recycled.
-        mIsLongPressTriggered = false;
+        mHandler.removeCallbacks(mHideHandleRunnable);
+
+        // When the view (ImprovedBookmarkRow) is detached, it will be recycled, so we need to reset
+        // v.setPressed, v.setVisibility, etc. But the BookmarkManagerDragHelper object gets garbage
+        // collected and a new helper is created every time coordinator#bindDragProperties is
+        // called. We therefore don't need to reset internal variables inside this class.
         v.setPressed(false);
         // Remove listener to prevent the recycled view from accumulating old DragHelper objects.
         v.removeOnAttachStateChangeListener(this);
@@ -224,7 +344,6 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     // Logic for Runnable 2: Drag Start. Runs when A) The grab handle is touched or B) 100ms after
     // mSelectRunnable finishes.
     private void startDrag() {
-        if (mViewHolder == null) return;
         // We previously blocked interception in the mSelectRunnable to stop
         // scrolling. We must unblock it now so ItemTouchHelper (attached to the
         // parent, which is the RecyclerView) can intercept the stream and handle
@@ -234,16 +353,25 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         }
 
         // Set grabbing (closed hand) on ImprovedBookmarkRow.
-        if (mContext != null) {
-            mViewHolder.itemView.setPointerIcon(
-                    PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRABBING));
-        }
-
-        // Set grabbing (closed hand) on ImprovedBookmarkRow.
         mViewHolder.itemView.setPointerIcon(
                 PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRABBING));
 
         // Manually call startDrag, which we disabled in the adapter.
         mItemTouchHelper.startDrag(mViewHolder);
+    }
+
+    // Logic for Runnable 3: Hides the handle. Runs when the user moves the mouse out of the row
+    // (HOVER_EXIT).
+    private void hideDragHandle() {
+        View dragHandle = mViewHolder.itemView.findViewById(R.id.drag_handle);
+        if (dragHandle == null) return;
+
+        boolean isSelected = mSelectionDelegate.isItemSelected(mBookmarkId);
+
+        // If the item is selected, the handle is always visible. mIsHandleTouched is
+        // needed to keep the handle visible when mouse down.
+        if (!isSelected && !mIsHandleTouched) {
+            dragHandle.setVisibility(View.GONE);
+        }
     }
 }

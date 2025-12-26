@@ -655,9 +655,13 @@ public class BookmarkManagerCoordinator
                         viewHolder,
                         isDragEnabled);
 
+        model.set(ImprovedBookmarkRowProperties.DRAG_HELPER, dragHelper);
+
         model.set(
                 ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER, dragHelper::onRowBodyTouch);
-        model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER, (v, event) -> false);
+        model.set(
+                ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER,
+                dragHelper::onDragHandleTouch);
         model.set(ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER, (v, event) -> false);
         model.set(ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER, (v, event) -> false);
     }

@@ -184,6 +184,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
             mDragHandle = findViewById(R.id.drag_handle);
+            mDragHandle.setClickable(true);
+            mDragHandle.setFocusable(true);
 
             // Define the shadow shape explicitly. This ensures that the shadow appears even if
             // mDraggedBackgroundColor is transparent.
