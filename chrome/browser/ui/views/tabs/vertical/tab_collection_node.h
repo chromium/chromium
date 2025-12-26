@@ -22,7 +22,6 @@ class View;
 
 class VerticalTabStripController;
 
-// TODO(crbug.com/459824840): Animate views based on operation.
 class TabCollectionNode {
  public:
   // Keep the same as TabCollection::Type with a tab.
@@ -73,6 +72,13 @@ class TabCollectionNode {
   std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
   RemoveChild(base::PassKey<TabCollectionNode> pass_key,
               const tabs::TabCollectionNodeHandle& handle);
+
+  // Moves the node to the new index within the same parent. Also updates the
+  // z-order of the moved child to the highest to ensure it shows over other
+  // tabs when animating.
+  void MoveChild(base::PassKey<TabCollectionNode> pass_key,
+                 const tabs::TabCollectionNodeHandle& handle,
+                 int new_index);
 
   // Adds child_node_view to node_view_ and child_node to children_.
   void AddChild(std::unique_ptr<views::View> child_node_view,

@@ -243,6 +243,46 @@ TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
   NOTREACHED();
 }
 
+void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
+                                  const tabs::TabCollectionNodeHandle& handle,
+                                  int new_index) {
+  auto it = std::find_if(
+      children_.begin(), children_.end(),
+      [&handle](const auto& node) { return node->GetHandle() == handle; });
+  CHECK(it != children_.end());
+
+  const size_t old_index = std::distance(children_.begin(), it);
+  const size_t target_index = static_cast<size_t>(
+      std::clamp(new_index, 0, static_cast<int>(children_.size() - 1)));
+
+  if (old_index == target_index) {
+    return;
+  }
+
+  if (old_index < target_index) {
+    std::rotate(children_.begin() + old_index,
+                children_.begin() + old_index + 1,
+                children_.begin() + target_index + 1);
+  } else {
+    std::rotate(children_.begin() + target_index, children_.begin() + old_index,
+                children_.begin() + old_index + 1);
+  }
+
+  // Move the child view to the top of the z-order to ensure the moved child
+  // appears over the other tabs in its parent container.
+  TabCollectionNode* moved_node = children_[target_index].get();
+  node_view_->ReorderChildView(moved_node->node_view_,
+                               static_cast<int>(children_.size() - 1));
+
+  // Explicitly set the next focusable view to follow our logical model.
+  if (target_index > 0) {
+    moved_node->node_view_->InsertAfterInFocusList(
+        children_[target_index - 1]->node_view_);
+  } else if (children_.size() > 1) {
+    moved_node->node_view_->InsertBeforeInFocusList(children_[1]->node_view_);
+  }
+}
+
 std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {
   std::vector<views::View*> child_views;
   child_views.reserve(children_.size());

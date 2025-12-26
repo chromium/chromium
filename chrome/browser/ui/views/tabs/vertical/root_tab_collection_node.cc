@@ -74,15 +74,22 @@ void RootTabCollectionNode::OnChildMoved(
     const tabs::TabCollectionObserver::NodeData& node_data) {
   const tabs::TabCollection::Position& from_position = node_data.position;
   const tabs::TabCollection::NodeHandle& moved_node_handle = node_data.handle;
-  TabCollectionNode* src_parent_node =
-      GetNodeForHandle(from_position.parent_handle);
-  TabCollectionNode* dst_parent_node =
-      GetNodeForHandle(to_position.parent_handle);
 
-  auto [view, node] =
-      src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
-  dst_parent_node->AddChild(std::move(view), std::move(node),
-                            to_position.index);
+  if (from_position.parent_handle == to_position.parent_handle) {
+    TabCollectionNode* parent_node =
+        GetNodeForHandle(to_position.parent_handle);
+    parent_node->MoveChild(GetPassKey(), moved_node_handle, to_position.index);
+  } else {
+    TabCollectionNode* src_parent_node =
+        GetNodeForHandle(from_position.parent_handle);
+    TabCollectionNode* dst_parent_node =
+        GetNodeForHandle(to_position.parent_handle);
+
+    auto [view, node] =
+        src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
+    dst_parent_node->AddChild(std::move(view), std::move(node),
+                              to_position.index);
+  }
 }
 
 void RootTabCollectionNode::OnTabStripModelChanged(
