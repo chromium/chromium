@@ -2031,6 +2031,8 @@ static_library("browser") {
 
     # TODO(crbug.com/417228688): Remove this dependency when c/b/profiles/profile_manager.h gets
     # modularized.
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:impl",
     "//chrome/browser/assist_ranker",
     "//chrome/browser/assist_ranker:impl",
     "//chrome/browser/infobars",
@@ -4261,8 +4263,6 @@ static_library("browser") {
       "//chrome/app/vector_icons",
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/accessibility/tree_fixing:service",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor:impl",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/actor/ui/task_list_bubble:controller_impl",

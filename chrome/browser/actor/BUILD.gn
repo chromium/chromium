@@ -4,435 +4,449 @@
 
 import("//chrome/common/features.gni")
 
-assert(!is_android)
-
 source_set("actor") {
-  friend = [
-    ":unit_tests",
-    ":browser_tests",
-  ]
   public = [
     "actor_features.h",
-    "actor_keyed_service.h",
-    "actor_keyed_service_factory.h",
-    "actor_metrics.h",
-    "actor_navigation_throttle.h",
-    "actor_policy_checker.h",
     "actor_switches.h",
-    "actor_tab_data.h",
-    "actor_task.h",
-    "actor_task_metadata.h",
-    "actor_util.h",
-    "aggregated_journal.h",
-    "aggregated_journal_file_serializer.h",
-    "aggregated_journal_in_memory_serializer.h",
-    "aggregated_journal_serializer.h",
-    "browser_action_util.h",
-    "execution_engine.h",
-    "site_policy.h",
-    "tools/attempt_form_filling_tool_request.h",
-    "tools/attempt_login_tool_request.h",
-    "tools/click_tool_request.h",
-    "tools/drag_and_release_tool_request.h",
-    "tools/history_tool_request.h",
-    "tools/media_control_tool_request.h",
-    "tools/move_mouse_tool_request.h",
-    "tools/navigate_tool_request.h",
-    "tools/observation_delay_controller.h",
-    "tools/page_tool_request.h",
-    "tools/script_tool_request.h",
-    "tools/scroll_to_tool_request.h",
-    "tools/scroll_tool_request.h",
-    "tools/select_tool_request.h",
-    "tools/tab_management_tool_request.h",
-    "tools/tool_controller.h",
-    "tools/tool_delegate.h",
-    "tools/tool_request.h",
-    "tools/tool_request_visitor_functor.h",
-    "tools/type_tool_request.h",
-    "tools/wait_tool_request.h",
-    "tools/window_management_tool_request.h",
   ]
   public_deps = [
-    ":types",
     "//base",
-    "//chrome/browser/actor/resources:browser_resources",
-    "//chrome/browser/actor/ui:dom_node_geometry",
-    "//chrome/browser/actor/ui:states",
     "//chrome/browser/page_content_annotations:fetcher",
-    "//chrome/browser/password_manager/actor_login:service",
-    "//chrome/browser/profiles",
-    "//chrome/browser/search",
-    "//chrome/browser/subscription_eligibility",
-    "//chrome/common",
-    "//chrome/common:actor_webui_mojom",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-    "//components/download/content/public",
-    "//components/optimization_guide/content/browser",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/password_manager/core/browser/actor_login:common",
-    "//components/tabs:public",
-    "//content/public/browser",
-    "//content/public/common:buildflags",
-    "//ui/base/unowned_user_data",
   ]
+
+  if (!skip_android_unmigrated_actor_files) {
+    friend = [
+      ":unit_tests",
+      ":browser_tests",
+    ]
+    public += [
+      "actor_keyed_service.h",
+      "actor_keyed_service_factory.h",
+      "actor_metrics.h",
+      "actor_navigation_throttle.h",
+      "actor_policy_checker.h",
+      "actor_tab_data.h",
+      "actor_task.h",
+      "actor_task_metadata.h",
+      "actor_util.h",
+      "aggregated_journal.h",
+      "aggregated_journal_file_serializer.h",
+      "aggregated_journal_in_memory_serializer.h",
+      "aggregated_journal_serializer.h",
+      "browser_action_util.h",
+      "execution_engine.h",
+      "site_policy.h",
+      "tools/attempt_form_filling_tool_request.h",
+      "tools/attempt_login_tool_request.h",
+      "tools/click_tool_request.h",
+      "tools/drag_and_release_tool_request.h",
+      "tools/history_tool_request.h",
+      "tools/media_control_tool_request.h",
+      "tools/move_mouse_tool_request.h",
+      "tools/navigate_tool_request.h",
+      "tools/observation_delay_controller.h",
+      "tools/page_tool_request.h",
+      "tools/script_tool_request.h",
+      "tools/scroll_to_tool_request.h",
+      "tools/scroll_tool_request.h",
+      "tools/select_tool_request.h",
+      "tools/tab_management_tool_request.h",
+      "tools/tool_controller.h",
+      "tools/tool_delegate.h",
+      "tools/tool_request.h",
+      "tools/tool_request_visitor_functor.h",
+      "tools/type_tool_request.h",
+      "tools/wait_tool_request.h",
+      "tools/window_management_tool_request.h",
+    ]
+    public_deps += [
+      ":types",
+      "//chrome/browser/actor/resources:browser_resources",
+      "//chrome/browser/actor/ui:dom_node_geometry",
+      "//chrome/browser/actor/ui:states",
+      "//chrome/browser/password_manager/actor_login:service",
+      "//chrome/browser/profiles",
+      "//chrome/browser/search",
+      "//chrome/browser/subscription_eligibility",
+      "//chrome/common",
+      "//chrome/common:actor_webui_mojom",
+      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+      "//components/download/content/public",
+      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/password_manager/core/browser/actor_login:common",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//content/public/common:buildflags",
+      "//ui/base/unowned_user_data",
+    ]
+  }
 }
 
 source_set("impl") {
   sources = [
-    "action_tracker_for_metrics.cc",
-    "action_tracker_for_metrics.h",
     "actor_features.cc",
-    "actor_keyed_service.cc",
-    "actor_keyed_service_factory.cc",
-    "actor_metrics.cc",
-    "actor_navigation_throttle.cc",
-    "actor_policy_checker.cc",
     "actor_switches.cc",
-    "actor_tab_data.cc",
-    "actor_task.cc",
-    "actor_task_metadata.cc",
-    "actor_util.cc",
-    "aggregated_journal.cc",
-    "aggregated_journal_file_serializer.cc",
-    "aggregated_journal_in_memory_serializer.cc",
-    "aggregated_journal_serializer.cc",
-    "browser_action_util.cc",
-    "execution_engine.cc",
-    "safety_list.cc",
-    "safety_list.h",
-    "safety_list_manager.cc",
-    "safety_list_manager.h",
-    "site_policy.cc",
-    "tools/attempt_form_filling_tool.cc",
-    "tools/attempt_form_filling_tool.h",
-    "tools/attempt_form_filling_tool_request.cc",
-    "tools/attempt_login_tool.cc",
-    "tools/attempt_login_tool.h",
-    "tools/attempt_login_tool_request.cc",
-    "tools/click_tool_request.cc",
-    "tools/drag_and_release_tool_request.cc",
-    "tools/history_tool.cc",
-    "tools/history_tool.h",
-    "tools/history_tool_request.cc",
-    "tools/media_control_tool.cc",
-    "tools/media_control_tool.h",
-    "tools/media_control_tool_request.cc",
-    "tools/move_mouse_tool_request.cc",
-    "tools/navigate_tool.cc",
-    "tools/navigate_tool.h",
-    "tools/navigate_tool_request.cc",
-    "tools/observation_delay_controller.cc",
-    "tools/observation_delay_metrics.cc",
-    "tools/observation_delay_metrics.h",
-    "tools/page_target_util.cc",
-    "tools/page_target_util.h",
-    "tools/page_tool.cc",
-    "tools/page_tool.h",
-    "tools/page_tool_request.cc",
-    "tools/script_tool_request.cc",
-    "tools/scroll_to_tool_request.cc",
-    "tools/scroll_tool_request.cc",
-    "tools/select_tool_request.cc",
-    "tools/tab_management_tool.cc",
-    "tools/tab_management_tool.h",
-    "tools/tab_management_tool_request.cc",
-    "tools/tool.cc",
-    "tools/tool.h",
-    "tools/tool_callbacks.cc",
-    "tools/tool_callbacks.h",
-    "tools/tool_controller.cc",
-    "tools/tool_request.cc",
-    "tools/type_tool_request.cc",
-    "tools/wait_tool.cc",
-    "tools/wait_tool.h",
-    "tools/wait_tool_request.cc",
-    "tools/window_management_tool.cc",
-    "tools/window_management_tool.h",
-    "tools/window_management_tool_request.cc",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":actor",
-    ":variants",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/actor/ui",
-    "//chrome/browser/actor/ui:event_dispatcher",
-    "//chrome/browser/affiliations",
-    "//chrome/browser/autofill/glic",
-    "//chrome/browser/favicon",
-    "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_io_data",
-    "//chrome/browser/safe_browsing",
-    "//chrome/browser/signin",
-    "//chrome/browser/ui:browser_list",
-    "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/browser/ui/tabs:tabs_public",
-    "//chrome/common",
-    "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-    "//components/content_settings/core/common",
-    "//components/favicon/core",
-    "//components/lookalikes/core",
-    "//components/page_load_metrics/browser",
-    "//components/password_manager/core/browser/features:password_features",
-    "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/tracing:tracing_metrics",
-    "//components/variations/service",
-    "//content/public/browser",
-    "//net",
-    "//pdf:features",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/perfetto:libperfetto",
-    "//third_party/perfetto/protos/perfetto/config:zero_gen",
-    "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
-    "//url",
   ]
 
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
-}
-
-source_set("variants") {
-  sources = [
-    "tool_request_variant.cc",
-    "tool_request_variant.h",
-  ]
-  deps = [
-    ":actor",
-    "//base",
-  ]
-}
-
-# This target contains only type definitions that may be depended on by other
-# headers without depending on all of :actor.
-# This avoids dependency cycles.
-source_set("types") {
-  sources = [
-    "actor_task_delegate.h",
-    "shared_types.cc",
-    "shared_types.h",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/common:mojo_bindings",
-    "//ui/gfx/geometry",
-  ]
-  deps = [
-    "//chrome/common",
-    "//chrome/common:actor_webui_mojom",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-    "//components/password_manager/core/browser/actor_login:common",
-    "//components/tabs:public",
-    "//third_party/abseil-cpp:absl",
-  ]
-}
-
-source_set("impl_test_support") {
-  testonly = true
-  sources = [
-    "tools/fake_tool.cc",
-    "tools/fake_tool.h",
-    "tools/fake_tool_request.cc",
-    "tools/fake_tool_request.h",
-  ]
-
-  deps = [
-    ":actor",
-    ":impl",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "actor_keyed_service_fake.cc",
-    "actor_keyed_service_fake.h",
-    "actor_test_util.cc",
-    "actor_test_util.h",
-  ]
-
-  deps = [ ":actor" ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser/actor/ui:event_dispatcher",
-    "//chrome/browser/actor/ui:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//content/test:test_support",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "actor_keyed_service_unittest.cc",
-    "actor_metrics_unittest.cc",
-    "actor_task_metadata_unittest.cc",
-    "aggregated_journal_unittest.cc",
-    "safety_list_manager_unittest.cc",
-    "safety_list_unittest.cc",
-    "shared_types_unittest.cc",
-    "site_policy_unittest.cc",
-    "tools/attempt_form_filling_tool_request_unittest.cc",
-  ]
-  deps = [
-    ":actor",
-    ":impl",
-    ":test_support",
-    ":variants",
-    "ui:event_dispatcher",
-    "ui:test_support",
-    "//base/test:test_support",
-    "//chrome/browser/optimization_guide:test_support",
-    "//chrome/test:test_support",
-    "//components/tabs:test_support",
-    "//testing/gtest",
-  ]
-  data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
-  if (enable_glic) {
-    sources += [ "execution_engine_unittest.cc" ]
-    deps += [ ":impl_test_support" ]
-  }
-}
-
-source_set("tools_test_support") {
-  testonly = true
-  public_deps = [ "//base/test:test_support" ]
-  deps = [
-    ":actor",
-    ":impl",
-    ":test_support",
-    "//chrome/browser/optimization_guide:test_support",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/zoom",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//testing/gtest",
-  ]
-  if (enable_glic) {
-    sources = [
-      "tools/observation_delay_test_util.cc",
-      "tools/observation_delay_test_util.h",
-      "tools/page_stability_test_util.cc",
-      "tools/page_stability_test_util.h",
-      "tools/tools_test_util.cc",
-      "tools/tools_test_util.h",
-    ]
-    deps += [ "//chrome/browser/glic" ]
-  }
-}
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "site_policy_browsertest.cc" ]
-  deps = [
-    ":actor",
-    ":impl",
-    ":test_support",
-    ":tools_test_support",
-    "ui:event_dispatcher",
-    "//chrome/browser/autofill/glic:test_support",
-    "//chrome/browser/optimization_guide:test_support",
-    "//chrome/browser/safe_browsing",
-    "//chrome/browser/subscription_eligibility",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/views:file_system_access_test_support",
-    "//chrome/browser/ui/zoom",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//components/favicon/core/test:test_support",
-    "//components/javascript_dialogs",
-    "//components/optimization_guide/core:bloomfilter",
-    "//components/optimization_guide/core:model_execution_test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/common:features",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//content/test:browsertest_support",
-    "//testing/gtest",
-  ]
-
-  if (enable_glic) {
+  if (!skip_android_unmigrated_actor_files) {
     sources += [
-      "actor_functional_browsertest.cc",
-      "actor_keyed_service_browsertest.cc",
-      "actor_policy_checker_browsertest.cc",
-      "execution_engine_browsertest.cc",
-      "execution_engine_origin_gating_browsertest.cc",
-      "tools/action_tracker_for_metrics_browsertest.cc",
-      "tools/attempt_form_filling_tool_browsertest.cc",
-      "tools/attempt_login_tool_browsertest.cc",
-      "tools/click_tool_browsertest.cc",
-      "tools/drag_and_release_tool_browsertest.cc",
-      "tools/history_tool_browsertest.cc",
-      "tools/media_control_tool_browsertest.cc",
-      "tools/mouse_move_tool_browsertest.cc",
-      "tools/navigate_tool_browsertest.cc",
-      "tools/observation_delay_controller_browsertest.cc",
-      "tools/observation_delay_metrics_browsertest.cc",
-      "tools/page_stability_browsertest.cc",
-      "tools/page_stability_metrics_browsertest.cc",
-      "tools/page_tool_browsertest.cc",
-      "tools/script_tool_browsertest.cc",
-      "tools/scroll_to_tool_browsertest.cc",
-      "tools/scroll_tool_browsertest.cc",
-      "tools/select_tool_browsertest.cc",
-      "tools/tab_management_tool_browsertest.cc",
-      "tools/tool_agnostic_browsertest.cc",
-      "tools/type_tool_browsertest.cc",
-      "tools/wait_tool_browsertest.cc",
-      "tools/window_management_tool_browsertest.cc",
+      "action_tracker_for_metrics.cc",
+      "action_tracker_for_metrics.h",
+      "actor_keyed_service.cc",
+      "actor_keyed_service_factory.cc",
+      "actor_metrics.cc",
+      "actor_navigation_throttle.cc",
+      "actor_policy_checker.cc",
+      "actor_tab_data.cc",
+      "actor_task.cc",
+      "actor_task_metadata.cc",
+      "actor_util.cc",
+      "aggregated_journal.cc",
+      "aggregated_journal_file_serializer.cc",
+      "aggregated_journal_in_memory_serializer.cc",
+      "aggregated_journal_serializer.cc",
+      "browser_action_util.cc",
+      "execution_engine.cc",
+      "safety_list.cc",
+      "safety_list.h",
+      "safety_list_manager.cc",
+      "safety_list_manager.h",
+      "site_policy.cc",
+      "tools/attempt_form_filling_tool.cc",
+      "tools/attempt_form_filling_tool.h",
+      "tools/attempt_form_filling_tool_request.cc",
+      "tools/attempt_login_tool.cc",
+      "tools/attempt_login_tool.h",
+      "tools/attempt_login_tool_request.cc",
+      "tools/click_tool_request.cc",
+      "tools/drag_and_release_tool_request.cc",
+      "tools/history_tool.cc",
+      "tools/history_tool.h",
+      "tools/history_tool_request.cc",
+      "tools/media_control_tool.cc",
+      "tools/media_control_tool.h",
+      "tools/media_control_tool_request.cc",
+      "tools/move_mouse_tool_request.cc",
+      "tools/navigate_tool.cc",
+      "tools/navigate_tool.h",
+      "tools/navigate_tool_request.cc",
+      "tools/observation_delay_controller.cc",
+      "tools/observation_delay_metrics.cc",
+      "tools/observation_delay_metrics.h",
+      "tools/page_target_util.cc",
+      "tools/page_target_util.h",
+      "tools/page_tool.cc",
+      "tools/page_tool.h",
+      "tools/page_tool_request.cc",
+      "tools/script_tool_request.cc",
+      "tools/scroll_to_tool_request.cc",
+      "tools/scroll_tool_request.cc",
+      "tools/select_tool_request.cc",
+      "tools/tab_management_tool.cc",
+      "tools/tab_management_tool.h",
+      "tools/tab_management_tool_request.cc",
+      "tools/tool.cc",
+      "tools/tool.h",
+      "tools/tool_callbacks.cc",
+      "tools/tool_callbacks.h",
+      "tools/tool_controller.cc",
+      "tools/tool_request.cc",
+      "tools/type_tool_request.cc",
+      "tools/wait_tool.cc",
+      "tools/wait_tool.h",
+      "tools/wait_tool_request.cc",
+      "tools/window_management_tool.cc",
+      "tools/window_management_tool.h",
+      "tools/window_management_tool_request.cc",
     ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     deps += [
+      ":variants",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/affiliations",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
-      "//components/affiliations/core/browser:test_support",
-      "//components/page_load_metrics/browser:test_support",
+      "//chrome/browser/autofill/glic",
+      "//chrome/browser/favicon",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_io_data",
+      "//chrome/browser/safe_browsing",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/common",
+      "//components/affiliations/core/browser:affiliations",
+      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+      "//components/content_settings/core/common",
+      "//components/favicon/core",
+      "//components/lookalikes/core",
+      "//components/page_load_metrics/browser",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/tracing:tracing_metrics",
+      "//components/variations/service",
+      "//content/public/browser",
+      "//net",
       "//pdf:features",
-      "//ui/base:ozone_buildflags",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/perfetto:libperfetto",
+      "//third_party/perfetto/protos/perfetto/config:zero_gen",
+      "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
+      "//url",
     ]
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
   }
 }
 
-source_set("interactive_ui_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  deps = [
-    ":actor",
-    ":impl",
-    ":test_support",
-    ":tools_test_support",
-    "//cc:test_support",
-    "//chrome/browser/ui:ui_features",
-    "//components/favicon/core/test:test_support",
-    "//content/test:browsertest_support",
-    "//testing/gtest",
-    "//ui/base/interaction:test_support",
-    "//ui/compositor",
-    "//ui/gfx/codec",
-  ]
-  if (enable_glic) {
+if (!skip_android_unmigrated_actor_files) {
+  source_set("variants") {
     sources = [
-      "tools/attempt_login_tool_interactive_ui_test.cc",
-      "tools/select_tool_interactive_ui_test.cc",
+      "tool_request_variant.cc",
+      "tool_request_variant.h",
     ]
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
+    deps = [
+      ":actor",
+      "//base",
+    ]
+  }
+
+  # This target contains only type definitions that may be depended on by other
+  # headers without depending on all of :actor.
+  # This avoids dependency cycles.
+  source_set("types") {
+    sources = [
+      "actor_task_delegate.h",
+      "shared_types.cc",
+      "shared_types.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/common:mojo_bindings",
+      "//ui/gfx/geometry",
+    ]
+    deps = [
+      "//chrome/common",
+      "//chrome/common:actor_webui_mojom",
+      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+      "//components/password_manager/core/browser/actor_login:common",
+      "//components/tabs:public",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+
+  source_set("impl_test_support") {
+    testonly = true
+    sources = [
+      "tools/fake_tool.cc",
+      "tools/fake_tool.h",
+      "tools/fake_tool_request.cc",
+      "tools/fake_tool_request.h",
+    ]
+
+    deps = [
+      ":actor",
+      ":impl",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "actor_keyed_service_fake.cc",
+      "actor_keyed_service_fake.h",
+      "actor_test_util.cc",
+      "actor_test_util.h",
+    ]
+
+    deps = [ ":actor" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/actor/ui:event_dispatcher",
+      "//chrome/browser/actor/ui:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//content/test:test_support",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "actor_keyed_service_unittest.cc",
+      "actor_metrics_unittest.cc",
+      "actor_task_metadata_unittest.cc",
+      "aggregated_journal_unittest.cc",
+      "safety_list_manager_unittest.cc",
+      "safety_list_unittest.cc",
+      "shared_types_unittest.cc",
+      "site_policy_unittest.cc",
+      "tools/attempt_form_filling_tool_request_unittest.cc",
+    ]
+    deps = [
+      ":actor",
+      ":impl",
+      ":test_support",
+      ":variants",
+      "ui:event_dispatcher",
+      "ui:test_support",
+      "//base/test:test_support",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/test:test_support",
+      "//components/tabs:test_support",
+      "//testing/gtest",
     ]
+    data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
+    if (enable_glic) {
+      sources += [ "execution_engine_unittest.cc" ]
+      deps += [ ":impl_test_support" ]
+    }
+  }
+
+  source_set("tools_test_support") {
+    testonly = true
+    public_deps = [ "//base/test:test_support" ]
+    deps = [
+      ":actor",
+      ":impl",
+      ":test_support",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/zoom",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//testing/gtest",
+    ]
+    if (enable_glic) {
+      sources = [
+        "tools/observation_delay_test_util.cc",
+        "tools/observation_delay_test_util.h",
+        "tools/page_stability_test_util.cc",
+        "tools/page_stability_test_util.h",
+        "tools/tools_test_util.cc",
+        "tools/tools_test_util.h",
+      ]
+      deps += [ "//chrome/browser/glic" ]
+    }
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "site_policy_browsertest.cc" ]
+    deps = [
+      ":actor",
+      ":impl",
+      ":test_support",
+      ":tools_test_support",
+      "ui:event_dispatcher",
+      "//chrome/browser/autofill/glic:test_support",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/safe_browsing",
+      "//chrome/browser/subscription_eligibility",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views:file_system_access_test_support",
+      "//chrome/browser/ui/zoom",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/favicon/core/test:test_support",
+      "//components/javascript_dialogs",
+      "//components/optimization_guide/core:bloomfilter",
+      "//components/optimization_guide/core:model_execution_test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/core/common:features",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//content/test:browsertest_support",
+      "//testing/gtest",
+    ]
+
+    if (enable_glic) {
+      sources += [
+        "actor_functional_browsertest.cc",
+        "actor_keyed_service_browsertest.cc",
+        "actor_policy_checker_browsertest.cc",
+        "execution_engine_browsertest.cc",
+        "execution_engine_origin_gating_browsertest.cc",
+        "tools/action_tracker_for_metrics_browsertest.cc",
+        "tools/attempt_form_filling_tool_browsertest.cc",
+        "tools/attempt_login_tool_browsertest.cc",
+        "tools/click_tool_browsertest.cc",
+        "tools/drag_and_release_tool_browsertest.cc",
+        "tools/history_tool_browsertest.cc",
+        "tools/media_control_tool_browsertest.cc",
+        "tools/mouse_move_tool_browsertest.cc",
+        "tools/navigate_tool_browsertest.cc",
+        "tools/observation_delay_controller_browsertest.cc",
+        "tools/observation_delay_metrics_browsertest.cc",
+        "tools/page_stability_browsertest.cc",
+        "tools/page_stability_metrics_browsertest.cc",
+        "tools/page_tool_browsertest.cc",
+        "tools/script_tool_browsertest.cc",
+        "tools/scroll_to_tool_browsertest.cc",
+        "tools/scroll_tool_browsertest.cc",
+        "tools/select_tool_browsertest.cc",
+        "tools/tab_management_tool_browsertest.cc",
+        "tools/tool_agnostic_browsertest.cc",
+        "tools/type_tool_browsertest.cc",
+        "tools/wait_tool_browsertest.cc",
+        "tools/window_management_tool_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/affiliations",
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/test_support",
+        "//components/affiliations/core/browser:test_support",
+        "//components/page_load_metrics/browser:test_support",
+        "//pdf:features",
+        "//ui/base:ozone_buildflags",
+      ]
+    }
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":actor",
+      ":impl",
+      ":test_support",
+      ":tools_test_support",
+      "//cc:test_support",
+      "//chrome/browser/ui:ui_features",
+      "//components/favicon/core/test:test_support",
+      "//content/test:browsertest_support",
+      "//testing/gtest",
+      "//ui/base/interaction:test_support",
+      "//ui/compositor",
+      "//ui/gfx/codec",
+    ]
+    if (enable_glic) {
+      sources = [
+        "tools/attempt_login_tool_interactive_ui_test.cc",
+        "tools/select_tool_interactive_ui_test.cc",
+      ]
+      deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/test_support",
+        "//chrome/browser/optimization_guide:test_support",
+      ]
+    }
   }
 }

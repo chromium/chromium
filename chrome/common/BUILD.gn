@@ -50,6 +50,7 @@ buildflag_header("buildflags") {
   flags = [
     "CHROME_ENABLE_LOGGING_BY_DEFAULT=$chrome_enable_logging_by_default",
     "CHROME_ROOT_STORE_CERT_MANAGEMENT_UI=$chrome_root_store_cert_management_ui",
+    "SKIP_ANDROID_UNMIGRATED_ACTOR_FILES=$skip_android_unmigrated_actor_files",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
@@ -124,6 +125,7 @@ static_library("common_lib") {
     "//chrome/common/win:eventlog_messages",
   ]
   sources = [
+    "actor/task_id.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",
     "chrome_content_client_constants.cc",
@@ -352,7 +354,6 @@ static_library("common_lib") {
       "actor/journal_details_builder.h",
       "actor/page_stability_metrics_common.cc",
       "actor/page_stability_metrics_common.h",
-      "actor/task_id.h",
       "media_galleries/metadata_types.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
@@ -665,6 +666,7 @@ mojom("mojo_bindings") {
   disable_variants = true
 
   sources = [
+    "actor.mojom",
     "chrome_render_frame.mojom",
     "google_accounts_private_api_extension.mojom",
     "media/webrtc_logging.mojom",
@@ -682,24 +684,23 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]
-  } else {
-    sources += [ "actor.mojom" ]
-    cpp_typemaps = [
-      {
-        types = [
-          {
-            mojom = "actor.mojom.TaskId"
-            cpp = "::actor::TaskId"
-          },
-        ]
-        traits_headers = [
-          "actor_mojom_traits.h",
-          "actor/task_id.h",
-        ]
-        traits_public_deps = [ "//base" ]
-      },
-    ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "actor.mojom.TaskId"
+          cpp = "::actor::TaskId"
+        },
+      ]
+      traits_headers = [
+        "actor_mojom_traits.h",
+        "actor/task_id.h",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
 
   if (is_mac) {
     sources += [ "mac/app_shim.mojom" ]
@@ -736,6 +737,10 @@ mojom("mojo_bindings") {
 
   if (enable_glic_android) {
     enabled_features += [ "enable_glic_android" ]
+  }
+
+  if (skip_android_unmigrated_actor_files) {
+    enabled_features += [ "skip_android_unmigrated_actor_files" ]
   }
 
   public_deps = [

@@ -52,6 +52,13 @@ declare_args() {
   # This is temporary, and will eventually be replaced by enable_glic.
   enable_glic_android = is_android
 
+  # Skips unmigrated actor files in the build on Android. This is temporary, and
+  # will eventually be removed once migration is done. Adding this flag likely
+  # means the code needs to be adapted for Android. Once adapted, the final code
+  # should use BUILDFLAG(IS_ANDROID) for Android specific implementation.
+  # TODO(debug.com/470475787): Remove this after migration.
+  skip_android_unmigrated_actor_files = is_android
+
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = enable_src_internal
