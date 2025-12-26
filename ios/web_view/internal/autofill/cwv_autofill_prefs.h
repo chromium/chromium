@@ -23,6 +23,9 @@ inline constexpr char kCWVAutofillVCNUsageEnabled[] =
 inline constexpr char kUseImageFetcherEnabled[] =
     "cwv.autofill.image_fetcher_usage_enabled";
 
+inline constexpr char kUseCardCustomImageEnabled[] =
+    "cwv.autofill.use_card_custom_image_enabled";
+
 // Registers the CWVAutofill preferences for this `pref_registry`.
 void RegisterCWVAutofillPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
 
@@ -37,6 +40,10 @@ bool IsAutofillVCNUsageEnabled(const PrefService* prefs);
 void SetUseImageFetcherEnabled(PrefService* prefs, bool value);
 
 bool IsUseImageFetcherEnabled(const PrefService* prefs);
+
+void SetUseCardCustomImageEnabled(PrefService* prefs, bool value);
+
+bool IsUseCardCustomImagerEnabled(const PrefService* prefs);
 
 }  // namespace ios_web_view
 
