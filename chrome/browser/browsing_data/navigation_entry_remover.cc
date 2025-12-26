@@ -24,8 +24,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -123,13 +123,16 @@ void DeleteTabNavigationEntries(
     }
   }
 #else
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    if (browser->profile() == profile) {
-      for (int i = 0; i < tab_strip->count(); i++)
-        DeleteNavigationEntries(tab_strip->GetWebContentsAt(i), predicate);
-    }
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [profile, &predicate](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile) {
+          TabStripModel* const tab_strip = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip->count(); i++) {
+            DeleteNavigationEntries(tab_strip->GetWebContentsAt(i), predicate);
+          }
+        }
+        return true;
+      });
 #endif
 }
 

@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/views/widget/widget.h"
 
@@ -68,12 +70,14 @@ GlicFocusedBrowserManager::~GlicFocusedBrowserManager() {
 void GlicFocusedBrowserManager::Initialize() {
   BrowserList::GetInstance()->AddObserver(this);
   window_controller_->AddStateObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-    if (browser->IsActive()) {
-      OnBrowserBecameActive(browser);
-    }
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        if (browser->IsActive()) {
+          OnBrowserBecameActive(browser);
+        }
+        return true;
+      });
   MaybeUpdateFocusedBrowser();
   is_initialized_ = true;
 }

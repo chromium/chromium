@@ -119,8 +119,7 @@ bool BrowserMatches(BrowserWindowInterface* browser,
     return false;
   }
 
-  if (!DoesBrowserMatchProfile(*browser->GetBrowserForMigrationOnly(), profile,
-                               match_types)) {
+  if (!DoesBrowserMatchProfile(*browser, profile, match_types)) {
     return false;
   }
 
@@ -182,10 +181,6 @@ BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
     bool match_original_profiles,
     bool match_current_workspace,
     int64_t display_id = display::kInvalidDisplayId) {
-  BrowserList* browser_list_impl = BrowserList::GetInstance();
-  if (!browser_list_impl) {
-    return nullptr;
-  }
   uint32_t match_types = kMatchAny;
   if (match_tabbed) {
     match_types |= kMatchNormal;
@@ -209,16 +204,17 @@ BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
 size_t GetBrowserCountImpl(Profile* profile,
                            uint32_t match_types,
                            int64_t display_id = display::kInvalidDisplayId) {
-  BrowserList* browser_list_impl = BrowserList::GetInstance();
   size_t count = 0;
-  if (browser_list_impl) {
-    for (const auto& i : *browser_list_impl) {
-      if (BrowserMatches(i, profile, Browser::WindowFeature::kFeatureNone,
-                         match_types, display_id)) {
-        count++;
-      }
-    }
-  }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&count, profile, match_types,
+       display_id](BrowserWindowInterface* browser) {
+        if (BrowserMatches(browser, profile,
+                           Browser::WindowFeature::kFeatureNone, match_types,
+                           display_id)) {
+          count++;
+        }
+        return true;
+      });
   return count;
 }
 

@@ -24,7 +24,7 @@ include_rules = [
   "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs",

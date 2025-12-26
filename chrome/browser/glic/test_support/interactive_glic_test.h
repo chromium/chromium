@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -782,11 +783,13 @@ class InteractiveGlicTestMixin : public T {
     return Api::CheckResult(
         [] {
           int popup_count = 0;
-          for (Browser* browser : *BrowserList::GetInstance()) {
-            if (browser && browser->is_type_popup()) {
-              popup_count++;
-            }
-          }
+          GlobalBrowserCollection::GetInstance()->ForEach(
+              [&popup_count](BrowserWindowInterface* browser) {
+                if (browser->GetType() == BrowserWindowInterface::TYPE_POPUP) {
+                  popup_count++;
+                }
+                return true;
+              });
           return popup_count;
         },
         expected_count, "CheckPopupCount");

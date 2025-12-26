@@ -235,10 +235,6 @@ void BrowserCloseManager::CloseBrowsers() {
           // happen.
           browser_window->GetTabStripModel()->CloseAllTabs();
           browser->SynchronouslyDestroyBrowser();
-
-          // Destroying the browser should have removed it from the browser
-          // list.
-          DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
         }
         return true;
       });
