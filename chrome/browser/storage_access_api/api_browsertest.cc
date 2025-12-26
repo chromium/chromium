@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -992,6 +993,48 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+}
+
+// Validate that a cross-partition iframe can bypass blob URL partitioning via
+// the Storage Access API. For an equivalent content browser test see
+// BlobUrlBrowserTest.BlobUrlPartitioningNotAlwaysBypassedWithThirdPartyCookieEnabled.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       ThirdPartyCookiesIFrameRequestsAccess_BlobURL) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/empty.html");
+
+  content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
+  content::RenderFrameHost* nested_frame = GetNestedFrame();
+
+  std::string blob_url_string =
+      content::EvalJs(main_frame,
+                      "const blob_url = URL.createObjectURL(new "
+                      "Blob(['<!doctype html><body>potato</body>'], {type: "
+                      "'text/html'}));"
+                      "blob_url;")
+          .ExtractString();
+  GURL blob_url(blob_url_string);
+
+  std::string fetch_blob_url_js = content::JsReplace("fetch($1)", blob_url);
+
+  EXPECT_TRUE(content::ExecJs(main_frame, fetch_blob_url_js));
+  EXPECT_FALSE(content::ExecJs(nested_frame, fetch_blob_url_js));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(
+      storage::test::RequestAndCheckStorageAccessForFrame(nested_frame));
+
+  EXPECT_TRUE(content::ExecJs(nested_frame, fetch_blob_url_js));
+
+  EXPECT_TRUE(content::ExecJs(
+      main_frame, content::JsReplace("URL.revokeObjectURL($1)", blob_url)));
+
+  EXPECT_FALSE(content::ExecJs(main_frame, fetch_blob_url_js));
+  EXPECT_FALSE(content::ExecJs(nested_frame, fetch_blob_url_js));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -3194,6 +3237,54 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
                       "  },"
                       "  () => false"
                       ");"));
+}
+
+// Validate that if third-party cookies are allowed but the permission is
+// denied, requestStorageAccess does grant unpartitioned blob URL access.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+                       BeyondCookies_BlobUrlWith3PCAndNoPermission) {
+  // Allow 3PC and deny storage access requests.
+  SetBlockThirdPartyCookies(false);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  // Navigate to a.com as a third-party context and then verify that handle can
+  // be used to create a blob URL accessible from both a first-party and
+  // third-party context.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/empty.html");
+
+  std::string blob_url = content::EvalJs(GetNestedFrame(),
+                                         R"(
+                (async () => {
+                  const handle = await document.requestStorageAccess(
+                      {createObjectURL: true});
+                  const blob_url = handle.createObjectURL(new Blob(['test']));
+                  return blob_url;
+                })();
+                )")
+                             .ExtractString();
+  ASSERT_THAT(blob_url, testing::StartsWith("blob:"));
+
+  std::string fetch_blob_url_js = content::JsReplace("fetch($1)", blob_url);
+
+  EXPECT_TRUE(content::ExecJs(GetPrimaryMainFrame(), fetch_blob_url_js));
+
+  EXPECT_TRUE(content::ExecJs(GetNestedFrame(), fetch_blob_url_js));
+
+  EXPECT_TRUE(content::ExecJs(GetNestedFrame(), content::JsReplace(
+                                                    R"(
+                (async () => {
+                  const handle = await document.requestStorageAccess(
+                      {revokeObjectURL: true});
+                  handle.revokeObjectURL($1);
+                })();
+                )",
+                                                    blob_url)));
+
+  EXPECT_FALSE(content::ExecJs(GetPrimaryMainFrame(), fetch_blob_url_js));
+  EXPECT_FALSE(content::ExecJs(GetNestedFrame(), fetch_blob_url_js));
 }
 
 class StorageAccessAPIAutograntsWithFedCMBrowserTest
