@@ -183,4 +183,23 @@ suite('ContextualTasksAppTest', function() {
     await proxy.callbackRouterRemote.$.flushForTesting();
     assertFalse(composebox.hasAttribute('hidden'));
   });
+
+  test('task details updated in url', async () => {
+    // Set the q query parameter for the AI page.
+    const query = 'abc';
+    const fixtureUrlWithQuery = `${fixtureUrl}?q=${query}`;
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrlWithQuery);
+    BrowserProxyImpl.setInstance(proxy);
+
+    document.body.appendChild(document.createElement('contextual-tasks-app'));
+
+    const taskId = {value: '12345'};
+    proxy.callbackRouterRemote.setTaskDetails(taskId, '1111', '2222');
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    const currentUrl = new URL(window.location.href);
+    assertEquals(taskId.value, currentUrl.searchParams.get('task'));
+    assertEquals('1111', currentUrl.searchParams.get('thread'));
+    assertEquals('2222', currentUrl.searchParams.get('turn'));
+  });
 });

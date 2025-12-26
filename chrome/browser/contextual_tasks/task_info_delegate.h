@@ -20,6 +20,7 @@ class TaskInfoDelegate {
   virtual void SetTaskId(std::optional<base::Uuid> id) = 0;
   virtual const std::optional<std::string>& GetThreadId() = 0;
   virtual void SetThreadId(std::optional<std::string> id) = 0;
+  virtual void SetThreadTurnId(std::optional<std::string> id) = 0;
   virtual const std::optional<std::string>& GetThreadTitle() = 0;
   virtual void SetThreadTitle(std::optional<std::string> title) = 0;
   virtual void SetIsAiPage(bool is_ai_page) = 0;
