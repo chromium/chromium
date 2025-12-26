@@ -17,16 +17,20 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ViewportTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
-import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Browser test for {@link TopControlsStacker}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -35,34 +39,41 @@ import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
 })
+@EnableFeatures({
+    ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+    ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
+})
+@DisableFeatures({ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class BrowserControlsPTTest {
 
     @Rule
-    public AutoResetCtaTransitTestRule sActivityTestRule =
+    public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private TopBottomLinksPageStation.TopFacility mTopFacility;
     private ChromeTabbedActivity mActivity;
     private View mControlContainer;
+    private ViewportTestUtils mViewportTestUtils;
 
     @Before
     public void setup() {
-        var blankPage = sActivityTestRule.startOnBlankPage();
+        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
+        mViewportTestUtils.setUpForBrowserControls();
+
+        var blankPage = mActivityTestRule.startOnBlankPage();
         var pair =
                 TopBottomLinksPageStation.loadPage(
-                        sActivityTestRule.getActivityTestRule(), blankPage);
+                        mActivityTestRule.getActivityTestRule(), blankPage);
         mTopFacility = pair.second;
-        mActivity = sActivityTestRule.getActivity();
+        mActivity = mActivityTestRule.getActivity();
         mControlContainer = mActivity.findViewById(R.id.control_container);
 
-        FullscreenManagerTestUtils.disableBrowserOverrides();
-        ThreadUtils.runOnUiThreadBlocking(
-                TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
+        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(mActivity);
     }
 
     @Test
     @LargeTest
-    @DisabledTest(message = "Flaky, see crbug.com/455947814")
     public void topControlsScroll() {
         waitForControlsVisibility(true);
 
@@ -75,21 +86,29 @@ public class BrowserControlsPTTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "Flaky, see crbug.com/455558607")
     public void topControlsScrollingDisabled() {
         // before test case - set scrolling disabled
         TopControlsStacker topControlsStacker =
                 mActivity.getRootUiCoordinatorForTesting().getTopControlsStacker();
-        ThreadUtils.runOnUiThreadBlocking(() -> topControlsStacker.setScrollingDisabled(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    topControlsStacker.setScrollingDisabled(true);
+                    topControlsStacker.requestLayerUpdateSync(false);
+                });
 
         mTopFacility.scrollToBottom();
         waitForControlsVisibility(true);
 
         // after test case - set scrolling back.
-        ThreadUtils.runOnUiThreadBlocking(() -> topControlsStacker.setScrollingDisabled(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    topControlsStacker.setScrollingDisabled(false);
+                    topControlsStacker.requestLayerUpdateSync(false);
+                });
     }
 
     private void waitForControlsVisibility(boolean visible) {
+        mViewportTestUtils.waitForBrowserControlsState(visible);
         int expectedVisibility = visible ? View.VISIBLE : View.INVISIBLE;
         CriteriaHelper.pollUiThread(() -> mControlContainer.getVisibility() == expectedVisibility);
     }
