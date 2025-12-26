@@ -2,66 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 
 #include "base/values.h"
-#include "components/os_crypt/async/common/encryptor.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
-#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace os_crypt_async {
+class Encryptor;
 class OSCryptAsync;
-}
+}  // namespace os_crypt_async
 
 namespace safe_browsing {
+class WebUIInfoSingleton;
+class WebUIInfoSingletonEventObserver;
 
-class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
+class SafeBrowsingUIHandler {
  public:
-  // A delegate class that communicates the changes received by the
-  // WebUIInfoSingletonEventObserver to the SafeBrowsingUIHandler for the
-  // purpose of notify JavaScript listeners.
-  class ObserverDelegate : public WebUIInfoSingletonEventObserver::Delegate {
-   public:
-    explicit ObserverDelegate(SafeBrowsingUIHandler& handler);
-    ~ObserverDelegate() override;
-
-    // WebUIInfoSingletonEventObserver::Delegate::
-    base::Value::Dict GetFormattedTailoredVerdictOverride() override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::Value value) override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::Value::List& list) override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::Value::Dict dict) override;
-
-   private:
-    raw_ref<SafeBrowsingUIHandler> handler_;
-  };
-
   SafeBrowsingUIHandler(
-      content::BrowserContext* context,
       std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
       os_crypt_async::OSCryptAsync* os_crypt_async);
-
   SafeBrowsingUIHandler(const SafeBrowsingUIHandler&) = delete;
   SafeBrowsingUIHandler& operator=(const SafeBrowsingUIHandler&) = delete;
-
-  ~SafeBrowsingUIHandler() override;
-
-  // Callback when Javascript becomes allowed in the WebUI.
-  void OnJavascriptAllowed() override;
-
-  // Callback when Javascript becomes disallowed in the WebUI.
-  void OnJavascriptDisallowed() override;
+  ~SafeBrowsingUIHandler();
 
   // Get the experiments that are currently enabled per Chrome instance.
   void GetExperiments(const base::Value::List& args);
@@ -142,15 +111,6 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // since the oldest currently open chrome://safe-browsing tab was opened.
   void GetHPRTLookupResponses(const base::Value::List& args);
 
-  // Get the current referrer chain for a given URL.
-  void GetReferrerChain(const base::Value::List& args);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Get the referring app info that launches Chrome on Android. Always set to
-  // null if it's called from platforms other than Android.
-  void GetReferringAppInfo(const base::Value::List& args);
-#endif
-
   // Get the list of log messages that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetLogMessages(const base::Value::List& args);
@@ -173,27 +133,27 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Clears the current tailored verdict override.
   void ClearTailoredVerdictOverride(const base::Value::List& args);
 
-  // Register callbacks for WebUI messages.
-  void RegisterMessages() override;
+  // Resolves Javascript requests initiated with returned promises.
+  virtual void ResolveCallback(const base::ValueView callback_id,
+                               const base::ValueView response) = 0;
 
   // Accessor method that returns the observer object.
-  WebUIInfoSingletonEventObserver* event_observer();
+  virtual WebUIInfoSingletonEventObserver* event_observer() = 0;
 
-  // Sets the WebUI for testing
-  void SetWebUIForTesting(content::WebUI* web_ui);
+  // Accessor method that returns the user PrefService object.
+  virtual PrefService* user_prefs() = 0;
 
- private:
-  // Notifies JS listeners of changes.
-  template <typename... Values>
-  void NotifyWebUIListener(std::string_view event_name,
-                           const Values&... values) {
-    AllowJavascript();
-    FireWebUIListener(event_name, values...);
-  }
+  // Accessor method that returns the CookieManager object.
+  virtual mojo::Remote<network::mojom::CookieManager> cookie_manager() = 0;
 
+  // Accessor method that returns the WebUIInfoSingleton object.
+  virtual WebUIInfoSingleton* web_ui_info_singleton() = 0;
+
+ protected:
   // Gets the tailored verdict override in a format for displaying.
   base::Value::Dict GetFormattedTailoredVerdictOverride();
 
+ private:
   // Sends formatted tailored verdict override information to the WebUI.
   void ResolveTailoredVerdictOverrideCallback(const std::string& callback_id);
 
@@ -204,25 +164,16 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void GetSavedPasswordsImpl(const std::string& callback_id,
                              os_crypt_async::Encryptor encryptor);
 
-  raw_ptr<content::BrowserContext> browser_context_;
-
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
-
-  // List that keeps all the WebUI listener objects.
-  static std::vector<SafeBrowsingUIHandler*> webui_list_;
 
   // Returns PrefService for local state.
   std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate_;
 
   const raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
-  // An observer object that waits for changes to the WebUIInfoSingleton and
-  // updates the SafeBrowsingUIHandler.
-  std::unique_ptr<WebUIInfoSingletonEventObserver> event_observer_;
-
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
 };
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_

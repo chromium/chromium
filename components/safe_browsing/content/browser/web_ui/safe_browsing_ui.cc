@@ -6,7 +6,7 @@
 
 #include "components/grit/safe_browsing_resources.h"
 #include "components/grit/safe_browsing_resources_map.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +29,7 @@ SafeBrowsingUI::SafeBrowsingUI(
 
   // Register callback handler.
   // Handles messages from JavaScript to C++ via chrome.send().
-  web_ui->AddMessageHandler(std::make_unique<SafeBrowsingUIHandler>(
+  web_ui->AddMessageHandler(std::make_unique<SafeBrowsingContentUIHandler>(
       browser_context, std::move(delegate), os_crypt_async));
 
   // Add required resources.

@@ -24,6 +24,33 @@ source_set("info_singleton") {
   ]
 }
 
+source_set("handler") {
+  sources = [
+    "safe_browsing_ui_handler.cc",
+    "safe_browsing_ui_handler.h",
+  ]
+
+  deps = [
+    ":event_observer",
+    ":event_observer_impl",
+    ":info_singleton",
+    ":local_state_delegate",
+    ":util",
+    "//base",
+    "//components/os_crypt/async/browser",
+    "//components/password_manager/core/browser:hash_password_manager",
+    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+    "//components/user_prefs",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+}
+
 source_set("event_observer") {
   sources = [ "web_ui_info_singleton_event_observer.h" ]
 

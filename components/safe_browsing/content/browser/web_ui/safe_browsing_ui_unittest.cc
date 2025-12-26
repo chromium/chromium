@@ -7,7 +7,7 @@
 #include "base/test/values_test_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,16 +31,16 @@ class SafeBrowsingUITest : public testing::Test {
     return member_int_;
   }
 
-  SafeBrowsingUIHandler* RegisterNewHandler() {
-    auto handler_unique = std::make_unique<SafeBrowsingUIHandler>(
+  SafeBrowsingContentUIHandler* RegisterNewHandler() {
+    auto handler_unique = std::make_unique<SafeBrowsingContentUIHandler>(
         &browser_context_, nullptr, os_crypt_async_.get());
 
-    SafeBrowsingUIHandler* handler = handler_unique.get();
+    SafeBrowsingContentUIHandler* handler = handler_unique.get();
     handler->SetWebUIForTesting(&web_ui_);
     // Calling AllowJavascript will register the handler as a web UI instance
     // for WebUIContentInfoSingleton::GetInstance(). We do this instead of
     // registering the instance directly because otherwise, the first
-    // SafeBrowsingUIHandler call to AllowJavascript will re-register the
+    // SafeBrowsingContentUIHandler call to AllowJavascript will re-register the
     // instance.
     handler->AllowJavascriptForTesting();
 
@@ -48,7 +48,7 @@ class SafeBrowsingUITest : public testing::Test {
     return handler;
   }
 
-  void UnregisterHandler(SafeBrowsingUIHandler* handler) {
+  void UnregisterHandler(SafeBrowsingContentUIHandler* handler) {
     WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
         handler->event_observer());
   }
@@ -69,7 +69,7 @@ TEST_F(SafeBrowsingUITest, CRSBLOGDoesNotEvaluateWhenNoListeners) {
   EXPECT_EQ(member_int_, 0);
 
   // Register a listener, so SetMemberInt() will be evaluated.
-  SafeBrowsingUIHandler* handler = RegisterNewHandler();
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
 
   CRSBLOG << SetMemberInt(1);
   EXPECT_EQ(member_int_, 1);
@@ -78,7 +78,7 @@ TEST_F(SafeBrowsingUITest, CRSBLOGDoesNotEvaluateWhenNoListeners) {
 }
 
 TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
-  SafeBrowsingUIHandler* handler = RegisterNewHandler();
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
   ASSERT_EQ(0u, web_ui_.call_data().size());
 
   // Create request.
