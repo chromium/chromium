@@ -3618,6 +3618,17 @@ inline constexpr char kPrivacySandboxInternalsName[] =
 inline constexpr char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
 
+inline constexpr char kPrivateMetricsEnablePumaName[] =
+    "Enable Private User Metrics";
+inline constexpr char kPrivateMetricsEnablePumaDescription[] =
+    "Enables collection of Private User Metrics.";
+
+inline constexpr char kPrivateMetricsEnablePumaRcName[] =
+    "Enable Private User Metrics for Regional Capabilities";
+inline constexpr char kPrivateMetricsEnablePumaRcDescription[] =
+    "Enables collection of Private User Metrics for Regional Capabilities. For "
+    "it to work, Private User Metrics need to be enabled too.";
+
 inline constexpr char kProfileSignalsReportingEnabledName[] =
     "Profile Signals Reporting Enabled";
 inline constexpr char kProfileSignalsReportingEnabledDescription[] =

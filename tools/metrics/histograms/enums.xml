@@ -11627,6 +11627,7 @@ from previous Chrome versions.
   <int value="-972945109" label="NtpRealbox:disabled"/>
   <int value="-972737445" label="ArcUseAuthEndpoint:disabled"/>
   <int value="-972425050" label="gesture-editing"/>
+  <int value="-970536287" label="PrivateMetricsPuma:enabled"/>
   <int value="-970201112"
       label="AutofillEnableDependentLocalityParsing:enabled"/>
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
@@ -14560,6 +14561,7 @@ from previous Chrome versions.
   <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
+  <int value="69812526" label="PrivateMetricsPumaRc:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>
   <int value="72097284" label="SmdsSupport:disabled"/>
   <int value="73425444"
@@ -19362,6 +19364,7 @@ from previous Chrome versions.
   <int value="1734685331" label="NtpShoppingTasksModule:enabled"/>
   <int value="1735934914" label="OverlayScrollbarFlashWhenMouseEnter:disabled"/>
   <int value="1736698988" label="FsNosymfollow:disabled"/>
+  <int value="1736788240" label="PrivateMetricsPumaRc:enabled"/>
   <int value="1737406099" label="TrustSafetySentimentSurvey:disabled"/>
   <int value="1738142596" label="AndroidUseCorrectWindowBounds:enabled"/>
   <int value="1738520473" label="SystemTrayMicGainSetting:disabled"/>
@@ -20084,6 +20087,7 @@ from previous Chrome versions.
   <int value="1978633725" label="EnableWifiQos:disabled"/>
   <int value="1979222611" label="XRSandbox:disabled"/>
   <int value="1979252604" label="ShareCrowLaunchTab:disabled"/>
+  <int value="1979252951" label="PrivateMetricsPuma:disabled"/>
   <int value="1979472169" label="TabGroupsFeedback:disabled"/>
   <int value="1979536751" label="lacros-availability-policy"/>
   <int value="1980011075" label="debug-packed-apps"/>

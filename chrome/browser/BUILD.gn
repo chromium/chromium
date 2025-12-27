@@ -2253,6 +2253,7 @@ static_library("browser") {
     "//components/metrics:ui",
     "//components/metrics/demographics",
     "//components/metrics/private_metrics",
+    "//components/metrics/private_metrics:private_metrics_features",
     "//components/metrics/structured",
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:structured_metrics_validator",
