@@ -120,8 +120,7 @@ mojom::TabStripService::GetTabResult TabStripServiceImpl::GetTab(
     const tabs_api::NodeId& tab_mojom_id) {
   auto session = session_controller_->CreateSession();
 
-  RETURN_IF_ERROR(utils::CheckIsContentType(tab_mojom_id));
-  ASSIGN_OR_RETURN(auto tab_id, utils::GetNativeTabId(tab_mojom_id));
+  ASSIGN_OR_RETURN(auto tab_id, utils::GetContentNativeTabId(tab_mojom_id));
 
   tabs_api::mojom::TabPtr tab_result;
   // TODO (crbug.com/412709270) TabStripModel or TabCollections should have an
@@ -192,17 +191,8 @@ mojom::TabStripService::CloseTabsResult TabStripServiceImpl::CloseTabs(
 
   std::vector<int32_t> tab_content_targets;
   for (const auto& id : ids) {
-    if (id.Type() != tabs_api::NodeId::Type::kContent) {
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kUnimplemented,
-          "only content tab closing has been implemented right now"));
-    }
-    int32_t numeric_id;
-    if (!base::StringToInt(id.Id(), &numeric_id)) {
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument, "invalid tab content id"));
-    }
-    tab_content_targets.push_back(numeric_id);
+    ASSIGN_OR_RETURN(auto content_id, utils::GetContentNativeTabId(id));
+    tab_content_targets.push_back(content_id);
   }
 
   std::vector<size_t> tab_strip_indices;
@@ -231,13 +221,7 @@ mojom::TabStripService::ActivateTabResult TabStripServiceImpl::ActivateTab(
     const tabs_api::NodeId& id) {
   auto session = session_controller_->CreateSession();
 
-  if (id.Type() != tabs_api::NodeId::Type::kContent) {
-    return base::unexpected(
-        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
-                                     "only a content tab id can be provided"));
-  }
-
-  ASSIGN_OR_RETURN(auto tab_id, utils::GetNativeTabId(id));
+  ASSIGN_OR_RETURN(auto tab_id, utils::GetContentNativeTabId(id));
 
   auto maybe_idx =
       tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(tab_id));
@@ -275,19 +259,12 @@ TabStripServiceImpl::SetSelectedTabs(
 
   std::vector<tabs::TabHandle> selection_handles;
   for (auto& id : selection) {
-    int32_t handle_id;
-    if (!base::StringToInt(id.Id(), &handle_id)) {
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument, "id is malformed"));
-    }
+    ASSIGN_OR_RETURN(auto handle_id, utils::GetNativeTabId(id));
     selection_handles.push_back(tabs::TabHandle(handle_id));
   }
 
-  int32_t activate_handle_id;
-  if (!base::StringToInt(tab_to_activate.Id(), &activate_handle_id)) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "activate id is malformed"));
-  }
+  ASSIGN_OR_RETURN(auto activate_handle_id,
+                   utils::GetNativeTabId(tab_to_activate));
 
   tab_strip_model_adapter_->SetTabSelection(
       selection_handles, tabs::TabHandle(activate_handle_id));
@@ -372,13 +349,7 @@ TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                                         const gfx::Point& location) {
   auto session = session_controller_->CreateSession();
 
-  if (tab_id.Type() != tabs_api::NodeId::Type::kContent) {
-    return base::unexpected(
-        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
-                                     "only a content tab id can be provided"));
-  }
-
-  ASSIGN_OR_RETURN(auto handle_id, utils::GetNativeTabId(tab_id));
+  ASSIGN_OR_RETURN(auto handle_id, utils::GetContentNativeTabId(tab_id));
 
   auto maybe_idx =
       tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(handle_id));

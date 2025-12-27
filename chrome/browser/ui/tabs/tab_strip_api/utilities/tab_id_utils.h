@@ -16,6 +16,11 @@ base::expected<void, mojo_base::mojom::ErrorPtr> CheckIsContentType(
 base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetNativeTabId(
     const NodeId& node_id);
 
+// Gets the native id for a content tab. Error if the id is not for a content
+// type.
+base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetContentNativeTabId(
+    const NodeId& node_id);
+
 }  // namespace tabs_api::utils
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_UTILITIES_TAB_ID_UTILS_H_

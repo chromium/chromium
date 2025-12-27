@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_id_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected_macros.h"
 
 namespace tabs_api::utils {
 
@@ -26,6 +27,13 @@ base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetNativeTabId(
         mojo_base::mojom::Code::kInvalidArgument, "invalid tab id provided"));
   }
   return tab_id;
+}
+
+base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetContentNativeTabId(
+    const NodeId& node_id) {
+  RETURN_IF_ERROR(CheckIsContentType(node_id));
+  ASSIGN_OR_RETURN(auto native, GetNativeTabId(node_id));
+  return native;
 }
 
 }  // namespace tabs_api::utils

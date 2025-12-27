@@ -32,4 +32,15 @@ TEST(TabStripApiUtilsTest, GetNativeTabId_BadType) {
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
 
+TEST(TabStripApiUtilsTest, GetContentNativeTabId) {
+  auto result = GetContentNativeTabId(NodeId(NodeId::Type::kContent, "123"));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(123, result.value());
+}
+
+TEST(TabStripApiUtilsTest, GetContentNativeTabId_Invalid) {
+  auto result = GetContentNativeTabId(NodeId(NodeId::Type::kInvalid, "123"));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
 }  // namespace tabs_api::utils
