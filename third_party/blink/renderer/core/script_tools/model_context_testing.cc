@@ -13,9 +13,7 @@ namespace blink {
 ModelContextTesting::ModelContextTesting(ModelContext* model_context)
     : model_context_(model_context) {}
 
-HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools(
-    ScriptState* state,
-    ExceptionState& exception_state) {
+HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
   HeapVector<Member<RegisteredTool>> tools;
   model_context_->ForEachScriptTool(
       [&tools](const mojom::blink::ScriptTool& mojom_tool) {
@@ -29,12 +27,11 @@ HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools(
 }
 
 ScriptPromise<IDLString> ModelContextTesting::executeTool(
-    ScriptState* state,
+    ScriptState* script_state,
     String tool_name,
-    String input_arguments,
-    ExceptionState& exception_state) {
+    String input_arguments) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
 
   ScriptPromise promise = resolver->Promise();
 
@@ -62,9 +59,7 @@ ScriptPromise<IDLString> ModelContextTesting::executeTool(
 }
 
 void ModelContextTesting::registerToolsChangedCallback(
-    ScriptState* state,
-    V8ToolsChangedCallback* callback,
-    ExceptionState& exception_state) {
+    V8ToolsChangedCallback* callback) {
   if (!callback) {
     tools_changed_callback_ = nullptr;
     model_context_->SetToolsChangedCallback(std::nullopt);

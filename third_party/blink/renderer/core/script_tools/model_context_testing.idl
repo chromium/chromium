@@ -11,11 +11,9 @@ dictionary RegisteredTool {
 callback ToolsChangedCallback = void ();
 
 [
-    ImplementedAs=ModelContextTesting,
     RuntimeEnabled=WebMCPTesting
 ] interface ModelContextTesting {
-  [CallWith=ScriptState, RaisesException] sequence<RegisteredTool> listTools();
-  [CallWith=ScriptState, RaisesException] Promise<DOMString> executeTool(
-  DOMString tool_name, DOMString input_arguments);
-  [CallWith=ScriptState, RaisesException] undefined registerToolsChangedCallback(ToolsChangedCallback callback);
+  sequence<RegisteredTool> listTools();
+  [CallWith=ScriptState] Promise<DOMString> executeTool(DOMString tool_name, DOMString input_arguments);
+  undefined registerToolsChangedCallback(ToolsChangedCallback callback);
 };

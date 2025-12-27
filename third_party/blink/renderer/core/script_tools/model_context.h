@@ -30,14 +30,12 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void registerTool(ScriptState* state,
                     ToolRegistrationParams* params,
                     ExceptionState& exception_state);
-  void unregisterTool(ScriptState* state,
-                      const String& name,
-                      ExceptionState& exception_state);
+  void unregisterTool(const String& name, ExceptionState& exception_state);
 
   void provideContext(ScriptState* state,
                       ProvideContextParams* params,
                       ExceptionState& exception_state);
-  void clearContext(ScriptState* state, ExceptionState& exception_state);
+  void clearContext();
 
   void ExecuteTool(const String& name,
                    const String& input_arguments,

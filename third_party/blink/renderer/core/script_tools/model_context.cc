@@ -101,8 +101,7 @@ void ModelContext::registerTool(ScriptState* script_state,
   }
 }
 
-void ModelContext::unregisterTool(ScriptState* script_state,
-                                  const String& tool_name,
+void ModelContext::unregisterTool(const String& tool_name,
                                   ExceptionState& exception_state) {
   auto it = tool_map_.find(tool_name);
   if (it == tool_map_.end()) {
@@ -128,8 +127,7 @@ void ModelContext::provideContext(ScriptState* script_state,
   }
 }
 
-void ModelContext::clearContext(ScriptState* script_state,
-                                ExceptionState& exception_state) {
+void ModelContext::clearContext() {
   tool_map_.clear();
   OnToolsChanged();
 }
