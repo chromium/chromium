@@ -149,21 +149,43 @@ public interface ChromeAndroidTask {
     int getBrowserWindowType();
 
     /**
-     * Sets the current {@link ActivityScopedObjects}.
+     * Adds an instance of {@link ActivityScopedObjects}.
      *
      * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but {@link
      * ActivityScopedObjects} is associated with a {@code ChromeActivity}, this method is needed to
-     * support the difference in their lifecycles.
+     * support the difference in their lifecycles and the fact that a Task can contain multiple
+     * {@code Activities}.
      *
-     * <p>We assume there is at most one {@link ActivityScopedObjects} associated with a {@link
-     * ChromeAndroidTask} at any time. If this method is called when this {@link ChromeAndroidTask}
-     * already has an {@link ActivityScopedObjects}, an {@link AssertionError} will occur.
+     * <p>The most recent {@link ActivityScopedObjects} added to a Task is considered as objects for
+     * the "top" {@code Activity} in the Task.
      *
      * @param activityScopedObjects The {@link ActivityScopedObjects} to be associated with this
      *     {@link ChromeAndroidTask}.
-     * @see #clearActivityScopedObjects()
+     * @see #removeActivityScopedObjects
      */
-    void setActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
+    void addActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
+
+    /**
+     * Removes the {@link ActivityScopedObjects} matching the given {@link ActivityWindowAndroid}.
+     *
+     * <p>This method should be called when the {@link ActivityWindowAndroid} is about to be
+     * destroyed.
+     *
+     * <p>Note that this method may not remove {@link ActivityScopedObjects} for the top {@code
+     * Activity}, as an Android Task isn't an FIFO stack. For example, the system can destroy an
+     * {@code Activity} in the background and keep the foreground {@code Activity}.
+     *
+     * @see #addActivityScopedObjects
+     */
+    void removeActivityScopedObjects(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
+     * Returns the top {@link ActivityWindowAndroid} in this Task, or {@code null} if there is none.
+     *
+     * @see #addActivityScopedObjects
+     * @see #removeActivityScopedObjects
+     */
+    @Nullable ActivityWindowAndroid getTopActivityWindowAndroid();
 
     /**
      * Called when native initialization has finished.
@@ -171,22 +193,6 @@ public interface ChromeAndroidTask {
      * <p>This signals when this {@link ChromeAndroidTask} is fully initialized.
      */
     void onNativeInitializationFinished();
-
-    /**
-     * Convenience API to return the {@link ActivityWindowAndroid} in {@link ActivityScopedObjects},
-     * or {@code null} if there is none.
-     */
-    @Nullable ActivityWindowAndroid getActivityWindowAndroid();
-
-    /**
-     * Clears the current {@link ActivityScopedObjects}.
-     *
-     * <p>This method should be called when the {@code Activity} for the current {@link
-     * ActivityScopedObjects} is about to be destroyed.
-     *
-     * @see #setActivityScopedObjects
-     */
-    void clearActivityScopedObjects();
 
     /**
      * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.

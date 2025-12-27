@@ -198,7 +198,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param isPendingTask If true, the returned {@link ChromeAndroidTask} will be in the pending
      *     state. The returned mock dependencies will not be connected with the pending {@link
      *     ChromeAndroidTask}. To connect the mocks with the pending {@link ChromeAndroidTask}, pass
-     *     them to {@link ChromeAndroidTask#setActivityScopedObjects}.
+     *     them to {@link ChromeAndroidTask#addActivityScopedObjects}.
      * @param isDesktopMode if true, mock the activity in a desktop mode with proper insets and
      *     screen bounds.
      * @return A new instance of {@link ChromeAndroidTaskWithMockDeps}.
