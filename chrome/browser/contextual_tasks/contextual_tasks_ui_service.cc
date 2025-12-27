@@ -568,44 +568,48 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
       g_browser_process->GetApplicationLocale(), false);
 }
 
-void ContextualTasksUiService::OnTaskChangedInPanel(
+void ContextualTasksUiService::OnTaskChanged(
     BrowserWindowInterface* browser_window_interface,
     content::WebContents* web_contents,
-    const base::Uuid& task_id) {
-  // If a new thread is started in the panel, affiliated tabs should change
-  // their thread to the new one.
-  base::Uuid new_task_id = task_id;
-  if (!task_id.is_valid()) {
-    // If the panel is in zero state, create an empty task.
-    ContextualTask task = context_controller_->CreateTask();
-    new_task_id = task.GetTaskId();
-  }
-
-  TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
-  content::WebContents* active_contents =
-      tab_strip_model->GetActiveWebContents();
-  SessionID active_id = SessionTabHelper::IdForTab(active_contents);
-
-  if (kTaskScopedSidePanel.Get()) {
-    // If the current tab is associated with any task, change associations for
-    // all tabs associated with that task.
-    std::optional<ContextualTask> current_task =
-        context_controller_->GetContextualTaskForTab(active_id);
-    if (current_task) {
-      std::vector<SessionID> tab_ids =
-          context_controller_->GetTabsAssociatedWithTask(
-              current_task->GetTaskId());
-      for (const auto& id : tab_ids) {
-        context_controller_->AssociateTabWithTask(new_task_id, id);
-      }
+    const base::Uuid& task_id,
+    bool is_shown_in_tab) {
+  if (!is_shown_in_tab && browser_window_interface) {
+    // If a new thread is started in the panel, affiliated tabs should change
+    // their thread to the new one.
+    base::Uuid new_task_id = task_id;
+    if (!task_id.is_valid()) {
+      // If the panel is in zero state, create an empty task.
+      ContextualTask task = context_controller_->CreateTask();
+      new_task_id = task.GetTaskId();
     }
-  } else {
-    context_controller_->AssociateTabWithTask(new_task_id, active_id);
-  }
 
-  ContextualTasksSidePanelCoordinator* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
-  coordinator->OnTaskChanged(web_contents, new_task_id);
+    TabStripModel* tab_strip_model =
+        browser_window_interface->GetTabStripModel();
+    content::WebContents* active_contents =
+        tab_strip_model->GetActiveWebContents();
+    SessionID active_id = SessionTabHelper::IdForTab(active_contents);
+
+    if (kTaskScopedSidePanel.Get()) {
+      // If the current tab is associated with any task, change associations for
+      // all tabs associated with that task.
+      std::optional<ContextualTask> current_task =
+          context_controller_->GetContextualTaskForTab(active_id);
+      if (current_task) {
+        std::vector<SessionID> tab_ids =
+            context_controller_->GetTabsAssociatedWithTask(
+                current_task->GetTaskId());
+        for (const auto& id : tab_ids) {
+          context_controller_->AssociateTabWithTask(new_task_id, id);
+        }
+      }
+    } else {
+      context_controller_->AssociateTabWithTask(new_task_id, active_id);
+    }
+
+    ContextualTasksSidePanelCoordinator* coordinator =
+        ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+    coordinator->OnTaskChanged(web_contents, new_task_id);
+  }
 }
 
 void ContextualTasksUiService::MoveTaskUiToNewTab(

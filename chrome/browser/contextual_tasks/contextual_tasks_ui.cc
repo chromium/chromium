@@ -818,12 +818,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       task_info_delegate_->GetThreadTitle());
   task_info_delegate_->SetThreadTurnId(mstk);
 
-  if (task_changed && !task_info_delegate_->IsShownInTab() &&
-      task_info_delegate_->GetBrowser()) {
-    ui_service_->OnTaskChangedInPanel(
-        task_info_delegate_->GetBrowser(),
-        task_info_delegate_->GetWebUIWebContents(),
-        task_info_delegate_->GetTaskId().value());
+  if (task_changed) {
+    ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
+                               task_info_delegate_->GetWebUIWebContents(),
+                               task_info_delegate_->GetTaskId().value(),
+                               task_info_delegate_->IsShownInTab());
   }
 }
 
