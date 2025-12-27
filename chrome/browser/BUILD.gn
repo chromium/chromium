@@ -1575,6 +1575,10 @@ static_library("browser") {
   # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/preloading/search_preload:search_preload",
+
+    # TODO(crbug.com/426554250): This needs //chrome/browser/lookalikes which is
+    # not yet modularized.
+    "//chrome/browser/actor:impl",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autofill",
     "//chrome/browser/commerce:impl",
@@ -4517,10 +4521,6 @@ static_library("browser") {
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
-      # TODO(crbug.com/426554250): This needs //chrome/browser/lookalikes which is
-      # not yet modularized.
-      "//chrome/browser/actor:impl",
-
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
 

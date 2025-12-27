@@ -8,8 +8,11 @@ source_set("actor") {
   public = [
     "actor_features.h",
     "actor_metrics.h",
+    "actor_policy_checker.h",
     "actor_switches.h",
+    "actor_tab_data.h",
     "actor_task.h",
+    "actor_task_metadata.h",
     "aggregated_journal.h",
     "tools/click_tool_request.h",
     "tools/drag_and_release_tool_request.h",
@@ -32,6 +35,7 @@ source_set("actor") {
     "//base",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
@@ -39,7 +43,9 @@ source_set("actor") {
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/policy/core/browser",
     "//components/tabs:public",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!skip_android_unmigrated_actor_files) {
@@ -51,9 +57,6 @@ source_set("actor") {
       "actor_keyed_service.h",
       "actor_keyed_service_factory.h",
       "actor_navigation_throttle.h",
-      "actor_policy_checker.h",
-      "actor_tab_data.h",
-      "actor_task_metadata.h",
       "actor_util.h",
       "aggregated_journal_file_serializer.h",
       "aggregated_journal_in_memory_serializer.h",
@@ -75,10 +78,8 @@ source_set("actor") {
       "//chrome/browser/actor/ui:states",
       "//chrome/browser/password_manager/actor_login:service",
       "//chrome/browser/search",
-      "//chrome/browser/subscription_eligibility",
       "//content/public/browser",
       "//content/public/common:buildflags",
-      "//ui/base/unowned_user_data",
     ]
   }
 }
@@ -87,8 +88,11 @@ source_set("impl") {
   sources = [
     "actor_features.cc",
     "actor_metrics.cc",
+    "actor_policy_checker.cc",
     "actor_switches.cc",
+    "actor_tab_data.cc",
     "actor_task.cc",
+    "actor_task_metadata.cc",
     "aggregated_journal.cc",
     "tools/click_tool_request.cc",
     "tools/drag_and_release_tool_request.cc",
@@ -112,11 +116,20 @@ source_set("impl") {
   ]
   deps = [
     ":actor",
+    "//chrome/browser:browser_process",
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/page_load_metrics/browser",
+    "//components/variations/service",
+    "//ui/base/metadata",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (enable_glic || enable_glic_android) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 
   if (!skip_android_unmigrated_actor_files) {
     sources += [
@@ -125,9 +138,6 @@ source_set("impl") {
       "actor_keyed_service.cc",
       "actor_keyed_service_factory.cc",
       "actor_navigation_throttle.cc",
-      "actor_policy_checker.cc",
-      "actor_tab_data.cc",
-      "actor_task_metadata.cc",
       "actor_util.cc",
       "aggregated_journal_file_serializer.cc",
       "aggregated_journal_in_memory_serializer.cc",
@@ -170,7 +180,6 @@ source_set("impl") {
 
     deps += [
       ":variants",
-      "//chrome/browser:browser_process",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/affiliations",
@@ -180,13 +189,11 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/safe_browsing",
-      "//chrome/browser/signin",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/common",
       "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
@@ -197,7 +204,6 @@ source_set("impl") {
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/tracing:tracing_metrics",
-      "//components/variations/service",
       "//content/public/browser",
       "//net",
       "//pdf:features",
@@ -207,10 +213,6 @@ source_set("impl") {
       "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
       "//url",
     ]
-
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
   }
 }
 
