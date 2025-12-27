@@ -12,6 +12,7 @@ source_set("actor") {
 
   deps = [
     "//base",
+    "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/common:actor_webui_mojom",
@@ -20,10 +21,7 @@ source_set("actor") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/actor/ui",
-    ]
+    deps += [ "//chrome/browser/actor/ui" ]
   } else {  #is_android
     deps += [ "//chrome/browser/glic:actor_types_for_migration" ]
   }
