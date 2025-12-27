@@ -9,17 +9,18 @@ common prompts and instructions into a central directory with stubs for bespoke
 IDE/agent integration. Please check with your organization before using GitHub
 Copilot.
 
-## Where is copilot-instructions.md?
-[`copilot-intructions.md`](../copilot-instructions.md) is typically a single
-instruction file that contains default instructions for a workspace. These
-instructions are automatically included in every chat request.
+### About copilot-instructions.md
+`copilot-instructions.md` is a user-local configuration file that defines default
+GitHub Copilot instructions for a workspace. Its contents are automatically
+included in Copilot chat requests when present.
 
-Until the prompt in `copilot-intructions.md` is generally agreed upon for the
-chromium repo, this file is intentionally excluded from the repo, and added to
-the [.gitignore](../.gitignore) for your customization.
+This file is intentionally not included in the Chromium repository. The prompt
+has not yet been standardized across the project, so each contributor is
+expected to create and maintain their own local version of file. The file is ignored in 
+repo and should not be committed.
 
-For generating your own `copilot-intructions.md`, type
-`/create_copilot_instructions` in GitHub Copilot to get started.
+To generate a local `copilot-instructions.md`, run `/create_copilot_instructions`
+in GitHub Copilot to get started.
 
 ## Code Layout
 - [.github/instructions](./instructions/): Custom instructions for specific
