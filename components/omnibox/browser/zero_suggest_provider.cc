@@ -386,6 +386,16 @@ void MaybeAddContextualSuggestParams(
       if (!input.context_tab_url().is_empty()) {
         search_terms_args.current_page_url = input.context_tab_url().spec();
       }
+    } else if (search_terms_args.page_classification ==
+                   metrics::OmniboxEventProto::NTP_COMPOSEBOX &&
+               !client->IsPersonalizedUrlDataCollectionActive() &&
+               !input.context_tab_title().empty()) {
+      // Set `lens_overlay_suggest_inputs` when history sync is disabled, but
+      // delayed context data is found in the input. This is done to switch over
+      // to the "chrome-contextual" client to only retrieve contextual
+      // suggestions.
+      search_terms_args.lens_overlay_suggest_inputs =
+          lens::proto::LensOverlaySuggestInputs();
     }
 
     search_terms_args.additional_query_params =

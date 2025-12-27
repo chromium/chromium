@@ -512,8 +512,7 @@ void ContextualSearchboxHandler::DeleteContext(
     }
 
     contextual_session_handle->DeleteFile(context_token);
-    num_files =
-        contextual_session_handle->GetController()->GetFileInfoList().size();
+    num_files = contextual_session_handle->GetUploadedContextFileInfos().size();
 
     if (contextual_tasks_service_ && associated_tab_id.has_value()) {
       std::optional<base::Uuid> current_task_id = GetTaskId();
@@ -699,7 +698,7 @@ void ContextualSearchboxHandler::SnapshotTabContext(
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
     context_input_data_ =
-        contextual_session_handle->GetController()->GetFileInfoList().size() > 0
+        contextual_session_handle->GetUploadedContextFileInfos().size() > 0
             ? std::nullopt
             : std::optional(*page_content_data);
   }
