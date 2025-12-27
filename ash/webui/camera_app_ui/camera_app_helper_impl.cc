@@ -216,8 +216,8 @@ CameraAppHelperImpl::CameraAppHelperImpl(
   DCHECK(camera_app_ui);
   DCHECK(window);
   window->SetProperty(kCanConsumeSystemKeysKey, true);
-  ScreenBacklight::Get()->AddObserver(this);
-  ash::SessionManagerClient::Get()->AddObserver(this);
+  screen_backlight_observation_.Observe(ScreenBacklight::Get());
+  session_manager_client_observation_.Observe(ash::SessionManagerClient::Get());
   sw_privacy_switch_state_observer_ =
       std::make_unique<media::CrosCameraSWPrivacySwitchStateObserver>(
           base::BindRepeating(
@@ -226,8 +226,6 @@ CameraAppHelperImpl::CameraAppHelperImpl(
 }
 
 CameraAppHelperImpl::~CameraAppHelperImpl() {
-  ash::SessionManagerClient::Get()->RemoveObserver(this);
-  ScreenBacklight::Get()->RemoveObserver(this);
 
   if (pending_intent_id_.has_value()) {
     camera_result_callback_.Run(*pending_intent_id_,

@@ -1155,7 +1155,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   raw_ptr<dbus::ObjectProxy> session_manager_proxy_ = nullptr;
   std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_{
+  base::ObserverList<Observer> observers_{
       SessionManagerClient::kObserverListPolicy};
 
   // Most recent screen-lock state received from session_manager.

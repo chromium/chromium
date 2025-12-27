@@ -506,7 +506,7 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 LoginDisplayHostWebUI::LoginDisplayHostWebUI()
     : LoginDisplayHostCommon(/*update_geolocation_usage_allowed=*/true),
       oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
-  SessionManagerClient::Get()->AddObserver(this);
+  session_manager_client_observation_.Observe(SessionManagerClient::Get());
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
@@ -525,7 +525,6 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   VLOG(4) << __func__;
 
-  SessionManagerClient::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
 
   if (waiting_for_configuration_) {

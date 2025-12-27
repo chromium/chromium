@@ -188,11 +188,10 @@ class DeviceCloudPolicyManagerAshTest
                                                   "test_sn");
     fake_statistics_provider_.SetMachineStatistic(
         ash::system::kHardwareClassKey, "test_hw");
-    session_manager_client_.AddObserver(this);
+    session_manager_client_observation_.Observe(&session_manager_client_);
   }
 
   ~DeviceCloudPolicyManagerAshTest() override {
-    session_manager_client_.RemoveObserver(this);
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
   }
 
@@ -400,6 +399,9 @@ class DeviceCloudPolicyManagerAshTest
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  base::ScopedObservation<ash::SessionManagerClient,
+                          ash::SessionManagerClient::Observer>
+      session_manager_client_observation_{this};
 };
 
 TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
