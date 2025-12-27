@@ -30,6 +30,7 @@ found in the LICENSE file.
     <dimen name="context_menu_small_width">268dp</dimen>
     <dimen name="context_menu_small_lateral_margin">30dp</dimen>
     <dimen name="context_menu_popup_max_width">300dp</dimen>
+    <dimen name="context_menu_popup_min_width">112dp</dimen>
     <dimen name="context_menu_fading_edge_size">52dp</dimen>
     <dimen name="context_menu_popup_border_radius">16dp</dimen>
 </resources>

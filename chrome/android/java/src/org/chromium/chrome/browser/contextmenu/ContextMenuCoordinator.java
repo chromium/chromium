@@ -277,12 +277,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                                 .getDimensionPixelSize(R.dimen.context_menu_small_lateral_margin)
                         : null;
         Integer desiredPopupContentWidth = null;
-        if (isDragDropEnabled) {
-            desiredPopupContentWidth =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.context_menu_popup_max_width);
-        } else if (params.getOpenedFromHighlight()) {
+        if (!isDragDropEnabled) {
             desiredPopupContentWidth =
                     mActivity
                             .getResources()
@@ -411,7 +406,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         ContextMenuListView listView = menu.findViewById(R.id.context_menu_list_view);
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(true);
-        listView.setIsFlyout(true);
         mListViews.add(listView);
 
         ContextMenuDialog dialog =
