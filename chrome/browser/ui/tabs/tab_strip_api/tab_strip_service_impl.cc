@@ -10,6 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter_impl.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_id_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -118,17 +120,8 @@ mojom::TabStripService::GetTabResult TabStripServiceImpl::GetTab(
     const tabs_api::NodeId& tab_mojom_id) {
   auto session = session_controller_->CreateSession();
 
-  if (tab_mojom_id.Type() != tabs_api::NodeId::Type::kContent) {
-    return base::unexpected(
-        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
-                                     "only tab content ids accepted"));
-  }
-
-  int32_t tab_id;
-  if (!base::StringToInt(tab_mojom_id.Id(), &tab_id)) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "invalid tab id provided"));
-  }
+  RETURN_IF_ERROR(utils::CheckIsContentType(tab_mojom_id));
+  ASSIGN_OR_RETURN(auto tab_id, utils::GetNativeTabId(tab_mojom_id));
 
   tabs_api::mojom::TabPtr tab_result;
   // TODO (crbug.com/412709270) TabStripModel or TabCollections should have an
@@ -244,14 +237,10 @@ mojom::TabStripService::ActivateTabResult TabStripServiceImpl::ActivateTab(
                                      "only a content tab id can be provided"));
   }
 
-  int32_t handle_id;
-  if (!base::StringToInt(id.Id(), &handle_id)) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "id is malformed"));
-  }
+  ASSIGN_OR_RETURN(auto tab_id, utils::GetNativeTabId(id));
 
   auto maybe_idx =
-      tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(handle_id));
+      tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(tab_id));
   if (!maybe_idx.has_value()) {
     return base::unexpected(mojo_base::mojom::Error::New(
         mojo_base::mojom::Code::kNotFound, "tab not found"));
@@ -389,11 +378,7 @@ TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                                      "only a content tab id can be provided"));
   }
 
-  int32_t handle_id;
-  if (!base::StringToInt(tab_id.Id(), &handle_id)) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "id is malformed"));
-  }
+  ASSIGN_OR_RETURN(auto handle_id, utils::GetNativeTabId(tab_id));
 
   auto maybe_idx =
       tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(handle_id));

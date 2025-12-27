@@ -6,11 +6,17 @@ source_set("utilities") {
   sources = [
     "event_filters.cc",
     "event_filters.h",
+    "tab_id_utils.cc",
+    "tab_id_utils.h",
     "tab_strip_api_utilities.cc",
     "tab_strip_api_utilities.h",
   ]
 
-  deps = [ "//components/browser_apis/tab_strip:mojom" ]
+  deps = [
+    "//base",
+    "//components/browser_apis/tab_strip:mojom",
+    "//mojo/public/mojom/base",
+  ]
 }
 
 source_set("unit_tests") {
@@ -18,6 +24,7 @@ source_set("unit_tests") {
 
   sources = [
     "event_filters_unittest.cc",
+    "tab_id_utils_unittest.cc",
     "tab_strip_api_utilities_unittest.cc",
   ]
 
