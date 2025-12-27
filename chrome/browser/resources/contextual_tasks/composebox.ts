@@ -165,7 +165,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     }
     tooltip.shouldShow = this.onboardingTooltipIsVisible_;
   }
-
   private shouldShowOnboardingTooltip(): boolean {
     return this.showOnboardingTooltip_ &&
         this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_ &&
@@ -201,6 +200,16 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
     this.$.composebox.focusInput();
     this.$.composebox.clearAutocompleteMatches();
+  }
+
+  startExpandAnimation() {
+    const composebox = this.$.composebox;
+
+    /* Reset state (so it goes from none to expand), then trigger
+     * expanding state
+     */
+    composebox.animationState = GlowAnimationState.NONE;
+    composebox.animationState = GlowAnimationState.EXPANDING;
   }
 }
 

@@ -179,7 +179,7 @@
   background-color: var(--search-background-color);
   display: block;
   height: 100%;
-  opacity: 1;
+  opacity: 0;
   position: absolute;
   top: 0;
   width: 100%;

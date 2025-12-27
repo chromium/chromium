@@ -8,7 +8,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './zero_state_overlay.css.js';
 import {getHtml} from './zero_state_overlay.html.js';
 
-
+export interface ZeroStateOverlayElement {
+  $: {
+    opaqueOverlay: HTMLElement,
+  };
+}
 export class ZeroStateOverlayElement extends CrLitElement {
   static get is() {
     return 'zero-state-overlay';
@@ -34,12 +38,39 @@ export class ZeroStateOverlayElement extends CrLitElement {
       },
     };
   }
+
+  // When called, will toggle fading overlay animation in zero state overlay.
+  startOverlayAnimation() {
+    if (this.currentAnimation_) {
+      this.currentAnimation_.cancel();
+    }
+    this.$.opaqueOverlay.style.display = 'block';
+    this.currentAnimation_ = this.$.opaqueOverlay.animate(
+        [
+          {opacity: 1, display: 'block'},
+          {opacity: 0, display: 'block'},
+        ],
+        {
+          duration: 1200,
+          delay: 1800,
+          easing: 'cubic-bezier(0, 0, 0.58, 1)',
+          fill: 'both',
+        },
+    );
+
+    this.currentAnimation_.onfinish = () => {
+      this.currentAnimation_ = null;
+      this.$.opaqueOverlay.style.display = 'none';
+    };
+  }
+
   accessor isFirstLoad: boolean = false;
   accessor isSidePanel: boolean = false;
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
   protected friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
+  protected currentAnimation_: Animation|null = null;
 }
 declare global {
   interface HtmlElementTagNameMap {
