@@ -88,6 +88,7 @@ public class BrowserControlsPTTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/471837396")
     public void topControlsScrollingDisabled() {
         // before test case - set scrolling disabled
         TopControlsStacker topControlsStacker =
