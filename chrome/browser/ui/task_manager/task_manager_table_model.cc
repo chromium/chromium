@@ -11,7 +11,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
@@ -221,8 +221,7 @@ class TaskManagerValuesStringifier {
 
 #if BUILDFLAG(IS_MAC)
     // System expectation is to show "100 kB", "200 MB", etc.
-    std::u16string memory_text =
-        ui::FormatBytes(memory_usage->AsDeprecatedByteCount());
+    std::u16string memory_text = ui::FormatBytes(memory_usage.value());
 #else
     std::u16string memory_text = base::FormatNumber(memory_usage->InKiB());
     // Adjust number string if necessary.
@@ -270,8 +269,7 @@ class TaskManagerValuesStringifier {
       return zero_string_;
     }
 
-    std::u16string net_byte =
-        ui::FormatSpeed(network_usage.value().AsDeprecatedByteCount());
+    std::u16string net_byte = ui::FormatSpeed(network_usage.value());
     // Force number string to have LTR directionality.
     return base::i18n::GetDisplayStringInLTRDirectionality(net_byte);
   }
@@ -285,10 +283,8 @@ class TaskManagerValuesStringifier {
                                               base::ByteSize used) {
     return l10n_util::GetStringFUTF16(
         IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT,
-        ui::FormatBytesWithUnits(allocated.AsDeprecatedByteCount(),
-                                 ui::DataUnits::kKibibyte, false),
-        ui::FormatBytesWithUnits(used.AsDeprecatedByteCount(),
-                                 ui::DataUnits::kKibibyte, false));
+        ui::FormatBytesWithUnits(allocated, ui::DataUnits::kKibibyte, false),
+        ui::FormatBytesWithUnits(used, ui::DataUnits::kKibibyte, false));
   }
 
   std::u16string GetWebCacheStatText(

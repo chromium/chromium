@@ -8,7 +8,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -539,10 +539,11 @@ static std::string UploadInfoVectorToString(
     } else {
       result += ", ";
     }
-    auto file_size = upload->file_size.has_value()
-                         ? base::UTF16ToUTF8(ui::FormatBytes(
-                               base::ByteCount(*upload->file_size)))
-                         : "";
+    auto file_size =
+        upload->file_size.has_value()
+            ? base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(
+                  base::checked_cast<uint64_t>(*upload->file_size))))
+            : "";
     base::StrAppend(
         &result, {"{state ", UploadInfoStateToString(upload->state),
                   ", upload_id ", upload->upload_id, ", upload_time ",

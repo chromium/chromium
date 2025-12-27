@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -48,7 +48,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
 
 namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
-constexpr base::ByteCount kMemoryUsageThreshold = base::MiB(10);
+constexpr base::ByteSize kMemoryUsageThreshold = base::MiBU(10);
 
 void AddBubbleBodyText(
     ui::DialogModel::Builder* dialog_model_builder,
@@ -112,12 +112,11 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
                        .SetId(kMemorySaverDialogOkButton));
 
-  const base::ByteCount memory_savings =
-      memory_saver::GetDiscardedMemorySavings(web_contents);
+  const base::ByteSize memory_savings = base::ByteSize::FromDeprecatedByteCount(
+      memory_saver::GetDiscardedMemorySavings(web_contents));
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
-      ui::DialogModelLabel::CreatePlainText(
-          ui::FormatBytes(base::ByteCount(memory_savings)));
+      ui::DialogModelLabel::CreatePlainText(ui::FormatBytes(memory_savings));
 
   Profile* const profile = browser->profile();
   const bool is_guest = profile->IsGuestSession();
@@ -125,7 +124,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   if (memory_savings > kMemoryUsageThreshold) {
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
-            std::make_unique<MemorySaverResourceView>(memory_savings),
+            std::make_unique<MemorySaverResourceView>(
+                memory_savings.AsDeprecatedByteCount()),
             views::BubbleDialogModelHost::FieldType::kText),
         kMemorySaverDialogResourceViewElementId);
   }

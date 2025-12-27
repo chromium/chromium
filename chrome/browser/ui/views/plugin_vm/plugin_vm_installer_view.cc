@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -354,7 +355,8 @@ std::u16string PluginVmInstallerView::GetMessage() const {
       return l10n_util::GetStringFUTF16(
           IDS_PLUGIN_VM_INSTALLER_CONFIRMATION_MESSAGE,
           ui::FormatBytesWithUnits(
-              base::ByteCount(plugin_vm_installer_->RequiredFreeDiskSpace()),
+              base::ByteSize(base::checked_cast<uint64_t>(
+                  plugin_vm_installer_->RequiredFreeDiskSpace())),
               ui::DataUnits::kGibibyte,
               /*show_units=*/true));
     case State::kInstalling:
@@ -453,8 +455,8 @@ std::u16string PluginVmInstallerView::GetMessage() const {
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE,
               ui::FormatBytesWithUnits(
-                  base::ByteCount(
-                      plugin_vm_installer_->RequiredFreeDiskSpace()),
+                  base::ByteSize(base::checked_cast<uint64_t>(
+                      plugin_vm_installer_->RequiredFreeDiskSpace())),
                   ui::DataUnits::kGibibyte,
                   /*show_units=*/true),
               app_name_);
@@ -585,14 +587,15 @@ std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
   if (content_length > 0) {
     return l10n_util::GetStringFUTF16(
         IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_MESSAGE,
-        ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+        ui::FormatBytesWithUnits(base::ByteSize(bytes_downloaded),
                                  ui::DataUnits::kGibibyte,
                                  /*(show_units)=*/false),
-        ui::FormatBytesWithUnits(base::ByteCount(content_length),
-                                 ui::DataUnits::kGibibyte,
-                                 /*show_units=*/true));
+        ui::FormatBytesWithUnits(
+            base::ByteSize(base::checked_cast<uint64_t>(content_length)),
+            ui::DataUnits::kGibibyte,
+            /*show_units=*/true));
   } else {
-    return ui::FormatBytesWithUnits(base::ByteCount(bytes_downloaded),
+    return ui::FormatBytesWithUnits(base::ByteSize(bytes_downloaded),
                                     ui::DataUnits::kGibibyte,
                                     /*show_units=*/true);
   }

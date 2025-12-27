@@ -331,7 +331,8 @@ void StorageHandler::UpdateStorageItem(
   if (total_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {
-    message = ui::FormatBytes(base::ByteCount(total_bytes));
+    message = ui::FormatBytes(
+        base::ByteSize(base::checked_cast<uint64_t>(total_bytes)));
   }
 
   if (calculation_type == SizeCalculator::CalculationType::kOtherUsers) {
@@ -381,8 +382,10 @@ void StorageHandler::UpdateOverallStatistics() {
 
   base::Value::Dict size_stat;
   size_stat.Set("availableSize",
-                ui::FormatBytes(base::ByteCount(available_bytes)));
-  size_stat.Set("usedSize", ui::FormatBytes(base::ByteCount(in_use_bytes)));
+                ui::FormatBytes(base::ByteSize(
+                    base::checked_cast<uint64_t>(available_bytes))));
+  size_stat.Set("usedSize", ui::FormatBytes(base::ByteSize(
+                                base::checked_cast<uint64_t>(in_use_bytes))));
   size_stat.Set("usedRatio", static_cast<double>(in_use_bytes) / total_bytes);
   int storage_space_state =
       static_cast<int>(StorageSpaceState::kStorageSpaceNormal);
@@ -435,7 +438,8 @@ void StorageHandler::UpdateSystemSizeItem() {
   if (system_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {
-    message = ui::FormatBytes(base::ByteCount(system_bytes));
+    message = ui::FormatBytes(
+        base::ByteSize(base::checked_cast<uint64_t>(system_bytes)));
   }
   FireWebUIListener(
       CalculationTypeToEventName(SizeCalculator::CalculationType::kSystem),

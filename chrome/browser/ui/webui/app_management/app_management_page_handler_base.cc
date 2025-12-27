@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
@@ -108,19 +109,8 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (!bytes) {
     return std::nullopt;
   }
-  // ui::FormatBytes requires a non-negative signed integer. In general, we
-  // expect that converting from unsigned to signed int here should always
-  // yield a positive value, since overflowing into negative would require an
-  // implausibly large app (2^63 bytes ~= 9 exabytes).
-  base::ByteCount signed_bytes = base::ByteCount(bytes.value());
-  if (signed_bytes < base::ByteCount(0)) {
-    // TODO(crbug.com/40063212): Investigate ARC apps which have negative data
-    // sizes.
-    LOG(ERROR) << "Invalid app size: " << signed_bytes;
-    base::debug::DumpWithoutCrashing();
-    return std::nullopt;
-  }
-  return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
+  return base::UTF16ToUTF8(ui::FormatBytes(
+      base::ByteSize(base::checked_cast<uint64_t>(bytes.value()))));
 }
 
 }  // namespace

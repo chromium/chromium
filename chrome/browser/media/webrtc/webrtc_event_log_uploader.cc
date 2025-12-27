@@ -27,7 +27,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace webrtc_event_logging {
 
@@ -105,11 +104,8 @@ void BindURLLoaderFactoryReceiver(
 }
 
 void OnURLLoadUploadProgress(uint64_t current, uint64_t total) {
-  ui::DataUnits unit = ui::GetByteDisplayUnits(base::ByteCount(total));
-  VLOG(1) << "WebRTC event log upload progress: "
-          << FormatBytesWithUnits(base::ByteCount(current), unit, false)
-          << " / " << FormatBytesWithUnits(base::ByteCount(total), unit, true)
-          << ".";
+  VLOG(1) << "WebRTC event log upload progress: " << base::ByteSize(current)
+          << " / " << base::ByteSize(total) << ".";
 }
 }  // namespace
 

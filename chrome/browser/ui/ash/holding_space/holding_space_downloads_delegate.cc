@@ -331,18 +331,23 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
       // If `total_bytes` is known, `secondary_text` will be something of the
       // form "10/100 MB", where the first number is the number of received
       // bytes and the second number is the total number of bytes expected.
-      const ui::DataUnits units =
-          ui::GetByteDisplayUnits(base::ByteCount(total_bytes.value()));
+      const ui::DataUnits units = ui::GetByteDisplayUnits(
+          base::ByteSize(base::checked_cast<uint64_t>(total_bytes.value())));
       secondary_text = l10n_util::GetStringFUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO,
-          ui::FormatBytesWithUnits(base::ByteCount(received_bytes), units,
-                                   /*show_units=*/false),
-          ui::FormatBytesWithUnits(base::ByteCount(total_bytes.value()), units,
-                                   /*show_units=*/true));
+          ui::FormatBytesWithUnits(
+              base::ByteSize(base::checked_cast<uint64_t>(received_bytes)),
+              units,
+              /*show_units=*/false),
+          ui::FormatBytesWithUnits(
+              base::ByteSize(base::checked_cast<uint64_t>(total_bytes.value())),
+              units,
+              /*show_units=*/true));
     } else {
       // If `total_bytes` is not known, `secondary_text` will be something of
       // the form "10 MB", indicating only the number of received bytes.
-      secondary_text = ui::FormatBytes(base::ByteCount(received_bytes));
+      secondary_text = ui::FormatBytes(
+          base::ByteSize(base::checked_cast<uint64_t>(received_bytes)));
     }
 
     if (IsPaused()) {

@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,12 +23,11 @@ const char kFixedMassStoragePrefix[] = "path:";
 const char kMtpPtpPrefix[] = "mtp:";
 const char kMacImageCapturePrefix[] = "ic:";
 
-std::u16string GetDisplayNameForDevice(base::ByteCount storage_size_in_bytes,
+std::u16string GetDisplayNameForDevice(base::ByteSize storage_size,
                                        const std::u16string& name) {
   DCHECK(!name.empty());
-  return (storage_size_in_bytes.is_zero())
-             ? name
-             : ui::FormatBytes(storage_size_in_bytes) + u" " + name;
+  return (storage_size.is_zero()) ? name
+                                  : ui::FormatBytes(storage_size) + u" " + name;
 }
 
 std::u16string GetFullProductName(const std::u16string& vendor_name,
@@ -174,8 +173,9 @@ std::u16string StorageInfo::GetDisplayNameWithOverride(
   if (name.empty())
     name = u"Unlabeled device";
 
-  if (with_size)
-    name = GetDisplayNameForDevice(base::ByteCount(total_size_in_bytes_), name);
+  if (with_size) {
+    name = GetDisplayNameForDevice(base::ByteSize(total_size_in_bytes_), name);
+  }
   return name;
 }
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/i18n/rtl.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,7 +77,8 @@ std::u16string StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
 std::u16string StatusTextBuilderUtils::GetCompletedTotalSizeString(
     int64_t total_bytes) {
   return GetBubbleStatusMessageWithBytes(
-      ui::FormatBytes(base::ByteCount(total_bytes)),
+      ui::FormatBytes(
+          base::ByteSize(base::checked_cast<uint64_t>(total_bytes))),
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE));
 }
 
@@ -84,9 +86,11 @@ std::u16string StatusTextBuilderUtils::GetCompletedTotalSizeString(
 std::u16string StatusTextBuilderUtils::GetBubbleProgressSizesString(
     int64_t completed_bytes,
     int64_t total_bytes) {
-  base::ByteCount size = base::ByteCount(completed_bytes);
-  base::ByteCount total = base::ByteCount(total_bytes);
-  if (total > base::ByteCount(0)) {
+  base::ByteSize size =
+      base::ByteSize(base::checked_cast<uint64_t>(completed_bytes));
+  base::ByteSize total =
+      base::ByteSize(base::checked_cast<uint64_t>(total_bytes));
+  if (total.is_positive()) {
     ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
     std::u16string simple_size =
         ui::FormatBytesWithUnits(size, amount_units, false);

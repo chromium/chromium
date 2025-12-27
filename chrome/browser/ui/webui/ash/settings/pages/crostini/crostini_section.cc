@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -487,17 +488,18 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE,
           base::ASCIIToUTF16(
               crostini::ContainerChromeOSBaseDirectory().value())));
-  html_source->AddString("crostiniDiskResizeRecommended",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED,
-                             ui::FormatBytes(base::ByteCount(
-                                 crostini::disk::kRecommendedDiskSizeBytes))));
+  html_source->AddString(
+      "crostiniDiskResizeRecommended",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED,
+          ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(
+              crostini::disk::kRecommendedDiskSizeBytes)))));
   html_source->AddString(
       "crostiniDiskResizeRecommendedWarning",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CROSTINI_DISK_RESIZE_RECOMMENDED_WARNING,
-          ui::FormatBytes(
-              base::ByteCount(crostini::disk::kRecommendedDiskSizeBytes))));
+          ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(
+              crostini::disk::kRecommendedDiskSizeBytes)))));
 
   html_source->AddBoolean("showCrostiniExportImport", IsExportImportAllowed());
   html_source->AddBoolean("showCrostiniPortForwarding",

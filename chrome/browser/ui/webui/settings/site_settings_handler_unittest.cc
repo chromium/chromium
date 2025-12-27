@@ -6421,7 +6421,8 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size))),
+  EXPECT_EQ(base::UTF16ToUTF8(
+                ui::FormatBytes(base::ByteSize(static_cast<uint64_t>(size)))),
             data.arg3()->GetString());
 }
 

@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
@@ -2898,7 +2898,8 @@ void PdfViewWebPlugin::SendMetadata() {
   }
 
   metadata.Set("fileSize",
-               ui::FormatBytes(base::ByteCount(document_metadata.size_bytes)));
+               ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(
+                   document_metadata.size_bytes))));
 
   metadata.Set("linearized", document_metadata.linearized);
 

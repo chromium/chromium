@@ -7,7 +7,7 @@
 #include <iomanip>
 
 #include "ash/constants/ash_features.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -192,10 +192,10 @@ void DrivePinningScreen::OnBulkPinProgress(
   drive_pinning_stage_ = progress.stage;
   if (progress.stage == drivefs::pinning::Stage::kSuccess) {
     VLOG(1) << "Finished calculating required space";
-    std::u16string free_space =
-        ui::FormatBytes(base::ByteCount(progress.free_space));
-    std::u16string required_space =
-        ui::FormatBytes(base::ByteCount(progress.required_space));
+    std::u16string free_space = ui::FormatBytes(
+        base::ByteSize(base::checked_cast<uint64_t>(progress.free_space)));
+    std::u16string required_space = ui::FormatBytes(
+        base::ByteSize(base::checked_cast<uint64_t>(progress.required_space)));
     SetRequiredSpaceInfo(required_space, free_space);
   }
 }

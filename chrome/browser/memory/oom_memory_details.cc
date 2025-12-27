@@ -37,8 +37,9 @@ void OomMemoryDetails::OnDetailsAvailable() {
   base::GraphicsMemoryInfoKB gpu_meminfo;
   if (base::GetGraphicsMemoryInfo(&gpu_meminfo)) {
     log_string +=
-        "Graphics " + base::UTF16ToASCII(ui::FormatBytes(
-                          base::ByteCount(gpu_meminfo.gpu_memory_size)));
+        "Graphics " +
+        base::UTF16ToASCII(ui::FormatBytes(base::ByteSize(
+            base::checked_cast<uint64_t>((gpu_meminfo.gpu_memory_size)))));
   }
 #endif
   LOG(WARNING) << title_ << " (" << delta.InMilliseconds() << " ms):\n"

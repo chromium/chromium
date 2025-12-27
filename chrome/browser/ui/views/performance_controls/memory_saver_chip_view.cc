@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -99,8 +99,9 @@ void MemorySaverChipView::UpdateImpl() {
       }
       case memory_saver::ChipState::EXPANDED_WITH_SAVINGS: {
         SetVisible(true);
-        const base::ByteCount memory_savings =
-            memory_saver::GetDiscardedMemorySavings(web_contents);
+        const base::ByteSize memory_savings =
+            base::ByteSize::FromDeprecatedByteCount(
+                memory_saver::GetDiscardedMemorySavings(web_contents));
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
                                             {memory_savings_string}),
