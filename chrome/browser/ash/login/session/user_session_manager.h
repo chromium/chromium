@@ -78,16 +78,16 @@ class UserSessionManagerDelegate {
   virtual base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() = 0;
 
  protected:
-  virtual ~UserSessionManagerDelegate();
+  virtual ~UserSessionManagerDelegate() = default;
 };
 
-class UserSessionStateObserver {
+class UserSessionStateObserver : public base::CheckedObserver {
  public:
   // Called when UserManager finishes restoring user sessions after crash.
-  virtual void PendingUserSessionsRestoreFinished();
+  virtual void PendingUserSessionsRestoreFinished() {}
 
  protected:
-  virtual ~UserSessionStateObserver();
+  ~UserSessionStateObserver() override = default;
 };
 
 class UserAuthenticatorObserver : public base::CheckedObserver {
@@ -554,7 +554,7 @@ class UserSessionManager
 
   PendingUserSessions pending_user_sessions_;
 
-  base::ObserverList<ash::UserSessionStateObserver>::Unchecked
+  base::ObserverList<ash::UserSessionStateObserver>
       session_state_observer_list_;
 
   base::ObserverList<UserAuthenticatorObserver> authenticator_observer_list_;

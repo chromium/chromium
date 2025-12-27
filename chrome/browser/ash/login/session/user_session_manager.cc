@@ -611,12 +611,6 @@ void MaybeSaveSessionStartedTimeBeforeRestart(Profile* profile) {
 
 }  // namespace
 
-UserSessionManagerDelegate::~UserSessionManagerDelegate() = default;
-
-void UserSessionStateObserver::PendingUserSessionsRestoreFinished() {}
-
-UserSessionStateObserver::~UserSessionStateObserver() = default;
-
 // static
 UserSessionManager* UserSessionManager::GetInstance() {
   return base::Singleton<UserSessionManager, base::DefaultSingletonTraits<

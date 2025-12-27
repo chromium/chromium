@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "components/user_manager/include_exclude_account_id_filter.h"
 #include "components/user_manager/user.h"
@@ -48,83 +49,84 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Interface that observers of UserManager must implement in order
   // to receive notification when local state preferences is changed
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the local state preferences is changed.
-    virtual void LocalStateChanged(UserManager* user_manager);
+    virtual void LocalStateChanged(UserManager* user_manager) {}
 
     // Called when the user list is loaded.
-    virtual void OnUserListLoaded();
+    virtual void OnUserListLoaded() {}
 
     // Called when the device local user list is updated.
-    virtual void OnDeviceLocalUserListUpdated();
+    virtual void OnDeviceLocalUserListUpdated() {}
 
     // Called when the user is logged in.
-    virtual void OnUserLoggedIn(const User& user);
+    virtual void OnUserLoggedIn(const User& user) {}
 
     // Called when the image of the given user is changed.
-    virtual void OnUserImageChanged(const User& user);
+    virtual void OnUserImageChanged(const User& user) {}
 
     // Called when the user image enterprise state of the given user is changed.
     virtual void OnUserImageIsEnterpriseManagedChanged(
         const User& user,
-        bool is_enterprise_managed);
+        bool is_enterprise_managed) {}
 
     // Called when the Profile instance for the user is created.
-    virtual void OnUserProfileCreated(const User& user);
+    virtual void OnUserProfileCreated(const User& user) {}
 
     // Called when the Profile instance for the user will be destroyed soon.
-    virtual void OnUserProfileWillBeDestroyed(const User& user);
+    virtual void OnUserProfileWillBeDestroyed(const User& user) {}
 
     // Called when the profile image download for the given user fails or
     // user has the default profile image or no porfile image at all.
-    virtual void OnUserProfileImageUpdateFailed(const User& user);
+    virtual void OnUserProfileImageUpdateFailed(const User& user) {}
 
     // Called when the profile image for the given user is downloaded.
     // |profile_image| contains the downloaded profile image.
-    virtual void OnUserProfileImageUpdated(const User& user,
-                                           const gfx::ImageSkia& profile_image);
+    virtual void OnUserProfileImageUpdated(
+        const User& user,
+        const gfx::ImageSkia& profile_image) {}
 
     // Called when any of the device cros settings which are responsible for
     // user sign in are changed.
-    virtual void OnUsersSignInConstraintsChanged();
+    virtual void OnUsersSignInConstraintsChanged() {}
 
     // Called when the user affiliation is updated.
-    virtual void OnUserAffiliationUpdated(const User& user);
+    virtual void OnUserAffiliationUpdated(const User& user) {}
 
     // Called just before a user of the device will be removed.
-    virtual void OnUserToBeRemoved(const AccountId& account_id);
+    virtual void OnUserToBeRemoved(const AccountId& account_id) {}
 
     // Called just after a user of the device has been removed.
     virtual void OnUserRemoved(const AccountId& account_id,
-                               UserRemovalReason reason);
+                               UserRemovalReason reason) {}
 
     // Called when the first user that is not allowed in the session is
     // detected.
-    virtual void OnUserNotAllowed(const std::string& user_email);
+    virtual void OnUserNotAllowed(const std::string& user_email) {}
 
    protected:
-    virtual ~Observer();
+    ~Observer() override = default;
   };
 
   // TODO(xiyuan): Refactor and move this observer out of UserManager.
   // Observer interface that defines methods used to notify on user session /
   // active user state changes. Default implementation is empty.
-  class UserSessionStateObserver {
+  class UserSessionStateObserver : public base::CheckedObserver {
    public:
     // Called when active user has changed.
-    virtual void ActiveUserChanged(User* active_user);
+    virtual void ActiveUserChanged(User* active_user) {}
 
     // Called when login state is updated.
     // This looks very similar to ActiveUserChanged, so consider to merge
     // in the future.
-    virtual void OnLoginStateUpdated(const User* active_user);
+    virtual void OnLoginStateUpdated(const User* active_user) {}
 
     // Called when another user got added to the existing session.
-    virtual void UserAddedToSession(const User* added_user);
+    virtual void UserAddedToSession(const User* added_user) {}
 
    protected:
-    virtual ~UserSessionStateObserver();
+    ~UserSessionStateObserver() override = default;
   };
 
   // Data retrieved from user account.

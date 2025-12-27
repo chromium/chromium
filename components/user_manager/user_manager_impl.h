@@ -354,7 +354,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                       const UserType user_type);
 
-  base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
+  base::ObserverList<UserManager::Observer> observer_list_;
 
   // A list of User instances taking their ownership.
   // Following members can refer User instances in this vector.
@@ -496,7 +496,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
       pending_owner_callbacks_;
 
   // TODO(nkostylev): Merge with session state refactoring CL.
-  base::ObserverList<UserManager::UserSessionStateObserver>::Unchecked
+  base::ObserverList<UserManager::UserSessionStateObserver>
       session_state_observer_list_;
 
   // Time at which this object was created.

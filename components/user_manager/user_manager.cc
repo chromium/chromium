@@ -19,54 +19,6 @@ namespace user_manager {
 
 UserManager* UserManager::instance = nullptr;
 
-UserManager::Observer::~Observer() = default;
-
-void UserManager::Observer::LocalStateChanged(UserManager* user_manager) {}
-
-void UserManager::Observer::OnUserListLoaded() {}
-
-void UserManager::Observer::OnDeviceLocalUserListUpdated() {}
-
-void UserManager::Observer::OnUserLoggedIn(const User& user) {}
-
-void UserManager::Observer::OnUserImageChanged(const User& user) {}
-
-void UserManager::Observer::OnUserImageIsEnterpriseManagedChanged(
-    const User& user,
-    bool is_enterprise_managed) {}
-
-void UserManager::Observer::OnUserProfileCreated(const User& user) {}
-
-void UserManager::Observer::OnUserProfileWillBeDestroyed(const User& user) {}
-
-void UserManager::Observer::OnUserProfileImageUpdateFailed(const User& user) {}
-
-void UserManager::Observer::OnUserProfileImageUpdated(
-    const User& user,
-    const gfx::ImageSkia& profile_image) {}
-
-void UserManager::Observer::OnUsersSignInConstraintsChanged() {}
-
-void UserManager::Observer::OnUserAffiliationUpdated(const User& user) {}
-
-void UserManager::Observer::OnUserRemoved(const AccountId& account_id,
-                                          UserRemovalReason reason) {}
-
-void UserManager::Observer::OnUserToBeRemoved(const AccountId& account_id) {}
-
-void UserManager::Observer::OnUserNotAllowed(const std::string& user_email) {}
-
-void UserManager::UserSessionStateObserver::ActiveUserChanged(
-    User* active_user) {}
-
-void UserManager::UserSessionStateObserver::UserAddedToSession(
-    const User* active_user) {}
-
-void UserManager::UserSessionStateObserver::OnLoginStateUpdated(
-    const User* active_user) {}
-
-UserManager::UserSessionStateObserver::~UserSessionStateObserver() = default;
-
 UserManager::UserAccountData::UserAccountData(
     const std::u16string& display_name,
     const std::u16string& given_name,
