@@ -1803,11 +1803,11 @@ std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
         autocomplete_controller()
             ->contextual_search_provider()
             ->HasToolbeltLensAction();
+    const auto* client =
+        autocomplete_controller()->autocomplete_provider_client();
     bool has_lens_search_chip =
-        controller_->client()->IsAimPopupEnabled() &&
-        omnibox::kShowLensSearchChip.Get() &&
-        ContextualSearchProvider::LensEntrypointEligible(
-            input, autocomplete_controller()->autocomplete_provider_client());
+        client->IsOmniboxNextLensSearchChipEnabled() &&
+        ContextualSearchProvider::LensEntrypointEligible(input, client);
     // Show contextual search suggestion group header if the Lens action has
     // been moved to the Omnibox toolbelt OR the "Omnibox Next" Lens search chip
     // is currently active.

@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -655,11 +654,11 @@ bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
       /*country=*/"us", /*locale=*/"en-US");
 }
 
-bool ChromeAutocompleteProviderClient::IsOmniboxNextFeatureParamEnabled(
-    const std::string& param_name) const {
+bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
+    const {
 #if !BUILDFLAG(IS_ANDROID)
-  return base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::internal::kWebUIOmniboxAimPopup, param_name, false);
+  return omnibox::IsAimPopupEnabled(profile_) &&
+         omnibox::kShowLensSearchChip.Get();
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)

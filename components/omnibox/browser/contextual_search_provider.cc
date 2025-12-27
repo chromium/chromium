@@ -200,7 +200,7 @@ struct EligibleMatchesAndActions {
         contextual_search_config.show_open_lens_action && !toolbelt_lens &&
         input.IsZeroSuggest() &&
         ContextualSearchProvider::LensEntrypointEligible(input, client) &&
-        !client->IsOmniboxNextFeatureParamEnabled("ShowLensSearchChip");
+        !client->IsOmniboxNextLensSearchChipEnabled();
 
     // - Check feature/params.
     // - Disabled if either `toolbelt` or `contextual_search_config` are shown.
