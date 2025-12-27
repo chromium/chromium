@@ -50,6 +50,12 @@ ContextualSearchService::ContextualSearchService(
 
 ContextualSearchService::~ContextualSearchService() = default;
 
+void ContextualSearchService::Shutdown() {
+  // The IdentityManager may be destroyed before this service, so clear the
+  // pointer to avoid dangling pointer issues.
+  identity_manager_ = nullptr;
+}
+
 // static
 void ContextualSearchService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
