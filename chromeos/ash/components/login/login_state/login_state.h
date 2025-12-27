@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/user_manager/user_manager.h"
 
@@ -33,13 +34,13 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState
     LOGGED_IN_USER_CHILD   // A child is logged in
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when either the login state or the logged in user type changes.
     virtual void LoggedInStateChanged() = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   // Manage singleton instance.
@@ -117,7 +118,7 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState
   LoggedInState logged_in_state_;
   LoggedInUserType logged_in_user_type_;
   std::string primary_user_hash_;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // If true, it always thinks the current status as logged in. Set to true by
   // default running on a Linux desktop without flags and test cases. To test

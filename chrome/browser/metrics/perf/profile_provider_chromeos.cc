@@ -55,8 +55,6 @@ ProfileProvider::ProfileProvider()
 }
 
 ProfileProvider::~ProfileProvider() {
-  ash::LoginState::Get()->RemoveObserver(this);
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   base::PowerMonitor::GetInstance()->RemovePowerThermalObserver(this);
   if (jank_monitor_) {
     jank_monitor_->RemoveObserver(this);
@@ -70,10 +68,10 @@ void ProfileProvider::Init() {
   }
 
   // Register as an observer of login state changes.
-  ash::LoginState::Get()->AddObserver(this);
+  login_state_observer_.Observe(ash::LoginState::Get());
 
   // Register as an observer of power manager events.
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  power_manager_client_observer_.Observe(chromeos::PowerManagerClient::Get());
 
   // Register as an observer of session restore.
   on_session_restored_callback_subscription_ =

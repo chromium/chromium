@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
@@ -226,8 +227,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
       post_login_deferred_task_runner_;
 
   base::ObserverList<PostLoginEventObserver> observers_;
-
-  PostLoginMetricsRecorder post_login_metrics_recorder_;
+  base::ScopedObservation<ash::LoginState, ash::LoginState::Observer>
+      login_state_observer_{this};
+  PostLoginMetricsRecorder post_login_metrics_recorder_{this};
 
   base::WeakPtrFactory<LoginUnlockThroughputRecorder> weak_ptr_factory_{this};
 };

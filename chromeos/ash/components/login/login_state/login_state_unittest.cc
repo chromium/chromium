@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -19,24 +20,20 @@ namespace ash {
 
 class LoginStateTest : public testing::Test, public LoginState::Observer {
  public:
-  LoginStateTest()
-      : logged_in_user_type_(LoginState::LOGGED_IN_USER_NONE),
-        login_state_changes_count_(0) {}
-
+  LoginStateTest() = default;
   LoginStateTest(const LoginStateTest&) = delete;
   LoginStateTest& operator=(const LoginStateTest&) = delete;
-
   ~LoginStateTest() override = default;
 
   // testing::Test
   void SetUp() override {
     LoginState::Initialize();
     LoginState::Get()->set_always_logged_in(false);
-    LoginState::Get()->AddObserver(this);
+    login_state_observer_.Observe(LoginState::Get());
   }
 
   void TearDown() override {
-    LoginState::Get()->RemoveObserver(this);
+    login_state_observer_.Reset();
     LoginState::Shutdown();
   }
 
@@ -55,10 +52,14 @@ class LoginStateTest : public testing::Test, public LoginState::Observer {
     return result;
   }
 
-  LoginState::LoggedInUserType logged_in_user_type_;
+  LoginState::LoggedInUserType logged_in_user_type_ =
+      LoginState::LOGGED_IN_USER_NONE;
 
  private:
-  unsigned int login_state_changes_count_;
+  unsigned int login_state_changes_count_ = 0;
+
+  base::ScopedObservation<LoginState, LoginState::Observer>
+      login_state_observer_{this};
 };
 
 TEST_F(LoginStateTest, TestLoginState) {
