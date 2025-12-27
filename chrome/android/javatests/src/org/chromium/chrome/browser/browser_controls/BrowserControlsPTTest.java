@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -74,6 +75,7 @@ public class BrowserControlsPTTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/471837397")
     public void topControlsScroll() {
         waitForControlsVisibility(true);
 
