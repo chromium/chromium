@@ -792,18 +792,31 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Check if sharing (which includes printing) is generally enabled for this tab's content.
         boolean canShareTab = ShareUtils.shouldEnableShare(currentTab);
+        if (!canShareTab) {
+            return false;
+        }
 
         // Check if printing is specifically enabled in user preferences for the current profile.
         Profile profile = currentTab.getProfile();
         boolean isPrintingEnabled = UserPrefs.get(profile).getBoolean(Pref.PRINTING_ENABLED);
+        if (!isPrintingEnabled) {
+            return false;
+        }
 
-        // Show print item if we're on a desktop device or if the current tab is displaying a native
-        // PDF.
+        // The print functionality is enabled if:
+        // 1. The device is running Desktop Android, OR
+        // 2. The current tab is a web-based PDF (transient).
+        // Note: Printing local PDFs (chrome-native://) is not yet supported.
         NativePage nativePage = currentTab.getNativePage();
-        boolean isPdfPage = nativePage != null && nativePage.isPdf();
-        boolean isEligibleForPrint = DeviceInfo.isDesktop() || isPdfPage;
+        boolean isPdf = nativePage != null && nativePage.isPdf();
+        boolean isLocalPdf =
+                isPdf && currentTab.getUrl().getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
-        return canShareTab && isPrintingEnabled && isEligibleForPrint;
+        if (isLocalPdf) {
+            return false;
+        }
+
+        return DeviceInfo.isDesktop() || isPdf;
     }
 
     private MVCListAdapter.ListItem buildPrintItem(Tab currentTab) {
