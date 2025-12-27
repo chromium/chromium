@@ -1138,7 +1138,8 @@ chromium-metrics-reviews@google.com.
   <int value="99" label="Identity docs"/>
   <int value="100" label="Travel"/>
   <int value="101" label="Contact info"/>
-  <int value="102" label="Show contextual tasks side panel"/>
+  <int value="102"
+      label="(Obsolete) Show contextual tasks side panel. Removed 12/18/25"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
