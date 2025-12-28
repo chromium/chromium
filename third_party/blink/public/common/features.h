@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -726,6 +725,12 @@ enum class IsolateSandboxedIframesGrouping {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     IsolateSandboxedIframesGrouping,
     kIsolateSandboxedIframesGroupingParam);
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+// Flag to enable JXL (JPEG XL) image format support.
+// If disabled, JXL images will not be decoded even if the decoder is built.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kJXLImageFormat);
+#endif
 
 // Kill-switch for the fetch keepalive request infra migration.
 // If enabled, all keepalive requests will be proxied via the browser process.

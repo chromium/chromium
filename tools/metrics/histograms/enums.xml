@@ -10913,6 +10913,7 @@ from previous Chrome versions.
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
+  <int value="-1214040127" label="JXLImageFormat:enabled"/>
   <int value="-1213030642"
       label="ThirdPartyDisableChromeAutofillSettingsScreen:disabled"/>
   <int value="-1212959146" label="HideTabletToolbarDownloadButton:enabled"/>
@@ -12259,6 +12260,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityGoogleTtsHighQualityVoices:disabled"/>
   <int value="-741806604" label="DownloadsUi:disabled"/>
   <int value="-741751264" label="SafetyCheckPermissions:disabled"/>
+  <int value="-741260505" label="JXLImageFormat:disabled"/>
   <int value="-740850824"
       label="PrefetchNotificationSchedulingIntegration:enabled"/>
   <int value="-740300751" label="TabStripGroupCollapseAndroid:enabled"/>
