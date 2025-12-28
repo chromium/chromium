@@ -39,6 +39,7 @@ HRESULT GetPointerToBufferData(IBuffer* buffer, uint8_t** out, UINT32* length) {
   return buffer_byte_access->Buffer(out);
 }
 
+// TODO(b/42271176): Change to take a span `src_span`, and change callers.
 HRESULT CreateIBufferFromData(const uint8_t* data,
                               UINT32 length,
                               Microsoft::WRL::ComPtr<IBuffer>* buffer) {
@@ -70,8 +71,11 @@ HRESULT CreateIBufferFromData(const uint8_t* data,
     return hr;
   }
 
-  UNSAFE_TODO(memcpy(p_buffer_data, data, length));
+  // SAFETY: Must assume that `data` has passed in `length'.
+  auto dest_span = UNSAFE_BUFFERS(base::span(p_buffer_data, length));
+  auto src_span = UNSAFE_BUFFERS(base::span(data, length));
 
+  dest_span.first(length).copy_from(src_span);
   *buffer = std::move(internal_buffer);
 
   return S_OK;
