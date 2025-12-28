@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_EQUALS_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_EQUALS_TRAITS_H_
 
+#include <concepts>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -19,23 +20,16 @@ namespace mojo {
 // objects. By default objects can be compared if they implement operator==()
 // or have a method named Equals().
 
-template <typename T, typename SFINAE = void>
-struct HasEqualsMethod : std::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-template <typename T>
-struct HasEqualsMethod<T,
-                       std::void_t<decltype(std::declval<const T&>().Equals(
-                           std::declval<const T&>()))>> : std::true_type {};
-
 template <typename T>
 bool Equals(const T& a, const T& b);
 
 template <typename T>
 struct EqualsTraits {
+  static_assert(sizeof(T), "T must be a complete type.");
   static bool Equals(const T& a, const T& b) {
-    if constexpr (HasEqualsMethod<T>::value) {
+    if constexpr (requires {
+                    { a.Equals(b) } -> std::same_as<bool>;
+                  }) {
       return a.Equals(b);
     } else {
       return a == b;

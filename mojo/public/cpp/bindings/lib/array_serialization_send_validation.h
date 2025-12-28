@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 
+#include <concepts>
 #include <type_traits>
 
 #include "base/types/is_instantiation.h"
@@ -30,24 +31,11 @@ struct SendValidationArraySerializer;
 template <typename MojomType,
           typename MaybeConstUserType,
           SendValidation send_validation,
-          typename UserTypeIterator,
-          typename = void>
-struct HasSendValidationArraySerializer : std::false_type {};
-
-template <typename MojomType,
-          typename MaybeConstUserType,
-          SendValidation send_validation,
           typename UserTypeIterator>
-struct HasSendValidationArraySerializer<
-    MojomType,
-    MaybeConstUserType,
-    send_validation,
-    UserTypeIterator,
-    std::void_t<decltype(SendValidationArraySerializer<MojomType,
-                                                       MaybeConstUserType,
-                                                       send_validation,
-                                                       UserTypeIterator>{})>>
-    : std::true_type {};
+concept HasSendValidationArraySerializer = requires {
+  SendValidationArraySerializer<MojomType, MaybeConstUserType, send_validation,
+                                UserTypeIterator>{};
+};
 
 template <typename MojomType,
           typename MaybeConstUserType,
@@ -57,7 +45,7 @@ using SelectArraySerializer = std::conditional_t<
     HasSendValidationArraySerializer<MojomType,
                                      MaybeConstUserType,
                                      send_validation,
-                                     UserTypeIterator>::value,
+                                     UserTypeIterator>,
     SendValidationArraySerializer<MojomType,
                                   MaybeConstUserType,
                                   send_validation,

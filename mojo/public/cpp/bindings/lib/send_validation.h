@@ -17,9 +17,7 @@ template <typename MojomType,
           SendValidation send_validation,
           typename MaybeConstUserType>
 using SelectSerializer = std::conditional_t<
-    HasSendValidationSerializer<MojomType,
-                                MaybeConstUserType,
-                                send_validation>::value,
+    HasSendValidationSerializer<MojomType, MaybeConstUserType, send_validation>,
     SendValidationSerializer<MojomType, MaybeConstUserType, send_validation>,
     Serializer<MojomType, MaybeConstUserType>>;
 

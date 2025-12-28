@@ -27,26 +27,21 @@ size_t WTFHashCombine(size_t seed, const T& value) {
   return seed ^ (std::hash<T>()(value) + (seed << 6) + (seed >> 2));
 }
 
-template <typename T, bool has_hash_method = HasHashMethod<T>::value>
-struct WTFHashTraits;
-
 template <typename T>
-size_t WTFHash(size_t seed, const T& value);
-
-template <typename T>
-struct WTFHashTraits<T, true> {
-  static size_t Hash(size_t seed, const T& value) { return value.Hash(seed); }
-};
-
-template <typename T>
-struct WTFHashTraits<T, false> {
+struct WTFHashTraits {
   static size_t Hash(size_t seed, const T& value) {
     return WTFHashCombine(seed, value);
   }
 };
 
+template <typename T>
+  requires(HasHashMethod<T>)
+struct WTFHashTraits<T> {
+  static size_t Hash(size_t seed, const T& value) { return value.Hash(seed); }
+};
+
 template <>
-struct WTFHashTraits<blink::String, false> {
+struct WTFHashTraits<blink::String> {
   static size_t Hash(size_t seed, const blink::String& value) {
     return HashCombine(seed, blink::GetHash(value));
   }

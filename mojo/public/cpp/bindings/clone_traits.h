@@ -16,23 +16,16 @@
 
 namespace mojo {
 
-template <typename T, typename SFINAE = void>
-struct HasCloneMethod : std ::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-template <typename T>
-struct HasCloneMethod<T,
-                      std::void_t<decltype(std::declval<const T&>().Clone())>>
-    : std::true_type {};
-
 template <typename T>
 T Clone(const T& input);
 
 template <typename T>
 struct CloneTraits {
+  static_assert(sizeof(T), "T must be a complete type.");
   static T Clone(const T& input) {
-    if constexpr (HasCloneMethod<T>::value) {
+    if constexpr (requires {
+                    { input.Clone() } -> std::same_as<T>;
+                  }) {
       return input.Clone();
     } else if constexpr (std::copyable<T>) {
       return input;
