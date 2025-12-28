@@ -480,14 +480,12 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     return {nominal_refresh_period_};
   }
 
-  if (granularity_.is_zero()) {
-    return {nominal_refresh_period_};
-  }
-
   base::flat_set<base::TimeDelta> supported_intervals;
 
   // Check if we can set various preferred intervals within the range.
-  if (display_link_mac_ && min_refresh_interval_ != max_refresh_interval_) {
+  if (base::FeatureList::IsEnabled(kUseRefreshRateRange) && display_link_mac_ &&
+      min_refresh_interval_ != max_refresh_interval_ &&
+      !granularity_.is_zero()) {
     // |max_refresh_interval_| might not be the same as
     // (|min_refresh_interval_| + n*|granularity_|), so add
     // |max_refresh_interval_| separately after the loop.
