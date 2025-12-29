@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
@@ -27,19 +28,40 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
+namespace {
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Associates an app name with one or more AppIds in the load-time data made
+// available to the front-end. `app_name` may be a localized string identified
+// by an IDS code or a provided string.
 void AddKnownApp(content::WebUIDataSource& source,
                  int index,
-                 int app_name_ids,
+                 std::variant<int, std::string_view> app_name,
                  std::initializer_list<std::string_view> app_ids) {
-  source.AddLocalizedString(
-      base::StrCat({"knownAppName", base::NumberToString(index)}),
-      app_name_ids);
+  std::visit(
+      absl::Overload{
+          [&](int app_name_ids) {
+            source.AddLocalizedString(
+                base::StrCat({"knownAppName", base::NumberToString(index)}),
+                app_name_ids);
+          },
+          [&](std::string_view app_name) {
+            source.AddString(
+                base::StrCat({"knownAppName", base::NumberToString(index)}),
+                app_name);
+          },
+      },
+      app_name);
   source.AddString(base::StrCat({"knownAppIds", base::NumberToString(index)}),
                    base::JoinString(app_ids, ","));
 }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+}  // namespace
 
 // enable_chrome_send is needed for plural_string_handler.
 UpdaterUI::UpdaterUI(content::WebUI* web_ui)
@@ -129,6 +151,10 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
   AddKnownApp(
       *source, num_known_apps++, IDS_SHORTCUT_NAME_DEV,
       {"{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}", "COM.GOOGLE.CHROME.DEV"});
+  AddKnownApp(*source, num_known_apps++, "Google Updater",
+              {"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}"});
+  AddKnownApp(*source, num_known_apps++, "Chrome Enterprise Companion App",
+              {"{85EEDF37-756C-4972-9399-5A12A4BEE148}"});
   source->AddLocalizedString("defaultAppFilters", IDS_PRODUCT_NAME);
 #else
   source->AddString("defaultAppFilters", "");
