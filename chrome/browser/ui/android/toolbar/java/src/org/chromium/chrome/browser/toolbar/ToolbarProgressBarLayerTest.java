@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link ToolbarProgressBarLayer}. */
@@ -46,7 +47,7 @@ public class ToolbarProgressBarLayerTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ControlContainer mControlContainer;
+    @Mock private ToolbarControlContainer mControlContainer;
     @Mock private ToolbarProgressBar mProgressBarView;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private BottomControlsStacker mBottomControlsStacker;

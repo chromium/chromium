@@ -1000,7 +1000,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
     }
 
-    int getToolbarCaptureHeight() {
+    /**
+     * @return The height of the screenshot of the toolbar (may include the tabstrip on large form
+     *     factors.)
+     */
+    public int getToolbarCaptureHeight() {
         return mToolbarCaptureSize.height();
     }
 
