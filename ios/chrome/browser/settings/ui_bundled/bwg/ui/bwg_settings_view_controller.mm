@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
