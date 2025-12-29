@@ -557,13 +557,16 @@ NewTabPageHandler::NewTabPageHandler(
       base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
                           base::Unretained(this)));
 
-  searchbox_shown_subscription_ =
-      ui::ElementTracker::GetElementTracker()
-          ->AddElementShownInAnyContextCallback(
-              NewTabPageUI::kRealboxContextualEntrypointElementId,
-              base::BindRepeating(
-                  &NewTabPageHandler::TryShowRealboxContextualMenuIPH,
-                  weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopRealboxContextualSearchFeature)) {
+    searchbox_shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()
+            ->AddElementShownInAnyContextCallback(
+                NewTabPageUI::kRealboxContextualEntrypointElementId,
+                base::BindRepeating(
+                    &NewTabPageHandler::TryShowRealboxContextualMenuIPH,
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -1473,6 +1476,12 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
 void NewTabPageHandler::TryShowRealboxContextualMenuIPH(
     ui::TrackedElement* element) {
   if (!element) {
+    return;
+  }
+
+  // TODO(crbug.com/378475391): NTP should always load into a WebContents.
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
     return;
   }
 
