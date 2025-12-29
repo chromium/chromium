@@ -81,6 +81,10 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // lazily set as a data property in first access.
   void SetSender(v8::Local<v8::Context> context, v8::Local<v8::Value> sender);
 
+  // Called when the `ServiceWorkerData` owning the `Delegate` and
+  // `APIEventHandler` is destroyed.
+  void OnContextDestroyed();
+
   const PortId& port_id() const { return port_id_; }
   const std::string& name() const { return name_; }
 
@@ -143,12 +147,13 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // The type of the associated channel.
   const mojom::ChannelType channel_type_;
 
-  // The associated APIEventHandler. Guaranteed to outlive this object.
-  const raw_ptr<APIEventHandler> event_handler_;
+  // The associated APIEventHandler. Guaranteed to live until
+  // `OnContextDestroyed` is called.
+  raw_ptr<APIEventHandler> event_handler_;
 
   // The delegate for handling the message passing between ports. Guaranteed to
-  // outlive this object.
-  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  // live until `OnContextDestroyed` is called.
+  raw_ptr<Delegate> delegate_;
 
   // Whether the `sender` property has been accessed, and thus set on the
   // port JS object.

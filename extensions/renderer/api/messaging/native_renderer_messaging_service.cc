@@ -856,6 +856,24 @@ NativeRendererMessagingService::GetMessagePortHostIfExists(
       ->GetMessagePortHostIfExists(port_id);
 }
 
+void NativeRendererMessagingService::InvalidatePorts(ScriptContext* context) {
+  v8::HandleScope handle_scope(context->isolate());
+  MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
+      context->v8_context(), CreatePerContextData::kDontCreateIfMissing);
+  if (!data) {
+    return;
+  }
+
+  for (const auto& [port_id, port_obj] : data->ports) {
+    GinPort* port = nullptr;
+    gin::Converter<GinPort*>::FromV8(context->isolate(),
+                                     port_obj.Get(context->isolate()), &port);
+    if (port) {
+      port->OnContextDestroyed();
+    }
+  }
+}
+
 base::SafeRef<NativeRendererMessagingService>
 NativeRendererMessagingService::AsSafeRef() {
   return weak_ptr_factory_.GetSafeRef();

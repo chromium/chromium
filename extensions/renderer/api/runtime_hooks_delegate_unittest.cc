@@ -81,6 +81,7 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     bindings_system()->UpdateBindingsForContext(script_context_);
   }
   void TearDown() override {
+    messaging_service_->InvalidatePorts(script_context_);
     script_context_ = nullptr;
     extension_ = nullptr;
     messaging_service_.reset();

@@ -770,4 +770,50 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
                                         "onMessageExternalReceived"));
 }
 
+TEST_F(NativeRendererMessagingServiceTest, DestroyContext) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
+
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  GinPort* port = messaging_service()->CreatePortForTesting(
+      script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+      message_port_remote, message_port_host_receiver);
+  message_port_remote.EnableUnassociatedUsage();
+  message_port_host_receiver.EnableUnassociatedUsage();
+
+  // Initially, the port should be active.
+  EXPECT_FALSE(port->is_closed_for_testing());
+
+  // Invalidate the ports, simulating worker termination.
+  messaging_service()->InvalidatePorts(script_context());
+
+  // The port should now be aware of the destruction.
+  v8::Local<v8::Object> port_object =
+      port->GetWrapper(isolate()).ToLocalChecked();
+  const char kDispatchMessage[] =
+      "(function(port) {\n"
+      "  port.postMessage({data: 'hello'});\n"
+      "})";
+  v8::Local<v8::Function> post_message =
+      FunctionFromString(context, kDispatchMessage);
+  v8::Local<v8::Value> args[] = {port_object};
+
+  // This should not crash.
+  RunFunctionOnGlobal(post_message, context, std::size(args), args);
+
+  // We also verify that trying to access `onMessage` throws an error,
+  // consistent with the behavior when the worker data is destroyed.
+  const char kGetOnMessage[] = "(function(port) { return port.onMessage; })";
+  v8::Local<v8::Function> get_on_message =
+      FunctionFromString(context, kGetOnMessage);
+  RunFunctionAndExpectError(get_on_message, context, std::size(args), args,
+                            "Uncaught Error: Extension context invalidated.");
+}
+
 }  // namespace extensions

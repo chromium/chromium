@@ -864,6 +864,8 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
         service_worker_data->bindings_system();
     if (worker_bindings_system) {
       worker_bindings_system->WillReleaseScriptContext(script_context);
+      worker_bindings_system->messaging_service()->InvalidatePorts(
+          script_context);
       service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
           extension_id, *service_worker_data->activation_sequence(),
           service_worker_scope, service_worker_version_id, thread_id);
