@@ -18,6 +18,14 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java",
     "//components/cached_flags:java",
   ]
+  public_deps = [ ":enums_java" ]
+}
+
+android_library("enums_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tabstrip/StripVisibilityState.java",
+  ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 robolectric_library("junit") {

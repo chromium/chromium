@@ -209,6 +209,7 @@ if (is_android) {
       "//chrome/browser/ui/android/quickactionsearchwidget:java",
       "//chrome/browser/ui/android/searchactivityutils:java",
       "//chrome/browser/ui/android/signin:java",
+      "//chrome/browser/ui/android/tabstrip:enums_java",
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/browser_window/public/android:java",

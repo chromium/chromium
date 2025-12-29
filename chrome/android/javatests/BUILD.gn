@@ -216,6 +216,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/ui/android/quickactionsearchwidget:java",
     "//chrome/browser/ui/android/searchactivityutils:java",
     "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/web_app_header:java",

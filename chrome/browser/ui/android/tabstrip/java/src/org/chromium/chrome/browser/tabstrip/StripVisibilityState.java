@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top.tab_strip;
+package org.chromium.chrome.browser.tabstrip;
 
 import androidx.annotation.IntDef;
 

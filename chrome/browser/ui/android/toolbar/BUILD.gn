@@ -139,7 +139,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlText.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/FadeTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/HeightTransitionHandler.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/StripVisibilityState.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinator.java",
   ]
 
@@ -191,6 +190,7 @@ android_library("java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/url_constants/android:java",
@@ -462,6 +462,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/ui/browser_window/public/android:java",
