@@ -70,6 +70,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   views::ProposedLayout starting_layout_;  // State at start of animation.
   views::ProposedLayout target_layout_;    // Goal state.
   views::ProposedLayout current_layout_;   // Current interpolated state.
+
+  // Where in the animation the last layout recalculation happened.
+  double starting_offset_ = 0.0;
+
+  // The current animation progress.
+  double current_offset_ = 1.0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_

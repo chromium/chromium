@@ -48,6 +48,9 @@ int TabCollectionAnimatingLayoutManager::GetPreferredHeightForWidth(
 
 void TabCollectionAnimatingLayoutManager::AnimationProgressed(
     const gfx::Animation* animation) {
+  if (current_offset_ == animation->GetCurrentValue()) {
+    return;
+  }
   // Do not invalidate the target layout as the animation progresses, only the
   // animating layout manager requires invalidation.
   InvalidateHost(/*mark_layouts_changed=*/false);
@@ -74,10 +77,16 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
   RecalculateTarget();
 
   if (animation_.is_animating()) {
-    current_layout_ = InterpolateLayout(animation_.GetCurrentValue());
+    current_offset_ = animation_.GetCurrentValue();
+    double denominator = 1.0 - starting_offset_;
+    double percent = (current_offset_ - starting_offset_) / denominator;
+    percent = std::clamp(percent, 0.0, 1.0);
+    current_layout_ = InterpolateLayout(percent);
     ApplyLayout(current_layout_);
   } else {
     // Ensure we are snapped to target.
+    current_offset_ = 1.0;
+    starting_offset_ = 0.0;
     current_layout_ = target_layout_;
     ApplyLayout(target_layout_);
   }
@@ -111,17 +120,39 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     target_layout_ = new_target;
     current_layout_ = new_target;
     starting_layout_ = new_target;
+    starting_offset_ = 0.0;
+    current_offset_ = 1.0;
     return;
   }
 
-  // Update starting layout to the current state (current visual position). If
-  // we are animating, `current_layout_` is the interpolated state. Since we are
-  // not animating here, `current_layout_` is the previous target.
-  starting_layout_ = current_layout_;
   target_layout_ = new_target;
 
-  animation_.Reset(0.0);
-  animation_.Show();
+  // If we haven't actually rendered a frame yet keep the original
+  // starting_layout.
+  if (animation_.is_animating() && current_offset_ == starting_offset_) {
+    return;
+  }
+
+  constexpr double kResetAnimationThreshold = 0.8;
+
+  if (current_offset_ > kResetAnimationThreshold) {
+    // We are far enough along that we should start a "fresh" animation
+    // from 0% to avoid awkward slow-downs at the end of the curve.
+    starting_layout_ = current_layout_;
+    starting_offset_ = 0.0;
+    current_offset_ = 0.0;
+    animation_.Reset(0.0);
+  } else {
+    // We are still early in the animation. Simply update the starting offset.
+    // The timer remains running and we just calculate a new slope in
+    // LayoutImpl.
+    starting_layout_ = current_layout_;
+    starting_offset_ = current_offset_;
+  }
+
+  if (!animation_.is_animating()) {
+    animation_.Show();
+  }
 }
 
 views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
@@ -132,22 +163,20 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   // animation.
   result.host_size = target_layout_.host_size;
 
-  for (const auto& target_child : target_layout_.child_layouts) {
-    // For the View associated with `target_child`, find its corresponding
-    // starting layout - if it exists.
-    const views::ChildLayout* start_child = nullptr;
-    for (const auto& s : starting_layout_.child_layouts) {
-      if (s.child_view == target_child.child_view) {
-        start_child = &s;
-        break;
-      }
-    }
+  // Map view pointers to their starting bounds for fast lookup
+  base::flat_map<const views::View*, gfx::Rect> start_bounds_map;
+  for (const auto& s : starting_layout_.child_layouts) {
+    start_bounds_map[s.child_view] = s.bounds;
+  }
 
+  for (const auto& target_child : target_layout_.child_layouts) {
     views::ChildLayout interpolated_child = target_child;
-    if (start_child) {
+    auto it = start_bounds_map.find(target_child.child_view);
+
+    if (it != start_bounds_map.end()) {
       // Interpolate between start and target bounds.
-      interpolated_child.bounds = gfx::Tween::RectValueBetween(
-          value, start_child->bounds, target_child.bounds);
+      interpolated_child.bounds =
+          gfx::Tween::RectValueBetween(value, it->second, target_child.bounds);
       // Snap visibility to target.
       interpolated_child.visible = target_child.visible;
     } else {
