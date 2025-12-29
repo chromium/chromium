@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -44,8 +46,10 @@ ContextualTasksButton::ContextualTasksButton(
       browser_window_interface_(browser_window_interface) {
   SetVectorIcon(kDockToRightSparkIcon);
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE));
+  const std::u16string button_tooltip =
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
+  GetViewAccessibility().SetName(button_tooltip);
+  SetTooltipText(button_tooltip);
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarPermanent) {
