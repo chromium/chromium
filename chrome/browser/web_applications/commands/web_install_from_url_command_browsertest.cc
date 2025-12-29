@@ -936,6 +936,44 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
+                       LaunchAppWithRedirect) {
+  NavigateToValidUrl();
+  base::HistogramTester histograms;
+
+  // Install a background document.
+  const GURL background_doc_install_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const std::string manifest_id =
+      GenerateManifestId("some_id", background_doc_install_url).spec();
+
+  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), background_doc_install_url);
+  // Verify that the app was installed and launched.
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromReparenting, 1);
+
+  // Create a redirect URL that redirects to the already installed app.
+  GURL redirect_url = https_server()->GetURL("/server-redirect?" +
+                                             background_doc_install_url.spec());
+
+  // Because we didn't install via web install, we'll be prompted to allow
+  // permission before the launch.
+  SetPermissionResponse(/*permission_granted=*/true);
+
+  // Try to install using the redirect URL - this should fail with kAbortError.
+  ASSERT_TRUE(TryInstallApp(redirect_url.spec(), manifest_id));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+
+  histograms.ExpectBucketCount("WebApp.LaunchSource",
+                               apps::LaunchSource::kFromWebInstallApi, 0);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnexpectedFailure, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
                        LaunchDialogClosesOnTabSwitch) {
   NavigateToValidUrl();
   base::HistogramTester histograms;

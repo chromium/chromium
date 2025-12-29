@@ -577,6 +577,16 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
     webapps::AppId app_id,
     const GURL& manifest_id,
     std::unique_ptr<WebAppInstallInfo> install_info) {
+  if (!install_info) {
+    // Failed to fetch install info for the already installed app. For example,
+    // redirecting URLs are not supported here so we can't get the install info.
+    // TODO(crbug.com/471021583): Evaluate supporting redirects.
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallApiResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError,
+             webapps::ManifestId());
+    return;
+  }
   // Choose the icon bitmap based on OS specific icon guidelines. See
   // crbug.com/423906188 for more information. Regardless of OS, we expect an
   // icon of size 32x32 to be available.
