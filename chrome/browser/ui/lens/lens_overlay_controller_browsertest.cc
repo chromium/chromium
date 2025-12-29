@@ -4525,7 +4525,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
             SidePanel::State::kClosed);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, FindBarClosesOverlay) {
+// TODO(crbug.com/471036459): Reenable this test on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FindBarClosesOverlay DISABLED_FindBarClosesOverlay
+#else
+#define MAYBE_FindBarClosesOverlay FindBarClosesOverlay
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_FindBarClosesOverlay) {
   WaitForPaint();
 
   // State should start in off.
