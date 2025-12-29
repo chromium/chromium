@@ -79,10 +79,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnablePrivacySandboxAdsApis,
        std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      // Enable 3PCD tracking protection UI.
-      {network::switches::kTestThirdPartyCookiePhaseout,
-       std::cref(content_settings::features::kTrackingProtection3pcd),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       // Override for --devtools-greendev-ui.
       {switches::kEnableDevToolsGreenDevUi,
        std::cref(features::kDevToolsGreenDevUi),
