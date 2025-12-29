@@ -289,8 +289,7 @@ class ExtensionUpdater : public KeyedService,
   // extension update (either foreground or background).
   bool AddExtensionToDownloader(const Extension& extension,
                                 int request_id,
-                                DownloadFetchPriority fetch_priority,
-                                bool is_corrupt_reinstall = false);
+                                DownloadFetchPriority fetch_priority);
 
   // Conduct a check as scheduled by ScheduleNextCheck.
   void NextCheck();

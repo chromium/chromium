@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
 }
 
 #if !(defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
-// We want to test what happens at startup with a corruption-disabled policy
+// We want to test what happens at startup with a corroption-disabled policy
 // force installed extension. So we set that up in the PRE test here.
 IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PRE_PolicyCorruptedOnStartup) {
   // This is to not allow any corrupted resintall to proceed.

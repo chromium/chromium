@@ -408,8 +408,7 @@ void ExtensionUpdater::AddToDownloader(
 bool ExtensionUpdater::AddExtensionToDownloader(
     const Extension& extension,
     int request_id,
-    DownloadFetchPriority fetch_priority,
-    bool is_corrupt_reinstall) {
+    DownloadFetchPriority fetch_priority) {
   GURL update_url = GetEffectiveUpdateURL(extension);
   // Skip extensions with empty update URLs converted from user
   // scripts.
@@ -428,9 +427,9 @@ bool ExtensionUpdater::AddExtensionToDownloader(
   }
 
   return downloader_->AddPendingExtension(ExtensionDownloaderTask(
-      extension.id(), update_url, extension.location(), is_corrupt_reinstall,
-      request_id, fetch_priority, extension.version(), extension.GetType(),
-      update_url_data));
+      extension.id(), update_url, extension.location(),
+      false /*is_corrupt_reinstall*/, request_id, fetch_priority,
+      extension.version(), extension.GetType(), update_url_data));
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
@@ -513,20 +512,12 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
         }
         // Policy installed extensions are not necessarily from the webstore,
         // but should have an `info` and never hit this path.
+        DCHECK(extension->from_webstore()) << "Extension with id " << pending_id
+                                           << " is not from the webstore";
         DCHECK(is_corrupt_reinstall) << "Extension with id " << pending_id
                                      << " is not a corrupt reinstall";
-
-        if (extension->from_webstore()) {
-          update_check_params.update_info[pending_id] =
-              GetExtensionUpdateData(pending_id);
-        } else if (AddExtensionToDownloader(*extension, request_id,
-                                            params.fetch_priority,
-                                            is_corrupt_reinstall)) {
-          request.in_progress_ids.insert(extension->id());
-          LOG(WARNING) << "Corrupt non-webstore extension with id "
-                       << pending_id
-                       << " will be reinstalled with ExtensionDownloader.";
-        }
+        update_check_params.update_info[pending_id] =
+            GetExtensionUpdateData(pending_id);
       } else if (!Manifest::IsAutoUpdateableLocation(info->install_source())) {
         VLOG(2) << "Extension " << pending_id << " is not auto updateable";
         continue;
@@ -902,9 +893,8 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
                        crx_file.request_ids.end());
   }
 
-  for (const int request_id : request_ids) {
+  for (const int request_id : request_ids)
     NotifyIfFinished(request_id);
-  }
 }
 
 scoped_refptr<CrxInstaller> ExtensionUpdater::CreateUpdateInstaller(
