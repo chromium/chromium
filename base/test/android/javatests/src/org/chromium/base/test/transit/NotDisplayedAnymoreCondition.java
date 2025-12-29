@@ -60,7 +60,6 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
             } else {
                 ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
                 if (activityElement == null) {
-                    // TODO(crbug.com/456768907): Allow this only for dialogs.
                     rootSpec = RootSpec.anyRoot();
                 } else {
                     rootSpec = RootSpec.activityOrDialogRoot(activityElement);
