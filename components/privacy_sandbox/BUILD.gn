@@ -12,7 +12,6 @@ static_library("privacy_sandbox_prefs") {
   ]
 
   deps = [
-    ":tracking_protection_prefs",
     "//components/pref_registry",
     "//components/prefs",
   ]
@@ -46,7 +45,6 @@ source_set("tracking_protection_settings") {
   deps = [
     ":features",
     ":privacy_sandbox_prefs",
-    ":tracking_protection_prefs",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
@@ -54,20 +52,6 @@ source_set("tracking_protection_settings") {
     "//components/prefs",
     "//components/sync/base",
     "//components/sync/service",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
-static_library("tracking_protection_prefs") {
-  sources = [
-    "tracking_protection_prefs.cc",
-    "tracking_protection_prefs.h",
-  ]
-
-  deps = [
-    "//components/pref_registry",
-    "//components/prefs",
   ]
 
   public_deps = [ "//base" ]
@@ -178,7 +162,6 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":privacy_sandbox_prefs",
-    ":tracking_protection_prefs",
     ":tracking_protection_settings",
     "//base/test:test_support",
     "//components/content_settings/core/browser",

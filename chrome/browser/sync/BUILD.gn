@@ -130,7 +130,6 @@ source_set("sync") {
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/core/browser/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/saved_tab_groups/public",
     "//components/send_tab_to_self",
     "//components/sharing_message",

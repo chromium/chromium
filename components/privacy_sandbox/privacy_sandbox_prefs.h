@@ -153,9 +153,23 @@ inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
 inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
     "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
 
+// Mode B prefs start
+
 // Unsynced boolean that controls showing the Mode B rollback UI.
 inline constexpr char kShowRollbackUiModeB[] =
     "tracking_protection.show_rollback_ui_mode_b";
+
+// Unsynced boolean that indicates whether 3PCD tracking protection (prefs + UI)
+// are enabled on the current device.
+inline constexpr char kTrackingProtection3pcdEnabled[] =
+    "tracking_protection.tracking_protection_3pcd_enabled";
+
+// Synced boolean that indicates whether the "block all 3pc" toggle on the
+// tracking protection page is enabled.
+inline constexpr char kBlockAll3pcToggleEnabled[] =
+    "tracking_protection.block_all_3pc_toggle_enabled";
+
+// Mode B prefs end
 
 }  // namespace prefs
 
