@@ -727,6 +727,11 @@ inline constexpr char kChromeUICertificateRedirectURL[] =
     "chrome://settings/certificates";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_MAC)
+inline constexpr char kChromeUIUnexportableKeysInternalsHost[] =
+    "unexportable-keys-internals";
+#endif  // BUILDFLAG(IS_MAC)
+
 // Extensions sub pages.
 inline constexpr char kExtensionConfigureCommandsSubPage[] =
     "configureCommands";

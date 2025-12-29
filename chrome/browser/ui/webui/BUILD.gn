@@ -132,6 +132,10 @@ source_set("configs") {
   if (enable_session_service) {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
   }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals" ]
+  }
 }
 
 source_set("webui") {

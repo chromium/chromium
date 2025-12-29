@@ -603,6 +603,13 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/updater_resources.pak" ]
       deps += [ "//chrome/browser/resources/updater:resources" ]
     }
+
+    if (is_mac) {
+      sources +=
+          [ "$root_gen_dir/chrome/unexportable_keys_internals_resources.pak" ]
+      deps +=
+          [ "//chrome/browser/resources/unexportable_keys_internals:resources" ]
+    }
   }
 }
 

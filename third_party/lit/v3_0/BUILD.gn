@@ -84,6 +84,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/tab_group_home:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
+    "//chrome/browser/resources/unexportable_keys_internals:build_ts",
     "//chrome/browser/resources/updater:build_ts",
     "//chrome/browser/resources/user_education_internals:build_ts",
     "//chrome/browser/resources/watermark:build_ts",

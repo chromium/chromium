@@ -111,6 +111,7 @@ group("resources") {
 
   if (is_mac) {
     public_deps += [
+      "unexportable_keys_internals:resources",
       "//chrome/browser/resources/media/mei_preload:component",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
     ]

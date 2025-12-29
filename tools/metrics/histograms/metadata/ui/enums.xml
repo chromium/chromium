@@ -778,6 +778,7 @@ chromium-metrics-reviews@google.com.
   <int value="-905972126" label="chrome://signin-email-confirmation/"/>
   <int value="-892484505" label="chrome://sys-internals/"/>
   <int value="-891260101" label="chrome://inspect/"/>
+  <int value="-861872937" label="chrome://unexportable-keys-internals/"/>
   <int value="-853789543" label="chrome://bluetooth-pairing/"/>
   <int value="-833683433" label="chrome://on-device-internals/"/>
   <int value="-823585847" label="chrome://chrome-signin/"/>

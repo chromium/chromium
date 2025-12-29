@@ -4972,6 +4972,7 @@ static_library("ui") {
         "views/webauthn/mac_authentication_view.mm",
       ]
       deps += [
+        "//chrome/browser/ui/webui/unexportable_keys_internals",
         "//components/crash/core/common:crash_key",
         "//services/audio/public/cpp",
       ]

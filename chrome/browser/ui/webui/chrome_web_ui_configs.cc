@@ -216,6 +216,10 @@
 #include "chrome/browser/ui/webui/watermark/watermark_ui.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_ui.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
   // them in chrome_web_ui_configs_chromeos.cc.
@@ -445,4 +449,8 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   map.AddWebUIConfig(std::make_unique<WatermarkUIConfig>());
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  map.AddWebUIConfig(std::make_unique<UnexportableKeysInternalsUIConfig>());
+#endif  // BUILDFLAG(IS_MAC)
 }
