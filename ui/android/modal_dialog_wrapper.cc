@@ -102,7 +102,32 @@ ParagraphData getParagraphData(DialogModelField* field) {
     data.spans.push_back(label.GetString());
     data.closures.emplace_back();  // Add a null closure.
   } else {
+    std::vector<std::u16string> replacement_texts;
     for (const auto& replacement : replacements) {
+      replacement_texts.push_back(replacement.text());
+    }
+
+    // Find the offsets of the replacements in the localized string.
+    std::vector<size_t> offsets;
+    const std::u16string final_text = l10n_util::GetStringFUTF16(
+        label.message_id(), replacement_texts, &offsets);
+
+    // Slice the final text into spans based on the offsets of the replacements.
+    // This allows Java to build a SpannableString where only the replacement
+    // portions are clickable/styled.
+    // Note: This assumes replacements appear in numerical order ($1 before $2).
+    size_t current_pos = 0;
+    for (size_t i = 0; i < offsets.size(); ++i) {
+      size_t start = offsets[i];
+      // Capture the plain text preceding the replacement.
+      if (start > current_pos) {
+        data.spans.push_back(
+            final_text.substr(current_pos, start - current_pos));
+        data.closures.emplace_back();
+      }
+
+      // Handle the current replacement.
+      const auto& replacement = replacements[i];
       data.spans.push_back(replacement.text());
       if (replacement.callback().has_value()) {
         data.closures.push_back(base::BindRepeating(
@@ -114,8 +139,15 @@ ParagraphData getParagraphData(DialogModelField* field) {
             },
             replacement.callback().value()));
       } else {
-        data.closures.emplace_back();  // Add a null closure.
+        data.closures.emplace_back();
       }
+      current_pos = start + replacement.text().length();
+    }
+
+    // Capture trailing text after all replacements.
+    if (current_pos < final_text.length()) {
+      data.spans.push_back(final_text.substr(current_pos));
+      data.closures.emplace_back();
     }
   }
   return data;

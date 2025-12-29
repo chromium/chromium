@@ -426,6 +426,12 @@ TEST_F(ModalDialogWrapperTest, ParagraphsContainReplacements) {
   ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
       IDS_APP_CLOSE, u"Close");
 
+  // Define a template with placeholders to test that the surrounding text is
+  // preserved.
+  ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      IDS_CONCAT_THREE_STRINGS_WITH_COMMA,
+      u"Text before $1, middle $2 and $3 after.");
+
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(u"Mixed Content Paragraph Test")
       .SetDialogDestroyingCallback(
@@ -440,29 +446,26 @@ TEST_F(ModalDialogWrapperTest, ParagraphsContainReplacements) {
   auto replacements = std::vector<DialogModelLabel::TextReplacement>();
 
   // Helper lambda to create the correct callback type, avoiding ambiguity.
-  auto make_callback = [&](int index) -> DialogModelLabel::Callback {
+  auto make_callback = [&](int callback_index) -> DialogModelLabel::Callback {
     return base::BindRepeating(
         [](std::vector<bool>* callbacks, int i, const ui::Event& event) {
           (*callbacks)[i] = true;
         },
-        &callbacks_called, index);
+        &callbacks_called, callback_index);
   };
 
-  // Link with global index 0.
+  const int ok_index = 0, cancel_index = 1;
+  // Create first link.
   replacements.push_back(
-      DialogModelLabel::CreateLink(IDS_APP_OK, make_callback(0)));
+      DialogModelLabel::CreateLink(IDS_APP_OK, make_callback(ok_index)));
+  // Emphasized text (no callback).
+  replacements.push_back(DialogModelLabel::CreateEmphasizedText(u"EMPHASIS"));
+  // Create second link.
   replacements.push_back(
-      DialogModelLabel::CreatePlainText(u" is the first link. "));
-  // Link with global index 1.
-  replacements.push_back(
-      DialogModelLabel::CreateLink(IDS_APP_CANCEL, make_callback(1)));
-  replacements.push_back(
-      DialogModelLabel::CreatePlainText(u" is the second. Finally, "));
-  // Link with global index 2.
-  replacements.push_back(
-      DialogModelLabel::CreateLink(IDS_APP_CLOSE, make_callback(2)));
-  dialog_builder.AddParagraph(
-      DialogModelLabel::CreateWithReplacements(0, std::move(replacements)));
+      DialogModelLabel::CreateLink(IDS_APP_CLOSE, make_callback(cancel_index)));
+
+  dialog_builder.AddParagraph(DialogModelLabel::CreateWithReplacements(
+      IDS_CONCAT_THREE_STRINGS_WITH_COMMA, std::move(replacements)));
 
   // Paragraph 2: An empty paragraph to test this edge case.
   dialog_builder.AddParagraph(DialogModelLabel(u""));
@@ -483,32 +486,23 @@ TEST_F(ModalDialogWrapperTest, ParagraphsContainReplacements) {
   ASSERT_EQ(displayed_paragraphs.size(), 4u);
   EXPECT_EQ(displayed_paragraphs[0], u"This is a paragraph with no links.");
   EXPECT_EQ(displayed_paragraphs[1],
-            u"OK is the first link. Cancel is the second. Finally, Close");
+            u"Text before OK, middle EMPHASIS and Close after.");
   EXPECT_EQ(displayed_paragraphs[2], u"");
   EXPECT_EQ(displayed_paragraphs[3], u"This is a final plain paragraph.");
 
   // Simulate link clicks.
-  EXPECT_FALSE(callbacks_called[0]);
-  EXPECT_FALSE(callbacks_called[1]);
-  EXPECT_FALSE(callbacks_called[2]);
+  EXPECT_FALSE(callbacks_called[ok_index]);
+  EXPECT_FALSE(callbacks_called[cancel_index]);
 
-  // Click the middle link.
-  fake_dialog_manager_->ClickLinkInMessageParagraphs(1);
-  EXPECT_FALSE(callbacks_called[0]);
-  EXPECT_TRUE(callbacks_called[1]);
-  EXPECT_FALSE(callbacks_called[2]);
+  // Click the first link ("OK").
+  fake_dialog_manager_->ClickLinkInMessageParagraphs(ok_index);
+  EXPECT_TRUE(callbacks_called[ok_index]);
+  EXPECT_FALSE(callbacks_called[cancel_index]);
 
-  // Click the last link.
-  fake_dialog_manager_->ClickLinkInMessageParagraphs(2);
-  EXPECT_FALSE(callbacks_called[0]);
-  EXPECT_TRUE(callbacks_called[1]);
-  EXPECT_TRUE(callbacks_called[2]);
-
-  // Click the first link.
-  fake_dialog_manager_->ClickLinkInMessageParagraphs(0);
-  EXPECT_TRUE(callbacks_called[0]);
-  EXPECT_TRUE(callbacks_called[1]);
-  EXPECT_TRUE(callbacks_called[2]);
+  // Click the last link ("Close").
+  fake_dialog_manager_->ClickLinkInMessageParagraphs(cancel_index);
+  EXPECT_TRUE(callbacks_called[ok_index]);
+  EXPECT_TRUE(callbacks_called[cancel_index]);
 }
 
 TEST_F(ModalDialogWrapperTest, Checkbox_InitialStateUnchecked) {
