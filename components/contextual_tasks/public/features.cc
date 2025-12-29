@@ -145,12 +145,12 @@ const base::FeatureParam<int>
     kContextualTasksShowOnboardingTooltipSessionImpressionCap(
         &kContextualTasksShowOnboardingTooltip,
         "ContextualTasksShowOnboardingTooltipSessionImpressionCap",
-        3);
+        1);
 
 const base::FeatureParam<int> kContextualTasksOnboardingTooltipDismissedCap(
     &kContextualTasksShowOnboardingTooltip,
     "ContextualTasksOnboardingTooltipDismissedCap",
-    3);
+    1);
 
 int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
