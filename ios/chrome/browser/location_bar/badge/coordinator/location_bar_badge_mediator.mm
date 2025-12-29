@@ -372,12 +372,12 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Timer to end the promo.
 - (void)startEndPromoTimer {
   __weak LocationBarBadgeMediator* weakSelf = self;
-  _promoStartTimer = std::make_unique<base::OneShotTimer>();
-  _promoStartTimer->Start(FROM_HERE,
-                          base::Seconds(kStartCollapseTransitionTimeInSeconds),
-                          base::BindOnce(^{
-                            [weakSelf cleanupAndTransitionToDefaultBadgeState];
-                          }));
+  _promoEndTimer = std::make_unique<base::OneShotTimer>();
+  _promoEndTimer->Start(FROM_HERE,
+                        base::Seconds(kStartCollapseTransitionTimeInSeconds),
+                        base::BindOnce(^{
+                          [weakSelf cleanupAndTransitionToDefaultBadgeState];
+                        }));
 }
 
 // Starts the promo timer for an IPH.
@@ -404,6 +404,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer expandBadgeContainer];
   [self chipShown:badgeConfig.badgeType];
   [self startEndPromoTimer];
+  _promoStartTimer = nullptr;
 }
 
 // Shows the IPH related to the `badgeConfig`.
@@ -471,6 +472,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self dismissIPHAnimated:YES];
   [self.consumer collapseBadgeContainer];
   [self.delegate enableFullscreen];
+  _promoEndTimer = nullptr;
 }
 
 // Cancels pending timers, dismisses any showing IPH and removes any active
@@ -664,9 +666,22 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     return YES;
   }
 
+  // If the promo timers have already started, do not allow the chip to show to
+  // avoid calling `ShouldTriggerHelpUI()` when the chip is in the process of
+  // being displayed.
+  if ([self arePromoTimersRunning]) {
+    return NO;
+  }
+
   return isPageEligible && isConsentEligible && eligibleTimeWindow &&
          _tracker->ShouldTriggerHelpUI(
              feature_engagement::kIPHiOSGeminiContextualCueChip);
+}
+
+// Returns whether the promo timers exist which implies a promo is in the
+// process of being displayed.
+- (BOOL)arePromoTimersRunning {
+  return _promoStartTimer != nullptr || _promoEndTimer != nullptr;
 }
 
 #pragma mark - Private ContextualPanelEntrypoint
@@ -674,6 +689,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
+  if ([self arePromoTimersRunning]) {
+    return;
+  }
+
   [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
