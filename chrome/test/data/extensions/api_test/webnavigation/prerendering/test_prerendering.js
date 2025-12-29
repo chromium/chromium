@@ -16,13 +16,6 @@ if (inServiceWorker) {
   ready = Promise.all([onWindowLoad, onScriptLoad]);
 }
 
-async function isAndroid() {
-  const os = await new Promise((resolve) => {
-    chrome.runtime.getPlatformInfo(info => resolve(info.os));
-  });
-  return os === 'android';
-}
-
 ready.then(async function() {
   const config = await promise(chrome.test.getConfig);
   const port = config.testServer.port;
@@ -40,14 +33,6 @@ ready.then(async function() {
           `http://a.test:${port}/extensions/api_test/webnavigation/prerendering/`;
       const prerenderTargetUrl = urlPrefix + 'a.html';
       const initiatorUrl = urlPrefix + 'prerender.html';
-
-      // On Android, tab creation is different: We open a tab, start to navigate
-      // it, then immediately cancel the navigation and start it again. This
-      // results in an initial document that gets aborted.
-      // TODO(https://crbug.com/470070174): Fix this when Android no longer
-      // triggers two navigations.
-      let android = await isAndroid();
-      let firstDocId = android ? 2 : 1;
 
       let expectedEvents = [
         // events
@@ -69,7 +54,7 @@ ready.then(async function() {
           label: 'onCommitted-1',
           event: 'onCommitted',
           details: {
-            documentId: firstDocId,
+            documentId: 1,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -86,7 +71,7 @@ ready.then(async function() {
           label: 'onDOMContentLoaded-1',
           event: 'onDOMContentLoaded',
           details: {
-            documentId: firstDocId,
+            documentId: 1,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -101,7 +86,7 @@ ready.then(async function() {
           label: 'onCompleted-1',
           event: 'onCompleted',
           details: {
-            documentId: firstDocId,
+            documentId: 1,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -130,7 +115,7 @@ ready.then(async function() {
           label: 'onCommitted-2',
           event: 'onCommitted',
           details: {
-            documentId: firstDocId + 1,
+            documentId: 2,
             documentLifecycle: 'prerender',
             frameId: 1,
             frameType: 'outermost_frame',
@@ -161,7 +146,7 @@ ready.then(async function() {
           label: 'onCommitted-3',
           event: 'onCommitted',
           details: {
-            documentId: firstDocId + 1,
+            documentId: 2,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -178,7 +163,7 @@ ready.then(async function() {
           label: 'onDOMContentLoaded-3',
           event: 'onDOMContentLoaded',
           details: {
-            documentId: firstDocId + 1,
+            documentId: 2,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -193,7 +178,7 @@ ready.then(async function() {
           label: 'onCompleted-3',
           event: 'onCompleted',
           details: {
-            documentId: firstDocId + 1,
+            documentId: 2,
             documentLifecycle: 'active',
             frameId: 0,
             frameType: 'outermost_frame',
@@ -206,42 +191,6 @@ ready.then(async function() {
         },
       ];
 
-      let expectedFailureEvents = [];
-      if (android) {
-        expectedEvents.unshift(
-            {
-              label: 'onBeforeNavigate-0',
-              event: 'onBeforeNavigate',
-              details: {
-                documentLifecycle: 'active',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
-                processId: -1,
-                tabId: 0,
-                timeStamp: 0,
-                url: initiatorUrl
-              }
-            },
-            {
-              label: 'onErrorOccurred-0',
-              event: 'onErrorOccurred',
-              details: {
-                documentId: 1,
-                documentLifecycle: 'active',
-                error: 'net::ERR_ABORTED',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
-                processId: -1,
-                tabId: 0,
-                timeStamp: 0,
-                url: initiatorUrl
-              }
-            });
-        expectedFailureEvents = ['onBeforeNavigate-0', 'onErrorOccurred-0'];
-      }
-
       let expectedPrerenderedOrder = ['onBeforeNavigate-2', 'onCommitted-2'];
 
       expect(
@@ -251,7 +200,6 @@ ready.then(async function() {
             // *-1: for navigate to the initiator page.
             // *-2: for prerendering.
             // *-3: for prerendering activation.
-            expectedFailureEvents,
             ['onBeforeNavigate-1', 'onCommitted-1',
             'onDOMContentLoaded-1', 'onCompleted-1'],
             expectedPrerenderedOrder,

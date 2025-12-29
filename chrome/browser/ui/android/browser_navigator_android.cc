@@ -7,7 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -90,10 +92,12 @@ void GetOrCreateBrowserWindowForDisposition(
 raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     BrowserWindowInterface* bwi,
     NavigateParams* params) {
-  TabListInterface* tab_list = TabListInterface::From(bwi);
-  if (!tab_list) {
+  // On Android, TabListInterface is TabModel.
+  TabModel* tab_model = static_cast<TabModel*>(TabListInterface::From(bwi));
+  if (!tab_model) {
     return nullptr;
   }
+
   switch (params->disposition) {
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
@@ -104,17 +108,28 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       // active tab. Else insert background tab at end of list.
       // TODO (crbug.com/449738150) Match WML logic in
       // TabStripModel::DetermineInsertionIndex.
-      int active_index = tab_list->GetActiveIndex();
+      int active_index = tab_model->GetActiveIndex();
       int insertion_index =
           active_index == -1 ? 0
           : params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB
               ? -1
               : active_index + 1;
 
+      // Create a WebContents.
+      content::WebContents::CreateParams create_params(
+          params->initiating_profile);
+      std::unique_ptr<content::WebContents> web_contents =
+          content::WebContents::Create(create_params);
+      // Tab will take ownership of these WebContents.
+      // TODO (crbug.com/471276663) This might have a use-after-free if
+      // !new_tab.
+      content::WebContents* raw_web_contents = web_contents.release();
       // Create a new tab (opens in the background).
-      // TODO (crbug.com/449738150) Add way to get this NavigationHandle.
-      raw_ptr<tabs::TabInterface> new_tab =
-          tab_list->OpenTab(params->url, insertion_index);
+      tab_model->CreateTab(nullptr, raw_web_contents, insertion_index,
+                           TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE,
+                           /*should_pin=*/false);
+
+      TabAndroid* new_tab = TabAndroid::FromWebContents(raw_web_contents);
       if (!new_tab || !new_tab->GetContents()) {
         return nullptr;
       }
@@ -122,7 +137,7 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       // Bring the new tab to the foreground if necessary.
       if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
         tabs::TabHandle new_tab_handle = new_tab->GetHandle();
-        tab_list->HighlightTabs(new_tab_handle, {new_tab_handle});
+        tab_model->HighlightTabs(new_tab_handle, {new_tab_handle});
       }
 
       // The new tab's WebContents is the target for our navigation.
@@ -143,7 +158,7 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     case WindowOpenDisposition::NEW_WINDOW: {
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
-      raw_ptr<tabs::TabInterface> active_tab = tab_list->GetActiveTab();
+      raw_ptr<tabs::TabInterface> active_tab = tab_model->GetActiveTab();
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }

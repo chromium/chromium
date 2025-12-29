@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 
 #include "base/base_switches.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,14 +14,52 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+namespace {
+
+// Helper classes used to track tabs and navigations.
+class NavigationCounter : public content::WebContentsObserver {
+ public:
+  explicit NavigationCounter(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidFinishNavigation(content::NavigationHandle* handle) override {
+    // Ignore warmup navigation.
+    if (base::EndsWith(handle->GetURL().path(), "warmup.html")) {
+      return;
+    }
+    finish_count_++;
+  }
+
+  int finish_count() const { return finish_count_; }
+
+ private:
+  int finish_count_ = 0;
+};
+
+class TabAdditionObserver : public TabListInterfaceObserver {
+ public:
+  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+    counter_ = std::make_unique<NavigationCounter>(tab->GetContents());
+  }
+
+  NavigationCounter* counter() { return counter_.get(); }
+
+ private:
+  std::unique_ptr<NavigationCounter> counter_;
+};
+
+}  // namespace
 
 class NavigateAndroidBrowserTest : public AndroidBrowserTest {
  public:
@@ -527,4 +566,27 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   // Verify the new tab is now the active one.
   EXPECT_EQ(1, incognito_tab_list->GetActiveIndex());
   EXPECT_EQ(new_tab, incognito_tab_list->GetActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, EnsureSingleNavigation) {
+  const GURL url1 = StartAtURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  TabAdditionObserver tab_observer;
+  tab_list_->AddTabListInterfaceObserver(&tab_observer);
+
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+
+  ASSERT_TRUE(tab_observer.counter());
+  // If Navigate() navigates twice, this will be 2.
+  EXPECT_EQ(1, tab_observer.counter()->finish_count());
+
+  tab_list_->RemoveTabListInterfaceObserver(&tab_observer);
 }
