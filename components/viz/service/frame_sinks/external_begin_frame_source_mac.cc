@@ -509,6 +509,12 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     interval *= 2;
   }
 
+  // FrameIntervalDecider::UpdateSettings() requires non-empty supported
+  // intervals for FixedIntervalSettings.
+  if (supported_intervals.empty()) {
+    supported_intervals.insert(nominal_refresh_period_);
+  }
+
   return supported_intervals;
 }
 
