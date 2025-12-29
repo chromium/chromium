@@ -25,7 +25,7 @@ TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches) {
       identity_test_env->identity_manager();
   syncer::TestSyncService sync_service;
 
-  // Sync is disabled.
+  // Signed out.
   sync_service.SetSignedOut();
   EXPECT_FALSE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
@@ -34,10 +34,10 @@ TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches) {
       &sync_service, identity_manager,
       /* user_has_enabled_enhanced_protection=*/false));
 
-  // Sync is enabled.
+  // Sign in a user.
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
-      "foo@gmail.com", signin::ConsentLevel::kSync);
-  sync_service.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+      "foo@gmail.com", signin::ConsentLevel::kSignin);
+  sync_service.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   EXPECT_TRUE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
       /* user_has_enabled_enhanced_protection=*/true));

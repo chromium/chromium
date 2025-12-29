@@ -19,12 +19,12 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
   void SetUp() override { sync_service_.SetSignedOut(); }
 
  protected:
-  void EnableSync() {
-    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
+  void SignIn() {
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
     sync_service_.FireStateChanged();
   }
 
-  void DisableSync() {
+  void SignOut() {
     sync_service_.SetSignedOut();
     sync_service_.FireStateChanged();
   }
@@ -35,34 +35,34 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
 
 TEST_F(SafeBrowsingSyncObserverImplTest, ObserveSyncState) {
   SafeBrowsingSyncObserverImpl observer(&sync_service_);
-  int invoke_cnt = 0;
+  int invoke_count = 0;
   observer.ObserveHistorySyncStateChanged(base::BindRepeating(
-      [](int* invoke_cnt) { (*invoke_cnt)++; }, &invoke_cnt));
+      [](int* invoke_count) { (*invoke_count)++; }, &invoke_count));
 
-  EnableSync();
-  EXPECT_EQ(invoke_cnt, 1);
+  SignIn();
+  EXPECT_EQ(invoke_count, 1);
 
-  DisableSync();
-  EXPECT_EQ(invoke_cnt, 2);
+  SignOut();
+  EXPECT_EQ(invoke_count, 2);
 
-  DisableSync();
+  SignOut();
   // Not invoked since the state didn't change.
-  EXPECT_EQ(invoke_cnt, 2);
+  EXPECT_EQ(invoke_count, 2);
 }
 
 TEST_F(SafeBrowsingSyncObserverImplTest, NullSyncService) {
   SafeBrowsingSyncObserverImpl observer(nullptr);
-  int invoke_cnt = 0;
+  int invoke_count = 0;
   observer.ObserveHistorySyncStateChanged(base::BindRepeating(
-      [](int* invoke_cnt) { (*invoke_cnt)++; }, &invoke_cnt));
+      [](int* invoke_count) { (*invoke_count)++; }, &invoke_count));
 
-  EnableSync();
-  EXPECT_EQ(invoke_cnt, 0);
+  SignIn();
+  EXPECT_EQ(invoke_count, 0);
 }
 
 TEST_F(SafeBrowsingSyncObserverImplTest, NullCallback) {
   SafeBrowsingSyncObserverImpl observer(&sync_service_);
-  EnableSync();
+  SignIn();
 }
 
 }  // namespace safe_browsing
