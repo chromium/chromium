@@ -2897,6 +2897,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"chrome-next-ia", flag_descriptions::kChromeNextIaName,
      flag_descriptions::kChromeNextIaDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kChromeNextIa)},
+    {"gemini-image-remix-tool", flag_descriptions::kGeminiImageRemixToolName,
+     flag_descriptions::kGeminiImageRemixToolDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiImageRemixTool)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

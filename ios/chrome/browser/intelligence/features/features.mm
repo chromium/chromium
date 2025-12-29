@@ -380,6 +380,12 @@ bool IsWebPageReportedImagesSheetEnabled() {
   return base::FeatureList::IsEnabled(kWebPageReportedImagesSheet);
 }
 
+BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiImageRemixToolEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
+}
+
 BASE_FEATURE(kImageContextMenuGeminiEntryPoint,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

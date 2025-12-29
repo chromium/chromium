@@ -688,6 +688,10 @@ const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
 const char kGeminiFullChatHistoryDescription[] =
     "Enables the full chat history being shown in the floaty.";
 
+const char kGeminiImageRemixToolName[] = "Gemini Image Remix Tool";
+const char kGeminiImageRemixToolDescription[] =
+    "Enables the image remix tool in the Gemini floaty.";
+
 const char kGeminiImmediateOverlayName[] = "GeminiImmediateOverlay";
 const char kGeminiImmediateOverlayDescription[] =
     "Enables immediate access to Gemini in the page tools menu.";

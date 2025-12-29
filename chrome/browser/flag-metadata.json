@@ -5492,6 +5492,14 @@
     "expiry_milestone": 148
   },
   {
+    "name": "gemini-image-remix-tool",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "gemini-immediate-overlay",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148

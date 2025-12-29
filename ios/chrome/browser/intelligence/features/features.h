@@ -276,6 +276,10 @@ bool IsGeminiRefactoredFREEnabled();
 BASE_DECLARE_FEATURE(kWebPageReportedImagesSheet);
 bool IsWebPageReportedImagesSheetEnabled();
 
+// Feature flag for enabling the image remixing tool in the Gemini floaty.
+BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
+bool IsGeminiImageRemixToolEnabled();
+
 // Feature flag for enabling passing an image from the long-press context menu
 // to Gemini.
 BASE_DECLARE_FEATURE(kImageContextMenuGeminiEntryPoint);
