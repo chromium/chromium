@@ -46,7 +46,7 @@ static base::HeapArray<uint8_t> PrepareData(int* size) {
 
   *size = encoded_data.length();
   auto buffer = base::HeapArray<uint8_t>::Uninit(*size);
-  UNSAFE_TODO(memcpy(buffer.data(), encoded_data.c_str(), *size));
+  base::span(buffer).copy_from(base::as_byte_span(encoded_data));
   return buffer;
 }
 
@@ -72,7 +72,8 @@ void SimulateReadSequence(base::span<const int> read_sequence) {
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);
-    UNSAFE_TODO(memcpy(buffer->data(), test_data.data() + pos, read));
+    buffer->first(read).copy_from(base::span(test_data).subspan(
+        static_cast<size_t>(pos), static_cast<size_t>(read)));
     decoder.AddData(buffer, read);
     while (true) {
       std::unique_ptr<CompoundBuffer> message(decoder.GetNextMessage());
