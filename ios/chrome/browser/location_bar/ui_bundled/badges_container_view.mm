@@ -314,14 +314,14 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
           _contextualPanelCurrentlyAnimating);
   }
 
+  // The badge view used by e.g. Translate, Permissions, etc, is visible if it
+  // wants to be visible and `IsDiamondPrototypeEnabled()` returns false.
+  badgeViewShouldBeVisibleFinal =
+      _badgeViewShouldBeVisible && !IsDiamondPrototypeEnabled();
+
   // Other badges can be visible only outside of Reader mode unless badge
   // support is explicitly enabled.
-  if (!readerModeChipShouldBeVisibleFinal ||
-      IsReaderModeBadgeSupportEnabled()) {
-    // The badge view used by e.g. Translate, Permissions, etc, is visible if it
-    // wants to be visible and `IsDiamondPrototypeEnabled()` returns false.
-    badgeViewShouldBeVisibleFinal =
-        _badgeViewShouldBeVisible && !IsDiamondPrototypeEnabled();
+  if (!readerModeChipShouldBeVisibleFinal) {
     // The contextual panel entrypoint can only be visible if it wants to be
     // visible and if one of these conditions is verified:
     // 1. The contextual panel has a loud moment (animating to large entrypoint)

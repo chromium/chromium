@@ -36,6 +36,8 @@ source_set("model") {
     "reader_mode_scroll_anchor_java_script_feature.mm",
     "reader_mode_tab_helper.h",
     "reader_mode_tab_helper.mm",
+    "reader_mode_tab_helper_observer_bridge.h",
+    "reader_mode_tab_helper_observer_bridge.mm",
     "reader_mode_web_state_delegate.h",
     "reader_mode_web_state_delegate.mm",
     "reader_mode_web_state_utils.h",

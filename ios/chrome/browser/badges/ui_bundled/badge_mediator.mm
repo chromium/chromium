@@ -33,6 +33,9 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -51,6 +54,18 @@ const char kInfobarOverflowBadgeTappedUserAction[] =
 // Histogram name for when the overflow badge is shown
 const char kInfobarOverflowBadgeShownUserAction[] =
     "MobileMessagesOverflowBadgeShown";
+
+// Helper method to determine if the `infobarType` is supported in Reader
+// Mode.
+bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType) {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    return true;
+  }
+  if (infobarType == InfobarType::kInfobarTypePermissions) {
+    return true;
+  }
+  return false;
+}
 
 // TODO(crbug.com/458142962): Migrate to LocationBarBadgeType.
 // Helper method to convert a `BadgeType` to a `LocationBarBadgeType. Serves as
@@ -85,8 +100,10 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 @interface BadgeMediator () <CRWWebStateObserver,
                              InfobarBadgeTabHelperDelegate,
                              OverlayPresenterObserving,
+                             ReaderModeTabHelperObserving,
                              WebStateListObserving> {
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
+  std::unique_ptr<ReaderModeTabHelperObserverBridge> _readerModeObserver;
   std::unique_ptr<WebStateListObserver> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
 }
@@ -131,6 +148,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     _webStateList = webStateList;
     _webState = _webStateList->GetActiveWebState();
 
+    _readerModeObserver =
+        std::make_unique<ReaderModeTabHelperObserverBridge>(self);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
@@ -138,6 +157,10 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     if (_webState) {
       InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(
           self);
+      if (ReaderModeTabHelper* readerModeTabHelper =
+              ReaderModeTabHelper::FromWebState(_webState)) {
+        readerModeTabHelper->AddObserver(_readerModeObserver.get());
+      }
       _webState->AddObserver(_webStateObserver.get());
     }
     _badgeButtonFactory = [[BadgeButtonFactory alloc] init];
@@ -165,6 +188,10 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
 - (void)disconnectWebState {
   if (self.webState) {
+    if (ReaderModeTabHelper* readerModeTabHelper =
+            ReaderModeTabHelper::FromWebState(self.webState)) {
+      readerModeTabHelper->RemoveObserver(_readerModeObserver.get());
+    }
     self.webState = nullptr;
     _webStateObserver = nullptr;
   }
@@ -194,9 +221,25 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   }
 
   NSMutableArray<id<BadgeItem>>* badges = [NSMutableArray array];
+
+  // If Reader Mode is active, only show camera and microphone permissions
+  // badges.
+  BOOL isReaderModeActive = NO;
+  if (self.webState) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(self.webState);
+    if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
+      isReaderModeActive = YES;
+    }
+  }
+
   std::map<InfobarType, BadgeState> badgeStatesForInfobarType =
       self.badgeTabHelper->GetInfobarBadgeStates();
   for (auto& infobarTypeBadgeStatePair : badgeStatesForInfobarType) {
+    if (isReaderModeActive &&
+        !IsInfobarTypeSupportedInReaderMode(infobarTypeBadgeStatePair.first)) {
+      continue;
+    }
     BadgeType badgeType =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
     // TODO(crbug.com/448422022): Remove this translate badge filtering logic
@@ -262,11 +305,19 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   }
   if (_webState) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(nil);
+    if (ReaderModeTabHelper* readerModeTabHelper =
+            ReaderModeTabHelper::FromWebState(_webState)) {
+      readerModeTabHelper->RemoveObserver(_readerModeObserver.get());
+    }
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
   if (_webState) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(self);
+    if (ReaderModeTabHelper* readerModeTabHelper =
+            ReaderModeTabHelper::FromWebState(_webState)) {
+      readerModeTabHelper->AddObserver(_readerModeObserver.get());
+    }
     _webState->AddObserver(_webStateObserver.get());
     _badgeButtonFactory.incognito =
         _webState->GetBrowserState()->IsOffTheRecord();
@@ -543,6 +594,20 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(webState, self.webState);
   [self disconnectWebState];
+}
+
+#pragma mark - ReaderModeTabHelperObserving
+
+- (void)readerModeWebStateDidLoadContent:(ReaderModeTabHelper*)tabHelper
+                                webState:(web::WebState*)webState {
+  [self updateConsumer];
+}
+
+- (void)readerModeWebStateWillBecomeUnavailable:(ReaderModeTabHelper*)tabHelper
+                                       webState:(web::WebState*)webState
+                                         reason:(ReaderModeDeactivationReason)
+                                                    reason {
+  [self updateConsumer];
 }
 
 #pragma mark - Private
