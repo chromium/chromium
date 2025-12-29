@@ -477,6 +477,19 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     return;
   }
 
+  if (!GetEligibleSceneForSyncedSetUp(self.profileState)) {
+    [self performNextPostFirstRunAction];
+    return;
+  }
+
+  if (!self.profileState.appState.startupInformation.isFirstRun) {
+    // Checking `isFirstRun` after verifying Synced Set Up eligibility ensures
+    // that Synced Set Up only triggers during the first run, but this profile
+    // agent does not get stuck if it is used outside of the first run (such as
+    // in IPH demo mode).
+    return;
+  }
+
   LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource::kPostFirstRun);
 
   __weak __typeof(self) weakSelf = self;
