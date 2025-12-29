@@ -90,10 +90,12 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
 
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
-  ChainedBackNavigationTracker* tracker =
-      ChainedBackNavigationTracker::FromWebContents(web_contents);
-  CHECK(tracker);
-  tracker->RecordBackButtonClickForChainedBackNavigation();
+  if (web_contents) {
+    ChainedBackNavigationTracker* tracker =
+        ChainedBackNavigationTracker::FromWebContents(web_contents);
+    CHECK(tracker);
+    tracker->RecordBackButtonClickForChainedBackNavigation();
+  }
 
   // Do this last because upon activation the MenuModel gets updated, removing
   // the label for the page about to be loaded. However, the title associated
