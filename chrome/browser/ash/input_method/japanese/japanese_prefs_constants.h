@@ -7,17 +7,6 @@
 
 namespace ash::input_method {
 
-// TODO(crbug.com/203464079): Use distinct CrOS prefs for nacl_mozc_jp
-// ("Japanese [for JIS keyboard]") and nacl_mozc_us ("Japanese for US keyboard")
-// input methods. Due to singleton constraints in the legacy implementation,
-// unlike all other input methods whose settings were distinct from one another,
-// these two input methods shared the same settings. Upon migration to CrOS
-// prefs, the unintended sharing was intentionally retained until the issue is
-// separately addressed outside the scope of the said migration. Thus, as of
-// now, Japanese prefs should specially be set only once for ID "nacl_mozc_jp"
-// and shared across both "nacl_mozc_jp" and "nacl_mozc_us" input methods.
-inline constexpr std::string_view kJpPrefsEngineId = "nacl_mozc_jp";
-
 // Top level option categories:
 // LINT.IfChange(JpOptionCategories)
 inline constexpr std::string_view kJpPrefAutomaticallySwitchToHalfwidth =
