@@ -205,3 +205,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@media (forced-colors: active) {
+  .remove-button {
+    --cr-icon-button-fill-color: ButtonText;
+    --cr-icon-button-hover-background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    box-sizing: border-box;
+  }
+}
