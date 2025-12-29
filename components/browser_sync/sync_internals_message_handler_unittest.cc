@@ -303,7 +303,7 @@ TEST_F(SyncInternalsMessageHandlerTest, RequestStart) {
 
   CoreAccountInfo account_info =
       identity_test_environment()->identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
   EXPECT_FALSE(account_info.IsEmpty());
   EXPECT_EQ(account_info.email, "foo@gmail.com");
 }
