@@ -414,7 +414,9 @@ void ContextualTasksUI::OnOAuthTokenReceived(
 }
 
 void ContextualTasksUI::OnZeroStateChange(bool is_zero_state) {
-  page_->OnZeroStateChange(is_zero_state);
+  if (page_) {
+    page_->OnZeroStateChange(is_zero_state);
+  }
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
@@ -725,14 +727,11 @@ void ContextualTasksUI::FrameNavObserver::DidStartNavigation(
 
   const GURL& url = navigation_handle->GetURL();
 
-  if (!ui_service_->IsAiUrl(url)) {
-    return;
-  }
-
+  // This is a zero state if there is no query in the AIM page.
   std::string query_value;
   net::GetValueForKeyInQuery(url, "q", &query_value);
   task_info_delegate_->OnZeroStateChange(
-      /*is_zero_state=*/query_value.empty());
+      /*is_zero_state=*/query_value.empty() && ui_service_->IsAiUrl(url));
 }
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
