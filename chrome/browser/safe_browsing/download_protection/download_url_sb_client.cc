@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -19,8 +18,6 @@
 #include "content/public/browser/download_item_utils.h"
 
 namespace safe_browsing {
-
-using enum ExtendedReportingLevel;
 
 DownloadUrlSBClient::DownloadUrlSBClient(
     download::DownloadItem* item,
@@ -44,13 +41,6 @@ DownloadUrlSBClient::DownloadUrlSBClient(
   DCHECK(item_);
   DCHECK(service_);
   download_item_observation_.Observe(item_.get());
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
-  extended_reporting_level_ =
-      profile ? GetExtendedReportingLevel(*profile->GetPrefs())
-              : SBER_LEVEL_OFF;
-  is_enhanced_protection_ =
-      profile ? IsEnhancedProtectionEnabled(*profile->GetPrefs()) : false;
 }
 
 // Implements DownloadItem::Observer.
@@ -99,8 +89,7 @@ void DownloadUrlSBClient::CheckDone(SBThreatType threat_type) {
   if (threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {
     UpdateDownloadCheckStats(dangerous_type_);
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DownloadUrlSBClient::ReportMalware, this, threat_type));
+        FROM_HERE, base::BindOnce(&DownloadUrlSBClient::ReportMalware, this));
   } else {
     // Identify download referrer chain, which will be used in
     // ClientDownloadRequest.
@@ -112,7 +101,7 @@ void DownloadUrlSBClient::CheckDone(SBThreatType threat_type) {
       FROM_HERE, base::BindOnce(std::move(callback_), result));
 }
 
-void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
+void DownloadUrlSBClient::ReportMalware() {
   std::string post_data;
   if (!sha256_hash_.empty()) {
     post_data += base::HexEncode(sha256_hash_) + "\n";
@@ -120,22 +109,6 @@ void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
   for (size_t i = 0; i < url_chain_.size(); ++i) {
     post_data += url_chain_[i].spec() + "\n";
   }
-
-  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
-  hit_report->malicious_url = url_chain_.back();
-  hit_report->page_url = url_chain_.front();
-  hit_report->referrer_url = referrer_url_;
-  hit_report->is_subresource = true;
-  hit_report->threat_type = threat_type;
-  hit_report->threat_source = database_manager_->GetNonBrowseUrlThreatSource();
-  hit_report->post_data = post_data;
-  hit_report->extended_reporting_level = extended_reporting_level_;
-  hit_report->is_enhanced_protection = is_enhanced_protection_;
-  hit_report->is_metrics_reporting_active =
-      ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
-
-  ui_manager_->MaybeReportSafeBrowsingHit(
-      std::move(hit_report), content::DownloadItemUtils::GetWebContents(item_));
 
   if (base::FeatureList::IsEnabled(
           safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {

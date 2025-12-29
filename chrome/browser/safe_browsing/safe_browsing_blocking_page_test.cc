@@ -719,12 +719,6 @@ class SafeBrowsingBlockingPageBrowserTest
     ::safe_browsing::ExpectNoSecurityIndicatorDowngrade(tab);
   }
 
-  bool hit_report_sent() {
-    return static_cast<FakeSafeBrowsingUIManager*>(
-               factory_.test_safe_browsing_service()->ui_manager().get())
-        ->hit_report_sent();
-  }
-
   bool report_sent() {
     return static_cast<FakeSafeBrowsingUIManager*>(
                factory_.test_safe_browsing_service()->ui_manager().get())
@@ -1427,18 +1421,18 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistUnsaved) {
 
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
 // TODO(crbug.com/40721886): Address flay failure.
-#define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
-  DISABLED_VerifyHitReportSentOnSBERAndNotIncognito
+#define MAYBE_VerifyClientReportSentOnSBERAndNotIncognito \
+  DISABLED_VerifyClientReportSentOnSBERAndNotIncognito
 #else
-#define MAYBE_VerifyHitReportSentOnSBERAndNotIncognito \
-  VerifyHitReportSentOnSBERAndNotIncognito
+#define MAYBE_VerifyClientReportSentOnSBERAndNotIncognito \
+  VerifyClientReportSentOnSBERAndNotIncognito
 #endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       MAYBE_VerifyHitReportSentOnSBERAndNotIncognito) {
-  // This test verifies that hit reports are sent under the legacy SBER
+                       MAYBE_VerifyClientReportSentOnSBERAndNotIncognito) {
+  // This test verifies that client reports are sent under the legacy SBER
   // reporting mechanism. With the deprecation of SBER, this functionality is
   // being replaced by Enhanced Safe Browsing (ESB). The ESB equivalent of this
-  // test can be found in the VerifyHistogramsAndHitReport test within the
+  // test can be found in the VerifyHistogramsAndClientReport test within the
   // SafeBrowsingBlockingPageAsyncChecksTimingTest suite.
   if (IsSberDeprecated()) {
     GTEST_SKIP() << "This test only applies to SBER logic.";
@@ -1455,12 +1449,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 
   EnableExtendedReporting(true);
   GURL url = SetupWarningAndNavigate(browser());  // not incognito
-  EXPECT_TRUE(hit_report_sent());
   EXPECT_TRUE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       VerifyHitReportNotSentOnIncognito) {
+                       VerifyClientReportNotSentOnIncognito) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, false);
   // The extended reporting opt-in is presented in the interstitial for malware,
@@ -1481,12 +1474,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_EQ(HIDDEN, ::safe_browsing::GetVisibility(
                         incognito_browser, "enhanced-protection-message"));
 
-  EXPECT_FALSE(hit_report_sent());
   EXPECT_FALSE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
-                       VerifyHitReportNotSentWithoutSBER) {
+                       VerifyClientReportNotSentWithoutSBER) {
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
@@ -1500,7 +1492,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, false);  // set up SBER
   GURL url = SetupWarningAndNavigate(browser());          // not incognito
-  EXPECT_FALSE(hit_report_sent());
   EXPECT_FALSE(report_sent());
 }
 
@@ -3505,18 +3496,13 @@ INSTANTIATE_TEST_SUITE_P(CheckCompleteAfterNavigationFinish,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
-                       VerifyHistogramsAndHitReport) {
+                       VerifyHistogramsAndClientReport) {
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
       {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
-  int hit_report_count =
-      static_cast<FakeSafeBrowsingUIManager*>(
-          factory_.test_safe_browsing_service()->ui_manager().get())
-          ->hit_report_count();
-  EXPECT_EQ(hit_report_count, 1);
   EXPECT_TRUE(shown_report_sent_is_async_check().value());
 
   histogram_tester_.ExpectUniqueSample(
@@ -3525,11 +3511,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
       /*expected_bucket_count=*/1);
 }
 
-// Confirm that duplicate hit reports aren't sent in the case where URT falls
+// Confirm that duplicate client reports aren't sent in the case where URT falls
 // back to HPD due to a high-confidence allowlist match.
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageAsyncChecksTimingTest,
-    NoDuplicateHitReports_FallbackFromHighConfidenceAllowlistMatch) {
+    NoDuplicateClientReports_FallbackFromHighConfidenceAllowlistMatch) {
   EnableAsyncCheck();
   // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
   // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
@@ -3546,18 +3532,13 @@ IN_PROC_BROWSER_TEST_P(
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
-  int hit_report_count =
-      static_cast<FakeSafeBrowsingUIManager*>(
-          factory_.test_safe_browsing_service()->ui_manager().get())
-          ->hit_report_count();
-  ASSERT_EQ(hit_report_count, 1);
   EXPECT_FALSE(shown_report_sent_is_async_check().value());
 }
 
-// Confirm that duplicate hit reports aren't sent in the case where URT is
+// Confirm that duplicate client reports aren't sent in the case where URT is
 // not eligible and HPD is used instead for the async check.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
-                       NoDuplicateHitReports_UrlRealTimeUncheckable) {
+                       NoDuplicateClientReports_UrlRealTimeUncheckable) {
   EnableAsyncCheck();
   // Do not call |SetupUrlRealTimeVerdictInCacheManager| with a random URL,
   // that way the real-time URL lookup will instead fall back to hash database
@@ -3569,17 +3550,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
-  int hit_report_count =
-      static_cast<FakeSafeBrowsingUIManager*>(
-          factory_.test_safe_browsing_service()->ui_manager().get())
-          ->hit_report_count();
-  ASSERT_EQ(hit_report_count, 1);
   EXPECT_FALSE(shown_report_sent_is_async_check().value());
 }
 
-// Confirm that duplicate hit reports aren't sent for web UI URLs.
+// Confirm that duplicate client reports aren't sent for web UI URLs.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
-                       NoDuplicateHitReports_WebUiUrl) {
+                       NoDuplicateClientReports_WebUiUrl) {
   EnableAsyncCheck();
   NavigateToURLAndWaitForAsyncChecks(
       GURL(kChromeUISafeBrowsingMatchPhishingUrl));
@@ -3587,11 +3563,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
-  int hit_report_count =
-      static_cast<FakeSafeBrowsingUIManager*>(
-          factory_.test_safe_browsing_service()->ui_manager().get())
-          ->hit_report_count();
-  ASSERT_EQ(hit_report_count, 1);
   EXPECT_FALSE(shown_report_sent_is_async_check().value());
 }
 
@@ -4079,11 +4050,6 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     return ::safe_browsing::IsShowingInterstitial(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
-  std::optional<ThreatSource> hit_report_sent_threat_source() {
-    return static_cast<FakeSafeBrowsingUIManager*>(
-               factory_.test_safe_browsing_service()->ui_manager().get())
-        ->hit_report_sent_threat_source();
-  }
   std::string GetReportSent() {
     return static_cast<FakeSafeBrowsingUIManager*>(
                factory_.test_safe_browsing_service()->ui_manager().get())
@@ -4176,7 +4142,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
       /*expected_count=*/0);
 }
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
-                       TriggerHitReportAndClientSafeBrowsingReportRequest) {
+                       TriggerClientSafeBrowsingReportRequest) {
   if (base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)) {
     // If the extended reporting pref dependency is removed, this test will not
     // be run since it is testing HPRT lookup cases.
@@ -4187,10 +4153,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());
-
-  // Verify correct hit report is sent.
-  EXPECT_EQ(hit_report_sent_threat_source(),
-            ThreatSource::NATIVE_PVER5_REAL_TIME);
 
   // Verify correct CSBRR is sent.
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();

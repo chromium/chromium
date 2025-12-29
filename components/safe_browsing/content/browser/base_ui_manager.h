@@ -88,14 +88,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
                             bool is_pending,
                             SBThreatType threat_type);
 
-  // This is a no-op in the base class, but should be overridden to report hits
-  // to the unsafe contents (malware, phishing, unsafe download URL)
-  // to the server. Can only be called on UI thread. Will only upload a hit
-  // report if the user has enabled SBER and is not currently in incognito mode.
-  virtual void MaybeReportSafeBrowsingHit(
-      std::unique_ptr<safe_browsing::HitReport> hit_report,
-      content::WebContents* web_contents);
-
   // This is a no-op in the base class, but should be overridden to send report
   // about unsafe contents (malware, phishing, unsafe download URL) to the
   // server. Can only be called on UI thread and only sent for
@@ -194,10 +186,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
   // Ensures that |web_contents| has its allowlist set in its userdata
   static void EnsureAllowlistCreated(content::WebContents* web_contents);
-
-  // BaseUIManager does not send SafeBrowsingHitReport. Subclasses should
-  // implement the reporting logic themselves if needed.
-  virtual void CreateAndSendHitReport(const UnsafeResource& resource);
 
   // BaseUIManager does not send ClientSafeBrowsingReport. Subclasses should
   // implement the reporting logic themselves if needed.

@@ -259,16 +259,6 @@ std::string JsRequestTestNavigateAndWaitForTitle(Browser* browser,
 
 class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
  public:
-  void MaybeReportSafeBrowsingHit(
-      std::unique_ptr<safe_browsing::HitReport> hit_report,
-      content::WebContents* web_contents) override {
-    EXPECT_FALSE(got_hit_report_);
-    got_hit_report_ = true;
-    hit_report_ = *(hit_report.get());
-    SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(std::move(hit_report),
-                                                      web_contents);
-  }
-
   void MaybeSendClientSafeBrowsingWarningShownReport(
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
       content::WebContents* web_contents) override {
@@ -279,21 +269,11 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
         std::move(report), web_contents);
   }
 
-  bool got_hit_report_ = false;
-  safe_browsing::HitReport hit_report_;
   bool got_warning_shown_report_ = false;
   safe_browsing::ClientSafeBrowsingReportRequest warning_shown_report_;
 
  private:
   ~FakeSafeBrowsingUIManager() override = default;
-};
-
-class MockObserver : public SafeBrowsingUIManager::Observer {
- public:
-  MockObserver() = default;
-  ~MockObserver() override = default;
-  MOCK_METHOD1(OnSafeBrowsingHit,
-               void(const security_interstitials::UnsafeResource&));
 };
 
 MATCHER_P(IsUnsafeResourceFor, url, "") {
@@ -508,16 +488,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 #endif
   }
 
-  void SetUpOnMainThread() override {
-    g_browser_process->safe_browsing_service()->ui_manager()->AddObserver(
-        &observer_);
-  }
-
-  void TearDownOnMainThread() override {
-    g_browser_process->safe_browsing_service()->ui_manager()->RemoveObserver(
-        &observer_);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     base::FilePath test_data_dir;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
@@ -551,10 +521,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     return static_cast<FakeSafeBrowsingUIManager*>(
         g_browser_process->safe_browsing_service()->ui_manager().get());
   }
-  bool got_hit_report() { return ui_manager()->got_hit_report_; }
-  const safe_browsing::HitReport& hit_report() {
-    return ui_manager()->hit_report_;
-  }
   bool got_warning_shown_report() {
     return ui_manager()->got_warning_shown_report_;
   }
@@ -569,8 +535,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 
  protected:
   using enum SBThreatType;
-
-  StrictMock<MockObserver> observer_;
 
  private:
   std::unique_ptr<TestSafeBrowsingServiceFactory> sb_factory_;
@@ -598,10 +562,8 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
   // After adding the URL to SafeBrowsing database and full hash cache, we
   // should see the interstitial page.
   MarkUrlForMalwareUnexpired(url);
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  Mock::VerifyAndClearExpectations(&observer_);
   // There should be an InterstitialPage.
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -619,7 +581,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
   EXPECT_FALSE(ShowingInterstitialPage());
 
   // Navigate to kEmptyPage again -- should hit the allowlist this time.
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(ShowingInterstitialPage());
 }
@@ -637,19 +598,13 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, Prefetch) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
   EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
 
   // However, when we navigate to the malware page, we should still get
   // the interstitial.
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(malware_url)))
-      .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malware_url));
   EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
   EXPECT_TRUE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
 }
 
 // Ensure that the referrer information is preserved in the hit report.
@@ -662,25 +617,15 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   // Navigate to first, safe page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
   EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
 
   // Navigate to malware page, should show interstitial and have first page in
   // referrer.
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(1);
-
   NavigateParams params(browser(), bad_url, ui::PAGE_TRANSITION_LINK);
   params.referrer.url = first_url;
   ui_test_utils::NavigateToURL(&params);
 
   EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
-  EXPECT_EQ(bad_url, hit_report().malicious_url);
-  EXPECT_EQ(bad_url, hit_report().page_url);
-  EXPECT_EQ(first_url, hit_report().referrer_url);
-  EXPECT_FALSE(hit_report().is_subresource);
   EXPECT_TRUE(got_warning_shown_report());
   EXPECT_EQ(bad_url, report().url());
   EXPECT_EQ(bad_url, report().page_url());
@@ -821,7 +766,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWithAutoReloadTest,
                        AutoReloadDisabled) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   MarkUrlForMalwareUnexpired(url);
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(ShowingInterstitialPage());
@@ -849,9 +793,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWarningShownCSBRRsDisabled,
   GURL bad_url = embedded_test_server()->GetURL(kMalwarePage);
   MarkUrlForMalwareUnexpired(bad_url);
 
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(1);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   EXPECT_TRUE(ShowingInterstitialPage());
 
@@ -877,7 +818,6 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
 
   EXPECT_EQ("NOT BLOCKED", new_title);
   EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
   EXPECT_FALSE(got_warning_shown_report());
 }
 
@@ -1081,17 +1021,10 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareMainFrame) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   MarkUrlForMalwareUnexpired(url, GetParam());
 
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // All types should show the interstitial.
   EXPECT_TRUE(ShowingInterstitialPage());
 
-  EXPECT_TRUE(got_hit_report());
-  EXPECT_EQ(url, hit_report().malicious_url);
-  EXPECT_EQ(url, hit_report().page_url);
-  EXPECT_EQ(GURL(), hit_report().referrer_url);
-  EXPECT_FALSE(hit_report().is_subresource);
   EXPECT_TRUE(got_warning_shown_report());
   EXPECT_EQ(url, report().url());
   EXPECT_EQ(url, report().page_url());

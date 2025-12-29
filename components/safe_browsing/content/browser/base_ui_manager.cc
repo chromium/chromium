@@ -391,7 +391,6 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
       !already_reported) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
-    CreateAndSendHitReport(resource);
     if (base::FeatureList::IsEnabled(
             safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
       CreateAndSendClientSafeBrowsingWarningShownReport(resource);
@@ -481,7 +480,6 @@ void BaseUIManager::EnsureAllowlistCreated(WebContents* web_contents) {
   AllowlistUrlSet::CreateForWebContents(web_contents);
 }
 
-void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
 void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {}
 
@@ -497,16 +495,6 @@ BaseUIManager::CreateBlockingPage(
   // non-committed implementations, and this code won't be called if committed
   // interstitials are disabled.
   NOTREACHED();
-}
-
-// A SafeBrowsing hit is sent after a blocking page for malware/phishing
-// or after the warning dialog for download urls, only for extended_reporting
-// users who are not in incognito mode.
-void BaseUIManager::MaybeReportSafeBrowsingHit(
-    std::unique_ptr<HitReport> hit_report,
-    content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return;
 }
 
 // A client safe browsing report is sent after a blocking page for

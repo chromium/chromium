@@ -296,16 +296,6 @@ void FakeSafeBrowsingUIManager::OnThreatDetailsDone(
   threat_details_done_ = true;
 }
 
-void FakeSafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
-    std::unique_ptr<HitReport> hit_report,
-    WebContents* web_contents) {
-  if (SafeBrowsingUIManager::ShouldSendHitReport(hit_report.get(),
-                                                 web_contents)) {
-    hit_report_count_++;
-    hit_report_sent_threat_source_ = hit_report.get()->threat_source;
-  }
-}
-
 void FakeSafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report,
     WebContents* web_contents) {

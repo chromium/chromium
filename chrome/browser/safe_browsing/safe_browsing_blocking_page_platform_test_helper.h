@@ -129,8 +129,6 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
       content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
   void OnThreatDetailsDone(const std::string& serialized);
-  void MaybeReportSafeBrowsingHit(std::unique_ptr<HitReport> hit_report,
-                                  WebContents* web_contents) override;
   void MaybeSendClientSafeBrowsingWarningShownReport(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       WebContents* web_contents) override;

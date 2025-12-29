@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/observer_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -61,47 +60,6 @@ void SafeBrowsingUIManager::Stop(bool shutdown) {
   if (shutdown) {
     shut_down_ = true;
   }
-}
-
-void SafeBrowsingUIManager::CreateAndSendHitReport(
-    const UnsafeResource& resource) {
-  WebContents* web_contents =
-      unsafe_resource_util::GetWebContentsForResource(resource);
-  DCHECK(web_contents);
-  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
-  hit_report->malicious_url = resource.url;
-  hit_report->is_subresource = false;
-  hit_report->threat_type = resource.threat_type;
-  hit_report->threat_source = resource.threat_source;
-
-  NavigationEntry* entry =
-      unsafe_resource_util::GetNavigationEntryForResource(resource);
-  if (entry) {
-    hit_report->page_url = entry->GetURL();
-    hit_report->referrer_url = entry->GetReferrer().url;
-  }
-
-  // When resource.original_url is not the same as the resource.url, that means
-  // we have a redirect from resource.original_url to resource.url. Also, at
-  // this point, page_url points to the _previous_ page that we were on. We
-  // replace page_url with resource.original_url and referrer with page_url.
-  if (!resource.original_url.is_empty() &&
-      resource.original_url != resource.url) {
-    hit_report->referrer_url = hit_report->page_url;
-    hit_report->page_url = resource.original_url;
-  }
-
-  const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
-
-  hit_report->extended_reporting_level = GetExtendedReportingLevel(prefs);
-  hit_report->is_enhanced_protection = IsEnhancedProtectionEnabled(prefs);
-  hit_report->is_metrics_reporting_active =
-      delegate_->IsMetricsAndCrashReportingEnabled();
-
-  MaybeReportSafeBrowsingHit(std::move(hit_report), web_contents);
-
-  for (Observer& observer : observer_list_)
-    observer.OnSafeBrowsingHit(resource);
 }
 
 void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
@@ -237,13 +195,6 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   DisplayBlockingPage(resource);
 }
 
-bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,
-                                                WebContents* web_contents) {
-  return web_contents &&
-         hit_report->extended_reporting_level != SBER_LEVEL_OFF &&
-         !web_contents->GetBrowserContext()->IsOffTheRecord();
-}
-
 bool SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
     WebContents* web_contents) {
   if (!web_contents || !web_contents->GetBrowserContext()) {
@@ -252,31 +203,6 @@ bool SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
   const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
   return GetExtendedReportingLevel(prefs) != SBER_LEVEL_OFF &&
          !web_contents->GetBrowserContext()->IsOffTheRecord();
-}
-
-// A SafeBrowsing hit is sent after a blocking page for malware/phishing
-// or after the warning dialog for download urls, only for
-// extended-reporting users.
-void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
-    std::unique_ptr<HitReport> hit_report,
-    WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Send report if user opted-in to extended reporting and is not in
-  //  incognito mode.
-  if (!ShouldSendHitReport(hit_report.get(), web_contents)) {
-    return;
-  }
-
-  if (shut_down_)
-    return;
-
-  DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report->malicious_url << " "
-           << hit_report->page_url << " " << hit_report->referrer_url << " "
-           << hit_report->is_subresource << " "
-           << static_cast<int>(hit_report->threat_type);
-  delegate_->GetPingManager(web_contents->GetBrowserContext())
-      ->ReportSafeBrowsingHit(std::move(hit_report));
 }
 
 void SafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
@@ -294,16 +220,6 @@ void SafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
 void SafeBrowsingUIManager::CreateAllowlistForTesting(
     content::WebContents* web_contents) {
   EnsureAllowlistCreated(web_contents);
-}
-
-void SafeBrowsingUIManager::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observer_list_.AddObserver(observer);
-}
-
-void SafeBrowsingUIManager::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observer_list_.RemoveObserver(observer);
 }
 
 const std::string SafeBrowsingUIManager::app_locale() const {
