@@ -270,8 +270,7 @@ class SymbolContext {
       // http://msdn.microsoft.com/en-us/library/ms680578(VS.85).aspx
       ULONG64 buffer[(sizeof(SYMBOL_INFO) + kMaxNameLength * sizeof(wchar_t) +
                       sizeof(ULONG64) - 1) /
-                     sizeof(ULONG64)];
-      UNSAFE_TODO(memset(buffer, 0, sizeof(buffer)));
+                     sizeof(ULONG64)] = {};
 
       // Initialize symbol information retrieval structures.
       DWORD64 sym_displacement = 0;
@@ -374,8 +373,7 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
   // so that downstream exception handlers get the right context.  The incoming
   // context may have had more register state (YMM, etc) than we need to unwind
   // the stack. Typically StackWalk64 only needs integer and control registers.
-  CONTEXT context_copy;
-  UNSAFE_TODO(memcpy(&context_copy, context_record, sizeof(context_copy)));
+  CONTEXT context_copy = *context_record;
   context_copy.ContextFlags = CONTEXT_INTEGER | CONTEXT_CONTROL;
 
   // When walking an exception stack, we need to use StackWalk64().
