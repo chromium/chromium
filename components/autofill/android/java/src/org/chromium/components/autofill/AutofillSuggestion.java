@@ -15,7 +15,7 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-/** Autofill suggestion container used to store information needed for each Autofill popup entry. */
+/** A container representing a single entry in an Autofill UI (e.g. keyboard accessory). */
 @NullMarked
 public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mLabel;
@@ -43,7 +43,7 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param voiceOver Voice over text read for the Autofill suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
-     * @param popupItemId The type of suggestion.
+     * @param suggestionType The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
@@ -59,7 +59,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondarySublabel,
             @Nullable String voiceOver,
             int iconId,
-            @SuggestionType int popupItemId,
+            @SuggestionType int suggestionType,
             boolean isDeletable,
             boolean applyDeactivatedStyle,
             @Nullable String featureForIph,
@@ -72,7 +72,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSecondarySublabel = secondarySublabel;
         mVoiceOver = voiceOver;
         mIconId = iconId;
-        mSuggestionType = popupItemId;
+        mSuggestionType = suggestionType;
         mIsDeletable = isDeletable;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
         mFeatureForIph = featureForIph;
@@ -267,8 +267,8 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
-        public Builder setSuggestionType(int popupItemId) {
-            this.mSuggestionType = popupItemId;
+        public Builder setSuggestionType(int suggestionType) {
+            this.mSuggestionType = suggestionType;
             return this;
         }
 
