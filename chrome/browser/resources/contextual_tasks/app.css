@@ -117,9 +117,13 @@
   --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
+  --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --color-menu-background: var(--cr-menu-background-color);
+  --color-composebox-context-entrypoint-text-disabled: rgba(105, 105, 105, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
-  --cr-composebox-submit-button-hover-color: rgba(54, 54, 54, 1);
   --cr-fallback-color-surface: var(--search-background-color-dark);
+  --color-composebox-submit-button-background: rgba(10, 80, 209, 1);
+  --cr-composebox-submit-button-hover-color: rgba(62, 63, 67, 0.1);
   --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --error-bottom-line-color: #9AA0A6;
