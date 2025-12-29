@@ -58,12 +58,6 @@
         }
     },
     "chromium.chromiumos": {
-        "chromeos-amd64-generic-rel-gtest": {
-            "net_unittests": {
-                "shards": 4,
-                "try_builder": "chromeos-amd64-generic-rel-gtest"
-            }
-        },
         "linux-chromeos-rel": {
             "ash_pixeltests": {
                 "shards": 2,
@@ -240,7 +234,7 @@
                 "try_builder": "win-rel"
             },
             "headless_shell_wpt_tests": {
-                "shards": 19,
+                "shards": 21,
                 "try_builder": "win-rel"
             },
             "interactive_ui_tests": {
