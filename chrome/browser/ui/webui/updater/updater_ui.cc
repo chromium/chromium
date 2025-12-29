@@ -6,13 +6,18 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <memory>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/updater/updater_page_handler.h"
+#include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
 void AddKnownApp(content::WebUIDataSource& source,
@@ -35,8 +41,9 @@ void AddKnownApp(content::WebUIDataSource& source,
                    base::JoinString(app_ids, ","));
 }
 
+// enable_chrome_send is needed for plural_string_handler.
 UpdaterUI::UpdaterUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUpdaterHost);
@@ -132,4 +139,20 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
                               IDR_UPDATER_UPDATER_HTML);
 }
 
+WEB_UI_CONTROLLER_TYPE_IMPL(UpdaterUI)
+
 UpdaterUI::~UpdaterUI() = default;
+
+void UpdaterUI::BindInterface(
+    mojo::PendingReceiver<updater_ui::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void UpdaterUI::CreatePageHandler(
+    mojo::PendingRemote<updater_ui::mojom::Page> page,
+    mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver) {
+  CHECK(page);
+  page_handler_ = std::make_unique<UpdaterPageHandler>(std::move(receiver),
+                                                       std::move(page));
+}

@@ -18,6 +18,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "browser_proxy.ts",
     "event_history.ts",
     "event_list/event_list.html.ts",
     "event_list/event_list.ts",
@@ -69,6 +70,13 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   ts_composite = true
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/updater:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/updater/updater_ui.mojom-webui.ts",
+  ]
 }

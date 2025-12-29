@@ -2995,6 +2995,8 @@ static_library("ui") {
       "webui/settings/settings_manage_profile_handler.h",
       "webui/settings/system_handler.cc",
       "webui/settings/system_handler.h",
+      "webui/updater/updater_page_handler.cc",
+      "webui/updater/updater_page_handler.h",
       "webui/updater/updater_ui.cc",
       "webui/updater/updater_ui.h",
     ]
@@ -3016,6 +3018,8 @@ static_library("ui") {
       "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
+      "//chrome/browser/ui/webui/updater:mojo_bindings",
+      "//chrome/updater:browser_sources",
       "//components/capture_mode",
       "//components/country_codes",
       "//services/audio/public/mojom",

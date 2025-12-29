@@ -7051,6 +7051,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/app_settings",
       "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
+      "//chrome/browser/ui/webui/updater:mojo_bindings",
       "//chrome/services/system_signals/public/cpp/browser",
       "//components/on_device_translation",
       "//components/supervised_user/core/common:features",

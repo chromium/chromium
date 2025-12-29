@@ -7,5 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UpdaterAppElement} from './app.js';
 
 export function getHtml(this: UpdaterAppElement) {
-  return html``;
+  return html`
+<div>
+  <h1>Event History</h1>
+  <event-list .messages="${this.messages}"></event-list>
+</div>
+`;
 }
