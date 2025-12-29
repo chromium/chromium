@@ -43,8 +43,7 @@ void SendKeyboardInput(uint32_t flags,
                        uint16_t scancode,
                        uint16_t virtual_key) {
   // Populate a Windows INPUT structure for the event.
-  INPUT input;
-  UNSAFE_TODO(memset(&input, 0, sizeof(input)));
+  INPUT input = {};
   input.type = INPUT_KEYBOARD;
   input.ki.time = 0;
   input.ki.dwFlags = flags;
