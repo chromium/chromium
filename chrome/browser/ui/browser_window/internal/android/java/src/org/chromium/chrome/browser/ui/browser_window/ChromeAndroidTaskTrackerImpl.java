@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.ArrayList;
@@ -317,13 +318,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 return null;
             case BrowserWindowType.POPUP:
                 var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
-                // TODO(crbug.com/466146557): Create WindowFeatures and set this extra.
-                // Most likely it looks like this:
-                // Rect bounds = createParams.getInitialBounds();
-                // WindowFeatures features =
-                //         new WindowFeatures(
-                //                 bounds.left, bounds.top, bounds.width(), bounds.height());
-                Intent intent = popupIntentCreator.createPopupIntent(null, isIncognito);
+                Rect bounds = createParams.getInitialBounds();
+                WindowFeatures features =
+                        new WindowFeatures(
+                                bounds.left, bounds.top, bounds.width(), bounds.height());
+                Intent intent =
+                        popupIntentCreator.createPopupIntent(
+                                features, createParams.getProfile().isIncognitoBranded());
                 IntentUtils.addTrustedIntentExtras(intent);
                 return intent;
             default:
