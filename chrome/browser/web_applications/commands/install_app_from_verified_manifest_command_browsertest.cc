@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -644,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppById(result_id)->user_display_mode(),
       mojom::UserDisplayMode::kBrowser);
-  EXPECT_EQ(provider().registrar_unsafe().GetAppEffectiveDisplayMode(result_id),
-            DisplayMode::kBrowser);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      result_id, WebAppFilter::OpensInBrowserTab()));
 }
 
 IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,

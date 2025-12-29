@@ -380,8 +380,8 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   app_info->is_locally_installed = is_locally_installed;
   // Treat all other types of display mode as "open as window".
-  app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
-                             blink::mojom::DisplayMode::kBrowser;
+  app_info->open_in_window = registrar.AppMatches(
+      app_id, web_app::WebAppFilter::OpensInDedicatedWindow());
 
   app_info->store_page_url = std::nullopt;
   app_info->may_uninstall = registrar.CanUserUninstallWebApp(app_id);

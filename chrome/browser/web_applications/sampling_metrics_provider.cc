@@ -58,9 +58,8 @@ void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
   if (install_source) {
     interaction.install_source = static_cast<int>(*install_source);
   }
-  DisplayMode display_mode =
-      provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id);
-  interaction.effective_display_mode = static_cast<int>(display_mode);
+  interaction.effective_display_mode = static_cast<int>(
+      provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {

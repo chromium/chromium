@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -204,13 +205,8 @@ bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(
   }
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
-  auto& registrar = provider->registrar_unsafe();
-  return registrar.IsInstallState(
-             app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-         registrar.GetAppEffectiveDisplayMode(app_id) !=
-             web_app::DisplayMode::kBrowser;
+  return provider->registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::OpensInDedicatedWindow());
 }
 
 bool WebAppShimManagerDelegate::AppIsMultiProfile(

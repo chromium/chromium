@@ -119,6 +119,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1686,10 +1687,9 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
 
   // TODO(cliffordcheng): Wait for multiple browsers and
   //                      support multiple client file handling.
-  DisplayMode display_mode =
-      provider()->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
-  if ((display_mode != blink::mojom::DisplayMode::kBrowser) &&
-      (allow_deny != AllowDenyOptions::kDeny)) {
+  if (provider()->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::OpensInDedicatedWindow()) &&
+      allow_deny != AllowDenyOptions::kDeny) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
   }
@@ -1722,9 +1722,8 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
 
   // TODO(cliffordcheng): Wait for multiple browsers and
   //                      support multiple client file handling.
-  DisplayMode display_mode =
-      provider()->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
-  if (display_mode != blink::mojom::DisplayMode::kBrowser) {
+  if (provider()->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::OpensInDedicatedWindow())) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
   }
@@ -1741,10 +1740,8 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
 
   WebAppRegistrar& app_registrar = provider()->registrar_unsafe();
-  const DisplayMode display_mode =
-      app_registrar.GetAppEffectiveDisplayMode(app_id);
   const bool is_open_in_app_browser =
-      (display_mode != blink::mojom::DisplayMode::kBrowser);
+      app_registrar.AppMatches(app_id, WebAppFilter::OpensInDedicatedWindow());
 #if BUILDFLAG(IS_CHROMEOS)
   if (is_open_in_app_browser) {
     app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -1861,11 +1858,8 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   webapps::AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-
-  WebAppRegistrar& app_registrar = provider()->registrar_unsafe();
-  DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
-  bool is_open_in_app_browser =
-      (display_mode != blink::mojom::DisplayMode::kBrowser);
+  bool is_open_in_app_browser = provider()->registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::OpensInDedicatedWindow());
 #if BUILDFLAG(IS_MAC)
   if (is_open_in_app_browser) {
     BrowserAddedWaiter browser_added_waiter;
@@ -1942,11 +1936,8 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
   webapps::AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-
-  WebAppRegistrar& app_registrar = provider()->registrar_unsafe();
-  DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
-  bool is_open_in_app_browser =
-      (display_mode != blink::mojom::DisplayMode::kBrowser);
+  bool is_open_in_app_browser = provider()->registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::OpensInDedicatedWindow());
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
