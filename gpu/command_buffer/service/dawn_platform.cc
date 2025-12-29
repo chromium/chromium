@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/dawn_platform.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -181,12 +182,15 @@ uint64_t DawnPlatform::AddTraceEvent(
   uint64_t result = 0;
   static_assert(sizeof(base::trace_event::TraceEventHandle) <= sizeof(result),
                 "TraceEventHandle must be at most the size of uint64_t");
+
   static_assert(
       std::is_trivial_v<base::trace_event::TraceEventHandle> &&
           std::is_standard_layout_v<base::trace_event::TraceEventHandle>,
-      "TraceEventHandle must be memcpy'able");
-  UNSAFE_TODO(
-      memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle)));
+      "TraceEventHandle must be a plain old data type for byte-wise copy.");
+
+  base::byte_span_from_ref(result)
+      .first(sizeof(handle))
+      .copy_from(base::byte_span_from_ref(handle));
   return result;
 }
 
