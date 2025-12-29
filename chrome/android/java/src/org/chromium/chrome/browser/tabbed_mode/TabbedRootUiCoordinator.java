@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.B
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateImpl;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -1548,7 +1549,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
-        mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
+
+        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
+            mToolbarManager
+                    .getTabStripHeightSupplier()
+                    .addObserver(mOnTabStripHeightChangedCallback);
+        }
     }
 
     @SuppressWarnings("NewApi") // OS version check is done via helper method.

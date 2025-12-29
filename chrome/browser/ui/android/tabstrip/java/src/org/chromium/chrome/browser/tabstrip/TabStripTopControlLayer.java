@@ -53,6 +53,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         public final int targetHeight;
         public final boolean applyScrimOverlay;
         public final Runnable transitionStartedCallback;
+        public final boolean hasAnimation;
         public final @TopControlVisibility int visibility;
 
         private boolean mIsStarted;
@@ -67,12 +68,13 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             this.applyScrimOverlay = applyScrimOverlay;
             this.transitionStartedCallback = transitionStartedCallback;
 
-            visibility = calculateVisibility(startHeight, targetHeight);
+            hasAnimation = calculateHasAnimation(startHeight, targetHeight, applyScrimOverlay);
+            visibility = calculateVisibility(startHeight, targetHeight, hasAnimation);
         }
 
         private static @TopControlVisibility int calculateVisibility(
-                int startHeight, int targetHeight) {
-            if (startHeight == targetHeight) {
+                int startHeight, int targetHeight, boolean hasAnimation) {
+            if (!hasAnimation) {
                 return targetHeight > 0
                         ? TopControlVisibility.VISIBLE
                         : TopControlVisibility.HIDDEN;
@@ -82,6 +84,13 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             return isIncreasing
                     ? TopControlVisibility.SHOWING_TOP_ANCHOR
                     : TopControlVisibility.HIDING_TOP_ANCHOR;
+        }
+
+        private static boolean calculateHasAnimation(
+                int startHeight, int targetHeight, boolean applyScrimOverlay) {
+            return !applyScrimOverlay
+                    || (startHeight != 0 && targetHeight != 0)
+                    || startHeight == targetHeight;
         }
 
         /** Returns true only when this method is called the first time. */
@@ -223,6 +232,12 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
+
+        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                && isInTransition()
+                && mTransitionState.targetHeight != mTransitionState.startHeight) {
+            mTopControlsStacker.requestLayerUpdateSync(mTransitionState.hasAnimation);
+        }
     }
 
     private void prepForTransitionRequested(

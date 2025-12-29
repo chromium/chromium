@@ -153,6 +153,7 @@ public class TabStripTopControlLayerUnitTest {
                 mOnTransitionStartedCallback.getCallCount());
         verify(mControlContainer).onHeightChanged(newHeight, applyScrimOverlay);
         verify(mTabStripSceneLayerHolder).onHeightChanged(newHeight, applyScrimOverlay);
+        verify(mTopControlsStacker).requestLayerUpdateSync(!applyScrimOverlay);
     }
 
     private void verifyHeightTransitionNotStarted() {
@@ -162,5 +163,6 @@ public class TabStripTopControlLayerUnitTest {
                 mOnTransitionStartedCallback.getCallCount());
         verify(mControlContainer, times(0)).onHeightChanged(anyInt(), anyBoolean());
         verify(mTabStripSceneLayerHolder, times(0)).onHeightChanged(anyInt(), anyBoolean());
+        verify(mTopControlsStacker, times(0)).requestLayerUpdateSync(anyBoolean());
     }
 }
