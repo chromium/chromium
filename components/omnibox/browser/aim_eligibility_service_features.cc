@@ -19,7 +19,7 @@ BASE_FEATURE(kAimServerEligibilityForPrimaryAccountEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerEligibilityChangedNotification,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerRequestOnStartupEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,6 +34,7 @@
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
@@ -102,6 +104,15 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
   controller_ = omnibox_controller;
   autocomplete_controller_observation_.Observe(autocomplete_controller());
   edit_model_observation_.Observe(omnibox_controller->edit_model());
+
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(Profile::FromWebUI(web_ui));
+  if (aim_eligibility_service) {
+    aim_eligibility_subscription_ =
+        aim_eligibility_service->RegisterEligibilityChangedCallback(
+            base::BindRepeating(&WebuiOmniboxHandler::OnAimEligibilityChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
@@ -266,6 +277,12 @@ void WebuiOmniboxHandler::OnShow() {
   page_->OnShow();
 }
 
+void WebuiOmniboxHandler::SetPage(
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
+  ContextualSearchboxHandler::SetPage(std::move(pending_page));
+  OnAimEligibilityChanged();
+}
+
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
 WebuiOmniboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
@@ -293,6 +310,24 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   return mojom_match;
 }
 
+void WebuiOmniboxHandler::OnAimEligibilityChanged() {
+  // Ignore the call until the page remote is bound and ready to receive calls.
+  if (!IsRemoteBound()) {
+    return;
+  }
+
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  if (aim_eligibility_service) {
+    bool eligible = aim_eligibility_service->IsAimEligible();
+    page_->UpdateAimEligibility(eligible);
+  }
+}
+
 int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
   return omnibox::kContextMenuMaxTabSuggestions.Get();
 }
+
+// TODO(b:468113419): The methods in this file are not ordered consistently with
+// the header
+//   file :(

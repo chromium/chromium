@@ -106,10 +106,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                          composebox_config.is_pdf_upload_enabled();
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
 
-  // TODO(b/469148777): Implement more granular enterprise policy checks.
-  source->AddBoolean("showContextMenuEntrypoint",
-                     omnibox::IsAimPopupEnabled(profile_));
-
   source->AddBoolean("composeboxCloseByClickOutside",
                      omnibox::kCloseComposeboxByClickOutside.Get());
   source->AddBoolean("composeboxCloseByEscape",
