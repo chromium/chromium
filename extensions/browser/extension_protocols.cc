@@ -654,7 +654,6 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     const auto& read_file_path = resource_info.file_path;
     const auto& last_modified_time = resource_info.last_modified_time;
-    const auto& file_size = resource_info.size;
     request_.url = net::FilePathToFileURL(read_file_path);
 
     AddCacheHeaders(*headers, last_modified_time);
@@ -666,28 +665,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     // example, in the case of request for an extension resource coming in
     // while a corruption repair that starts when an extension goes idle.
 
-    // TODO(crbug.com/405286894, crbug.com/410916670): Properly implement
-    // content verification for range headers which return a subset of the
-    // extension's file. Currently end headers may trigger unintentional
-    // corruptions.
-    bool should_verify_content = true;
-
-    if (std::optional<std::string> range_header =
-            request_.headers.GetHeader(net::HttpRequestHeaders::kRange);
-        range_header) {
-      std::vector<net::HttpByteRange> ranges;
-      if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges) &&
-          ranges.size() == 1) {
-        // For now, skip content verification if the file will be read before
-        // its end.
-        should_verify_content = !ranges[0].HasLastBytePosition() ||
-                                ranges[0].last_byte_position() == file_size - 1;
-      } else {
-        // Malformed range header or multiple ranges detected. The FileURLLoader
-        // will also detect this and return an error.
-        should_verify_content = false;
-      }
-    }
+    bool should_verify_content =
+        ShouldVerifyContent(resource, extension_version, resource_info);
 
     scoped_refptr<ContentVerifyJob> verify_job;
     if (content_verifier && should_verify_content) {
@@ -702,6 +681,48 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         /*allow_directory_listing=*/false, std::move(headers));
 
     DeleteThis();
+  }
+
+  bool ShouldVerifyContent(const extensions::ExtensionResource& resource,
+                           const base::Version& extension_version,
+                           const ResourceInfo& resource_info) {
+    // TODO(crbug.com/405286894, crbug.com/410916670): Properly implement
+    // content verification for range headers which return a subset of the
+    // extension's file. Currently end headers may trigger unintentional
+    // corruptions.
+    if (std::optional<std::string> range_header =
+            request_.headers.GetHeader(net::HttpRequestHeaders::kRange);
+        range_header) {
+      std::vector<net::HttpByteRange> ranges;
+      if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges) &&
+          ranges.size() == 1) {
+        // For now, skip content verification if the file will be read before
+        // its end.
+        if (ranges[0].HasLastBytePosition() &&
+            ranges[0].last_byte_position() != resource_info.size - 1) {
+          return false;
+        }
+      } else {
+        // Malformed range header or multiple ranges detected. The FileURLLoader
+        // will also detect this and return an error.
+        return false;
+      }
+    }
+
+    ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+    CHECK(registry);
+    auto* extension =
+        registry->enabled_extensions().GetByID(resource.extension_id());
+    // The extension might have been re-installed since the moment the
+    // resource read was issued. In this case, this task was requested for
+    // an extension that is now either disabled, or installed in a different
+    // folder or with a different version.
+    if (!extension || extension->path() != resource.extension_root() ||
+        extension->version() != extension_version) {
+      return false;
+    }
+
+    return true;
   }
 
   void OnFaviconRetrieved(mojo::StructPtr<network::mojom::URLResponseHead> head,
