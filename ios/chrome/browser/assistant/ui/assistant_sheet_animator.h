@@ -7,14 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class AssistantSheetViewController;
+
 // Handles the presentation and dismissal animations for the Assistant Sheet.
 @interface AssistantSheetAnimator : NSObject
 
-// Animates the presentation of the given view (Expand and Fade In).
-- (void)animatePresentation:(UIView*)view completion:(void (^)(void))completion;
+// Animates the presentation of the assistant sheet (Slide Up from bottom).
+- (void)animatePresentation:(AssistantSheetViewController*)viewController
+                 completion:(void (^)(void))completion;
 
-// Animates the dismissal of the given view (Shrink and Fade Out).
-- (void)animateDismissal:(UIView*)view completion:(void (^)(void))completion;
+// Animates the dismissal of the assistant sheet (Slide Down to bottom).
+- (void)animateDismissal:(AssistantSheetViewController*)viewController
+              completion:(void (^)(void))completion;
 
 @end
 

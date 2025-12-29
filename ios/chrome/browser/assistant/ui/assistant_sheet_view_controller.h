@@ -14,6 +14,9 @@
 @interface AssistantSheetViewController
     : UIViewController <AssistantSheetConsumer>
 
+// Whether the sheet is currently being animated by an external animator.
+@property(nonatomic, assign) BOOL isAnimating;
+
 // Delegate for handling actions.
 @property(nonatomic, weak) id<AssistantSheetViewControllerDelegate> delegate;
 

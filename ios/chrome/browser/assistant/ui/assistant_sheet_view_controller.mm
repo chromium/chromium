@@ -272,7 +272,8 @@ constexpr CGFloat kSpringDamping = 0.85;
 - (void)updateHeightConstraint {
   // If we are currently dragging, DO NOT interfere with the constraint.
   if (_headerPanGesture.state == UIGestureRecognizerStateBegan ||
-      _headerPanGesture.state == UIGestureRecognizerStateChanged) {
+      _headerPanGesture.state == UIGestureRecognizerStateChanged ||
+      self.isAnimating) {
     return;
   }
 

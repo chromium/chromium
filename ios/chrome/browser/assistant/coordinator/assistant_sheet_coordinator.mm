@@ -70,7 +70,7 @@
 
   // Animation: Expand and Fade In.
   _animator = [[AssistantSheetAnimator alloc] init];
-  [_animator animatePresentation:_viewController.view completion:nil];
+  [_animator animatePresentation:_viewController completion:nil];
 }
 
 - (void)stop {
@@ -92,7 +92,7 @@
 - (void)assistantSheetViewControllerDidTapClose:
     (AssistantSheetViewController*)viewController {
   __weak __typeof(self) weakSelf = self;
-  [_animator animateDismissal:_viewController.view
+  [_animator animateDismissal:_viewController
                    completion:^{
                      [weakSelf dismissalAnimationCompletion];
                    }];
