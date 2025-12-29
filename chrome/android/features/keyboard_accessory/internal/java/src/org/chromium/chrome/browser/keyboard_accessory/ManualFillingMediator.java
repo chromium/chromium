@@ -879,8 +879,8 @@ class ManualFillingMediator
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
             if (requiresVisibleBar(extensionState)) {
                 mKeyboardAccessory.setStyle(
-                        new KeyboardAccessoryStyle(
-                                false, getHorizontalOffset(), getTopOffset(), getMaxWidth()));
+                        KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                                getHorizontalOffset(), getTopOffset(), getMaxWidth()));
                 mBottomInsetSupplier.set(0);
                 return;
             }
@@ -921,11 +921,7 @@ class ManualFillingMediator
         }
         if (requiresVisibleBar(extensionState)) {
             mKeyboardAccessory.setStyle(
-                    new KeyboardAccessoryStyle(
-                            /* isDocked= */ true,
-                            /* horizontalOffset= */ 0,
-                            newControlsOffset,
-                            /* maxWidth= */ 0));
+                    KeyboardAccessoryStyle.createDockedKeyboardAccessoryStyle(newControlsOffset));
         }
         mBottomInsetSupplier.set(newControlsHeight);
     }

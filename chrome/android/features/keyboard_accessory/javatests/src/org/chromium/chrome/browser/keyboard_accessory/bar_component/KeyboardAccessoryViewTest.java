@@ -1021,11 +1021,8 @@ public class KeyboardAccessoryViewTest {
         int horizontalOffset = 10;
         int verticalOffset = 20;
         KeyboardAccessoryStyle style =
-                new KeyboardAccessoryStyle(
-                        /* isDocked= */ false,
-                        horizontalOffset,
-                        verticalOffset,
-                        /* maxWidth= */ 100);
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                        horizontalOffset, verticalOffset, /* maxWidth= */ 100);
 
         ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
 
