@@ -11,6 +11,7 @@ export function getHtml(this: ReloadButtonAppElement) {
 <cr-icon-button class="${this.isLoading_ ? 'icon-clear' : 'icon-refresh'}"
     title="${this.tooltip_}"
     aria-label="${this.accName_}"
+    aria-haspopup="${this.isMenuEnabled_}"
     @pointerdown="${this.onReloadButtonPointerDown_}"
     @pointerup="${this.onReloadButtonPointerUp_}">
 </cr-icon-button>

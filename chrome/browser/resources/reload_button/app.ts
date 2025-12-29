@@ -82,7 +82,7 @@ export class ReloadButtonAppElement extends CrLitElement {
       loadTimeData.getString(RELOAD_BUTTON_ACC_NAME_RELOAD);
   private isLongPressed_: boolean = false;
   private longPressTimer_: number = 0;
-  private isMenuEnabled_: boolean = false;
+  protected isMenuEnabled_: boolean = false;
 
   /**
    * Sets up event listeners and the PerformanceObserver when the element is

@@ -66,7 +66,6 @@ class ReloadButtonWebView : public views::View,
   views::WebView* GetWebViewForTesting() { return web_view_; }
 
  private:
-  void UpdateAccessibleHasPopup();
   void SetReloadButtonUIState();
 
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
