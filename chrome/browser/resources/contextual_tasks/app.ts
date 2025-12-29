@@ -142,6 +142,11 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor showComposebox_: boolean = true;
   protected accessor isErrorPageVisible_: boolean = false;
   protected accessor isZeroState_: boolean = false;
+
+  protected friendlyZeroStateSubtitle: string =
+      loadTimeData.getString('friendlyZeroStateSubtitle');
+  protected friendlyZeroStateTitle: string =
+      loadTimeData.getString('friendlyZeroStateTitle');
   private listenerIds_: number[] = [];
   // The OAuth token to use for embedded page requests. Null if not yet set.
   // Can be empty if the user is not signed in or the token couldn't be fetched.

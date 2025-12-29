@@ -58,7 +58,7 @@
   background: linear-gradient(to top,
     rgba(var(--search-background-color-rgb), 1)
     var(--composebox-container-height), transparent);
-  height: calc(var(--composebox-container-height) + 36px);
+  height: var(--composebox-container-height);
   inset-block-end: 0;
   justify-content: flex-end;
   min-height: var(--composebox-collapsed-height);

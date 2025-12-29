@@ -41,6 +41,8 @@
   --error-bottom-line-color: #70757A;
   --error-top-line-color: #202124;
   --gradient-protection-width: 100%;
+  --max-composebox-width: 692px;
+  --min-composebox-width: 200px;
   --paper-tooltip-background:rgba(255, 255, 255, 1);
   --paper-tooltip-text-color: rgba(0, 0, 0, 1);
   --protected-icon-background-color: #535353;
@@ -180,8 +182,8 @@ error-page {
 
 :host([is-zero-state_]) #composebox {
   inset-inline-start: 20px;
-  max-width: 692px;
-  min-width: 200px;
+  max-width: var(--max-composebox-width);
+  min-width: var(--min-composebox-width);
   pointer-events: auto;
   position: relative;
   z-index: 2;
@@ -190,27 +192,31 @@ error-page {
 }
 
 @media (max-width: 900px) {
-  :host([is-zero-state_]) #composebox {
+  :host([is-zero-state_]) #composebox,
+  :host([is-zero-state_]) #relativeThreadHolder {
     inset-inline-start: 5%;
     width: calc(90% - 20px);
   }
 }
 @media (max-width: 650px) {
-  :host([is-zero-state_]) #composebox {
+  :host([is-zero-state_]) #composebox,
+  :host([is-zero-state_]) #relativeThreadHolder {
     inset-inline-start: 7.5%;
     width: calc(85% - 20px);
   }
 }
 
 @media (max-width: 480px) {
-  :host([is-zero-state_]) #composebox {
+  :host([is-zero-state_]) #composebox,
+  :host([is-zero-state_]) #relativeThreadHolder {
     inset-inline-start: 0;
     width: calc(100% - 20px);
   }
 }
 
 @media (min-width: 750px) {
-  :host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) #composebox
+  :host([is-zero-state_]:not([is-shown-in-tab_])) #relativeThreadHolder {
     inset-inline-start: 40px;
   }
 }
@@ -218,33 +224,111 @@ error-page {
 :host([is-zero-state_]) .flex-center {
   align-items: center;
   display: flex;
-  /* Height is so aligns with 900px height webview.
-   * TODO(crbug.com/470121831): change this when webview height
-   * changes + 100% overlay incorporated.
-   */
-  height: 880px;
+  flex-direction: column;
+  height: 100%;
+  gap: 36px;
   justify-content: center;
   pointer-events: none;
   position: absolute;
   width: 100%;
 }
 
-@media (max-width: 512px) {
-  :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
-    padding-top: 25px;
-  }
-}
-
-:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
-  padding-top: 40px;
-}
-
-@media (max-width: 367px) {
-  :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
-    padding-top: 60px;
-  }
-}
-
 #toolbar {
   z-index: 2;
+}
+
+
+.thread-header {
+  color: var(--color-zero-state-greeting);
+  font-family: inherit;
+  font-size: 32px;
+  font-weight: 500;
+  inset-inline-start: 20px;
+  line-height: 100%;
+  margin: 0;
+  margin-right: 20px; /* To push for earlier wrapping. */
+  position: relative;
+  z-index: 2;
+}
+
+:host(:not([is-shown-in-tab_])) .thread-header {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 36px;
+  margin: 0 8px 0 0;
+}
+
+#relativeThreadHolder {
+  display: none;
+  justify-content: flex-start;
+  /* Same width so stays at same centering as composebox with flexbox. */
+  max-width: var(--max-composebox-width);
+  min-width: var(--min-composebox-width);
+  position: relative;
+  width: calc(100% - 20px);
+}
+
+:host([is-zero-state_]) #relativeThreadHolder {
+  display: flex;
+}
+
+@media (max-width: 480px) {
+  :host([is-shown-in-tab_]) .thread-header {
+    inset-inline-start: 30px;
+    position: absolute;
+  }
+  :host([is-shown-in-tab_]) #relativeThreadHolder {
+    height: 64px;
+    width: 100%;
+  }
+}
+
+/* Give thread header more space when it wraps. */
+@media (max-width: 440px) {
+  #relativeThreadHolder {
+    padding-bottom: 10px;
+  }
+  :host(:not([is-shown-in-tab_])) #relativeThreadHolder {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Higher specificity so it wins over other side panel formatting. */
+  :host(:not([is-shown-in-tab_])) .thread-header {
+    inset-inline-start: 28px;
+    position: absolute;
+  }
+  :host(:not([is-shown-in-tab_])) #relativeThreadHolder {
+    height: 64px;
+    width: 100%;
+  }
+}
+
+@media (max-height: 480px) {
+  :host([is-zero-state_]) #relativeThreadHolder {
+    margin-top: 100px;
+  }
+}
+
+@media (max-width: 280px) {
+  .thread-header {
+    font-size: 11vw;
+  }
+}
+
+:host([is-zero-state_]) #composebox {
+  margin-bottom: 22.5vh;
+}
+:host(:not([is-shown-in-tab_])[is-zero-state_]) #composebox {
+  margin-bottom: 15vh;
+}
+
+@media (max-width: 480px) {
+  :host([is-zero-state_]) #composebox {
+    margin-bottom: 15vh;
+  }
+  :host(:not([is-shown-in-tab_])[is-zero-stae_]) #composebox {
+    margin-bottom: 10vh;
+  }
 }

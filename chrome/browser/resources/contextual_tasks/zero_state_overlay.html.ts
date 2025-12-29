@@ -11,16 +11,7 @@ export function getHtml(this: ZeroStateOverlayElement) {
   return html`<!--_html-template_start_-->
     <div id="pointerEventBlocker"> </div>
     <div id="overlay">
-      <div id="relativeThreadHolder">
-        <h1 class="thread-header">
-          ${this.friendlyZeroStateTitle}
-          ${this.friendlyZeroStateSubtitle.length > 0 ?
-              html`<br>
-              ${this.friendlyZeroStateSubtitle}` : ''}
-        </h1>
-      </div>
       <slot name="composebox"></slot>
-      <div id="space"> </div>
     </div>
     <div id="opaqueOverlay"> </div>
     <!--TODO(crbug.com/461911563): Add dynamic suggestions-->
