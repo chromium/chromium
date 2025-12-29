@@ -33,6 +33,8 @@ std::string CloseReasonToString(omnibox::PopupCloseReason reason) {
       return "kRevertAll";
     case omnibox::PopupCloseReason::kTextDrag:
       return "kTextDrag";
+    case omnibox::PopupCloseReason::kCrash:
+      return "kCrash";
     case omnibox::PopupCloseReason::kOther:
       return "kOther";
   }

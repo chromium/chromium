@@ -75,7 +75,7 @@ void OmniboxPopupWebUIContent::PrimaryMainFrameRenderProcessGone(
   // Close the popup if the render process is gone. This will allow for the
   // crash recovery flow in `ShowUI` to run and restore the popup.
   if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
-    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kOther);
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kCrash);
   }
 }
 
