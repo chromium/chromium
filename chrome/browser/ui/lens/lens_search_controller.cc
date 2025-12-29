@@ -809,6 +809,10 @@ void LensSearchController::OnThumbnailProcessed(
 
 void LensSearchController::CloseLensPart2(
     lens::LensOverlayDismissalSource dismissal_source) {
+  if (state_ == State::kOff) {
+    return;
+  }
+
   // Let the controllers know to cleanup.
   // TODO(crbug.com/404941800): Move logging to a shared location to not be
   // dependent on the overlay controller.
