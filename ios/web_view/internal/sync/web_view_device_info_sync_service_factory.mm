@@ -90,6 +90,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // Returns false since we only care about Chrome OS devices
   bool IsUmaEnabledOnCrOSDevice() const override { return false; }
 
+  // syncer::DeviceInfoSyncClient:
+  bool GetDesktopToIOSPromoReceivingEnabled() const override { return false; }
+
  private:
   PrefService* const prefs_;
   syncer::SyncInvalidationsService* const sync_invalidations_service_;

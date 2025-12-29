@@ -58,7 +58,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
@@ -80,7 +81,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 class IOSPromosUtilsTest : public testing::Test {

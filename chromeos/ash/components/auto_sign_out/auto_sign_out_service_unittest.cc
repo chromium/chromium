@@ -147,7 +147,8 @@ class AutoSignOutTest : public testing::Test {
         /*paask_info=*/std::nullopt,
         /*fcm_registration_token=*/"token",
         /*interested_data_types=*/syncer::DataTypeSet(),
-        /*auto_sign_out_last_signin_timestamp=*/signin_timestamp);
+        /*auto_sign_out_last_signin_timestamp=*/signin_timestamp,
+        /*desktop_to_ios_promo_receiving_enabled=*/false);
     fake_device_info_tracker()->Add(std::move(device_info));
   }
 

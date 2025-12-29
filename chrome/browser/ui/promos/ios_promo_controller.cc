@@ -17,6 +17,7 @@
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/sync_device_info/device_info.h"
 #include "ui/views/widget/widget.h"
 
 using desktop_to_mobile_promos::PromoType;
@@ -126,9 +127,8 @@ bool IOSPromoController::ShouldShowPromo(PromoType promo_type) {
   const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
 
   // Check if user is eligible for Reminder type promo.
-  // TODO(crbug.com/470198750): Check for the feature's status on the iOS
-  // device once we add the feature flag value to the DeviceInfo.
   if (device && !ios_promos_utils::IsUserActiveOnIOS(browser_->profile()) &&
+      device->desktop_to_ios_promo_receiving_enabled() &&
       MobilePromoOnDesktopTypeEnabled(
           feature_type, desktop_to_mobile_promos::BubbleType::kReminder)) {
     return true;

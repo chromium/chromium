@@ -1,6 +1,7 @@
 include_rules = [
   "+components/consent_auditor",
   "+components/data_sharing/public",
+  "+components/desktop_to_mobile_promos",
   "+components/collaboration/public/collaboration_service.h",
   "+components/saved_tab_groups/public/tab_group_sync_service.h",
   "+components/sharing_message",

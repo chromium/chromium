@@ -117,6 +117,7 @@ source_set("device_info_sync_service_factory") {
     ":data_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
+    "//components/desktop_to_mobile_promos",
     "//components/send_tab_to_self",
     "//components/signin/public/base",
     "//components/sync/invalidations",

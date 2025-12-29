@@ -661,6 +661,7 @@ VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
   VISIT(send_tab_to_self_receiving_enabled);
   VISIT_ENUM(send_tab_to_self_receiving_type);
   VISIT(auto_sign_out_last_signin_timestamp_windows_epoch_micros);
+  VISIT(desktop_to_ios_promo_receiving_enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {

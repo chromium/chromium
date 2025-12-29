@@ -145,7 +145,8 @@ class SyncedSetUpUtilsTest : public PlatformTest {
         /*paask_info=*/std::nullopt,
         /*fcm_registration_token=*/std::string(),
         /*interested_data_types=*/syncer::DataTypeSet(),
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+        /*desktop_to_ios_promo_receiving_enabled=*/false);
   }
 
   // Helper for configuring a TimestampedPrefValue.

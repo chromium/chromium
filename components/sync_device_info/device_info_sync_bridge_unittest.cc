@@ -145,6 +145,9 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .send_tab_to_self_receiving_type() ==
              arg.send_tab_to_self_receiving_type() &&
+         expected_specifics.feature_fields()
+                 .desktop_to_ios_promo_receiving_enabled() ==
+             arg.desktop_to_ios_promo_receiving_enabled() &&
          expected_specifics.invalidation_fields().instance_id_token() ==
              arg.fcm_registration_token();
 }
@@ -418,7 +421,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
             sharing_enabled_features),
         /*paask_info=*/std::nullopt, last_fcm_registration_token,
         last_interested_data_types,
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+        /*desktop_to_ios_promo_receiving_enabled=*/false);
   }
 
   void Clear() override { local_device_info_.reset(); }

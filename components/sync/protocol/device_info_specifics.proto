@@ -118,6 +118,10 @@ message FeatureSpecificFields {
   // Tracks the last time this device signed-in with the Auto Sign-Out
   // feature enabled. As of 09/2025, this feature is only supported on ChromeOS.
   optional int64 auto_sign_out_last_signin_timestamp_windows_epoch_micros = 3;
+
+  // Tracks whether the Desktop to iOS Promo feature is enabled on the device.
+  // This is populated only for iOS devices.
+  optional bool desktop_to_ios_promo_receiving_enabled = 4;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end

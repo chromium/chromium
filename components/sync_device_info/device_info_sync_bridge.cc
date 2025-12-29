@@ -185,7 +185,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       specifics.invalidation_fields().instance_id_token(),
       GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
-      SpecificsToAutoSignOutLastSigninTimestamp(specifics));
+      SpecificsToAutoSignOutLastSigninTimestamp(specifics),
+      specifics.feature_fields().desktop_to_ios_promo_receiving_enabled());
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -244,6 +245,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
       info.send_tab_to_self_receiving_type());
+  feature_fields->set_desktop_to_ios_promo_receiving_enabled(
+      info.desktop_to_ios_promo_receiving_enabled());
   if (info.auto_sign_out_last_signin_timestamp().has_value()) {
     feature_fields
         ->set_auto_sign_out_last_signin_timestamp_windows_epoch_micros(
@@ -322,6 +325,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->send_tab_to_self_receiving_enabled() &&
          current->send_tab_to_self_receiving_type() ==
              stored->send_tab_to_self_receiving_type() &&
+         current->desktop_to_ios_promo_receiving_enabled() ==
+             stored->desktop_to_ios_promo_receiving_enabled() &&
          current->sharing_info() == stored->sharing_info() &&
          ArePaaskInfosEqual(current->paask_info(), stored->paask_info()) &&
          current->fcm_registration_token() ==
