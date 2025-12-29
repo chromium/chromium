@@ -208,7 +208,8 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
     tab_strip.tab_model()->CreateTab(
         TabAndroid::FromWebContents(active_contents), new_contents,
         TabModel::kInvalidIndex,
-        /*select=*/true, /*should_pin=*/false);
+        TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+        /*should_pin=*/false);
 
     NavigateNewTabToUrl(new_contents, url);
     return true;

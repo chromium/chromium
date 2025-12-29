@@ -51,7 +51,7 @@ class TestTabModel : public TabModel {
   void CreateTab(TabAndroid* parent,
                  content::WebContents* web_contents,
                  int index,
-                 bool select,
+                 TabLaunchType type,
                  bool should_pin) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
@@ -159,7 +159,7 @@ class OwningTestTabModel : public TabModel {
   void CreateTab(TabAndroid* parent,
                  content::WebContents* web_contents,
                  int index,
-                 bool select,
+                 TabLaunchType type,
                  bool should_pin) override;
   bool IsActiveModel() const override;
   void AddObserver(TabModelObserver* observer) override;

@@ -297,7 +297,7 @@ tabs::TabInterface* TabModelJniBridge::GetActiveTab() {
 void TabModelJniBridge::CreateTab(TabAndroid* parent,
                                   WebContents* web_contents,
                                   int index,
-                                  bool select,
+                                  TabLaunchType type,
                                   bool should_pin) {
   JNIEnv* env = AttachCurrentThread();
   Profile* profile =
@@ -306,7 +306,7 @@ void TabModelJniBridge::CreateTab(TabAndroid* parent,
   Java_TabModelJniBridge_createTabWithWebContents(
       env, java_object_.get(env), (parent ? parent->GetJavaObject() : nullptr),
       profile->GetJavaObject(), web_contents->GetJavaWebContents(), index,
-      select, should_pin);
+      static_cast<int>(type), should_pin);
 }
 
 void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,

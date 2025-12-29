@@ -62,7 +62,8 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     // This will never be a bulk session restore so we can select the tab here.
     tab_model->CreateTab(current_tab, new_web_contents.release(),
-                         TabModel::kInvalidIndex, /*select=*/true,
+                         TabModel::kInvalidIndex,
+                         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                          /*should_pin=*/false);
     tab_model->CloseTab(current_tab->GetHandle());
     return raw_new_web_contents;
@@ -70,9 +71,9 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   DCHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
          disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB);
   // Do not select a tab here it will interrupt bulk session restores.
-  tab_model->CreateTab(current_tab, new_web_contents.release(),
-                       TabModel::kInvalidIndex,
-                       /*select=*/false, /*should_pin=*/false);
+  tab_model->CreateTab(
+      current_tab, new_web_contents.release(), TabModel::kInvalidIndex,
+      TabModel::TabLaunchType::FROM_RECENT_TABS, /*should_pin=*/false);
   return raw_new_web_contents;
 }
 

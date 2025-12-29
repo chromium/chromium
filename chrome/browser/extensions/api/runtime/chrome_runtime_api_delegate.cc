@@ -303,7 +303,7 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
       content::WebContents::CreateParams(browser_context_));
   content::WebContents* new_web_contents = contents.release();
   tab_model->CreateTab(nullptr, new_web_contents, TabModel::kInvalidIndex,
-                       /*select=*/true,
+                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                        /*should_pin=*/false);
 
   content::NavigationController::LoadURLParams load_params(uninstall_url);

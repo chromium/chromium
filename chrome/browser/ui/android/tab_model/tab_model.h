@@ -250,11 +250,10 @@ class TabModel : public TabListInterface {
   virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
 
-  // Used for restoring tabs from synced foreign sessions.
   virtual void CreateTab(TabAndroid* parent,
                          content::WebContents* web_contents,
                          int index,
-                         bool select,
+                         TabLaunchType type,
                          bool should_pin) = 0;
 
   virtual void HandlePopupNavigation(TabAndroid* parent,

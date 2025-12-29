@@ -78,7 +78,7 @@ base::android::ScopedJavaLocalRef<jobject> TestTabModel::GetJavaObject() const {
 void TestTabModel::CreateTab(TabAndroid* parent,
                              content::WebContents* web_contents,
                              int index,
-                             bool select,
+                             TabLaunchType type,
                              bool should_pin) {}
 
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
@@ -248,6 +248,29 @@ void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
 }
 #endif
 
+namespace {
+// See TabModelOrderController#willOpenInForeground() for the
+// complete, correct implementation of this function. If your test needs this
+// to be more accurate please consider removing this partial duplication.
+bool WillOpenInForeground(TabModel::TabLaunchType type) {
+  if (type == TabModel::TabLaunchType::FROM_RESTORE ||
+      type == TabModel::TabLaunchType::FROM_BROWSER_ACTIONS ||
+      type == TabModel::TabLaunchType::FROM_RESTORE_TABS_UI ||
+      type == TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE) {
+    return false;
+  }
+  return type != TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND &&
+         type != TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND_IN_GROUP &&
+         type != TabModel::TabLaunchType::FROM_RECENT_TABS &&
+         type != TabModel::TabLaunchType::FROM_SYNC_BACKGROUND &&
+         type !=
+             TabModel::TabLaunchType::FROM_COLLABORATION_BACKGROUND_IN_GROUP &&
+         type != TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND &&
+         type != TabModel::TabLaunchType::FROM_REPARENTING_BACKGROUND &&
+         type != TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_BACKGROUND;
+}
+}  // end namespace
+
 OwningTestTabModel::OwningTestTabModel(
     Profile* profile,
     chrome::android::ActivityType activity_type)
@@ -346,16 +369,18 @@ void OwningTestTabModel::CloseTabAt(int index) {
 void OwningTestTabModel::CreateTab(TabAndroid* parent,
                                    content::WebContents* web_contents,
                                    int index,
-                                   bool select,
+                                   TabLaunchType type,
                                    bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t insertion_index =
       (index == TabModel::kInvalidIndex) ? owned_tabs_.size() : index;
 
+  bool select_tab = WillOpenInForeground(type);
+
   // Take ownership of the WebContents.
   AddTabFromWebContents(std::unique_ptr<content::WebContents>(web_contents),
-                        insertion_index, select,
+                        insertion_index, select_tab,
                         TabModel::TabLaunchType::FROM_RESTORE);
 }
 
