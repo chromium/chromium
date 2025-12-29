@@ -733,7 +733,7 @@ public class SearchActivity extends AsyncInitializationActivity
     // defined on initialize in {@link SearchActivityLocationBarLayout}.
     private void setColorScheme(boolean isIncognito) {
         @ColorRes int anchorViewBackgroundColorRes = R.color.omnibox_suggestion_dropdown_bg;
-        @ColorRes int searchBoxColorRes = R.color.omnibox_suggestion_bg;
+        @ColorRes int searchBoxColorRes = R.color.search_suggestion_bg_color;
 
         var searchBoxBackground = mSearchBox.getBackground();
 

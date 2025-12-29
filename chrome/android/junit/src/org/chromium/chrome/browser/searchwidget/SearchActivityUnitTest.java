@@ -214,7 +214,7 @@ public class SearchActivityUnitTest {
         mAnchorView = new View(mActivity);
         GradientDrawable anchorViewBackground = new GradientDrawable();
         anchorViewBackground.setTint(
-                ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
         mAnchorView.setBackground(anchorViewBackground);
         mActivity.setAnchorViewForTesting(mAnchorView);
 
@@ -1187,7 +1187,7 @@ public class SearchActivityUnitTest {
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground)
                 .setBackgroundColor(
-                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                        ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
 
         // Toggle the incognito state and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(true);
@@ -1210,6 +1210,6 @@ public class SearchActivityUnitTest {
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground, times(2))
                 .setBackgroundColor(
-                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                        ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
     }
 }

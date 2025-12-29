@@ -430,8 +430,8 @@ public class OmniboxResourceProvider {
     public static @ColorInt int getStandardSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
         return colorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
+                ? context.getColor(R.color.search_suggestion_bg_color_incognito)
+                : ContextCompat.getColor(context, R.color.search_suggestion_bg_color);
     }
 
     /** Returns the background hover color for suggestions in a model with the given context. */
@@ -439,11 +439,12 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int colorScheme) {
 
         if (colorScheme == BrandedColorScheme.INCOGNITO) {
-            return context.getColor(R.color.omnibox_suggestion_bg_hover_incognito);
+            return context.getColor(R.color.search_suggestion_bg_color_hover_incognito);
         }
 
-        // omnibox_suggestion_bg + 8% colorOnSurface
-        @ColorInt int baseColor = ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
+        // search_suggestion_bg_color + 8% colorOnSurface
+        @ColorInt
+        int baseColor = ContextCompat.getColor(context, R.color.search_suggestion_bg_color);
         @ColorInt int hoverColor = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         float fraction =
                 context.getResources()

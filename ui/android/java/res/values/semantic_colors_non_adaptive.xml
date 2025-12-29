@@ -134,7 +134,7 @@ found in the LICENSE file.
     <color name="tab_strip_tablet_bg_incognito">@color/gm3_baseline_surface_container_highest_dark</color>
     <color name="tab_strip_tablet_divider_bg_incognito">@color/baseline_neutral_variant_30</color>
     <color name="tab_strip_tablet_bg_unfocused_incognito">@color/gm3_baseline_surface_container_low_dark</color>
-    <color name="omnibox_suggestion_bg_hover_incognito">@color/gm3_baseline_surface_container_low_dark</color>
+    <color name="search_suggestion_bg_color_hover_incognito">@color/gm3_baseline_surface_container_low_dark</color>
 
     <!-- Illustration -->
     <color name="promo_illustration_bg_color_light">@color/baseline_neutral_90_alpha_38</color>

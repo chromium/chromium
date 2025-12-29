@@ -310,10 +310,10 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color-night/omnibox_suggestion_bg.xml",
     "java/res/color-night/omnibox_suggestion_dropdown_bg.xml",
-    "java/res/color/omnibox_suggestion_bg.xml",
+    "java/res/color-night/search_suggestion_bg_color.xml",
     "java/res/color/omnibox_suggestion_dropdown_bg.xml",
+    "java/res/color/search_suggestion_bg_color.xml",
     "java/res/drawable-night/search_spark_rainbow.xml",
     "java/res/drawable/action_button_hovered.xml",
     "java/res/drawable/action_button_selected.xml",
