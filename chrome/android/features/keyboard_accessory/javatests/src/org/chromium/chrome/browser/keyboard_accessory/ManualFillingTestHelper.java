@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
@@ -48,6 +49,7 @@ import org.junit.Assert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -586,13 +588,19 @@ public class ManualFillingTestHelper {
     }
 
     /**
-     * Use like {@link androidx.test.espresso.Espresso#onView}. It waits for a view matching
-     * the given |matcher| to be displayed and allows to chain checks/performs on the result.
+     * Use like {@link androidx.test.espresso.Espresso#onView}. It waits for a view matching the
+     * given |matcher| to be displayed and allows to chain checks/performs on the result.
+     *
      * @param matcher The matcher matching exactly the view that is expected to be displayed.
      * @return An interaction on the view matching |matcher|.
      */
     public static ViewInteraction whenDisplayed(Matcher<View> matcher) {
-        return onViewWaiting(allOf(matcher, isDisplayed()));
+        return onViewWaiting(matcher);
+    }
+
+    public static ViewInteraction whenDisplayed(
+            Matcher<View> matcher, @IntRange(from = 1, to = 100) int atLeast) {
+        return onViewWaiting(matcher, ViewElement.displayingAtLeastOption(atLeast));
     }
 
     public ViewInteraction waitForViewOnRoot(View root, Matcher<View> matcher) {

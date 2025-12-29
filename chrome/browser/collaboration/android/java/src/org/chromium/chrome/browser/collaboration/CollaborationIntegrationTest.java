@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -590,7 +591,7 @@ public class CollaborationIntegrationTest {
                 .check(matches(isDisplayed()));
 
         // Click "Close group" from the menu.
-        onViewWaiting(withId(R.id.toolbar_menu_button))
+        onViewWaiting(withId(R.id.toolbar_menu_button), ViewElement.displayingAtLeastOption(51))
                 .perform(CollaborationTestUtils.relaxedClick());
         onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_close_group)).perform(click());
 

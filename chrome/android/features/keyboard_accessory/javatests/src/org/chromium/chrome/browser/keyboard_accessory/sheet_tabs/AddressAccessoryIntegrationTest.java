@@ -127,7 +127,7 @@ public class AddressAccessoryIntegrationTest {
                                 not(isAssignableFrom(TextView.class))))
                 .perform(click());
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.addresses_sheet));
+        whenDisplayed(withId(R.id.addresses_sheet), /* atLeast= */ 51);
         onView(withText(containsString("No saved addresses"))).check(matches(isDisplayed()));
     }
 

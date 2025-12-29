@@ -294,7 +294,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame), /* atLeast= */ 51)
                 .check((v, e) -> assertTrue("Catch click to stay open!", singleMouseClickView(v)));
 
         assertTrue(
@@ -326,7 +326,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                                 isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
                                 selectTabAtPosition(0)));
 
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame), /* atLeast= */ 51)
                 .check(
                         (sheetView, exception) -> {
                             assertTrue(sheetView.isShown() && sheetView.getHeight() > 0);

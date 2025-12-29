@@ -229,6 +229,20 @@ public class ViewUtils {
      * Waits until a visible view matching the given matcher Fails if the matcher applies to
      * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
+     * @param viewMatcher The matcher matching the view that should be waited for.
+     * @param options The options to override expectations for the View (e.g. displayed %).
+     * @return An interaction on the matching view.
+     */
+    public static ViewInteraction onViewWaiting(
+            Matcher<View> viewMatcher, ViewElement.Options options) {
+        ViewCarryOn<View> viewCarryOn = ViewFinder.waitForView(viewMatcher, options);
+        return viewCarryOn.onView();
+    }
+
+    /**
+     * Waits until a visible view matching the given matcher Fails if the matcher applies to
+     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
      * <p>Android API 30+ tests are flakey with espresso 3.2 without the inRoot(isDialog()) check.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
@@ -236,13 +250,11 @@ public class ViewUtils {
      */
     public static ViewInteraction onViewWaiting(
             Matcher<View> viewMatcher, boolean checkRootDialog) {
-        ViewElement.Options.Builder optionsBuilder =
-                ViewElement.newOptions().allowDisabled().displayingAtLeast(1);
+        ViewElement.Options.Builder optionsBuilder = ViewElement.newOptions().allowDisabled();
         if (checkRootDialog) {
             optionsBuilder = optionsBuilder.inDialog();
         }
-        ViewCarryOn<View> viewCarryOn =
-                ViewFinder.waitForView(View.class, viewMatcher, optionsBuilder.build());
+        ViewCarryOn<View> viewCarryOn = ViewFinder.waitForView(viewMatcher, optionsBuilder.build());
         return viewCarryOn.onView();
     }
 
@@ -255,7 +267,9 @@ public class ViewUtils {
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        return onViewWaiting(viewMatcher, false);
+        ViewCarryOn<View> viewCarryOn =
+                ViewFinder.waitForView(viewMatcher, ViewElement.allowDisabledOption());
+        return viewCarryOn.onView();
     }
 
     /**
