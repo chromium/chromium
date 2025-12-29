@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -144,7 +143,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_Phones() {
         doTestUnpinCustomTileImpl();
     }
@@ -153,7 +151,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_Tablets() {
         doTestUnpinCustomTileImpl();
     }
@@ -162,7 +159,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_undo_Phones() {
         var snackbar = doTestUnpinCustomTileImpl();
 
@@ -175,7 +171,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_undo_Tablets() {
         var snackbar = doTestUnpinCustomTileImpl();
 
