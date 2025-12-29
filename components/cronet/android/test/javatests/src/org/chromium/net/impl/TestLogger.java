@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import android.os.Build;
 import android.os.ConditionVariable;
 
@@ -91,12 +93,22 @@ public final class TestLogger extends CronetLogger {
     }
 
     public void waitForCronetInitializedInfo() {
-        mCronetInitializedInfoCalled.block();
+        assertWithMessage(
+                        "TestLogger has not received any telemetry. This can happen, for example,"
+                            + " if you are running tests against HttpEngine, which does not support"
+                            + " TestLogger")
+                .that(mCronetInitializedInfoCalled.block(/* timeoutMs= */ 5000))
+                .isTrue();
         mCronetInitializedInfoCalled.close();
     }
 
     public void waitForLogCronetTrafficInfo() {
-        mBlock.block();
+        assertWithMessage(
+                        "TestLogger has not received any telemetry. This can happen, for example,"
+                            + " if you are running tests against HttpEngine, which does not support"
+                            + " TestLogger")
+                .that(mBlock.block(/* timeoutMs= */ 5000))
+                .isTrue();
         mBlock.close();
     }
 
