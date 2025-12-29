@@ -13,6 +13,9 @@
 // The close button.
 @property(nonatomic, strong, readonly) UIButton* closeButton;
 
+// The header view (contains grabber, title and buttons).
+@property(nonatomic, strong, readonly) UIView* headerView;
+
 // The title of the sheet.
 @property(nonatomic, copy) NSString* title;
 

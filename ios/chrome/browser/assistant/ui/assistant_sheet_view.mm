@@ -42,7 +42,6 @@ UIColor* SheetBackgroundColor() {
 
 @implementation AssistantSheetView {
   UILabel* _titleLabel;
-  UIView* _headerView;
   UIScrollView* _scrollView;
   UIButton* _closeButton;
 }
