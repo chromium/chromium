@@ -54,6 +54,11 @@ namespace {
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kTaskQueryParam[] = "task";
 
+// Parameters that the search results page must contain at least one of to be
+// considered a valid search results page.
+constexpr char kSearchQueryKey[] = "q";
+constexpr char kLensModeKey[] = "lns_mode";
+
 // Search parameters for the AI page.
 // TODO(crbug.com/466149941): These should be more robust to be able to handle
 // changes in the URL format.
@@ -61,6 +66,9 @@ constexpr char kUdmParam[] = "udm";
 constexpr char kUdmAiValue[] = "50";
 constexpr char kNemParam[] = "nem";
 constexpr char kNemAiValue[] = "143";
+
+// Query parameter values for the mode.
+inline constexpr char kShoppingModeParameterValue[] = "28";
 
 bool IsSignInDomain(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
@@ -424,7 +432,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     // if being viewed in the side panel, but only if it is intercepted without
     // the side panel-specific params. If the params have already been added, do
     // nothing, otherwise this logic causes an infinite "intercept" loop.
-    if (IsSearchResultsPage(url_params.url) || is_nav_to_ai) {
+    if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
       // The search results page needs to be handled differently depending on
       // whether viewed in a tab or side panel.
       if (tab && !is_nav_to_ai) {
@@ -739,13 +747,29 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
          url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
-bool ContextualTasksUiService::IsSearchResultsPage(const GURL& url) {
+bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {
     return false;
   }
 
-  return base::StartsWith(url.path(), "/search");
+  if (!base::StartsWith(url.path(), "/search")) {
+    return false;
+  }
+
+  // Do not allow shopping mode queries.
+  std::string value;
+  if (net::GetValueForKeyInQuery(url, kUdmParam, &value) &&
+      value == kShoppingModeParameterValue) {
+    return false;
+  }
+
+  // The search results page is only valid if it has a text query or is a Lens
+  // query.
+  return (net::GetValueForKeyInQuery(url, kSearchQueryKey, &value) &&
+          !value.empty()) ||
+         (net::GetValueForKeyInQuery(url, kLensModeKey, &value) &&
+          !value.empty());
 }
 
 void ContextualTasksUiService::AssociateWebContentsToTask(
