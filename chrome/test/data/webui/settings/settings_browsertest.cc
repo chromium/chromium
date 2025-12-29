@@ -1149,9 +1149,7 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
  protected:
   SettingsPrivacyGuideTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kPrivacyGuideForceAvailable,
-         content_settings::features::kTrackingProtection3pcd},
-        {});
+        {features::kPrivacyGuideForceAvailable}, {});
   }
 
  private:

@@ -36,7 +36,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -454,16 +453,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
       "/websocket/connect_to_using_shared_worker_as_public_address.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
-
-class WebSocketBrowserHTTPSConnectToTestPre3pcd
-    : public WebSocketBrowserHTTPSConnectToTest {
-  void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        content_settings::features::kTrackingProtection3pcd);
-    WebSocketBrowserHTTPSConnectToTest::SetUp();
-  }
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Test that the browser can handle a WebSocket frame split into multiple TCP
 // segments.
@@ -923,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
   EXPECT_EQ("FILE", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
                        CookieAccess_ThirdPartyAllowed) {
   wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(wss_server_.Start());

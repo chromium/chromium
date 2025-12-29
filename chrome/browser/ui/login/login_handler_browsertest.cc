@@ -40,7 +40,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/prefs/pref_service.h"
@@ -436,8 +435,7 @@ class LoginPromptBrowserTestThirdPartyCookiesUnblocked
   LoginPromptBrowserTestThirdPartyCookiesUnblocked() {
     scoped_feature_list_.InitWithFeatureStates(
         {{network::features::kSplitAuthCacheByNetworkIsolationKey,
-          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)},
-         {content_settings::features::kTrackingProtection3pcd, false}});
+          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)}});
   }
 
  private:

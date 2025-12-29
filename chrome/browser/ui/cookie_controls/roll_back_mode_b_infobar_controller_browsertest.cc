@@ -24,11 +24,6 @@ namespace {
 
 class RollBackModeBInfoBarControllerBrowserTest : public InProcessBrowserTest {
  protected:
-  RollBackModeBInfoBarControllerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kRollBackModeB},
-        {content_settings::features::kTrackingProtection3pcd});
-  }
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB,
                                                  true);
@@ -43,7 +38,7 @@ class RollBackModeBInfoBarControllerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{privacy_sandbox::kRollBackModeB};
 };
 
 IN_PROC_BROWSER_TEST_F(RollBackModeBInfoBarControllerBrowserTest,

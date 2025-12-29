@@ -35,15 +35,12 @@ class NativeUnpartitionedStorageAccessWhen3PCOff
   NativeUnpartitionedStorageAccessWhen3PCOff() = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features = {
+        content_settings::features::kTrackingProtection3pcd};
     if (NativeUnpartitionedStoragePermittedWhenTpcOff()) {
-      enabled_features = {
-          content_settings::features::kTrackingProtection3pcd,
+      enabled_features.push_back(
           content_settings::features::
-              kNativeUnpartitionedStoragePermittedWhen3PCOff,
-      };
-    } else {
-      enabled_features = {content_settings::features::kTrackingProtection3pcd};
+              kNativeUnpartitionedStoragePermittedWhen3PCOff);
     }
     features_.InitWithFeatures(enabled_features,
                                {net::features::kThirdPartyStoragePartitioning});

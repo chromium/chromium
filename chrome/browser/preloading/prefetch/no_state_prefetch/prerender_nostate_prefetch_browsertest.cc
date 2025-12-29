@@ -48,7 +48,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -305,10 +304,7 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
 class NoStatePrefetchBrowserTest
     : public test_utils::PrerenderInProcessBrowserTest {
  public:
-  NoStatePrefetchBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        content_settings::features::kTrackingProtection3pcd);
-  }
+  NoStatePrefetchBrowserTest() = default;
   NoStatePrefetchBrowserTest(const NoStatePrefetchBrowserTest&) = delete;
   NoStatePrefetchBrowserTest& operator=(const NoStatePrefetchBrowserTest&) =
       delete;
@@ -490,7 +486,6 @@ class NoStatePrefetchBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       link_rel_attempt_entry_builder_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class NoStatePrefetchBrowserSplitCacheTest
@@ -1118,10 +1113,7 @@ class NoStatePrefetchPurposeHeaderBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   NoStatePrefetchPurposeHeaderBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features = {
-        content_settings::features::kTrackingProtection3pcd,
-    };
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
 
     // Parameter determines whether kRemovePurposeHeaderForPrefetch is enabled
     if (GetParam()) {

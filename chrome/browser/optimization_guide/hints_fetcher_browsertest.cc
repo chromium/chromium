@@ -33,7 +33,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -534,8 +533,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
         {optimization_guide::kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
     };
     PopulateEnabledFeatures(&enabled_features);
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     // Call to inherited class to match same set up with feature flags added.
     HintsFetcherDisabledBrowserTest::SetUp();
   }
@@ -571,9 +569,6 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
             urls, optimization_types,
             optimization_guide::proto::CONTEXT_BOOKMARKS, callback);
   }
-
- protected:
-  std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 // This test creates new browser with no profile and loads a random page with
@@ -1290,16 +1285,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class HintsFetcherPre3pcdBrowserTest : public HintsFetcherBrowserTest {
- public:
-  HintsFetcherPre3pcdBrowserTest() {
-    disabled_features_.push_back(
-        content_settings::features::kTrackingProtection3pcd);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HintsFetcherPre3pcdBrowserTest,
-                       HintsFetcherDoesntFetchOnNSP) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherDoesntFetchOnNSP) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Allowlist NoScript for https_url()'s' host.

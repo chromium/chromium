@@ -3125,16 +3125,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithImplicitGrantsBrowserTest,
 // Tests to verify that when 3p cookie is allowed, the embedded iframe can
 // access cookie without requesting, and no prompt is shown if the iframe makes
 // the request.
-class StorageAccessAPIWith3PCEnabledBrowserTest
-    : public StorageAccessAPIBaseBrowserTest {
- public:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {content_settings::features::kTrackingProtection3pcd};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
-                       AllowedWhenUnblocked) {
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest, AllowedWhenUnblocked) {
   SetBlockThirdPartyCookies(false);
 
   NavigateToPageWithFrame(kHostA);
@@ -3151,8 +3142,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 }
 
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
-                       AllowedByUserBypass) {
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest, AllowedByUserBypass) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -3180,7 +3170,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
 // Validate that if third-party cookies are allowed but the permission is
 // denied, requestStorageAccess beyond cookies succeeds.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest,
                        BeyondCookies_WithCookiesWithoutPermission) {
   SetBlockThirdPartyCookies(false);
   prompt_factory()->set_response_type(
@@ -3195,7 +3185,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
 // Validate that if third-party cookies are allowed and the permission is
 // allowed, requestStorageAccess beyond cookies succeeds.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest,
                        BeyondCookies_WithCookiesWithPermission) {
   SetBlockThirdPartyCookies(false);
   prompt_factory()->set_response_type(
@@ -3210,7 +3200,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
 // Validate that if third-party cookies are allowed but the permission is
 // denied, requestStorageAccess does grant local storage access.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest,
                        BeyondCookies_LocalStorageWith3PCAndNoPermission) {
   // Allow 3PC and deny storage access requests.
   SetBlockThirdPartyCookies(false);
@@ -3241,7 +3231,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
 
 // Validate that if third-party cookies are allowed but the permission is
 // denied, requestStorageAccess does grant unpartitioned blob URL access.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBaseBrowserTest,
                        BeyondCookies_BlobUrlWith3PCAndNoPermission) {
   // Allow 3PC and deny storage access requests.
   SetBlockThirdPartyCookies(false);
@@ -3962,16 +3952,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessHeadersBrowserTest,
       }));
 }
 
-class StorageAccessHeadersWithThirdPartyCookiesBrowserTest
-    : public StorageAccessHeadersBrowserTest {
- public:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    std::vector<base::test::FeatureRef> features =
-        StorageAccessHeadersBrowserTest::GetDisabledFeatures();
-    features.push_back(content_settings::features::kTrackingProtection3pcd);
-    return features;
-  }
-};
+using StorageAccessHeadersWithThirdPartyCookiesBrowserTest =
+    StorageAccessHeadersBrowserTest;
 
 INSTANTIATE_TEST_SUITE_P(,
                          StorageAccessHeadersWithThirdPartyCookiesBrowserTest,
@@ -4034,7 +4016,7 @@ class StorageAccessAPIWindowOpenTestBase
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (AreTrackingProtectionsEnabled()) {
+    if (Is3PCDEnabled()) {
       enabled_features.emplace_back(
           content_settings::features::kTrackingProtection3pcd,
           base::FieldTrialParams{});
@@ -4042,26 +4024,17 @@ class StorageAccessAPIWindowOpenTestBase
     return enabled_features;
   }
 
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (!AreTrackingProtectionsEnabled()) {
-      disabled_features.emplace_back(
-          content_settings::features::kTrackingProtection3pcd);
-    }
-    return disabled_features;
-  }
-
  protected:
   virtual bool Are3PCEnabled() const = 0;
 
-  virtual bool AreTrackingProtectionsEnabled() const = 0;
+  virtual bool Is3PCDEnabled() const = 0;
 
   virtual bool ArePermissionPromptsAccepted() const = 0;
 
   virtual std::string MainFrameHost() const = 0;
 
   bool Are3PCFullyEnabled() const {
-    return Are3PCEnabled() && !AreTrackingProtectionsEnabled();
+    return Are3PCEnabled() && !Is3PCDEnabled();
   }
 
   void SetupPromptFactoryForNewWebContents(
@@ -4157,9 +4130,7 @@ class StorageAccessAPIWindowOpenMainFrameTest
  protected:
   bool Are3PCEnabled() const override { return std::get<0>(GetParam()); }
 
-  bool AreTrackingProtectionsEnabled() const override {
-    return std::get<1>(GetParam());
-  }
+  bool Is3PCDEnabled() const override { return std::get<1>(GetParam()); }
 
   bool ArePermissionPromptsAccepted() const override {
     return std::get<2>(GetParam());

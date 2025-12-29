@@ -75,10 +75,7 @@ class HTTPErrProcBrowserTest : public InProcessBrowserTest {
                     : content_settings::CookieControlsMode::kOff));
     scoped_refptr<content_settings::CookieSettings> settings =
         CookieSettingsFactory::GetForProfile(browser()->profile());
-    ASSERT_EQ(
-        settings->ShouldBlockThirdPartyCookies(),
-        enabled || base::FeatureList::IsEnabled(
-                       content_settings::features::kTrackingProtection3pcd));
+    ASSERT_EQ(settings->ShouldBlockThirdPartyCookies(), enabled);
   }
 
   // Checks that the HTTP Error has been properly recorded in the metrics

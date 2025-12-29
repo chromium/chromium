@@ -45,7 +45,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -1741,11 +1740,8 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
                                               public InstantTestBase {
  public:
   AutomaticBeaconCredentialsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{privacy_sandbox::
-                                  kOverridePrivacySandboxSettingsLocalTesting},
-        /*disabled_features=*/{
-            content_settings::features::kTrackingProtection3pcd});
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting);
   }
 
   void SetUpOnMainThread() override {

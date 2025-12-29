@@ -1389,12 +1389,6 @@ class TopLevelStorageExemptionReasonMetricTest
   const std::vector<int64_t>& expected_metric_value() {
     return GetParam().expected_metric_value;
   }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {
-        content_settings::features::kTrackingProtection3pcd,
-    };
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
