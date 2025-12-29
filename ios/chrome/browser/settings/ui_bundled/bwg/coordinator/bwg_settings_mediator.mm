@@ -6,6 +6,7 @@
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -17,6 +18,12 @@
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
+namespace {
+// The amount by which to offset the integer value of a dynamic setting to
+// create its corresponding section/row identifier.
+const NSInteger kDynamicSettingsItemTypeOffset = 10000;
+}  // namespace
 
 @interface BWGSettingsMediator () <BooleanObserver>
 @end
@@ -76,7 +83,23 @@
     NSArray<GeminiSettingsMetadata*>* eligibleSettingsMetadata =
         ios::provider::GetEligibleSettings(_authService);
 
-    [self.consumer updateDynamicSettingsRows:eligibleSettingsMetadata];
+    NSMutableArray<GeminiDynamicSettingsItem*>* settingsItems =
+        [[NSMutableArray alloc]
+            initWithCapacity:eligibleSettingsMetadata.count];
+
+    for (GeminiSettingsMetadata* setting in eligibleSettingsMetadata) {
+      NSInteger type = kDynamicSettingsItemTypeOffset + setting.context;
+      GeminiSettingsAction* action =
+          ios::provider::ActionForSettingsContext(setting.context);
+
+      GeminiDynamicSettingsItem* item =
+          [[GeminiDynamicSettingsItem alloc] initWithType:type
+                                                 metadata:setting
+                                                   action:action];
+      [settingsItems addObject:item];
+    }
+
+    [self.consumer updateDynamicSettingsItems:settingsItems];
   }
 }
 

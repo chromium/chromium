@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class GeminiSettingsMetadata;
+@class GeminiDynamicSettingsItem;
 
 // Consumer protocol for BWG settings.
 @protocol BWGSettingsConsumer
@@ -19,8 +19,8 @@
 - (void)setPageContentSharingEnabled:(BOOL)enabled;
 
 // Adds table view sections and rows for the given dynamic settings.
-- (void)updateDynamicSettingsRows:
-    (NSArray<GeminiSettingsMetadata*>*)newSettings;
+- (void)updateDynamicSettingsItems:
+    (NSArray<GeminiDynamicSettingsItem*>*)newItems;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_BWG_SETTINGS_CONSUMER_H_
