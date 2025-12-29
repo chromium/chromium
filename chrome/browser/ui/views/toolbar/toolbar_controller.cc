@@ -18,10 +18,13 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
@@ -232,7 +235,21 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
           ToolbarController::ElementIdInfo{
               kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
               &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
-          /*is_section_end=*/false)};
+          /*is_section_end=*/false),
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              kToolbarSplitTabsToolbarButtonElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_TABS, &kSplitSceneIcon,
+              kToolbarSplitTabsToolbarButtonElementId},
+          /*is_section_end=*/false),
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              ContextualTasksButton::kContextualTasksToolbarButton,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_CONTEXTUAL_TASKS,
+              &kDockToRightSparkIcon,
+              ContextualTasksButton::kContextualTasksToolbarButton},
+          /*is_section_end=*/false),
+  };
 
   // Support actions items.
   const auto* const browser_actions = browser->browser_actions();
@@ -297,7 +314,9 @@ ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
       {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
        kToolbarMediaButtonElementId, kToolbarNewTabButtonElementId,
-       kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId});
+       kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId,
+       ContextualTasksButton::kContextualTasksToolbarButton});
 }
 
 // Every activate identifier should have an action name in order to emit
@@ -315,6 +334,9 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kToolbarMediaButtonElementId, "MediaButton"},
           {kToolbarNewTabButtonElementId, "NewTabButton"},
           {kToolbarSidePanelButtonElementId, "SidePanelButton"},
+          {kToolbarSplitTabsToolbarButtonElementId, "SplitTabs"},
+          {ContextualTasksButton::kContextualTasksToolbarButton,
+           "PinnedContextualTasksSidePanelButton"},
           {kActionClearBrowsingData, "PinnedClearBrowsingDataButton"},
           {kActionCopyUrl, "PinnedCopyLinkButton"},
           {kActionDevTools, "PinnedDeveloperToolsButton"},
