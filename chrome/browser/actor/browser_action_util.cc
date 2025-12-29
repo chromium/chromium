@@ -583,8 +583,8 @@ std::unique_ptr<ToolRequest> CreateMediaControlRequest(
       media_control = PauseMedia();
       break;
     case MediaControlAction::kSeek:
-      media_control = SeekMedia{.seek_time_microseconds =
-                                    action.seek().seek_time_microseconds()};
+      media_control = SeekMedia{.seek_time_milliseconds =
+                                    action.seek().seek_time_milliseconds()};
       break;
     default:
       return nullptr;

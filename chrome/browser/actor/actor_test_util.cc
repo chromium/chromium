@@ -412,8 +412,8 @@ Actions MakeMediaControl(tabs::TabHandle tab_handle,
   } else if (std::get_if<PauseMedia>(&media_control)) {
     media_control_action->mutable_pause();
   } else if (const auto* seek = std::get_if<SeekMedia>(&media_control)) {
-    media_control_action->mutable_seek()->set_seek_time_microseconds(
-        seek->seek_time_microseconds);
+    media_control_action->mutable_seek()->set_seek_time_milliseconds(
+        seek->seek_time_milliseconds);
   }
   return action;
 }

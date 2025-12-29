@@ -68,8 +68,12 @@ void MediaControlTool::Invoke(ToolCallback callback) {
           },
           [media_session](const SeekMedia& arg) {
             // Seek to a specific time in the media.
-            media_session->SeekTo(
-                base::Microseconds(arg.seek_time_microseconds));
+            auto media_position = media_session->GetMediaSessionPosition();
+            auto seek_time = base::Milliseconds(arg.seek_time_milliseconds);
+            if (seek_time >= base::Seconds(0) && media_position &&
+                seek_time <= media_position->duration()) {
+              media_session->SeekTo(seek_time);
+            }
           }),
       media_control_);
 
