@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/japanese/japanese_settings.h"
+#include "chrome/browser/ash/input_method/japanese_settings.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
+#include "chrome/browser/ash/input_method/japanese_prefs_constants.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -116,6 +116,9 @@ static_library("input_method") {
     "input_method_syncer.h",
     "input_methods_by_language.cc",
     "input_methods_by_language.h",
+    "japanese_prefs_constants.h",
+    "japanese_settings.cc",
+    "japanese_settings.h",
     "longpress_control_v_suggester.cc",
     "longpress_control_v_suggester.h",
     "longpress_diacritics_suggester.cc",
@@ -194,7 +197,6 @@ static_library("input_method") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/input_method/japanese",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/profiles",
@@ -254,10 +256,7 @@ static_library("input_method") {
     "//ui/ozone",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/input_method/japanese",
-    "//chrome/browser/ash/magic_boost",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/magic_boost" ]
 }
 
 static_library("test_support") {
@@ -321,6 +320,7 @@ source_set("unit_tests") {
     "input_method_quick_settings_helpers_unittest.cc",
     "input_method_settings_unittest.cc",
     "input_methods_by_language_unittest.cc",
+    "japanese_settings_unittest.cc",
     "longpress_diacritics_suggester_unittest.cc",
     "multi_word_suggester_unittest.cc",
     "native_input_method_engine_observer_unittest.cc",
@@ -424,9 +424,6 @@ source_set("unit_tests") {
     "//ui/views:test_support",
     "//ui/wm",
     "//url",
-
-    # Tests from subdirs:
-    "//chrome/browser/ash/input_method/japanese:unit_tests",
   ]
 }
 

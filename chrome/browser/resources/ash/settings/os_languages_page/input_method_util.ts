@@ -68,7 +68,7 @@ export const OPTION_DEFAULT = {
       JapaneseSelectionShortcut.DIGITS_123456789,
   [OptionType.JAPANESE_KEYMAP_STYLE]: JapaneseKeymapStyle.CHROME_OS,
   [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: false,
-  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:JpPrefDefaults)
+  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese_settings.cc:JpPrefDefaults)
 
   // Options for Korean input method.
   [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,

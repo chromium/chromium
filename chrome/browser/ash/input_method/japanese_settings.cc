@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/japanese/japanese_settings.h"
+#include "chrome/browser/ash/input_method/japanese_settings.h"
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
+#include "chrome/browser/ash/input_method/japanese_prefs_constants.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 
 namespace ash::input_method {
