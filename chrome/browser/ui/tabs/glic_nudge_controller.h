@@ -28,6 +28,7 @@ enum class GlicNudgeActivity {
   kNudgeIgnoredActiveTabChanged,
   kNudgeIgnoredNavigation,
   kNudgeNotShownWindowCallToActionUI,
+  kNudgeIgnoredOpenedContextualTasksSidePanel,
 };
 
 // Controller that mediates Glic Nudges and ensures that only the active tab is

@@ -12274,6 +12274,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/actor:interactive_ui_tests",
         "//chrome/browser/background/glic",
         "//chrome/browser/background/glic:interactive_ui_tests",
+        "//chrome/browser/contextual_tasks:ui",
         "//chrome/browser/glic",
         "//chrome/browser/glic:interactive_ui_tests",
         "//chrome/browser/glic/test_support",

@@ -131,6 +131,9 @@ chromium-metrics-reviews@google.com.
     The server sent data, but another window level call to action UI was already
     shown.&quot;&gt;
   </int>
+  <int value="8" label="Closed due to contextual tasks side panel opening">
+    The nudge was dismissed by the contextual tasks side panel opening.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
