@@ -58,7 +58,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Helper method to determine if the `infobarType` is supported in Reader
 // Mode.
 bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType) {
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsProactiveSuggestionsFrameworkEnabled() ||
+      IsReaderModeBadgeSupportEnabled()) {
     return true;
   }
   if (infobarType == InfobarType::kInfobarTypePermissions) {
