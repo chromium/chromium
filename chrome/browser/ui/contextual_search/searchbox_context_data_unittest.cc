@@ -60,8 +60,8 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithFileAttachment) {
   auto context = std::make_unique<SearchboxContextData::Context>();
   context->text = kWorldText;
   context->file_infos.push_back(
-      searchbox::mojom::SearchContextAttachmentStub::NewFileAttachment(
-          searchbox::mojom::FileAttachmentStub::New(
+      searchbox::mojom::SearchContextAttachment::NewFileAttachment(
+          searchbox::mojom::FileAttachment::New(
               base::UnguessableToken::Create(), kTestPdf, kApplicationPdf,
               kImageUrl)));
   data.SetPendingContext(std::move(context));
@@ -88,8 +88,8 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithTabAttachment) {
   auto context = std::make_unique<SearchboxContextData::Context>();
   context->text = kWorldText;
   context->file_infos.push_back(
-      searchbox::mojom::SearchContextAttachmentStub::NewTabAttachment(
-          searchbox::mojom::TabAttachmentStub::New(kTabId, kTabName,
+      searchbox::mojom::SearchContextAttachment::NewTabAttachment(
+          searchbox::mojom::TabAttachment::New(kTabId, kTabName,
                                                    GURL(kExampleUrl))));
   data.SetPendingContext(std::move(context));
 

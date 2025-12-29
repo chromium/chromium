@@ -295,12 +295,12 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   }
 
   if (tab_info) {
-    auto tab_attachment = searchbox::mojom::TabAttachmentStub::New();
+    auto tab_attachment = searchbox::mojom::TabAttachment::New();
     tab_attachment->tab_id = tab_info->tab_id;
     tab_attachment->title = base::UTF16ToUTF8(tab_info->title);
     tab_attachment->url = tab_info->url;
     context->file_infos.push_back(
-        searchbox::mojom::SearchContextAttachmentStub::NewTabAttachment(
+        searchbox::mojom::SearchContextAttachment::NewTabAttachment(
             std::move(tab_attachment)));
   }
 

@@ -15,13 +15,13 @@
 
 namespace {
 
-searchbox::mojom::SearchContextStubPtr ToSearchContext(
+searchbox::mojom::SearchContextPtr ToSearchContext(
     std::unique_ptr<SearchboxContextData::Context> context) {
   if (!context) {
     return nullptr;
   }
 
-  auto search_context = searchbox::mojom::SearchContextStub::New();
+  auto search_context = searchbox::mojom::SearchContext::New();
   search_context->input = context->text;
   search_context->attachments = std::move(context->file_infos);
   search_context->tool_mode = context->mode;

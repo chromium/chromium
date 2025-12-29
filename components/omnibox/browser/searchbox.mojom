@@ -121,10 +121,8 @@ enum ToolMode {
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/contextual_entrypoint_and_carousel.ts:ComposeboxMode)
 
 // Represents a file attachment who's upload was started browser-side (currently
-// an image or PDF only). The stub name is intended to indicate that usage of
-// this struct is being iterated on and usage must currently be flagged with
-// `MojomWorkInProgress`.
-struct FileAttachmentStub {
+// an image or PDF only).
+struct FileAttachment {
   // A client-side unique identifier referring to a specific file upload. The
   // UUID is assigned on the browser-side.
   mojo_base.mojom.UnguessableToken uuid;
@@ -138,10 +136,7 @@ struct FileAttachmentStub {
 };
 
 // Represents a tab attachment chosen browser-side and communicated to WebUI.
-// The stub name is intended to indicate that usage of
-// this struct is being iterated on and usage must currently be flagged with
-// `MojomWorkInProgress`.
-struct TabAttachmentStub {
+struct TabAttachment {
   // The unique identifier of the tab.
   int32 tab_id;
   // The title of the tab.
@@ -154,17 +149,17 @@ struct TabAttachmentStub {
 // The stub name is intended to indicate that usage of
 // this struct is being iterated on and usage must currently be flagged with
 // `MojomWorkInProgress`.
-union SearchContextAttachmentStub {
-  FileAttachmentStub file_attachment;
-  TabAttachmentStub tab_attachment;
+union SearchContextAttachment {
+  FileAttachment file_attachment;
+  TabAttachment tab_attachment;
 };
 
 // Represents the context of a search query.
-struct SearchContextStub {
+struct SearchContext {
   // The input text of the search query.
   string input;
   // A list of attachments to the search context.
-  array<SearchContextAttachmentStub> attachments;
+  array<SearchContextAttachment> attachments;
   // The mode of the search query.
   ToolMode tool_mode;
 };

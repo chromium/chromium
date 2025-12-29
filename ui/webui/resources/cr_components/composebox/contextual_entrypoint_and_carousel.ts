@@ -17,7 +17,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {FileAttachmentStub, SearchContextStub, TabAttachmentStub, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {FileAttachment, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -470,7 +470,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }));
   }
 
-  private addFileFromAttachment_(fileAttachment: FileAttachmentStub) {
+  private addFileFromAttachment_(fileAttachment: FileAttachment) {
     const pendingStatus = this.pendingFiles_.get(fileAttachment.uuid);
     const composeboxFile: ComposeboxFile = {
       uuid: fileAttachment.uuid,
@@ -489,7 +489,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.fire('add-file_context', {file: composeboxFile});
   }
 
-  private addTabFromAttachment_(tabAttachment: TabAttachmentStub) {
+  private addTabFromAttachment_(tabAttachment: TabAttachment) {
     this.addTabContext_(new CustomEvent('addTabContext', {
       detail: {
         id: tabAttachment.tabId,
@@ -501,7 +501,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }));
   }
 
-  addSearchContext(context: SearchContextStub) {
+  addSearchContext(context: SearchContext) {
     for (const attachment of context.attachments) {
       if (attachment.fileAttachment) {
         this.addFileFromAttachment_(attachment.fileAttachment);
