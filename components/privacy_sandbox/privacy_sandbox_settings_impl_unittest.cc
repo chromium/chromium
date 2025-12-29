@@ -451,16 +451,14 @@ TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
 }
 
 struct PrivateAggregationDebugModeTestCase {
-  using TupleT = std::tuple<bool, bool, bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool>;
 
   explicit PrivateAggregationDebugModeTestCase(TupleT t)
-      : cookies_blocked_by_experiment(std::get<0>(t)),
-        cookies_blocked_by_user_setting(std::get<1>(t)),
-        cookie_controls_mode_ui_pref(std::get<2>(t)),
-        site_exception_user_setting_defined(std::get<3>(t)),
-        ignore_site_exception_feature_enabled(std::get<4>(t)) {}
+      : cookies_blocked_by_user_setting(std::get<0>(t)),
+        cookie_controls_mode_ui_pref(std::get<1>(t)),
+        site_exception_user_setting_defined(std::get<2>(t)),
+        ignore_site_exception_feature_enabled(std::get<3>(t)) {}
 
-  bool cookies_blocked_by_experiment = false;
   bool cookies_blocked_by_user_setting = false;
   bool cookie_controls_mode_ui_pref = false;
   bool site_exception_user_setting_defined = false;
@@ -479,19 +477,16 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(testing::Bool(),
                          testing::Bool(),
                          testing::Bool(),
-                         testing::Bool(),
                          testing::Bool())),
     // Creates a human-readable name for each test. Per gtest docs, test names
     // must contain only alphanumeric characters.
     [](const testing::TestParamInfo<PrivateAggregationDebugModeTestCase>& info)
         -> std::string {
       return base::StringPrintf(
-          "And3pcdExperiment%s"
           "AndExplicitUserSetting%s"
           "AndCookieControlsModePref%s"
           "AndSiteExceptionUserSetting%s"
           "AndIgnoreSiteException%s",
-          info.param.cookies_blocked_by_experiment ? "On" : "Off",
           info.param.cookies_blocked_by_user_setting ? "Blocks3pc" : "IsNotSet",
           info.param.cookie_controls_mode_ui_pref ? "On" : "Off",
           info.param.site_exception_user_setting_defined ? "Defined"
