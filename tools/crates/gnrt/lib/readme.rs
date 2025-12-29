@@ -277,15 +277,16 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
         // of priority.
         let mut map = HashMap::new();
         for kind in LicenseKind::iter() {
-            let license_name_suffix = {
-                // `license_kind_name` is taken from the Display
-                // implementation. E.g. "Apache-2.0" becomes "-APACHE"
-                let license_kind_name = kind.as_ref().split("-").next().unwrap().to_uppercase();
-                // Prepend `-` so this can be used as an optional suffix.
-                format!("-{license_kind_name}")
-            };
-            // More specific `license_name_suffix` is prioritized and listed first.
-            let suffixes: [&str; 2] = [&license_name_suffix, ""];
+            // `license_name` is taken from the Display implementation.
+            // E.g. "Apache-2.0" becomes "Apache"
+            let license_name = kind.as_ref().split("-").next().unwrap();
+            let mut suffixes = Vec::new();
+            // More specific `license_name`-based suffixes are prioritized and listed first.
+            suffixes.push(format!("-{license_name}"));
+            if license_name != license_name.to_uppercase() {
+                suffixes.push(format!("-{}", license_name.to_uppercase()));
+            }
+            suffixes.push(String::new()); // No suffix goes last / has lowest priority.
 
             let mut license_files = vec![];
             for suffix in suffixes {
@@ -303,7 +304,6 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
         // that is not covered already in the map generated above, add it here.
         let apache = map.get_mut(&LicenseKind::Apache2).unwrap();
         apache.insert(0, "license-apache-2.0".to_string());
-        apache.insert(0, "LICENSE-Apache".to_string());
         map
     });
 
@@ -457,8 +457,13 @@ mod test {
             (
                 LicenseKind::Apache2,
                 &[
-                    "LICENSE-Apache",
                     "license-apache-2.0",
+                    "LICENSE-Apache",
+                    "LICENSE-Apache.md",
+                    "LICENSE-Apache.txt",
+                    "LICENCE-Apache",
+                    "LICENCE-Apache.md",
+                    "LICENCE-Apache.txt",
                     "LICENSE-APACHE",
                     "LICENSE-APACHE.md",
                     "LICENSE-APACHE.txt",
