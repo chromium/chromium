@@ -24,23 +24,29 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
     : root_action_item_(root_action_item),
       browser_(browser),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
-  SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-
-  // Setting Button's layout based on collapsed state
-  SetOrientation(state_controller->IsCollapsed()
-                     ? views::LayoutOrientation::kVertical
-                     : views::LayoutOrientation::kHorizontal);
+  SetProperty(views::kElementIdentifierKey,
+              kVerticalTabStripBottomContainerElementId);
 
   // Flex Specification for uncollapsed state
-  views::FlexSpecification uncollapsed_flex_specification =
+  uncollapsed_flex_specification_ =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, false,
                                views::MinimumFlexSizeRule::kPreferred);
 
+  // Flex Specification for collapsed state
+  collapsed_flex_specification_ =
+      views::FlexSpecification(views::LayoutOrientation::kVertical,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred, false,
+                               views::MinimumFlexSizeRule::kPreferred);
+
+  collapsed_state_changed_subscription_ =
+      state_controller->RegisterOnStateChanged(base::BindRepeating(
+          &VerticalTabStripBottomContainer::OnCollapsedStateChanged,
+          base::Unretained(this)));
+
   tab_group_button_ = AddChildButtonFor(kActionTabGroupsMenu);
-  tab_group_button_->SetProperty(views::kFlexBehaviorKey,
-                                 uncollapsed_flex_specification.WithWeight(1));
 
   // Creating MenuButtonController because tab_group_button is a LabelButton.
   auto controller = std::make_unique<views::MenuButtonController>(
@@ -49,33 +55,22 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
                           base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           tab_group_button_));
-
   everything_menu_controller_ = controller.get();
 
   tab_group_button_->SetButtonController(std::move(controller));
-
-  new_tab_button_ = AddChildButtonFor(kActionNewTab);
-  new_tab_button_->SetProperty(views::kFlexBehaviorKey,
-                               uncollapsed_flex_specification.WithWeight(2));
-
-  new_tab_button_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(
-          0, GetLayoutConstant(VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING), 0,
-          0));
-
   tab_group_button_->SetProperty(views::kElementIdentifierKey,
                                  kSavedTabGroupButtonElementId);
+
+  new_tab_button_ = AddChildButtonFor(kActionNewTab);
   new_tab_button_->SetProperty(views::kElementIdentifierKey,
                                kNewTabButtonElementId);
 
-  SetProperty(views::kElementIdentifierKey,
-              kVerticalTabStripBottomContainerElementId);
+  UpdateButtonStyles(state_controller);
 }
 
 VerticalTabStripBottomContainer::~VerticalTabStripBottomContainer() = default;
 
-views::LabelButton* VerticalTabStripBottomContainer::AddChildButtonFor(
+BottomContainerButton* VerticalTabStripBottomContainer::AddChildButtonFor(
     actions::ActionId action_id) {
   std::unique_ptr<BottomContainerButton> container_button =
       std::make_unique<BottomContainerButton>();
@@ -110,8 +105,50 @@ void VerticalTabStripBottomContainer::ShowEverythingMenu() {
 
 void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* controller) {
-  // TODO(crbug.com/439961053): Add styling for bottom container buttons in
-  // collapsed state.
+  UpdateButtonStyles(controller);
+}
+
+void VerticalTabStripBottomContainer::UpdateButtonStyles(
+    tabs::VerticalTabStripStateController* controller) {
+  // Setting Button's layout based on collapsed state
+  SetOrientation(controller->IsCollapsed()
+                     ? views::LayoutOrientation::kVertical
+                     : views::LayoutOrientation::kHorizontal);
+
+  if (controller->IsCollapsed()) {
+    // If collapsed, the tab group button and the new tab button share the same
+    // weights. The flat edge is inverse to the position: tab group button is
+    // placed on top so the flat edge is on the bottom.
+    tab_group_button_->SetProperty(views::kFlexBehaviorKey,
+                                   collapsed_flex_specification_.WithWeight(1));
+    tab_group_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kBottom);
+
+    new_tab_button_->SetProperty(views::kFlexBehaviorKey,
+                                 collapsed_flex_specification_.WithWeight(1));
+    new_tab_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            GetLayoutConstant(
+                VERTICAL_TAB_STRIP_COLLAPSED_BOTTOM_BUTTON_PADDING),
+            0, 0, 0));
+    new_tab_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kTop);
+  } else {
+    // If uncollapsed, the tab group button and the new tab button are set with
+    // weights 1 and 2, respectively. Flat edges should be reset and padding
+    // is moved from top to left.
+    tab_group_button_->SetProperty(
+        views::kFlexBehaviorKey, uncollapsed_flex_specification_.WithWeight(1));
+    tab_group_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kNone);
+
+    new_tab_button_->SetProperty(views::kFlexBehaviorKey,
+                                 uncollapsed_flex_specification_.WithWeight(2));
+    new_tab_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            0, GetLayoutConstant(VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING), 0,
+            0));
+    new_tab_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kNone);
+  }
 }
 
 BEGIN_METADATA(VerticalTabStripBottomContainer)

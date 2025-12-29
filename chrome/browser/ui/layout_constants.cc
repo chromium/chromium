@@ -143,6 +143,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 20;
     case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:
       return 4;
+    case VERTICAL_TAB_STRIP_COLLAPSED_BOTTOM_BUTTON_PADDING:
+      return 2;
     case VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT:
       return 28;
     case VERTICAL_TAB_PINNED_BORDER_THICKNESS:

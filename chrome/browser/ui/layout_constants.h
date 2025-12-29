@@ -202,9 +202,13 @@ enum LayoutConstant {
   // The icon size of top buttons in the vertical tab strip.
   VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE,
 
-  // The horiziontal padding between the two buttons in the bottom container of
+  // The horizontal padding between the two buttons in the bottom container of
   // the vertical tab strip when it is uncollapsed.
   VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING,
+
+  // The vertical padding between the two buttons in the bottom container of
+  // the vertical tab strip when it is collapsed.
+  VERTICAL_TAB_STRIP_COLLAPSED_BOTTOM_BUTTON_PADDING,
 
   // The default height of the top container for the vertical tab strip when
   // uncollapsed.
