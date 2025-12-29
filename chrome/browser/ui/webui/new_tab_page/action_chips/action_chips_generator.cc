@@ -214,22 +214,6 @@ std::vector<ActionChipPtr> CreateDeepDiveChips(
   return chips;
 }
 
-void AppendStaticAimChipsBasedOnEligibility(
-    std::vector<ActionChipPtr>& chips,
-    const AimEligibilityService* aim_eligibility_service) {
-  for (base::FunctionRef<std::optional<ActionChipPtr>(
-           std::string_view, const AimEligibilityService*)> generator :
-       {&CreateDeepSearchChipIfEligible, &CreateImageCreationChipIfEligible}) {
-    if (chips.size() >= 3) {
-      break;
-    }
-    std::optional<ActionChipPtr> chip = generator("", aim_eligibility_service);
-    if (chip.has_value()) {
-      chips.push_back(*std::move(chip));
-    }
-  }
-}
-
 TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
                          const TabInterface& tab) {
   TabInfoPtr tab_info = TabInfo::New();
@@ -362,11 +346,5 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
     return;
   }
   std::vector<ActionChipPtr> chips = CreateDeepDiveChips(tab, *result);
-  if (chips.size() < 3) {
-    // This ensures that at least two chips are available for display.
-    // Assumption: The user is either deepsearch eligible or nanobanana
-    // eligible (and can be both).
-    AppendStaticAimChipsBasedOnEligibility(chips, aim_eligibility_service_);
-  }
   std::move(callback).Run(std::move(chips));
 }

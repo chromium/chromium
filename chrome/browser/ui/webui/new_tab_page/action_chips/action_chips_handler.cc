@@ -181,7 +181,8 @@ void ActionChipsHandler::SendActionChipsToUi(base::TimeTicks start_time,
   if (!page_.is_bound()) {
     return;
   }
-  if (chips.size() <= 1) {
+  if (!ntp_features::kNtpNextShowSimplificationUIParam.Get() &&
+      chips.size() <= 1) {
     // We show a chip only when there are more than one chip. This occurs when
     // there is no tab opened and only one of the AIM features are enabled.
     // This branch ensures that no chip is displayed by returning an empty list.

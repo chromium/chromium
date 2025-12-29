@@ -597,6 +597,34 @@ TEST_F(ActionChipsHandlerStaticChipsTest,
   EXPECT_THAT(actual_chips, IsEmpty());
 }
 
+TEST_F(ActionChipsHandlerStaticChipsTest,
+       StartActionChipsRetrievalAllowsOneChipsForRowUI) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowSimplificationUIParam.name, "true"}});
+  std::vector<ActionChipPtr> actual_chips;
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnActionChipsChanged(_))
+      .WillOnce(
+          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
+            actual_chips = std::move(action_chips);
+            run_loop.Quit();
+          });
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [](base::optional_ref<const tabs::TabInterface>,
+             base::OnceCallback<void(
+                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+            std::vector<ActionChipPtr> chips;
+            chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
+            std::move(callback).Run(std::move(chips));
+          });
+  handler().StartActionChipsRetrieval();
+  run_loop.Run();
+  EXPECT_FALSE(actual_chips.empty());
+}
+
 TEST_F(ActionChipsHandlerTest, DiscardWebContentsDoesNotCrash) {
   // Discard the NTP. This would trigger a crash in
   // ActionChipsHandler::OnTabStripModelChanged if the kReplaced event is not
