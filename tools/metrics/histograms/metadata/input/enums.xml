@@ -653,7 +653,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="SquareBracketMiddleDot"/>
 </enum>
 
-<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese_prefs_constants.h:jp_settings_hist_enums)-->
+<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese_settings.h:jp_settings_hist_enums)-->
 
 <enum name="KoreanAction">
   <summary>Actions that are available on the Korean IME.</summary>
