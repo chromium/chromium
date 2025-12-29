@@ -293,15 +293,10 @@ ComposeboxQueryController::ComposeboxQueryController(
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       contextual_tasks::ShouldForceContextIdMigration()) {
     enable_multi_context_input_flow_ = true;
-    use_separate_request_ids_for_multi_context_viewport_images_ = true;
+    use_separate_request_ids_for_multi_context_viewport_images_ = false;
     enable_context_id_migration_ = true;
   }
 
-  // The context id migration requires that viewport images use a separate
-  // request id, so this flag should be enabled if the context id migration is
-  // enabled.
-  DCHECK(!enable_context_id_migration_ ||
-         use_separate_request_ids_for_multi_context_viewport_images_);
   attach_page_title_and_url_to_suggest_requests_ =
       feature_params->attach_page_title_and_url_to_suggest_requests;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
@@ -402,10 +397,15 @@ void ComposeboxQueryController::CreateSearchUrl(
         // TODO(crbug.com/462509148): Determine how to support interaction
         // requests for multi-context input flow.
         if (search_url_request_info->lens_overlay_selection_type.has_value()) {
+          auto interaction_request_id = request_id_generator_.GetNextRequestId(
+              lens::RequestIdUpdateMode::kInteractionRequest,
+              last_active_file->request_id.media_type(),
+              enable_context_id_migration_
+                  ? std::make_optional<int64_t>(
+                        last_active_file->GetContextId())
+                  : std::nullopt);
           SendInteractionRequest(
-              request_id_generator_.GetNextRequestId(
-                  lens::RequestIdUpdateMode::kInteractionRequest,
-                  last_active_file->request_id.media_type()),
+              std::move(interaction_request_id),
               search_url_request_info->query_text,
               search_url_request_info->image_crop,
               search_url_request_info->client_logs,
@@ -417,12 +417,20 @@ void ComposeboxQueryController::CreateSearchUrl(
           interaction_contextual_input->mutable_request_id()->CopyFrom(
               *latest_interaction_request_data_->request_id_);
 
-          auto search_url_request_id = request_id_generator_.GetNextRequestId(
-              lens::RequestIdUpdateMode::kSearchUrl,
-              last_active_file->request_id.media_type());
+          std::unique_ptr<lens::LensOverlayRequestId> search_url_request_id;
+          lens::LensOverlayRequestId* request_id_for_vsrid;
+          if (enable_context_id_migration_) {
+            request_id_for_vsrid =
+                latest_interaction_request_data_->request_id_.get();
+          } else {
+            search_url_request_id = request_id_generator_.GetNextRequestId(
+                lens::RequestIdUpdateMode::kSearchUrl,
+                last_active_file->request_id.media_type());
+            request_id_for_vsrid = search_url_request_id.get();
+          }
           std::string serialized_request_id;
           CHECK(
-              search_url_request_id->SerializeToString(&serialized_request_id));
+              request_id_for_vsrid->SerializeToString(&serialized_request_id));
           std::string encoded_request_id;
           base::Base64UrlEncode(serialized_request_id,
                                 base::Base64UrlEncodePolicy::OMIT_PADDING,
@@ -611,7 +619,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
                              : RandInt64();
     current_file_info.request_id =
         *request_id_generator_
-             .GetRequestIdWithMultiContextId(
+             .GetNextRequestId(
+                 lens::RequestIdUpdateMode::kMultiContextUploadRequest,
                  lens::MimeTypeToMediaType(current_file_info.mime_type,
                                            use_has_viewport_media_type),
                  context_id)
