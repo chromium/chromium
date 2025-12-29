@@ -121,6 +121,30 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android && !is_fuchsia) {
+    sources += [ "search_content_sharing_policy_handler_unittest.cc" ]
+    deps += [
+      ":policy_handler",
+      ":prefs",
+    ]
+  }
+}
+
+if (!is_android && !is_fuchsia) {
+  source_set("policy_handler") {
+    sources = [
+      "search_content_sharing_policy_handler.cc",
+      "search_content_sharing_policy_handler.h",
+    ]
+
+    deps = [
+      ":prefs",
+      "//components/policy:generated",
+      "//components/policy/core/browser",
+      "//components/prefs",
+    ]
+  }
 }
 
 source_set("prefs") {

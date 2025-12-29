@@ -29,15 +29,23 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
   // Struct containing the necessary info to set the default value of each
   // covered GenAI policy.
   struct POLICY_EXPORT GenAiPolicyDetails {
-    explicit GenAiPolicyDetails(std::string name, std::string pref_path);
-    explicit GenAiPolicyDetails(std::string name,
-                                std::string pref_path,
-                                PolicyValueToPrefMap policy_value_to_pref_map);
+    GenAiPolicyDetails(std::string name, std::string pref_path);
+    GenAiPolicyDetails(std::string name,
+                       std::string pref_path,
+                       PolicyValueToPrefMap policy_value_to_pref_map);
+    GenAiPolicyDetails(std::string name,
+                       std::string pref_path,
+                       std::string overridden_name,
+                       PolicyValueToPrefMap policy_value_to_pref_map);
     GenAiPolicyDetails(const GenAiPolicyDetails& other);
     ~GenAiPolicyDetails();
 
     std::string name;
     std::string pref_path;
+
+    // Another policy that can also set `pref_path` and has higher priority.
+    std::optional<std::string> overridden_name;
+
     // Optional map to translate the integer value from `GenAiDefaultSettings`
     // policy to a specific integer value for this policy's preference. If an
     // entry for the `GenAiDefaultSettings` value doesn't exist in this map,
@@ -54,9 +62,9 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
   ~GenAiDefaultSettingsPolicyHandler() override;
 
   // policy::TypeCheckingPolicyHandler:
-  bool CheckPolicySettings(const policy::PolicyMap& policies,
-                           policy::PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const policy::PolicyMap& policies,
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
  private:

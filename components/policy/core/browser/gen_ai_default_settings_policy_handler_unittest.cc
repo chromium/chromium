@@ -340,4 +340,63 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest,
   EXPECT_EQ(0, pref_value);
 }
 
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, OverriddenPolicyIsSet) {
+  // Add a new policy that is overridden by kGenAiPolicy1Name.
+  // This means if kGenAiPolicy1Name is set, then kOverriddenPolicyName's
+  // default should NOT be applied by GenAiDefaultSettingsPolicyHandler.
+  constexpr char kOverriddenPolicyName[] = "OverriddenPolicy";
+  constexpr char kOverriddenPolicyPrefPath[] = "OverriddenPolicyPrefPath";
+
+  GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails legacy_policy(
+      kOverriddenPolicyName, kOverriddenPolicyPrefPath,
+      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap());
+  // kGenAiPolicy1Name overrides this
+  legacy_policy.overridden_name = kGenAiPolicy1Name;
+  std::vector<policy::GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      new_gen_ai_policies;
+  new_gen_ai_policies.emplace_back(legacy_policy);
+  new_gen_ai_policies.emplace_back(kGenAiPolicy1Name, kGenAiPolicy1PrefPath);
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(new_gen_ai_policies));
+
+  // Set the GenAiDefaultSettings policy.
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  ApplyPolicies();
+
+  int pref_value;
+  // Since kGenAiPolicy1Name (the overriding policy) is set,
+  // GenAiDefaultSettings should NOT set the pref for kOverriddenPolicyName.
+  EXPECT_FALSE(prefs_.GetInteger(kOverriddenPolicyPrefPath, &pref_value));
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, OverriddenPolicyIsNotSet) {
+  // Add a new policy that is overridden by kGenAiPolicy1Name.
+  // This means if kGenAiPolicy1Name is set, then kOverriddenPolicyName's
+  // default should NOT be applied by GenAiDefaultSettingsPolicyHandler.
+  constexpr char kOverriddenPolicyName[] = "OverriddenPolicy";
+  constexpr char kOverriddenPolicyPrefPath[] = "OverriddenPolicyPrefPath";
+
+  GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails legacy_policy(
+      kOverriddenPolicyName, kOverriddenPolicyPrefPath,
+      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap());
+  // kGenAiPolicy4Name overrides this
+  legacy_policy.overridden_name = kGenAiPolicy4Name;
+  std::vector<policy::GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      new_gen_ai_policies;
+  new_gen_ai_policies.emplace_back(legacy_policy);
+  new_gen_ai_policies.emplace_back(kGenAiPolicy4Name, kGenAiPolicy4PrefPath);
+  handler_ = std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+      std::move(new_gen_ai_policies));
+
+  // Set the GenAiDefaultSettings policy.
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  ApplyPolicies();
+
+  int pref_value;
+  // Since kGenAiPolicy4PrefPath (the overriding policy) is not set,
+  // GenAiDefaultSettings should set the pref for kOverriddenPolicyName.
+  EXPECT_TRUE(prefs_.GetInteger(kOverriddenPolicyPrefPath, &pref_value));
+  EXPECT_EQ(kDefaultValue, pref_value);
+}
+
 }  // namespace policy

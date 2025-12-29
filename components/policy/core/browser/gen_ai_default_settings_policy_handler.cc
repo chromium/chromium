@@ -51,6 +51,12 @@ std::optional<int> GetValueToApply(
     return std::nullopt;
   }
 
+  // Don't apply the default if there is an overriding policy and it is set.
+  // This should be handled by the legacy policy handler.
+  if (policy.overridden_name && policies.Get(policy.overridden_name.value())) {
+    return std::nullopt;
+  }
+
   // If no map exists, use the default value directly.
   if (policy.policy_value_to_pref_map.empty()) {
     return default_int_value;
@@ -86,6 +92,16 @@ GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails::GenAiPolicyDetails(
     PolicyValueToPrefMap policy_value_to_pref_map)
     : name(std::move(name)),
       pref_path(std::move(pref_path)),
+      policy_value_to_pref_map(std::move(policy_value_to_pref_map)) {}
+
+GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails::GenAiPolicyDetails(
+    std::string name,
+    std::string pref_path,
+    std::string overriden_name,
+    PolicyValueToPrefMap policy_value_to_pref_map)
+    : name(std::move(name)),
+      pref_path(std::move(pref_path)),
+      overridden_name(std::move(overriden_name)),
       policy_value_to_pref_map(std::move(policy_value_to_pref_map)) {}
 
 GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails::GenAiPolicyDetails(
@@ -182,6 +198,7 @@ void GenAiDefaultSettingsPolicyHandler::ApplyPolicySettings(
 
   int default_int_value = default_value->GetInt();
   for (const auto& policy : gen_ai_policies_) {
+    // Get the value to apply from the policy and its overriding policy.
     std::optional<int> value_to_apply =
         GetValueToApply(policy, policies, default_int_value);
     if (value_to_apply.has_value()) {
@@ -203,8 +220,11 @@ GenAiDefaultSettingsPolicyHandler::GetControlledGenAiPolicies(
       continue;
     }
 
-    // Add all covered policies without a set policy value.
-    if (!policies.Get(policy.name)) {
+    // Add all covered policies without a set policy value. If it has a
+    // overridden policy, check whether the overridden policy is set too.
+    if (!policies.Get(policy.name) &&
+        (!policy.overridden_name ||
+         !policies.Get(policy.overridden_name.value()))) {
       controlled_gen_ai_policies.push_back(policy);
     }
   }

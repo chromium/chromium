@@ -4510,6 +4510,7 @@ static_library("browser") {
       "//components/commerce/core:proto",
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
+      "//components/contextual_search:policy_handler",
       "//components/endpoint_fetcher",
       "//components/enterprise/buildflags",
       "//components/feedback",
