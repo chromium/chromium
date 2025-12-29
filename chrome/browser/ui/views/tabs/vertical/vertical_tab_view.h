@@ -45,18 +45,7 @@ class VerticalTabView : public views::View,
 
   void OnTabDragOver();
 
-  TabIcon* icon_for_testing() { return icon_; }
-  AlertIndicatorButton* alert_indicator_for_testing() {
-    return alert_indicator_;
-  }
   TabCloseButton* close_button_for_testing() { return close_button_; }
-
-  void OnMouseEnteredForTesting(const ui::MouseEvent& event) {
-    OnMouseEntered(event);
-  }
-  void OnMouseExitedForTesting(const ui::MouseEvent& event) {
-    OnMouseExited(event);
-  }
 
  private:
   // views::View

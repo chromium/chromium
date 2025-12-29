@@ -26,8 +26,11 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/widget_utils.h"
 
 class TestWebContentsObserver : public content::WebContentsObserver {
  public:
@@ -74,18 +77,11 @@ class VerticalTabViewTest
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
-  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
-  TabIcon* icon =
-      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
-          ->icon_for_testing();
+  auto* icon = BrowserElementsViews::From(browser())->GetViewAs<TabIcon>(
+      kTabIconElementId);
 
   // Expect the favicon to be in the active state and not be loading initially.
   EXPECT_TRUE(icon->GetActiveStateForTesting());
@@ -118,11 +114,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
   GURL initial_url = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
   views::Label* title =
       BrowserElementsViews::From(browser())->GetViewAs<views::Label>(
           kVerticalTabTitleElementId);
@@ -138,18 +129,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
-  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
-  AlertIndicatorButton* alert_indicator =
-      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
-          ->alert_indicator_for_testing();
+  auto* alert_indicator =
+      BrowserElementsViews::From(browser())->GetViewAs<AlertIndicatorButton>(
+          kTabAlertIndicatorButtonElementId);
 
   // The alert indicator should not be visible initially.
   ASSERT_FALSE(alert_indicator->GetVisible());
@@ -200,18 +184,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
 // This test doesn't need the EnableTabMuting feature flag because it directly
 // calls NotifyClick() on the button controller.
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
-  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
-  AlertIndicatorButton* alert_indicator =
-      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
-          ->alert_indicator_for_testing();
+  auto* alert_indicator =
+      BrowserElementsViews::From(browser())->GetViewAs<AlertIndicatorButton>(
+          kTabAlertIndicatorButtonElementId);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -241,15 +218,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
-  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
+  TabCollectionNode* tab_node = root_node()->children()[1]->children()[0].get();
   VerticalTabView* tab_view =
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
   TabCloseButton* close_button = tab_view->close_button_for_testing();
@@ -264,18 +235,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(close_button->GetVisible());
 
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
+      browser()->GetBrowserView().GetNativeWindow());
+
   // After the mouse enters the tab, the close button should be showing.
-  ui::MouseEvent mouse_entered_event(ui::EventType::kMouseEntered, gfx::Point(),
-                                     gfx::Point(), base::TimeTicks(),
-                                     ui::EF_NONE, ui::EF_NONE);
-  tab_view->OnMouseEnteredForTesting(mouse_entered_event);
+  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(close_button->GetVisible());
 
   // After the mouse exits the tab, the close button should be hidden.
-  ui::MouseEvent mouse_exited_event(ui::EventType::kMouseExited, gfx::Point(),
-                                    gfx::Point(), base::TimeTicks(),
-                                    ui::EF_NONE, ui::EF_NONE);
-  tab_view->OnMouseExitedForTesting(mouse_exited_event);
+  event_generator.MoveMouseTo(gfx::Point());
   EXPECT_FALSE(close_button->GetVisible());
 }
 
@@ -285,16 +254,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonPressed) {
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-  root_node.SetController(vertical_tab_strip_controller());
-
   // The second tab is the second child of the unpinned collection which is the
   // second child of the root node.
-  TabCollectionNode* tab_node = root_node.children()[1]->children()[1].get();
+  TabCollectionNode* tab_node = root_node()->children()[1]->children()[1].get();
   VerticalTabView* tab_view =
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
   TabCloseButton* close_button = tab_view->close_button_for_testing();
@@ -321,8 +283,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsHideCloseButton) {
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
 
   // The favicon should be visible but the close button is not.
-  EXPECT_TRUE(tab->icon_for_testing()->GetVisible());
-  EXPECT_FALSE(tab->alert_indicator_for_testing()->GetVisible());
+  EXPECT_TRUE(tab->GetViewByElementId(kTabIconElementId)->GetVisible());
+  EXPECT_FALSE(
+      tab->GetViewByElementId(kTabAlertIndicatorButtonElementId)->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsRenderBorder) {

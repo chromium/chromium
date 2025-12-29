@@ -100,6 +100,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gmock",
+    "//ui/events:test_support",
   ]
 }
 
