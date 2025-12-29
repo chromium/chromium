@@ -35,6 +35,7 @@ constexpr int kTabVerticalPadding = 2;
 constexpr int kGroupLineWidth = 2;
 constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
+constexpr int kGroupHeaderVerticalMargin = 4;
 constexpr int kTabLeadingPadding = 10;
 
 const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
@@ -71,7 +72,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;
   int width = 0;
-  int height = 0;
+  int height = kGroupHeaderVerticalMargin;
 
   gfx::Rect header_bounds;
   header_bounds.set_y(height);
@@ -83,7 +84,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   }
   layouts.child_layouts.emplace_back(
       group_header_.get(), group_header_->GetVisible(), header_bounds);
-  height += header_bounds.height() + kTabVerticalPadding;
+  height +=
+      header_bounds.height() + kGroupHeaderVerticalMargin + kTabVerticalPadding;
   width = std::max(width, header_bounds.width());
 
   gfx::Rect group_line_bounds = gfx::Rect(
@@ -117,8 +119,10 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 
   bool is_collapsed =
       GetTabGroupFromNode(collection_node_)->visual_data()->is_collapsed();
-  layouts.host_size =
-      gfx::Size(width, is_collapsed ? header_bounds.height() : height);
+  layouts.host_size = gfx::Size(
+      width, is_collapsed
+                 ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
+                 : height);
   return layouts;
 }
 

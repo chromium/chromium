@@ -15,6 +15,7 @@ class TabGroupVisualData;
 }
 
 namespace views {
+class ImageView;
 class Label;
 }
 
@@ -41,8 +42,11 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView {
   void OnDataChanged(
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
 
+  views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }
+
  private:
   const raw_ptr<views::Label> group_header_label_ = nullptr;
+  const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
 
   base::RepeatingCallback<void(ToggleTabGroupCollapsedStateOrigin)>
       toggle_collapsed_state_callback_;

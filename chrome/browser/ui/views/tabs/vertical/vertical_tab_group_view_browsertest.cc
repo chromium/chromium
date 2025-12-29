@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 
 #include "base/test/run_until.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -15,6 +16,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 
@@ -88,9 +90,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // The grouped tab is the first child of the group collection, which is the
   // second child of the unpinned collection which is the second child of the
   // root node.
-  TabCollectionNode* group_node =
-      root_node()->children()[1]->children()[1].get();
-  TabCollectionNode* tab_node = group_node->children()[0].get();
+  TabCollectionNode* tab_node =
+      root_node()->children()[1]->children()[1]->children()[0].get();
   VerticalTabView* tab =
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
   // Verify the tab in the group is visible.
@@ -100,16 +101,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // visibility of the tab in the group.
   ClickTabGroupHeaderToToggleCollapse();
   EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
-  VerticalTabGroupView* group =
-      static_cast<VerticalTabGroupView*>(group_node->get_view_for_testing());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return group->bounds().height() ==
-           group->group_header_for_testing()->bounds().height();
-  }));
 
   // Uncollapse the tab group and verify the tab in the group is visible.
   ClickTabGroupHeaderToToggleCollapse();
   EXPECT_TRUE(base::test::RunUntil([&]() { return tab->GetVisible(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
+                       HeaderCollapseIconUpdatesWithCollapseState) {
+  CreateInactiveTabGroup();
+
+  // The group is the second child of the unpinned collection which is the
+  // second child of the root node. Verify the collapse icon is correct.
+  TabCollectionNode* group_node =
+      root_node()->children()[1]->children()[1].get();
+  VerticalTabGroupHeaderView* group_header =
+      static_cast<VerticalTabGroupView*>(group_node->get_view_for_testing())
+          ->group_header_for_testing();
+  EXPECT_EQ(group_header->collapse_icon_for_testing()
+                ->GetImageModel()
+                .GetVectorIcon()
+                .vector_icon()
+                ->name,
+            kKeyboardArrowUpChromeRefreshIcon.name);
+
+  // Collapse the tab group and verify the collapse icon is correctly updated.
+  ClickTabGroupHeaderToToggleCollapse();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return group_header->collapse_icon_for_testing()
+               ->GetImageModel()
+               .GetVectorIcon()
+               .vector_icon()
+               ->name == kKeyboardArrowDownChromeRefreshIcon.name;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
