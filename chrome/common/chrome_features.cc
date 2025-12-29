@@ -945,6 +945,11 @@ BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers{
     &kGlicWebActuationSetting, "allowed_tiers", ""};
 
+// If enabled, show web actuation settings toggle if
+// kGlicWebActuationAllowedTiers is populated.
+BASE_FEATURE(kGlicWebActuationSettingsToggle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicMetricsSession, base::FEATURE_ENABLED_BY_DEFAULT);
 // The duration of inactivity after which a session is considered ended.
 const base::FeatureParam<base::TimeDelta> kGlicMetricsSessionInactivityTimeout{

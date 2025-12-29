@@ -771,7 +771,10 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   const base::flat_set<int32_t>& allowed_tiers =
       actor::ActorPolicyChecker::GetActorEligibleTiers();
 
-  if (!allowed_tiers.empty()) {
+  // If tiers are populated, ensure the UI visibility flag is also enabled
+  // before showing the toggle.
+  if (!allowed_tiers.empty() &&
+      base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(profile);
     CHECK(subscription_service);
@@ -779,7 +782,7 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
         subscription_service->GetAiSubscriptionTier());
   }
 
-  // If no specific tiers are allowlisted, show the toggle only if the user
+  // If no specific tiers are populated, show the toggle only if the user
   // has explicitly modified the preference before.
   const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
       glic::prefs::kGlicUserEnabledActuationOnWeb);
