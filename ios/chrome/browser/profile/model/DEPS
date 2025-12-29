@@ -98,6 +98,7 @@ specific_include_rules = {
     "+ios/chrome/browser/webauthn/model",
     "+ios/chrome/browser/webdata_services/model",
     "+ios/chrome/browser/image_fetcher/model",
+    "+ios/chrome/browser/intelligence/actuation/model",
     "+ios/chrome/browser/omnibox/model",
     "+ios/chrome/browser/aim/model",
     "+ios/chrome/browser/composebox/model",
