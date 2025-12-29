@@ -317,7 +317,8 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsBold) {
 
   const std::u16string kExpectedFullFooterText =
       u"Google uses information from the checkout page and other relevant data "
-      u"to offer these options. To hide pay later options, go to payment "
+      u"to offer these options. To hide pay later options in autofill, go to "
+      u"payment "
       u"settings.";
   const std::u16string kExpectedBoldAiText =
       u"Google uses information from the checkout page and other relevant data "
@@ -342,7 +343,8 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
 
   const std::u16string kExpectedFullFooterText =
       u"Google uses information from the checkout page and other relevant data "
-      u"to offer these options. To hide pay later options, go to payment "
+      u"to offer these options. To hide pay later options in autofill, go to "
+      u"payment "
       u"settings.";
   const std::u16string kLinkText = u"payment settings";
   const size_t kLinkOffset = kExpectedFullFooterText.find(kLinkText);
