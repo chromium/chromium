@@ -272,8 +272,8 @@ void PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel(
   VLOG(1) << "[PermissionsAI] OnSnapshotTakenForOnDeviceModel";
   PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
       model_data.model_type, snapshot_inquire_start_time,
-      /*success=*/!snapshot->isNull());
-  if (snapshot->isNull() || snapshot->drawsNothing()) {
+      /*success=*/snapshot != nullptr);
+  if (snapshot == nullptr || snapshot->drawsNothing()) {
     VLOG(1) << "[PermissionsAI] The page's snapshot is empty; skipping AivX "
                "on-device model execution.";
     return InquireServerModel(model_data.features,
