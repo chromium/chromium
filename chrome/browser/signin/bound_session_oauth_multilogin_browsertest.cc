@@ -533,9 +533,22 @@ INSTANTIATE_TEST_SUITE_P(,
                                              : "PrototypeServerResponse";
                          });
 
+struct PersistentErrorTestParam {
+  OAuthMultiloginResponseStatus oauth_multilogin_response_status =
+      OAuthMultiloginResponseStatus::kUnknownStatus;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  std::string test_suffix;
+};
+
 class BoundSessionOAuthMultiloginPersistentErrorTest
-    : public BoundSessionOAuthMultiloginPrototypeTest,
-      public testing::WithParamInterface<OAuthMultiloginResponseStatus> {};
+    : public BoundSessionOAuthMultiloginBaseTest,
+      public testing::WithParamInterface<PersistentErrorTestParam> {
+ public:
+  BoundSessionOAuthMultiloginPersistentErrorTest()
+      : BoundSessionOAuthMultiloginBaseTest(GetParam().enabled_features,
+                                            GetParam().disabled_features) {}
+};
 
 IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
                        RefreshTokensBoundToDifferentKeys) {
@@ -576,11 +589,12 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
                                           refresh_token_2);
   ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
 
-  // This makes sure that OAML will return `INVALID_INPUT` error. At the same
+  // This makes sure that OAML will return a given error. At the same
   // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
   // it simulates similar scenario to cookies being cleared.
   FakeGaia::Configuration config;
-  config.oauth_multilogin_response_status = GetParam();
+  config.oauth_multilogin_response_status =
+      GetParam().oauth_multilogin_response_status;
   fake_gaia().SetConfiguration(config);
 
   signin::TestIdentityManagerObserver identity_manager_observer(
@@ -656,11 +670,12 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
                                           refresh_token_2);
   ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
 
-  // This makes sure that OAML will return `INVALID_INPUT` error. At the same
+  // This makes sure that OAML will return a given error. At the same
   // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
   // it simulates similar scenario to cookies being cleared.
   FakeGaia::Configuration config;
-  config.oauth_multilogin_response_status = GetParam();
+  config.oauth_multilogin_response_status =
+      GetParam().oauth_multilogin_response_status;
   fake_gaia().SetConfiguration(config);
 
   TestAccountReconcilorObserver observer(
@@ -690,10 +705,35 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   EXPECT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         BoundSessionOAuthMultiloginPersistentErrorTest,
-                         Values(OAuthMultiloginResponseStatus::kInvalidInput,
-                                OAuthMultiloginResponseStatus::kError));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    BoundSessionOAuthMultiloginPersistentErrorTest,
+    Values(
+        PersistentErrorTestParam{
+            .oauth_multilogin_response_status =
+                OAuthMultiloginResponseStatus::kInvalidInput,
+            .enabled_features = GetPrototypeFeatures(),
+            .disabled_features = GetStandardFeatures(),
+            .test_suffix = "PrototypeInvalidInput"},
+        PersistentErrorTestParam{.oauth_multilogin_response_status =
+                                     OAuthMultiloginResponseStatus::kError,
+                                 .enabled_features = GetPrototypeFeatures(),
+                                 .disabled_features = GetStandardFeatures(),
+                                 .test_suffix = "PrototypeError"},
+        PersistentErrorTestParam{
+            .oauth_multilogin_response_status =
+                OAuthMultiloginResponseStatus::kInvalidInput,
+            .enabled_features = GetStandardFeatures(),
+            .disabled_features = GetPrototypeFeatures(),
+            .test_suffix = "StandardInvalidInput"},
+        PersistentErrorTestParam{.oauth_multilogin_response_status =
+                                     OAuthMultiloginResponseStatus::kError,
+                                 .enabled_features = GetStandardFeatures(),
+                                 .disabled_features = GetPrototypeFeatures(),
+                                 .test_suffix = "StandardError"}),
+    [](const testing::TestParamInfo<PersistentErrorTestParam>& info) {
+      return info.param.test_suffix;
+    });
 
 class BoundSessionOAuthMultiloginStandardTest
     : public BoundSessionOAuthMultiloginBaseTest {
