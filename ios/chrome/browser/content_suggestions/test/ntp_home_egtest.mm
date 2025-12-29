@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -388,10 +389,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[[EarlGrey selectElementWithMatcher:
-                  base::ios::IsRunningOnIOS26OrLater()
-                      ? chrome_test_util::NavigationBarCloseButton()
-                      : chrome_test_util::NavigationBarDoneButton()]
+
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kTableViewNavigationDismissButtonId)]
       inRoot:grey_kindOfClassName(@"UINavigationBar")]
       performAction:grey_tap()];
 
