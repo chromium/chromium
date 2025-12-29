@@ -37,7 +37,8 @@ namespace ui {
 
 namespace {
 API_AVAILABLE(macos(14.0))
-ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
+ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link,
+                                             base::TimeDelta min_interval) {
   // The time interval that represents when the last frame displayed.
   base::TimeTicks callback_time =
       base::TimeTicks() + base::Seconds(display_link.timestamp);
@@ -48,10 +49,12 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
   bool times_valid = true;
   base::TimeDelta interval = base::Seconds(1) * display_link.duration;
 
-  // Sanity check.
+  // Sanity check. Use default values if needed.
   if (callback_time.is_null() || target_time.is_null() ||
       !interval.is_positive()) {
-    times_valid = false;
+    interval = min_interval;
+    callback_time = base::TimeTicks::Now();
+    target_time = callback_time + interval;
   }
 
   ui::VSyncParamsMac params;
@@ -90,7 +93,7 @@ void CADisplayLinkMac::Step() {
     consecutive_vsyncs_with_no_callbacks_ = 0;
 
     ui::VSyncParamsMac params =
-        ComputeVSyncParametersMac(objc_state_->display_link);
+        ComputeVSyncParametersMac(objc_state_->display_link, min_interval_);
 
     // UnregisterCallback() might be called while running the callbacks.
     vsync_callback_->callback_for_displaylink_thread_.Run(params);
