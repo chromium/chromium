@@ -131,7 +131,34 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-using BMPSuiteEntry = std::tuple<std::string, std::string>;
+class BMPSuiteEntry {
+ public:
+  // `entry_dir` and `entry_bmp` are primarily used to locate the input test
+  // file (and also to construct Skia Gold test name) - the file will be read
+  // from:
+  // `third_party/blink/web_tests/images/bmp-suite/<entry_dir>/<entry_bmp>.bmp`
+  //
+  // `revision` is a Skia Gold revision number, which needs to be increased
+  // every time test expectations change - see also documentation of
+  // `PositiveIfOnlyImageAlgorithm` used by `BMPImageDecoderTest`:
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/base/test/skia_gold_matching_algorithm.h;l=97-133;drc=31a129ff9b513950f7f96f7fba885e8341f52158
+  BMPSuiteEntry(std::string entry_dir,
+                std::string entry_bmp,
+                std::string revision = "rev0")
+      : entry_dir_(std::move(entry_dir)),
+        entry_bmp_(std::move(entry_bmp)),
+        revision_(std::move(revision)) {}
+
+  const std::string& entry_dir() const { return entry_dir_; }
+  const std::string& entry_bmp() const { return entry_bmp_; }
+  const std::string& revision() const { return revision_; }
+
+ private:
+  std::string entry_dir_;
+  std::string entry_bmp_;
+  std::string revision_;
+};
+
 class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
 
 #if BUILDFLAG(IS_LINUX)
@@ -142,7 +169,8 @@ class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
 // TODO(crbug.com/422362214): Re-enable once flakiness is addressed.
 TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
   // Load the BMP file under test.
-  const auto& [entry_dir, entry_bmp] = GetParam();
+  const std::string& entry_dir = GetParam().entry_dir();
+  const std::string& entry_bmp = GetParam().entry_bmp();
   std::string bmp_path = base::StringPrintf(
       "/images/bmp-suite/%s/%s.bmp", entry_dir.c_str(), entry_bmp.c_str());
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(bmp_path.c_str());
@@ -181,7 +209,8 @@ TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
   ui::test::PositiveIfOnlyImageAlgorithm positive_if_exact_image_only;
   std::string golden_name = ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
       "BMPImageDecoderTest", "VerifyBMPSuite",
-      base::StringPrintf("%s_%s.rev0", entry_dir.c_str(), entry_bmp.c_str()));
+      base::StringPrintf("%s_%s.%s", entry_dir.c_str(), entry_bmp.c_str(),
+                         GetParam().revision()));
   EXPECT_TRUE(skia_gold->CompareScreenshot(golden_name, *result_image,
                                            &positive_if_exact_image_only))
       << bmp_path;
@@ -248,8 +277,8 @@ INSTANTIATE_TEST_SUITE_P(
         //           {"questionable", "rgb24prof"},  Omitted--not public domain.
         //           {"questionable", "rgb24prof2"},    "       "    "      "
         //           {"questionable", "rgb24lprof"},    "       "    "      "
-        BMPSuiteEntry{"questionable", "rgb24jpeg"},
-        BMPSuiteEntry{"questionable", "rgb24png"},
+        BMPSuiteEntry{"questionable", "rgb24jpeg", "rev1"},
+        BMPSuiteEntry{"questionable", "rgb24png", "rev1"},
         BMPSuiteEntry{"questionable", "rgb32h52"},
         BMPSuiteEntry{"questionable", "rgb32-xbgr"},
         BMPSuiteEntry{"questionable", "rgb32fakealpha"},
