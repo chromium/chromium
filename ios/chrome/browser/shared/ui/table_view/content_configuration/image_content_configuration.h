@@ -27,6 +27,9 @@
 // The tint color for the image.
 @property(nonatomic, strong) UIColor* imageTintColor;
 
+// Corner radius for the image. Default is 0.
+@property(nonatomic, assign) CGFloat imageCornerRadius;
+
 // Accessibility identifier of the image view, to be used in tests.
 @property(nonatomic, copy) NSString* accessibilityID;
 
