@@ -1256,7 +1256,6 @@ void LensOverlayController::IssueLensRequest(
   lens_selection_type_ = selection_type;
   if (region_bytes) {
     initialization_data_->selected_region_bitmap_ = region_bytes.value();
-    lens_search_controller_->HandleThumbnailCreatedBitmap(region_bytes.value());
   } else {
     initialization_data_->selected_region_bitmap_.reset();
   }
@@ -1266,11 +1265,6 @@ void LensOverlayController::IssueLensRequest(
         query_start_time, region.Clone(), selection_type,
         initialization_data_->additional_search_query_params_, region_bytes,
         invocation_source_);
-  }
-
-  if (invocation_source_ ==
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
-    return;
   }
 
   MaybeOpenSidePanel();
@@ -1300,11 +1294,6 @@ void LensOverlayController::IssueMultimodalRequest(
         query_start_time, std::move(region), text_query, selection_type,
         initialization_data_->additional_search_query_params_, region_bitmap,
         invocation_source_);
-  }
-
-  if (invocation_source_ ==
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
-    return;
   }
 }
 
@@ -2187,11 +2176,23 @@ void LensOverlayController::AddBackgroundBlur() {
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
+  if (lens_search_controller_->should_route_to_contextual_tasks()) {
+    lens_search_controller_->CloseLensAsync(
+        lens::LensOverlayDismissalSource::kOverlayCloseButton);
+    return;
+  }
+
   lens_search_controller_->HideOverlay(
       lens::LensOverlayDismissalSource::kOverlayCloseButton);
 }
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
+  if (lens_search_controller_->should_route_to_contextual_tasks()) {
+    lens_search_controller_->CloseLensAsync(
+        lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
+    return;
+  }
+
   lens_search_controller_->HideOverlay(
       lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
 }
@@ -2224,23 +2225,19 @@ void LensOverlayController::IssueLensRegionRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
   MaybeGrantLensOverlayPermissionsForSession();
-  SkBitmap region_bitmap = lens::CropBitmapToRegion(
-      initialization_data_->initial_screenshot_, region->Clone());
   IssueLensRequest(/*query_start_time=*/base::Time::Now(), std::move(region),
                    is_click ? lens::TAP_ON_EMPTY : lens::REGION_SEARCH,
-                   region_bitmap);
+                   std::nullopt);
 }
 
 void LensOverlayController::IssueLensObjectRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_mask_click) {
   MaybeGrantLensOverlayPermissionsForSession();
-  SkBitmap region_bitmap = lens::CropBitmapToRegion(
-      initialization_data_->initial_screenshot_, region->Clone());
   IssueLensRequest(
       /*query_start_time=*/base::Time::Now(), std::move(region),
       is_mask_click ? lens::TAP_ON_REGION_GLEAM : lens::TAP_ON_OBJECT,
-      region_bitmap);
+      std::nullopt);
 }
 
 void LensOverlayController::IssueTextSelectionRequest(const std::string& query,

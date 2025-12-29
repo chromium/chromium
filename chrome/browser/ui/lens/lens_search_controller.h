@@ -206,6 +206,11 @@ class LensSearchController {
   // Handles the creation of a new thumbnail from a bitmap.
   void HandleThumbnailCreatedBitmap(const SkBitmap& thumbnail);
 
+  // Callback used by the query flow router to pass the thumbnail bytes of a
+  // visual interaction request to the searchbox and composebox.
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes,
+                              const SkBitmap& region_bitmap);
+
   // Callback used by the query controller to notify the search controller of
   // the response of an interaction request. If this is a visual interaction
   // request, the response will contain the text container within that image.
@@ -217,6 +222,9 @@ class LensSearchController {
   // Sets a callback to be invoked when a thumbnail is created.
   void SetThumbnailCreatedCallback(
       base::RepeatingCallback<void(const std::string&)> callback);
+
+  // Whether the user has selected a region on the overlay.
+  bool HasRegionSelection();
 
   // Returns the weak pointer to this class.
   base::WeakPtr<LensSearchController> GetWeakPtr();
@@ -408,11 +416,6 @@ class LensSearchController {
   // Callback used by the query controller to notify the search controller when
   // the suggest inputs response is ready.
   void OnSuggestInputsReady();
-
-  // Callback used by the query controller to pass the thumbnail bytes of a
-  // visual interaction request to the searchbox and composebox.
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes,
-                              const SkBitmap& region_bitmap);
 
   // Callback used by the query controller to notify the search controller of
   // the progress of the page content upload.

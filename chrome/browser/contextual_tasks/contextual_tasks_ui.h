@@ -313,6 +313,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
     kShownInSidePanel,
   };
   WebUIState previous_web_ui_state_ = WebUIState::kUnknown;
+  bool was_ai_page_ = false;
 
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 

@@ -406,7 +406,11 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     pending_session_handle_->NotifySessionStarted();
   }
 
-  if (!overlay_tab_context_file_token_.has_value()) {
+  bool needs_overlay_tab_context =
+      lens_search_controller_->invocation_source() !=
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox;
+  if (needs_overlay_tab_context &&
+      !overlay_tab_context_file_token_.has_value()) {
     pending_search_url_request_ = std::move(request_info);
     // Upload the page context when creating a session handle.
     if (auto* controller =
@@ -427,10 +431,10 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
 void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
   // If the invocation source was the contextual tasks composebox, avoid
   // navigating the side panel URL to preserve the current
-  // conversation.
+  // conversation (the panel should already be open).
   if (lens_search_controller_->invocation_source() ==
       lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
-    url = GURL();
+    return;
   }
 
   // Show the side panel. This will create a new task and associate it with the
@@ -552,6 +556,9 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
         GetViewportScreenshot(), region->Clone(), region_bytes,
         std::move(client_logs));
     if (image_crop_and_bitmap) {
+      lens_search_controller_->HandleThumbnailCreated(
+          image_crop_and_bitmap->image_crop.image().image_content(),
+          image_crop_and_bitmap->region_bitmap);
       request_info->image_crop = std::move(image_crop_and_bitmap->image_crop);
     }
   }
