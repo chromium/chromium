@@ -286,6 +286,9 @@ const char kCacheIdentityListInChromeDescription[] =
     "Changes the implementation of the cache of the list of identities on "
     "device.";
 
+const char kChromeNextIaName[] = "ChromeNextIa";
+const char kChromeNextIaDescription[] = "Enables the chrome_next_ia feature.";
+
 const char kChromeStartupParametersAsyncName[] =
     "Enable the async chrome startup";
 const char kChromeStartupParametersAsyncDescription[] =

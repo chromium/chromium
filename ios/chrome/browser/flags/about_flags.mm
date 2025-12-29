@@ -2894,6 +2894,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"composebox-ipad", flag_descriptions::kComposeboxIpadName,
      flag_descriptions::kComposeboxIpadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxIpad)},
+    {"chrome-next-ia", flag_descriptions::kChromeNextIaName,
+     flag_descriptions::kChromeNextIaDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kChromeNextIa)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

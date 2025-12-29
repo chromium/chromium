@@ -1725,6 +1725,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "chrome-next-ia",
+    "owners": [ "gambard@chromium.org", "meridian@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "chrome-web-store-navigation-throttle",
     "owners": [ "marissashen@google.com", "chrome-web-store-consumer-eng-team@google.com"],
     "expiry_milestone": 150

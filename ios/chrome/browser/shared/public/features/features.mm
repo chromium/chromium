@@ -1210,3 +1210,9 @@ BASE_FEATURE(kComposeboxIpad, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsComposeboxIpadEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxIpad);
 }
+
+BASE_FEATURE(kChromeNextIa, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsChromeNextIaEnabled() {
+  return base::FeatureList::IsEnabled(kChromeNextIa);
+}

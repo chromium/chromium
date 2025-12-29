@@ -1134,4 +1134,10 @@ BASE_DECLARE_FEATURE(kComposeboxIpad);
 // Returns true if the ComposeboxIpad feature is enabled.
 bool IsComposeboxIpadEnabled();
 
+// Enables the ChromeNextIa feature.
+BASE_DECLARE_FEATURE(kChromeNextIa);
+
+// Returns true if the ChromeNextIa feature is enabled.
+bool IsChromeNextIaEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
