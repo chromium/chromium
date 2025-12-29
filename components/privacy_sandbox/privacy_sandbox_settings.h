@@ -163,11 +163,6 @@ class PrivacySandboxSettings : public KeyedService {
   // Determines whether Attribution Reporting API's transitional debug reporting
   // is allowable in a particular context. Note that
   // `IsAttributionReportingAllowed()` should be called prior to this.
-  // |can_bypass| indicates whether the result can be bypassed which is set to
-  // true when it's disallowed due to the cookie deprecation experiment.
-  //
-  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
-  // deprecation experiment.
   virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
