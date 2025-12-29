@@ -1843,14 +1843,21 @@ const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUI[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
 };
+const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
+    {"NtpNextShowSimplificationUIParam", "true"},
+    {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+    {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
+};
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
     {"- Show Static Text", kNtpNextShowStaticText,
      std::size(kNtpNextShowStaticText), nullptr},
     {"- Show Deep Dive Suggestions", kNtpNextShowDeepDiveSuggestions,
      std::size(kNtpNextShowDeepDiveSuggestions), nullptr},
-    {"- Show NTP Simplification", kNtpNextShowSimplificationUI,
+    {"- Show Row UI", kNtpNextShowSimplificationUI,
      std::size(kNtpNextShowSimplificationUI), nullptr},
+    {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
+     std::size(kNtpNextShowSimplificationUIWithDeepDive), nullptr},
 };
 
 const FeatureEntry::FeatureParam
