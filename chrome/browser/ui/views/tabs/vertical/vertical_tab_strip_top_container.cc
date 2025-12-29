@@ -69,8 +69,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     container_buttons.push_back(projects_button_);
   }
 
-  CHECK(!container_buttons.empty());
-
   if (state_controller_->IsCollapsed()) {
     // If the vertical tab strip is collapsed, then lay out the buttons
     // vertically in reverse order from top-to-bottom.

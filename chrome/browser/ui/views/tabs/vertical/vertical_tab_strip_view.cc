@@ -93,16 +93,20 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   y += pinned_container_bounds.height() + kRegionVerticalPadding;
 
   // Place the tabs separator if visible.
-  if (tabs_separator_->GetVisible()) {
+  const bool has_pinned_tabs = pinned_tabs_container_view_ &&
+                               !pinned_tabs_container_view_->children().empty();
+  if (is_collapsed_ && has_pinned_tabs) {
     int separator_width =
         size_bounds.width().value() - region_horizontal_padding;
     gfx::Rect tabs_separator_bounds(
         0, y, separator_width, tabs_separator_->GetPreferredSize().height());
-    layouts.child_layouts.emplace_back(tabs_separator_.get(),
-                                       tabs_separator_->GetVisible(),
+    layouts.child_layouts.emplace_back(tabs_separator_.get(), true,
                                        tabs_separator_bounds);
 
     y += tabs_separator_bounds.height() + kRegionVerticalPadding;
+  } else {
+    layouts.child_layouts.emplace_back(tabs_separator_.get(), false,
+                                       gfx::Rect());
   }
 
   // Place the unpinned container.
@@ -127,8 +131,9 @@ VerticalTabStripView::GetUnpinnedTabsContainer() {
 }
 
 void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
-  if (is_collapsed != tabs_separator_->GetVisible()) {
-    tabs_separator_->SetVisible(is_collapsed);
+  if (is_collapsed != is_collapsed_) {
+    is_collapsed_ = is_collapsed;
+    InvalidateLayout();
   }
 }
 

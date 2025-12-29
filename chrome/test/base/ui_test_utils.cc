@@ -1083,6 +1083,28 @@ void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
   }
 }
 
+ViewVisibilityWaiter::ViewVisibilityWaiter(views::View* observed_view,
+                                           bool expected_visible)
+    : view_(observed_view), expected_visible_(expected_visible) {
+  observation_.Observe(view_.get());
+}
+
+ViewVisibilityWaiter::~ViewVisibilityWaiter() = default;
+
+void ViewVisibilityWaiter::Wait() {
+  if (expected_visible_ != view_->GetVisible()) {
+    run_loop_.Run();
+  }
+}
+
+void ViewVisibilityWaiter::OnViewVisibilityChanged(views::View* observed_view,
+                                                   views::View* starting_view,
+                                                   bool visible) {
+  if (expected_visible_ == observed_view->GetVisible()) {
+    run_loop_.Quit();
+  }
+}
+
 namespace {
 
 class WebModalShowWaiter

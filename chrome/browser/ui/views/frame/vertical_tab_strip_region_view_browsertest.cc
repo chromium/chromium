@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -86,13 +87,18 @@ class VerticalTabStripRegionViewTest
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        SeparatorVisibilityChangesWithCollapsedState) {
+  auto* tabs_separator = region_view()->tabs_separator_for_testing();
+
   state_controller()->SetCollapsed(true);
   EXPECT_TRUE(state_controller()->IsCollapsed());
-  EXPECT_TRUE(region_view()->tabs_separator_for_testing()->GetVisible());
+  ui_test_utils::ViewVisibilityWaiter(tabs_separator, false).Wait();
+
+  AppendPinnedTab();
+  ui_test_utils::ViewVisibilityWaiter(tabs_separator, true).Wait();
 
   state_controller()->SetCollapsed(false);
   EXPECT_FALSE(state_controller()->IsCollapsed());
-  EXPECT_FALSE(region_view()->tabs_separator_for_testing()->GetVisible());
+  ui_test_utils::ViewVisibilityWaiter(tabs_separator, false).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {

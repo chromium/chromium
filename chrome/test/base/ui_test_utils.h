@@ -673,6 +673,30 @@ class ViewBoundsWaiter : public views::ViewObserver {
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
+// Used to wait for view to change visibility to expected value.
+class ViewVisibilityWaiter : public views::ViewObserver {
+ public:
+  explicit ViewVisibilityWaiter(views::View* observed_view,
+                                bool expected_visible);
+  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
+  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
+
+  ~ViewVisibilityWaiter() override;
+
+  void Wait();
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
+
+  raw_ptr<views::View> view_;
+  const bool expected_visible_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 }  // namespace ui_test_utils
 
 #endif  // CHROME_TEST_BASE_UI_TEST_UTILS_H_
