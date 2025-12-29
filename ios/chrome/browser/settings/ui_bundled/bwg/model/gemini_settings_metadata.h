@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
+typedef NS_ENUM(NSInteger, GeminiSettingsContext);
 
 // Metadata about a Gemini setting item.
 @interface GeminiSettingsMetadata : NSObject
