@@ -370,6 +370,14 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
   std::unique_ptr<const PermissionSet> granted_permissions =
       extension_prefs->GetGrantedPermissions(extension.id());
 
+  // GetGrantedPermissions() can return nullptr if no extension prefs exist
+  // for this extension (e.g., during installation/uninstallation race
+  // conditions or corrupted profile data). Use an empty PermissionSet in
+  // this case to avoid null pointer dereference.
+  if (!granted_permissions) {
+    granted_permissions = std::make_unique<PermissionSet>();
+  }
+
   const PermissionMessageProvider* message_provider =
       PermissionMessageProvider::Get();
 
