@@ -1845,7 +1845,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(windowId);
         if (selector == null) return null;
 
-        return selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(isIncognito);
+        return selector.getTabGroupModelFilter(isIncognito);
     }
 
     private @Nullable TabGroupSyncService getTabGroupSyncService(

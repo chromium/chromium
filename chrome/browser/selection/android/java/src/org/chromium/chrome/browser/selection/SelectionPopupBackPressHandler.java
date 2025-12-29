@@ -35,11 +35,10 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
     private @Nullable Tab mTab;
 
     /**
-     * @param tabModelSelector A {@link TabModelSelector} which can provide {@link
-     *     org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider}.
+     * @param tabModelSelector A {@link TabModelSelector}.
      */
     public SelectionPopupBackPressHandler(TabModelSelector tabModelSelector) {
-        tabModelSelector.getTabGroupModelFilterProvider().addTabGroupModelFilterObserver(this);
+        tabModelSelector.addTabGroupModelFilterObserver(this);
     }
 
     @Override

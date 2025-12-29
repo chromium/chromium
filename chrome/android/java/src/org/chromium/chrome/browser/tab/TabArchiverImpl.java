@@ -122,9 +122,7 @@ public class TabArchiverImpl implements TabArchiver {
                 });
 
         TabGroupModelFilter regularTabGroupModelFilter =
-                selectorToArchive
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
+                selectorToArchive.getTabGroupModelFilter(/* isIncognito= */ false);
         assert regularTabGroupModelFilter != null;
         TabModel model = regularTabGroupModelFilter.getTabModel();
 

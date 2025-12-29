@@ -439,9 +439,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mArchivedTabCountTracker.setupInternalObservers(model, mTabGroupSyncService);
 
         TabGroupModelFilter regularFilter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
+                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
         assumeNonNull(regularFilter);
         mHistoricalTabModelObserver = new HistoricalTabModelObserver(regularFilter);
     }
@@ -568,9 +566,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabGroupSyncService = assertNonNull(TabGroupSyncServiceFactory.getForProfile(mProfile));
         TabGroupModelFilter regularFilter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
+                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
         assumeNonNull(regularFilter);
         mTabArchiver =
                 new TabArchiverImpl(

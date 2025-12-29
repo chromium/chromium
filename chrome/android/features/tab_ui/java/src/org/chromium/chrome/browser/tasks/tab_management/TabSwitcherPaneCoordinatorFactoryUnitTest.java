@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -112,7 +111,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabContentManager mTabContentManager;
@@ -171,15 +169,12 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilterSupplier())
+        when(mTabModelSelector.getCurrentTabGroupModelFilterSupplier())
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.iterator()).thenAnswer(invocation -> List.of(tab).iterator());

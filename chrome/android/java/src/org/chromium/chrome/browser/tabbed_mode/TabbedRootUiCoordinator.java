@@ -1598,8 +1598,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mInstantMessageDelegateImpl =
                                     InstantMessageDelegateFactory.getForProfile(originalProfile);
                             TabGroupModelFilter tabGroupModelFilter =
-                                    selector.getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(/* isIncognito= */ false);
+                                    selector.getTabGroupModelFilter(/* isIncognito= */ false);
                             DataSharingNotificationManager dataSharingNotificationManager =
                                     new DataSharingNotificationManager(mActivity);
                             mInstantMessageDelegateImpl.attachWindow(
@@ -1622,10 +1621,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void openTabGroup(@Nullable Token tabGroupId) {
                 TabGroupModelFilter filter =
-                        mTabModelSelectorSupplier
-                                .get()
-                                .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(false);
+                        mTabModelSelectorSupplier.get().getTabGroupModelFilter(false);
                 if (!filter.tabGroupExists(tabGroupId)) {
                     // This method is only supposed to be called when the tab group is in the local
                     // model. However it's possible that something has recently changed. In which

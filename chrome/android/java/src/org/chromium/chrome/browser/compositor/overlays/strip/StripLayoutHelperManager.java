@@ -85,7 +85,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -765,9 +764,7 @@ public class StripLayoutHelperManager
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
         if (mTabModelSelector != null) {
-            mTabModelSelector
-                    .getTabGroupModelFilterProvider()
-                    .removeTabGroupModelFilterObserver(mTabModelObserver);
+            mTabModelSelector.removeTabGroupModelFilterObserver(mTabModelObserver);
 
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelectorTabModelObserver.destroy();
@@ -1426,9 +1423,7 @@ public class StripLayoutHelperManager
                         updateTitleForTab(tab);
                     }
                 };
-        modelSelector
-                .getTabGroupModelFilterProvider()
-                .addTabGroupModelFilterObserver(mTabModelObserver);
+        modelSelector.addTabGroupModelFilterObserver(mTabModelObserver);
 
         mTabModelSelector = modelSelector;
 
@@ -1461,10 +1456,10 @@ public class StripLayoutHelperManager
                 mTabModelSelector.getModel(true),
                 tabCreatorManager.getTabCreator(true),
                 tabStateInitialized);
-        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
-        mNormalHelper.setTabGroupModelFilter(assumeNonNull(provider.getTabGroupModelFilter(false)));
+        mNormalHelper.setTabGroupModelFilter(
+                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(false)));
         mIncognitoHelper.setTabGroupModelFilter(
-                assumeNonNull(provider.getTabGroupModelFilter(true)));
+                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(true)));
         tabModelSwitched(mTabModelSelector.isIncognitoSelected());
         // Manually called on initialization, since the logic in #tabModelSwitched only runs if the
         // Incognito state actually changes. Since mIncognito defaults to false, it may not actually

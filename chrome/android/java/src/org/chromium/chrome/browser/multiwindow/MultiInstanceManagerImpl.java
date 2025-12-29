@@ -567,8 +567,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     protected void cleanupSyncedTabGroups(TabModelSelector selector) {
-        TabGroupModelFilter filter =
-                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
 
         // Skip if there is no regular/normal windows.
         if (filter == null) return;

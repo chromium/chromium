@@ -323,7 +323,7 @@ public class ModelTrackingOrchestrator {
     }
 
     private @Nullable TabGroupModelFilter getFilter(boolean incognito) {
-        return mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(incognito);
+        return mTabModelSelector.getTabGroupModelFilter(incognito);
     }
 
     private static ProfileAndCollection getProfileAndCollection(

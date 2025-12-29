@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -69,7 +68,6 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
@@ -98,10 +96,7 @@ public class TabModelNotificationDotManagerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);

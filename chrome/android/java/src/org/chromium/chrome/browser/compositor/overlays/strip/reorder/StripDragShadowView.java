@@ -277,10 +277,7 @@ public class StripDragShadowView extends FrameLayout {
     public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
-        TabGroupModelFilter modelFilter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
+        TabGroupModelFilter modelFilter = mTabModelSelector.getTabGroupModelFilter(isIncognito);
         assumeNonNull(modelFilter);
 
         // Background color

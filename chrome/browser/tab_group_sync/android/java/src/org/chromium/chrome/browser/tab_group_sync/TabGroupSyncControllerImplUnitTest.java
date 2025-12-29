@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -72,12 +70,7 @@ public class TabGroupSyncControllerImplUnitTest {
     public void setUp() {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        TabGroupModelFilterProvider tabGroupModelFilterProvider =
-                mock(TabGroupModelFilterProvider.class);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(tabGroupModelFilterProvider);
-        when(tabGroupModelFilterProvider.getTabGroupModelFilter(false))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
         doNothing().when(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         mTabModel.setTabCreatorForTesting(mTabCreator);
         doNothing()

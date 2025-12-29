@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
@@ -70,7 +69,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabModel mNormalTabModel;
@@ -95,10 +93,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mCurrentTabSupplier.get()).thenReturn(mTab);
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 

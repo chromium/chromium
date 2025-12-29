@@ -282,11 +282,7 @@ public class TabGroupSyncIntegrationTestHelper {
     /** Returns the regular tab model filter. */
     public TabGroupModelFilter getTabGroupFilter() {
         return assertNonNull(
-                mSyncTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(false));
+                mSyncTestRule.getActivity().getTabModelSelector().getTabGroupModelFilter(false));
     }
 
     /** Gets the {@link SyncEntity} for a particular sync GUID. */
