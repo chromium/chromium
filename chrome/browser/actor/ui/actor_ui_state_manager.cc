@@ -160,18 +160,9 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kFailed:
     case ActorTask::State::kCancelled:
     case ActorTask::State::kFinished:
-      ui_tab_state = GetCompletedUiTabState();
-      // TODO(crbug.com/458391262) revisit or cleanup implementation here for
-      // m144.
-      NotifyActorTaskStopped(task_id);
       if (base::FeatureList::IsEnabled(
               features::kGlicActorUiGlobalTaskIndicator)) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&ActorUiStateManager::NotifyActorTaskRemoved,
-                           weak_factory_.GetWeakPtr(), task_id),
-            base::Seconds(
-                features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+        LOG(FATAL) << "Stopped states should be processed via StopTask event.";
       }
       break;
   }
@@ -247,6 +238,21 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
           [this](const TaskStateChanged& e) {
             this->OnActorTaskStateChange(e.task_id, e.state, e.title);
           },
+          [this](const StopTask& e) {
+            if (base::FeatureList::IsEnabled(
+                    features::kGlicActorUiGlobalTaskIndicator)) {
+              NotifyActorTaskStopped(e.task_id);
+
+              // After expiry, remove the task and notify observers.
+              base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                  FROM_HERE,
+                  base::BindOnce(&ActorUiStateManager::NotifyActorTaskRemoved,
+                                 weak_factory_.GetWeakPtr(), e.task_id),
+                  base::Seconds(
+                      features::kGlicActorUiCompletedTaskExpiryDelaySeconds
+                          .Get()));
+            }
+          },
           [](const StoppedActingOnTab& e) {
             auto* tab = e.tab_handle.Get();
             if (auto* tab_controller =
@@ -293,6 +299,7 @@ void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
 }
 
 void ActorUiStateManager::NotifyActorTaskStopped(TaskId task_id) {
+  // TODO(chrstne): Implement this.
   actor_task_stopped_callback_list_.Notify(task_id);
 }
 
@@ -308,6 +315,7 @@ base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskStopped(
 }
 
 void ActorUiStateManager::NotifyActorTaskRemoved(TaskId task_id) {
+  // TODO(chrstne): Implement this.
   actor_task_removed_callback_list_.Notify(task_id);
 }
 

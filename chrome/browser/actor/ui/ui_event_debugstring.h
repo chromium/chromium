@@ -19,6 +19,7 @@ std::string DebugString(TargetSource);
 // LINT.IfChange(GetUiEventName)
 inline constexpr absl::Overload UiEventNameFn{
     [](const StartTask&) -> std::string_view { return "StartTask"; },
+    [](const StopTask&) -> std::string_view { return "StopTask"; },
     [](const TaskStateChanged&) -> std::string_view {
       return "TaskStateChanged";
     },

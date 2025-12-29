@@ -125,8 +125,13 @@ constexpr absl::Overload ActorTaskSyncChangeFn{
           c.new_state == ActorTask::State::kActing) {
         seq.push_back(StartTask(c.task_id));
       }
+      // TODO(chrstne): Remove title.
       seq.push_back(TaskStateChanged(c.task_id, c.new_state, c.title));
       return seq;
+    },
+    [](const UiEventDispatcher::StopTask& c) {
+      return EventSequence<SyncUiEvent>{StopTask(
+          c.task_id, c.final_state, c.title, c.last_acted_on_tab_handle)};
     },
     [](const UiEventDispatcher::RemoveTab& c) {
       return EventSequence<SyncUiEvent>{StoppedActingOnTab(c.handle)};
@@ -201,6 +206,12 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
                   "ChangeTaskState task_id=%d old_state=%s new_state=%s",
                   c.task_id.GetUnsafeValue(), ToString(c.old_state),
                   ToString(c.new_state));
+            },
+            [](const UiEventDispatcher::StopTask& c) {
+              return absl::StrFormat(
+                  "StopTask task_id=%d final_state=%s title=%s tab=%d",
+                  c.task_id.GetUnsafeValue(), ToString(c.final_state), c.title,
+                  c.last_acted_on_tab_handle.raw_value());
             },
             [](const UiEventDispatcher::RemoveTab& c) {
               return absl::StrFormat("RemoveTab task_id=%d tab=%d",

@@ -34,14 +34,27 @@ class UiEventDispatcher {
     TaskId task_id;
     ActorTask::State old_state;
     ActorTask::State new_state;
+    // TODO(chrstne): Remove this field.
     std::string title;
   };
+
+  /* The only valid values for final_state are terminal states
+   * that include: {kFinished, kFailed, kCancelled}
+   */
+  struct StopTask {
+    TaskId task_id;
+    ActorTask::State final_state;
+    std::string title;
+    tabs::TabInterface::Handle last_acted_on_tab_handle;
+  };
+
   struct RemoveTab {
     TaskId task_id;
     tabs::TabInterface::Handle handle;
   };
   // TODO(crbug.com/425784083): Add tab changes from ActorTask.
-  using ActorTaskSyncChange = std::variant<ChangeTaskState, RemoveTab>;
+  using ActorTaskSyncChange =
+      std::variant<ChangeTaskState, StopTask, RemoveTab>;
 
   virtual ~UiEventDispatcher() = default;
 

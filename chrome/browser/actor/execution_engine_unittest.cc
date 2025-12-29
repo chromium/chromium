@@ -61,6 +61,7 @@ using testing::Field;
 using testing::Property;
 using testing::VariantWith;
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
+using StopTask = ui::UiEventDispatcher::StopTask;
 using AddTab = ui::UiEventDispatcher::AddTab;
 using enum ActorTask::StoppedReason;
 
@@ -487,6 +488,10 @@ TEST_F(ExecutionEngineTest, CancelOngoingAction) {
 }
 
 TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kGlicActorUiGlobalTaskIndicator, {});
+
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -505,6 +510,19 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
   // Simulate time passing before the task stops
   const base::TimeDelta task_duration = base::Milliseconds(123);
   task_environment()->FastForwardBy(task_duration);
+
+  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+              OnActorTaskSyncChange(
+                  VariantWith<ui::MockUiEventDispatcher::RemoveTab>(_)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *task_mock_ui_event_dispatcher_,
+      OnActorTaskSyncChange(VariantWith<StopTask>(AllOf(
+          Field(&StopTask::task_id, task_->id()),
+          Field(&StopTask::final_state, ActorTask::State::kFinished),
+          Field(&StopTask::title, task_->title()),
+          Field(&StopTask::last_acted_on_tab_handle, GetTab()->GetHandle())))))
+      .Times(1);
 
   task_->Stop(kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,

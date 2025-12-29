@@ -232,12 +232,19 @@ void ActorTask::SetState(State new_state) {
   if (IsInterruptedState(new_state)) {
     ++total_number_of_interruptions_;
   }
-  ui_event_dispatcher_->OnActorTaskSyncChange(
-      ui::UiEventDispatcher::ChangeTaskState{.task_id = id_,
-                                             .old_state = old_state,
-                                             .new_state = new_state,
-                                             .title = title_});
 
+  // In the new implementation, stopped tasks are tracked separately as they
+  // need to store additional information before they're cleared.
+  bool should_dispatch = !base::FeatureList::IsEnabled(
+                             features::kGlicActorUiGlobalTaskIndicator) ||
+                         !stopped_reason_;
+  if (should_dispatch) {
+    ui_event_dispatcher_->OnActorTaskSyncChange(
+        ui::UiEventDispatcher::ChangeTaskState{.task_id = id_,
+                                               .old_state = old_state,
+                                               .new_state = new_state,
+                                               .title = title_});
+  }
   if (base::FeatureList::IsEnabled(
           actor::kGlicPerformActionsReturnsBeforeStateChange)) {
     // The callback_for_act_ is posted before calling SetState. We want that to
@@ -347,10 +354,6 @@ void ActorTask::Stop(StoppedReason stop_reason) {
     execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
   }
   end_time_ = base::Time::Now();
-  // Remove all the tabs from the task.
-  while (!controlled_tabs_.empty()) {
-    RemoveTab(controlled_tabs_.begin()->first);
-  }
   State final_state;
   switch (stop_reason) {
     case StoppedReason::kUserStartedNewChat:
@@ -369,6 +372,20 @@ void ActorTask::Stop(StoppedReason stop_reason) {
       break;
   }
   stopped_reason_ = stop_reason;
+  // Remove all the tabs from the task.
+  tabs::TabHandle last_tab_handle;
+  while (!controlled_tabs_.empty()) {
+    last_tab_handle = controlled_tabs_.begin()->first;
+    RemoveTab(controlled_tabs_.begin()->first);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    ui_event_dispatcher_->OnActorTaskSyncChange(ui::UiEventDispatcher::StopTask{
+        .task_id = id_,
+        .final_state = final_state,
+        .title = title_,
+        .last_acted_on_tab_handle = last_tab_handle});
+  }
   SetState(final_state);
 }
 

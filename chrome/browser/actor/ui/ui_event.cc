@@ -10,6 +10,19 @@ StartTask::StartTask(actor::TaskId id) : task_id(id) {}
 StartTask::~StartTask() = default;
 StartTask::StartTask(const StartTask&) = default;
 
+StopTask::StopTask(actor::TaskId id,
+                   ActorTask::State final_state,
+                   const std::string& title,
+                   tabs::TabInterface::Handle last_acted_on_tab_handle)
+    : task_id(id),
+      final_state(final_state),
+      title(title),
+      last_acted_on_tab_handle(last_acted_on_tab_handle) {
+  DCHECK(ActorTask::IsCompletedState(final_state));
+}
+StopTask::~StopTask() = default;
+StopTask::StopTask(const StopTask&) = default;
+
 TaskStateChanged::TaskStateChanged(actor::TaskId id,
                                    ActorTask::State state,
                                    const std::string& title)

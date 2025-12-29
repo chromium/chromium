@@ -321,6 +321,22 @@ TEST_F(EventDispatcherTest, SyncActorTaskChange_NewTask) {
       .new_state = ActorTask::State::kActing});
 }
 
+TEST_F(EventDispatcherTest, SyncActor_StopTask) {
+  EXPECT_CALL(
+      *mock_state_manager_,
+      OnUiEvent(VariantWith<StopTask>(AllOf(
+          Field(&StopTask::task_id, TaskId(1)),
+          Field(&StopTask::final_state, ActorTask::State::kCancelled),
+          Field(&StopTask::title, ""),
+          Field(&StopTask::last_acted_on_tab_handle, tabs::TabHandle(5309))))))
+      .Times(1);
+  dispatcher_->OnActorTaskSyncChange(UiEventDispatcher::StopTask{
+      .task_id = TaskId(1),
+      .final_state = ActorTask::State::kCancelled,
+      .title = "",
+      .last_acted_on_tab_handle = tabs::TabHandle(5309)});
+}
+
 TEST_F(EventDispatcherTest, SyncActor_RemoveTab) {
   EXPECT_CALL(*mock_state_manager_,
               OnUiEvent(VariantWith<StoppedActingOnTab>(Field(

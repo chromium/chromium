@@ -89,6 +89,7 @@ chromium-metrics-reviews@google.com.
   <variant name="StartingToActOnTab" summary="StartingToActOnTab UiEvent"/>
   <variant name="StartTask" summary="StartTask UiEvent"/>
   <variant name="StoppedActingOnTab" summary="StoppedActingOnTab UiEvent"/>
+  <variant name="StopTask" summary="StopTask UiEvent"/>
   <variant name="TaskStateChanged" summary="TaskStateChanged UiEvent"/>
 </variants>
 
