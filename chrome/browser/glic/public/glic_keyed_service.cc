@@ -427,14 +427,13 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   host_manager().GuestAdded(guest_contents);
 }
 
-// TODO(crbug.com/454367781): Update callers to use IsPanelShowingForBrowser()
-// instead.
 bool GlicKeyedService::IsWindowShowing() const {
   if (UseDefaultWindowController()) {
     return GetSingleInstanceWindowController().IsShowing();
   }
   // TODO: Investigate if this is needed for multi-instance.
-  NOTIMPLEMENTED() << "IsWindowShowing not implemented for multi-instance.";
+  NOTIMPLEMENTED_LOG_ONCE()
+      << "IsWindowShowing not implemented for multi-instance.";
   return false;
 }
 
