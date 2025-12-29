@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 
+#include <optional>
+
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/common/pref_names.h"
@@ -40,7 +42,9 @@ class VerticalTabStripStateControllerTest : public testing::Test {
     controller_ = std::make_unique<VerticalTabStripStateController>(
         &mock_browser_window_interface_, &pref_service_,
         /*root_action_item=*/nullptr,
-        /*session_service*/ nullptr, test_session_id);
+        /*session_service=*/nullptr, test_session_id,
+        /*restored_state_collapsed=*/std::nullopt,
+        /*restored_state_uncollapsed_width=*/std::nullopt);
   }
 
   void TearDown() override {

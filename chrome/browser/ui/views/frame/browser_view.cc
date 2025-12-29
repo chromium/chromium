@@ -1003,16 +1003,6 @@ BrowserView::BrowserView(Browser* browser)
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 
   if (vertical_tab_strip_state_controller) {
-    const std::optional<bool>& restored_state_collapsed =
-        browser_->is_vertical_tabs_initially_collapsed();
-    const std::optional<int>& restored_state_uncollapsed_width =
-        browser_->get_vertical_tabs_initial_uncollapsed_width();
-    vertical_tab_strip_state_controller->SetCollapsed(
-        restored_state_collapsed.value_or(false));
-    vertical_tab_strip_state_controller->SetUncollapsedWidth(
-        restored_state_uncollapsed_width.value_or(
-            tabs::kVerticalTabStripDefaultUncollapsedWidth));
-
     vertical_tab_subscription_ =
         vertical_tab_strip_state_controller->RegisterOnStateChanged(
             base::BindRepeating(&BrowserView::OnVerticalTabStripStateChanged,

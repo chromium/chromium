@@ -297,13 +297,21 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {
+      const std::optional<bool>& restored_state_collapsed =
+          browser->GetBrowserForMigrationOnly()
+              ->is_vertical_tabs_initially_collapsed();
+      const std::optional<int>& restored_state_uncollapsed_width =
+          browser->GetBrowserForMigrationOnly()
+              ->get_vertical_tabs_initial_uncollapsed_width();
+
       vertical_tab_strip_state_controller_ =
           GetUserDataFactory()
               .CreateInstance<tabs::VerticalTabStripStateController>(
                   *browser, browser, profile->GetPrefs(),
                   browser_actions_->root_action_item(),
                   SessionServiceFactory::GetForProfile(browser_->GetProfile()),
-                  browser_->GetSessionID());
+                  browser_->GetSessionID(), restored_state_collapsed,
+                  restored_state_uncollapsed_width);
     }
 
     if (tabs::IsProjectsPanelFeatureEnabled()) {

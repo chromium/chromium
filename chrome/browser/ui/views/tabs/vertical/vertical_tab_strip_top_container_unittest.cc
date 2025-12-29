@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -37,7 +38,9 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
     controller_ = std::make_unique<tabs::VerticalTabStripStateController>(
         &mock_browser_window_interface_, &pref_service_,
         /*root_action_item=*/nullptr,
-        /*session_service*/ nullptr, test_session_id);
+        /*session_service=*/nullptr, test_session_id,
+        /*restored_state_collapsed=*/std::nullopt,
+        /*restored_state_uncollapsed_width=*/std::nullopt);
 
     action_item_ = actions::ActionItem::Builder().Build();
     action_item_->AddChild(
