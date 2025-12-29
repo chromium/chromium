@@ -187,6 +187,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         updateTitleInUrl(title);
         document.title = title || loadTimeData.getString('title');
       }),
+      callbackRouter.onAiPageStatusChanged.addListener((isAiPage: boolean) => {
+        this.isAiPage_ = isAiPage;
+      }),
       callbackRouter.postMessageToWebview.addListener(
           this.postMessageToWebview.bind(this)),
       callbackRouter.onHandshakeComplete.addListener(
