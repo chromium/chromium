@@ -171,8 +171,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
+// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
-       ExtractPageContextWithForceDetach) {
+       DISABLED_ExtractPageContextWithForceDetach) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
