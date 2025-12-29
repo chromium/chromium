@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 
 namespace content {
 class NavigationHandle;
@@ -496,6 +497,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void UpdatePreferredSize(content::WebContents* web_contents,
                            const gfx::Size& pref_size) final;
   void UpdateTargetURL(content::WebContents* source, const GURL& url) final;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) final;
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;

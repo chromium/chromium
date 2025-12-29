@@ -1023,6 +1023,19 @@ void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {
       embedder_web_contents(), url);
 }
 
+void GuestViewBase::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    return;
+  }
+
+  embedder_web_contents()->GetDelegate()->DraggableRegionsChanged(
+      regions, embedder_web_contents());
+}
+
 void GuestViewBase::OnZoomControllerDestroyed(zoom::ZoomController* source) {
   DCHECK(zoom_controller_observations_.IsObservingSource(source));
   zoom_controller_observations_.RemoveObservation(source);
