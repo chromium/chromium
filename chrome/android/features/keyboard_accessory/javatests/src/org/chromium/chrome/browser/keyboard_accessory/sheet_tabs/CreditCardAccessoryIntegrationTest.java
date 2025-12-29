@@ -117,7 +117,7 @@ public class CreditCardAccessoryIntegrationTest {
                                         R.string.credit_card_accessory_sheet_toggle)));
 
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.credit_card_sheet));
+        whenDisplayed(withId(R.id.credit_card_sheet), /* atLeast= */ 51);
         onView(withText(containsString("No saved payment methods"))).check(matches(isDisplayed()));
     }
 
@@ -140,7 +140,7 @@ public class CreditCardAccessoryIntegrationTest {
                                         R.string.credit_card_accessory_sheet_toggle)));
 
         // Wait for the sheet to come up and be stable.
-        whenDisplayed(withId(R.id.credit_card_sheet));
+        whenDisplayed(withId(R.id.credit_card_sheet), /* atLeast= */ 51);
 
         // Click a suggestion.
         whenDisplayed(withId(R.id.cc_number)).perform(click());
