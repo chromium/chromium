@@ -288,11 +288,10 @@ const base::FeatureParam<bool> kShowCreateImageTool(
     &internal::kWebUIOmniboxAimPopup,
     "ShowCreateImageTool",
     true);
-// TODO(crbug.com/462739330): Enable lens chip.
 const base::FeatureParam<bool> kShowLensSearchChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowLensSearchChip",
-    false);
+    true);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &internal::kWebUIOmniboxAimPopup,
     "AddTabUploadDelayOnRecentTabChipClick",
@@ -315,11 +314,11 @@ const base::FeatureParam<bool> kShowToolsAndModels(
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInSteadyComposebox",
-    false);
+    true);
 const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInExpandedComposebox",
-    false);
+    true);
 const base::FeatureParam<bool> kEnableContextDragAndDrop(&internal::kWebUIOmniboxAimPopup,
                                                   "EnableContextDragAndDrop",
                                                   false);
