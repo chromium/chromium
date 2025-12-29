@@ -9,8 +9,6 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("contextual_tasks") {
   sources = [
     "ai_mode_context_library_converter.h",
-    "contextual_tasks_context_controller.h",
-    "contextual_tasks_context_controller_factory.h",
     "contextual_tasks_service_factory.h",
   ]
 
@@ -52,10 +50,6 @@ source_set("impl") {
 
   sources = [
     "ai_mode_context_library_converter.cc",
-    "contextual_tasks_context_controller.cc",
-    "contextual_tasks_context_controller_factory.cc",
-    "contextual_tasks_context_controller_impl.cc",
-    "contextual_tasks_context_controller_impl.h",
     "contextual_tasks_service_factory.cc",
   ]
   if (!is_android) {
@@ -210,18 +204,6 @@ if (!is_android) {
   }
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "mock_contextual_tasks_context_controller.cc",
-    "mock_contextual_tasks_context_controller.h",
-  ]
-  deps = [
-    ":contextual_tasks",
-    "//testing/gmock",
-  ]
-}
-
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
@@ -233,7 +215,6 @@ if (!is_android) {
 
     deps = [
       ":contextual_tasks",
-      ":test_support",
       ":ui",
       "//base",
       "//base/test:test_support",
@@ -271,8 +252,6 @@ source_set("unit_tests") {
 
   sources = [
     "ai_mode_context_library_converter_unittest.cc",
-    "contextual_tasks_context_controller_factory_unittest.cc",
-    "contextual_tasks_context_controller_impl_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
   ]
 
@@ -291,7 +270,6 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/sync",
