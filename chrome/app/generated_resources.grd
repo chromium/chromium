@@ -10346,16 +10346,31 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Create split view
       </message>
 
-      <!-- Vertical Tab Strings (crbug.com/469487552) -->
-      <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
-          Show tabs to the side
-      </message>
-      <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
-          Show tabs at the top
-      </message>
-      <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
-          Collapse vertical tabs
-      </message>
+      <!-- Vertical Tab Strings -->
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="In Title Case: The button in context menu that switches to vertical tab view.">
+            Show Tabs To The Side
+          </message>
+          <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="In Title Case: The button in context menu that switches to horizontal tab view.">
+            Show Tabs At The Top
+          </message>
+          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
+            Collapse Vertical Tabs
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
+            Show tabs to the side
+          </message>
+          <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
+            Show tabs at the top
+          </message>
+          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
+            Collapse vertical tabs
+          </message>
+        </else>
+      </if>
       <!-- /Vertical Tab Strings -->
 
       <!-- Projects Panel Strings -->
