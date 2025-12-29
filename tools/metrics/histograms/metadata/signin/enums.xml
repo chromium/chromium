@@ -834,6 +834,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginResponseStatus) -->
 
+<!-- LINT.IfChange(PAMInitializePrimaryAccountInfoState) -->
+
 <enum name="PAMInitializePrimaryAccountInfoState">
   <int value="0" label="OK: Account info available"/>
   <int value="1" label="Empty account info. Restore failed (no sync consent)."/>
@@ -843,9 +845,12 @@ chromium-metrics-reviews@google.com.
       label="Empty account info. Restore failed (no last sync email)"/>
   <int value="4"
       label="Empty account info. Restore failed (account id mismatch)"/>
-  <int value="5" label="Empty account info. Restore failed (feature disabled)"/>
+  <int value="5"
+      label="(Obsolete) Empty account info. Restore failed (feature disabled)"/>
   <int value="6" label="Empty account info. Restore success"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/primary_account_manager.h:InitializeAccountInfoState) -->
 
 <enum name="PAMInitializePrimaryAccountPrefs">
   <int value="0" label="With primary account id, no sync consent"/>

@@ -35,7 +35,6 @@
 
 using signin::PrimaryAccountChangeEvent;
 
-BASE_FEATURE(kRestorePrimaryAccountInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 // Registers that the sign in occurred with an explicit user action.
@@ -421,22 +420,15 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
             kEmptyAccountInfo_RestoreFailedAccountIdDontMatch);
   }
 
-  if (base::FeatureList::IsEnabled(kRestorePrimaryAccountInfo)) {
-    CHECK_EQ(
-        account_id,
-        account_tracker_service_->SeedAccountInfo(
-            last_syncing_gaia_id, last_syncing_email,
-            signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad));
+  CHECK_EQ(
+      account_id,
+      account_tracker_service_->SeedAccountInfo(
+          last_syncing_gaia_id, last_syncing_email,
+          signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad));
 
-    return std::make_pair(account_tracker_service_->GetAccountInfo(account_id),
-                          InitializeAccountInfoState::
-                              kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo);
-  } else {
-    return std::make_pair(
-        CoreAccountInfo(),
-        InitializeAccountInfoState::
-            kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
-  }
+  return std::make_pair(account_tracker_service_->GetAccountInfo(account_id),
+                        InitializeAccountInfoState::
+                            kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo);
 }
 
 const PrimaryAccountManager::PrimaryAccount&

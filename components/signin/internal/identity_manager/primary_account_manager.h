@@ -65,16 +65,23 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   };
 
   // Enum for histogram 'Signin.PAMInitialize.PrimaryAccountInfoState'.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitializeAccountInfoState)
   enum class InitializeAccountInfoState {
     kAccountInfoAvailable = 0,
     kEmptyAccountInfo_RestoreFailedNotSyncConsented = 1,
     kEmptyAccountInfo_RestoreFailedNoLastSyncGaiaId = 2,
     kEmptyAccountInfo_RestoreFailedNoLastSyncEmail = 3,
     kEmptyAccountInfo_RestoreFailedAccountIdDontMatch = 4,
-    kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled = 5,
+    // kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled = 5, // no
+    // longer used, related feature flag has been removed
     kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo = 6,
     kMaxValue = kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:PAMInitializePrimaryAccountInfoState)
 
   PrimaryAccountManager(SigninClient* client,
                         ProfileOAuth2TokenService* token_service,
@@ -241,8 +248,5 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
                           ProfileOAuth2TokenServiceObserver>
       token_service_observation_{this};
 };
-
-// Internal feature - exposed only unit testing.
-BASE_DECLARE_FEATURE(kRestorePrimaryAccountInfo);
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

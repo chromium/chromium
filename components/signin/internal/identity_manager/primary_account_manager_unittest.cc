@@ -807,28 +807,6 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedNotSyncing) {
           kEmptyAccountInfo_RestoreFailedNotSyncConsented);
 }
 
-TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kRestorePrimaryAccountInfo);
-
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
-                        "user@gmail.com");
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId, "gaia_id");
-  CoreAccountId account_id = account_tracker()->PickAccountIdForAccount(
-      GaiaId("gaia_id"), "user@gmail.com");
-  ASSERT_FALSE(account_id.empty());
-  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
-  CreatePrimaryAccountManager();
-
-  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
-  CheckInitializeAccountInfoStateHistogram(
-      PrimaryAccountManager::InitializeAccountInfoState::
-          kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
-}
-
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
