@@ -4282,12 +4282,6 @@ inline constexpr char kUiPartialSwapName[] = "Partial swap";
 inline constexpr char kUiPartialSwapDescription[] =
     "Sets partial swap behavior.";
 
-inline constexpr char kTPCPhaseOutFacilitatedTestingName[] =
-    "Third-party Cookie Phase Out Facilitated Testing";
-inline constexpr char kTPCPhaseOutFacilitatedTestingDescription[] =
-    "Enables third-party cookie phase out for facilitated testing described in "
-    "https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/";
-
 inline constexpr char kTpcdHeuristicsGrantsName[] =
     "Third-party Cookie Grants Heuristics Testing";
 inline constexpr char kTpcdHeuristicsGrantsDescription[] =
