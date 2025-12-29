@@ -41,8 +41,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.concurrent.Callable;
 
@@ -84,7 +82,6 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature({"TextInput"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
     public void testComposeGetTextFinishGetText() {
         // IME app calls setComposingText().
         mConnection.setComposingText("hello", 1);
@@ -178,7 +175,6 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature({"TextInput"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
     @Ignore("crbug/632792")
     public void testFailToRequestToRenderer() {
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(false);
@@ -188,7 +184,6 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature({"TextInput"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
     @Ignore("crbug/632792")
     public void testRendererCannotUpdateState() {
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
@@ -215,7 +210,6 @@ public class ThreadedInputConnectionTest {
     // crbug.com/643477
     @Test
     @Feature({"TextInput"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT})
     public void testUiThreadAccess() {
         assertTrue(mConnection.commitText("hello", 1));
         mRunningOnUiThread = true;

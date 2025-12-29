@@ -701,7 +701,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         }
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
-        return textInputState.getSurroundingText(beforeLength, afterLength, flags);
+        return textInputState.getSurroundingText(beforeLength, afterLength);
     }
 
     /**
@@ -712,7 +712,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         if (DEBUG_LOGS) Log.i(TAG, "getTextBeforeCursor [%d %x]", maxChars, flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
-        return textInputState.getTextBeforeSelection(maxChars, flags);
+        return textInputState.getTextBeforeSelection(maxChars);
     }
 
     /**
@@ -723,7 +723,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         if (DEBUG_LOGS) Log.i(TAG, "getTextAfterCursor [%d %x]", maxChars, flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
-        return textInputState.getTextAfterSelection(maxChars, flags);
+        return textInputState.getTextAfterSelection(maxChars);
     }
 
     /**
@@ -734,7 +734,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         if (DEBUG_LOGS) Log.i(TAG, "getSelectedText [%x]", flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
-        return textInputState.getSelectedText(flags);
+        return textInputState.getSelectedText();
     }
 
     /**
