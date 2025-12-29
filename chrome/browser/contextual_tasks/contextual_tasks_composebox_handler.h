@@ -34,6 +34,7 @@ class TabInterface;
 namespace contextual_tasks {
 struct ContextualTaskContext;
 class ContextualTasksService;
+struct UrlAttachment;
 }  // namespace contextual_tasks
 
 // Struct to store file data and mime type.
@@ -150,6 +151,18 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnVisualSelectionAdded(const base::UnguessableToken& token);
 
   LensSearchController* GetLensSearchController() const;
+
+  // Returns the matching attachment for the given URL and session ID.
+  const contextual_tasks::UrlAttachment* GetMatchingAttachment(
+      const contextual_tasks::ContextualTaskContext& context,
+      const GURL& url,
+      SessionID session_id);
+
+  // Returns true if the tab context should be uploaded based on the context ID
+  // and page content data.
+  bool ShouldUploadTabContext(
+      std::optional<int64_t> context_id,
+      const lens::ContextualInputData& page_content_data);
 
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   // The context controller for the current profile. The profile will outlive
