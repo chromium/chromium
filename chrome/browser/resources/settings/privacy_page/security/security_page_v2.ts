@@ -128,6 +128,16 @@ export class SettingsSecurityPageV2Element extends
         value: true,
       },
 
+      isSafeBrowsingEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      isSafeBrowsingWarningIconVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
       safeBrowsingOff_: {
         type: Array,
         value: () => [SafeBrowsingSetting.DISABLED],
@@ -166,8 +176,9 @@ export class SettingsSecurityPageV2Element extends
           'isResettingToDefaults_,' +
           'prefs.generated.security_settings_bundle.value,' +
           'prefs.generated.safe_browsing.*),',
-      'updateHttpsFirstModeState_(' +
-          'prefs.generated.https_first_mode_enabled.value),',
+      'updateRowsState_(' +
+          'prefs.generated.https_first_mode_enabled.*,' +
+          'prefs.generated.safe_browsing.*),',
     ];
   }
 
@@ -175,6 +186,8 @@ export class SettingsSecurityPageV2Element extends
   declare private isResetStandardBundleToDefaultsButtonVisible_: boolean;
   declare private isResetEnhancedBundleToDefaultsButtonVisible_: boolean;
   declare private isHttpsFirstModeEnabled_: boolean;
+  declare private isSafeBrowsingEnabled_: boolean;
+  declare private isSafeBrowsingWarningIconVisible_: boolean;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
   declare private safeBrowsingStateTextMap_: Object;
@@ -392,10 +405,18 @@ export class SettingsSecurityPageV2Element extends
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
 
-  private updateHttpsFirstModeState_() {
-    this.isHttpsFirstModeEnabled_ =
-        this.getPref('generated.https_first_mode_enabled').value !==
-        HttpsFirstModeSetting.DISABLED;
+  private updateRowsState_() {
+    const httpsFirstModePref =
+        this.getPref('generated.https_first_mode_enabled');
+    this.isHttpsFirstModeEnabled_ = httpsFirstModePref.value !== undefined &&
+        httpsFirstModePref.value !== HttpsFirstModeSetting.DISABLED;
+
+    const safeBrowsingPref = this.getPref('generated.safe_browsing');
+    this.isSafeBrowsingEnabled_ = safeBrowsingPref.value !== undefined &&
+        safeBrowsingPref.value !== SafeBrowsingSetting.DISABLED;
+    this.isSafeBrowsingWarningIconVisible_ = !this.isSafeBrowsingEnabled_ &&
+        safeBrowsingPref.enforcement !==
+            chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 }
 

@@ -10,12 +10,41 @@
     width: 100%;
   }
 
+  #icon cr-icon {
+    --iron-icon-fill-color: var(--google-red-600);
+    flex-shrink: 0;
+  }
+
+  /* Style for empty icon (takes up no space) or removal of icon */
+  #icon {
+    display: flex;
+    justify-content: center;
+    margin-inline-end: 0;
+    opacity: 0;
+    width: 0;
+  }
+
+  #icon.enable-transition {
+    transition: margin-inline-end 400ms cubic-bezier(0.42, 0, 0.73, 1),
+        opacity 500ms linear, width 400ms cubic-bezier(0.42, 0, 0.73, 1);
+  }
+
+  /* Style for icon and transition for insertion of icon */
+  :host([icon]:not([icon=''])[icon-visible]) #icon {
+    margin-inline-end: var(--cr-icon-button-margin-end, 16px);
+    opacity: 1;
+    width: var(--cr-icon-size, 20px);
+  }
+
   #toggleButton {
     --cr-section-min-height: 16px;
   }
 </style>
 <cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
   <div id="content-wrapper">
+    <span id="icon" aria-hidden="true">
+      <cr-icon slot="icon" icon="[[icon]]"></cr-icon>
+    </span>
     <div class="flex">
       [[label]]
       <div class="cr-secondary-text">[[subLabel]]</div>
@@ -25,7 +54,7 @@
         [[currentStateLabel_]]
       </div>
     </template>
-    <template is="dom-if" if="[[expanded]]">
+    <template is="dom-if" if="[[expanded]]" restamp>
       <settings-toggle-button id="toggleButton" pref="{{pref}}"
           numeric-unchecked-values="[[numericUncheckedValues]]"
           numeric-checked-value="[[numericCheckedValue]]">

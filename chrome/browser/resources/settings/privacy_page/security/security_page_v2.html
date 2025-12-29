@@ -7,7 +7,7 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
-    --security-page-selected-card-background-color: rgba(0, 74, 119, 1);
+      --security-page-selected-card-background-color: rgba(0, 74, 119, 1);
     }
   }
 
@@ -106,6 +106,10 @@
 
   #bundlesRadioGroup ul.icon-bulleted-list li:last-child {
     margin-bottom: 0;
+  }
+
+  #httpsFirstModeRadioGroup > :last-child {
+    padding-bottom: var(--cr-section-vertical-padding);
   }
 
   #safeBrowsingRadioGroup {
@@ -221,7 +225,9 @@
         label="$i18n{securitySafeBrowsingTitle}"
         sub-label="$i18n{securitySafeBrowsingDesc}" class="box"
         numeric-unchecked-values="[[safeBrowsingOff_]]"
-        state-text-map="[[safeBrowsingStateTextMap_]]">
+        state-text-map="[[safeBrowsingStateTextMap_]]"
+        icon="settings20:warning_outline"
+        icon-visible="[[isSafeBrowsingWarningIconVisible_]]">
       <div slot="collapse">
         <settings-radio-group id="safeBrowsingRadioGroup"
             pref="{{prefs.generated.safe_browsing}}"
@@ -230,7 +236,8 @@
           <controlled-radio-button
               label="$i18n{securitySafeBrowsingStandardTitle}"
               name="[[safeBrowsingSettingEnum_.STANDARD]]"
-              pref="[[prefs.generated.safe_browsing]]">
+              pref="[[prefs.generated.safe_browsing]]"
+              disabled="[[!isSafeBrowsingEnabled_]]">
             <div class="settings-radio-button-subtitle">
               $i18n{securitySafeBrowsingStandardSubtitle}
             </div>
@@ -257,7 +264,8 @@
           <controlled-radio-button id="enhancedProtectionButton"
               label="$i18n{securitySafeBrowsingEnhancedTitle}"
               name="[[safeBrowsingSettingEnum_.ENHANCED]]"
-              pref="[[prefs.generated.safe_browsing]]">
+              pref="[[prefs.generated.safe_browsing]]"
+              disabled="[[!isSafeBrowsingEnabled_]]">
             <div class="settings-radio-button-subtitle">
               $i18n{securitySafeBrowsingEnhancedSubtitle}
             </div>

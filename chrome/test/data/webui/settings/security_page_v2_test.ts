@@ -196,6 +196,40 @@ suite('Main', function() {
         'HTTPS First Mode should default to ENABLED_BALANCED when enabled');
   });
 
+  test('SafeBrowsingWarningIconUpdatesCorrectly', async function() {
+    const row = page.$.safeBrowsingRow;
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when enhanced safe browsing is enabled');
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    await flushTasks();
+    assertTrue(
+        row.iconVisible, 'Icon should be shown when safe browsing is disabled');
+    assertEquals('settings20:warning_outline', row.icon);
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when standard safe browsing is enabled');
+
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.DISABLED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when safe browsing is disabled by policy');
+  });
+
   test('PasswordsLeakDetectionClickTogglesSetting', async function() {
     page.setPrefValue('generated.password_leak_detection', true);
 

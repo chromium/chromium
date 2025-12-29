@@ -10,6 +10,7 @@
  */
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
@@ -39,6 +40,18 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
         type: Boolean,
         notify: true,
         value: false,
+        observer: 'onExpandedChanged_',
+      },
+
+      icon: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
+      iconVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: true,
       },
 
       label: String,
@@ -63,6 +76,8 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   }
 
   declare expanded: boolean;
+  declare icon: string;
+  declare iconVisible: boolean;
   declare label: string;
   declare pref: chrome.settingsPrivate.PrefObject;
   declare subLabel: string;
@@ -70,6 +85,22 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   declare numericCheckedValue: number;
   declare stateTextMap: Record<string, string>;
   declare private currentStateLabel_: string;
+
+
+  private onExpandedChanged_() {
+    if (!this.expanded) {
+      return;
+    }
+
+    // To prevent animation on page load, the transition styling is not applied
+    // to the icon until after the row has been expanded.
+    // TODO(crbug.com/441316657): Determine the underlying cause and remove
+    // this if possible.
+    const icon = this.shadowRoot!.querySelector('#icon');
+    if (icon) {
+      icon.classList.add('enable-transition');
+    }
+  }
 
   private computeCurrentStateLabel_(): string {
     if (this.stateTextMap && this.stateTextMap[this.pref.value] !== undefined) {
