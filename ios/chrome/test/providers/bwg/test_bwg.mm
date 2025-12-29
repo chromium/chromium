@@ -49,7 +49,7 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context) {
   return nil;
 }
 
-void UpdateOverlayOffset(CGFloat offset) {}
+void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
 
 void UpdateGeminiViewState(GeminiViewState view_state) {}
 

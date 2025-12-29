@@ -164,7 +164,7 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
   // fullscreen mode is enabled (progress == 0), the offset will be a negative
   // value, `kOverlayFullscreenOffset`.
-  ios::provider::UpdateOverlayOffset(offset);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, 0);
 }
 
 #pragma mark - Private

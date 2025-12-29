@@ -129,10 +129,11 @@ NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
 // Returns the settings action for a given settings context.
 GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context);
 
-// Updates Gemini overlay offset. A positive `offset` will move the overlay
-// towards the top of the viewport while a negative `offset` will move the
-// overlay towards the bottom and even below the viewport.
-void UpdateOverlayOffset(CGFloat offset);
+// Updates Gemini overlay offset with a specific `opacity`. A positive `offset`
+// will move the overlay towards the top of the viewport while a negative
+// `offset` will move the overlay towards the bottom and even below the
+// viewport.
+void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity);
 
 // Updates Gemini floaty view state.
 void UpdateGeminiViewState(GeminiViewState view_state);
