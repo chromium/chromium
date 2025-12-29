@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -18,6 +19,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -31,6 +34,12 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/fake_tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
+#include "components/history/core/test/test_history_database.h"
+#include "components/search/ntp_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -109,6 +118,19 @@ class FakeActionChipsHandler : public ActionChipsHandler {
                            std::move(action_chips_generator)) {}
 };
 
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  ~MockHistoryService() override = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              QueryHistory,
+              (const std::u16string& text_query,
+               const history::QueryOptions& options,
+               base::OnceCallback<void(history::QueryResults)> callback,
+               base::CancelableTaskTracker* tracker));
+};
+
 struct TabInfoFields {
   int32_t tab_id = 0;
   std::string title;
@@ -122,6 +144,14 @@ struct ActionChipFields {
   ChipType type = ChipType::kRecentTab;
   std::optional<TabInfoFields> tab;
 };
+
+std::unique_ptr<KeyedService> BuildTestHistoryService(
+    const base::FilePath& file_path,
+    content::BrowserContext* context) {
+  auto service = std::make_unique<testing::StrictMock<MockHistoryService>>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(file_path));
+  return service;
+}
 
 base::Time GetTimeAt(const size_t index) {
   return base::Time::FromMillisecondsSinceUnixEpoch(0) +
@@ -242,11 +272,22 @@ class ActionChipsHandlerTest : public testing::Test {
   ActionChipsHandlerTest() = default;
   void SetUp() override {
     testing::Test::SetUp();
+
+    ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
+
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildTestHistoryService, profile_dir_.GetPath()));
+    profile_builder.SetPath(profile_dir_.GetPath());
     profile_ = profile_builder.Build();
+
+    history_service_ =
+        static_cast<MockHistoryService*>(HistoryServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
     tab_strip_model_fixture_ =
         std::make_unique<TabStripModelFixture>(profile_.get());
     content::WebContents* ntp =
@@ -272,6 +313,7 @@ class ActionChipsHandlerTest : public testing::Test {
 
  protected:
   content::WebContents* web_contents() { return web_ui_->GetWebContents(); }
+  MockHistoryService& history_service() { return *history_service_; }
   void AddTab(const GURL& url, const std::u16string& title) {
     tab_strip_model_fixture_->AddTab(url, title);
   }
@@ -280,6 +322,7 @@ class ActionChipsHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  protected:
+  base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
@@ -289,6 +332,7 @@ class ActionChipsHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<FakeActionChipsHandler> handler_;
   raw_ptr<MockActionChipsGenerator> mock_action_chips_generator_ = nullptr;
+  raw_ptr<MockHistoryService> history_service_ = nullptr;
 
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -300,10 +344,20 @@ struct UrlAndTitle {
   std::string title;
 };
 
+enum class Sensitivity {
+  SENSITIVE = 0,
+  NOT_SENSITIVE = 1,
+  // For test case of in-eligible locale.
+  INELIGIBLE = 2,
+  // Disabled param.
+  DISABLED = 3,
+};
+
 struct StaticChipsTestCase {
   std::string test_name;
   std::vector<UrlAndTitle> tabs;
   std::vector<ActionChipFields> expected_chips;
+  Sensitivity sensitive;
 };
 
 // Assumption of test cases:
@@ -321,6 +375,7 @@ INSTANTIATE_TEST_SUITE_P(
             .tabs = {},
             .expected_chips = {CreateStaticDeepSearchChip(),
                                CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::DISABLED,
         },
         StaticChipsTestCase{
             .test_name = "ThreeChipsWhenAnOpenTabExists",
@@ -333,6 +388,7 @@ INSTANTIATE_TEST_SUITE_P(
                                }),
                                CreateStaticDeepSearchChip(),
                                CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::DISABLED,
         },
         StaticChipsTestCase{
             .test_name = "ThreeChipsUsingMostRecentTab",
@@ -345,6 +401,7 @@ INSTANTIATE_TEST_SUITE_P(
                                }),
                                CreateStaticDeepSearchChip(),
                                CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::DISABLED,
         },
         StaticChipsTestCase{
             .test_name = "MostRecentTabIgnoringChromeUrls",
@@ -358,7 +415,9 @@ INSTANTIATE_TEST_SUITE_P(
                                    .last_active_time = GetTimeAt(1),
                                }),
                                CreateStaticDeepSearchChip(),
-                               CreateStaticImageGenerationChip()}},
+                               CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::DISABLED,
+        },
         StaticChipsTestCase{
             .test_name = "IgnoresAllInvalidTabs",
             .tabs =
@@ -373,7 +432,43 @@ INSTANTIATE_TEST_SUITE_P(
                      .title = "Untrusted Internal Page"},
                 },
             .expected_chips = {CreateStaticDeepSearchChip(),
-                               CreateStaticImageGenerationChip()}},
+                               CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::DISABLED,
+        },
+        StaticChipsTestCase{
+            .test_name = "NotSensitiveTab",
+            .tabs = {{.url = "https://www.example.com",
+                      .title = "Example Tab"}},
+            .expected_chips = {CreateStaticRecentTabChip({
+                                   .title = "Example Tab",
+                                   .url = GURL("https://www.example.com"),
+                                   .last_active_time = GetTimeAt(0),
+                               }),
+                               CreateStaticDeepSearchChip(),
+                               CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::NOT_SENSITIVE,
+        },
+        StaticChipsTestCase{
+            .test_name = "SensitiveTab",
+            .tabs = {{.url = "https://www.example.com",
+                      .title = "Example Tab"}},
+            .expected_chips = {CreateStaticDeepSearchChip(),
+                               CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::SENSITIVE,
+        },
+        StaticChipsTestCase{
+            .test_name = "IneligibleForSensitivityCheck",
+            .tabs = {{.url = "https://www.example.com",
+                      .title = "Example Tab"}},
+            .expected_chips = {CreateStaticRecentTabChip({
+                                   .title = "Example Tab",
+                                   .url = GURL("https://www.example.com"),
+                                   .last_active_time = GetTimeAt(0),
+                               }),
+                               CreateStaticDeepSearchChip(),
+                               CreateStaticImageGenerationChip()},
+            .sensitive = Sensitivity::INELIGIBLE,
+        },
     }),
     [](const testing::TestParamInfo<StaticChipsTestCase>& param_info) {
       return param_info.param.test_name;
@@ -405,6 +500,42 @@ TEST_P(ActionChipsHandlerStaticChipsTest,
               run_loop.Quit();
             }
           });
+
+  // If there is a tab, sensitivity will be checked. Set the default
+  // depending on test.
+  Sensitivity sensitive = GetParam().sensitive;
+  base::test::ScopedFeatureList feature_list;
+  if (sensitive != Sensitivity::DISABLED) {
+    feature_list.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextClientSensitivityCheckParam.name, "true"}});
+  }
+  if (sensitive == Sensitivity::INELIGIBLE) {
+    g_browser_process->SetApplicationLocale("");
+  }
+  bool expect_sensitivity_check = GetParam().tabs.empty() ||
+                                  sensitive == Sensitivity::INELIGIBLE ||
+                                  sensitive == Sensitivity::DISABLED;
+  EXPECT_CALL(history_service(), QueryHistory(_, _, _, _))
+      .Times(expect_sensitivity_check ? 0 : 1)
+      .WillRepeatedly(testing::WithArg<2>(
+          [&sensitive](
+              base::OnceCallback<void(history::QueryResults)> callback) {
+            history::QueryResults query_results;
+            std::vector<history::URLResult> url_results;
+            history::URLResult url_result;
+            history::VisitContentAnnotations annotations;
+            history::VisitContentModelAnnotations model_annotations;
+            if (sensitive == Sensitivity::NOT_SENSITIVE) {
+              model_annotations.visibility_score = 1.0;
+            }
+            annotations.model_annotations = model_annotations;
+            url_result.set_content_annotations(std::move(annotations));
+            url_results.emplace_back(std::move(url_result));
+            query_results.SetURLResults(std::move(url_results));
+            std::move(callback).Run(std::move(query_results));
+            return 1234567890L;
+          }));
 
   // Simulate the first request from the UI.
   handler().StartActionChipsRetrieval();

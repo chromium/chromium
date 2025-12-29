@@ -260,6 +260,10 @@ extern const base::FeatureParam<bool> kNtpNextShowStaticTextParam;
 // dive suggestions.
 extern const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam;
 
+// Parameter determining if the recent tab should be run through client-side
+// sensitivity check.
+extern const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam;
+
 // Parameter determining if the suggestions are retrieved from the newly
 // implemented search suggestions endpoint. If true, the new one is used.
 // If false, an existing endpoint (used by ZPS) is used for deep dive chips,

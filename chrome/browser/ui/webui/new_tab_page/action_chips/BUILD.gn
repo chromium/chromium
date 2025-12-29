@@ -20,8 +20,10 @@ source_set("action_chips") {
   public_deps = [ ":mojo_bindings" ]
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
@@ -61,6 +63,7 @@ source_set("unit_tests") {
   deps = [
     ":action_chips",
     "//base/test:test_support",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
