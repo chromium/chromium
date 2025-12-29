@@ -1001,7 +1001,6 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   } else {
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
-    base::ElapsedTimer open_timer;
     Status status, first_try_status;
     constexpr static const int kNumOpenTries = 2;
     for (int i = 0; i < kNumOpenTries; ++i) {
@@ -1035,18 +1034,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
     first_try_status.LogLevelDbStatus(
         "WebCore.IndexedDB.BackingStore.OpenFirstTryResult");
 
-    if (first_try_status.ok()) [[likely]] {
-      UMA_HISTOGRAM_TIMES(
-          "WebCore.IndexedDB.BackingStore.OpenFirstTrySuccessTime",
-          open_timer.Elapsed());
-    }
-
-    if (status.ok()) [[likely]] {
-      base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenSuccessTime",
-                              open_timer.Elapsed());
-    } else {
-      base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenFailureTime",
-                              open_timer.Elapsed());
+    if (!status.ok()) [[unlikely]] {
       if (disk_full) {
         ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_DISK_FULL,
                          bucket_locator());
@@ -1079,7 +1067,6 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
-    const auto start = base::TimeTicks::Now();
     base::WaitableEvent leveldb_destruct_event;
     backing_store_->TearDown(&leveldb_destruct_event);
     if (!GetTeardownExtraStepForTesting().is_null()) {
@@ -1087,8 +1074,6 @@ void BucketContext::ResetBackingStore() {
     }
     backing_store_.reset();
     leveldb_destruct_event.Wait();
-    base::UmaHistogramTimes("IndexedDB.BackingStoreCloseDuration",
-                            base::TimeTicks::Now() - start);
   }
 
   if (is_doomed_) {

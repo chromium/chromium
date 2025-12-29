@@ -1528,7 +1528,6 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
   scoped_refptr<LevelDBState> database_state;
   {
     TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify.OpenLevelDB");
-    base::TimeTicks begin_time = base::TimeTicks::Now();
     leveldb::Status ldb_status;
     bool is_disk_full = false;
     std::tie(database_state, ldb_status, is_disk_full) = CreateLevelDBState(
@@ -1542,8 +1541,6 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
       return {nullptr, std::move(ldb_status), IndexedDBDataLossInfo(),
               is_disk_full};
     }
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
-                                          base::TimeTicks::Now() - begin_time);
   }
 
   // Create the LevelDBScopes wrapper.

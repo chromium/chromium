@@ -177,15 +177,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.BackingStore.OpenFailureTime" units="ms"
-    expires_after="2025-04-13">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the time that it takes to fail to open IndexedDB's backing store.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.BackingStore.OpenFirstTryResult"
     enum="LevelDBStatus" expires_after="never">
 <!-- expires-never: indexeddb heartbeat metric; used for chirp alerts (go/chrome-indexeddb-heartbeat) -->
@@ -198,17 +189,6 @@ chromium-metrics-reviews@google.com.
     needs to open the backing store (if it isn't already opened). API calls that
     can open the backing store are: IDBFactory::Open, GetDatabaseNames,
     GetDatabaseInfo, and DeleteDatabase.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.BackingStore.OpenFirstTrySuccessTime"
-    units="ms" expires_after="2025-05-04">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the time that it takes to open IndexedDB's backing store. This is
-    only recorded if the backing store was opened successfully on the first
-    attempt.
   </summary>
 </histogram>
 
@@ -237,45 +217,6 @@ chromium-metrics-reviews@google.com.
     Count of the different success and failure modes when opening an IndexedDB
     backing store - clean open, successful open with recovery, failed recovery,
     etc. Only for docs.google.com.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.BackingStore.OpenSuccessTime" units="ms"
-    expires_after="2025-06-22">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the time that it takes to succesfully open IndexedDB's backing
-    store. Unlike OpenFirstTrySuccessTime, this is recorded regardless of
-    whether the success was on the first try.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
-    expires_after="2025-08-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The time that it takes to close IndexedDB's LevelDB backing store.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDB.OpenTime" units="ms"
-    expires_after="2025-08-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The time that it takes to open IndexedDB's LevelDB backing store.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDB.WriteTime" units="ms"
-    expires_after="2025-08-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The time that it takes to write data to an IndexedDB's LevelDB backing
-    store.
   </summary>
 </histogram>
 
