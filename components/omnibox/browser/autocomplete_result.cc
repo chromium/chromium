@@ -1346,6 +1346,7 @@ void AutocompleteResult::ClearMatches() {
   matches_.clear();
   suggestion_groups_map_.clear();
   smart_compose_inline_hint_.clear();
+  has_contextual_chips_ = false;
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif
@@ -1355,6 +1356,7 @@ void AutocompleteResult::SwapMatchesWith(AutocompleteResult* other) {
   matches_.swap(other->matches_);
   suggestion_groups_map_.swap(other->suggestion_groups_map_);
   smart_compose_inline_hint_.swap(other->smart_compose_inline_hint_);
+  has_contextual_chips_ = other->has_contextual_chips();
 
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -1369,6 +1371,7 @@ void AutocompleteResult::CopyMatchesFrom(const AutocompleteResult& other) {
   matches_ = other.matches_;
   suggestion_groups_map_ = other.suggestion_groups_map_;
   smart_compose_inline_hint_ = other.smart_compose_inline_hint_;
+  has_contextual_chips_ = other.has_contextual_chips();
 
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();

@@ -799,7 +799,8 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   UpdateResult(UpdateType::kStop);
   CancelNotifyChangedRequest();
 
-  const bool non_empty_result = !internal_result_.empty();
+  const bool non_empty_result =
+      !internal_result_.empty() || internal_result_.has_contextual_chips();
   if (stop_reason == AutocompleteStopReason::kClobbered) {
     internal_result_.Reset();
     if (non_empty_result) {
@@ -1521,6 +1522,11 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   }
 
   PostProcessMatches();
+
+  const bool is_lens_enabled = autocomplete_provider_client()->IsLensEnabled();
+
+  internal_result_.set_has_contextual_chips(
+      mia_enabled && (is_lens_enabled || can_show_contextual_suggestions));
 
   bool default_match_changed = CheckWhetherDefaultMatchChanged(
       old_result.last_default_match,
