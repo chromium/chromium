@@ -5,12 +5,10 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
+#include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/interest_group_api_operation.h"
-
-#include "base/time/time.h"
 
 class GURL;
 
@@ -91,17 +89,6 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the Privacy Sandbox is partially enabled based on
     // restrictions.
     virtual bool IsRestrictedNoticeEnabled() const = 0;
-
-    // Whether the profile is eligible for 3PCD experiment. The eligibility
-    // applies for both mode A and mode B experiments.
-    virtual bool IsCookieDeprecationExperimentEligible() const = 0;
-
-    // Returns the profile's computed eligibility for 3PCD experiment. The
-    // eligibility applies for both mode A and mode B experiments. Unlike
-    // `IsCookieDeprecationExperimentEligible` this method returns the real time
-    // eligibility.
-    virtual TpcdExperimentEligibility
-    GetCookieDeprecationExperimentCurrentEligibility() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -291,12 +278,6 @@ class PrivacySandboxSettings : public KeyedService {
   virtual bool IsPrivateAggregationDebugModeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
-
-  // Returns the profile computed eligibility for 3PCD experiments.
-  // This consults the delegate for the real time eligibility of the profile.
-  // The eligibility applies for both mode A and mode B experiments.
-  virtual TpcdExperimentEligibility
-  GetCookieDeprecationExperimentCurrentEligibility() const = 0;
 
   // Allows all Privacy Sandbox prefs for testing. This should be used if tests
   // don't depend on specific access control and just would like to have Privacy

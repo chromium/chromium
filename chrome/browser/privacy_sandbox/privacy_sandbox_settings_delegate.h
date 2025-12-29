@@ -13,7 +13,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 
 class Profile;
 
@@ -36,9 +35,6 @@ class PrivacySandboxSettingsDelegate
   bool IsIncognitoProfile() const override;
   bool HasAppropriateTopicsConsent() const override;
   bool IsSubjectToM1NoticeRestricted() const override;
-  bool IsCookieDeprecationExperimentEligible() const override;
-  privacy_sandbox::TpcdExperimentEligibility
-  GetCookieDeprecationExperimentCurrentEligibility() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
@@ -49,7 +45,6 @@ class PrivacySandboxSettingsDelegate
   bool PrivacySandboxRestrictedNoticeRequired() const;
   bool IsSubjectToEnterpriseFeatures() const;
   raw_ptr<Profile> profile_;
-  mutable std::optional<bool> is_cookie_deprecation_experiment_eligible_;
 
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 

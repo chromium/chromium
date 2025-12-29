@@ -14,7 +14,6 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 
 class HostContentSettingsMap;
 class PrefService;
@@ -104,8 +103,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   bool IsPrivateAggregationDebugModeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
-  TpcdExperimentEligibility GetCookieDeprecationExperimentCurrentEligibility()
-      const override;
 
   void SetAllPrivacySandboxAllowedForTesting() override;
   void SetTopicsBlockedForTesting() override;
@@ -145,7 +142,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kAttestationsDownloadedNotYetLoaded = 8,
     kAttestationsFileCorrupt = 9,
     kJoiningTopFrameBlocked = 10,
-    kBlockedBy3pcdExperiment = 11,
     kAttestationsFileNotYetChecked = 12,
     kAttestationsFileNotPresent = 13,
     kMaxValue = kAttestationsFileNotPresent,

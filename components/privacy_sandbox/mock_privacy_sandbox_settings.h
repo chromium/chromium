@@ -6,7 +6,6 @@
 #define COMPONENTS_PRIVACY_SANDBOX_MOCK_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace privacy_sandbox_test_util {
@@ -101,10 +100,6 @@ class MockPrivacySandboxSettings
   MOCK_METHOD(bool,
               IsPrivateAggregationDebugModeAllowed,
               (const url::Origin&, const url::Origin&),
-              (override, const));
-  MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
-              GetCookieDeprecationExperimentCurrentEligibility,
-              (),
               (override, const));
   MOCK_METHOD(void, SetAllPrivacySandboxAllowedForTesting, (), (override));
   MOCK_METHOD(void, SetTopicsBlockedForTesting, (), (override));

@@ -36,7 +36,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -945,10 +944,6 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
-  if (delegate_->IsCookieDeprecationExperimentEligible() &&
-      features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
-    return Status::kBlockedBy3pcdExperiment;
-  }
 
   bool should_ignore_restriction =
       pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled &&
@@ -970,12 +965,6 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   status = (pref_service_->GetBoolean(pref_name)) ? Status::kAllowed
                                                   : Status::kApisDisabled;
   return status;
-}
-
-TpcdExperimentEligibility
-PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
-    const {
-  return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
