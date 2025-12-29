@@ -324,6 +324,15 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Called when the side panel alignment chgces.
   void OnSidePanelAlignmentChanged();
 
+  // TODO(crbug.com/404941800): All the Handle*Response methods should not exist
+  // in this class. They currently exist to unblock development. They will be
+  // removed once the migration is complete. Handles the response to the Lens
+  // start query request.
+  virtual void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text,
+      bool is_error);
+
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
                                         bool is_click);
@@ -545,15 +554,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Returns a search query struct containing the current state of the overlay.
   void AddOverlayStateToSearchQuery(lens::SearchQuery& search_query);
-
-  // TODO(crbug.com/404941800): All the Handle*Response methods should not exist
-  // in this class. They currently exist to unblock development. They will be
-  // removed once the migration is complete. Handles the response to the Lens
-  // start query request.
-  void HandleStartQueryResponse(
-      std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text,
-      bool is_error);
 
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(

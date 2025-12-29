@@ -83,6 +83,10 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     fake_cluster_info_response_ = response;
   }
 
+  void set_fake_file_upload_response(lens::LensOverlayServerResponse response) {
+    fake_file_upload_response_ = response;
+  }
+
   void set_next_cluster_info_request_should_return_error(
       bool set_next_cluster_info_request_should_return_error) {
     next_cluster_info_request_should_return_error_ =
@@ -191,6 +195,9 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
+
+  // The fake response to return for file upload requests.
+  lens::LensOverlayServerResponse fake_file_upload_response_;
 
   // The number of cluster info fetch requests sent by the query controller.
   int num_cluster_info_fetch_requests_sent_ = 0;

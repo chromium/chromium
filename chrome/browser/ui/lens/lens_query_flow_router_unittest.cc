@@ -116,6 +116,9 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
     raw_mock_session_handle_ = pending_mock_session_handle_.get();
     ON_CALL(*pending_mock_session_handle_, GetController())
         .WillByDefault(Return(mock_context_controller));
+    ON_CALL(*pending_mock_session_handle_, AddTabContext(_, _))
+        .WillByDefault(
+            base::test::RunOnceCallback<1>(base::UnguessableToken::Create()));
     pending_mock_session_handle_->CheckSearchContentSharingSettings(
         profile->GetPrefs());
     viewport_screenshot_.allocN32Pixels(10, 10);
@@ -178,6 +181,12 @@ class MockLensOverlayController : public LensOverlayController {
   ~MockLensOverlayController() override = default;
 
   MOCK_METHOD(void, NotifyResultsPanelOpened, (), (override));
+  MOCK_METHOD(void,
+              HandleStartQueryResponse,
+              (std::vector<lens::mojom::OverlayObjectPtr> objects,
+               lens::mojom::TextPtr text,
+               bool is_error),
+              (override));
 };
 
 class MockContextualTasksUiService
@@ -886,6 +895,105 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act
   router.SetSuggestInputsReadyCallback(base::DoNothing());
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       OnFileUploadStatusChanged_PassesTextAndObjectsToOverlay) {
+  // Arrange: Set up and create the router.
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillRepeatedly(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
+
+  // Act: Start query flow to set the token.
+  router.StartQueryFlow(router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+
+  // Arrange: Mock GetFileInfo to return text.
+  contextual_search::FileInfo file_info;
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_objects_response()
+      ->mutable_text()
+      ->set_content_language("en");
+  auto* object =
+      server_response.mutable_objects_response()->add_overlay_objects();
+  object->set_id("test_id");
+  object->mutable_interaction_properties()->set_select_on_tap(true);
+  std::string serialized_response;
+  server_response.SerializeToString(&serialized_response);
+  file_info.response_bodies.push_back(serialized_response);
+  EXPECT_CALL(*mock_context_controller_, GetFileInfo(file_token))
+      .WillOnce(Return(&file_info));
+
+  // Assert: Expect HandleStartQueryResponse to be called with text.
+  EXPECT_CALL(*mock_lens_overlay_controller_, HandleStartQueryResponse(_, _, _))
+      .WillOnce([](std::vector<lens::mojom::OverlayObjectPtr> objects,
+                   lens::mojom::TextPtr text, bool is_error) {
+        EXPECT_EQ(text->content_language, "en");
+        EXPECT_EQ(objects.size(), 1u);
+        EXPECT_EQ(objects[0]->id, "test_id");
+        EXPECT_FALSE(is_error);
+      });
+
+  // Act: Trigger file upload status changed.
+  router.OnFileUploadStatusChangedForTesting(
+      file_token, lens::MimeType::kPdf,
+      contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    OnFileUploadStatusChanged_DoesNotPassTextAndObjectsToOverlayIfTokensDoNotMatch) {
+  // Arrange: Set up and create the router.
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillRepeatedly(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
+
+  // Act: Start query flow to set the token.
+  router.StartQueryFlow(router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+
+  // Assert: Expect HandleStartQueryResponse to NOT be called.
+  EXPECT_CALL(*mock_lens_overlay_controller_, HandleStartQueryResponse(_, _, _))
+      .Times(0);
+
+  // Act: Trigger file upload status changed with a different token.
+  router.OnFileUploadStatusChangedForTesting(
+      base::UnguessableToken::Create(), lens::MimeType::kPdf,
+      contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
 }
 
 }  // namespace lens

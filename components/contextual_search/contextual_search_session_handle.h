@@ -91,7 +91,7 @@ class ContextualSearchSessionHandle {
   // contextual input data.
   // TODO(crbug.com/461869881): Pass more metadata than just the tab id for
   //  being able to return the list of attached tabs.
-  void AddTabContext(int32_t tab_id, AddTabContextCallback callback);
+  virtual void AddTabContext(int32_t tab_id, AddTabContextCallback callback);
 
   // Starts the tab context upload flow for the given file token using the
   // tab context stored in the contextual input data.

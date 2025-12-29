@@ -1460,6 +1460,9 @@ void ComposeboxQueryController::HandleUploadResponse(
     return;
   }
 
+  // Store the response body for later processing.
+  file_info->response_bodies.push_back(response->response);
+
   // If the file was still uploading and there are no more outstanding network
   // requests, update the file upload status to successful. The upload status
   // would have been set to ServerError if the response code for any prior

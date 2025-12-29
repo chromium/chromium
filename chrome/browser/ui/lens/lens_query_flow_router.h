@@ -98,6 +98,13 @@ class LensQueryFlowRouter
       std::optional<SkBitmap> region_bytes,
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Testing method to trigger the file upload status changed callback.
+  void OnFileUploadStatusChangedForTesting(
+      const base::UnguessableToken& file_token,
+      lens::MimeType mime_type,
+      contextual_search::FileUploadStatus file_upload_status,
+      const std::optional<contextual_search::FileUploadErrorType>& error_type);
+
  protected:
   // Creates a contextual search session handle. Virtual for testing.
   virtual std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
@@ -122,6 +129,10 @@ class LensQueryFlowRouter
   LensSearchContextualizationController*
   lens_search_contextualization_controller() const {
     return lens_search_controller_->lens_search_contextualization_controller();
+  }
+
+  LensOverlayController* lens_overlay_controller() const {
+    return lens_search_controller_->lens_overlay_controller();
   }
 
   tabs::TabInterface* tab_interface() const {
@@ -203,6 +214,11 @@ class LensQueryFlowRouter
 
   // The callback for when the suggest inputs are ready.
   base::RepeatingClosure suggest_inputs_ready_callback_;
+
+  // An optional value representing the file token for the tab and full image
+  // viewport uploaded when the overlay first opens.
+  std::optional<base::UnguessableToken> overlay_tab_context_file_token_ =
+      std::nullopt;
 
   raw_ptr<LensSearchController> lens_search_controller_;
 

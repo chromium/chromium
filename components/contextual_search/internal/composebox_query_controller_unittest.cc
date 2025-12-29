@@ -3118,6 +3118,40 @@ TEST_F(ComposeboxQueryControllerTest,
               EqualsProto(second_file_request_id));
 }
 
+TEST_F(ComposeboxQueryControllerTest, UploadFileResponseSetsResponseBodies) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Arrange: Create a fake response with text.
+  lens::LensOverlayServerResponse file_upload_response;
+  file_upload_response.mutable_objects_response()
+      ->mutable_text()
+      ->set_content_language("en");
+  file_upload_response.mutable_objects_response()->add_overlay_objects();
+
+  controller().set_fake_file_upload_response(file_upload_response);
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Assert: Verify viewport text is set.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  EXPECT_EQ(file_info->response_bodies.size(), 1u);
+  lens::LensOverlayServerResponse server_response;
+  ASSERT_TRUE(server_response.ParseFromString(file_info->response_bodies[0]));
+  EXPECT_TRUE(server_response.has_objects_response());
+  EXPECT_EQ(server_response.objects_response().text().content_language(), "en");
+  EXPECT_EQ(server_response.objects_response().overlay_objects().size(), 1);
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadFileBeforeClusterInfoUpdatesRequestId) {
   // Act: Start the file upload flow BEFORE cluster info is received.
