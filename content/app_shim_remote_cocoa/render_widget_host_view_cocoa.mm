@@ -786,6 +786,17 @@ void ExtractUnderlines(NSAttributedString* string,
       [self acceptsMouseEventsOption] > AcceptMouseEvents::kWhenInActiveWindow;
 }
 
+- (AcceptTooltipEvents)acceptsTooltipEvents {
+  // The embedder may override this behavior to mimic native UI.
+  if (_responderDelegate &&
+      [_responderDelegate respondsToSelector:@selector(acceptsTooltipEvents)]) {
+    return [_responderDelegate acceptsTooltipEvents];
+  }
+
+  // By default, only the key window accepts tooltip events.
+  return AcceptTooltipEvents::kWhenInKeyWindow;
+}
+
 - (void)setCloseOnDeactivate:(BOOL)b {
   _closeOnDeactivate = b;
 }

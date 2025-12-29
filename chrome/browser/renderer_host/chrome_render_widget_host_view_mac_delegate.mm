@@ -465,4 +465,20 @@
   return AcceptMouseEvents::kWhenInActiveWindow;
 }
 
+- (AcceptTooltipEvents)acceptsTooltipEvents {
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
+    return AcceptTooltipEvents::kWhenInKeyWindow;
+  }
+
+  // For Top Chrome WebUIs, allows non-key windows to accept
+  // tooltip events.
+  if (IsTopChromeWebUIURL(webContents->GetVisibleURL()) ||
+      IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
+    return AcceptTooltipEvents::kWhenInActiveApp;
+  }
+
+  return AcceptTooltipEvents::kWhenInKeyWindow;
+}
+
 @end
