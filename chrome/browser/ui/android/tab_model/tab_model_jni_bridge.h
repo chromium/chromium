@@ -147,6 +147,10 @@ class TabModelJniBridge : public TabModel {
 
   static TabModel* GetArchivedTabModelPtr();
 
+  static bool IsTabLaunchedInForeground(TabLaunchType type,
+                                        bool is_new_tab_incognito,
+                                        bool is_current_model_incognito);
+
  protected:
   jni_zero::ScopedJavaLocalRef<jobject> GetActivityForWindow(
       SessionID window_id);

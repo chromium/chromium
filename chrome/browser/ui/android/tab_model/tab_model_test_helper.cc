@@ -22,6 +22,7 @@
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "content/public/browser/visibility.h"
@@ -248,29 +249,6 @@ void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
 }
 #endif
 
-namespace {
-// See TabModelOrderController#willOpenInForeground() for the
-// complete, correct implementation of this function. If your test needs this
-// to be more accurate please consider removing this partial duplication.
-bool WillOpenInForeground(TabModel::TabLaunchType type) {
-  if (type == TabModel::TabLaunchType::FROM_RESTORE ||
-      type == TabModel::TabLaunchType::FROM_BROWSER_ACTIONS ||
-      type == TabModel::TabLaunchType::FROM_RESTORE_TABS_UI ||
-      type == TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE) {
-    return false;
-  }
-  return type != TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND &&
-         type != TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND_IN_GROUP &&
-         type != TabModel::TabLaunchType::FROM_RECENT_TABS &&
-         type != TabModel::TabLaunchType::FROM_SYNC_BACKGROUND &&
-         type !=
-             TabModel::TabLaunchType::FROM_COLLABORATION_BACKGROUND_IN_GROUP &&
-         type != TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND &&
-         type != TabModel::TabLaunchType::FROM_REPARENTING_BACKGROUND &&
-         type != TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_BACKGROUND;
-}
-}  // end namespace
-
 OwningTestTabModel::OwningTestTabModel(
     Profile* profile,
     chrome::android::ActivityType activity_type)
@@ -376,7 +354,10 @@ void OwningTestTabModel::CreateTab(TabAndroid* parent,
   size_t insertion_index =
       (index == TabModel::kInvalidIndex) ? owned_tabs_.size() : index;
 
-  bool select_tab = WillOpenInForeground(type);
+  bool is_new_tab_incognito =
+      web_contents->GetBrowserContext()->IsOffTheRecord();
+  bool select_tab = TabModelJniBridge::IsTabLaunchedInForeground(
+      type, is_new_tab_incognito, GetProfile()->IsOffTheRecord());
 
   // Take ownership of the WebContents.
   AddTabFromWebContents(std::unique_ptr<content::WebContents>(web_contents),

@@ -648,6 +648,15 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         mNativeTabModelJniBridge);
     }
 
+    @CalledByNative
+    private static boolean isTabLaunchedInForeground(
+            @TabLaunchType int type,
+            boolean isNewTabIncognitoBranded,
+            boolean isCurrentModelIncognitoBranded) {
+        return TabModelOrderControllerImpl.willOpenInForeground(
+                type, isNewTabIncognitoBranded, isCurrentModelIncognitoBranded);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

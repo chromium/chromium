@@ -695,6 +695,17 @@ jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
   return org_chromium_chrome_browser_tabmodel_TabModelJniBridge_clazz(env);
 }
 
+// static
+bool TabModelJniBridge::IsTabLaunchedInForeground(
+    TabLaunchType type,
+    bool is_new_tab_incognito,
+    bool is_current_model_incognito) {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabModelJniBridge_isTabLaunchedInForeground(
+      env, static_cast<int>(type), is_new_tab_incognito,
+      is_current_model_incognito);
+}
+
 TabModelJniBridge::~TabModelJniBridge() {
   if (is_archived_tab_model_) {
     TabModelList::SetArchivedTabModel(nullptr);
