@@ -1032,7 +1032,8 @@ class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
   ~ScrollBeginObserver() override { rwh_->RemoveInputEventObserver(this); }
 
   void OnInputEvent(const RenderWidgetHost&,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource) override {
     if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin) {
       return;
     }

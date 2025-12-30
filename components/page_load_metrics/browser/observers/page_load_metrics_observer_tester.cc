@@ -322,7 +322,8 @@ void PageLoadMetricsObserverTester::SimulateFrameReceivedUserActivation(
 void PageLoadMetricsObserverTester::SimulateInputEvent(
     const blink::WebInputEvent& event) {
   metrics_web_contents_observer_->OnInputEvent(
-      *web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(), event);
+      *web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(), event,
+      input::InputEventSource::kBrowser);
 }
 
 void PageLoadMetricsObserverTester::SimulateAppEnterBackground() {

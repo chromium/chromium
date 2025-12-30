@@ -783,7 +783,8 @@ class InputHandler::InputInjector
 
  private:
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     input_queued_ = true;
   }
 

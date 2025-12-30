@@ -35,7 +35,8 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
 
   void DidSubmitCompositorFrame() override;
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override;
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override;
 
  private:
   // DelegatedFrameHostAndroid::Client implementation.

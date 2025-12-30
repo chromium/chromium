@@ -960,7 +960,8 @@ void MetricsWebContentsObserver::NavigationStopped() {
 
 void MetricsWebContentsObserver::OnInputEvent(
     const content::RenderWidgetHost& widget,
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    input::InputEventSource source) {
   // Ignore browser navigation or reload which comes with type Undefined.
   if (event.GetType() == blink::WebInputEvent::Type::kUndefined) {
     return;

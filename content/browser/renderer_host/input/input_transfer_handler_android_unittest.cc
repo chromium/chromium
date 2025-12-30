@@ -15,8 +15,10 @@
 #include "components/input/features.h"
 #include "components/input/utils.h"
 #include "components/viz/common/input/viz_touch_state.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
@@ -127,13 +129,14 @@ std::unique_ptr<ui::MotionEventAndroid> GetMotionEventAndroid(
 
 // TODO(crbug.com/397939487): Add helper methods to generate test input
 // to help simplifying test logic and use mock time source.
-class InputTransferHandlerTest : public testing::Test {
+class InputTransferHandlerTest : public RenderViewHostTestHarness {
  public:
   explicit InputTransferHandlerTest(bool init_feature = true)
       : finger_pointer_(0, 0, 0, 0, 0, 0, 0, 0, 0),
         init_feature_(init_feature) {}
 
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
     if (init_feature_) {
       scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
     }
@@ -159,6 +162,7 @@ class InputTransferHandlerTest : public testing::Test {
   void TearDown() override {
     transfer_handler_.reset();
     input_transfer_handler_client_.reset();
+    RenderViewHostTestHarness::TearDown();
   }
 
  protected:
@@ -626,6 +630,88 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
     testing::Mock::VerifyAndClearExpectations(
         input_transfer_handler_client_.get());
   }
+}
+
+TEST_F(InputTransferHandlerTest, AcceptsNewSequenceAfterBrowserCancel) {
+  base::TimeTicks event_time =
+      base::TimeTicks::Now() - base::Milliseconds(1000);
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  // Start a sequence and transfer it.
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce([&]() {
+    return kSuccessfullyTransferred;
+  });
+  EXPECT_CALL(*input_transfer_handler_client_,
+              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+      .Times(1);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+
+  event_time += base::Milliseconds(8);
+  // Verify that subsequent events are consumed (transferred state).
+  auto move_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
+
+  event_time += base::Milliseconds(8);
+  // Simulate receiving a TouchCancel from the Browser process (e.g. timeout).
+  // This should reset the handler state.
+  blink::WebTouchEvent touch_cancel(blink::WebInputEvent::Type::kTouchCancel,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    event_time);
+  transfer_handler_->GetInputObserver().OnInputEvent(
+      *rvh()->GetWidget(), touch_cancel, input::InputEventSource::kBrowser);
+
+  // Now start a NEW sequence. It should be processed normally (attempt
+  // transfer), not dropped or auto-consumed as part of the old sequence.
+  // Advance time enough to be distinct, and ensure event time > down time to
+  // avoid negative delta checks.
+  event_time += base::Milliseconds(16);
+  auto down_event_2 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce([&]() {
+    return kSuccessfullyTransferred;
+  });
+  EXPECT_CALL(*input_transfer_handler_client_,
+              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+      .Times(1);
+
+  // If reset worked, this returns true because it's a new successful transfer,
+  // NOT because it's "consuming events until cancel" from the old sequence.
+  // The Mock expectation above proves we entered the transfer logic again.
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
+}
+
+TEST_F(InputTransferHandlerTest, DoNotResetOnVizCancel) {
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  // Start a sequence and transfer it.
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce([&]() {
+    transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
+    return kSuccessfullyTransferred;
+  });
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+
+  event_time += base::Milliseconds(8);
+  // Simulate receiving a TouchCancel from the VIZ process.
+  // This should NOT reset the handler state (it waits for local cancel).
+  blink::WebTouchEvent touch_cancel(blink::WebInputEvent::Type::kTouchCancel,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    event_time);
+  transfer_handler_->GetInputObserver().OnInputEvent(
+      *rvh()->GetWidget(), touch_cancel, input::InputEventSource::kViz);
+
+  event_time += base::Milliseconds(8);
+  // New events should still be consumed as part of the transferred sequence
+  // (or dropped if we consider the sequence dead, but the key is we didn't
+  // reset). Actually, if we didn't reset, we are still in
+  // kConsumeEventsUntilCancel.
+  auto move_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
 }
 
 class DownTimeAfterEventTimeTest

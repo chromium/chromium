@@ -179,7 +179,8 @@ void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
 }
 
 void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
-                                          const blink::WebInputEvent& event) {
+                                          const blink::WebInputEvent& event,
+                                          InputEventSource source) {
   const blink::mojom::EventType event_type = event.GetType();
 
   if (IsUserInteractionInputType(event_type)) {

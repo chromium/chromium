@@ -371,6 +371,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool& ended_delegated_ink_trail) override;
   void NotifyObserversOfInputEvent(const blink::WebInputEvent& event,
                                    bool dispatched_to_renderer) override;
+  void NotifyObserversOfInputEventWithSource(const blink::WebInputEvent& event,
+                                             input::InputEventSource source,
+                                             bool dispatched_to_renderer);
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,

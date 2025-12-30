@@ -1666,7 +1666,8 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent&) override;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent&) override;
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override;
 
   raw_ptr<RenderWidgetHost> render_widget_host_;
   blink::WebInputEvent::Type last_sent_event_type_ =

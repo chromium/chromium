@@ -345,9 +345,12 @@ FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
 // MockInputEventObserver -------------------------------------------------
 class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD2(OnInputEvent,
-               void(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent&));
+  MOCK_METHOD(void,
+              OnInputEvent,
+              (const RenderWidgetHost& widget,
+               const blink::WebInputEvent&,
+               InputEventSource),
+              (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
@@ -2472,7 +2475,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   // Confirm OnInputEvent is triggered.
   input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
-  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _, _)).Times(1);
   std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
       .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 
@@ -2480,7 +2483,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->RemoveInputEventObserver(&observer);
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _, _)).Times(0);
   std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
       .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 }
@@ -2499,7 +2502,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   // Confirm OnInputEvent is triggered.
   input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
-  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _, _)).Times(1);
   std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
       .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 
@@ -2507,7 +2510,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   scoped_observation.Reset();
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _, _)).Times(0);
   std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
       .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 }

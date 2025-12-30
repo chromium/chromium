@@ -105,7 +105,8 @@ class ChromePasswordReuseDetectionManagerClient
 
   // content::RenderWidgetHost::InputEventObserver overrides.
   void OnInputEvent(const content::RenderWidgetHost& widget,
-                    const blink::WebInputEvent&) override;
+                    const blink::WebInputEvent& event,
+                    input::InputEventSource source) override;
 
   // Implements signin::IdentityManager::Observer.
   void OnPrimaryAccountChanged(

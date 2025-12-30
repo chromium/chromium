@@ -108,7 +108,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
     ~InputObserver() override;
     // Start RenderWidgetHost::InputEventObserver overrides
     void OnInputEvent(const RenderWidgetHost& host,
-                      const blink::WebInputEvent& event) override;
+                      const blink::WebInputEvent& event,
+                      InputEventSource source) override;
     // End RenderWidgetHost::InputEventObserver overrides
 
    private:

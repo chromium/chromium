@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
+#include "components/input/input_event_source.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
@@ -226,10 +227,14 @@ class CONTENT_EXPORT RenderWidgetHost {
   // Observer for WebInputEvents.
   class InputEventObserver {
    public:
-    virtual ~InputEventObserver() {}
+    using InputEventSource = input::InputEventSource;
+    virtual ~InputEventObserver() = default;
 
-    virtual void OnInputEvent(const RenderWidgetHost&,
-                              const blink::WebInputEvent&) {}
+    // Called when an input event is received. `source` indicates whether the
+    // event was received from the browser or Viz process.
+    virtual void OnInputEvent(const RenderWidgetHost& host,
+                              const blink::WebInputEvent& event,
+                              InputEventSource source) {}
     virtual void OnInputEventAck(const RenderWidgetHost&,
                                  blink::mojom::InputEventResultSource source,
                                  blink::mojom::InputEventResultState state,

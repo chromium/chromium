@@ -152,7 +152,8 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   ~TestInputEventObserver() override {}
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     dispatched_events_.push_back(event.GetType());
   }
 

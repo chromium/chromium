@@ -2678,8 +2678,16 @@ std::optional<bool> RenderWidgetHostImpl::IsDelegatedInkHovering() {
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
     const WebInputEvent& event,
     bool dispatched_to_renderer) {
+  NotifyObserversOfInputEventWithSource(
+      event, input::InputEventSource::kBrowser, dispatched_to_renderer);
+}
+
+void RenderWidgetHostImpl::NotifyObserversOfInputEventWithSource(
+    const WebInputEvent& event,
+    input::InputEventSource source,
+    bool dispatched_to_renderer) {
   for (auto& observer : input_event_observers_) {
-    observer.OnInputEvent(*this, event);
+    observer.OnInputEvent(*this, event, source);
   }
   if (dispatched_to_renderer) {
     delegate_->DidReceiveInputEvent(this, event);
