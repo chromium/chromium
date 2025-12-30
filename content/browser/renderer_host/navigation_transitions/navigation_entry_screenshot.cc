@@ -132,11 +132,11 @@ bool NavigationEntryScreenshot::SharedImageProvider::
   if (!shared_image) {
     return false;
   }
-  // By the time the screenshot is created, the shared_image is already
-  // finalized, so no sync token is necessary.
-  gpu::SyncToken sync_token;
+  // Synchronize using the creation token so that the shared image is available
+  // in viz before the resource is used.
   *transferable_resource = viz::TransferableResource::Make(
-      shared_image, viz::TransferableResource::ResourceSource::kUI, sync_token);
+      shared_image, viz::TransferableResource::ResourceSource::kUI,
+      shared_image->creation_sync_token());
   *release_callback =
       base::BindOnce(&NavigationEntryScreenshot::SharedImageProvider::DoRelease,
                      base::WrapRefCounted(this));
