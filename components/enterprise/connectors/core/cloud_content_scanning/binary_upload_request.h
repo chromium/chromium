@@ -153,6 +153,7 @@ class BinaryUploadRequest {
   void set_source_content_area_account_email(const std::string& email);
   void set_frame_url_chain(
       const google::protobuf::RepeatedPtrField<std::string> frame_url_chain);
+  void set_content_hash_in_final_call(bool content_hash_in_final_call);
 
   std::string SetRandomRequestToken();
 
@@ -173,6 +174,7 @@ class BinaryUploadRequest {
   bool blocking() const;
   bool is_content_encrypted() const;
   bool is_content_too_large() const;
+  bool content_hash_in_final_call() const;
 
   // Called when beginning to try upload.
   void StartRequest();

@@ -561,7 +561,7 @@ void ContentAnalysisDelegate::FilesRequestCallback(
   // Remember to send acks for any responses.
   files_request_handler_->AppendFinalActionsTo(&final_actions_);
 
-  // No reporting here, because the MultiFileRequestHandler does that.
+  // No reporting here, because the FilesRequestHandler does that.
   DCHECK_EQ(results.size(), result_.paths_results.size());
   for (size_t index = 0; index < results.size(); ++index) {
     FinalContentAnalysisResult result = results[index].final_result;
@@ -654,12 +654,12 @@ ContentAnalysisDelegate::UploadData() {
 
   if (!data_.paths.empty()) {
     // Passing the settings using a reference is safe here, because
-    // MultiFileRequestHandler is owned by this class.
+    // FilesRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
         this, GetBinaryUploadService(), profile_, url_, "", "",
         GetContentTransferMethod(), access_point_, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
-                       GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();
   } else {
     // If no files should be uploaded, the file request is complete.

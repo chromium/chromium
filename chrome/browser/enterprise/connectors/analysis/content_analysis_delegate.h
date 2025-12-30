@@ -301,10 +301,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Callback called after all files are scanned by the FilesRequestHandler.
   void FilesRequestCallback(std::vector<RequestHandlerResult> results);
 
-  base::WeakPtr<ContentAnalysisDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
   const Data& GetDataForTesting() { return data_; }

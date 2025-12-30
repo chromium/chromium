@@ -242,6 +242,12 @@ void BinaryUploadRequest::set_frame_url_chain(
       std::move(frame_url_chain);
 }
 
+void BinaryUploadRequest::set_content_hash_in_final_call(
+    bool content_hash_in_final_call) {
+  content_analysis_request_.set_content_hash_in_final_call(
+      content_hash_in_final_call);
+}
+
 std::string BinaryUploadRequest::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(
@@ -329,6 +335,10 @@ bool BinaryUploadRequest::is_content_too_large() const {
 
 bool BinaryUploadRequest::is_content_encrypted() const {
   return content_analysis_request_.is_content_encrypted();
+}
+
+bool BinaryUploadRequest::content_hash_in_final_call() const {
+  return content_analysis_request_.content_hash_in_final_call();
 }
 
 void BinaryUploadRequest::StartRequest() {
