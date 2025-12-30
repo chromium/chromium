@@ -9381,7 +9381,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlist) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  WebContents* web_contents = shell()->web_contents();
+
+  std::optional<base::UnguessableToken> first_network_restrictions_id =
+      web_contents()->GetPrimaryMainFrame()->GetNetworkRestrictionsID();
+  EXPECT_TRUE(first_network_restrictions_id.has_value());
 
   GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
   std::string fetch_resource = JsReplace(
@@ -9390,7 +9393,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
       "  return resp.status; })();",
       fetch_url);
 
-  EXPECT_EQ(200, EvalJs(web_contents->GetPrimaryMainFrame(), fetch_resource));
+  EXPECT_EQ(200, EvalJs(web_contents()->GetPrimaryMainFrame(), fetch_resource));
 
   // now fetch a cross-origin resource. It should be disallowed.
   GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
@@ -9399,8 +9402,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
       "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
       "  return resp.status; })();",
       d_url);
-  ASSERT_FALSE(
-      ExecJs(web_contents->GetPrimaryMainFrame(), cross_origin_fetch_resource));
+  ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                      cross_origin_fetch_resource));
 
   // Perform a same-origin cross-document navigation.
   GURL same_origin_cross_document_url =
@@ -9408,9 +9411,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), same_origin_cross_document_url));
 
   // In the new document, attempt a cross-origin fetch. This should pass as it
-  // does not have the Connection-Allowlist header.
-  EXPECT_EQ(200, EvalJs(web_contents->GetPrimaryMainFrame(),
+  // does not have the Connection-Allowlist header. It should also have a new
+  // network restrictions ID.
+  EXPECT_EQ(200, EvalJs(web_contents()->GetPrimaryMainFrame(),
                         cross_origin_fetch_resource));
+  std::optional<base::UnguessableToken> final_network_restrictions_id =
+      web_contents()->GetPrimaryMainFrame()->GetNetworkRestrictionsID();
+  EXPECT_TRUE(final_network_restrictions_id.has_value());
+  EXPECT_NE(first_network_restrictions_id, final_network_restrictions_id);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
@@ -9419,6 +9427,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
+  std::optional<base::UnguessableToken> main_network_restrictions_id =
+      main_rfh->GetNetworkRestrictionsID();
+  EXPECT_TRUE(main_network_restrictions_id.has_value());
 
   // Create an empty iframe
   EXPECT_TRUE(ExecJs(main_rfh,
@@ -9429,6 +9440,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_EQ(1U, main_rfh->child_count());
   RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
   EXPECT_TRUE(iframe->IsRenderFrameLive());
+  std::optional<base::UnguessableToken> iframe_network_restrictions_id =
+      iframe->GetNetworkRestrictionsID();
+  // We never navigated this frame, so it does not have a network restrictions
+  // ID set.
+  EXPECT_FALSE(iframe_network_restrictions_id.has_value());
 
   // Inject JavaScript into the iframe to fetch a cross-origin resource.
   GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
@@ -9477,7 +9493,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistEmpty) {
   GURL url(embedded_test_server()->GetURL("/title3.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  WebContents* web_contents = shell()->web_contents();
+
+  std::optional<base::UnguessableToken> main_network_restrictions_id =
+      web_contents()->GetPrimaryMainFrame()->GetNetworkRestrictionsID();
+  EXPECT_TRUE(main_network_restrictions_id.has_value());
 
   // now fetch same-origin and cross-origin resources, both should be
   // disallowed.
@@ -9488,7 +9507,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
       "  return resp.status; })();",
       fetch_url);
 
-  ASSERT_FALSE(ExecJs(web_contents->GetPrimaryMainFrame(), fetch_resource));
+  ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(), fetch_resource));
 
   GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
   std::string cross_origin_fetch_resource = JsReplace(
@@ -9496,8 +9515,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
       "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
       "  return resp.status; })();",
       d_url);
-  ASSERT_FALSE(
-      ExecJs(web_contents->GetPrimaryMainFrame(), cross_origin_fetch_resource));
+  ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                      cross_origin_fetch_resource));
 }
 
 }  // namespace content

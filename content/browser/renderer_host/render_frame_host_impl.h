@@ -3250,6 +3250,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // fenced frame tree as well as for all of its descendant fenced frame trees.
   void CalculateUntrustedNetworkStatus();
 
+  // Returns the network restrictions ID which the network service uses to block
+  // requests originating from this document. If there is a pending commit, the
+  // identifier for that commit will be used. Otherwise, the identifier for
+  // the last committed navigation will be used.
+  std::optional<base::UnguessableToken> GetNetworkRestrictionsID();
+
   // Find the frame that triggered the beforeunload handler to run in this
   // frame, which might be the frame itself or its ancestor.  This will
   // return the frame that is navigating, or the main frame if beforeunload was

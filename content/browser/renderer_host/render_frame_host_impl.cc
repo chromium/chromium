@@ -10932,6 +10932,17 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
   }
 }
 
+std::optional<base::UnguessableToken>
+RenderFrameHostImpl::GetNetworkRestrictionsID() {
+  // TODO(crbug.com/447954811): Consider refactoring this method after
+  // RenderDocument launches, because we may not need to consider pending
+  // navigations anymore.
+  auto config =
+      SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
+          *this);
+  return config.network_restrictions_id();
+}
+
 RenderFrameHostImpl* RenderFrameHostImpl::GetBeforeUnloadInitiator() {
   for (RenderFrameHostImpl* frame = this; frame; frame = frame->GetParent()) {
     if (frame->is_waiting_for_beforeunload_completion_) {
