@@ -20,6 +20,7 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/input_state_lookup.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
@@ -127,6 +128,16 @@ void Env::AddObserver(EnvObserver* observer) {
 
 void Env::RemoveObserver(EnvObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void Env::AddWindowEventDispatcherObserver(
+    WindowEventDispatcherObserver* observer) {
+  window_event_dispatcher_observers_.AddObserver(observer);
+}
+
+void Env::RemoveWindowEventDispatcherObserver(
+    WindowEventDispatcherObserver* observer) {
+  window_event_dispatcher_observers_.RemoveObserver(observer);
 }
 
 bool Env::IsMouseButtonDown() const {

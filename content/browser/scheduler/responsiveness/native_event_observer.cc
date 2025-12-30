@@ -16,7 +16,8 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "ui/events/platform/platform_event_source.h"
+#include "ui/aura/env.h"
+#include "ui/events/event.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -40,21 +41,22 @@ NativeEventObserver::~NativeEventObserver() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void NativeEventObserver::RegisterObserver() {
-  CHECK(ui::PlatformEventSource::GetInstance());
-  ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
+  aura::Env::GetInstance()->AddWindowEventDispatcherObserver(this);
 }
 void NativeEventObserver::DeregisterObserver() {
-  CHECK(ui::PlatformEventSource::GetInstance());
-  ui::PlatformEventSource::GetInstance()->RemovePlatformEventObserver(this);
+  aura::Env::GetInstance()->RemoveWindowEventDispatcherObserver(this);
 }
 
-void NativeEventObserver::WillProcessEvent(const ui::PlatformEvent& event) {
+void NativeEventObserver::OnWindowEventDispatcherStartedProcessing(
+    aura::WindowEventDispatcher* dispatcher,
+    const ui::Event& event) {
   EventInfo info{&event};
   events_being_processed_.push_back(info);
   will_run_event_callback_.Run(&event);
 }
 
-void NativeEventObserver::DidProcessEvent(const ui::PlatformEvent& event) {
+void NativeEventObserver::OnWindowEventDispatcherFinishedProcessingEvent(
+    aura::WindowEventDispatcher* dispatcher) {
   EventInfo& info = events_being_processed_.back();
   did_run_event_callback_.Run(info.unique_id.get());
   events_being_processed_.pop_back();

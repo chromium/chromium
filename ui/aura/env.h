@@ -42,6 +42,7 @@ class EnvObserver;
 class EventObserverAdapter;
 class InputStateLookup;
 class Window;
+class WindowEventDispatcherObserver;
 class WindowOcclusionTracker;
 class WindowTreeHost;
 
@@ -63,6 +64,15 @@ class AURA_EXPORT Env : public ui::EventTarget {
 
   void AddObserver(EnvObserver* observer);
   void RemoveObserver(EnvObserver* observer);
+
+  void AddWindowEventDispatcherObserver(
+      WindowEventDispatcherObserver* observer);
+  void RemoveWindowEventDispatcherObserver(
+      WindowEventDispatcherObserver* observer);
+  base::ObserverList<WindowEventDispatcherObserver>::Unchecked&
+  window_event_dispatcher_observers() {
+    return window_event_dispatcher_observers_;
+  }
 
   EnvInputStateController* env_controller() const {
     return env_controller_.get();
@@ -175,6 +185,12 @@ class AURA_EXPORT Env : public ui::EventTarget {
   ui::EventTargeter* GetEventTargeter() override;
 
   base::ObserverList<EnvObserver>::Unchecked observers_;
+
+  // Code wanting to observe WindowEventDispatcher typically wants to observe
+  // all WindowEventDispatchers. This is made easier by having Env own all the
+  // observers.
+  base::ObserverList<WindowEventDispatcherObserver>::Unchecked
+      window_event_dispatcher_observers_;
 
   // The ObserverList and set of owned EventObserver adapters.
   base::ObserverList<EventObserverAdapter> event_observer_adapter_list_;

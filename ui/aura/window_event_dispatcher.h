@@ -154,6 +154,23 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   friend class Window;
   friend class TestScreen;
 
+  // Used to call WindowEventDispatcherObserver when event processing starts
+  // (from the constructor) and finishes (from the destructor). Notification is
+  // handled by this object to ensure notification happens if the associated
+  // WindowEventDispatcher is destroyed during processing of the event.
+  class ObserverNotifier {
+   public:
+    ObserverNotifier(WindowEventDispatcher* dispatcher, const ui::Event& event);
+
+    ObserverNotifier(const ObserverNotifier&) = delete;
+    ObserverNotifier& operator=(const ObserverNotifier&) = delete;
+
+    ~ObserverNotifier();
+
+   private:
+    raw_ptr<WindowEventDispatcher> dispatcher_;
+  };
+
   // The parameter for OnWindowHidden() to specify why window is hidden.
   enum WindowHiddenReason {
     WINDOW_DESTROYED,  // Window is destroyed.
@@ -209,6 +226,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Overridden from ui::EventProcessor:
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   void OnEventProcessingStarted(ui::Event* event) override;
+  void OnEventProcessingFinished(ui::Event* event) override;
 
   // Overridden from ui::EventDispatcherDelegate.
   bool CanDispatchToTarget(ui::EventTarget* target) override;
@@ -317,6 +335,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // This callback is called when the held move event is dispatched, or when
   // pointer moves are released and there is no held move event.
   base::OnceClosure did_dispatch_held_move_event_callback_;
+
+  // See ObserverNotifier for details. This is a queue to handle the case of
+  // nested event dispatch.
+  std::queue<std::unique_ptr<ObserverNotifier>> observer_notifiers_;
 
   // Determines whether a scroll-update has been seen after the last
   // scroll-begin. Used to determine whether a scroll-update is the first one in
