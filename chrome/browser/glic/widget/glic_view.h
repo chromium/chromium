@@ -78,7 +78,7 @@ class GlicView : public views::WebView {
   }
 
  private:
-  void SetDraggableRegion(const SkRegion& region, bool for_webview);
+  void SetDraggableRegion(const SkRegion& region);
 
   std::optional<SkColor> GetClientBackgroundColor();
 
@@ -91,7 +91,6 @@ class GlicView : public views::WebView {
   std::vector<gfx::Rect> draggable_areas_;
 
   SkRegion draggable_region_;
-  SkRegion webview_draggable_region_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};

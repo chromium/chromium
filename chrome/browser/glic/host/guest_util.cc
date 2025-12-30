@@ -68,36 +68,6 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
-// Forwards the draggable regions from the webview webcontent to main
-// webcontents.
-class WebviewWebContentsDelegate : public content::WebContentsDelegate,
-                                   public base::SupportsUserData::Data {
- public:
-  explicit WebviewWebContentsDelegate(content::WebContents* contents) {
-    contents->SetDelegate(this);
-  }
-
-  WebviewWebContentsDelegate(const WebviewWebContentsDelegate&) = delete;
-  WebviewWebContentsDelegate& operator=(const WebviewWebContentsDelegate&) =
-      delete;
-
-  ~WebviewWebContentsDelegate() override = default;
-
-  // content::WebContentsDelegate:
-  void DraggableRegionsChanged(
-      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
-      content::WebContents* contents) override {
-    // Note: contents are the guest webcontents associated to <webview>.
-    auto* embedder_web_contents =
-        guest_view::GuestViewBase::FromRenderFrameHost(
-            contents->GetPrimaryMainFrame())
-            ->embedder_web_contents();
-    if (auto* delegate = embedder_web_contents->GetDelegate(); delegate) {
-      delegate->DraggableRegionsChanged(regions, contents);
-    }
-  }
-};
-
 }  // namespace
 
 GURL GetGuestURL() {
@@ -163,9 +133,6 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     return false;
   }
   if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    guest_contents->SetUserData(
-        "glic::WebviewWebContentsDelegate",
-        std::make_unique<WebviewWebContentsDelegate>(guest_contents));
     guest_contents->SetSupportsDraggableRegions(true);
   }
 
