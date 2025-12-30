@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
@@ -17,9 +18,9 @@
 namespace autofill_address_profile_infobar_overlays {
 
 SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
-    InfoBarIOS* infobar)
-    : infobar_(infobar) {
-  DCHECK(infobar_);
+    InfoBarIOS* infobar) {
+  DCHECK(infobar);
+  infobar_ = infobar->AsWeakPtr();
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
           infobar_->delegate());
@@ -49,6 +50,10 @@ SaveAddressProfileModalRequestConfig::~SaveAddressProfileModalRequestConfig() =
     default;
 
 bool SaveAddressProfileModalRequestConfig::IsUpdateModal() const {
+  if (!infobar_) {
+    return false;
+  }
+
   return static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
              infobar_->delegate())
       ->GetOriginalProfile();
@@ -68,6 +73,10 @@ void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
 
 const autofill::AutofillProfile*
 SaveAddressProfileModalRequestConfig::GetProfile() {
+  if (!infobar_) {
+    return nullptr;
+  }
+
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
           infobar_->delegate());
@@ -77,7 +86,8 @@ SaveAddressProfileModalRequestConfig::GetProfile() {
 void SaveAddressProfileModalRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
-      user_data, infobar_, InfobarOverlayType::kModal, false);
+      user_data, static_cast<InfoBarIOS*>(infobar_.get()),
+      InfobarOverlayType::kModal, false);
 }
 
 }  // namespace autofill_address_profile_infobar_overlays

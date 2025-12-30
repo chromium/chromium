@@ -15,9 +15,9 @@
 namespace autofill_address_profile_infobar_overlays {
 
 SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
-    infobars::InfoBar* infobar)
-    : infobar_(infobar) {
-  DCHECK(infobar_);
+    infobars::InfoBar* infobar) {
+  DCHECK(infobar);
+  infobar_ = infobar->AsWeakPtr();
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
           FromInfobarDelegate(infobar_->delegate());
@@ -35,7 +35,7 @@ SaveAddressProfileBannerRequestConfig::
 void SaveAddressProfileBannerRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
-      user_data, static_cast<InfoBarIOS*>(infobar_),
+      user_data, static_cast<InfoBarIOS*>(infobar_.get()),
       InfobarOverlayType::kBanner, false);
 }
 

@@ -7,7 +7,7 @@
 
 #import <string>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "ui/gfx/image/image.h"
 
 namespace infobars {
@@ -42,14 +42,14 @@ class ConfirmBannerRequestConfigStorage {
   // Whether to use a background tint for the icon image.
   bool use_icon_background_tint() const { return use_icon_background_tint_; }
 
-  infobars::InfoBar* infobar() const { return infobar_; }
+  infobars::InfoBar* infobar() const { return infobar_.get(); }
 
  protected:
   explicit ConfirmBannerRequestConfigStorage(infobars::InfoBar* infobar);
 
  private:
   // The InfoBar causing this banner.
-  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_ = nullptr;
+  base::WeakPtr<infobars::InfoBar> infobar_;
 
   // Configuration data extracted from `infobar_`'s confirm delegate.
   std::u16string title_text_;

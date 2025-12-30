@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -84,6 +85,8 @@ class InfoBar : public gfx::AnimationDelegate {
     return delegate_->GetIdentifier();
   }
 
+  base::WeakPtr<InfoBar> AsWeakPtr();
+
  protected:
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -125,6 +128,8 @@ class InfoBar : public gfx::AnimationDelegate {
   // The current and target heights.
   int height_;  // Includes both fill and bottom separator.
   int target_height_;
+
+  base::WeakPtrFactory<InfoBar> weak_factory_{this};
 };
 
 }  // namespace infobars

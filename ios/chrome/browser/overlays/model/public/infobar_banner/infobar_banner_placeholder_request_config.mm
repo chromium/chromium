@@ -11,7 +11,7 @@
 
 InfobarBannerPlaceholderRequestConfig::InfobarBannerPlaceholderRequestConfig(
     infobars::InfoBar* infobar)
-    : infobar_(infobar) {}
+    : infobar_(infobar ? infobar->AsWeakPtr() : nullptr) {}
 
 InfobarBannerPlaceholderRequestConfig::
     ~InfobarBannerPlaceholderRequestConfig() = default;
@@ -20,6 +20,6 @@ void InfobarBannerPlaceholderRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   PlaceholderRequestConfig::CreateForUserData(user_data);
   InfobarOverlayRequestConfig::CreateForUserData(
-      user_data, static_cast<InfoBarIOS*>(infobar_),
+      user_data, static_cast<InfoBarIOS*>(infobar_.get()),
       InfobarOverlayType::kBanner, false);
 }
