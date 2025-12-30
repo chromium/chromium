@@ -174,15 +174,23 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         // draw here.
         // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should be
         //  discarded after a reboot.
-        if (!savedInstanceState.getBoolean(
-                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)
-                && !persistentState.getBoolean(
-                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)) {
+        boolean isReauthPendingInSavedState =
+                savedInstanceState != null
+                        && savedInstanceState.getBoolean(
+                                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING,
+                                false);
+        boolean isReauthPendingInPersistentState =
+                persistentState != null
+                        && persistentState.getBoolean(
+                                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING,
+                                false);
+        if (!isReauthPendingInSavedState && !isReauthPendingInPersistentState) {
             return false;
         }
 
         boolean isLastSelectedModelIncognito =
-                savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
+                savedInstanceState != null
+                        && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
         boolean isIncognitoFiredFromLauncherShortcut =
                 !mShouldIgnoreIntentSupplier.get()
                         && mIntentSupplier.get() != null
