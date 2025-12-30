@@ -147,6 +147,18 @@ TEST_F(ReloadButtonUITest, CreatePageHandler) {
   EXPECT_THAT(ui()->page_handler_for_testing(), testing::NotNull());
 }
 
+// Tests that CreatePageHandler handles a null CommandUpdater gracefully.
+TEST_F(ReloadButtonUITest, CreatePageHandler_NullCommandUpdater) {
+  // Set command updater to null to simulate the crash scenario.
+  ui()->SetCommandUpdaterForTesting(nullptr);
+
+  MockReloadButtonPageHandlerFactory factory(ui());
+
+  factory.CreatePageHandler();
+  // Expect page handler is NOT created.
+  EXPECT_THAT(ui()->page_handler_for_testing(), testing::IsNull());
+}
+
 // Tests that PopulateLocalResourceLoaderConfig provides the theme source.
 TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
   ui::ColorProvider color_provider;

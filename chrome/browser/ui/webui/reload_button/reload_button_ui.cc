@@ -94,6 +94,9 @@ void ReloadButtonUI::CreatePageHandler(
   CHECK(page);
   auto* web_contents = web_ui()->GetWebContents();
   auto* command_updater = GetCommandUpdater();
+  if (!command_updater) {
+    return;
+  }
   page_handler_ = std::make_unique<ReloadButtonPageHandler>(
       std::move(receiver), std::move(page), web_contents, command_updater);
 }
@@ -107,9 +110,12 @@ CommandUpdater* ReloadButtonUI::GetCommandUpdater() const {
     return command_updater_for_testing_;  // IN-TEST
   }
 
-  return webui::GetBrowserWindowInterface(web_ui()->GetWebContents())
-      ->GetFeatures()
-      .browser_command_controller();
+  BrowserWindowInterface* browser_interface =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (!browser_interface) {
+    return nullptr;
+  }
+  return browser_interface->GetFeatures().browser_command_controller();
 }
 
 void ReloadButtonUI::SetCommandUpdaterForTesting(
