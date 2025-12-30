@@ -230,6 +230,8 @@ ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   search_url_request_info->additional_params =
       lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->invocation_source =
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
   // Read the list of tokens from the fileinfo map in the contextual search
   // controller.
   // TODO(crbug.com/455952553): Rely on the contextual search session handle
