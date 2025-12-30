@@ -53,6 +53,12 @@ class PageToolRequest : public TabToolRequest {
   // Returns what in the page the tool should act upon.
   const PageTarget& GetTarget() const;
 
+  // Called just before the tool action is sent to the renderer.
+  // TODO(https://crbug.com/470325962): Implement this in all child classes and
+  // make this pure virtual.
+  virtual void WillSendToRenderer(
+      content::RenderWidgetHost* render_widget_host) {}
+
  private:
   PageTarget target_;
 };
