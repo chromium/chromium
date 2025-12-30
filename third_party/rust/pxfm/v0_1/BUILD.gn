@@ -283,7 +283,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "pxfm"
   cargo_pkg_description = "Fast and accurate math"
   cargo_pkg_repository = "https://github.com/awxkee/pxfm"
-  cargo_pkg_version = "0.1.26"
+  cargo_pkg_version = "0.1.27"
 
   allow_unsafe = true
 

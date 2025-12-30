@@ -26,8 +26,9 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::{dd_fmla, dyad_fmla, f_fmla};
+use crate::common::{dd_fmla, f_fmla};
 use crate::double_double::DoubleDouble;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 use crate::exponents::fast_ldexp;
 use crate::rounding::CpuRoundTiesEven;
 use crate::shared_eval::poly_dekker_generic;
@@ -363,10 +364,8 @@ fn as_expm1_accurate(x: f64) -> f64 {
     }
 }
 
-/// Computes e^x - 1
-///
-/// Max found ULP 0.5
-pub fn f_expm1(x: f64) -> f64 {
+#[inline(always)]
+fn expm1_gen<B: ExpfBackend>(x: f64, backend: B) -> f64 {
     let ix = x.to_bits();
     let aix: u64 = ix & 0x7fff_ffff_ffff_ffff;
     if aix < 0x3fd0000000000000u64 {
@@ -374,10 +373,10 @@ pub fn f_expm1(x: f64) -> f64 {
             if aix == 0 {
                 return x;
             }
-            return dyad_fmla(f64::from_bits(0x3c90000000000000), x.abs(), x);
+            return backend.dyad_fma(f64::from_bits(0x3c90000000000000), x.abs(), x);
         }
         let sx = f64::from_bits(0x4060000000000000) * x;
-        let fx = sx.cpu_round_ties_even();
+        let fx = backend.round_ties_even(sx);
         let z = sx - fx;
         let z2 = z * z;
         let i: i64 = unsafe {
@@ -394,18 +393,18 @@ pub fn f_expm1(x: f64) -> f64 {
         ];
         let fh = z * f64::from_bits(C[0]);
 
-        let fl0 = f_fmla(z, f64::from_bits(C[5]), f64::from_bits(C[4]));
-        let fl1 = f_fmla(z, f64::from_bits(C[2]), f64::from_bits(C[1]));
+        let fl0 = backend.fma(z, f64::from_bits(C[5]), f64::from_bits(C[4]));
+        let fl1 = backend.fma(z, f64::from_bits(C[2]), f64::from_bits(C[1]));
 
-        let fw0 = f_fmla(z, fl0, f64::from_bits(C[3]));
+        let fw0 = backend.fma(z, fl0, f64::from_bits(C[3]));
 
-        let fl = z2 * f_fmla(z2, fw0, fl1);
+        let fl = z2 * backend.fma(z2, fw0, fl1);
         let mut f = DoubleDouble::new(fl, fh);
         let e0 = f64::from_bits(0x3bea000000000000);
         let eps = z2 * e0 + f64::from_bits(0x3970000000000000);
         let mut r = DoubleDouble::from_exact_add(t.hi, f.hi);
         r.lo += t.lo + f.lo;
-        f = DoubleDouble::quick_mult(t, f);
+        f = backend.quick_mult(t, f);
         f = DoubleDouble::add(r, f);
         let ub = f.hi + (f.lo + eps);
         let lb = f.hi + (f.lo - eps);
@@ -436,7 +435,7 @@ pub fn f_expm1(x: f64) -> f64 {
         }
 
         const S: f64 = f64::from_bits(0x40b71547652b82fe);
-        let t = (x * S).cpu_round_ties_even();
+        let t = backend.round_ties_even(x * S);
         let jt: i64 = unsafe {
             t.to_int_unchecked::<i64>() // t is already integer, this is just a conversion
         };
@@ -446,11 +445,11 @@ pub fn f_expm1(x: f64) -> f64 {
         let t0 = DoubleDouble::from_bit_pair(EXPM1_T0[i0 as usize]);
         let t1 = DoubleDouble::from_bit_pair(EXPM1_T1[i1 as usize]);
 
-        let bt = DoubleDouble::quick_mult(t0, t1);
+        let bt = backend.quick_mult(t0, t1);
 
         const L2H: f64 = f64::from_bits(0x3f262e42ff000000);
         const L2L: f64 = f64::from_bits(0x3d0718432a1b0e26);
-        let dx = dd_fmla(L2L, t, f_fmla(-L2H, t, x));
+        let dx = backend.dd_fma(L2L, t, backend.fma(-L2H, t, x));
         let dx2 = dx * dx;
 
         const CH: [u64; 4] = [
@@ -460,13 +459,13 @@ pub fn f_expm1(x: f64) -> f64 {
             0x3fa55555553a12f4,
         ];
 
-        let p0 = f_fmla(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
-        let p1 = f_fmla(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
+        let p0 = backend.fma(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
+        let p1 = backend.fma(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
 
-        let p = f_fmla(dx2, p0, p1);
+        let p = backend.fma(dx2, p0, p1);
         let mut fh = bt.hi;
         let tx = bt.hi * dx;
-        let mut fl = f_fmla(tx, p, bt.lo);
+        let mut fl = backend.fma(tx, p, bt.lo);
         let eps = f64::from_bits(0x3c0833beace2b6fe) * bt.hi;
 
         let off: u64 = ((2048i64 + 1023i64).wrapping_sub(ie) as u64).wrapping_shl(52);
@@ -489,6 +488,41 @@ pub fn f_expm1(x: f64) -> f64 {
             return as_expm1_accurate(x);
         }
         fast_ldexp(lb, ie as i32)
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn expm1_fma_impl(x: f64) -> f64 {
+    use crate::exponents::expf::FmaBackend;
+    expm1_gen(x, FmaBackend {})
+}
+
+/// Computes e^x - 1
+///
+/// Max found ULP 0.5
+pub fn f_expm1(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        expm1_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                expm1_fma_impl
+            } else {
+                fn def_expm1(x: f64) -> f64 {
+                    expm1_gen(x, GenericExpfBackend {})
+                }
+                def_expm1
+            }
+        });
+        unsafe { q(x) }
     }
 }
 

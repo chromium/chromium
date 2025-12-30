@@ -26,11 +26,10 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::bits::EXP_MASK;
 use num_traits::MulAdd;
 use std::ops::{Add, Mul};
 
-#[inline]
+#[inline(always)]
 pub(crate) fn is_integerf(x: f32) -> bool {
     #[cfg(any(
         all(
@@ -59,7 +58,7 @@ pub(crate) fn is_integerf(x: f32) -> bool {
     }
 }
 
-#[inline]
+#[inline(always)]
 pub(crate) fn is_odd_integerf(x: f32) -> bool {
     #[cfg(target_arch = "aarch64")]
     {
@@ -77,7 +76,7 @@ pub(crate) fn is_odd_integerf(x: f32) -> bool {
     }
 }
 
-#[inline]
+#[inline(always)]
 pub(crate) fn is_integer(n: f64) -> bool {
     #[cfg(any(
         all(
@@ -97,6 +96,7 @@ pub(crate) fn is_integer(n: f64) -> bool {
         target_arch = "aarch64"
     )))]
     {
+        use crate::bits::EXP_MASK;
         let x_u = n.to_bits();
         let x_e = (x_u & EXP_MASK) >> 52;
         let lsb = (x_u | EXP_MASK).trailing_zeros();
@@ -107,15 +107,47 @@ pub(crate) fn is_integer(n: f64) -> bool {
     }
 }
 
-#[inline]
-pub(crate) fn is_odd_integer(x: f64) -> bool {
-    let x_u = x.to_bits();
-    let x_e = (x_u & EXP_MASK) >> 52;
-    let lsb = (x_u | EXP_MASK).trailing_zeros();
-    const E_BIAS: u64 = (1u64 << (11 - 1u64)) - 1u64;
+#[inline(always)]
+#[allow(unused)]
+pub(crate) fn is_odd_integer_fast(x: f64) -> bool {
+    unsafe { (x.to_int_unchecked::<i64>() & 1) != 0 }
+}
 
-    const UNIT_EXPONENT: u64 = E_BIAS + 52;
-    x_e + lsb as u64 == UNIT_EXPONENT
+#[inline(always)]
+#[allow(unused)]
+pub(crate) fn is_odd_integerf_fast(x: f32) -> bool {
+    unsafe { (x.to_int_unchecked::<i32>() & 1) != 0 }
+}
+
+#[inline(always)]
+pub(crate) fn is_odd_integer(x: f64) -> bool {
+    #[cfg(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "sse4.1"
+        ),
+        target_arch = "aarch64"
+    ))]
+    {
+        (x as i64 & 1) != 0
+    }
+    #[cfg(not(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "sse4.1"
+        ),
+        target_arch = "aarch64"
+    )))]
+    {
+        use crate::bits::EXP_MASK;
+        let x_u = x.to_bits();
+        let x_e = (x_u & EXP_MASK) >> 52;
+        let lsb = (x_u | EXP_MASK).trailing_zeros();
+        const E_BIAS: u64 = (1u64 << (11 - 1u64)) - 1u64;
+
+        const UNIT_EXPONENT: u64 = E_BIAS + 52;
+        x_e + lsb as u64 == UNIT_EXPONENT
+    }
 }
 
 #[cfg(any(

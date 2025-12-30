@@ -26,16 +26,11 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::f_fmla;
 use crate::exponents::exp2f::EXP2F_TABLE;
-use crate::polyeval::f_polyeval3;
-use crate::rounding::CpuRound;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 
-/// Computes 2^x - 1
-///
-/// Max found ULP 0.5
-#[inline]
-pub fn f_exp2m1f(x: f32) -> f32 {
+#[inline(always)]
+fn exp2m1f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffffu32;
     if x_abs >= 0x4300_0000u32 || x_abs <= 0x3d00_0000u32 {
@@ -54,10 +49,10 @@ pub fn f_exp2m1f(x: f32) -> f32 {
             ];
             let xd = x as f64;
             let xsq = xd * xd;
-            let c0 = f_fmla(xd, f64::from_bits(C[1]), f64::from_bits(C[0]));
-            let c1 = f_fmla(xd, f64::from_bits(C[3]), f64::from_bits(C[2]));
-            let c2 = f_fmla(xd, f64::from_bits(C[5]), f64::from_bits(C[4]));
-            let p = f_polyeval3(xsq, c0, c1, c2);
+            let c0 = backend.fma(xd, f64::from_bits(C[1]), f64::from_bits(C[0]));
+            let c1 = backend.fma(xd, f64::from_bits(C[3]), f64::from_bits(C[2]));
+            let c2 = backend.fma(xd, f64::from_bits(C[5]), f64::from_bits(C[4]));
+            let p = backend.polyeval3(xsq, c0, c1, c2);
             return (p * xd) as f32;
         }
 
@@ -98,10 +93,10 @@ pub fn f_exp2m1f(x: f32) -> f32 {
 
     let xd = x as f64;
 
-    let kf = (x * 64.0).cpu_round();
+    let kf = backend.roundf(x * 64.0);
     let k = unsafe { kf.to_int_unchecked::<i32>() }; // it's already not indeterminate.
     // dx = lo = x - (hi + mid) = x - kf * 2^(-6)
-    let dx = f_fmla(f64::from_bits(0xbf90000000000000), kf as f64, xd);
+    let dx = backend.fma(f64::from_bits(0xbf90000000000000), kf as f64, xd);
 
     const TABLE_BITS: u32 = 6;
     const TABLE_MASK: u64 = (1u64 << TABLE_BITS) - 1;
@@ -126,15 +121,51 @@ pub fn f_exp2m1f(x: f32) -> f32 {
         0x3f55d88091198529,
     ];
     let dx_sq = dx * dx;
-    let c1 = f_fmla(dx, f64::from_bits(C[0]), 1.0);
-    let c2 = f_fmla(dx, f64::from_bits(C[2]), f64::from_bits(C[1]));
-    let c3 = f_fmla(dx, f64::from_bits(C[4]), f64::from_bits(C[3]));
-    let p = f_polyeval3(dx_sq, c1, c2, c3);
+    let c1 = backend.fma(dx, f64::from_bits(C[0]), 1.0);
+    let c2 = backend.fma(dx, f64::from_bits(C[2]), f64::from_bits(C[1]));
+    let c3 = backend.fma(dx, f64::from_bits(C[4]), f64::from_bits(C[3]));
+    let p = backend.polyeval3(dx_sq, c1, c2, c3);
     // 2^x = 2^(hi + mid + lo)
     //     = 2^(hi + mid) * 2^lo
     //     ~ mh * (1 + lo * P(lo))
     //     = mh + (mh*lo) * P(lo)
-    f_fmla(p, mh, -1.) as f32
+    backend.fma(p, mh, -1.) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp2m1f_fma_impl(x: f32) -> f32 {
+    use crate::exponents::expf::FmaBackend;
+    exp2m1f_gen(x, FmaBackend {})
+}
+
+/// Computes 2^x - 1
+///
+/// Max found ULP 0.5
+#[inline]
+pub fn f_exp2m1f(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp2m1f_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp2m1f_fma_impl
+            } else {
+                fn def_exp2f(x: f32) -> f32 {
+                    exp2m1f_gen(x, GenericExpfBackend {})
+                }
+                def_exp2f
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

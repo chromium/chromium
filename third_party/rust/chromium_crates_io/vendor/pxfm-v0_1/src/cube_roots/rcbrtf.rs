@@ -40,6 +40,12 @@ fn rapshon_refine_inv_cbrt(x: f64, a: f64) -> f64 {
     x * f_fmla(-1. / 3. * a, x * x * x, 4. / 3.)
 }
 
+#[inline(always)]
+#[allow(unused)]
+fn rapshon_refine_inv_cbrt_fma(x: f64, a: f64) -> f64 {
+    x * f64::mul_add(-1. / 3. * a, x * x * x, 4. / 3.)
+}
+
 // y1 = y0(k1 − c(k2 − k3c), c = x*y0*y0*y0
 // k1 = 14/9 , k2 = 7/9 , k3 = 2/9
 #[inline(always)]
@@ -53,11 +59,24 @@ fn halleys_div_free(x: f64, a: f64) -> f64 {
     y * x
 }
 
-/// Computes 1/cbrt(x)
-///
-/// ULP 0.5
-#[inline]
-pub fn f_rcbrtf(x: f32) -> f32 {
+#[inline(always)]
+#[allow(unused)]
+fn halleys_div_free_fma(x: f64, a: f64) -> f64 {
+    const K3: f64 = 2. / 9.;
+    const K2: f64 = 7. / 9.;
+    const K1: f64 = 14. / 9.;
+    let c = a * x * x * x;
+    let mut y = f64::mul_add(-K3, c, K2);
+    y = f64::mul_add(-c, y, K1);
+    y * x
+}
+
+#[inline(always)]
+fn rcbrtf_gen_impl<Halley: Fn(f64, f64) -> f64, NewtonRaphson: Fn(f64, f64) -> f64>(
+    x: f32,
+    halley: Halley,
+    rapshon: NewtonRaphson,
+) -> f32 {
     let u = x.to_bits();
     let au = u.wrapping_shl(1);
     if au < (1u32 << 24) || au >= (0xffu32 << 24) {
@@ -97,10 +116,45 @@ pub fn f_rcbrtf(x: f32) -> f32 {
 
     let t = f32::from_bits(ui) as f64;
     let dx = x as f64;
-    let mut t = halleys_div_free(t, dx);
-    t = halleys_div_free(t, dx);
-    t = rapshon_refine_inv_cbrt(t, dx);
+    let mut t = halley(t, dx);
+    t = halley(t, dx);
+    t = rapshon(t, dx);
     t as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn rcbrtf_fma_impl(x: f32) -> f32 {
+    rcbrtf_gen_impl(x, halleys_div_free_fma, rapshon_refine_inv_cbrt_fma)
+}
+
+/// Computes 1/cbrt(x)
+///
+/// ULP 0.5
+#[inline]
+pub fn f_rcbrtf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        rcbrtf_gen_impl(x, halleys_div_free, rapshon_refine_inv_cbrt)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                rcbrtf_fma_impl
+            } else {
+                fn def_rcbrtf(x: f32) -> f32 {
+                    rcbrtf_gen_impl(x, halleys_div_free, rapshon_refine_inv_cbrt)
+                }
+                def_rcbrtf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

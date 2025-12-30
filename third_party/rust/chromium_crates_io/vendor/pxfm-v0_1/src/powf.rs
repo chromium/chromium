@@ -26,13 +26,13 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#![allow(clippy::too_many_arguments)]
 use crate::bits::biased_exponent_f64;
 use crate::common::*;
 use crate::double_double::DoubleDouble;
 use crate::exponents::expf;
 use crate::logf;
 use crate::logs::LOG2_R;
-use crate::polyeval::{f_polyeval3, f_polyeval6, f_polyeval10};
 use crate::pow_tables::EXP2_MID1;
 use crate::powf_tables::{LOG2_R_TD, LOG2_R2_DD, POWF_R2};
 use crate::rounding::CpuRound;
@@ -53,6 +53,241 @@ pub const fn powf(d: f32, n: f32) -> f32 {
     }
 }
 
+pub(crate) trait PowfBackend {
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32;
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64;
+    fn integerf(&self, x: f32) -> bool;
+    fn odd_integerf(&self, x: f32) -> bool;
+    fn round(&self, x: f64) -> f64;
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble;
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble;
+    fn dd_polyeval6(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+    ) -> DoubleDouble;
+    fn dd_polyeval10(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+        a6: DoubleDouble,
+        a7: DoubleDouble,
+        a8: DoubleDouble,
+        a9: DoubleDouble,
+    ) -> DoubleDouble;
+    const HAS_FMA: bool;
+    const ERR: u64;
+}
+
+pub(crate) struct GenPowfBackend {}
+
+impl PowfBackend for GenPowfBackend {
+    #[inline(always)]
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32 {
+        f_fmlaf(x, y, z)
+    }
+
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f_fmla(x, y, z)
+    }
+
+    #[inline(always)]
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64 {
+        use crate::polyeval::f_polyeval3;
+        f_polyeval3(x, a0, a1, a2)
+    }
+
+    #[inline(always)]
+    fn integerf(&self, x: f32) -> bool {
+        is_integerf(x)
+    }
+
+    #[inline(always)]
+    fn odd_integerf(&self, x: f32) -> bool {
+        is_odd_integerf(x)
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.cpu_round()
+    }
+
+    #[inline(always)]
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64(x, y)
+    }
+
+    #[inline(always)]
+    fn dd_polyeval6(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+    ) -> DoubleDouble {
+        use crate::polyeval::dd_quick_polyeval6;
+        dd_quick_polyeval6(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn dd_polyeval10(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+        a6: DoubleDouble,
+        a7: DoubleDouble,
+        a8: DoubleDouble,
+        a9: DoubleDouble,
+    ) -> DoubleDouble {
+        use crate::polyeval::dd_quick_polyeval10;
+        dd_quick_polyeval10(x, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+    }
+
+    #[cfg(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "fma"
+        ),
+        target_arch = "aarch64"
+    ))]
+    const HAS_FMA: bool = true;
+    #[cfg(not(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "fma"
+        ),
+        target_arch = "aarch64"
+    )))]
+    const HAS_FMA: bool = false;
+    #[cfg(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "fma"
+        ),
+        target_arch = "aarch64"
+    ))]
+    const ERR: u64 = 64;
+    #[cfg(not(any(
+        all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "fma"
+        ),
+        target_arch = "aarch64"
+    )))]
+    const ERR: u64 = 128;
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+pub(crate) struct FmaPowfBackend {}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+impl PowfBackend for FmaPowfBackend {
+    #[inline(always)]
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32 {
+        f32::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64 {
+        use crate::polyeval::d_polyeval3;
+        d_polyeval3(x, a0, a1, a2)
+    }
+
+    #[inline(always)]
+    fn integerf(&self, x: f32) -> bool {
+        x.round_ties_even() == x
+    }
+
+    #[inline(always)]
+    fn odd_integerf(&self, x: f32) -> bool {
+        use crate::common::is_odd_integerf_fast;
+        is_odd_integerf_fast(x)
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.round()
+    }
+
+    #[inline(always)]
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult_fma(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64_fma(x, y)
+    }
+
+    #[inline(always)]
+    fn dd_polyeval6(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+    ) -> DoubleDouble {
+        use crate::polyeval::dd_quick_polyeval6_fma;
+        dd_quick_polyeval6_fma(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn dd_polyeval10(
+        &self,
+        x: DoubleDouble,
+        a0: DoubleDouble,
+        a1: DoubleDouble,
+        a2: DoubleDouble,
+        a3: DoubleDouble,
+        a4: DoubleDouble,
+        a5: DoubleDouble,
+        a6: DoubleDouble,
+        a7: DoubleDouble,
+        a8: DoubleDouble,
+        a9: DoubleDouble,
+    ) -> DoubleDouble {
+        use crate::polyeval::dd_quick_polyeval10_fma;
+        dd_quick_polyeval10_fma(x, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+    }
+
+    const HAS_FMA: bool = true;
+
+    const ERR: u64 = 64;
+}
+
 #[inline]
 const fn larger_exponent(a: f64, b: f64) -> bool {
     biased_exponent_f64(a) >= biased_exponent_f64(b)
@@ -66,20 +301,26 @@ const fn larger_exponent(a: f64, b: f64) -> bool {
 //   lo6_hi: the high part of 2^6 * (y - (hi + mid))
 //   exp2_hi_mid: high part of 2^(hi + mid)
 #[cold]
-#[inline(never)]
-fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble) -> f64 {
+#[inline(always)]
+fn powf_dd<B: PowfBackend>(
+    idx_x: i32,
+    dx: f64,
+    y6: f64,
+    lo6_hi: f64,
+    exp2_hi_mid: DoubleDouble,
+    backend: &B,
+) -> f64 {
     // Perform a second range reduction step:
     //   idx2 = round(2^14 * (dx  + 2^-8)) = round ( dx * 2^14 + 2^6)
     //   dx2 = (1 + dx) * r2 - 1
     // Output range:
     //   -0x1.3ffcp-15 <= dx2 <= 0x1.3e3dp-15
-    let idx2 = f_fmla(
+    let idx2 = backend.round(backend.fma(
         dx,
         f64::from_bits(0x40d0000000000000),
         f64::from_bits(0x4050000000000000),
-    )
-    .cpu_round() as usize;
-    let dx2 = f_fmla(1.0 + dx, f64::from_bits(POWF_R2[idx2]), -1.0); // Exact
+    )) as usize;
+    let dx2 = backend.fma(1.0 + dx, f64::from_bits(POWF_R2[idx2]), -1.0); // Exact
 
     const COEFFS: [(u64, u64); 6] = [
         (0x3c7777d0ffda25e0, 0x3ff71547652b82fe),
@@ -90,7 +331,7 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
         (0x3c62d2fbd081e657, 0xbfcec70af1929ca6),
     ];
     let dx_dd = DoubleDouble::new(0.0, dx2);
-    let p = f_polyeval6(
+    let p = backend.dd_polyeval6(
         dx_dd,
         DoubleDouble::from_bit_pair(COEFFS[0]),
         DoubleDouble::from_bit_pair(COEFFS[1]),
@@ -100,7 +341,7 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
         DoubleDouble::from_bit_pair(COEFFS[5]),
     );
     // log2(1 + dx2) ~ dx2 * P(dx2)
-    let log2_x_lo = DoubleDouble::quick_mult_f64(p, dx2);
+    let log2_x_lo = backend.quick_mult_f64(p, dx2);
     // Lower parts of (e_x - log2(r1)) of the first range reduction constant
     let log2_r_td = LOG2_R_TD[idx_x as usize];
     let log2_x_mid = DoubleDouble::new(f64::from_bits(log2_r_td.0), f64::from_bits(log2_r_td.1));
@@ -116,7 +357,7 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
     };
     let lo6_hi_dd = DoubleDouble::new(0.0, lo6_hi);
     // 2^6 * y * (log2(1 + dx2) - log2(r2) + lower part of (e_x - log2(r1)))
-    let prod = DoubleDouble::quick_mult_f64(log2_x, y6);
+    let prod = backend.quick_mult_f64(log2_x, y6);
     // 2^6 * (y * log2(x) - (hi + mid)) = 2^6 * lo
     let lo6 = if larger_exponent(prod.hi, lo6_hi) {
         DoubleDouble::add(prod, lo6_hi_dd)
@@ -137,7 +378,7 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
         (0xb7b8483eabd9642d, 0x3b1b5251ff97bee1),
     ];
 
-    let pp = f_polyeval10(
+    let pp = backend.dd_polyeval10(
         lo6,
         DoubleDouble::from_bit_pair(EXP2_COEFFS[0]),
         DoubleDouble::from_bit_pair(EXP2_COEFFS[1]),
@@ -150,7 +391,7 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
         DoubleDouble::from_bit_pair(EXP2_COEFFS[8]),
         DoubleDouble::from_bit_pair(EXP2_COEFFS[9]),
     );
-    let rr = DoubleDouble::quick_mult(exp2_hi_mid, pp);
+    let rr = backend.quick_mult(exp2_hi_mid, pp);
 
     // Make sure the sum is normalized:
     let r = DoubleDouble::from_exact_add(rr.hi, rr.lo);
@@ -171,10 +412,8 @@ fn powf_dd(idx_x: i32, dx: f64, y6: f64, lo6_hi: f64, exp2_hi_mid: DoubleDouble)
     f64::from_bits(r_bits)
 }
 
-/// Power function
-///
-/// Max found ULP 0.5
-pub fn f_powf(x: f32, y: f32) -> f32 {
+#[inline(always)]
+fn powf_gen<B: PowfBackend>(x: f32, y: f32, backend: B) -> f32 {
     let mut x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffff;
     let mut y = y;
@@ -241,7 +480,7 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
                     } // y = 1.0f
                     0x4000_0000 => return x * x, // y = 2.0f
                     _ => {
-                        let is_int = is_integerf(y);
+                        let is_int = backend.integerf(y);
                         if is_int && (y_u > 0x4000_0000) && (y_u <= 0x41c0_0000) {
                             // Check for exact cases when 2 < y < 25 and y is an integer.
                             let mut msb: i32 = if x_abs == 0 {
@@ -309,7 +548,7 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
         let x_is_neg = x.to_bits() > 0x8000_0000;
 
         if x == 0.0 {
-            let out_is_neg = x_is_neg && is_odd_integerf(f32::from_bits(y_u));
+            let out_is_neg = x_is_neg && backend.odd_integerf(f32::from_bits(y_u));
             if y_u > 0x8000_0000u32 {
                 // pow(0, negative number) = inf
                 return if x_is_neg {
@@ -324,7 +563,7 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
 
         if x_abs == 0x7f80_0000u32 {
             // x = +-Inf
-            let out_is_neg = x_is_neg && is_odd_integerf(f32::from_bits(y_u));
+            let out_is_neg = x_is_neg && backend.odd_integerf(f32::from_bits(y_u));
             if y_u >= 0x7fff_ffff {
                 return if out_is_neg { -0.0 } else { 0.0 };
             }
@@ -349,9 +588,9 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
 
         // x is finite and negative, and y is a finite integer.
         if x.is_sign_negative() {
-            if is_integerf(y) {
+            if backend.integerf(y) {
                 x = -x;
-                if is_odd_integerf(y) {
+                if backend.odd_integerf(y) {
                     sign = 0x8000_0000_0000_0000u64;
                 }
             } else {
@@ -383,37 +622,21 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     //   log2(m_x) = log2( (1 + dx) / r )
     //             = log2(1 + dx) - log2(r).
 
-    let dx;
-    #[cfg(any(
-        all(
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "fma"
-        ),
-        target_arch = "aarch64"
-    ))]
-    {
+    let dx = if B::HAS_FMA {
         use crate::logs::LOG_REDUCTION_F32;
-        dx = f_fmlaf(
+        backend.fmaf(
             m_x,
             f32::from_bits(LOG_REDUCTION_F32.0[idx_x as usize]),
             -1.0,
-        ) as f64; // Exact.
-    }
-    #[cfg(not(any(
-        all(
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "fma"
-        ),
-        target_arch = "aarch64"
-    )))]
-    {
+        ) as f64 // Exact.
+    } else {
         use crate::logs::LOG_RANGE_REDUCTION;
-        dx = f_fmla(
+        backend.fma(
             m_x as f64,
             f64::from_bits(LOG_RANGE_REDUCTION[idx_x as usize]),
             -1.0,
-        ); // Exact
-    }
+        ) // Exact
+    };
 
     // Degree-5 polynomial approximation:
     //   dx * P(dx) ~ log2(1 + dx)
@@ -431,11 +654,11 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     ];
 
     let dx2 = dx * dx; // Exact
-    let c0 = f_fmla(dx, f64::from_bits(COEFFS[1]), f64::from_bits(COEFFS[0]));
-    let c1 = f_fmla(dx, f64::from_bits(COEFFS[3]), f64::from_bits(COEFFS[2]));
-    let c2 = f_fmla(dx, f64::from_bits(COEFFS[5]), f64::from_bits(COEFFS[4]));
+    let c0 = backend.fma(dx, f64::from_bits(COEFFS[1]), f64::from_bits(COEFFS[0]));
+    let c1 = backend.fma(dx, f64::from_bits(COEFFS[3]), f64::from_bits(COEFFS[2]));
+    let c2 = backend.fma(dx, f64::from_bits(COEFFS[5]), f64::from_bits(COEFFS[4]));
 
-    let p = f_polyeval3(dx2, c0, c1, c2);
+    let p = backend.polyeval3(dx2, c0, c1, c2);
 
     // s = e_x - log2(r) + dx * P(dx)
     // Approximation errors:
@@ -443,7 +666,7 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     //                 = ulp(e_x) + 2^-7 * 2^-51
     //                 < 2^8 * 2^-52 + 2^-7 * 2^-43
     //                 ~ 2^-44 + 2^-50
-    let s = f_fmla(dx, p, f64::from_bits(LOG2_R[idx_x as usize]) + e_x);
+    let s = backend.fma(dx, p, f64::from_bits(LOG2_R[idx_x as usize]) + e_x);
 
     // To compute 2^(y * log2(x)), we break the exponent into 3 parts:
     //   y * log(2) = hi + mid + lo, where
@@ -466,7 +689,7 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     //   hm  = 2^6 * (hi + mid) = round(2^6 * y * log2(x)) ~ round(y6 * s)
     //   lo6 = 2^6 * lo = 2^6 * (y - (hi + mid)) = y6 * log2(x) - hm.
     let y6 = (y * f32::from_bits(0x42800000)) as f64; // Exact.
-    let hm = (s * y6).cpu_round();
+    let hm = backend.round(s * y6);
 
     // let log2_rr = LOG2_R2_DD[idx_x as usize];
 
@@ -478,13 +701,13 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     // let lo6 = f_fmla(y6, f_fmla(dx, p, f64::from_bits(log2_rr.0)), lo6_hi);
 
     // lo6 = 2^6 * lo.
-    let lo6_hi = f_fmla(y6, e_x + f64::from_bits(LOG2_R_TD[idx_x as usize].2), -hm); // Exact
+    let lo6_hi = backend.fma(y6, e_x + f64::from_bits(LOG2_R_TD[idx_x as usize].2), -hm); // Exact
     // Error bounds:
     //   | (y*log2(x) - hm * 2^-6 - lo) / y| < err(dx * p) + err(LOG2_R_DD.lo)
     //                                       < 2^-51 + 2^-75
-    let lo6 = f_fmla(
+    let lo6 = backend.fma(
         y6,
-        f_fmla(dx, p, f64::from_bits(LOG2_R_TD[idx_x as usize].1)),
+        backend.fma(dx, p, f64::from_bits(LOG2_R_TD[idx_x as usize].1)),
         lo6_hi,
     );
 
@@ -527,45 +750,28 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
     ];
 
     let lo6_sqr = lo6 * lo6;
-    let d0 = f_fmla(
+    let d0 = backend.fma(
         lo6,
         f64::from_bits(EXP2_COEFFS[1]),
         f64::from_bits(EXP2_COEFFS[0]),
     );
-    let d1 = f_fmla(
+    let d1 = backend.fma(
         lo6,
         f64::from_bits(EXP2_COEFFS[3]),
         f64::from_bits(EXP2_COEFFS[2]),
     );
-    let d2 = f_fmla(
+    let d2 = backend.fma(
         lo6,
         f64::from_bits(EXP2_COEFFS[5]),
         f64::from_bits(EXP2_COEFFS[4]),
     );
-    let pp = f_polyeval3(lo6_sqr, d0, d1, d2);
+    let pp = backend.polyeval3(lo6_sqr, d0, d1, d2);
 
     let r = pp * exp2_hi_mid;
     let r_u = r.to_bits();
 
-    #[cfg(any(
-        all(
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "fma"
-        ),
-        target_arch = "aarch64"
-    ))]
-    const ERR: u64 = 64;
-    #[cfg(not(any(
-        all(
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "fma"
-        ),
-        target_arch = "aarch64"
-    )))]
-    const ERR: u64 = 128;
-
-    let r_upper = f64::from_bits(r_u + ERR) as f32;
-    let r_lower = f64::from_bits(r_u - ERR) as f32;
+    let r_upper = f64::from_bits(r_u + B::ERR) as f32;
+    let r_lower = f64::from_bits(r_u - B::ERR) as f32;
     if r_upper == r_lower {
         return r_upper;
     }
@@ -580,8 +786,42 @@ pub fn f_powf(x: f32, y: f32) -> f32 {
         hi: exp2_hi_mid,
     };
 
-    let r_dd = powf_dd(idx_x, dx, y6, lo6_hi, exp2_hi_mid_dd);
+    let r_dd = powf_dd(idx_x, dx, y6, lo6_hi, exp2_hi_mid_dd, &backend);
     r_dd as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn powf_fma_impl(x: f32, y: f32) -> f32 {
+    powf_gen(x, y, FmaPowfBackend {})
+}
+
+/// Power function
+///
+/// Max found ULP 0.5
+pub fn f_powf(x: f32, y: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        powf_gen(x, y, GenPowfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32, f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                powf_fma_impl
+            } else {
+                fn def_powf(x: f32, y: f32) -> f32 {
+                    powf_gen(x, y, GenPowfBackend {})
+                }
+                def_powf
+            }
+        });
+        unsafe { q(x, y) }
+    }
 }
 
 /// Dirty fast pow

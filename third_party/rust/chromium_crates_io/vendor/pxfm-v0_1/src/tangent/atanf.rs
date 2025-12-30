@@ -28,11 +28,8 @@
  */
 use crate::common::{f_fmla, f_fmlaf};
 
-/// Computes atan
-///
-/// Max found ULP 0.49999973
-#[inline]
-pub fn f_atanf(x: f32) -> f32 {
+#[inline(always)]
+fn atanf_gen_impl<Q: Fn(f64, f64, f64) -> f64>(x: f32, fma: Q) -> f32 {
     const PI2: f64 = f64::from_bits(0x3ff921fb54442d18);
     let t = x.to_bits();
     let e = (t >> 23) & 0xff;
@@ -91,21 +88,21 @@ pub fn f_atanf(x: f32) -> f32 {
         0x3f8653ea99fc9bb0,
         0x3f31e7fcc202340a,
     ];
-    let mut cn0 = f_fmla(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
-    let cn2 = f_fmla(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
-    let mut cn4 = f_fmla(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
+    let mut cn0 = fma(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
+    let cn2 = fma(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
+    let mut cn4 = fma(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
     let cn6 = f64::from_bits(CN[6]);
-    cn0 = f_fmla(z4, cn2, cn0);
-    cn4 = f_fmla(z4, cn6, cn4);
-    cn0 = f_fmla(z8, cn4, cn0);
+    cn0 = fma(z4, cn2, cn0);
+    cn4 = fma(z4, cn6, cn4);
+    cn0 = fma(z8, cn4, cn0);
     cn0 *= z;
-    let mut cd0 = f_fmla(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
-    let cd2 = f_fmla(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
-    let mut cd4 = f_fmla(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
+    let mut cd0 = fma(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
+    let cd2 = fma(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
+    let mut cd4 = fma(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
     let cd6 = f64::from_bits(CD[6]);
-    cd0 = f_fmla(z4, cd2, cd0);
-    cd4 = f_fmla(z4, cd6, cd4);
-    cd0 = f_fmla(z8, cd4, cd0);
+    cd0 = fma(z4, cd2, cd0);
+    cd4 = fma(z4, cd6, cd4);
+    cd0 = fma(z8, cd4, cd0);
     let r = cn0 / cd0;
     if !gt {
         return r as f32;
@@ -120,6 +117,41 @@ pub fn f_atanf(x: f32) -> f32 {
     With sign(z)*PI - r, where PI is a double approximation of pi to nearest,
     it fails for x=0x1.ddf9f6p+0 and rounding upward. */
     ((f64::copysign(PI_OVER2_L, z) - r) + f64::copysign(PI_OVER2_H, z)) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atanf_fma_impl(x: f32) -> f32 {
+    atanf_gen_impl(x, f64::mul_add)
+}
+
+/// Computes atan
+///
+/// Max found ULP 0.49999973
+#[inline]
+pub fn f_atanf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atanf_gen_impl(x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atanf_fma_impl
+            } else {
+                fn def_atanf(x: f32) -> f32 {
+                    atanf_gen_impl(x, f_fmla)
+                }
+                def_atanf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

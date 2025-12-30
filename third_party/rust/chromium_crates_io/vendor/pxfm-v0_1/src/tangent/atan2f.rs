@@ -65,6 +65,14 @@ static ATAN2F_TABLE: [(u64, u64); 32] = [
     (0xbe829b7e6f676385, 0xbb2a783b6de718fb),
 ];
 
+const M: [f64; 2] = [0., 1.];
+const PI: f64 = f64::from_bits(0x400921fb54442d18);
+const PI2: f64 = f64::from_bits(0x3ff921fb54442d18);
+const PI2L: f64 = f64::from_bits(0x3c91a62633145c07);
+static OFF: [f64; 8] = [0.0, PI2, PI, PI2, -0.0, -PI2, -PI, -PI2];
+static OFFL: [f64; 8] = [0.0, PI2L, 2. * PI2L, PI2L, -0.0, -PI2L, -2. * PI2L, -PI2L];
+static SGN: [f64; 2] = [1., -1.];
+
 #[cold]
 fn atan2f_tiny(y: f32, x: f32) -> f32 {
     let dy = y as f64;
@@ -139,18 +147,8 @@ fn atan2f_refine(ay: u32, ax: u32, y: f32, x: f32, zy: f64, zx: f64, gt: usize, 
     r as f32
 }
 
-/// Computes atan2
-///
-/// Max found ULP 0.49999842
-#[inline]
-pub fn f_atan2f(y: f32, x: f32) -> f32 {
-    const M: [f64; 2] = [0., 1.];
-    const PI: f64 = f64::from_bits(0x400921fb54442d18);
-    const PI2: f64 = f64::from_bits(0x3ff921fb54442d18);
-    const PI2L: f64 = f64::from_bits(0x3c91a62633145c07);
-    static OFF: [f64; 8] = [0.0, PI2, PI, PI2, -0.0, -PI2, -PI, -PI2];
-    static OFFL: [f64; 8] = [0.0, PI2L, 2. * PI2L, PI2L, -0.0, -PI2L, -2. * PI2L, -PI2L];
-    static SGN: [f64; 2] = [1., -1.];
+#[inline(always)]
+fn atan2f_gen_impl<Q: Fn(f64, f64, f64) -> f64>(y: f32, x: f32, fma: Q) -> f32 {
     let tx = x.to_bits();
     let ty = y.to_bits();
     let ux = tx;
@@ -210,8 +208,8 @@ pub fn f_atan2f(y: f32, x: f32) -> f32 {
 
     let zx = x as f64;
     let zy = y as f64;
-    let mut z = f_fmla(M[gt], zx, M[1usize.wrapping_sub(gt)] * zy)
-        / f_fmla(M[gt], zy, M[1usize.wrapping_sub(gt)] * zx);
+    let mut z = fma(M[gt], zx, M[1usize.wrapping_sub(gt)] * zy)
+        / fma(M[gt], zy, M[1usize.wrapping_sub(gt)] * zx);
     // z = x/y if |y| > |x|, and z = y/x otherwise
     let mut r;
 
@@ -243,32 +241,67 @@ pub fn f_atan2f(y: f32, x: f32) -> f32 {
             0x3f4b3874b8798286,
         ];
 
-        let mut cn0 = f_fmla(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
-        let cn2 = f_fmla(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
-        let mut cn4 = f_fmla(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
+        let mut cn0 = fma(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
+        let cn2 = fma(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
+        let mut cn4 = fma(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
         let cn6 = f64::from_bits(CN[6]);
-        cn0 = f_fmla(z4, cn2, cn0);
-        cn4 = f_fmla(z4, cn6, cn4);
-        cn0 = f_fmla(z8, cn4, cn0);
-        let mut cd0 = f_fmla(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
-        let cd2 = f_fmla(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
-        let mut cd4 = f_fmla(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
+        cn0 = fma(z4, cn2, cn0);
+        cn4 = fma(z4, cn6, cn4);
+        cn0 = fma(z8, cn4, cn0);
+        let mut cd0 = fma(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
+        let cd2 = fma(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
+        let mut cd4 = fma(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
         let cd6 = f64::from_bits(CD[6]);
-        cd0 = f_fmla(z4, cd2, cd0);
-        cd4 = f_fmla(z4, cd6, cd4);
-        cd0 = f_fmla(z8, cd4, cd0);
+        cd0 = fma(z4, cd2, cd0);
+        cd4 = fma(z4, cd6, cd4);
+        cd0 = fma(z8, cd4, cd0);
         r = cn0 / cd0;
     } else {
         r = 1.;
     }
     z *= SGN[gt];
-    r = f_fmla(z, r, OFF[i as usize]);
+    r = fma(z, r, OFF[i as usize]);
     let res = r.to_bits();
     if ((res.wrapping_add(8)) & 0xfffffff) <= 16 {
         return atan2f_refine(ay, ax, y, x, zy, zx, gt, i);
     }
 
     r as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atan2f_fma_impl(y: f32, x: f32) -> f32 {
+    atan2f_gen_impl(y, x, f64::mul_add)
+}
+
+/// Computes atan2
+///
+/// Max found ULP 0.49999842
+#[inline]
+pub fn f_atan2f(y: f32, x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atan2f_gen_impl(y, x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32, f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atan2f_fma_impl
+            } else {
+                fn def_atan2f(y: f32, x: f32) -> f32 {
+                    atan2f_gen_impl(y, x, f_fmla)
+                }
+                def_atan2f
+            }
+        });
+        unsafe { q(y, x) }
+    }
 }
 
 #[cfg(test)]

@@ -59,7 +59,7 @@ pub const fn roundf(x: f32) -> f32 {
 }
 
 // infinity, NaNs are assumed already handled somewhere
-#[inline]
+#[inline(always)]
 pub(crate) fn froundf_finite(x: f32) -> f32 {
     #[cfg(any(
         all(
@@ -144,14 +144,14 @@ pub(crate) trait CpuRound {
 }
 
 impl CpuRound for f32 {
-    #[inline]
+    #[inline(always)]
     fn cpu_round(self) -> Self {
         froundf_finite(self)
     }
 }
 
 impl CpuRound for f64 {
-    #[inline]
+    #[inline(always)]
     fn cpu_round(self) -> Self {
         fround_finite(self)
     }

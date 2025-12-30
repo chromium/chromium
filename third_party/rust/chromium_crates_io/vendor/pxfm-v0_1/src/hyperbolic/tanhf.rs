@@ -72,7 +72,7 @@ pub fn f_tanhf(x: f32) -> f32 {
             )))]
             {
                 let dx = x as f64;
-                let res = crate::common::f_fmla(-dx, dx.abs(), dx);
+                let res = f_fmla(-dx, dx.abs(), dx);
                 return res as f32;
             }
         }

@@ -191,11 +191,8 @@ pub(crate) static ASINCOSF_PI_TABLE: [[u64; 8]; 16] = [
     ],
 ];
 
-/// Computes asin(x)/PI
-///
-/// Max ULP 0.5
-#[inline]
-pub fn f_asinpif(x: f32) -> f32 {
+#[inline(always)]
+fn asinpif_gen_impl<Q: Fn(f64, f64, f64) -> f64>(x: f32, fma: Q) -> f32 {
     let ax = x.abs();
     let az = ax as f64;
     let z = x as f64;
@@ -222,30 +219,65 @@ pub fn f_asinpif(x: f32) -> f32 {
     let c = ASINCOSF_PI_TABLE[i as usize & 15];
     if i == 0 {
         // |x| < 2^-4
-        let mut c0 = f_fmla(z2, f64::from_bits(c[1]), f64::from_bits(c[0]));
-        let c2 = f_fmla(z2, f64::from_bits(c[3]), f64::from_bits(c[2]));
-        let mut c4 = f_fmla(z2, f64::from_bits(c[5]), f64::from_bits(c[4]));
-        let c6 = f_fmla(z2, f64::from_bits(c[7]), f64::from_bits(c[6]));
-        c0 = f_fmla(c2, z4, c0);
-        c4 = f_fmla(c6, z4, c4);
+        let mut c0 = fma(z2, f64::from_bits(c[1]), f64::from_bits(c[0]));
+        let c2 = fma(z2, f64::from_bits(c[3]), f64::from_bits(c[2]));
+        let mut c4 = fma(z2, f64::from_bits(c[5]), f64::from_bits(c[4]));
+        let c6 = fma(z2, f64::from_bits(c[7]), f64::from_bits(c[6]));
+        c0 = fma(c2, z4, c0);
+        c4 = fma(c6, z4, c4);
         c0 += c4 * (z4 * z4);
         (z * c0) as f32
     } else {
         // |x| >= 2^-4
         let f = (1. - az).sqrt();
-        let mut c0 = f_fmla(az, f64::from_bits(c[1]), f64::from_bits(c[0]));
-        let c2 = f_fmla(az, f64::from_bits(c[3]), f64::from_bits(c[2]));
-        let mut c4 = f_fmla(az, f64::from_bits(c[5]), f64::from_bits(c[4]));
-        let c6 = f_fmla(az, f64::from_bits(c[7]), f64::from_bits(c[6]));
-        c0 = f_fmla(c2, z2, c0);
-        c4 = f_fmla(c6, z2, c4);
+        let mut c0 = fma(az, f64::from_bits(c[1]), f64::from_bits(c[0]));
+        let c2 = fma(az, f64::from_bits(c[3]), f64::from_bits(c[2]));
+        let mut c4 = fma(az, f64::from_bits(c[5]), f64::from_bits(c[4]));
+        let c6 = fma(az, f64::from_bits(c[7]), f64::from_bits(c[6]));
+        c0 = fma(c2, z2, c0);
+        c4 = fma(c6, z2, c4);
         c0 += c4 * z4;
-        let r = f_fmla(
+        let r = fma(
             -c0,
             f64::copysign(f, x as f64),
             f64::copysign(0.5, x as f64),
         );
         r as f32
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn asinpif_fma_impl(x: f32) -> f32 {
+    asinpif_gen_impl(x, f64::mul_add)
+}
+
+/// Computes asin(x)/PI
+///
+/// Max ULP 0.5
+#[inline]
+pub fn f_asinpif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        asinpif_gen_impl(x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                asinpif_fma_impl
+            } else {
+                fn def_asinpif(x: f32) -> f32 {
+                    asinpif_gen_impl(x, f_fmla)
+                }
+                def_asinpif
+            }
+        });
+        unsafe { q(x) }
     }
 }
 

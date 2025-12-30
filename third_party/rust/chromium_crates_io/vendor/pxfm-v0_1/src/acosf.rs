@@ -29,20 +29,20 @@
 use crate::common::f_fmla;
 use std::hint::black_box;
 
-#[inline]
-pub(crate) fn poly12(z: f64, c: [u64; 12]) -> f64 {
+#[inline(always)]
+pub(crate) fn poly12<Q: Fn(f64, f64, f64) -> f64>(z: f64, c: [u64; 12], fma: &Q) -> f64 {
     let z2 = z * z;
     let z4 = z2 * z2;
-    let mut c0 = f_fmla(z, f64::from_bits(c[1]), f64::from_bits(c[0]));
-    let c2 = f_fmla(z, f64::from_bits(c[3]), f64::from_bits(c[2]));
-    let mut c4 = f_fmla(z, f64::from_bits(c[5]), f64::from_bits(c[4]));
-    let c6 = f_fmla(z, f64::from_bits(c[7]), f64::from_bits(c[6]));
-    let mut c8 = f_fmla(z, f64::from_bits(c[9]), f64::from_bits(c[8]));
-    let c10 = f_fmla(z, f64::from_bits(c[11]), f64::from_bits(c[10]));
-    c0 = f_fmla(c2, z2, c0);
-    c4 = f_fmla(c6, z2, c4);
-    c8 = f_fmla(z2, c10, c8);
-    f_fmla(z4, f_fmla(z4, c8, c4), c0)
+    let mut c0 = fma(z, f64::from_bits(c[1]), f64::from_bits(c[0]));
+    let c2 = fma(z, f64::from_bits(c[3]), f64::from_bits(c[2]));
+    let mut c4 = fma(z, f64::from_bits(c[5]), f64::from_bits(c[4]));
+    let c6 = fma(z, f64::from_bits(c[7]), f64::from_bits(c[6]));
+    let mut c8 = fma(z, f64::from_bits(c[9]), f64::from_bits(c[8]));
+    let c10 = fma(z, f64::from_bits(c[11]), f64::from_bits(c[10]));
+    c0 = fma(c2, z2, c0);
+    c4 = fma(c6, z2, c4);
+    c8 = fma(z2, c10, c8);
+    fma(z4, fma(z4, c8, c4), c0)
 }
 
 #[cold]
@@ -63,11 +63,8 @@ fn as_special(x: f32) -> f32 {
     f32::NAN
 }
 
-/// Compute acos
-///
-/// Max found ULP 0.49999982
-#[inline]
-pub fn f_acosf(x: f32) -> f32 {
+#[inline(always)]
+fn acosf_gen_impl<Q: Fn(f64, f64, f64) -> f64>(x: f32, fma: Q) -> f32 {
     const PI2: f64 = f64::from_bits(0x3ff921fb54442d18);
     const O: [f64; 2] = [0., f64::from_bits(0x400921fb54442d18)];
     let xs = x as f64;
@@ -105,22 +102,22 @@ pub fn f_acosf(x: f32) -> f32 {
         let z = xs;
         let z2 = z * z;
 
-        let w0 = f_fmla(z2, f64::from_bits(B[1]), f64::from_bits(B[0]));
-        let w1 = f_fmla(z2, f64::from_bits(B[3]), f64::from_bits(B[2]));
-        let w2 = f_fmla(z2, f64::from_bits(B[5]), f64::from_bits(B[4]));
-        let w3 = f_fmla(z2, f64::from_bits(B[7]), f64::from_bits(B[6]));
-        let w4 = f_fmla(z2, f64::from_bits(B[9]), f64::from_bits(B[8]));
-        let w5 = f_fmla(z2, f64::from_bits(B[11]), f64::from_bits(B[10]));
-        let w6 = f_fmla(z2, f64::from_bits(B[13]), f64::from_bits(B[12]));
-        let w7 = f_fmla(z2, f64::from_bits(B[15]), f64::from_bits(B[14]));
+        let w0 = fma(z2, f64::from_bits(B[1]), f64::from_bits(B[0]));
+        let w1 = fma(z2, f64::from_bits(B[3]), f64::from_bits(B[2]));
+        let w2 = fma(z2, f64::from_bits(B[5]), f64::from_bits(B[4]));
+        let w3 = fma(z2, f64::from_bits(B[7]), f64::from_bits(B[6]));
+        let w4 = fma(z2, f64::from_bits(B[9]), f64::from_bits(B[8]));
+        let w5 = fma(z2, f64::from_bits(B[11]), f64::from_bits(B[10]));
+        let w6 = fma(z2, f64::from_bits(B[13]), f64::from_bits(B[12]));
+        let w7 = fma(z2, f64::from_bits(B[15]), f64::from_bits(B[14]));
 
         let z4 = z2 * z2;
         let z8 = z4 * z4;
         let z16 = z8 * z8;
 
         r = z
-            * ((f_fmla(z4, w1, w0) + z8 * f_fmla(z4, w3, w2))
-                + z16 * (f_fmla(z4, w5, w4) + z8 * f_fmla(z4, w7, w6)));
+            * ((fma(z4, w1, w0) + z8 * fma(z4, w3, w2))
+                + z16 * (fma(z4, w5, w4) + z8 * fma(z4, w7, w6)));
 
         let ub = f64::from_bits(0x3ff921fb54574191) - r;
         let lb = f64::from_bits(0x3ff921fb543118a0) - r;
@@ -154,7 +151,7 @@ pub fn f_acosf(x: f32) -> f32 {
                 + black_box(f64::from_bits(0x3e60000000000000) as f32);
         }
         let x2 = xs * xs;
-        r = f_fmla(-(xs * x2), poly12(x2, C), PI2 - xs);
+        r = fma(-(xs * x2), poly12(x2, C, &fma), PI2 - xs);
     } else {
         const C: [u64; 12] = [
             0x3ff6a09e667f3bcb,
@@ -173,9 +170,44 @@ pub fn f_acosf(x: f32) -> f32 {
         let bx = xs.abs();
         let z = 1.0 - bx;
         let s = f64::copysign(z.sqrt(), xs);
-        r = f_fmla(s, poly12(z, C), O[t.wrapping_shr(31) as usize]);
+        r = fma(s, poly12(z, C, &fma), O[t.wrapping_shr(31) as usize]);
     }
     r as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn acosf_fma_impl(x: f32) -> f32 {
+    acosf_gen_impl(x, f64::mul_add)
+}
+
+/// Compute acos
+///
+/// Max found ULP 0.49999982
+#[inline]
+pub fn f_acosf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        acosf_gen_impl(x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                acosf_fma_impl
+            } else {
+                fn def_acosf(x: f32) -> f32 {
+                    acosf_gen_impl(x, f_fmla)
+                }
+                def_acosf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

@@ -238,7 +238,8 @@ fn compoundf_exp2m1_accurate(x_dd: DoubleDouble, x: f32, y: f32) -> f32 {
         // let k = Dekker::from_exact_sub(z0, 1.);
         // return k.to_f64() as f32;
 
-        return exp2m1_accurate_tiny(x_dd.to_f64()) as f32;
+        use crate::exponents::GenericExpfBackend;
+        return exp2m1_accurate_tiny(x_dd.to_f64(), &GenericExpfBackend {}) as f32;
     }
 
     let r = x_dd.hi - k; // |r| <= 1/2, exact

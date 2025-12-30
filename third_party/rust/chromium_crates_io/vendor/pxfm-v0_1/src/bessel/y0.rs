@@ -867,7 +867,7 @@ pub(crate) fn y0_asympt_fast(x: f64) -> f64 {
     );
 
     let recip = if x.to_bits() > 0x7fd000000000000u64 {
-        DoubleDouble::quick_mult_f64(DoubleDouble::from_exact_safe_div(4.0, x), 0.25)
+        DoubleDouble::quick_mult_f64(DoubleDouble::from_exact_div_fma(4.0, x), 0.25)
     } else {
         DoubleDouble::from_recip(x)
     };

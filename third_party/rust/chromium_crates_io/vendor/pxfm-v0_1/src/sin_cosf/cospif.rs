@@ -31,11 +31,8 @@ use crate::polyeval::f_polyeval5;
 use crate::sin_cosf::argument_reduction_pi::ArgumentReducerPi;
 use crate::sin_cosf::sincosf_eval::{cospif_eval, sinpif_eval};
 
-/// Computes cos(PI*x)
-///
-/// Max ULP 0.5
-#[inline]
-pub fn f_cospif(x: f32) -> f32 {
+#[inline(always)]
+fn cospif_gen_impl(x: f32) -> f32 {
     let x_abs = x.to_bits() & 0x7fff_ffffu32;
     let x = f32::from_bits(x_abs);
     let xd = x as f64;
@@ -111,6 +108,94 @@ pub fn f_cospif(x: f32) -> f32 {
         2 => -cospif_eval(y),
         _ => sinpif_eval(y),
     }) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn cospif_fma_impl(x: f32) -> f32 {
+    let x_abs = x.to_bits() & 0x7fff_ffffu32;
+    let x = f32::from_bits(x_abs);
+    let xd = x as f64;
+
+    // |x| <= 1/16
+    if x_abs <= 0x3d80_0000u32 {
+        // |x| < 0.00000009546391
+        if x_abs < 0x38a2_f984u32 {
+            return f32::mul_add(x, f32::from_bits(0xb3000000), 1.);
+        }
+
+        // Cos(x*PI)
+        // Generated poly by Sollya:
+        // d = [0, 1/16];
+        // f_cos = cos(y*pi);
+        // Q = fpminimax(f_cos, [|0, 2, 4, 6, 8|], [|D...|], d, relative, floating);
+        //
+        // See ./notes/cospif.sollya
+
+        let x2 = xd * xd;
+        use crate::polyeval::d_polyeval5;
+        let p = d_polyeval5(
+            x2,
+            f64::from_bits(0x3ff0000000000000),
+            f64::from_bits(0xc013bd3cc9be43f7),
+            f64::from_bits(0x40103c1f08091fe0),
+            f64::from_bits(0xbff55d3ba3d94835),
+            f64::from_bits(0x3fce173c2a00e74e),
+        );
+        return p as f32;
+    }
+
+    // Numbers greater or equal to 2^23 are always integers or NaN
+    if x_abs >= 0x4b00_0000u32 || x.round_ties_even() == x {
+        if x_abs >= 0x7f80_0000u32 {
+            return x + f32::NAN;
+        }
+        if x_abs < 0x4b80_0000u32 {
+            static CF: [f32; 2] = [1., -1.];
+            let is_odd_integer = unsafe { (x.to_int_unchecked::<i32>() & 1) != 0 };
+            return CF[is_odd_integer as usize];
+        }
+        return 1.;
+    }
+
+    // We're computing cos(y) after argument reduction then return valid value
+    // based on quadrant
+    let reducer = ArgumentReducerPi { x: x as f64 };
+    let (y, k) = reducer.reduce_0p25_fma();
+    // Decide based on quadrant what kernel function to use
+    use crate::sin_cosf::sincosf_eval::{cospif_eval_fma, sinpif_eval_fma};
+    (match k & 3 {
+        0 => cospif_eval_fma(y),
+        1 => sinpif_eval_fma(-y),
+        2 => -cospif_eval_fma(y),
+        _ => sinpif_eval_fma(y),
+    }) as f32
+}
+
+/// Computes cos(PI*x)
+///
+/// Max ULP 0.5
+#[inline]
+pub fn f_cospif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        cospif_gen_impl(x)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                cospif_fma_impl
+            } else {
+                cospif_gen_impl
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

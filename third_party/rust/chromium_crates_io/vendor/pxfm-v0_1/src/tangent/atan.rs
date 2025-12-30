@@ -259,10 +259,20 @@ fn atan_refine(x: f64, a: f64) -> f64 {
     v1.hi + v0.hi
 }
 
-/// Computes atan in double precision
-///
-/// ULP 0.5
-pub fn f_atan(x: f64) -> f64 {
+/// fma - fma
+/// dd_fma - DD fma fallback
+/// dyad_fma - mandatory fma fallback
+#[inline(always)]
+fn atan_gen_impl<
+    Q: Fn(f64, f64, f64) -> f64,
+    F: Fn(f64, f64, f64) -> f64,
+    D: Fn(f64, f64, f64) -> f64,
+>(
+    x: f64,
+    fma: Q,
+    dd_fma: F,
+    dyad_fma: D,
+) -> f64 {
     const CH: [u64; 4] = [
         0x3ff0000000000000,
         0xbfd555555555552b,
@@ -287,18 +297,18 @@ pub fn f_atan(x: f64) -> f64 {
             // |x| < 0x1p-27
             /* underflow when 0 < |x| < 2^-1022 or when |x| = 2^-1022
             and rounding towards zero. */
-            return dyad_fmla(f64::from_bits(0xbc90000000000000), x, x);
+            return dyad_fma(f64::from_bits(0xbc90000000000000), x, x);
         }
         let x2 = x * x;
         let x3 = x * x2;
         let x4 = x2 * x2;
 
-        let w0 = f_fmla(x2, f64::from_bits(CH2[3]), f64::from_bits(CH2[2]));
-        let w1 = f_fmla(x2, f64::from_bits(CH2[1]), f64::from_bits(CH2[0]));
+        let w0 = fma(x2, f64::from_bits(CH2[3]), f64::from_bits(CH2[2]));
+        let w1 = fma(x2, f64::from_bits(CH2[1]), f64::from_bits(CH2[0]));
 
-        let f = x3 * f_fmla(x4, w0, w1);
-        let ub = f_fmla(f, f64::from_bits(0x3cd2000000000000), f) + x;
-        let lb = f_fmla(-f, f64::from_bits(0x3cc4000000000000), f) + x;
+        let f = x3 * fma(x4, w0, w1);
+        let ub = fma(f, f64::from_bits(0x3cd2000000000000), f) + x;
+        let lb = fma(-f, f64::from_bits(0x3cc4000000000000), f) + x;
         // Ziv's accuracy test
         if ub != lb {
             return atan_refine(x, ub);
@@ -334,29 +344,63 @@ pub fn f_atan(x: f64) -> f64 {
         let la = ATAN_REDUCE[i as usize];
         let ta = f64::copysign(1.0, x) * f64::from_bits(la.0);
         let id = f64::copysign(1.0, x) * i as f64;
-        al = dd_fmla(
+        al = dd_fma(
             f64::copysign(1.0, x),
             f64::from_bits(la.1),
             f64::from_bits(0x3c88469898cc5170) * id,
         );
-        h = (x - ta) / f_fmla(x, ta, 1.0);
+        h = (x - ta) / fma(x, ta, 1.0);
         ah = f64::from_bits(0x3f8921fb54442d00) * id;
     }
     let h2 = h * h;
     let h4 = h2 * h2;
 
-    let f0 = f_fmla(h2, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
-    let f1 = f_fmla(h2, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
+    let f0 = fma(h2, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
+    let f1 = fma(h2, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
 
-    let f = f_fmla(h4, f0, f1);
-    al = dd_fmla(h, f, al);
-    let ub = f_fmla(h, f64::from_bits(0x3ccf800000000000), al) + ah;
-    let lb = f_fmla(-h, f64::from_bits(0x3ccf800000000000), al) + ah;
+    let f = fma(h4, f0, f1);
+    al = dd_fma(h, f, al);
+    let ub = fma(h, f64::from_bits(0x3ccf800000000000), al) + ah;
+    let lb = fma(-h, f64::from_bits(0x3ccf800000000000), al) + ah;
     // Ziv's accuracy test
     if lb != ub {
         return atan_refine(x, ub);
     }
     ub
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atan_fma_impl(x: f64) -> f64 {
+    atan_gen_impl(x, f64::mul_add, f64::mul_add, f64::mul_add)
+}
+
+/// Computes atan in double precision
+///
+/// ULP 0.5
+pub fn f_atan(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atan_gen_impl(x, f_fmla, dd_fmla, dyad_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atan_fma_impl
+            } else {
+                fn def_atan(x: f64) -> f64 {
+                    atan_gen_impl(x, f_fmla, dd_fmla, dyad_fmla)
+                }
+                def_atan
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

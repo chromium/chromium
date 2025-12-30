@@ -37,7 +37,7 @@ pub(crate) struct ArgumentReducerPi {
 impl ArgumentReducerPi {
     // Return k and y, where
     // k = round(x * 32 / pi) and y = (x * 32 / pi) - k.
-    #[inline]
+    #[inline(always)]
     pub(crate) fn reduce(self) -> (f64, i64) {
         let kd = (self.x * 32.).cpu_round();
         let y = f_fmla(self.x, 32.0, -kd);
@@ -47,8 +47,20 @@ impl ArgumentReducerPi {
     }
 
     // Return k and y, where
+    // k = round(x * 32 / pi) and y = (x * 32 / pi) - k.
+    #[inline(always)]
+    #[allow(unused)]
+    pub(crate) fn reduce_fma(self) -> (f64, i64) {
+        let kd = (self.x * 32.).round();
+        let y = f64::mul_add(self.x, 32.0, -kd);
+        (y, unsafe {
+            kd.to_int_unchecked::<i64>() // indeterminate values is always filtered out before this call, as well only lowest bits are used
+        })
+    }
+
+    // Return k and y, where
     // k = round(x * 2 / pi) and y = (x * 2 / pi) - k.
-    #[inline]
+    #[inline(always)]
     pub(crate) fn reduce_0p25(self) -> (f64, i64) {
         let kd = (self.x + self.x).cpu_round();
         let y = f_fmla(kd, -0.5, self.x);
@@ -56,6 +68,19 @@ impl ArgumentReducerPi {
             kd.to_int_unchecked::<i64>() // indeterminate values is always filtered out before this call, as well only lowest bits are used
         })
     }
+
+    // Return k and y, where
+    // k = round(x * 2 / pi) and y = (x * 2 / pi) - k.
+    #[inline(always)]
+    #[allow(unused)]
+    pub(crate) fn reduce_0p25_fma(self) -> (f64, i64) {
+        let kd = (self.x + self.x).round();
+        let y = f64::mul_add(kd, -0.5, self.x);
+        (y, unsafe {
+            kd.to_int_unchecked::<i64>() // indeterminate values is always filtered out before this call, as well only lowest bits are used
+        })
+    }
+
     //
     // // Return k and y, where
     // // k = round(x * 2 / pi) and y = (x * 2 / pi) - k.

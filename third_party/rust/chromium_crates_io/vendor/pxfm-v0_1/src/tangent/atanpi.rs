@@ -98,6 +98,68 @@ fn atanpi_small(x: f64) -> f64 {
     dyad_fmla(corr, f64::from_bits(0x3950000000000000), h)
 }
 
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atanpi_small_fma(x: f64) -> f64 {
+    if x == 0. {
+        return x;
+    }
+    if x.abs() == f64::from_bits(0x0015cba89af1f855) {
+        return if x > 0. {
+            f64::mul_add(
+                f64::from_bits(0x9a70000000000000),
+                f64::from_bits(0x1a70000000000000),
+                f64::from_bits(0x0006f00f7cd3a40b),
+            )
+        } else {
+            f64::mul_add(
+                f64::from_bits(0x1a70000000000000),
+                f64::from_bits(0x1a70000000000000),
+                f64::from_bits(0x8006f00f7cd3a40b),
+            )
+        };
+    }
+    // generic worst case
+    let mut v = x.to_bits();
+    if (v & 0xfffffffffffff) == 0x59af9a1194efe
+    // +/-0x1.59af9a1194efe*2^e
+    {
+        let e = v >> 52;
+        if (e & 0x7ff) > 2 {
+            v = ((e - 2) << 52) | 0xb824198b94a89;
+            return if x > 0. {
+                f64::mul_add(
+                    f64::from_bits(0x9a70000000000000),
+                    f64::from_bits(0x1a70000000000000),
+                    f64::from_bits(v),
+                )
+            } else {
+                f64::mul_add(
+                    f64::from_bits(0x1a70000000000000),
+                    f64::from_bits(0x1a70000000000000),
+                    f64::from_bits(v),
+                )
+            };
+        }
+    }
+    let h = x * ONE_OVER_PI_DD.hi;
+    /* Assuming h = x*ONE_OVER_PI_DD.hi - e, the correction term is
+    e + x * ONE_OVER_PIL, but we need to scale values to avoid underflow. */
+    let mut corr = f64::mul_add(
+        x * f64::from_bits(0x4690000000000000),
+        ONE_OVER_PI_DD.hi,
+        -h * f64::from_bits(0x4690000000000000),
+    );
+    corr = f64::mul_add(
+        x * f64::from_bits(0x4690000000000000),
+        ONE_OVER_PI_DD.lo,
+        corr,
+    );
+    // now return h + corr * 2^-106
+
+    f64::mul_add(corr, f64::from_bits(0x3950000000000000), h)
+}
+
 /* Deal with the case where |x| is large:
 for x > 0, atanpi(x) = 1/2 - 1/pi * 1/x + 1/(3pi) * 1/x^3 + O(1/x^5)
 for x < 0, atanpi(x) = -1/2 - 1/pi * 1/x + 1/(3pi) * 1/x^3 + O(1/x^5).
@@ -206,10 +268,21 @@ fn as_atanpi_refine2(x: f64, a: f64) -> f64 {
     z0.to_f64()
 }
 
-/// Computes atan(x)/pi
-///
-/// Max ULP 0.5
-pub fn f_atanpi(x: f64) -> f64 {
+#[inline(always)]
+/// fma - fma
+/// dd_fma - mandatory fma fallback
+fn atanpi_gen_impl<
+    Q: Fn(f64, f64, f64) -> f64,
+    F: Fn(f64, f64, f64) -> f64,
+    DdMul: Fn(DoubleDouble, DoubleDouble) -> DoubleDouble,
+    AtanpiSmall: Fn(f64) -> f64,
+>(
+    x: f64,
+    fma: Q,
+    dd_fma: F,
+    dd_mul: DdMul,
+    atanpi_small: AtanpiSmall,
+) -> f64 {
     const CH: [u64; 4] = [
         0x3ff0000000000000,
         0xbfd555555555552b,
@@ -238,10 +311,10 @@ pub fn f_atanpi(x: f64) -> f64 {
         let x3 = x * x2;
         let x4 = x2 * x2;
 
-        let f0 = f_fmla(x2, f64::from_bits(CH2[3]), f64::from_bits(CH2[2]));
-        let f1 = f_fmla(x2, f64::from_bits(CH2[1]), f64::from_bits(CH2[0]));
+        let f0 = fma(x2, f64::from_bits(CH2[3]), f64::from_bits(CH2[2]));
+        let f1 = fma(x2, f64::from_bits(CH2[1]), f64::from_bits(CH2[0]));
 
-        let f = x3 * f_fmla(x4, f0, f1);
+        let f = x3 * dd_fma(x4, f0, f1);
         // begin_atanpi
         /* Here x+f approximates atan(x), with absolute error bounded by
         0x4.8p-52*f (see atan.c). After multiplying by 1/pi this error
@@ -249,12 +322,12 @@ pub fn f_atanpi(x: f64) -> f64 {
         we have |f| < 2^-16*|x|, thus the error is bounded by
         0x1.6fp-52*2^-16*|x| < 0x1.6fp-68. */
         // multiply x + f by 1/pi
-        let hy = DoubleDouble::quick_mult(DoubleDouble::new(f, x), ONE_OVER_PI_DD);
+        let hy = dd_mul(DoubleDouble::new(f, x), ONE_OVER_PI_DD);
         /* The rounding error in muldd and the approximation error between
         1/pi and ONE_OVER_PIH + ONE_OVER_PIL are covered by the difference
         between 0x4.8p-52*pi and 0x1.6fp-52, which is > 2^-61.8. */
-        let mut ub = hy.hi + dd_fmla(f64::from_bits(0x3bb6f00000000000), x, hy.lo);
-        let lb = hy.hi + dd_fmla(f64::from_bits(0xbbb6f00000000000), x, hy.lo);
+        let mut ub = hy.hi + dd_fma(f64::from_bits(0x3bb6f00000000000), x, hy.lo);
+        let lb = hy.hi + dd_fma(f64::from_bits(0xbbb6f00000000000), x, hy.lo);
         if ub == lb {
             return ub;
         }
@@ -301,20 +374,24 @@ pub fn f_atanpi(x: f64) -> f64 {
         let va = ATAN_REDUCE[i as usize];
         let ta = f64::copysign(1.0, x) * f64::from_bits(va.0);
         let id = f64::copysign(1.0, x) * i as f64;
-        h = (x - ta) / (1. + x * ta);
+        h = (x - ta) / fma(x, ta, 1.);
         a = DoubleDouble::new(
-            f64::copysign(1.0, x) * f64::from_bits(va.1) + f64::from_bits(0x3c88469898cc5170) * id,
+            fma(
+                f64::copysign(1.0, x),
+                f64::from_bits(va.1),
+                f64::from_bits(0x3c88469898cc5170) * id,
+            ),
             f64::from_bits(0x3f8921fb54442d00) * id,
         );
     }
     let h2 = h * h;
     let h4 = h2 * h2;
 
-    let f0 = f_fmla(h2, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
-    let f1 = f_fmla(h2, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
+    let f0 = fma(h2, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
+    let f1 = fma(h2, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
 
-    let f = f_fmla(h4, f0, f1);
-    a.lo = dd_fmla(h, f, a.lo);
+    let f = fma(h4, f0, f1);
+    a.lo = dd_fma(h, f, a.lo);
     // begin_atanpi
     /* Now ah + al approximates atan(x) with error bounded by 0x3.fp-52*h
     (see atan.c), thus by 0x1.41p-52*h after multiplication by 1/pi.
@@ -323,7 +400,7 @@ pub fn f_atanpi(x: f64) -> f64 {
     let e0 = h * f64::from_bits(0x3ccf800000000000); // original value in atan.c
     let ub0 = (a.lo + e0) + a.hi; // original value in atan.c
     a = DoubleDouble::from_exact_add(a.hi, a.lo);
-    a = DoubleDouble::quick_mult(a, ONE_OVER_PI_DD);
+    a = dd_mul(a, ONE_OVER_PI_DD);
     /* The rounding error in muldd() and the approximation error between 1/pi
     and ONE_OVER_PIH+ONE_OVER_PIL are absorbed when rounding up 0x3.fp-52*pi
     to 0x1.41p-52. */
@@ -335,6 +412,46 @@ pub fn f_atanpi(x: f64) -> f64 {
         return ub;
     }
     as_atanpi_refine2(x, ub0)
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atanpi_fma_impl(x: f64) -> f64 {
+    atanpi_gen_impl(
+        x,
+        f64::mul_add,
+        f64::mul_add,
+        DoubleDouble::quick_mult_fma,
+        |x| unsafe { atanpi_small_fma(x) },
+    )
+}
+
+/// Computes atan(x)/pi
+///
+/// Max ULP 0.5
+pub fn f_atanpi(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atanpi_gen_impl(x, f_fmla, dd_fmla, DoubleDouble::quick_mult, atanpi_small)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atanpi_fma_impl
+            } else {
+                fn def_atanpi(x: f64) -> f64 {
+                    atanpi_gen_impl(x, f_fmla, dd_fmla, DoubleDouble::quick_mult, atanpi_small)
+                }
+                def_atanpi
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

@@ -30,12 +30,72 @@ use crate::common::f_fmla;
 use crate::cube_roots::cbrtf::halley_refine_d;
 use crate::double_double::DoubleDouble;
 use crate::exponents::fast_ldexp;
-use crate::polyeval::f_polyeval4;
 
-/// Computes cube root
-///
-/// Max found ULP 0.5
-pub fn f_cbrt(x: f64) -> f64 {
+pub(crate) trait CbrtBackend {
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn polyeval4(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64) -> f64;
+    fn halley(&self, x: f64, a: f64) -> f64;
+    fn exact_mul(&self, x: f64, y: f64) -> DoubleDouble;
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble;
+}
+
+pub(crate) struct GenericCbrtBackend {}
+
+impl CbrtBackend for GenericCbrtBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f_fmla(x, y, z)
+    }
+    #[inline(always)]
+    fn polyeval4(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64) -> f64 {
+        use crate::polyeval::f_polyeval4;
+        f_polyeval4(x, a0, a1, a2, a3)
+    }
+    #[inline(always)]
+    fn halley(&self, x: f64, a: f64) -> f64 {
+        halley_refine_d(x, a)
+    }
+    #[inline(always)]
+    fn exact_mul(&self, x: f64, y: f64) -> DoubleDouble {
+        DoubleDouble::from_exact_mult(x, y)
+    }
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64(x, y)
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+pub(crate) struct FmaCbrtBackend {}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+impl CbrtBackend for FmaCbrtBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+    #[inline(always)]
+    fn polyeval4(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64) -> f64 {
+        use crate::polyeval::d_polyeval4;
+        d_polyeval4(x, a0, a1, a2, a3)
+    }
+    #[inline(always)]
+    fn halley(&self, x: f64, a: f64) -> f64 {
+        use crate::cube_roots::cbrtf::halley_refine_d_fma;
+        halley_refine_d_fma(x, a)
+    }
+    #[inline(always)]
+    fn exact_mul(&self, x: f64, y: f64) -> DoubleDouble {
+        DoubleDouble::from_exact_mult_fma(x, y)
+    }
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64_fma(x, y)
+    }
+}
+
+#[inline(always)]
+fn cbrt_gen_impl<B: CbrtBackend>(x: f64, backend: B) -> f64 {
     // 1; 2^{1/3}; 2^{2/3}
     static ESCALE: [f64; 3] = [
         1.0,
@@ -71,7 +131,7 @@ pub fn f_cbrt(x: f64) -> f64 {
     // Q = fpminimax(f_cbrt, 4, [|D...|], d, relative, floating);
     // See ./notes/cbrt.sollya
 
-    let p = f_polyeval4(
+    let p = backend.polyeval4(
         m,
         f64::from_bits(0x3fe1b0babceeaafa),
         f64::from_bits(0x3fe2c9a3e8e06a3c),
@@ -92,17 +152,51 @@ pub fn f_cbrt(x: f64) -> f64 {
 
     // One Halley's method step
     // then refine in partial double-double precision with Newton-Raphson iteration
-    let y0 = halley_refine_d(z, mm);
-    let d2y = DoubleDouble::from_exact_mult(y0, y0);
-    let d3y = DoubleDouble::quick_mult_f64(d2y, y0);
+    let y0 = backend.halley(z, mm);
+    let d2y = backend.exact_mul(y0, y0);
+    let d3y = backend.quick_mult_f64(d2y, y0);
     // Newton-Raphson step
     // h = (x^3 - a) * r
     // y1 = y0 - 1/3 * h * y0
     let h = ((d3y.hi - mm) + d3y.lo) * r;
     // y1 = y0 - 1/3*y0*(h.lo + h.hi) = y0 - 1/3 *y0*h.lo - 1/3 * y0 * h.hi
-    let y = f_fmla(-f64::from_bits(0x3fd5555555555555), y0 * h, y0);
+    let y = backend.fma(-f64::from_bits(0x3fd5555555555555), y0 * h, y0);
 
     f64::copysign(fast_ldexp(y, q), x)
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn cbrt_fma_impl(x: f64) -> f64 {
+    cbrt_gen_impl(x, FmaCbrtBackend {})
+}
+
+/// Computes cube root
+///
+/// Max found ULP 0.5
+pub fn f_cbrt(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        cbrt_gen_impl(x, GenericCbrtBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                cbrt_fma_impl
+            } else {
+                fn def_cbrt(x: f64) -> f64 {
+                    cbrt_gen_impl(x, GenericCbrtBackend {})
+                }
+                def_cbrt
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

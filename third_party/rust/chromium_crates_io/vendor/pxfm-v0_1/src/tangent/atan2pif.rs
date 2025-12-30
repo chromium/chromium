@@ -32,11 +32,8 @@ static OFF: [f32; 8] = [0.0, 0.5, 1.0, 0.5, -0.0, -0.5, -1.0, -0.5];
 static SGNF: [f32; 2] = [1., -1.];
 static SGN: [f64; 2] = [1., -1.];
 
-/// Computes atan(x/y) / PI
-///
-/// Max found ULP 0.5
-#[inline]
-pub fn f_atan2pif(y: f32, x: f32) -> f32 {
+#[inline(always)]
+fn atan2pif_gen_impl<Q: Fn(f64, f64, f64) -> f64>(y: f32, x: f32, fma: Q) -> f32 {
     let tx = x.to_bits();
     let ty: u32 = y.to_bits();
     let ux: u32 = tx;
@@ -91,7 +88,7 @@ pub fn f_atan2pif(y: f32, x: f32) -> f32 {
     let zy = y as f64;
     static M: [f64; 2] = [0., 1.];
 
-    let mut z = f_fmla(M[gt], zx, M[1 - gt] * zy) / f_fmla(M[gt], zy, M[1 - gt] * zx);
+    let mut z = fma(M[gt], zx, M[1 - gt] * zy) / fma(M[gt], zy, M[1 - gt] * zx);
 
     const CN: [u64; 7] = [
         0x3fd45f306dc9c883,
@@ -110,9 +107,9 @@ pub fn f_atan2pif(y: f32, x: f32) -> f32 {
     if z2 > f64::from_bits(0x3c90000000000000) {
         let z4 = z2 * z2;
         let z8 = z4 * z4;
-        let mut cn0 = f_fmla(z2, f64::from_bits(CN[1]), r);
-        let cn2 = f_fmla(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
-        let mut cn4 = f_fmla(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
+        let mut cn0 = fma(z2, f64::from_bits(CN[1]), r);
+        let cn2 = fma(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
+        let mut cn4 = fma(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
         let cn6 = f64::from_bits(CN[6]);
         cn0 += z4 * cn2;
         cn4 += z4 * cn6;
@@ -128,17 +125,52 @@ pub fn f_atan2pif(y: f32, x: f32) -> f32 {
             0x3f4b3874b8798286,
         ];
 
-        let mut cd0 = f_fmla(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
-        let cd2 = f_fmla(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
-        let mut cd4 = f_fmla(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
+        let mut cd0 = fma(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
+        let cd2 = fma(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
+        let mut cd4 = fma(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
         let cd6 = f64::from_bits(CD[6]);
-        cd0 += z4 * cd2;
-        cd4 += z4 * cd6;
-        cd0 += z8 * cd4;
+        cd0 = fma(z4, cd2, cd0);
+        cd4 = fma(z4, cd6, cd4);
+        cd0 = fma(z8, cd4, cd0);
 
         r = cn0 / cd0;
     }
-    f_fmla(z, r, OFF[i as usize] as f64) as f32
+    fma(z, r, OFF[i as usize] as f64) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atan2pif_fma_impl(y: f32, x: f32) -> f32 {
+    atan2pif_gen_impl(y, x, f64::mul_add)
+}
+
+/// Computes atan(x/y) / PI
+///
+/// Max found ULP 0.5
+#[inline]
+pub fn f_atan2pif(y: f32, x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atan2pif_gen_impl(y, x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32, f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atan2pif_fma_impl
+            } else {
+                fn def_atan2pif(y: f32, x: f32) -> f32 {
+                    atan2pif_gen_impl(y, x, f_fmla)
+                }
+                def_atan2pif
+            }
+        });
+        unsafe { q(y, x) }
+    }
 }
 
 #[cfg(test)]

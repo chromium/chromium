@@ -29,7 +29,7 @@
 use crate::common::{f_fmla, fmla, pow2i, rintk};
 use crate::double_double::DoubleDouble;
 use crate::exponents::auxiliary::fast_ldexp;
-use crate::rounding::CpuRound;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 
 /// Exp for given value for const context.
 /// This is simplified version just to make a good approximation on const context.
@@ -290,10 +290,8 @@ fn as_exp_accurate(x: f64, t: f64, tz: DoubleDouble, ie: i64) -> f64 {
     f.hi
 }
 
-/// Computes exponent
-///
-/// Max found ULP 0.5
-pub fn f_exp(x: f64) -> f64 {
+#[inline(always)]
+fn exp_gen<B: ExpfBackend>(x: f64, backend: B) -> f64 {
     let mut ix = x.to_bits();
     let aix = ix & 0x7fffffffffffffff;
     // exp(x) rounds to 1 to nearest for |x| <= 5.55112e-17
@@ -325,7 +323,7 @@ pub fn f_exp(x: f64) -> f64 {
         }
     }
     const S: f64 = f64::from_bits(0x40b71547652b82fe);
-    let t = (x * S).cpu_round();
+    let t = backend.round(x * S);
     let jt: i64 = unsafe {
         t.to_int_unchecked::<i64>() // this is already finite here
     };
@@ -334,7 +332,7 @@ pub fn f_exp(x: f64) -> f64 {
     let ie: i64 = jt >> 12;
     let t0 = DoubleDouble::from_bit_pair(EXP_REDUCE_T0[i0 as usize]);
     let t1 = DoubleDouble::from_bit_pair(EXP_REDUCE_T1[i1 as usize]);
-    let tz = DoubleDouble::quick_mult(t0, t1);
+    let tz = backend.quick_mult(t0, t1);
 
     const L2: DoubleDouble = DoubleDouble::new(
         f64::from_bits(0x3d0718432a1b0e26),
@@ -343,7 +341,7 @@ pub fn f_exp(x: f64) -> f64 {
 
     /* Use Cody-Waite argument reduction: since |x| < 745, we have |t| < 2^23,
     thus since l2h is exactly representable on 29 bits, l2h*t is exact. */
-    let dx = f_fmla(L2.lo, t, f_fmla(-L2.hi, t, x));
+    let dx = backend.fma(L2.lo, t, backend.fma(-L2.hi, t, x));
     let dx2 = dx * dx;
     const CH: [u64; 4] = [
         0x3ff0000000000000,
@@ -352,11 +350,11 @@ pub fn f_exp(x: f64) -> f64 {
         0x3fa55555553a12f4,
     ];
 
-    let pw0 = f_fmla(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
-    let pw1 = f_fmla(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
+    let pw0 = backend.fma(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
+    let pw1 = backend.fma(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
 
-    let p = f_fmla(dx2, pw0, pw1);
-    let mut f = DoubleDouble::new(f_fmla(tz.hi * dx, p, tz.lo), tz.hi);
+    let p = backend.fma(dx2, pw0, pw1);
+    let mut f = DoubleDouble::new(backend.fma(tz.hi * dx, p, tz.lo), tz.hi);
     const EPS: f64 = f64::from_bits(0x3c0833beace2b6fe);
     if ix > 0xc086232bdd7abcd2u64 {
         // subnormal case: x < -708.396
@@ -379,6 +377,41 @@ pub fn f_exp(x: f64) -> f64 {
         f.hi = fast_ldexp(lb, ie as i32);
     }
     f.hi
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp_fma_impl(x: f64) -> f64 {
+    use crate::exponents::expf::FmaBackend;
+    exp_gen(x, FmaBackend {})
+}
+
+/// Computes exponent
+///
+/// Max found ULP 0.5
+pub fn f_exp(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp_fma_impl
+            } else {
+                fn def_exp(x: f64) -> f64 {
+                    exp_gen(x, GenericExpfBackend {})
+                }
+                def_exp
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

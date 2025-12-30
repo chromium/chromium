@@ -27,11 +27,19 @@
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 use crate::common::f_fmla;
+use crate::cube_roots::cbrt::{CbrtBackend, GenericCbrtBackend};
 
 #[inline(always)]
 pub(crate) fn halley_refine_d(x: f64, a: f64) -> f64 {
     let tx = x * x * x;
     x * f_fmla(2., a, tx) / f_fmla(2., tx, a)
+}
+
+#[inline(always)]
+#[allow(unused)]
+pub(crate) fn halley_refine_d_fma(x: f64, a: f64) -> f64 {
+    let tx = x * x * x;
+    x * f64::mul_add(2., a, tx) / f64::mul_add(2., tx, a)
 }
 
 #[inline(always)]
@@ -69,11 +77,8 @@ pub const fn cbrtf(x: f32) -> f32 {
     halley_refine(t, x)
 }
 
-/// Computes cube root
-///
-/// Peak ULP on 64 bit = 0.49999577
-#[inline]
-pub fn f_cbrtf(x: f32) -> f32 {
+#[inline(always)]
+fn cbrtf_gen_impl<B: CbrtBackend>(x: f32, backend: B) -> f32 {
     let u = x.to_bits();
     let au = u.wrapping_shl(1);
     if au < (1u32 << 24) || au >= (0xffu32 << 24) {
@@ -107,8 +112,44 @@ pub fn f_cbrtf(x: f32) -> f32 {
 
     let mut t = f32::from_bits(ui) as f64;
     let dx = x as f64;
-    t = halley_refine_d(t, dx);
-    halley_refine_d(t, dx) as f32
+    t = backend.halley(t, dx);
+    backend.halley(t, dx) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn cbrtf_fma_impl(x: f32) -> f32 {
+    use crate::cube_roots::cbrt::FmaCbrtBackend;
+    cbrtf_gen_impl(x, FmaCbrtBackend {})
+}
+
+/// Computes cube root
+///
+/// Peak ULP on 64 bit = 0.49999577
+#[inline]
+pub fn f_cbrtf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        cbrtf_gen_impl(x, GenericCbrtBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                cbrtf_fma_impl
+            } else {
+                fn def_cbrt(x: f32) -> f32 {
+                    cbrtf_gen_impl(x, GenericCbrtBackend {})
+                }
+                def_cbrt
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

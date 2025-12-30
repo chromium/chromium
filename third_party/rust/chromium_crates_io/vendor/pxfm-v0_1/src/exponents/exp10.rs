@@ -26,10 +26,10 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::f_fmla;
 use crate::double_double::DoubleDouble;
 use crate::exponents::auxiliary::fast_ldexp;
 use crate::exponents::exp::{EXP_REDUCE_T0, EXP_REDUCE_T1, to_denormal};
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 use crate::rounding::CpuRoundTiesEven;
 use std::hint::black_box;
 
@@ -115,10 +115,8 @@ fn as_exp10_accurate(x: f64) -> f64 {
     zfh
 }
 
-/// Computes exp10
-///
-/// Max found ULP 0.5
-pub fn f_exp10(x: f64) -> f64 {
+#[inline(always)]
+fn exp10_gen<B: ExpfBackend>(x: f64, backend: B) -> f64 {
     let mut ix = x.to_bits();
     let aix = ix & 0x7fff_ffff_ffff_ffff;
     if aix > 0x40734413509f79feu64 {
@@ -141,7 +139,7 @@ pub fn f_exp10(x: f64) -> f64 {
 
     // check x integer to avoid a spurious inexact exception
     if ix.wrapping_shl(16) == 0 && (aix >> 48) <= 0x4036 {
-        let kx = x.cpu_round_ties_even();
+        let kx = backend.round_ties_even(x);
         if kx == x {
             let k = kx as i64;
             if k >= 0 {
@@ -158,7 +156,7 @@ pub fn f_exp10(x: f64) -> f64 {
     if aix <= 0x3c7bcb7b1526e50eu64 {
         return 1.0 + x; // |x| <= 2.41082e-17
     }
-    let t = (f64::from_bits(0x40ca934f0979a371) * x).cpu_round_ties_even();
+    let t = backend.round_ties_even(f64::from_bits(0x40ca934f0979a371) * x);
     let jt: i64 = unsafe { t.to_int_unchecked::<i64>() }; // t is already integer this is just a conversion
     let i1 = jt & 0x3f;
     let i0 = (jt >> 6) & 0x3f;
@@ -167,10 +165,10 @@ pub fn f_exp10(x: f64) -> f64 {
     let t01 = EXP_REDUCE_T1[i1 as usize];
     let t0 = DoubleDouble::from_bit_pair(t00);
     let t1 = DoubleDouble::from_bit_pair(t01);
-    let mut tz = DoubleDouble::quick_mult(t0, t1);
+    let mut tz = backend.quick_mult(t0, t1);
     const L0: f64 = f64::from_bits(0x3f13441350800000);
     const L1: f64 = f64::from_bits(0x3d1f79fef311f12b);
-    let dx = f_fmla(-L1, t, f_fmla(-L0, t, x));
+    let dx = backend.fma(-L1, t, backend.fma(-L0, t, x));
     let dx2 = dx * dx;
 
     const CH: [u64; 4] = [
@@ -180,14 +178,14 @@ pub fn f_exp10(x: f64) -> f64 {
         0x3ff2bd760a1f32a5,
     ];
 
-    let p0 = f_fmla(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
-    let p1 = f_fmla(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
+    let p0 = backend.fma(dx, f64::from_bits(CH[1]), f64::from_bits(CH[0]));
+    let p1 = backend.fma(dx, f64::from_bits(CH[3]), f64::from_bits(CH[2]));
 
-    let p = f_fmla(dx2, p1, p0);
+    let p = backend.fma(dx2, p1, p0);
 
     let mut fh = tz.hi;
     let fx = tz.hi * dx;
-    let mut fl = f_fmla(fx, p, tz.lo);
+    let mut fl = backend.fma(fx, p, tz.lo);
     const EPS: f64 = 1.63e-19;
     if ix < 0xc0733a7146f72a42u64 {
         // x > -307.653
@@ -215,6 +213,41 @@ pub fn f_exp10(x: f64) -> f64 {
         fh = to_denormal(fh + fl);
     }
     fh
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp10_fma_impl(x: f64) -> f64 {
+    use crate::exponents::expf::FmaBackend;
+    exp10_gen(x, FmaBackend {})
+}
+
+/// Computes exp10
+///
+/// Max found ULP 0.5
+pub fn f_exp10(x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp10_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp10_fma_impl
+            } else {
+                fn def_exp10(x: f64) -> f64 {
+                    exp10_gen(x, GenericExpfBackend {})
+                }
+                def_exp10
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

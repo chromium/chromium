@@ -26,35 +26,32 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::f_fmla;
 use crate::exponents::exp10f::EXP10F_COEFFS;
-use crate::polyeval::f_polyeval3;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 
 #[cold]
-fn exp10m1f_small(x: f32) -> f32 {
+#[inline(always)]
+fn exp10m1f_small<B: ExpfBackend>(x: f32, backend: &B) -> f32 {
     let dx = x as f64;
     let dx_sq = dx * dx;
     let c0 = dx * f64::from_bits(EXP10F_COEFFS[0]);
-    let c1 = f_fmla(
+    let c1 = backend.fma(
         dx,
         f64::from_bits(EXP10F_COEFFS[2]),
         f64::from_bits(EXP10F_COEFFS[1]),
     );
-    let c2 = f_fmla(
+    let c2 = backend.fma(
         dx,
         f64::from_bits(EXP10F_COEFFS[4]),
         f64::from_bits(EXP10F_COEFFS[3]),
     );
     // 10^dx - 1 ~ (1 + COEFFS[0] * dx + ... + COEFFS[4] * dx^5) - 1
     //           = COEFFS[0] * dx + ... + COEFFS[4] * dx^5
-    f_polyeval3(dx_sq, c0, c1, c2) as f32
+    backend.polyeval3(dx_sq, c0, c1, c2) as f32
 }
 
-/// Computes 10^x - 1
-///
-/// Max ULP 0.5
-#[inline]
-pub fn f_exp10m1f(x: f32) -> f32 {
+#[inline(always)]
+fn exp10m1f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffffu32;
 
@@ -66,7 +63,7 @@ pub fn f_exp10m1f(x: f32) -> f32 {
 
     if x_abs <= 0x3b9a_209bu32 {
         // |x| <= 0.004703594
-        return exp10m1f_small(x);
+        return exp10m1f_small(x, &backend);
     }
 
     // When x <= log10(2^-25), or x is nan
@@ -106,26 +103,62 @@ pub fn f_exp10m1f(x: f32) -> f32 {
 
     // Range reduction: 10^x = 2^(mid + hi) * 10^lo
     //   rr = (2^(mid + hi), lo)
-    let rr = crate::exponents::exp10f::exp_b_range_reduc(x);
+    let rr = crate::exponents::exp10f::exp_b_range_reduc(x, &backend);
 
     // The low part is approximated by a degree-5 minimax polynomial.
     // 10^lo ~ 1 + COEFFS[0] * lo + ... + COEFFS[4] * lo^5
     let lo_sq = rr.lo * rr.lo;
-    let c0 = f_fmla(rr.lo, f64::from_bits(EXP10F_COEFFS[0]), 1.0);
-    let c1 = f_fmla(
+    let c0 = backend.fma(rr.lo, f64::from_bits(EXP10F_COEFFS[0]), 1.0);
+    let c1 = backend.fma(
         rr.lo,
         f64::from_bits(EXP10F_COEFFS[2]),
         f64::from_bits(EXP10F_COEFFS[1]),
     );
-    let c2 = f_fmla(
+    let c2 = backend.fma(
         rr.lo,
         f64::from_bits(EXP10F_COEFFS[4]),
         f64::from_bits(EXP10F_COEFFS[3]),
     );
-    let exp10_lo = f_polyeval3(lo_sq, c0, c1, c2);
+    let exp10_lo = backend.polyeval3(lo_sq, c0, c1, c2);
     // 10^x - 1 = 2^(mid + hi) * 10^lo - 1
     //          ~ mh * exp10_lo - 1
-    f_fmla(exp10_lo, rr.hi, -1.0) as f32
+    backend.fma(exp10_lo, rr.hi, -1.0) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp10f_fma_impl(x: f32) -> f32 {
+    use crate::exponents::expf::FmaBackend;
+    exp10m1f_gen(x, FmaBackend {})
+}
+
+/// Computes 10^x - 1
+///
+/// Max ULP 0.5
+#[inline]
+pub fn f_exp10m1f(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp10m1f_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp10f_fma_impl
+            } else {
+                fn def_expf(x: f32) -> f32 {
+                    exp10m1f_gen(x, GenericExpfBackend {})
+                }
+                def_expf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

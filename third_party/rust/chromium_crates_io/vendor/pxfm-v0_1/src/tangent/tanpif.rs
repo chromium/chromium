@@ -30,11 +30,8 @@ use crate::common::f_fmla;
 use crate::sin_cosf::ArgumentReducerPi;
 use crate::tangent::evalf::tanpif_eval;
 
-/// Computes tan(PI*x)
-///
-/// Max found ULP 0.5
-#[inline]
-pub fn f_tanpif(x: f32) -> f32 {
+#[inline(always)]
+fn tanpif_gen_impl(x: f32) -> f32 {
     let ix = x.to_bits();
     let e = ix & (0xff << 23);
     if e > (150 << 23) {
@@ -91,6 +88,94 @@ pub fn f_tanpif(x: f32) -> f32 {
     // den = 1 - tan(k*pi/32) * tan(y*pi/32)
     let den = f_fmla(rs.tan_y, -rs.tan_k, 1.);
     (num / den) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn tanpif_fma_impl(x: f32) -> f32 {
+    let ix = x.to_bits();
+    let e = ix & (0xff << 23);
+    if e > (150 << 23) {
+        // |x| > 2^23
+        if e == (0xff << 23) {
+            // x = nan or inf
+            if (ix.wrapping_shl(9)) == 0 {
+                // x = inf
+                return f32::NAN;
+            }
+            return x + x; // x = nan
+        }
+        return f32::copysign(0.0, x);
+    }
+
+    let argument_reduction = ArgumentReducerPi { x: x as f64 };
+
+    let (y, k) = argument_reduction.reduce_fma();
+
+    if y == 0.0 {
+        let km = (k.abs() & 31) as i32; // k mod 32
+
+        match km {
+            0 => return 0.0f32.copysign(x),               // tanpi(n) = 0
+            16 => return f32::copysign(f32::INFINITY, x), // tanpi(n+0.5) = ±∞
+            8 => return f32::copysign(1.0, x),            // tanpi(n+0.25) = ±1
+            24 => return -f32::copysign(1.0, x),          // tanpi(n+0.75) = ∓1
+            _ => {}
+        }
+    }
+
+    let ax = ix & 0x7fff_ffff;
+    if ax < 0x38d1b717u32 {
+        // taylor series for tan(PI*x) where |x| < 0.0001
+        let dx = x as f64;
+        let dx_sqr = dx * dx;
+        // tan(PI*x) ~ PI*x + PI^3*x^3/3 + O(x^5)
+        let r = f64::mul_add(
+            dx_sqr,
+            f64::from_bits(0x4024abbce625be53),
+            f64::from_bits(0x400921fb54442d18),
+        );
+        return (r * dx) as f32;
+    }
+
+    // tanpif_eval returns:
+    // - rs.tan_y = tan(pi/32 * y)          -> tangent of the remainder
+    // - rs.tan_k = tan(pi/32 * k)          -> tan of the main angle multiple
+    use crate::tangent::evalf::tanpif_eval_fma;
+    let rs = tanpif_eval_fma(y, k);
+
+    // Then computing tan through identities
+    // num = tan(k*pi/32) + tan(y*pi/32)
+    let num = rs.tan_y + rs.tan_k;
+    // den = 1 - tan(k*pi/32) * tan(y*pi/32)
+    let den = f64::mul_add(rs.tan_y, -rs.tan_k, 1.);
+    (num / den) as f32
+}
+
+/// Computes tan(PI*x)
+///
+/// Max found ULP 0.5
+#[inline]
+pub fn f_tanpif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        tanpif_gen_impl(x)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                tanpif_fma_impl
+            } else {
+                tanpif_gen_impl
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

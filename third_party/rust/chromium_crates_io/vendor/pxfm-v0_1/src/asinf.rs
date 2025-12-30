@@ -39,11 +39,14 @@ fn as_special(x: f32) -> f32 {
     f32::NAN
 }
 
-/// Computes asin
-///
-/// Max found ULP 0.49999928
-#[inline]
-pub fn f_asinf(x: f32) -> f32 {
+#[inline(always)]
+/// fma - fma
+/// dd_fma - mandatory fma fallback
+fn asinf_gen_impl<Q: Fn(f64, f64, f64) -> f64, F: Fn(f32, f32, f32) -> f32>(
+    x: f32,
+    fma: Q,
+    dd_fma: F,
+) -> f32 {
     const PI2: f64 = f64::from_bits(0x3ff921fb54442d18);
     let xs = x as f64;
     let mut r;
@@ -56,7 +59,7 @@ pub fn f_asinf(x: f32) -> f32 {
         // |x| < 1.49029
         if ax < 115 << 24 {
             // |x| < 0.000244141
-            return dd_fmlaf(x, f64::from_bits(0x3e60000000000000) as f32, x);
+            return dd_fma(x, f64::from_bits(0x3e60000000000000) as f32, x);
         }
         const B: [u64; 16] = [
             0x3ff0000000000005,
@@ -78,22 +81,22 @@ pub fn f_asinf(x: f32) -> f32 {
         ];
         let z = xs;
         let z2 = z * z;
-        let w0 = f_fmla(z2, f64::from_bits(B[1]), f64::from_bits(B[0]));
-        let w1 = f_fmla(z2, f64::from_bits(B[3]), f64::from_bits(B[2]));
-        let w2 = f_fmla(z2, f64::from_bits(B[5]), f64::from_bits(B[4]));
-        let w3 = f_fmla(z2, f64::from_bits(B[7]), f64::from_bits(B[6]));
-        let w4 = f_fmla(z2, f64::from_bits(B[9]), f64::from_bits(B[8]));
-        let w5 = f_fmla(z2, f64::from_bits(B[11]), f64::from_bits(B[10]));
-        let w6 = f_fmla(z2, f64::from_bits(B[13]), f64::from_bits(B[12]));
-        let w7 = f_fmla(z2, f64::from_bits(B[15]), f64::from_bits(B[14]));
+        let w0 = fma(z2, f64::from_bits(B[1]), f64::from_bits(B[0]));
+        let w1 = fma(z2, f64::from_bits(B[3]), f64::from_bits(B[2]));
+        let w2 = fma(z2, f64::from_bits(B[5]), f64::from_bits(B[4]));
+        let w3 = fma(z2, f64::from_bits(B[7]), f64::from_bits(B[6]));
+        let w4 = fma(z2, f64::from_bits(B[9]), f64::from_bits(B[8]));
+        let w5 = fma(z2, f64::from_bits(B[11]), f64::from_bits(B[10]));
+        let w6 = fma(z2, f64::from_bits(B[13]), f64::from_bits(B[12]));
+        let w7 = fma(z2, f64::from_bits(B[15]), f64::from_bits(B[14]));
 
         let z4 = z2 * z2;
         let z8 = z4 * z4;
         let z16 = z8 * z8;
 
         r = z
-            * ((f_fmla(z4, w1, w0) + z8 * f_fmla(z4, w3, w2))
-                + z16 * (f_fmla(z4, w5, w4) + z8 * f_fmla(z4, w7, w6)));
+            * ((fma(z4, w1, w0) + z8 * fma(z4, w3, w2))
+                + z16 * (fma(z4, w5, w4) + z8 * fma(z4, w7, w6)));
         let ub = r;
         let lb = r - z * f64::from_bits(0x3e0efa8eb0000000);
         // Ziv's accuracy test
@@ -118,7 +121,7 @@ pub fn f_asinf(x: f32) -> f32 {
         ];
         let z = xs;
         let z2 = z * z;
-        let c0 = poly12(z2, C);
+        let c0 = poly12(z2, C, &fma);
         r = z + (z * z2) * c0;
     } else {
         if ax == 0x7e55688au32 {
@@ -146,10 +149,45 @@ pub fn f_asinf(x: f32) -> f32 {
             0xbef1717e86d0fa28,
             0x3ef6ff526de46023,
         ];
-        r = PI2 - s * poly12(z, C);
+        r = PI2 - s * poly12(z, C, &fma);
         r = f64::copysign(r, xs);
     }
     r as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn asinf_fma_impl(x: f32) -> f32 {
+    asinf_gen_impl(x, f64::mul_add, f32::mul_add)
+}
+
+/// Computes asin
+///
+/// Max found ULP 0.49999928
+#[inline]
+pub fn f_asinf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        asinf_gen_impl(x, f_fmla, dd_fmlaf)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                asinf_fma_impl
+            } else {
+                fn def_asinf(x: f32) -> f32 {
+                    asinf_gen_impl(x, f_fmla, dd_fmlaf)
+                }
+                def_asinf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

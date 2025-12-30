@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "pxfm"
-version = "0.1.26"
+version = "0.1.27"
 authors = ["Radzivon Bartoshyk"]
 build = false
 include = [

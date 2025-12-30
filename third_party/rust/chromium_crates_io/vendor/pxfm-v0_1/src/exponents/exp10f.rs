@@ -26,9 +26,7 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::{f_fmla, f_fmlaf};
-use crate::polyeval::f_polyeval7;
-use crate::rounding::CpuRound;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 
 pub(crate) struct ExpBReduc {
     pub(crate) hi: f64,
@@ -88,12 +86,12 @@ pub(crate) const EXP10F_COEFFS: [u64; 5] = [
 ];
 
 /// Range reduction function equivalent to exp_b_range_reduc
-#[inline]
-pub(crate) fn exp_b_range_reduc(x: f32) -> ExpBReduc {
+#[inline(always)]
+pub(crate) fn exp_b_range_reduc<B: ExpfBackend>(x: f32, backend: &B) -> ExpBReduc {
     let xd = x as f64;
 
     // kd = round(log2(b) * x)
-    let kd = (LOG2_B * xd).cpu_round();
+    let kd = backend.round(LOG2_B * xd);
     let k = unsafe { kd.to_int_unchecked::<i32>() }; // it's already not indeterminate.
 
     // hi = floor(kd / 2^MID_BITS)
@@ -105,17 +103,14 @@ pub(crate) fn exp_b_range_reduc(x: f32) -> ExpBReduc {
     let mh = f64::from_bits(mh_bits);
 
     // dx = x - (hi + mid) * log(2)
-    let z0 = f_fmla(kd, M_LOGB_2_HI, xd);
-    let dx = f_fmla(kd, M_LOGB_2_LO, z0);
+    let z0 = backend.fma(kd, M_LOGB_2_HI, xd);
+    let dx = backend.fma(kd, M_LOGB_2_LO, z0);
 
     ExpBReduc { lo: dx, hi: mh }
 }
 
-/// Computes exp10
-///
-/// Max found ULP 0.49999508
-#[inline]
-pub fn f_exp10f(x: f32) -> f32 {
+#[inline(always)]
+fn exp10f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
     let x_abs = x_u & 0x7fffffff;
 
@@ -150,7 +145,7 @@ pub fn f_exp10f(x: f32) -> f32 {
             // |x| < 2^-25
             // 10^x ~ 1 + log(10) * x
             if x_abs <= 0x32800000u32 {
-                return f_fmlaf(x, f32::from_bits(0x40135da2), 1.0);
+                return backend.fmaf(x, f32::from_bits(0x40135da2), 1.0);
             }
         }
 
@@ -163,7 +158,7 @@ pub fn f_exp10f(x: f32) -> f32 {
         // Q = fpminimax(f_exp10f, 6, [|D...|], d, relative, floating);
 
         // See ./notes/exp10f_small.sollya
-        let p = f_polyeval7(
+        let p = backend.polyeval7(
             xd,
             f64::from_bits(0x40026bb1bbb55516),
             f64::from_bits(0x40053524c73cfbf6),
@@ -173,38 +168,74 @@ pub fn f_exp10f(x: f32) -> f32 {
             f64::from_bits(0x3fca7feffa781d53),
             f64::from_bits(0x3fb16e53492c0f0e),
         );
-        return f_fmla(p, xd, 1.) as f32;
+        return backend.fma(p, xd, 1.) as f32;
     }
 
     // Range reduction: 10^x = 2^(mid + hi) * 10^lo
     //   rr = (2^(mid + hi), lo)
-    let rr = exp_b_range_reduc(x);
+    let rr = exp_b_range_reduc(x, &backend);
 
     // The low part is approximated by a degree-5 minimax polynomial.
     // 10^lo ~ 1 + COEFFS[0] * lo + ... + COEFFS[4] * lo^5
     let lo2 = rr.lo * rr.lo;
     // c0 = 1 + COEFFS[0] * lo
-    let c0 = f_fmla(rr.lo, f64::from_bits(EXP10F_COEFFS[0]), 1.0);
+    let c0 = backend.fma(rr.lo, f64::from_bits(EXP10F_COEFFS[0]), 1.0);
     // c1 = COEFFS[1] + COEFFS[2] * lo
-    let c1 = f_fmla(
+    let c1 = backend.fma(
         rr.lo,
         f64::from_bits(EXP10F_COEFFS[2]),
         f64::from_bits(EXP10F_COEFFS[1]),
     );
     // c2 = COEFFS[3] + COEFFS[4] * lo
-    let c2 = f_fmla(
+    let c2 = backend.fma(
         rr.lo,
         f64::from_bits(EXP10F_COEFFS[4]),
         f64::from_bits(EXP10F_COEFFS[3]),
     );
     // p = c1 + c2 * lo^2
     //   = COEFFS[1] + COEFFS[2] * lo + COEFFS[3] * lo^2 + COEFFS[4] * lo^3
-    let p = f_fmla(lo2, c2, c1);
+    let p = backend.fma(lo2, c2, c1);
     // 10^lo ~ c0 + p * lo^2
     // 10^x = 2^(mid + hi) * 10^lo
     //      ~ mh * (c0 + p * lo^2)
     //      = (mh * c0) + p * (mh * lo^2)
-    f_fmla(p, lo2 * rr.hi, c0 * rr.hi) as f32
+    backend.fma(p, lo2 * rr.hi, c0 * rr.hi) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp10f_fma_impl(x: f32) -> f32 {
+    use crate::exponents::expf::FmaBackend;
+    exp10f_gen(x, FmaBackend {})
+}
+
+/// Computes exp10
+///
+/// Max found ULP 0.49999508
+#[inline]
+pub fn f_exp10f(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp10f_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp10f_fma_impl
+            } else {
+                fn def_exp10f(x: f32) -> f32 {
+                    exp10f_gen(x, GenericExpfBackend {})
+                }
+                def_exp10f
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

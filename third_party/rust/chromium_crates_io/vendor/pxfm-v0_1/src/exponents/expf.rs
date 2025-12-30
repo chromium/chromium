@@ -26,9 +26,10 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::{f_fmla, f_fmlaf, fmlaf, pow2if, rintfk};
-use crate::polyeval::f_polyeval5;
-use crate::rounding::CpuRound;
+#![allow(clippy::too_many_arguments)]
+use crate::common::{dd_fmla, dyad_fmla, f_fmla, f_fmlaf, fmlaf, pow2if, rintfk};
+use crate::double_double::DoubleDouble;
+use crate::rounding::{CpuFloor, CpuRound};
 
 const L2U_F: f32 = 0.693_145_751_953_125;
 const L2L_F: f32 = 1.428_606_765_330_187_045_e-6;
@@ -413,11 +414,234 @@ pub(crate) static EXP_M2: [u64; 128] = [
     0x400593b7d72305bb,
 ];
 
-/// Computes exp
-///
-/// Max found ULP 0.5
-#[inline]
-pub fn f_expf(x: f32) -> f32 {
+pub(crate) trait ExpfBackend {
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32;
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn dd_fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn dyad_fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64;
+    fn polyeval5(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64) -> f64;
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64;
+    fn polyeval7(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+    ) -> f64;
+    fn roundf(&self, x: f32) -> f32;
+    fn round(&self, x: f64) -> f64;
+    fn floor(&self, x: f64) -> f64;
+    fn round_ties_even(&self, x: f64) -> f64;
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble;
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble;
+    fn quick_f64_mult(&self, x: f64, y: DoubleDouble) -> DoubleDouble;
+    fn exact_mult(&self, x: f64, y: f64) -> DoubleDouble;
+}
+
+pub(crate) struct GenericExpfBackend {}
+
+impl ExpfBackend for GenericExpfBackend {
+    #[inline(always)]
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32 {
+        f_fmlaf(x, y, z)
+    }
+
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        use crate::common::f_fmla;
+        f_fmla(x, y, z)
+    }
+    #[inline(always)]
+    fn dd_fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        dd_fmla(x, y, z)
+    }
+    #[inline(always)]
+    fn dyad_fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        dyad_fmla(x, y, z)
+    }
+
+    #[inline(always)]
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64 {
+        use crate::polyeval::f_polyeval3;
+        f_polyeval3(x, a0, a1, a2)
+    }
+
+    #[inline(always)]
+    fn polyeval5(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64) -> f64 {
+        use crate::polyeval::f_polyeval5;
+        f_polyeval5(x, a0, a1, a2, a3, a4)
+    }
+
+    #[inline(always)]
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64 {
+        use crate::polyeval::f_polyeval6;
+        f_polyeval6(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn polyeval7(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+    ) -> f64 {
+        use crate::polyeval::f_polyeval7;
+        f_polyeval7(x, a0, a1, a2, a3, a4, a5, a6)
+    }
+
+    #[inline(always)]
+    fn roundf(&self, x: f32) -> f32 {
+        x.cpu_round()
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.cpu_round()
+    }
+
+    #[inline(always)]
+    fn floor(&self, x: f64) -> f64 {
+        x.cpu_floor()
+    }
+
+    #[inline(always)]
+    fn round_ties_even(&self, x: f64) -> f64 {
+        use crate::rounding::CpuRoundTiesEven;
+        x.cpu_round_ties_even()
+    }
+
+    #[inline(always)]
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_f64_mult(&self, x: f64, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64(y, x)
+    }
+
+    #[inline(always)]
+    fn exact_mult(&self, x: f64, y: f64) -> DoubleDouble {
+        DoubleDouble::from_exact_mult(x, y)
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+pub(crate) struct FmaBackend {}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+impl ExpfBackend for FmaBackend {
+    #[inline(always)]
+    fn fmaf(&self, x: f32, y: f32, z: f32) -> f32 {
+        f32::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn dd_fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+    #[inline(always)]
+    fn dyad_fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn polyeval3(&self, x: f64, a0: f64, a1: f64, a2: f64) -> f64 {
+        use crate::polyeval::d_polyeval3;
+        d_polyeval3(x, a0, a1, a2)
+    }
+
+    #[inline(always)]
+    fn polyeval5(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64) -> f64 {
+        use crate::polyeval::d_polyeval5;
+        d_polyeval5(x, a0, a1, a2, a3, a4)
+    }
+
+    #[inline(always)]
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64 {
+        use crate::polyeval::d_polyeval6;
+        d_polyeval6(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn polyeval7(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+    ) -> f64 {
+        use crate::polyeval::d_polyeval7;
+        d_polyeval7(x, a0, a1, a2, a3, a4, a5, a6)
+    }
+
+    #[inline(always)]
+    fn roundf(&self, x: f32) -> f32 {
+        x.round()
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.round()
+    }
+
+    #[inline(always)]
+    fn floor(&self, x: f64) -> f64 {
+        x.floor()
+    }
+
+    #[inline(always)]
+    fn round_ties_even(&self, x: f64) -> f64 {
+        x.round_ties_even()
+    }
+
+    #[inline(always)]
+    fn quick_mult(&self, x: DoubleDouble, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult_fma(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_mult_f64(&self, x: DoubleDouble, y: f64) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64_fma(x, y)
+    }
+
+    #[inline(always)]
+    fn quick_f64_mult(&self, x: f64, y: DoubleDouble) -> DoubleDouble {
+        DoubleDouble::quick_mult_f64_fma(y, x)
+    }
+
+    #[inline(always)]
+    fn exact_mult(&self, x: f64, y: f64) -> DoubleDouble {
+        DoubleDouble::from_exact_mult_fma(x, y)
+    }
+}
+
+#[inline(always)]
+fn expf_gen_impl<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffffu32;
     if x_abs >= 0x42b2_0000u32 || x_abs <= 0x3280_0000u32 {
@@ -461,9 +685,9 @@ pub fn f_expf(x: f32) -> f32 {
     // generated by Sollya.
 
     // x_hi = (hi + mid) * 2^7 = round(x * 2^7).
-    let kf = (x * 128.).cpu_round();
+    let kf = backend.roundf(x * 128.);
     // Subtract (hi + mid) from x to get lo.
-    let xd = f_fmlaf(kf, -0.0078125 /* - 1/128 */, x) as f64;
+    let xd = backend.fmaf(kf, -0.0078125 /* - 1/128 */, x) as f64;
     let mut x_hi = unsafe { kf.to_int_unchecked::<i32>() }; // it's already not indeterminate.
     x_hi += 104 << 7;
     // hi = x_hi >> 7
@@ -475,7 +699,7 @@ pub fn f_expf(x: f32) -> f32 {
     // d = [-2^-8, 2^-8];
     // f_exp = expm1(x)/x;
     // Q = fpminimax(f_exp, 3, [|D...|], [-2^-8, 2^-8]);
-    let p = f_polyeval5(
+    let p = backend.polyeval5(
         xd,
         1.,
         f64::from_bits(0x3feffffffffff777),
@@ -484,6 +708,41 @@ pub fn f_expf(x: f32) -> f32 {
         f64::from_bits(0x3fa55555555ef243),
     );
     (p * exp_hi * exp_mid) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn expf_fma_impl(x: f32) -> f32 {
+    expf_gen_impl(x, FmaBackend {})
+}
+
+/// Computes exp
+///
+/// Max found ULP 0.5
+#[inline]
+pub fn f_expf(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        expf_gen_impl(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                expf_fma_impl
+            } else {
+                fn def_expf(x: f32) -> f32 {
+                    expf_gen_impl(x, GenericExpfBackend {})
+                }
+                def_expf
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[inline]
@@ -503,6 +762,7 @@ pub(crate) fn core_expf(x: f32) -> f64 {
     // d = [-2^-8, 2^-8];
     // f_exp = expm1(x)/x;
     // Q = fpminimax(f_exp, 3, [|D...|], [-2^-8, 2^-8]);
+    use crate::polyeval::f_polyeval5;
     let p = f_polyeval5(
         xd,
         1.,
@@ -531,6 +791,7 @@ pub(crate) fn core_expdf(x: f64) -> f64 {
     // d = [-2^-8, 2^-8];
     // f_exp = expm1(x)/x;
     // Q = fpminimax(f_exp, 3, [|D...|], [-2^-8, 2^-8]);
+    use crate::polyeval::f_polyeval5;
     let p = f_polyeval5(
         xd,
         1.,

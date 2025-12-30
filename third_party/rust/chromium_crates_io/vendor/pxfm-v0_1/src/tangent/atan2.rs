@@ -485,6 +485,37 @@ pub(crate) fn atan_eval(x: DoubleDouble) -> DoubleDouble {
     DoubleDouble::new(p_lo, p_hi)
 }
 
+#[inline(always)]
+#[allow(unused)]
+pub(crate) fn atan_eval_fma(x: DoubleDouble) -> DoubleDouble {
+    let p_hi = x.hi;
+    let x_hi_sq = x.hi * x.hi;
+    // c0 ~ x_hi^2 * 1/5 - 1/3
+    let c0 = f64::mul_add(
+        x_hi_sq,
+        f64::from_bits(0x3fc999999999999a),
+        f64::from_bits(0xbfd5555555555555),
+    );
+    // c1 ~ x_hi^2 * 1/9 - 1/7
+    let c1 = f64::mul_add(
+        x_hi_sq,
+        f64::from_bits(0x3fbc71c71c71c71c),
+        f64::from_bits(0xbfc2492492492492),
+    );
+    // x_hi^3
+    let x_hi_3 = x_hi_sq * x.hi;
+    // x_hi^4
+    let x_hi_4 = x_hi_sq * x_hi_sq;
+    // d0 ~ 1/3 - x_hi^2 / 5 + x_hi^4 / 7 - x_hi^6 / 9
+    let d0 = f64::mul_add(x_hi_4, c1, c0);
+    // x_lo - x_lo * x_hi^2 + x_lo * x_hi^4
+    let d1 = f64::mul_add(x_hi_4 - x_hi_sq, x.lo, x.lo);
+    // p.lo ~ -x_hi^3/3 + x_hi^5/5 - x_hi^7/7 + x_hi^9/9 +
+    //        + x_lo * (1 - x_hi^2 + x_hi^4)
+    let p_lo = f64::mul_add(x_hi_3, d0, d1);
+    DoubleDouble::new(p_lo, p_hi)
+}
+
 #[inline]
 fn atan_eval_hard(x: DyadicFloat128) -> DyadicFloat128 {
     // let x_hi_sq = x * x;
@@ -652,45 +683,59 @@ pub(crate) fn atan2_hard(y: f64, x: f64) -> DyadicFloat128 {
     r
 }
 
-/// Computes atan(x)
-///
-/// Max found ULP 0.5
-pub fn f_atan2(y: f64, x: f64) -> f64 {
-    static IS_NEG: [f64; 2] = [1.0, -1.0];
-    const ZERO: DoubleDouble = DoubleDouble::new(0.0, 0.0);
-    const MZERO: DoubleDouble = DoubleDouble::new(-0.0, -0.0);
-    const PI: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0x3ca1a62633145c07),
-        f64::from_bits(0x400921fb54442d18),
-    );
-    const MPI: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0xbca1a62633145c07),
-        f64::from_bits(0xc00921fb54442d18),
-    );
-    const PI_OVER_2: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0x3c91a62633145c07),
-        f64::from_bits(0x3ff921fb54442d18),
-    );
-    const MPI_OVER_2: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0xbc91a62633145c07),
-        f64::from_bits(0xbff921fb54442d18),
-    );
-    const PI_OVER_4: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0x3c81a62633145c07),
-        f64::from_bits(0x3fe921fb54442d18),
-    );
-    const THREE_PI_OVER_4: DoubleDouble = DoubleDouble::new(
-        f64::from_bits(0x3c9a79394c9e8a0a),
-        f64::from_bits(0x4002d97c7f3321d2),
-    );
+static IS_NEG: [f64; 2] = [1.0, -1.0];
+const ZERO: DoubleDouble = DoubleDouble::new(0.0, 0.0);
+const MZERO: DoubleDouble = DoubleDouble::new(-0.0, -0.0);
+const PI: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0x3ca1a62633145c07),
+    f64::from_bits(0x400921fb54442d18),
+);
+const MPI: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0xbca1a62633145c07),
+    f64::from_bits(0xc00921fb54442d18),
+);
+const PI_OVER_2: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0x3c91a62633145c07),
+    f64::from_bits(0x3ff921fb54442d18),
+);
+const MPI_OVER_2: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0xbc91a62633145c07),
+    f64::from_bits(0xbff921fb54442d18),
+);
+const PI_OVER_4: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0x3c81a62633145c07),
+    f64::from_bits(0x3fe921fb54442d18),
+);
+const THREE_PI_OVER_4: DoubleDouble = DoubleDouble::new(
+    f64::from_bits(0x3c9a79394c9e8a0a),
+    f64::from_bits(0x4002d97c7f3321d2),
+);
 
-    // Adjustment for constant term:
-    //   CONST_ADJ[x_sign][y_sign][recip]
-    static CONST_ADJ: [[[DoubleDouble; 2]; 2]; 2] = [
-        [[ZERO, MPI_OVER_2], [MZERO, MPI_OVER_2]],
-        [[MPI, PI_OVER_2], [MPI, PI_OVER_2]],
-    ];
+// Adjustment for constant term:
+//   CONST_ADJ[x_sign][y_sign][recip]
+static CONST_ADJ: [[[DoubleDouble; 2]; 2]; 2] = [
+    [[ZERO, MPI_OVER_2], [MZERO, MPI_OVER_2]],
+    [[MPI, PI_OVER_2], [MPI, PI_OVER_2]],
+];
 
+// Exceptional cases:
+//   EXCEPT[y_except][x_except][x_is_neg]
+// with x_except & y_except:
+//   0: zero
+//   1: finite, non-zero
+//   2: infinity
+static EXCEPTS: [[[DoubleDouble; 2]; 3]; 3] = [
+    [[ZERO, PI], [ZERO, PI], [ZERO, PI]],
+    [[PI_OVER_2, PI_OVER_2], [ZERO, ZERO], [ZERO, PI]],
+    [
+        [PI_OVER_2, PI_OVER_2],
+        [PI_OVER_2, PI_OVER_2],
+        [PI_OVER_4, THREE_PI_OVER_4],
+    ],
+];
+
+#[inline(always)]
+fn atan2_gen_fma(y: f64, x: f64) -> f64 {
     let x_sign = x.is_sign_negative() as usize;
     let y_sign = y.is_sign_negative() as usize;
     let x_bits = x.to_bits() & 0x7fff_ffff_ffff_ffff;
@@ -726,22 +771,6 @@ pub fn f_atan2(y: f64, x: f64) -> f64 {
         } else {
             1
         };
-
-        // Exceptional cases:
-        //   EXCEPT[y_except][x_except][x_is_neg]
-        // with x_except & y_except:
-        //   0: zero
-        //   1: finite, non-zero
-        //   2: infinity
-        static EXCEPTS: [[[DoubleDouble; 2]; 3]; 3] = [
-            [[ZERO, PI], [ZERO, PI], [ZERO, PI]],
-            [[PI_OVER_2, PI_OVER_2], [ZERO, ZERO], [ZERO, PI]],
-            [
-                [PI_OVER_2, PI_OVER_2],
-                [PI_OVER_2, PI_OVER_2],
-                [PI_OVER_4, THREE_PI_OVER_4],
-            ],
-        ];
 
         if (x_except != 1) || (y_except != 1) {
             let r = EXCEPTS[y_except][x_except][x_sign];
@@ -826,6 +855,158 @@ pub fn f_atan2(y: f64, x: f64) -> f64 {
         return r.to_f64();
     }
     atan2_hard(y, x).fast_as_f64()
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atan2_fma_impl(y: f64, x: f64) -> f64 {
+    let x_sign = x.is_sign_negative() as usize;
+    let y_sign = y.is_sign_negative() as usize;
+    let x_bits = x.to_bits() & 0x7fff_ffff_ffff_ffff;
+    let y_bits = y.to_bits() & 0x7fff_ffff_ffff_ffff;
+    let x_abs = x_bits;
+    let y_abs = y_bits;
+    let recip = x_abs < y_abs;
+    let mut min_abs = if recip { x_abs } else { y_abs };
+    let mut max_abs = if !recip { x_abs } else { y_abs };
+    let mut min_exp = min_abs.wrapping_shr(52);
+    let mut max_exp = max_abs.wrapping_shr(52);
+
+    let mut num = f64::from_bits(min_abs);
+    let mut den = f64::from_bits(max_abs);
+
+    // Check for exceptional cases, whether inputs are 0, inf, nan, or close to
+    // overflow, or close to underflow.
+    if max_exp > 0x7ffu64 - 128u64 || min_exp < 128u64 {
+        if x.is_nan() || y.is_nan() {
+            return f64::NAN;
+        }
+        let x_except = if x == 0.0 {
+            0
+        } else if x.is_infinite() {
+            2
+        } else {
+            1
+        };
+        let y_except = if y == 0.0 {
+            0
+        } else if y.is_infinite() {
+            2
+        } else {
+            1
+        };
+
+        if (x_except != 1) || (y_except != 1) {
+            let r = EXCEPTS[y_except][x_except][x_sign];
+            return f64::mul_add(IS_NEG[y_sign], r.hi, IS_NEG[y_sign] * r.lo);
+        }
+        let scale_up = min_exp < 128u64;
+        let scale_down = max_exp > 0x7ffu64 - 128u64;
+        // At least one input is denormal, multiply both numerator and denominator
+        // by some large enough power of 2 to normalize denormal inputs.
+        // if scale_up || scale_down {
+        //     return atan2_hard(y, x).fast_as_f64();
+        // }
+        if scale_up {
+            num *= f64::from_bits(0x43f0000000000000);
+            if !scale_down {
+                den *= f64::from_bits(0x43f0000000000000);
+            }
+        } else if scale_down {
+            den *= f64::from_bits(0x3bf0000000000000);
+            if !scale_up {
+                num *= f64::from_bits(0x3bf0000000000000);
+            }
+        }
+
+        min_abs = num.to_bits();
+        max_abs = den.to_bits();
+        min_exp = min_abs.wrapping_shr(52);
+        max_exp = max_abs.wrapping_shr(52);
+    }
+    let final_sign = IS_NEG[((x_sign != y_sign) != recip) as usize];
+    let const_term = CONST_ADJ[x_sign][y_sign][recip as usize];
+    let exp_diff = max_exp - min_exp;
+    // We have the following bound for normalized n and d:
+    //   2^(-exp_diff - 1) < n/d < 2^(-exp_diff + 1).
+    if exp_diff > 54 {
+        return f64::mul_add(
+            final_sign,
+            const_term.hi,
+            final_sign * (const_term.lo + num / den),
+        );
+    }
+
+    let mut k = (64.0 * num / den).round();
+    let idx = k as u64;
+    // k = idx / 64
+    k *= f64::from_bits(0x3f90000000000000);
+
+    // Range reduction:
+    // atan(n/d) - atan(k/64) = atan((n/d - k/64) / (1 + (n/d) * (k/64)))
+    //                        = atan((n - d * k/64)) / (d + n * k/64))
+    let num_k = DoubleDouble::from_exact_mult_fma(num, k);
+    let den_k = DoubleDouble::from_exact_mult_fma(den, k);
+
+    // num_dd = n - d * k
+    let num_dd = DoubleDouble::from_exact_add(num - den_k.hi, -den_k.lo);
+    // den_dd = d + n * k
+    let mut den_dd = DoubleDouble::from_exact_add(den, num_k.hi);
+    den_dd.lo += num_k.lo;
+
+    // q = (n - d * k) / (d + n * k)
+    let q = DoubleDouble::div_fma(num_dd, den_dd);
+    // p ~ atan(q)
+    let p = atan_eval_fma(q);
+
+    let vl = ATAN_I[idx as usize];
+    let vlo = DoubleDouble::from_bit_pair(vl);
+    let mut r = DoubleDouble::add(const_term, DoubleDouble::add(vlo, p));
+
+    let err = f64::mul_add(
+        p.hi,
+        f64::from_bits(0x3bd0000000000000),
+        f64::from_bits(0x3c00000000000000),
+    );
+
+    let ub = r.hi + (r.lo + err);
+    let lb = r.hi + (r.lo - err);
+
+    if ub == lb {
+        r.hi *= final_sign;
+        r.lo *= final_sign;
+
+        return r.to_f64();
+    }
+    atan2_hard(y, x).fast_as_f64()
+}
+
+/// Computes atan(x)
+///
+/// Max found ULP 0.5
+pub fn f_atan2(y: f64, x: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atan2_gen_fma(y, x)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64, f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atan2_fma_impl
+            } else {
+                fn def_atan2pi(y: f64, x: f64) -> f64 {
+                    atan2_gen_fma(y, x)
+                }
+                def_atan2pi
+            }
+        });
+        unsafe { q(y, x) }
+    }
 }
 
 #[cfg(test)]

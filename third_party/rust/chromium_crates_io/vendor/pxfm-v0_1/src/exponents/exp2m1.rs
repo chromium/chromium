@@ -26,11 +26,9 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use crate::common::{dd_fmla, dyad_fmla, f_fmla};
 use crate::double_double::DoubleDouble;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 use crate::exponents::fast_ldexp;
-use crate::rounding::CpuFloor;
-use crate::rounding::CpuRoundTiesEven;
 
 const LN2H: f64 = f64::from_bits(0x3fe62e42fefa39ef);
 const LN2L: f64 = f64::from_bits(0x3c7abc9e3b39803f);
@@ -183,8 +181,8 @@ pub(crate) static EXP_M1_2_TABLE2: [(u64, u64); 64] = [
 // Approximation for the fast path of exp(z) for z=zh+zl,
 // with |z| < 0.000130273 < 2^-12.88 and |zl| < 2^-42.6
 // (assuming x^y does not overflow or underflow)
-#[inline]
-fn q_1(dz: DoubleDouble) -> DoubleDouble {
+#[inline(always)]
+fn q_1<B: ExpfBackend>(dz: DoubleDouble, backend: &B) -> DoubleDouble {
     const Q_1: [u64; 5] = [
         0x3ff0000000000000,
         0x3ff0000000000000,
@@ -193,24 +191,24 @@ fn q_1(dz: DoubleDouble) -> DoubleDouble {
         0x3fa55555558489dc,
     ];
     let z = dz.to_f64();
-    let mut q = f_fmla(f64::from_bits(Q_1[4]), dz.hi, f64::from_bits(Q_1[3]));
-    q = f_fmla(q, z, f64::from_bits(Q_1[2]));
+    let mut q = backend.fma(f64::from_bits(Q_1[4]), dz.hi, f64::from_bits(Q_1[3]));
+    q = backend.fma(q, z, f64::from_bits(Q_1[2]));
 
     let mut p0 = DoubleDouble::from_exact_add(f64::from_bits(Q_1[1]), q * z);
-    p0 = DoubleDouble::quick_mult(dz, p0);
+    p0 = backend.quick_mult(dz, p0);
     p0 = DoubleDouble::f64_add(f64::from_bits(Q_1[0]), p0);
     p0
 }
 
-#[inline]
-fn exp1(x: DoubleDouble) -> DoubleDouble {
+#[inline(always)]
+fn exp1<B: ExpfBackend>(x: DoubleDouble, backend: &B) -> DoubleDouble {
     const INVLOG2: f64 = f64::from_bits(0x40b71547652b82fe); /* |INVLOG2-2^12/log(2)| < 2^-43.4 */
-    let k = (x.hi * INVLOG2).cpu_round_ties_even();
+    let k = backend.round_ties_even(x.hi * INVLOG2);
 
     const LOG2H: f64 = f64::from_bits(0x3f262e42fefa39ef);
     const LOG2L: f64 = f64::from_bits(0x3bbabc9e3b39803f);
     const LOG2DD: DoubleDouble = DoubleDouble::new(LOG2L, LOG2H);
-    let zk = DoubleDouble::quick_mult_f64(LOG2DD, k);
+    let zk = backend.quick_mult_f64(LOG2DD, k);
 
     let mut yz = DoubleDouble::from_exact_add(x.hi - zk.hi, x.lo);
     yz.lo -= zk.lo;
@@ -223,10 +221,10 @@ fn exp1(x: DoubleDouble) -> DoubleDouble {
     let t1 = DoubleDouble::from_bit_pair(EXP_M1_2_TABLE1[i2 as usize]);
     let t2 = DoubleDouble::from_bit_pair(EXP_M1_2_TABLE2[i1 as usize]);
 
-    let p0 = DoubleDouble::quick_mult(t2, t1);
+    let p0 = backend.quick_mult(t2, t1);
 
-    let mut q = q_1(yz);
-    q = DoubleDouble::quick_mult(p0, q);
+    let mut q = q_1(yz, backend);
+    q = backend.quick_mult(p0, q);
 
     /* Scale by 2^k. Warning: for x near 1024, we can have k=2^22, thus
     M = 2047, which encodes Inf */
@@ -241,15 +239,15 @@ fn exp1(x: DoubleDouble) -> DoubleDouble {
     q
 }
 
-#[inline]
-fn exp2m1_fast(x: f64, tiny: bool) -> Exp2m1 {
+#[inline(always)]
+fn exp2m1_fast<B: ExpfBackend>(x: f64, tiny: bool, backend: &B) -> Exp2m1 {
     if tiny {
-        return exp2m1_fast_tiny(x);
+        return exp2m1_fast_tiny(x, backend);
     }
     /* now -54 < x < -0.125 or 0.125 < x < 1024: we approximate exp(x*log(2))
     and subtract 1 */
-    let mut v = DoubleDouble::from_exact_mult(LN2H, x);
-    v.lo = f_fmla(x, LN2L, v.lo);
+    let mut v = backend.exact_mult(LN2H, x);
+    v.lo = backend.fma(x, LN2L, v.lo);
     /*
     The a_mul() call is exact, and the error of the fma() is bounded by
      ulp(l).
@@ -261,7 +259,7 @@ fn exp2m1_fast(x: f64, tiny: bool) -> Exp2m1 {
      |h + l - x*log(2)| <= |h + l - x*(LN2H+LN2L)| + |x|*|LN2H+LN2L-log(2)|
                         <= 2^-95 + 1024*2^-110.4 < 2^-94.9 */
 
-    let mut p = exp1(v);
+    let mut p = exp1(v, backend);
 
     let zf: DoubleDouble = if x >= 0. {
         // implies h >= 1 and the fast_two_sum pre-condition holds
@@ -286,8 +284,8 @@ fn exp2m1_fast(x: f64, tiny: bool) -> Exp2m1 {
 // Approximation for the accurate path of exp(z) for z=zh+zl,
 // with |z| < 0.000130273 < 2^-12.88 and |zl| < 2^-42.6
 // (assuming x^y does not overflow or underflow)
-#[inline]
-fn q_2(dz: DoubleDouble) -> DoubleDouble {
+#[inline(always)]
+fn q_2<B: ExpfBackend>(dz: DoubleDouble, backend: &B) -> DoubleDouble {
     /* Let q[0]..q[7] be the coefficients of degree 0..7 of Q_2.
     The ulp of q[7]*z^7 is at most 2^-155, thus we can compute q[7]*z^7
     in double precision only.
@@ -314,32 +312,32 @@ fn q_2(dz: DoubleDouble) -> DoubleDouble {
     ];
 
     let z = dz.to_f64();
-    let mut q = dd_fmla(f64::from_bits(Q_2[8]), dz.hi, f64::from_bits(Q_2[7]));
-    q = dd_fmla(q, z, f64::from_bits(Q_2[6]));
-    q = dd_fmla(q, z, f64::from_bits(Q_2[5]));
+    let mut q = backend.dd_fma(f64::from_bits(Q_2[8]), dz.hi, f64::from_bits(Q_2[7]));
+    q = backend.dd_fma(q, z, f64::from_bits(Q_2[6]));
+    q = backend.dd_fma(q, z, f64::from_bits(Q_2[5]));
 
     // multiply q by z and add Q_2[3] + Q_2[4]
 
-    let mut p = DoubleDouble::from_exact_mult(q, z);
+    let mut p = backend.exact_mult(q, z);
     let r0 = DoubleDouble::from_exact_add(f64::from_bits(Q_2[3]), p.hi);
     p.hi = r0.hi;
     p.lo += r0.lo + f64::from_bits(Q_2[4]);
 
     // multiply hi+lo by zh+zl and add Q_2[2]
 
-    p = DoubleDouble::quick_mult(p, dz);
+    p = backend.quick_mult(p, dz);
     let r1 = DoubleDouble::from_exact_add(f64::from_bits(Q_2[2]), p.hi);
     p.hi = r1.hi;
     p.lo += r1.lo;
 
     // multiply hi+lo by zh+zl and add Q_2[1]
-    p = DoubleDouble::quick_mult(p, dz);
+    p = backend.quick_mult(p, dz);
     let r1 = DoubleDouble::from_exact_add(f64::from_bits(Q_2[1]), p.hi);
     p.hi = r1.hi;
     p.lo += r1.lo;
 
     // multiply hi+lo by zh+zl and add Q_2[0]
-    p = DoubleDouble::quick_mult(p, dz);
+    p = backend.quick_mult(p, dz);
     let r1 = DoubleDouble::from_exact_add(f64::from_bits(Q_2[0]), p.hi);
     p.hi = r1.hi;
     p.lo += r1.lo;
@@ -347,16 +345,16 @@ fn q_2(dz: DoubleDouble) -> DoubleDouble {
 }
 
 // returns a double-double approximation hi+lo of exp(x*log(2)) for |x| < 745
-#[inline]
-fn exp_2(x: f64) -> DoubleDouble {
-    let k = (x * f64::from_bits(0x40b0000000000000)).cpu_round_ties_even();
+#[inline(always)]
+fn exp_2<B: ExpfBackend>(x: f64, backend: &B) -> DoubleDouble {
+    let k = backend.round_ties_even(x * f64::from_bits(0x40b0000000000000));
     // since |x| <= 745 we have k <= 3051520
 
-    let yhh = f_fmla(-k, f64::from_bits(0x3f30000000000000), x); // exact, |yh| <= 2^-13
+    let yhh = backend.fma(-k, f64::from_bits(0x3f30000000000000), x); // exact, |yh| <= 2^-13
 
     /* now x = k + yh, thus 2^x = 2^k * 2^yh, and we multiply yh by log(2)
     to use the accurate path of exp() */
-    let ky = DoubleDouble::quick_f64_mult(yhh, DoubleDouble::new(LN2L, LN2H));
+    let ky = backend.quick_f64_mult(yhh, DoubleDouble::new(LN2L, LN2H));
 
     let ik: i64 = unsafe {
         k.to_int_unchecked::<i64>() // k is already integer, this is just a conversion
@@ -368,10 +366,10 @@ fn exp_2(x: f64) -> DoubleDouble {
     let t1 = DoubleDouble::from_bit_pair(EXP_M1_2_TABLE1[i2 as usize]);
     let t2 = DoubleDouble::from_bit_pair(EXP_M1_2_TABLE2[i1 as usize]);
 
-    let p = DoubleDouble::quick_mult(t2, t1);
+    let p = backend.quick_mult(t2, t1);
 
-    let mut q = q_2(ky);
-    q = DoubleDouble::quick_mult(p, q);
+    let mut q = q_2(ky, backend);
+    q = backend.quick_mult(p, q);
     let mut ud: u64 = (im as u64).wrapping_shl(52);
 
     if im == 0x7ff {
@@ -385,7 +383,8 @@ fn exp_2(x: f64) -> DoubleDouble {
 }
 
 #[cold]
-pub(crate) fn exp2m1_accurate_tiny(x: f64) -> f64 {
+#[inline(always)]
+pub(crate) fn exp2m1_accurate_tiny<B: ExpfBackend>(x: f64, backend: &B) -> f64 {
     let x2 = x * x;
     let x4 = x2 * x2;
     const Q: [u64; 22] = [
@@ -412,72 +411,73 @@ pub(crate) fn exp2m1_accurate_tiny(x: f64) -> f64 {
         0x3d33150b3d792231,
         0x3cec184260bfad7e,
     ];
-    let mut c13 = dd_fmla(f64::from_bits(Q[20]), x, f64::from_bits(Q[19])); // degree 13
-    let c11 = dd_fmla(f64::from_bits(Q[18]), x, f64::from_bits(Q[17])); // degree 11
-    c13 = dd_fmla(f64::from_bits(Q[21]), x2, c13); // degree 13
+    let mut c13 = backend.dd_fma(f64::from_bits(Q[20]), x, f64::from_bits(Q[19])); // degree 13
+    let c11 = backend.dd_fma(f64::from_bits(Q[18]), x, f64::from_bits(Q[17])); // degree 11
+    c13 = backend.dd_fma(f64::from_bits(Q[21]), x2, c13); // degree 13
     // add Q[16]*x+c11*x2+c13*x4 to Q[15] (degree 9)
     let mut p = DoubleDouble::from_exact_add(
         f64::from_bits(Q[15]),
-        f_fmla(f64::from_bits(Q[16]), x, f_fmla(c11, x2, c13 * x4)),
+        backend.fma(f64::from_bits(Q[16]), x, backend.fma(c11, x2, c13 * x4)),
     );
     // multiply h+l by x and add Q[14] (degree 8)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[14]), p.hi);
     p.lo += p0.lo;
     p.hi = p0.hi;
 
     // multiply h+l by x and add Q[12]+Q[13] (degree 7)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[12]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[13]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[10]+Q[11] (degree 6)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[10]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[11]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[8]+Q[9] (degree 5)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[8]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[9]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[6]+Q[7] (degree 4)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[6]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[7]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[4]+Q[5] (degree 3)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[4]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[5]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[2]+Q[3] (degree 2)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[2]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[3]);
     p.hi = p0.hi;
     // multiply h+l by x and add Q[0]+Q[1] (degree 2)
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(Q[0]), p.hi);
     p.lo += p0.lo + f64::from_bits(Q[1]);
     p.hi = p0.hi;
     // multiply h+l by x
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     p.to_f64()
 }
 
 #[cold]
-fn exp2m1_accurate(x: f64) -> f64 {
+#[inline(always)]
+fn exp2m1_accurate<B: ExpfBackend>(x: f64, backend: &B) -> f64 {
     let t = x.to_bits();
     let ux = t;
     let ax = ux & 0x7fffffffffffffffu64;
 
     if ax <= 0x3fc0000000000000u64 {
         // |x| <= 0.125
-        return exp2m1_accurate_tiny(x);
+        return exp2m1_accurate_tiny(x, backend);
     }
 
-    let mut p = exp_2(x);
+    let mut p = exp_2(x, backend);
 
     let zf: DoubleDouble = DoubleDouble::from_full_exact_add(p.hi, -1.0);
     p.lo += zf.lo;
@@ -494,8 +494,8 @@ exp2m1_fast_tiny_all(xmin,0.125,2^-65.73) in exp2m1.sage returns
 exp2m1_fast_tiny_all(-0.125,-xmin,2^-65.62) returns
 1.76283772822891e-20 < 2^-65.62, which proves the relative
 error is bounded by 2^-65.62. */
-#[inline]
-fn exp2m1_fast_tiny(x: f64) -> Exp2m1 {
+#[inline(always)]
+fn exp2m1_fast_tiny<B: ExpfBackend>(x: f64, backend: &B) -> Exp2m1 {
     /* The maximal value of |c4*x^4/exp2m1(x)| over [-0.125,0.125]
     is less than 2^-15.109, where c4 is the degree-4 coefficient,
     thus we can compute the coefficients of degree 4 or higher
@@ -516,30 +516,30 @@ fn exp2m1_fast_tiny(x: f64) -> Exp2m1 {
     ];
     let x2 = x * x;
     let x4 = x2 * x2;
-    let mut c8 = dd_fmla(f64::from_bits(P[10]), x, f64::from_bits(P[9])); // degree 8
-    let c6 = dd_fmla(f64::from_bits(P[8]), x, f64::from_bits(P[7])); // degree 6
-    let mut c4 = dd_fmla(f64::from_bits(P[6]), x, f64::from_bits(P[5])); // degree 4
-    c8 = dd_fmla(f64::from_bits(P[11]), x2, c8); // degree 8
-    c4 = dd_fmla(c6, x2, c4); // degree 4
-    c4 = dd_fmla(c8, x4, c4); // degree 4
+    let mut c8 = backend.dd_fma(f64::from_bits(P[10]), x, f64::from_bits(P[9])); // degree 8
+    let c6 = backend.dd_fma(f64::from_bits(P[8]), x, f64::from_bits(P[7])); // degree 6
+    let mut c4 = backend.dd_fma(f64::from_bits(P[6]), x, f64::from_bits(P[5])); // degree 4
+    c8 = backend.dd_fma(f64::from_bits(P[11]), x2, c8); // degree 8
+    c4 = backend.dd_fma(c6, x2, c4); // degree 4
+    c4 = backend.dd_fma(c8, x4, c4); // degree 4
 
-    let mut p = DoubleDouble::from_exact_mult(c4, x);
+    let mut p = backend.exact_mult(c4, x);
     let p0 = DoubleDouble::from_exact_add(f64::from_bits(P[4]), p.hi);
     p.lo += p0.lo;
     p.hi = p0.hi;
 
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
 
     let p1 = DoubleDouble::from_exact_add(f64::from_bits(P[2]), p.hi);
     p.lo += p1.lo + f64::from_bits(P[3]);
     p.hi = p1.hi;
 
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
     let p2 = DoubleDouble::from_exact_add(f64::from_bits(P[0]), p.hi);
     p.lo += p2.lo + f64::from_bits(P[1]);
     p.hi = p2.hi;
 
-    p = DoubleDouble::quick_f64_mult(x, p);
+    p = backend.quick_f64_mult(x, p);
 
     Exp2m1 {
         exp: p,
@@ -547,10 +547,8 @@ fn exp2m1_fast_tiny(x: f64) -> Exp2m1 {
     }
 }
 
-/// Computes 2^x - 1
-///
-/// Max found ULP 0.5
-pub fn f_exp2m1(d: f64) -> f64 {
+#[inline(always)]
+fn exp2m1_gen<B: ExpfBackend>(d: f64, backend: B) -> f64 {
     let mut x = d;
     let t = x.to_bits();
     let ux = t;
@@ -576,7 +574,7 @@ pub fn f_exp2m1(d: f64) -> f64 {
         }
         /* for x >= 1024, exp2m1(x) rounds to +Inf to nearest,
         but for RNDZ/RNDD, we should have no overflow for x=1024 */
-        return f_fmla(
+        return backend.fma(
             x,
             f64::from_bits(0x7bffffffffffffff),
             f64::from_bits(0x7fefffffffffffff),
@@ -599,27 +597,27 @@ pub fn f_exp2m1(d: f64) -> f64 {
             }
             // scale x by 2^106
             x *= f64::from_bits(0x4690000000000000);
-            let z = DoubleDouble::quick_mult_f64(DoubleDouble::new(LN2L, LN2H), x);
+            let z = backend.quick_mult_f64(DoubleDouble::new(LN2L, LN2H), x);
             let mut h2 = z.to_f64(); // round to 53-bit precision
             // scale back, hoping to avoid double rounding
             h2 *= f64::from_bits(0x3950000000000000);
             // now subtract back h2 * 2^106 from h to get the correction term
-            let mut h = dd_fmla(-h2, f64::from_bits(0x4690000000000000), z.hi);
+            let mut h = backend.dd_fma(-h2, f64::from_bits(0x4690000000000000), z.hi);
             // add l
             h += z.lo;
             /* add h2 + h * 2^-106. Warning: when h=0, 2^-106*h2 might be exact,
             thus no underflow will be raised. We have underflow for
             0 < x <= 0x1.71547652b82fep-1022 for RNDZ, and for
             0 < x <= 0x1.71547652b82fdp-1022 for RNDN/RNDU. */
-            dyad_fmla(h, f64::from_bits(0x3950000000000000), h2)
+            backend.dyad_fma(h, f64::from_bits(0x3950000000000000), h2)
         } else {
             const C2: f64 = f64::from_bits(0x3fcebfbdff82c58f); // log(2)^2/2
-            let mut z = DoubleDouble::from_exact_mult(LN2H, x);
-            z.lo = dyad_fmla(LN2L, x, z.lo);
+            let mut z = backend.exact_mult(LN2H, x);
+            z.lo = backend.dyad_fma(LN2L, x, z.lo);
             /* h+l approximates the first term x*log(2) */
             /* we add C2*x^2 last, so that in case there is a cancellation in
             LN2L*x+l, it will contribute more bits */
-            z.lo += C2 * x * x;
+            z.lo = backend.fma(C2, x * x, z.lo);
             z.to_f64()
         };
     }
@@ -629,7 +627,7 @@ pub fn f_exp2m1(d: f64) -> f64 {
 
     /* 2^x-1 is exact for x integer, -53 <= x <= 53 */
     if ux.wrapping_shl(17) == 0 {
-        let i = unsafe { x.cpu_floor().to_int_unchecked::<i32>() };
+        let i = unsafe { backend.floor(x).to_int_unchecked::<i32>() };
         if x == i as f64 && -53 <= i && i <= 53 {
             return if i >= 0 {
                 ((1u64 << i) - 1) as f64
@@ -639,13 +637,48 @@ pub fn f_exp2m1(d: f64) -> f64 {
         }
     }
 
-    let result = exp2m1_fast(x, ax <= 0x3fc0000000000000u64);
+    let result = exp2m1_fast(x, ax <= 0x3fc0000000000000u64, &backend);
     let left = result.exp.hi + (result.exp.lo - result.err);
     let right = result.exp.hi + (result.exp.lo + result.err);
     if left != right {
-        return exp2m1_accurate(x);
+        return exp2m1_accurate(x, &backend);
     }
     left
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp2m1_fma_impl(x: f64) -> f64 {
+    use crate::exponents::expf::FmaBackend;
+    exp2m1_gen(x, FmaBackend {})
+}
+
+/// Computes 2^x - 1
+///
+/// Max found ULP 0.5
+pub fn f_exp2m1(d: f64) -> f64 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp2m1_gen(d, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f64) -> f64> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp2m1_fma_impl
+            } else {
+                fn def_exp2m1(x: f64) -> f64 {
+                    exp2m1_gen(x, GenericExpfBackend {})
+                }
+                def_exp2m1
+            }
+        });
+        unsafe { q(d) }
+    }
 }
 
 #[cfg(test)]

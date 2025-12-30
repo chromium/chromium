@@ -29,11 +29,14 @@
 use crate::asinpif::ASINCOSF_PI_TABLE;
 use crate::common::{dd_fmla, f_fmla};
 
-/// Computes acos(x)/PI
-///
-/// Max ULP 0.5
-#[inline]
-pub fn f_acospif(x: f32) -> f32 {
+#[inline(always)]
+/// fma - fma
+/// dd_fma - mandatory fma fallback
+fn acospif_gen_impl<Q: Fn(f64, f64, f64) -> f64, F: Fn(f64, f64, f64) -> f64>(
+    x: f32,
+    fma: Q,
+    dd_fma: F,
+) -> f32 {
     let ax = x.abs();
     let az = ax as f64;
     let z = x as f64;
@@ -60,29 +63,64 @@ pub fn f_acospif(x: f32) -> f32 {
     let z2 = z * z;
     let z4 = z2 * z2;
     if i == 0 {
-        let mut c0 = f_fmla(z2, f64::from_bits(c[1]), f64::from_bits(c[0]));
-        let c2 = f_fmla(z2, f64::from_bits(c[3]), f64::from_bits(c[2]));
-        let mut c4 = f_fmla(z2, f64::from_bits(c[5]), f64::from_bits(c[4]));
-        let c6 = f_fmla(z2, f64::from_bits(c[7]), f64::from_bits(c[6]));
+        let mut c0 = fma(z2, f64::from_bits(c[1]), f64::from_bits(c[0]));
+        let c2 = fma(z2, f64::from_bits(c[3]), f64::from_bits(c[2]));
+        let mut c4 = fma(z2, f64::from_bits(c[5]), f64::from_bits(c[4]));
+        let c6 = fma(z2, f64::from_bits(c[7]), f64::from_bits(c[6]));
         c0 += c2 * z4;
         c4 += c6 * z4;
         /* For |x| <= 0x1.0fd288p-127, c0 += c4*(z4*z4) would raise a spurious
         underflow exception, we use an FMA instead, where c4 * z4 does not
         underflow. */
-        c0 = dd_fmla(c4 * z4, z4, c0);
-        f_fmla(-z, c0, 0.5) as f32
+        c0 = dd_fma(c4 * z4, z4, c0);
+        fma(-z, c0, 0.5) as f32
     } else {
         let f = (1. - az).sqrt();
-        let mut c0 = f_fmla(az, f64::from_bits(c[1]), f64::from_bits(c[0]));
-        let c2 = f_fmla(az, f64::from_bits(c[3]), f64::from_bits(c[2]));
-        let mut c4 = f_fmla(az, f64::from_bits(c[5]), f64::from_bits(c[4]));
-        let c6 = f_fmla(az, f64::from_bits(c[7]), f64::from_bits(c[6]));
+        let mut c0 = fma(az, f64::from_bits(c[1]), f64::from_bits(c[0]));
+        let c2 = fma(az, f64::from_bits(c[3]), f64::from_bits(c[2]));
+        let mut c4 = fma(az, f64::from_bits(c[5]), f64::from_bits(c[4]));
+        let c6 = fma(az, f64::from_bits(c[7]), f64::from_bits(c[6]));
         c0 += c2 * z2;
         c4 += c6 * z2;
         c0 += c4 * z4;
         static SIGN: [f64; 2] = [0., 1.];
         let r = SIGN[(t >> 31) as usize] + c0 * f64::copysign(f, x as f64);
         r as f32
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn acospif_fma_impl(x: f32) -> f32 {
+    acospif_gen_impl(x, f64::mul_add, f64::mul_add)
+}
+
+/// Computes acos(x)/PI
+///
+/// Max ULP 0.5
+#[inline]
+pub fn f_acospif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        acospif_gen_impl(x, f_fmla, dd_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                acospif_fma_impl
+            } else {
+                fn def_acospif(x: f32) -> f32 {
+                    acospif_gen_impl(x, f_fmla, dd_fmla)
+                }
+                def_acospif
+            }
+        });
+        unsafe { q(x) }
     }
 }
 

@@ -28,11 +28,8 @@
  */
 use crate::common::f_fmla;
 
-/// Computes atan(x)/PI
-///
-/// Max ULP 0.5
-#[inline]
-pub fn f_atanpif(x: f32) -> f32 {
+#[inline(always)]
+fn atanpif_gen_impl<Q: Fn(f64, f64, f64) -> f64>(x: f32, fma: Q) -> f32 {
     let t = x.to_bits();
     let e: i32 = ((t >> 23) & 0xff) as i32;
     let gt = e >= 127;
@@ -89,9 +86,9 @@ pub fn f_atanpif(x: f32) -> f32 {
         0x3f994a7f81ee634b,
         0x3f4a6bbf6127a6df,
     ];
-    let mut cn0 = f_fmla(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
-    let cn2 = f_fmla(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
-    let cn4 = f_fmla(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
+    let mut cn0 = fma(z2, f64::from_bits(CN[1]), f64::from_bits(CN[0]));
+    let cn2 = fma(z2, f64::from_bits(CN[3]), f64::from_bits(CN[2]));
+    let cn4 = fma(z2, f64::from_bits(CN[5]), f64::from_bits(CN[4]));
     cn0 += z4 * cn2;
     cn0 += z8 * cn4;
     cn0 *= z;
@@ -106,18 +103,53 @@ pub fn f_atanpif(x: f32) -> f32 {
         0x3f1dadf2ca0acb43,
     ];
 
-    let mut cd0 = f_fmla(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
-    let cd2 = f_fmla(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
-    let mut cd4 = f_fmla(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
+    let mut cd0 = fma(z2, f64::from_bits(CD[1]), f64::from_bits(CD[0]));
+    let cd2 = fma(z2, f64::from_bits(CD[3]), f64::from_bits(CD[2]));
+    let mut cd4 = fma(z2, f64::from_bits(CD[5]), f64::from_bits(CD[4]));
     let cd6 = f64::from_bits(CD[6]);
     cd0 += z4 * cd2;
     cd4 += z4 * cd6;
-    cd0 += z8 * cd4;
+    cd0 = fma(z8, cd4, cd0);
     let mut r = cn0 / cd0;
     if gt {
         r = f64::copysign(0.5, z) - r;
     }
     r as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn atanpif_fma_impl(x: f32) -> f32 {
+    atanpif_gen_impl(x, f64::mul_add)
+}
+
+/// Computes atan(x)/PI
+///
+/// Max ULP 0.5
+#[inline]
+pub fn f_atanpif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        atanpif_gen_impl(x, f_fmla)
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                atanpif_fma_impl
+            } else {
+                fn def_atanpif(x: f32) -> f32 {
+                    atanpif_gen_impl(x, f_fmla)
+                }
+                def_atanpif
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

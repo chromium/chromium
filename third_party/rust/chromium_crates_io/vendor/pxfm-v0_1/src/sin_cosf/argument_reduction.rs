@@ -79,7 +79,7 @@ impl ArgumentReducer {
         ),
         target_arch = "aarch64"
     )))]
-    #[inline]
+    #[inline(always)]
     pub(crate) fn reduce_small(self) -> (f64, i64) {
         /*
            Generated in SageMath:
@@ -99,6 +99,30 @@ impl ArgumentReducer {
         let mut y = prod - kd;
         y = f_fmla(self.x, f64::from_bits(THIRTYTWO_OVER_PI[1]), y);
         y = f_fmla(self.x, f64::from_bits(THIRTYTWO_OVER_PI[2]), y);
+        (y, unsafe {
+            kd.to_int_unchecked::<i64>() // indeterminate values is always filtered out before this call, as well only lowest bits are used
+        })
+    }
+
+    #[inline(always)]
+    pub(crate) fn reduce_small_fma(self) -> (f64, i64) {
+        /*
+           Generated in SageMath:
+           z = RealField(300)(32) / RealField(300).pi()
+           n = 53
+           x_hi = RealField(n)(z)  # convert to f64
+           x_mid = RealField(n)(z - RealField(300)(x_hi))
+           x_lo = RealField(n)(z - RealField(300)(x_hi) - RealField(300)(x_mid))
+           print(double_to_hex(x_hi), ",")
+           print(double_to_hex(x_mid), ",")
+           print(double_to_hex(x_lo), ",")
+        */
+        const THIRTYTWO_OVER_PI: [u64; 3] =
+            [0x40245f306dc9c883, 0xbcc6b01ec5417056, 0xb966447e493ad4ce];
+
+        let kd = (self.x * f64::from_bits(THIRTYTWO_OVER_PI[0])).round();
+        let mut y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[0]), -kd);
+        y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[1]), y);
         (y, unsafe {
             kd.to_int_unchecked::<i64>() // indeterminate values is always filtered out before this call, as well only lowest bits are used
         })
@@ -202,6 +226,97 @@ impl ArgumentReducer {
 
     // Return k and y, where
     // k = round(x * 32 / pi) and y = (x * 32 / pi) - k.
+    #[inline(always)]
+    #[allow(unused)]
+    pub(crate) fn reduce_large_fma(self, exponent: i32) -> (f64, i64) {
+        /*
+        Generated in SageMath:
+        z = RealField(300)(32) / RealField(300).pi()
+        n = 53
+        x_hi = RealField(n)(z)  # convert to f64
+        x_mid = RealField(n)(z - RealField(300)(x_hi))
+        x_lo = RealField(n)(z - RealField(300)(x_hi) - RealField(300)(x_mid))
+        x_lo_2 = RealField(n)(z - RealField(300)(x_hi) - RealField(300)(x_mid) - RealField(300)(x_lo))
+        x_lo_3 = z - RealField(300)(x_hi) - RealField(300)(x_mid) - RealField(300)(x_lo) - RealField(300)(x_lo_2)
+        print(double_to_hex(x_hi), ",")
+        print(double_to_hex(x_mid), ",")
+        print(double_to_hex(x_lo), ",")
+        print(double_to_hex(x_lo_2), ",")
+        print(double_to_hex(x_lo_3), ",")
+         */
+        const THIRTYTWO_OVER_PI: [u64; 5] = [
+            0x40245f306dc9c883,
+            0xbcc6b01ec5417056,
+            0xb966447e493ad4ce,
+            0x360e21c820ff28b2,
+            0xb29508510ea79237,
+        ];
+
+        // 2^45 <= |x| < 2^99
+        if exponent < 99 {
+            // - When x < 2^99, the full exact product of x * THIRTYTWO_OVER_PI[0]
+            // contains at least one integral bit <= 2^5.
+            // - When 2^45 <= |x| < 2^55, the lowest 6 unit bits are contained
+            // in the last 12 bits of double(x * THIRTYTWO_OVER_PI[0]).
+            // - When |x| >= 2^55, the LSB of double(x * THIRTYTWO_OVER_PI[0]) is at
+            // least 2^6.
+            let mut prod_hi = self.x * f64::from_bits(THIRTYTWO_OVER_PI[0]);
+            prod_hi = f64::from_bits(
+                prod_hi.to_bits()
+                    & (if exponent < 55 {
+                        0xfffffffffffff000
+                    } else {
+                        0xffffffffffffffff
+                    }),
+            ); // |x| < 2^55
+            let k_hi = prod_hi.round();
+            let truncated_prod = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[0]), -k_hi);
+            let prod_lo =
+                f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[1]), truncated_prod);
+            let k_lo = prod_lo.round();
+            let mut y = f64::mul_add(
+                self.x,
+                f64::from_bits(THIRTYTWO_OVER_PI[1]),
+                truncated_prod - k_lo,
+            );
+            y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[2]), y);
+            y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[3]), y);
+
+            return (y, k_lo as i64);
+        }
+
+        // - When x >= 2^110, the full exact product of x * THIRTYTWO_OVER_PI[0] does
+        // not contain any of the lowest 6 unit bits, so we can ignore it completely.
+        // - When 2^99 <= |x| < 2^110, the lowest 6 unit bits are contained
+        // in the last 12 bits of double(x * THIRTYTWO_OVER_PI[1]).
+        // - When |x| >= 2^110, the LSB of double(x * THIRTYTWO_OVER_PI[1]) is at
+        // least 64.
+        let mut prod_hi = self.x * f64::from_bits(THIRTYTWO_OVER_PI[1]);
+        prod_hi = f64::from_bits(
+            prod_hi.to_bits()
+                & (if exponent < 110 {
+                    0xfffffffffffff000
+                } else {
+                    0xffffffffffffffff
+                }),
+        ); // |x| < 2^110
+        let k_hi = prod_hi.round();
+        let truncated_prod = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[1]), -k_hi);
+        let prod_lo = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[2]), truncated_prod);
+        let k_lo = prod_lo.round();
+        let mut y = f64::mul_add(
+            self.x,
+            f64::from_bits(THIRTYTWO_OVER_PI[2]),
+            truncated_prod - k_lo,
+        );
+        y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[3]), y);
+        y = f64::mul_add(self.x, f64::from_bits(THIRTYTWO_OVER_PI[4]), y);
+
+        (y, k_lo as i64)
+    }
+
+    // Return k and y, where
+    // k = round(x * 32 / pi) and y = (x * 32 / pi) - k.
     #[cfg(not(any(
         all(
             any(target_arch = "x86", target_arch = "x86_64"),
@@ -279,7 +394,7 @@ impl ArgumentReducer {
         (y, (k_hi as i64).wrapping_add(k_lo as i64))
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn reduce(self) -> (f64, i64) {
         #[cfg(any(
             all(
@@ -302,6 +417,18 @@ impl ArgumentReducer {
             self.reduce_small()
         } else {
             self.reduce_large(get_exponent_f32(f32::from_bits(self.x_abs)))
+        }
+    }
+
+    #[inline(always)]
+    #[allow(unused)]
+    pub(crate) fn reduce_fma(self) -> (f64, i64) {
+        const SMALL_PASS_BOUND: u32 = 0x5600_0000u32;
+        if self.x_abs < SMALL_PASS_BOUND {
+            // 2^45
+            self.reduce_small_fma()
+        } else {
+            self.reduce_large_fma(get_exponent_f32(f32::from_bits(self.x_abs)))
         }
     }
 }

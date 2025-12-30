@@ -27,8 +27,7 @@
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 use crate::common::{f_fmla, f_fmlaf, pow2if};
-use crate::polyeval::f_polyeval6;
-use crate::rounding::CpuRound;
+use crate::exponents::expf::{ExpfBackend, GenericExpfBackend};
 use std::hint::black_box;
 
 const TBLSIZE: usize = 64;
@@ -142,11 +141,8 @@ pub(crate) static EXP2F_TABLE: [u64; 64] = [
   f_fmlaf(u, z0, z0) * i2
 */
 
-/// Computing exp2f
-///
-/// ULP 0.4999994
-#[inline]
-pub fn f_exp2f(x: f32) -> f32 {
+#[inline(always)]
+fn exp2f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let mut t = x.to_bits();
 
     if (t & 0xffff) == 0 {
@@ -219,7 +215,7 @@ pub fn f_exp2f(x: f32) -> f32 {
             0x3f243090e61e6af1,
         ];
         let xd = x as f64;
-        let p = f_polyeval6(
+        let p = backend.polyeval6(
             xd,
             f64::from_bits(C[0]),
             f64::from_bits(C[1]),
@@ -228,14 +224,14 @@ pub fn f_exp2f(x: f32) -> f32 {
             f64::from_bits(C[4]),
             f64::from_bits(C[5]),
         );
-        return f_fmla(p, xd, 1.) as f32;
+        return backend.fma(p, xd, 1.) as f32;
     }
 
     let x_d = x as f64;
-    let kf = (x_d * 64.).cpu_round();
+    let kf = backend.round(x_d * 64.);
     let k = unsafe { kf.to_int_unchecked::<i32>() }; // it's already not indeterminate.
     // dx = lo = x - (hi + mid) = x - kf * 2^(-6)
-    let dx = f_fmla(f64::from_bits(0xbf90000000000000), kf, x_d);
+    let dx = backend.fma(f64::from_bits(0xbf90000000000000), kf, x_d);
 
     const TABLE_BITS: u32 = 6;
     const TABLE_MASK: u64 = (1u64 << TABLE_BITS) - 1;
@@ -260,15 +256,51 @@ pub fn f_exp2f(x: f32) -> f32 {
         0x3f55d88091198529,
     ];
     let dx_sq = dx * dx;
-    let c1 = f_fmla(dx, f64::from_bits(C[0]), 1.0);
-    let c2 = f_fmla(dx, f64::from_bits(C[2]), f64::from_bits(C[1]));
-    let c3 = f_fmla(dx, f64::from_bits(C[4]), f64::from_bits(C[3]));
-    let p = f_fmla(dx_sq, c3, c2);
+    let c1 = backend.fma(dx, f64::from_bits(C[0]), 1.0);
+    let c2 = backend.fma(dx, f64::from_bits(C[2]), f64::from_bits(C[1]));
+    let c3 = backend.fma(dx, f64::from_bits(C[4]), f64::from_bits(C[3]));
+    let p = backend.fma(dx_sq, c3, c2);
     // 2^x = 2^(hi + mid + lo)
     //     = 2^(hi + mid) * 2^lo
     //     ~ mh * (1 + lo * P(lo))
     //     = mh + (mh*lo) * P(lo)
-    f_fmla(p, dx_sq * mh, c1 * mh) as f32
+    backend.fma(p, dx_sq * mh, c1 * mh) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn exp2f_fma_impl(x: f32) -> f32 {
+    use crate::exponents::expf::FmaBackend;
+    exp2f_gen(x, FmaBackend {})
+}
+
+/// Computing exp2f
+///
+/// ULP 0.4999994
+#[inline]
+pub fn f_exp2f(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        exp2f_gen(x, GenericExpfBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                exp2f_fma_impl
+            } else {
+                fn def_exp2f(x: f32) -> f32 {
+                    exp2f_gen(x, GenericExpfBackend {})
+                }
+                def_exp2f
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[inline]

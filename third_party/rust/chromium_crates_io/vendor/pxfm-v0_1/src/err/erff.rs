@@ -356,11 +356,32 @@ static COEFFS: [[u64; 8]; 32] = [
     ],
 ];
 
-/// Error function
-///
-/// Max ulp 0.5
-#[inline]
-pub fn f_erff(x: f32) -> f32 {
+trait ErffBackend {
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64;
+}
+
+struct GenErffBackend {}
+
+impl ErffBackend for GenErffBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f_fmla(x, y, z)
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+struct FmaErffBackend {}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+impl ErffBackend for FmaErffBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+}
+
+#[inline(always)]
+fn erff_gen<B: ErffBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffffu32;
 
@@ -388,16 +409,51 @@ pub fn f_erff(x: f32) -> f32 {
     let c = COEFFS[idx];
 
     let x4 = xsq * xsq;
-    let c0 = f_fmla(xsq, f64::from_bits(c[1]), f64::from_bits(c[0]));
-    let c1 = f_fmla(xsq, f64::from_bits(c[3]), f64::from_bits(c[2]));
-    let c2 = f_fmla(xsq, f64::from_bits(c[5]), f64::from_bits(c[4]));
-    let c3 = f_fmla(xsq, f64::from_bits(c[7]), f64::from_bits(c[6]));
+    let c0 = backend.fma(xsq, f64::from_bits(c[1]), f64::from_bits(c[0]));
+    let c1 = backend.fma(xsq, f64::from_bits(c[3]), f64::from_bits(c[2]));
+    let c2 = backend.fma(xsq, f64::from_bits(c[5]), f64::from_bits(c[4]));
+    let c3 = backend.fma(xsq, f64::from_bits(c[7]), f64::from_bits(c[6]));
 
     let x8 = x4 * x4;
-    let p0 = f_fmla(x4, c1, c0);
-    let p1 = f_fmla(x4, c3, c2);
+    let p0 = backend.fma(x4, c1, c0);
+    let p1 = backend.fma(x4, c3, c2);
 
-    (xd * f_fmla(x8, p1, p0)) as f32
+    (xd * backend.fma(x8, p1, p0)) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn erff_fma_impl(x: f32) -> f32 {
+    erff_gen(x, FmaErffBackend {})
+}
+
+/// Error function
+///
+/// Max ulp 0.5
+#[inline]
+pub fn f_erff(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        crate::err::erff::erff_gen(x, GenErffBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                erff_fma_impl
+            } else {
+                fn def_erff(x: f32) -> f32 {
+                    erff_gen(x, GenErffBackend {})
+                }
+                def_erff
+            }
+        });
+        unsafe { q(x) }
+    }
 }
 
 #[cfg(test)]

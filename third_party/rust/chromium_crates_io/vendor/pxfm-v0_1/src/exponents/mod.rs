@@ -58,6 +58,7 @@ pub use exp10::f_exp10;
 pub use exp10f::f_exp10f;
 pub use exp10m1::f_exp10m1;
 pub use exp10m1f::f_exp10m1f;
+pub(crate) use expf::GenericExpfBackend;
 pub(crate) use expf::{core_expdf, core_expf};
 pub use expf::{expf, f_expf};
 pub use expm1::f_expm1;
