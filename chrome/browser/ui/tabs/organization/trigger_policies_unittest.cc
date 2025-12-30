@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

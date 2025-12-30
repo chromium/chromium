@@ -17,7 +17,7 @@ import type {DeclutterPageElement} from './declutter/declutter_page.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
 import type {UnusedTabInfo} from './tab_search.mojom-webui.js';
-import {DeclutterCTREvent, TabDeclutterEntryPoint, TabOrganizationFeature} from './tab_search.mojom-webui.js';
+import {TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
@@ -139,12 +139,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     }
   }
 
-  maybeLogFeatureShow(): void {
-    if (this.selectedState_ === TabOrganizationFeature.kDeclutter) {
-      this.$.declutterPage.logCtrValue(DeclutterCTREvent.kDeclutterShown);
-    }
-  }
-
   protected getVisibleFeature_(): TabOrganizationFeature {
     if (this.selectedState_ === TabOrganizationFeature.kDeclutter &&
         this.disableDeclutter_) {
@@ -161,11 +155,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onDeclutterClick_(): void {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'Tab.Organization.Declutter.EntryPoint',
-        TabDeclutterEntryPoint.kSelector, TabDeclutterEntryPoint.MAX_VALUE + 1);
-
-    this.$.declutterPage.logCtrValue(DeclutterCTREvent.kDeclutterShown);
     this.selectedState_ = TabOrganizationFeature.kDeclutter;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }

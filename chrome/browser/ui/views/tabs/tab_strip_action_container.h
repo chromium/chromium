@@ -199,9 +199,6 @@ class TabStripActionContainer : public views::View,
 
   void OnTabStripNudgeButtonTimeout(TabStripNudgeButton* button);
 
-  DeclutterTriggerCTRBucket GetDeclutterTriggerBucket(bool clicked);
-  void LogDeclutterTriggerBucket(bool clicked);
-
   // View where, if the mouse is currently over its bounds, the expansion state
   // will not change. Changes will be staged until after the mouse exits the
   // bounds of this View.

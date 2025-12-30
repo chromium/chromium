@@ -35,34 +35,6 @@ enum class LockedExpansionMode {
   kWillHide,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(DeclutterTriggerCTRBucket)
-enum class DeclutterTriggerCTRBucket {
-  kShownUnder15Tabs = 0,
-  kShown15To19TabsUnder2Stale = 1,
-  kShown15To19Tabs2To4Stale = 2,
-  kShown15To19Tabs5To7Stale = 3,
-  kShown15To19TabsOver7Stale = 4,
-  kShown20To24TabsUnder2Stale = 5,
-  kShown20To24Tabs2To4Stale = 6,
-  kShown20To24Tabs5To7Stale = 7,
-  kShown20To24TabsOver7Stale = 8,
-  kShownOver24Tabs = 9,
-  kClickedUnder15Tabs = 10,
-  kClicked15To19TabsUnder2Stale = 11,
-  kClicked15To19Tabs2To4Stale = 12,
-  kClicked15To19Tabs5To7Stale = 13,
-  kClicked15To19TabsOver7Stale = 14,
-  kClicked20To24TabsUnder2Stale = 15,
-  kClicked20To24Tabs2To4Stale = 16,
-  kClicked20To24Tabs5To7Stale = 17,
-  kClicked20To24TabsOver7Stale = 18,
-  kClickedOver24Tabs = 19,
-  kMaxValue = kClickedOver24Tabs,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:TabOrganizationDeclutterTriggerCTRBucket)
-
 class TabSearchContainer : public views::View,
                            public views::AnimationDelegateViews,
                            public TabOrganizationObserver,
@@ -188,8 +160,6 @@ class TabSearchContainer : public views::View,
       bool tab_search_before_chips);
   void SetupButtonProperties(TabStripNudgeButton* button,
                              bool tab_search_before_chips);
-  DeclutterTriggerCTRBucket GetDeclutterTriggerBucket(bool clicked);
-  void LogDeclutterTriggerBucket(bool clicked);
 
   // View where, if the mouse is currently over its bounds, the expansion state
   // will not change. Changes will be staged until after the mouse exits the

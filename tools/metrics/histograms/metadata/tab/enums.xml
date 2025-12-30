@@ -346,12 +346,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Activate the context menu of a tab"/>
 </enum>
 
-<enum name="TabDeclutterEntryPoint">
-  <int value="0" label="Nudge"/>
-  <int value="1" label="AppMenu"/>
-  <int value="2" label="Selector"/>
-</enum>
-
 <!-- LINT.IfChange(TabGroupingTransitionType) -->
 
 <enum name="TabGroupingTransitionType">
@@ -387,60 +381,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/browser_commands.h:TabGroupShortcut) -->
-
-<enum name="TabOrganizationDeclutterCTREvent">
-  <int value="0" label="Declutter Shown"/>
-  <int value="1" label="Close Tabs Clicked"/>
-</enum>
-
-<!-- LINT.IfChange(TabOrganizationDeclutterTriggerCTRBucket) -->
-
-<enum name="TabOrganizationDeclutterTriggerCTRBucket">
-  <int value="0" label="Shown: under 15 tabs"/>
-  <int value="1" label="Shown: 15-19 tabs, under 2 inactive"/>
-  <int value="2" label="Shown: 15-19 tabs, 2-4 inactive"/>
-  <int value="3" label="Shown: 15-19 tabs, 5-7 inactive"/>
-  <int value="4" label="Shown: 15-19 tabs, over 7 inactive"/>
-  <int value="5" label="Shown: 20-24 tabs, under 2 inactive"/>
-  <int value="6" label="Shown: 20-24 tabs, 2-4 inactive"/>
-  <int value="7" label="Shown: 20-24 tabs, 5-7 inactive"/>
-  <int value="8" label="Shown: 20-24 tabs, over 7 inactive"/>
-  <int value="9" label="Shown: over 24 tabs"/>
-  <int value="10" label="Clicked: under 15 tabs"/>
-  <int value="11" label="Clicked: 15-19 tabs, under 2 inactive"/>
-  <int value="12" label="Clicked: 15-19 tabs, 2-4 inactive"/>
-  <int value="13" label="Clicked: 15-19 tabs, 5-7 inactive"/>
-  <int value="14" label="Clicked: 15-19 tabs, over 7 inactive"/>
-  <int value="15" label="Clicked: 20-24 tabs, under 2 inactive"/>
-  <int value="16" label="Clicked: 20-24 tabs, 2-4 inactive"/>
-  <int value="17" label="Clicked: 20-24 tabs, 5-7 inactive"/>
-  <int value="18" label="Clicked: 20-24 tabs, over 7 inactive"/>
-  <int value="19" label="Clicked: over 24 tabs"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_search_container.h:DeclutterTriggerCTRBucket) -->
-
-<enum name="TabOrganizationSelectorCTREvent">
-  <int value="0" label="Selector Shown"/>
-  <int value="1" label="Auto Tab Groups Clicked"/>
-  <int value="2" label="Declutter Clicked"/>
-</enum>
-
-<enum name="TabOrganizationTriggerOutcome">
-  <int value="0" label="Accepted">User clicked through the nudge UI.</int>
-  <int value="1" label="Dismissed">User explicitly dismissed the nudge UI.</int>
-  <int value="2" label="Timed out">
-    The timeout elapsed without user interaction.
-  </int>
-</enum>
-
-<enum name="TabOrganizationUserChoice">
-  <int value="0" label="No Choice">
-    The session was destroyed before the organization had a choice.
-  </int>
-  <int value="1" label="Accepted">User accepted the organization.</int>
-  <int value="2" label="Rejected">User rejected the organization.</int>
-</enum>
 
 <enum name="TabRestoreMethod">
   <int value="0" label="TabState"/>

@@ -38,15 +38,6 @@
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class TriggerOutcome {
-  kAccepted = 0,
-  kDismissed = 1,
-  kTimedOut = 2,
-  kMaxValue = kTimedOut,
-};
-
 constexpr base::TimeDelta kExpansionInDuration = base::Milliseconds(500);
 constexpr base::TimeDelta kExpansionOutDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kFlatEdgeInDuration = base::Milliseconds(400);
@@ -55,10 +46,6 @@ constexpr base::TimeDelta kOpacityInDuration = base::Milliseconds(300);
 constexpr base::TimeDelta kOpacityOutDuration = base::Milliseconds(100);
 constexpr base::TimeDelta kOpacityDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kShowDuration = base::Seconds(16);
-constexpr char kDeclutterTriggerOutcomeName[] =
-    "Tab.Organization.Declutter.Trigger.Outcome";
-constexpr char kDeclutterTriggerBucketedCTRName[] =
-    "Tab.Organization.Declutter.Trigger.BucketedCTR";
 constexpr int kSpaceBetweenButtons = 2;
 
 Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
@@ -383,11 +370,6 @@ void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
 }
 
 void TabSearchContainer::OnOrganizeButtonTimeout(TabStripNudgeButton* button) {
-  if (button == tab_declutter_button_) {
-    base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
-                                  TriggerOutcome::kTimedOut);
-  }
-
   // Hide the button if not pressed. Use locked expansion mode to avoid
   // disrupting the user.
   HideTabOrganization(button);
@@ -433,10 +415,6 @@ void TabSearchContainer::ExecuteShowTabOrganization(
       FROM_HERE, kShowDuration,
       base::BindOnce(&TabSearchContainer::OnOrganizeButtonTimeout,
                      base::Unretained(this), button));
-
-  if (button == tab_declutter_button_) {
-    LogDeclutterTriggerBucket(false);
-  }
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization(
@@ -510,9 +488,6 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
 }
 
 void TabSearchContainer::OnTabDeclutterButtonClicked() {
-  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
-                                TriggerOutcome::kAccepted);
-  LogDeclutterTriggerBucket(true);
   browser_->window()->CreateTabSearchBubble(
       tab_search::mojom::TabSearchSection::kOrganize,
       tab_search::mojom::TabOrganizationFeature::kDeclutter);
@@ -522,8 +497,6 @@ void TabSearchContainer::OnTabDeclutterButtonClicked() {
 }
 
 void TabSearchContainer::OnTabDeclutterButtonDismissed() {
-  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
-                                TriggerOutcome::kDismissed);
   tab_declutter_controller_->OnActionUIDismissed(
       base::PassKey<TabSearchContainer>());
 
@@ -538,54 +511,6 @@ void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
   }
 
   ShowTabOrganization(tab_declutter_button_);
-}
-
-DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(
-    bool clicked) {
-  const auto total_tab_count =
-      tab_declutter_controller_->tab_strip_model()->count();
-  const auto stale_tab_count = tab_declutter_controller_->GetStaleTabs().size();
-
-  if (total_tab_count < 15) {
-    return clicked ? DeclutterTriggerCTRBucket::kClickedUnder15Tabs
-                   : DeclutterTriggerCTRBucket::kShownUnder15Tabs;
-  } else if (total_tab_count < 20) {
-    if (stale_tab_count < 2) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsUnder2Stale
-                     : DeclutterTriggerCTRBucket::kShown15To19TabsUnder2Stale;
-    } else if (stale_tab_count < 5) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs2To4Stale
-                     : DeclutterTriggerCTRBucket::kShown15To19Tabs2To4Stale;
-    } else if (stale_tab_count < 8) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs5To7Stale
-                     : DeclutterTriggerCTRBucket::kShown15To19Tabs5To7Stale;
-    } else {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsOver7Stale
-                     : DeclutterTriggerCTRBucket::kShown15To19TabsOver7Stale;
-    }
-  } else if (total_tab_count < 25) {
-    if (stale_tab_count < 2) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsUnder2Stale
-                     : DeclutterTriggerCTRBucket::kShown20To24TabsUnder2Stale;
-    } else if (stale_tab_count < 5) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs2To4Stale
-                     : DeclutterTriggerCTRBucket::kShown20To24Tabs2To4Stale;
-    } else if (stale_tab_count < 8) {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs5To7Stale
-                     : DeclutterTriggerCTRBucket::kShown20To24Tabs5To7Stale;
-    } else {
-      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsOver7Stale
-                     : DeclutterTriggerCTRBucket::kShown20To24TabsOver7Stale;
-    }
-  } else {
-    return clicked ? DeclutterTriggerCTRBucket::kClickedOver24Tabs
-                   : DeclutterTriggerCTRBucket::kShownOver24Tabs;
-  }
-}
-
-void TabSearchContainer::LogDeclutterTriggerBucket(bool clicked) {
-  const DeclutterTriggerCTRBucket bucket = GetDeclutterTriggerBucket(clicked);
-  base::UmaHistogramEnumeration(kDeclutterTriggerBucketedCTRName, bucket);
 }
 
 BEGIN_METADATA(TabSearchContainer)

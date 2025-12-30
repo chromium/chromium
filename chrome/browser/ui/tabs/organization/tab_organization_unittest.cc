@@ -1368,23 +1368,3 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
     EXPECT_FALSE(quality_org_label.edited());
   }
 }
-
-TEST_F(TabOrganizationTest, HistogramLogNoOrganization) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationRequest> request =
-      std::make_unique<TabOrganizationRequest>();
-  TabOrganizationRequest* request_ptr = request.get();
-
-  std::unique_ptr<TabOrganizationResponse> response =
-      std::make_unique<TabOrganizationResponse>(
-          std::vector<TabOrganizationResponse::Organization>());
-
-  std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
-
-  session->StartRequest();
-  request_ptr->CompleteRequestForTesting(std::move(response));
-
-  session.reset();
-}
-

@@ -128,17 +128,8 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
     const PrefService* prefs = profile_->GetPrefs();
     const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
         prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
-    const auto organization_feature =
-        tab_search_prefs::GetTabOrganizationFeatureFromInt(
-            prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
     if (section == tab_search::mojom::TabSearchSection::kSearch) {
       return;
-    }
-    if (organization_feature ==
-        tab_search::mojom::TabOrganizationFeature::kDeclutter) {
-      base::UmaHistogramEnumeration(
-          "Tab.Organization.DeclutterCTR",
-          tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
   } else if (!visible && bubble_created_time_.has_value()) {
     const base::TimeDelta time_to_close =

@@ -107,13 +107,6 @@ export class TabSearchAppElement extends CrLitElement {
 
   private onTabSectionChanged_(section: TabSearchSection) {
     this.selectedTabSection_ = section;
-    if (section === TabSearchSection.kOrganize) {
-      const organizationSelector =
-          this.shadowRoot.querySelector('tab-organization-selector');
-      if (organizationSelector) {
-        organizationSelector.maybeLogFeatureShow();
-      }
-    }
   }
 
   private onTabOrganizationEnabledChanged_(enabled: boolean) {
