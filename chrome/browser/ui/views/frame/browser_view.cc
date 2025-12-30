@@ -1376,7 +1376,7 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
 }
 
 bool BrowserView::IsInSplitView() const {
-  return multi_contents_view_ && multi_contents_view_->IsInSplitView();
+  return multi_contents_view_->IsInSplitView();
 }
 
 void BrowserView::OnVerticalTabStripStateChanged(
@@ -1660,9 +1660,7 @@ void BrowserView::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
 
 void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
   ContentsContainerView* contents_container_view =
-      multi_contents_view_ ? multi_contents_view_->GetContentsContainerViewFor(
-                                 inspected_web_contents)
-                           : GetActiveContentsContainerView();
+      multi_contents_view_->GetContentsContainerViewFor(inspected_web_contents);
   if (!contents_container_view) {
     return;
   }
@@ -1808,9 +1806,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(nullptr);
     }
-    if (multi_contents_view_) {
-      multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
-    }
+
+    multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
     active_contents_view->SetWebContents(nullptr);
   }
 
@@ -1862,7 +1859,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       loading_bar_->SetWebContents(new_contents);
     }
 
-    if (multi_contents_view_) {
       const tabs::TabInterface* active_tab =
           tabs::TabInterface::GetFromContents(new_contents);
       if (active_tab->IsSplit()) {
@@ -1874,9 +1870,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
         multi_contents_view_->GetActiveContentsView()->SetWebContents(
             new_contents);
       }
-    } else {
-      active_contents_view->SetWebContents(new_contents);
-    }
 
     SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(new_contents);
     if (sad_tab_helper) {
@@ -1886,8 +1879,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     // Temporarily disable fast resize for to ensure that the new active tab
     // updates its layout.
     views::WebView* contents_view_to_layout =
-        multi_contents_view_ ? multi_contents_view_->GetActiveContentsView()
-                             : active_contents_view;
+        multi_contents_view_->GetActiveContentsView();
     CHECK(contents_view_to_layout);
     const bool original_fast_resize = contents_view_to_layout->GetFastResize();
     contents_view_to_layout->SetFastResize(false);
@@ -1999,7 +1991,7 @@ void BrowserView::SetContentsSize(const gfx::Size& size) {
 
   // If in split view, the width diff needs to be scaled by the split ratio to
   // account for the combined width of both contents views.
-  if (multi_contents_view_ && multi_contents_view_->IsInSplitView()) {
+  if (multi_contents_view_->IsInSplitView()) {
     const double split_ratio = multi_contents_view_->GetSplitRatio();
     CHECK(split_ratio > 0.0 && split_ratio < 1.0);
     const double multiplier = 1.0 / (multi_contents_view_->GetActiveIndex() == 0
@@ -2213,12 +2205,10 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
   if (toolbar_) {
     toolbar_->Update(contents);
   }
-  if (multi_contents_view_) {
     for (ContentsContainerView* contents_container :
          multi_contents_view_->contents_container_views()) {
       contents_container->mini_toolbar()->UpdateContents();
     }
-  }
 }
 
 bool BrowserView::UpdateToolbarSecurityState() {
@@ -2349,7 +2339,7 @@ TabDragTarget* BrowserView::GetTabDragTarget(
       return target;
     }
   }
-  if (!multi_contents_view_ || multi_contents_view_->IsInSplitView() ||
+  if (multi_contents_view_->IsInSplitView() ||
       !multi_contents_view_->IsDragAndDropEnabled()) {
     return nullptr;
   }
@@ -3366,7 +3356,7 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
 
 void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
-  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
+  if (multi_contents_view_->IsDragAndDropEnabled()) {
     // Read the split state from the active tab because when BrowserView is in
     // full screen it may not be rendering a split, even though the active tab
     // is in a split.
@@ -3382,13 +3372,13 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
 }
 
 void BrowserView::PreHandleDragExit() {
-  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
+  if (multi_contents_view_->IsDragAndDropEnabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
   }
 }
 
 void BrowserView::HandleDragEnded() {
-  if (multi_contents_view_ && multi_contents_view_->IsDragAndDropEnabled()) {
+  if (multi_contents_view_->IsDragAndDropEnabled()) {
     multi_contents_view_->drop_target_controller().OnWebContentsDragEnded();
   }
 }
@@ -3530,7 +3520,6 @@ LocationBarView* BrowserView::GetLocationBarView() const {
 // BrowserView, TabStripModelObserver implementation:
 
 void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
-  CHECK(multi_contents_view_);
   switch (change.type) {
     case SplitTabChange::Type::kAdded: {
       const tabs::TabInterface* active_tab =
@@ -4556,8 +4545,6 @@ void BrowserView::UpdateTabSearchBubbleHost() {
 }
 
 void BrowserView::ShowSplitView(bool focus_active_view) {
-  CHECK(multi_contents_view_);
-
   const int active_index = browser_->tab_strip_model()->active_index();
 
   std::optional<split_tabs::SplitTabId> split_tab_id =
@@ -4599,12 +4586,11 @@ void BrowserView::ShowSplitView(bool focus_active_view) {
 }
 
 void BrowserView::HideSplitView() {
-  CHECK(multi_contents_view_);
   multi_contents_view_->CloseSplitView();
 }
 
 void BrowserView::UpdateActiveTabInSplitView() {
-  CHECK(multi_contents_view_ && multi_contents_view_->IsInSplitView());
+  CHECK(multi_contents_view_->IsInSplitView());
   const int active_index = browser_->tab_strip_model()->active_index();
 
   std::optional<split_tabs::SplitTabId> split_tab_id =
@@ -4632,7 +4618,7 @@ void BrowserView::UpdateActiveTabInSplitView() {
 void BrowserView::UpdateContentsInSplitView(
     const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
     const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs) {
-  CHECK(multi_contents_view_ && multi_contents_view_->IsInSplitView());
+  CHECK(multi_contents_view_->IsInSplitView());
 
   std::optional<split_tabs::SplitTabId> split_id =
       browser_->GetActiveTabInterface()->GetSplit();
@@ -4679,7 +4665,7 @@ void BrowserView::UpdateContentsInSplitView(
 
 bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
                                          content::WebContents* new_contents) {
-  return multi_contents_view_ && multi_contents_view_->IsInSplitView() &&
+  return multi_contents_view_->IsInSplitView() &&
          multi_contents_view_->GetActiveContentsView()->web_contents() ==
              old_contents &&
          multi_contents_view_->GetInactiveContentsView()->web_contents() ==
@@ -5609,10 +5595,6 @@ bool BrowserView::MaybeShowInfoBar(WebContents* contents) {
 }
 
 bool BrowserView::MaybeUpdateSplitView(content::WebContents* contents) {
-  if (!multi_contents_view_) {
-    return false;
-  }
-
   const bool current_state = multi_contents_view_->IsInSplitView();
   const tabs::TabInterface* const new_tab =
       contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
