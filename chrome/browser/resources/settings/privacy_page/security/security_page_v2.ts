@@ -405,6 +405,11 @@ export class SettingsSecurityPageV2Element extends
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
 
+  private onAdvancedProtectionProgramClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('advancedProtectionURL'));
+  }
+
   private updateRowsState_() {
     const httpsFirstModePref =
         this.getPref('generated.https_first_mode_enabled');

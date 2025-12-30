@@ -2493,6 +2493,12 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("advancedProtectionURL",
                          advanced_protection_url.spec());
 
+  html_source->AddString(
+      "securityAdvancedProtectionProgramLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SECURITY_ADVANCED_PROTECTION_PROGRAM_LABEL,
+          base::UTF8ToUTF16(advanced_protection_url.spec())));
+
   AddPersonalizationOptionsStrings(html_source);
   AddSecureDnsStrings(html_source);
 

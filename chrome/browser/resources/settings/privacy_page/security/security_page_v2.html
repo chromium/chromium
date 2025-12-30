@@ -74,6 +74,10 @@
     border-bottom: var(--cr-separator-line);
   }
 
+  settings-section:last-of-type{
+    --cr-card-shadow: none;
+  }
+
   ul.icon-bulleted-list {
     --cr-icon-size: 20px;
     --iron-icon-width: 16px;
@@ -91,6 +95,10 @@
 
   ul.icon-bulleted-list cr-icon {
     margin-inline-end: 10px;
+  }
+
+  #advancedProtectionProgramLinkRow {
+    background-color: var(--cr-fallback-color-surface2);
   }
 
   #bundlesRadioGroup controlled-radio-button {
@@ -403,6 +411,14 @@
         label="$i18n{manageCertificates}"
         sub-label="$i18n{manageCertificatesDescription}"
         on-click="onManageCertificatesClick_" external>
+    </cr-link-row>
+  </settings-section>
+  <settings-section>
+    <cr-link-row id="advancedProtectionProgramLinkRow" class="box"
+        start-icon="settings20:gshield"
+        on-click="onAdvancedProtectionProgramClick_"
+        external using-slotted-label>
+      <div slot="label">$i18nRaw{securityAdvancedProtectionProgramLabel}</div>
     </cr-link-row>
   </settings-section>
 </settings-subpage>

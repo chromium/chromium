@@ -2053,6 +2053,9 @@
   <message name="IDS_SETTINGS_SECURITY_ACCOUNT_AND_NETWORK_SECTION_TITLE" desc="Name of the security page's 'account and network protection' section.">
     Account and network protection
   </message>
+  <message name="IDS_SETTINGS_SECURITY_ADVANCED_PROTECTION_PROGRAM_LABEL" desc="Description of the Google Advanced Protection Program. Includes a link which takes users to the Google Advanced Protection Program external webpage.">
+    If you are an activist, journalist, public figure, election worker, or someone else in a uniquely high risk role, you may be interested in Google's <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Advanced Protection Program<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE" desc="Label for a toggle that allows users to choose whether chrome should check if credentials have been part of a leak.">
     Compromised password detection
   </message>

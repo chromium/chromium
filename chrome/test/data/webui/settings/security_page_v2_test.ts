@@ -294,6 +294,24 @@ suite('Main', function() {
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
+
+  test('AdvancedProtectionProgramRowClick', async function() {
+    page.shadowRoot!
+        .querySelector<HTMLElement>(
+            '#advancedProtectionProgramLinkRow')!.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+  });
+
+  test('AdvancedProtectionProgramTextLinkClick', async function() {
+    page.shadowRoot!
+        .querySelector<HTMLElement>(
+            '#advancedProtectionProgramLinkRow')!.querySelector('a')!.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+  });
 });
 
 suite('SecurityKeysSubpageDisabled', function() {
