@@ -86,7 +86,8 @@ MATCHER_P(CreateSearchUrlRequestInfoMatches,
          arg->lens_overlay_selection_type ==
              expected->lens_overlay_selection_type &&
          arg->additional_params == expected->additional_params &&
-         arg->image_crop.has_value() == expected->image_crop.has_value();
+         arg->image_crop.has_value() == expected->image_crop.has_value() &&
+         arg->file_tokens == expected->file_tokens;
 }
 
 MATCHER_P(ImageEncodingOptionsMatches,
@@ -574,6 +575,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   std::map<std::string, std::string> additional_params;
   additional_params["lns_fp"] = "1";
   additional_params["lns_mode"] = "un";
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   SkBitmap region_bytes;
   region_bytes.allocN32Pixels(10, 10);
@@ -590,10 +592,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = lens::ImageCrop();
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
   // StartTabContextUploadFlow is called as part of OnFinishedAddingTabContext.
   EXPECT_CALL(*router.mock_session_handle(),
               StartTabContextUploadFlow(_, _, _));
@@ -643,6 +648,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   std::map<std::string, std::string> additional_params;
   additional_params["lns_fp"] = "1";
   additional_params["lns_mode"] = "text";
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   // Arrange: Create expected request info.
   auto expected_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
@@ -653,6 +659,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = std::nullopt;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
@@ -660,6 +667,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Assert: Create expectation to call CreateSearchUrl.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
   // StartTabContextUploadFlow is called as part of OnFinishedAddingTabContext.
   EXPECT_CALL(*router.mock_session_handle(),
               StartTabContextUploadFlow(_, _, _));
@@ -706,6 +715,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   std::map<std::string, std::string> additional_params;
   additional_params["lns_fp"] = "1";
   additional_params["lns_mode"] = "text";
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   // Arrange: Create expected request info.
   auto expected_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
@@ -716,6 +726,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = std::nullopt;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
@@ -723,6 +734,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Assert: Create expectation to call CreateSearchUrl.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
   // StartTabContextUploadFlow is called as part of OnFinishedAddingTabContext.
   EXPECT_CALL(*router.mock_session_handle(),
               StartTabContextUploadFlow(_, _, _));
@@ -770,6 +783,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   std::map<std::string, std::string> additional_params;
   additional_params["lns_fp"] = "1";
   additional_params["lns_mode"] = "mu";
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
   SkBitmap region_bytes;
   region_bytes.allocN32Pixels(10, 10);
 
@@ -782,6 +796,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->lens_overlay_selection_type = selection_type;
   expected_request_info->additional_params = additional_params;
   expected_request_info->image_crop = lens::ImageCrop();
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
@@ -790,6 +805,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), AddTabContext(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(file_token));
   // StartTabContextUploadFlow is called as part of OnFinishedAddingTabContext.
   EXPECT_CALL(*router.mock_session_handle(),
               StartTabContextUploadFlow(_, _, _));

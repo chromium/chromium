@@ -313,7 +313,6 @@ void LensQueryFlowRouter::OnFileUploadStatusChanged(
     }
     lens_overlay_controller()->HandleStartQueryResponse(
         std::move(objects), std::move(text), /*is_error=*/false);
-    overlay_tab_context_file_token_.reset();
   }
 }
 
@@ -386,6 +385,9 @@ void LensQueryFlowRouter::OnFinishedAddingTabContext(
   // session handle before creating the search URL so it is properly
   // contextualized.
   if (pending_search_url_request_) {
+    // Add the tab context file token to the request's file tokens. This could
+    // not be added earlier because the token is not known until this point.
+    pending_search_url_request_->file_tokens.push_back(token);
     session_handle->CreateSearchUrl(
         std::move(pending_search_url_request_),
         base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
@@ -436,6 +438,10 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   }
   request_info->query_start_time = query_start_time;
   request_info->lens_overlay_selection_type = lens_selection_type;
+  if (overlay_tab_context_file_token_.has_value()) {
+    request_info->file_tokens.push_back(
+        overlay_tab_context_file_token_.value());
+  }
 
   // Add mandatory Lens specific query parameters if not already present.
   const bool has_text = query_text.has_value() && !query_text->empty();
