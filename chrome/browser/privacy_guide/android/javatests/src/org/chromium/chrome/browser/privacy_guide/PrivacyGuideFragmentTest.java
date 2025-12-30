@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -578,7 +579,8 @@ public class PrivacyGuideFragmentTest {
 
         executeWhileCapturingIntents(
                 () -> {
-                    onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click());
+                    onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                            .perform(scrollTo(), click());
                     intended(
                             IntentMatchers.hasData(
                                     UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL));
@@ -593,7 +595,9 @@ public class PrivacyGuideFragmentTest {
         goToCard(FragmentType.DONE);
 
         executeWhileCapturingIntents(
-                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
+                () ->
+                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                                .perform(scrollTo(), click()));
 
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.CompletionSWAAClick"));
@@ -611,7 +615,9 @@ public class PrivacyGuideFragmentTest {
                         ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
 
         executeWhileCapturingIntents(
-                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
+                () ->
+                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                                .perform(scrollTo(), click()));
 
         histogram.assertExpected();
     }
