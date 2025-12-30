@@ -21,6 +21,7 @@ class FirstPartySetMetadata;
 }  // namespace net
 
 namespace net::device_bound_sessions {
+struct CookieCravingDisplay;
 
 namespace proto {
 class CookieCraving;
@@ -142,6 +143,10 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // a std::nullopt is returned.
   static std::optional<CookieCraving> CreateFromProto(
       const proto::CookieCraving& proto);
+
+  // Returns a display-friendly version of this CookieCraving. Used for
+  // DevTools.
+  CookieCravingDisplay ToDisplay() const;
 
   // Whether the craving applies to the given `request`, with other
   // arguments providing context for the access.

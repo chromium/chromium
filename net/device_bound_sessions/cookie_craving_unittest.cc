@@ -14,6 +14,7 @@
 #include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -613,6 +614,32 @@ TEST_F(CookieCravingTest, FailCreateFromInvalidProto) {
     std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
     EXPECT_FALSE(c.has_value());
   }
+}
+
+TEST_F(CookieCravingTest, BasicCookieToDisplay) {
+  // Default cookie.
+  CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), kName, "");
+
+  CookieCravingDisplay display = cc.ToDisplay();
+  EXPECT_EQ(display.name, kName);
+  EXPECT_EQ(display.domain, "www.example.test");
+  EXPECT_EQ(display.path, "/");
+  EXPECT_FALSE(display.secure);
+  EXPECT_FALSE(display.http_only);
+  EXPECT_EQ(display.same_site, CookieSameSite::UNSPECIFIED);
+
+  // Non-default attributes.
+  cc = CreateValidCookieCraving(
+      GURL(kUrlString), kName,
+      "Secure; HttpOnly; Path=/foo; Domain=example.test; SameSite=Lax");
+
+  display = cc.ToDisplay();
+  EXPECT_EQ(display.name, kName);
+  EXPECT_EQ(display.domain, ".example.test");
+  EXPECT_EQ(display.path, "/foo");
+  EXPECT_TRUE(display.secure);
+  EXPECT_TRUE(display.http_only);
+  EXPECT_EQ(display.same_site, CookieSameSite::LAX_MODE);
 }
 
 TEST_F(CookieCravingTest, ShouldIncludeCantCreateCanonicalCookie) {

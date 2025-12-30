@@ -5,7 +5,10 @@
 #include "services/network/public/cpp/device_bound_sessions_mojom_traits.h"
 
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/session_params.h"
+#include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -121,6 +124,69 @@ bool StructTraits<network::mojom::DeviceBoundSessionParamsDataView,
       unexportable_keys::UnexportableKeyId(),
       std::move(allowed_refresh_initiators));
 
+  return true;
+}
+
+// static
+const std::string&
+StructTraits<network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+             net::device_bound_sessions::CookieCravingDisplay>::
+    name(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.name;
+}
+
+// static
+const std::string&
+StructTraits<network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+             net::device_bound_sessions::CookieCravingDisplay>::
+    domain(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.domain;
+}
+
+// static
+const std::string&
+StructTraits<network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+             net::device_bound_sessions::CookieCravingDisplay>::
+    path(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.path;
+}
+
+// static
+bool StructTraits<
+    network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+    net::device_bound_sessions::CookieCravingDisplay>::
+    secure(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.secure;
+}
+
+// static
+bool StructTraits<
+    network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+    net::device_bound_sessions::CookieCravingDisplay>::
+    http_only(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.http_only;
+}
+
+// static
+net::CookieSameSite
+StructTraits<network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+             net::device_bound_sessions::CookieCravingDisplay>::
+    same_site(const net::device_bound_sessions::CookieCravingDisplay& r) {
+  return r.same_site;
+}
+
+// static
+bool StructTraits<
+    network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+    net::device_bound_sessions::CookieCravingDisplay>::
+    Read(network::mojom::DeviceBoundSessionCookieCravingDisplayDataView data,
+         net::device_bound_sessions::CookieCravingDisplay* out) {
+  if (!data.ReadName(&out->name) || !data.ReadDomain(&out->domain) ||
+      !data.ReadPath(&out->path) || !data.ReadSameSite(&out->same_site)) {
+    return false;
+  }
+  out->secure = data.secure();
+  out->http_only = data.http_only();
   return true;
 }
 

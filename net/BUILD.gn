@@ -473,6 +473,8 @@ component("net") {
     "cookies/static_cookie_policy.h",
     "cookies/unique_cookie_key.cc",
     "cookies/unique_cookie_key.h",
+    "device_bound_sessions/cookie_craving_display.cc",
+    "device_bound_sessions/cookie_craving_display.h",
     "device_bound_sessions/deletion_reason.h",
     "device_bound_sessions/inclusion_result.h",
     "device_bound_sessions/session_access.cc",

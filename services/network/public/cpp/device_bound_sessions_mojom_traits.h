@@ -12,6 +12,13 @@
 #include "net/device_bound_sessions/session_params.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
+namespace net::device_bound_sessions {
+struct CookieCravingDisplay;
+}
+
+namespace net {
+enum class CookieSameSite;
+}
 namespace mojo {
 
 template <>
@@ -731,6 +738,26 @@ struct StructTraits<network::mojom::DeviceBoundSessionParamsDataView,
 
   static bool Read(network::mojom::DeviceBoundSessionParamsDataView data,
                    net::device_bound_sessions::SessionParams* out);
+};
+
+template <>
+struct StructTraits<
+    network::mojom::DeviceBoundSessionCookieCravingDisplayDataView,
+    net::device_bound_sessions::CookieCravingDisplay> {
+  static const std::string& name(
+      const net::device_bound_sessions::CookieCravingDisplay& r);
+  static const std::string& domain(
+      const net::device_bound_sessions::CookieCravingDisplay& r);
+  static const std::string& path(
+      const net::device_bound_sessions::CookieCravingDisplay& r);
+  static bool secure(const net::device_bound_sessions::CookieCravingDisplay& r);
+  static bool http_only(
+      const net::device_bound_sessions::CookieCravingDisplay& r);
+  static net::CookieSameSite same_site(
+      const net::device_bound_sessions::CookieCravingDisplay& r);
+  static bool Read(
+      network::mojom::DeviceBoundSessionCookieCravingDisplayDataView data,
+      net::device_bound_sessions::CookieCravingDisplay* out);
 };
 
 }  // namespace mojo

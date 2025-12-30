@@ -19,6 +19,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/url_request/url_request.h"
@@ -402,6 +403,11 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
   }
 
   return cookie_craving;
+}
+
+CookieCravingDisplay CookieCraving::ToDisplay() const {
+  return CookieCravingDisplay(Name(), Domain(), Path(), SecureAttribute(),
+                              IsHttpOnly(), SameSite());
 }
 
 bool CookieCraving::ShouldIncludeForRequest(

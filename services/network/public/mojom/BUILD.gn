@@ -1021,6 +1021,10 @@ mojom("url_loader_base") {
           mojom = "network.mojom.DeviceBoundSessionError"
           cpp = "::net::device_bound_sessions::SessionError::ErrorType"
         },
+        {
+          mojom = "network.mojom.DeviceBoundSessionCookieCravingDisplay"
+          cpp = "::net::device_bound_sessions::CookieCravingDisplay"
+        },
       ]
       traits_headers = [
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",

@@ -244,3 +244,21 @@ interface DeviceBoundSessionAccessObserver {
   // from ResourceRequest).
   Clone(pending_receiver<DeviceBoundSessionAccessObserver> observer);
 };
+
+// Mojo representation of a Cookie Craving. Used for DevTools.
+// See net/device_bound_sessions/cookie_craving.h and
+// net/cookies/cookie_base.h for more details on each of the properties.
+struct DeviceBoundSessionCookieCravingDisplay {
+  // The name of the craving.
+  string name;
+  // The domain of the craving.
+  string domain;
+  // The path of the craving.
+  string path;
+  // The `Secure` attribute of the craving attributes.
+  bool secure;
+  // The `HttpOnly` attribute of the craving attributes.
+  bool http_only;
+  // The `SameSite` attribute of the craving attributes.
+  CookieSameSite same_site;
+};
