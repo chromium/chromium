@@ -34,8 +34,6 @@ class UiEventDispatcher {
     TaskId task_id;
     ActorTask::State old_state;
     ActorTask::State new_state;
-    // TODO(chrstne): Remove this field.
-    std::string title;
   };
 
   /* The only valid values for final_state are terminal states

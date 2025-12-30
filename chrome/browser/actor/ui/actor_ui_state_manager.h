@@ -25,6 +25,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
+  std::optional<std::string> GetActorTaskTitle(TaskId id) override;
+  std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
+      TaskId id) override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) override;
@@ -40,9 +43,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Notify profile scoped ui components about actor task state changes.
   void NotifyActorTaskStateChange(TaskId task_id);
   // Called whenever an actor task state changes.
-  void OnActorTaskStateChange(TaskId task_id,
-                              ActorTask::State new_task_state,
-                              const std::string& title);
+  void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
   // Notify profile scoped ui components about actor task stop.
   void NotifyActorTaskStopped(TaskId task_id);
@@ -50,7 +51,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Notify profile scoped ui components about actor task removal.
   // This is called after an actor task has been stopped and has hit its expiry
   // period after `kGlicActorUiCompletedTaskExpiryDelaySeconds` seconds.
-  void NotifyActorTaskRemoved(TaskId task_id);
+  void ActorTaskRemoved(TaskId task_id);
+
+  // Elements in this map are cleared after
+  // kGlicActorUiCompletedTaskExpiryDelaySeconds period of time.
+  absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_infos_;
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 

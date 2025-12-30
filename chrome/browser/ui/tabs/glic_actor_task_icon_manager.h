@@ -21,15 +21,6 @@ class Profile;
 
 namespace tabs {
 
-struct ActorTaskListBubbleRowState {
-  actor::TaskId task_id;
-  std::string title;
-  // If this row requires processing. A row is only processed when it has been
-  // clicked on by the user. If the row does not need user attention it will not
-  // require processing.
-  bool requires_processing;
-};
-
 class GlicActorTaskIconManager : public KeyedService {
  public:
   GlicActorTaskIconManager(Profile* profile,
@@ -66,10 +57,7 @@ class GlicActorTaskIconManager : public KeyedService {
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
 
-  raw_ptr<tabs::TabInterface> GetLastUpdatedTabForTaskId(actor::TaskId task_id);
-
-  std::map<actor::TaskId, ActorTaskListBubbleRowState>
-  GetActorTaskListBubbleRows() const {
+  std::map<actor::TaskId, bool> GetActorTaskListBubbleRows() const {
     return actor_task_list_bubble_rows_;
   }
 
@@ -102,8 +90,11 @@ class GlicActorTaskIconManager : public KeyedService {
   // TODO(mjenn): Update implementation for multi-tab actuation.
   actor::TaskId current_task_id_;
 
-  // Map of tasks needing notifications.
-  std::map<actor::TaskId, ActorTaskListBubbleRowState>
+  // Map of tasks needing notifications. `requires_proccessing` tracks if this
+  // row requires processing. A row is only processed when it has been clicked
+  // on by the user. If the row does not need user attention it will not require
+  // processing.
+  std::map<actor::TaskId, bool /*requires_processing*/>
       actor_task_list_bubble_rows_;
 };
 

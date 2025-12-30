@@ -19,6 +19,12 @@ using UiCompleteCallback =
 static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
     base::Milliseconds(500);
 
+struct StoppedTaskInfo {
+  ActorTask::State final_state;
+  std::string title;
+  tabs::TabInterface::Handle last_acted_on_tab_handle;
+};
+
 class ActorUiStateManagerInterface {
  public:
   virtual ~ActorUiStateManagerInterface() = default;
@@ -31,6 +37,20 @@ class ActorUiStateManagerInterface {
   // Shows toast that notifies user the Actor is working in the background.
   // Shows a maximum of kToastShownMax per profile.
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
+
+  // Gets the title of a given task, this includes active tasks and tasks that
+  // have stopped within an `kGlicActorUiCompletedTaskExpiryDelaySeconds` period
+  // of time.
+  // "" is returned when we had a task but it never set a title.
+  // std::nullopt is returned when we don't have a task for the given id.
+  virtual std::optional<std::string> GetActorTaskTitle(TaskId id) = 0;
+  // Gets the last tab handle that was acted on by the actor for a given task,
+  // this includes active tasks and tasks that have stopped within an
+  // `kGlicActorUiCompletedTaskExpiryDelaySeconds` period of time.
+  // nullptr is returned when we had a task but it never acted on a tab.
+  // std::nullopt is returned when we don't have a task for the given id.
+  virtual std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
+      TaskId id) = 0;
 
   // Register for this callback to be notified whenever the actor task state
   // changes. This callback may be debounced by a delay.

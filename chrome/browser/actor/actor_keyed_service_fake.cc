@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/ui/mocks/mock_event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom.h"
 
 namespace actor {
 using ::testing::_;
@@ -47,9 +48,11 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
   }
   auto execution_engine = ExecutionEngine::CreateForTesting(
       GetProfile(), std::move(ui_event_dispatcher));
-  auto actor_task =
-      std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine),
-                                  std::move(task_ui_event_dispatcher));
+  auto task_options = webui::mojom::TaskOptions::New();
+  task_options->title = "Test Task";
+  auto actor_task = std::make_unique<ActorTask>(
+      GetProfile(), std::move(execution_engine),
+      std::move(task_ui_event_dispatcher), std::move(task_options));
   return AddActiveTask(std::move(actor_task));
 }
 

@@ -55,10 +55,8 @@ struct StopTask {
 struct TaskStateChanged {
   actor::TaskId task_id;
   ActorTask::State state;
-  // TODO(chrstne): Remove this field.
-  std::string title;
 
-  TaskStateChanged(actor::TaskId, ActorTask::State, const std::string& title);
+  TaskStateChanged(actor::TaskId, ActorTask::State);
   TaskStateChanged(const TaskStateChanged&);
   ~TaskStateChanged();
 };

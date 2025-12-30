@@ -125,8 +125,7 @@ constexpr absl::Overload ActorTaskSyncChangeFn{
           c.new_state == ActorTask::State::kActing) {
         seq.push_back(StartTask(c.task_id));
       }
-      // TODO(chrstne): Remove title.
-      seq.push_back(TaskStateChanged(c.task_id, c.new_state, c.title));
+      seq.push_back(TaskStateChanged(c.task_id, c.new_state));
       return seq;
     },
     [](const UiEventDispatcher::StopTask& c) {

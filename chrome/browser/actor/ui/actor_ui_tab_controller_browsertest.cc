@@ -193,8 +193,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
   // Wait for user event.
   actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(
-          task_id, actor::ActorTask::State::kWaitingOnUser, /*title=*/""));
+      actor::ui::TaskStateChanged(task_id,
+                                  actor::ActorTask::State::kWaitingOnUser));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
@@ -207,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
   // Restart the task
   actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing,
-                                  /*title=*/""));
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 

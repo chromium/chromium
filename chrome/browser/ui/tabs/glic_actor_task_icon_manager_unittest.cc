@@ -221,15 +221,11 @@ TEST_F(GlicActorTaskIconManagerTest,
   actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
 
   manager()->UpdateTaskListBubble(task_id_1);
-  EXPECT_EQ(
-      manager()->GetActorTaskListBubbleRows()[task_id_1].requires_processing,
-      true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], true);
   manager()->UpdateTaskNudge();
 
   manager()->UpdateTaskListBubble(task_id_2);
-  EXPECT_EQ(
-      manager()->GetActorTaskListBubbleRows()[task_id_2].requires_processing,
-      true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], true);
   manager()->UpdateTaskNudge();
 
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
@@ -239,9 +235,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   // Process one task, the text should remain the same and all bubbles should
   // still exist.
   manager()->ProcessRowInTaskListBubble(task_id_1);
-  EXPECT_EQ(
-      manager()->GetActorTaskListBubbleRows()[task_id_1].requires_processing,
-      false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
@@ -249,9 +243,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   // Process the other task, the text should change to default and all bubbles
   // should still exist.
   manager()->ProcessRowInTaskListBubble(task_id_2);
-  EXPECT_EQ(
-      manager()->GetActorTaskListBubbleRows()[task_id_2].requires_processing,
-      false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], false);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);

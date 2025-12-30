@@ -38,6 +38,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ValuesIn;
 
+using enum ActorTask::StoppedReason;
 using enum HandoffButtonState::ControlOwnership;
 
 class ActorUiStateManagerTest : public testing::Test {
@@ -125,19 +126,27 @@ class ActorUiStateManagerTest : public testing::Test {
   void PauseActorTask(TaskId task_id, bool from_actor) {
     actor_keyed_service()->GetTask(task_id)->Pause(from_actor);
     if (from_actor) {
-      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-          task_id, ActorTask::State::kPausedByActor, /*title=*/""));
+      actor_ui_state_manager()->OnUiEvent(
+          TaskStateChanged(task_id, ActorTask::State::kPausedByActor));
     } else {
-      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-          task_id, ActorTask::State::kPausedByUser, /*title=*/""));
+      actor_ui_state_manager()->OnUiEvent(
+          TaskStateChanged(task_id, ActorTask::State::kPausedByUser));
     }
   }
 
   void ResumeActorTask(TaskId task_id) {
     actor_keyed_service()->GetTask(task_id)->Resume();
-    TaskStateChanged reflecting_task_event(
-        task_id, ActorTask::State::kReflecting, /*title=*/"");
+    TaskStateChanged reflecting_task_event(task_id,
+                                           ActorTask::State::kReflecting);
     actor_ui_state_manager()->OnUiEvent(reflecting_task_event);
+  }
+
+  void StopActorTask(TaskId task_id) {
+    actor_keyed_service()->StopTask(task_id,
+                                    ActorTask::StoppedReason::kTaskComplete);
+    StopTask stop_task_event(task_id, ActorTask::State::kFinished, "Test Task",
+                             mock_tab_.GetHandle());
+    actor_ui_state_manager()->OnUiEvent(stop_task_event);
   }
 
  private:
@@ -178,8 +187,8 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidTaskStateChanges_Debounced) {
 }
 
 TEST_F(ActorUiStateManagerTest, OnActorTaskState_kCreatedNewStateCrashes) {
-  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-                   TaskId(123), ActorTask::State::kCreated, /*title=*/"")),
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
+                   TaskStateChanged(TaskId(123), ActorTask::State::kCreated)),
                "");
 }
 
@@ -188,14 +197,14 @@ TEST_F(ActorUiStateManagerTest, OnActorTaskState_FinalStateCrashes) {
   scoped_features.InitAndEnableFeatureWithParameters(
       features::kGlicActorUiGlobalTaskIndicator, {});
 
-  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-                   TaskId(123), ActorTask::State::kCancelled, /*title=*/"")),
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
+                   TaskStateChanged(TaskId(123), ActorTask::State::kCancelled)),
                "");
-  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-                   TaskId(123), ActorTask::State::kFinished, /*title=*/"")),
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
+                   TaskStateChanged(TaskId(123), ActorTask::State::kFinished)),
                "");
-  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-                   TaskId(123), ActorTask::State::kFailed, /*title=*/"")),
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
+                   TaskStateChanged(TaskId(123), ActorTask::State::kFailed)),
                "");
 }
 
@@ -222,8 +231,7 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
 
   auto [task_state, expected_ui_tab_state] = GetParam();
   ExpectUiTabStateChange(expected_ui_tab_state);
-  actor_ui_state_manager()->OnUiEvent(
-      TaskStateChanged(task_id, task_state, /*title=*/""));
+  actor_ui_state_manager()->OnUiEvent(TaskStateChanged(task_id, task_state));
 }
 
 const auto kActorTaskTestValues =
@@ -339,6 +347,58 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   VerifyUiEvent(MouseClick{mock_tab().GetHandle(), MouseClickType::kLeft,
                            MouseClickCount::kSingle},
                 expected_ui_tab_state);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       GetsInactiveTaskInfoBeforeExpiry) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kGlicActorUiGlobalTaskIndicator, {});
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  StartTask start_task_event(task_id);
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
+  StopActorTask(task_id);
+
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), "Test Task");
+  EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), &mock_tab());
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       DoesNotGetInactiveTaskInfoAfterExpiry) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kGlicActorUiGlobalTaskIndicator, {});
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  StartTask start_task_event(task_id);
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
+  StopActorTask(task_id);
+  task_environment().FastForwardBy(base::Seconds(
+      features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), std::nullopt);
+  EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), std::nullopt);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest, GetsActiveTaskInfo) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kGlicActorUiGlobalTaskIndicator, {});
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+
+  base::RunLoop loop;
+  actor_keyed_service()->GetTask(task_id)->AddTab(
+      mock_tab().GetHandle(),
+      base::BindLambdaForTesting([&](ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  StartTask start_task_event(task_id);
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
+  PauseActorTask(task_id, /*from_actor=*/true);
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), "Test Task");
+  EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), &mock_tab());
 }
 
 }  // namespace

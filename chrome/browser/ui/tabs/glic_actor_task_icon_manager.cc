@@ -76,6 +76,10 @@ void GlicActorTaskIconManager::OnActorTaskRemoved(actor::TaskId task_id) {
   // TODO(crbug.com/470106502): Implement.
 }
 void GlicActorTaskIconManager::OnActorTaskStopped(actor::TaskId task_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorUiGlobalTaskIndicator)) {
+    return;
+  }
   // TODO(crbug.com/470106502): Implement.
 }
 
@@ -97,7 +101,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   // TODO(crbug.com/469817191): Accommodate completed/failed tasks.
   bool has_unprocessed_tasks = std::any_of(
       actor_task_list_bubble_rows_.begin(), actor_task_list_bubble_rows_.end(),
-      [](const auto& pair) { return pair.second.requires_processing; });
+      [](const auto& pair) { return pair.second; });
 
   bool needs_attention =
       base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)
@@ -121,8 +125,10 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
     actor::TaskId task_id) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
-    actor_task_list_bubble_rows_.find(task_id)->second.requires_processing =
-        false;
+    if (auto it = actor_task_list_bubble_rows_.find(task_id);
+        it != actor_task_list_bubble_rows_.end()) {
+      it->second = false;
+    }
   } else {
     actor_task_list_bubble_rows_.erase(task_id);
   }
@@ -133,15 +139,11 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
   if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
     if (base::FeatureList::IsEnabled(
             features::kGlicActorUiGlobalTaskIndicator)) {
-      ActorTaskListBubbleRowState task_state = {
-          .task_id = task_id,
-          .title = task->title(),
-          .requires_processing = RequiresTaskProcessing(task->GetState())};
-      actor_task_list_bubble_rows_[task_id] = task_state;
+      actor_task_list_bubble_rows_[task_id] =
+          RequiresTaskProcessing(task->GetState());
     } else if (RequiresTaskProcessing(task->GetState())) {
-      ActorTaskListBubbleRowState task_state = {.task_id = task_id,
-                                                .title = task->title()};
-      actor_task_list_bubble_rows_.insert({task_state.task_id, task_state});
+      // Old implementation does not use this field.
+      actor_task_list_bubble_rows_[task_id] = false;
     }
     task_list_bubble_change_callback_list_.Notify(task_id);
     return;
@@ -169,17 +171,6 @@ GlicActorTaskIconManager::RegisterTaskListBubbleStateChange(
 ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
     const {
   return current_actor_task_nudge_state_;
-}
-
-raw_ptr<tabs::TabInterface>
-GlicActorTaskIconManager::GetLastUpdatedTabForTaskId(actor::TaskId task_id) {
-  if (ActorTask* task = actor_service_->GetTask(task_id)) {
-    actor::ActorTask::TabHandleSet tabs = task->GetLastActedTabs();
-    // TODO(crbug.com/441064175): Will need to be updated for multi-tab
-    // actuation.
-    return tabs.empty() ? nullptr : tabs.begin()->Get();
-  }
-  return nullptr;
 }
 
 }  // namespace tabs

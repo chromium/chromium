@@ -8,8 +8,9 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -54,7 +55,7 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
                               ->GetActorTaskListBubbleRows();
   std::vector<ActorTaskListBubbleRowButtonParams> param_list;
   for (const auto& task : task_id_to_state) {
-    param_list.emplace_back(CreateRowButtonParamsForTaskState(task.second));
+    param_list.emplace_back(CreateRowButtonParamsForTask(task.first));
   }
   const size_t param_list_size = param_list.size();
   // Do not show bubble if there are no rows to show.
@@ -74,15 +75,20 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
 }
 
 ActorTaskListBubbleRowButtonParams
-ActorTaskListBubbleController::CreateRowButtonParamsForTaskState(
-    tabs::ActorTaskListBubbleRowState task_state) {
+ActorTaskListBubbleController::CreateRowButtonParamsForTask(
+    actor::TaskId task_id) {
+  actor::ui::ActorUiStateManagerInterface* manager =
+      actor::ActorKeyedService::Get(browser_->GetProfile())
+          ->GetActorUiStateManager();
+  // TODO(chrstne): refactor the title to check that task id exists instead.
   return ActorTaskListBubbleRowButtonParams{
-      .title = base::UTF8ToUTF16(task_state.title),
+      .title =
+          base::UTF8ToUTF16(manager->GetActorTaskTitle(task_id).value_or("")),
       .subtitle = l10n_util::GetStringUTF16(
           IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
       .on_click_callback = base::BindRepeating(
           &ActorTaskListBubbleController::GetOnTaskRowClickCallback,
-          base::Unretained(this), task_state.task_id),
+          base::Unretained(this), task_id),
   };
 }
 
@@ -115,10 +121,11 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
     actor::TaskId task_id) {
 #if BUILDFLAG(ENABLE_GLIC)
   Profile* profile = browser_->GetProfile();
-  auto* icon_manager =
-      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-  if (tabs::TabInterface* last_tab =
-          icon_manager->GetLastUpdatedTabForTaskId(task_id)) {
+  actor::ui::ActorUiStateManagerInterface* manager =
+      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  if (auto last_tab_opt = manager->GetLastActedOnTab(task_id);
+      last_tab_opt && *last_tab_opt) {
+    tabs::TabInterface* last_tab = *last_tab_opt;
     int tab_index = last_tab->GetBrowserWindowInterface()
                         ->GetTabStripModel()
                         ->GetIndexOfTab(last_tab);
@@ -134,6 +141,8 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
   }
   // Regardless of tab navigation, process the row and close the bubble when
   // done.
+  auto* icon_manager =
+      tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
   icon_manager->ProcessRowInTaskListBubble(task_id);
   if (bubble_widget_) {
     bubble_widget_->Close();

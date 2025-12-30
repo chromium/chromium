@@ -240,10 +240,8 @@ void ActorTask::SetState(State new_state) {
                          !stopped_reason_;
   if (should_dispatch) {
     ui_event_dispatcher_->OnActorTaskSyncChange(
-        ui::UiEventDispatcher::ChangeTaskState{.task_id = id_,
-                                               .old_state = old_state,
-                                               .new_state = new_state,
-                                               .title = title_});
+        ui::UiEventDispatcher::ChangeTaskState{
+            .task_id = id_, .old_state = old_state, .new_state = new_state});
   }
   if (base::FeatureList::IsEnabled(
           actor::kGlicPerformActionsReturnsBeforeStateChange)) {

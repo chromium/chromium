@@ -134,8 +134,7 @@ ActorUiStateManager::~ActorUiStateManager() = default;
 // accept a callback.
 void ActorUiStateManager::OnActorTaskStateChange(
     TaskId task_id,
-    ActorTask::State new_task_state,
-    const std::string& title) {
+    ActorTask::State new_task_state) {
   TRACE_EVENT("actor", "UiStateManager::OnActorTaskStateChange", "new_state",
               new_task_state);
   // TODO(crbug.com/424495020): Look into converting this switch into a
@@ -236,17 +235,24 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                                weak_factory_.GetWeakPtr(), e.task_id));
           },
           [this](const TaskStateChanged& e) {
-            this->OnActorTaskStateChange(e.task_id, e.state, e.title);
+            this->OnActorTaskStateChange(e.task_id, e.state);
           },
           [this](const StopTask& e) {
             if (base::FeatureList::IsEnabled(
                     features::kGlicActorUiGlobalTaskIndicator)) {
+              stopped_task_infos_.emplace(
+                  e.task_id,
+                  StoppedTaskInfo{
+                      .final_state = e.final_state,
+                      .title = e.title,
+                      .last_acted_on_tab_handle = e.last_acted_on_tab_handle,
+                  });
               NotifyActorTaskStopped(e.task_id);
 
               // After expiry, remove the task and notify observers.
               base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
                   FROM_HERE,
-                  base::BindOnce(&ActorUiStateManager::NotifyActorTaskRemoved,
+                  base::BindOnce(&ActorUiStateManager::ActorTaskRemoved,
                                  weak_factory_.GetWeakPtr(), e.task_id),
                   base::Seconds(
                       features::kGlicActorUiCompletedTaskExpiryDelaySeconds
@@ -299,7 +305,6 @@ void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
 }
 
 void ActorUiStateManager::NotifyActorTaskStopped(TaskId task_id) {
-  // TODO(chrstne): Implement this.
   actor_task_stopped_callback_list_.Notify(task_id);
 }
 
@@ -314,14 +319,38 @@ base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskStopped(
   return actor_task_stopped_callback_list_.Add(std::move(callback));
 }
 
-void ActorUiStateManager::NotifyActorTaskRemoved(TaskId task_id) {
-  // TODO(chrstne): Implement this.
+void ActorUiStateManager::ActorTaskRemoved(TaskId task_id) {
+  stopped_task_infos_.erase(task_id);
   actor_task_removed_callback_list_.Notify(task_id);
 }
 
 base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskRemoved(
     ActorTaskRemovedCallback callback) {
   return actor_task_removed_callback_list_.Add(std::move(callback));
+}
+
+std::optional<std::string> ActorUiStateManager::GetActorTaskTitle(TaskId id) {
+  if (ActorTask* task = actor_service_->GetTask(id)) {
+    return task->title();
+  }
+  if (auto it = stopped_task_infos_.find(id); it != stopped_task_infos_.end()) {
+    return it->second.title;
+  }
+  return std::nullopt;
+}
+
+std::optional<raw_ptr<tabs::TabInterface>>
+ActorUiStateManager::GetLastActedOnTab(TaskId id) {
+  if (ActorTask* task = actor_service_->GetTask(id)) {
+    actor::ActorTask::TabHandleSet tabs = task->GetLastActedTabs();
+    // TODO(crbug.com/441064175): Will need to be updated for multi-tab
+    // actuation.
+    return tabs.empty() ? nullptr : tabs.begin()->Get();
+  }
+  if (auto it = stopped_task_infos_.find(id); it != stopped_task_infos_.end()) {
+    return it->second.last_acted_on_tab_handle.Get();
+  }
+  return std::nullopt;
 }
 
 }  // namespace actor::ui
