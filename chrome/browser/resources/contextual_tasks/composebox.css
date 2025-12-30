@@ -23,7 +23,7 @@
       + var(--composebox-margin-bottom)
     );
   /* Max width for tab and side-panel mode (from Figma) */
-  --composebox-max-width: 691px;
+  --composebox-max-width: 692px;
   /* Shared sizing between voice cancel and regular cancel buttons. */
   --composebox-cancel-button-size: 40px;
   --composebox-icon-menu-bottom: 12px;
@@ -165,6 +165,15 @@
   background: transparent;
   display: block;
   position: relative;
+}
+
+:host([is-side-panel]) #composebox {
+  --inset-start-indent_: 0;
+  inset-inline-start: 20px;
+  max-width: var(--composebox-max-width);
+  min-width: 200px;
+  /* 20px on each side -> 40px. */
+  width: calc(100% - 40px);
 }
 
 #composebox::part(error-scrim) {
