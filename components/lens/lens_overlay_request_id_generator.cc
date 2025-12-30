@@ -18,6 +18,16 @@ namespace lens {
 // The number of bytes to use in an analytics id.
 constexpr size_t kAnalyticsIdBytesSize = 16;
 
+namespace {
+
+int64_t RandInt64() {
+  int64_t number;
+  base::RandBytes(base::byte_span_from_ref(number));
+  return number >> 1;
+}
+
+}  // namespace
+
 LensOverlayRequestIdGenerator::LensOverlayRequestIdGenerator() {
   LensOverlayRequestIdGenerator::ResetRequestId();
 }
@@ -30,6 +40,7 @@ void LensOverlayRequestIdGenerator::ResetRequestId() {
   image_sequence_id_ = 0;
   long_context_id_ = 0;
   analytics_id_ = base::RandBytesAsString(kAnalyticsIdBytesSize);
+  context_id_ = RandInt64();
   routing_info_.reset();
 }
 
@@ -42,18 +53,64 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
         sequence_id_ == 0);
 
+  bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
+
+  std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
+      GetCurrentRequestId();
+  current_request_id->set_media_type(media_type);
+  std::unique_ptr<lens::LensOverlayRequestId> next_request_id =
+      CreateNextRequestIdForUpdate(std::move(current_request_id), update_mode);
+
+  // Update the internal state.
+  uuid_ = next_request_id->uuid();
+  sequence_id_ = next_request_id->sequence_id();
+  image_sequence_id_ = next_request_id->image_sequence_id();
+  long_context_id_ = next_request_id->long_context_id();
+  if (store_analytics_id) {
+    analytics_id_ = next_request_id->analytics_id();
+  }
+
+  if (context_id.has_value()) {
+    next_request_id->set_context_id(context_id.value());
+  }
+  return next_request_id;
+}
+
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::CreateNextRequestIdForUpdate(
+    std::unique_ptr<lens::LensOverlayRequestId> previous_request_id,
+    RequestIdUpdateMode update_mode) {
+  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
+  request_id->set_uuid(previous_request_id->uuid());
+  request_id->set_sequence_id(previous_request_id->sequence_id());
+  request_id->set_analytics_id(previous_request_id->analytics_id());
+  request_id->set_long_context_id(previous_request_id->long_context_id());
+  request_id->set_image_sequence_id(previous_request_id->image_sequence_id());
+  request_id->set_media_type(previous_request_id->media_type());
+  request_id->set_time_usec(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  if (previous_request_id->has_routing_info()) {
+    request_id->mutable_routing_info()->CopyFrom(
+        previous_request_id->routing_info());
+  }
+  request_id->set_context_id(previous_request_id->context_id());
+
   bool create_analytics_id =
       update_mode != RequestIdUpdateMode::kSearchUrl &&
       update_mode != RequestIdUpdateMode::kPartialPageContentRequest;
-  bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
 
   if (update_mode == RequestIdUpdateMode::kMultiContextUploadRequest) {
-    uuid_ = base::RandUint64();
-    image_sequence_id_ = 1;
-    sequence_id_ = 1;
+    // kMultiContextUploadRequest is only used for the initial request in a
+    // multi-context upload flow, so reset all ids to their initial values.
+    request_id->set_uuid(base::RandUint64());
+    request_id->set_image_sequence_id(1);
+    request_id->set_sequence_id(1);
     // All media types other than image-only should set long-context-id to 1.
-    long_context_id_ =
-        media_type == LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ? 0 : 1;
+    request_id->set_long_context_id(
+        previous_request_id->media_type() ==
+                LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+            ? 0
+            : 1);
   } else {
     bool increment_image_sequence =
         update_mode == RequestIdUpdateMode::kFullImageRequest ||
@@ -66,30 +123,21 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
         update_mode == RequestIdUpdateMode::kInitialRequest;
 
     if (increment_image_sequence) {
-      image_sequence_id_++;
+      request_id->set_image_sequence_id(request_id->image_sequence_id() + 1);
     }
     if (increment_sequence) {
-      sequence_id_++;
+      request_id->set_sequence_id(request_id->sequence_id() + 1);
     }
     if (increment_long_context) {
-      long_context_id_++;
-    }
-  }
-  std::string analytics_id_to_set = analytics_id_;
-  if (create_analytics_id) {
-    analytics_id_to_set = base::RandBytesAsString(kAnalyticsIdBytesSize);
-    if (store_analytics_id) {
-      analytics_id_ = analytics_id_to_set;
+      request_id->set_long_context_id(request_id->long_context_id() + 1);
     }
   }
 
-  std::unique_ptr<lens::LensOverlayRequestId> request_id =
-      GetCurrentRequestId();
-  request_id->set_media_type(media_type);
-  request_id->set_analytics_id(analytics_id_to_set);
-  if (context_id.has_value()) {
-    request_id->set_context_id(context_id.value());
+  if (create_analytics_id) {
+    request_id->set_analytics_id(
+        base::RandBytesAsString(kAnalyticsIdBytesSize));
   }
+
   return request_id;
 }
 
@@ -142,6 +190,7 @@ LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   if (routing_info_.has_value()) {
     request_id->mutable_routing_info()->CopyFrom(routing_info_.value());
   }
+  request_id->set_context_id(context_id_);
   return request_id;
 }
 }  // namespace lens

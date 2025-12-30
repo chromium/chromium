@@ -74,6 +74,14 @@ class LensOverlayRequestIdGenerator {
       lens::LensOverlayRequestId::MediaType media_type,
       std::optional<int64_t> context_id = std::nullopt);
 
+  // Creates a new request id based on the previous request id and update mode.
+  // This does not modify the generator's internal state.
+  // TODO(crbug.com/472498582): Migrate all callers of GetNextRequestId to
+  // call this method and remove most internal state from this class.
+  std::unique_ptr<lens::LensOverlayRequestId> CreateNextRequestIdForUpdate(
+      std::unique_ptr<lens::LensOverlayRequestId> previous_request_id,
+      RequestIdUpdateMode update_mode);
+
   // Gets a request id using the migrated server flow using context_id.
   // The resulting request ID will not have an analytics ID, image sequence ID,
   // sequence ID, or long context ID.
@@ -119,6 +127,10 @@ class LensOverlayRequestIdGenerator {
 
   // The current long context id.
   int long_context_id_;
+
+  // The context ID to use for the request ID. This is generated once and
+  // reused for all requests.
+  int64_t context_id_;
 
   // The current routing info. Not guaranteed to exist if not returned from the
   // server.

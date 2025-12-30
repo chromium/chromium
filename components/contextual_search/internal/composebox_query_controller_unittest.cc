@@ -794,14 +794,6 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_id()
                 .context_id(),
             context_id);
-  EXPECT_EQ(controller()
-                .last_sent_file_upload_request()
-                ->objects_request()
-                .request_context()
-                .request_id()
-                .media_type(),
-            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
-
   // Check that the routing info is in the vsrid.
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
@@ -822,7 +814,60 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
-       UploadPdfFileRequestWithContextIdMigrationDisabled_DoesNotSetContextId) {
+       UploadPdfFileRequestWithContextIdMigrationDisabled_IncrementsRequestId) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*enable_context_id_migration=*/false);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  int64_t context_id = 12345;
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Capture the first request ID.
+  auto* first_file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(first_file_info);
+  auto first_request_id = first_file_info->GetRequestIdForTesting();
+  EXPECT_EQ(first_request_id.sequence_id(), 1);
+  EXPECT_EQ(first_request_id.context_id(), context_id);
+
+  // Act: Start the file upload flow again with the same context ID (re-upload).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token_2, lens::MimeType::kPdf);
+
+  // Capture the second request ID.
+  auto* second_file_info = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_TRUE(second_file_info);
+  auto second_request_id = second_file_info->GetRequestIdForTesting();
+
+  // Verify that the request ID was incremented.
+  EXPECT_EQ(second_request_id.sequence_id(), 2);
+  EXPECT_EQ(second_request_id.context_id(), context_id);
+  EXPECT_EQ(second_request_id.uuid(), first_request_id.uuid());
+  EXPECT_NE(second_request_id.analytics_id(), first_request_id.analytics_id());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequestWithContextIdMigrationDisabled_SetsContextId) {
   CreateController(
       /*send_lns_surface=*/false,
       /*suppress_lns_surface_param_if_no_image=*/true,
@@ -863,16 +908,11 @@ TEST_F(ComposeboxQueryControllerTest,
                 ->GetRequestIdForTesting()
                 .long_context_id(),
             1);
-  EXPECT_NE(controller()
-                .GetFileInfoForTesting(file_token)
-                ->GetRequestIdForTesting()
-                .context_id(),
-            context_id);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .context_id(),
-            0u);
+            context_id);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
