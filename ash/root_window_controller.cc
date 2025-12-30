@@ -1199,6 +1199,8 @@ void RootWindowController::CreateContainers() {
                       "AlwaysOnTopContainer", shutdown_screenshot_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(always_on_top_container);
   always_on_top_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+  window_util::SetChildrenUseExtendedHitRegionForWindow(
+      always_on_top_container);
 
   aura::Window* float_container =
       CreateContainer(kShellWindowId_FloatContainer, "FloatContainer",

@@ -21,8 +21,6 @@ PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(browser_widget, browser_view) {
   aura::Window* frame_window = browser_widget->GetNativeWindow();
-  ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
-      frame_window->parent());
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
 
   window_observation_.Observe(frame_window);
