@@ -799,9 +799,17 @@ void ContextualSearchboxHandler::OpenUrl(
         return;
       }
     }
-    browser_window_interface->GetTabStripModel()
-        ->GetActiveWebContents()
-        ->OpenURL(params, std::move(navigation_handle_callback));
+
+    auto* target_web_contents = active_web_contents->OpenURL(
+        params, std::move(navigation_handle_callback));
+
+    // Manually set the focus to the newly navigated content. Without this,
+    // the focus is re-captured by the Omnibox after query submission (see:
+    // http://crbug.com/469458346).
+    if (target_web_contents &&
+        disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+      target_web_contents->Focus();
+    }
   } else {
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
