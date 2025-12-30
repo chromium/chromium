@@ -130,6 +130,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="FRE Promo"/>
   <int value="14" label="Content area text context menu"/>
   <int value="15" label="Content area video context menu"/>
+  <int value="16" label="NTP Contextual Compose Flow"/>
+  <int value="17" label="Omnibox Contextual Compose Flow"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

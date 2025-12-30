@@ -328,6 +328,7 @@ int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
   return omnibox::kContextMenuMaxTabSuggestions.Get();
 }
 
-// TODO(b:468113419): The methods in this file are not ordered consistently with
-// the header
-//   file :(
+std::optional<lens::LensOverlayInvocationSource>
+WebuiOmniboxHandler::GetInvocationSource() const {
+  return lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
+}

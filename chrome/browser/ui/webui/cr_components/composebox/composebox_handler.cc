@@ -302,3 +302,8 @@ void ComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr tab_info) {
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(std::move(tab_info));
 }
+
+std::optional<lens::LensOverlayInvocationSource>
+ComposeboxHandler::GetInvocationSource() const {
+  return lens::LensOverlayInvocationSource::kNtpContextualQuery;
+}

@@ -54,6 +54,8 @@ inline constexpr char kInvocationSourceOmniboxIcon[] = "obic";
 inline constexpr char kInvocationSourceOmniboxPageAction[] = "obpa";
 inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] = "obcs";
 inline constexpr char kInvocationSourceHomeworkActionChip[] = "hwac";
+inline constexpr char kInvocationSourceNtpContextualQuery[] = "rb";
+inline constexpr char kInvocationSourceOmniboxContextualQuery[] = "obic";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -292,6 +294,12 @@ GURL AppendInvocationSourceParamToURL(
       break;
     case lens::LensOverlayInvocationSource::kHomeworkActionChip:
       param_value += kInvocationSourceHomeworkActionChip;
+      break;
+    case lens::LensOverlayInvocationSource::kNtpContextualQuery:
+      param_value += kInvocationSourceNtpContextualQuery;
+      break;
+    case lens::LensOverlayInvocationSource::kOmniboxContextualQuery:
+      param_value += kInvocationSourceOmniboxContextualQuery;
       break;
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:

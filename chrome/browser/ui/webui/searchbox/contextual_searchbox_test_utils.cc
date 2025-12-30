@@ -26,7 +26,11 @@ MockQueryController::MockQueryController(
                                     template_url_service,
                                     variations_client,
                                     std::move(query_controller_config_params),
-                                    /*enable_cluster_info_ttl=*/false) {}
+                                    /*enable_cluster_info_ttl=*/false) {
+  ON_CALL(*this, CreateSearchUrl)
+      .WillByDefault(testing::Invoke(
+          this, &MockQueryController::CreateSearchUrlBase));
+}
 MockQueryController::~MockQueryController() = default;
 
 content::WebContents* TestWebContentsDelegate::OpenURLFromTab(

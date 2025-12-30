@@ -55,6 +55,12 @@ class MockQueryController
                std::unique_ptr<lens::ContextualInputData> contextual_input,
                std::optional<lens::ImageEncodingOptions> image_options),
               (override));
+  MOCK_METHOD(void,
+              CreateSearchUrl,
+              (std::unique_ptr<CreateSearchUrlRequestInfo>
+                   search_url_request_info,
+               base::OnceCallback<void(GURL)> callback),
+              (override));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&), (override));
   MOCK_METHOD(void, ClearFiles, (), (override));
   MOCK_METHOD(const contextual_search::FileInfo*,
@@ -64,6 +70,13 @@ class MockQueryController
 
   void InitializeIfNeededBase() {
     TestComposeboxQueryController::InitializeIfNeeded();
+  }
+
+  void CreateSearchUrlBase(std::unique_ptr<CreateSearchUrlRequestInfo>
+                               search_url_request_info,
+                           base::OnceCallback<void(GURL)> callback) {
+    TestComposeboxQueryController::CreateSearchUrl(
+        std::move(search_url_request_info), std::move(callback));
   }
 };
 

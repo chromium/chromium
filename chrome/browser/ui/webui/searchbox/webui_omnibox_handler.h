@@ -85,8 +85,12 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   // `AimEligibilityService` callback.
   void OnAimEligibilityChanged();
 
- private:
+ protected:
   // ContextualSearchboxHandler:
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override;
+
+ private:
   int GetContextMenuMaxTabSuggestions() override;
 
   // Observe `OmniboxEditModel` for updates that require updating the views.

@@ -157,6 +157,11 @@ class ContextualSearchboxHandler
       WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
       std::map<std::string, std::string> additional_params);
+
+  // Returns the invocation source associated with the searchbox implementation.
+  virtual std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const = 0;
+
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTest,
                            CreateTabPreviewEncodingOptions_NotScaled);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTestDSF2,

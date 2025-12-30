@@ -29,6 +29,11 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
   // composebox::mojom::PageHandler:
   void HandleFileUpload(bool is_image) override;
+
+ protected:
+  // ContextualSearchboxHandler:
+  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
+      const override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_

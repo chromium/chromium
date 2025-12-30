@@ -105,6 +105,11 @@ INSTANTIATE_TEST_SUITE_P(
             lens::LensOverlayInvocationSource::kOmnibox, "obic"},
         InvocationSourceParamTestCase{
             lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo,
-            "ctxv"}));
+            "ctxv"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kNtpContextualQuery, "rb"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+            "obic"}));
 
 }  // namespace lens
