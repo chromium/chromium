@@ -149,6 +149,9 @@ suite('TopToolbarTest', () => {
   });
 
   test('handles open in new tab click', async () => {
+    topToolbar.isAiPage = true;
+    await microtasksFinished();
+
     const moreButton =
         topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
     assertTrue(!!moreButton);
@@ -158,8 +161,16 @@ suite('TopToolbarTest', () => {
     const buttons = topToolbar.$.menu.get().querySelectorAll('button');
     const openInNewTabButton = buttons[0];
     assertTrue(!!openInNewTabButton);
+    assertFalse(openInNewTabButton.disabled);
     openInNewTabButton.click();
     await proxy.handler.whenCalled('moveTaskUiToNewTab');
+
+    topToolbar.isAiPage = false;
+    await microtasksFinished();
+    assertTrue(openInNewTabButton.disabled);
+    proxy.handler.reset();
+    openInNewTabButton.click();
+    assertEquals(0, proxy.handler.getCallCount('moveTaskUiToNewTab'));
   });
 
   test('handles my activity click', async () => {
