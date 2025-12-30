@@ -18,8 +18,10 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -39,6 +41,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -766,6 +769,36 @@ void ContextualSearchboxHandler::OpenUrl(
         webui::GetBrowserWindowInterface(web_contents_);
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
+    // If the current tab is part of the context list, navigate in the lens side
+    // panel if co-browsing is disabled.
+    auto* active_web_contents =
+        browser_window_interface->GetTabStripModel()->GetActiveWebContents();
+    auto* eligibility_manager =
+        contextual_tasks::EntryPointEligibilityManager::From(
+            browser_window_interface);
+    if ((!eligibility_manager ||
+         !eligibility_manager->AreEntryPointsEligible()) &&
+        contextual_session_handle->IsTabInContext(
+            sessions::SessionTabHelper::IdForTab(active_web_contents))) {
+      // Open in AIM in lens side panel.
+      if (auto* lens_search_controller =
+              LensSearchController::FromWebUIWebContents(active_web_contents)) {
+        // There technically might not be a match associated with this query
+        // since a user can submit a query with just a file.
+        std::string query_text;
+        net::GetValueForKeyInQuery(url, "q", &query_text);
+        lens_search_controller->IssueContextualSearchRequest(
+            lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
+            url,
+            query_text.empty()
+                ? AutocompleteMatchType::Type::SEARCH_SUGGEST
+                : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+            /*is_zero_prefix_suggestion=*/query_text.empty());
+        // TODO(crbug.com/469458346): Fix bug where omnibox remains open after
+        // navigation.
+        return;
+      }
+    }
     browser_window_interface->GetTabStripModel()
         ->GetActiveWebContents()
         ->OpenURL(params, std::move(navigation_handle_callback));
