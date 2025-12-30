@@ -26,6 +26,13 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+static constexpr base::TimeDelta kShowDropTargetForLinkAfterHideLookbackWindow =
+    base::Seconds(30);
+static constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
+static constexpr base::TimeDelta kShowNudgeDelay = base::Milliseconds(1000);
+}  // namespace
+
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
     MultiContentsDropTargetView& drop_target_view,
     DropDelegate& drop_delegate,
@@ -342,15 +349,14 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
 
   base::TimeDelta show_delay;
   if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
-    show_delay = features::kSideBySideShowDropTargetDelay.Get();
+    show_delay = kShowDropTargetForTabDelay;
   } else if (base::Time::Now() - drop_target_last_hidden_ <
-             features::kSideBySideShowDropTargetForLinkAfterHideLookbackWindow
-                 .Get()) {
+             kShowDropTargetForLinkAfterHideLookbackWindow) {
     // If a drop target was recently closed for a link drag, use a longer delay
     // to avoid blocking elements on the page.
-    show_delay = features::kSideBySideShowDropTargetForLinkAfterHideDelay.Get();
+    show_delay = kShowDropTargetForLinkAfterHideDelay;
   } else {
-    show_delay = features::kSideBySideShowDropTargetForLinkDelay.Get();
+    show_delay = kShowDropTargetForLinkDelay;
   }
 
   show_drop_target_timer_->timer.Start(
@@ -374,7 +380,7 @@ void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
 
 void MultiContentsViewDropTargetController::StartDropTargetHideTimer() {
   hide_drop_target_timer_.Start(
-      FROM_HERE, features::kSideBySideHideDropTargetDelay.Get(),
+      FROM_HERE, kHideDropTargetDelay,
       base::BindOnce(&MultiContentsViewDropTargetController::HideDropTarget,
                      base::Unretained(this), false));
 }
@@ -392,7 +398,7 @@ void MultiContentsViewDropTargetController::StartNudgeShowTimer(
   show_nudge_timer_.emplace(drop_side,
                             MultiContentsDropTargetView::DragType::kLink);
   show_nudge_timer_->timer.Start(
-      FROM_HERE, features::kSideBySideShowNudgeDelay.Get(),
+      FROM_HERE, kShowNudgeDelay,
       base::BindOnce(
           &MultiContentsViewDropTargetController::ShowTimerDelayedNudge,
           base::Unretained(this), drop_side));

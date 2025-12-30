@@ -93,38 +93,6 @@ BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The delay before showing the drop target for the side-by-side drag-and-drop
-// entrypoint.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideShowDropTargetDelay,
-                   &kSideBySide,
-                   "drop_target_show_delay",
-                   base::Milliseconds(500));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideShowDropTargetForLinkDelay,
-                   &kSideBySide,
-                   "drop_target_for_link_show_delay",
-                   base::Milliseconds(500));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideShowDropTargetForLinkAfterHideDelay,
-                   &kSideBySide,
-                   "drop_target_for_link_after_hide_show_delay",
-                   base::Milliseconds(3000));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideShowDropTargetForLinkAfterHideLookbackWindow,
-                   &kSideBySide,
-                   "drop_target_for_link_after_hide_lookback_window",
-                   base::Seconds(30));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideHideDropTargetDelay,
-                   &kSideBySide,
-                   "drop_target_hide_delay",
-                   base::Milliseconds(100));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSideBySideShowNudgeDelay,
-                   &kSideBySide,
-                   "show_nudge_delay",
-                   base::Milliseconds(1000));
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetMinWidth,
                    &kSideBySide,
