@@ -150,6 +150,11 @@ struct ContextualTaskContext {
       const GURL& url,
       url_deduplication::URLDeduplicationHelper* deduplication_helper) const;
 
+  // Returns a list of URL attachments that match the given |url|.
+  std::vector<const UrlAttachment*> GetMatchingUrlAttachments(
+      const GURL& url,
+      url_deduplication::URLDeduplicationHelper* deduplication_helper) const;
+
  private:
   friend class ContextDecorator;
 

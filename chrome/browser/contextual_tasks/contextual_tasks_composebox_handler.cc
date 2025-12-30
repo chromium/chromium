@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
@@ -27,8 +28,11 @@
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/mime_util.h"
 #include "net/base/url_util.h"
@@ -197,10 +201,20 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     }
   }
 
+  // Fetch the context for the task, including pending context from the current
+  // session handle.
+  auto context_decoration_params =
+      std::make_unique<contextual_tasks::ContextDecorationParams>();
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    context_decoration_params->contextual_search_session_handle =
+        session_handle->AsWeakPtr();
+  }
   // TODO(crbug.com/468453630): The context needs to actually be populated
   // with tab data from the server-managed context list.
   context_controller->GetContextForTask(
-      *task_id, {}, nullptr,
+      *task_id,
+      {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},
+      std::move(context_decoration_params),
       base::BindOnce(&ContextualTasksComposeboxHandler::OnContextRetrieved,
                      weak_factory_.GetWeakPtr(), query, active_tab_handle));
 }
@@ -286,8 +300,7 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
   // re-upload.
   std::optional<int64_t> maybe_context_id = std::nullopt;
   if (page_content_data->tab_session_id.has_value()) {
-    maybe_context_id =
-        GetContextIdForTab(*context, page_content_data->tab_session_id.value());
+    maybe_context_id = GetContextIdForTab(*context, *page_content_data);
   }
 
   UploadTabContextWithData(
@@ -308,6 +321,8 @@ ContextualTasksComposeboxHandler::GetTabsToUpdate(
     const contextual_tasks::ContextualTaskContext& context,
     tabs::TabInterface* active_tab) {
   std::vector<tabs::TabInterface*> tabs_to_update;
+  // TODO(crbug.com/469807132): Add suggested tabs to the list of tabs to
+  // update.
 
   // TODO(crbug.com/468430623): Support updating multiple tabs.
   // Currently this only checks the active tab.
@@ -315,14 +330,39 @@ ContextualTasksComposeboxHandler::GetTabsToUpdate(
     return tabs_to_update;
   }
 
-  tabs_to_update.push_back(active_tab);
+  // Check if the active tab is in the context.
+  SessionID active_tab_session_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  if (!active_tab_session_id.is_valid()) {
+    return tabs_to_update;
+  }
+
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      url_duplication_helper =
+          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
+  std::vector<const contextual_tasks::UrlAttachment*> matching_attachments =
+      context.GetMatchingUrlAttachments(
+          active_tab->GetContents()->GetLastCommittedURL(),
+          url_duplication_helper.get());
+
+  for (const auto* attachment : matching_attachments) {
+    if (attachment->GetTabSessionId() == active_tab_session_id) {
+      tabs_to_update.push_back(active_tab);
+      break;
+    }
+  }
 
   return tabs_to_update;
 }
 
 std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
     const contextual_tasks::ContextualTaskContext& context,
-    SessionID tab_session_id) {
+    const lens::ContextualInputData& page_content_data) {
+  if (!page_content_data.tab_session_id.has_value()) {
+    return std::nullopt;
+  }
+  SessionID tab_session_id = page_content_data.tab_session_id.value();
+
   auto* controller = GetContextController();
   if (!controller) {
     return std::nullopt;
@@ -338,11 +378,16 @@ std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
     return std::nullopt;
   }
 
-  for (const auto& attachment : context.GetUrlAttachments()) {
-    // Currently, the only field of the url attachment that is used to determine
-    // if the attachment is from the context is if the tab session id is
-    // present.
-    if (attachment.GetTabSessionId() == tab_session_id) {
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      url_duplication_helper =
+          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
+  std::vector<const contextual_tasks::UrlAttachment*> matching_attachments =
+      context.GetMatchingUrlAttachments(page_content_data.page_url.value(),
+                                        url_duplication_helper.get());
+
+  for (const auto* attachment : matching_attachments) {
+    // Check if the attachment matches the tab session ID.
+    if (attachment->GetTabSessionId() == tab_session_id) {
       const auto& file_info_list = search_context_controller->GetFileInfoList();
       for (const auto* file_info : file_info_list) {
         if (file_info->tab_session_id == tab_session_id) {
