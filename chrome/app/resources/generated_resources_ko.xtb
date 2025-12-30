@@ -527,7 +527,6 @@
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
 <translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
-<translation id="13449088910457661">Gemini는 탭에서 작동하여 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -1987,6 +1986,7 @@
 <translation id="2319072477089403627">Android 휴대전화에 연결 중...</translation>
 <translation id="2319459402137712349">키보드를 열려면 텍스트 입력란을 선택합니다. 화면 하단에서 키보드 아이콘을 선택할 수도 있습니다.</translation>
 <translation id="2319993584768066746">로그인 화면 사진</translation>
+<translation id="2321487076181785382">탭 분할</translation>
 <translation id="2322193970951063277">머리글과 바닥글</translation>
 <translation id="2322318151094136999">사이트가 직렬 포트에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="2322622365472107569">종료 시간: <ph name="TIME" /></translation>
@@ -6177,7 +6177,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
-<translation id="520576054436518354">Gemini가 대신 탐색하도록 허용</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208722776934437424">권한 변경하기</translation>
@@ -10223,6 +10222,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' 항목을 이동했습니다.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">인스턴트 핫스팟 세부정보</translation>
+<translation id="8013181884974864006">맥락에 맞는 작업</translation>
 <translation id="8013534738634318212"><ph name="RWS_OWNER" />에서 정의한 그룹에 속하는 사이트입니다. 그룹의 사이트에서 내 그룹 활동을 볼 수 있습니다.</translation>
 <translation id="8013993649590906847">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
 <translation id="8014154204619229810">업데이터가 현재 실행 중입니다. 잠시 후에 새로고침하여 다시 확인해 주세요.</translation>

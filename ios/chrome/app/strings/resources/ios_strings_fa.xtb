@@ -393,7 +393,7 @@
 <translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2434918313224755415">برای مرور در «حالت ناشناس»، می‌توانید به چپ پیمایش کنید.</translation>
-<translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2435457462613246316">نشان دادن گذرواژه</translation>
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2458827363789845126">{count,plural, =1{‫{count} مورد از سابقه}one{‫{count} مورد از سابقه}other{‫{count} مورد از سابقه}}</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
@@ -1470,7 +1470,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6505334220040167806">جمع کردن گروه زبانه.</translation>
 <translation id="6506996418997555004">هم‌رسانی کردن گروه زبانه «<ph name="GROUP_NAME" />»</translation>
 <translation id="6507973708545996744">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
-<translation id="6518133107902771759">تأیید</translation>
+<translation id="6518133107902771759">درستی‌سنجی</translation>
 <translation id="6518861084553706202">برگه‌ها بسته خواهد شد و داده‌های حذف‌شده ممکن است شامل گذرواژه‌ها، سابقه مرور، کوکی‌ها، و موارد دیگر باشد.</translation>
 <translation id="6523575793810663688">روش کار را نشانم بده</translation>
 <translation id="6524082013156754186">ذخیره کردن در حساب</translation>

@@ -1443,6 +1443,7 @@
 <translation id="3342018947887487892">之后，您访问的网站便可请求获取以下信息：您的广告主题，或者您访问过的网站建议的广告。</translation>
 <translation id="334438173029876234">滑板装备</translation>
 <translation id="3347146863028219517">滑雪与单板滑雪</translation>
+<translation id="3349610303043713601">使用 AI 浏览</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">回放 10 秒</translation>
 <translation id="3352881017886802007">体育游戏</translation>
@@ -4104,7 +4105,7 @@
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="7615932826417658001">添加身份证件</translation>
-<translation id="7616390733770379387">这些搜索引擎按随机顺序显示。</translation>
+<translation id="7616390733770379387">以下搜索引擎按随机顺序显示。</translation>
 <translation id="7616645509853975347">您的管理员已在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
 <translation id="7617825962482469577">C7/C6 信封</translation>
 <translation id="7618270539713451657">武术</translation>
@@ -4956,7 +4957,7 @@
 <translation id="9046578823518542618"><ph name="URL" /> 想要查找并连接到本地网络中的任何设备</translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="9046865906192819796">“先买后付”服务条款界面已以一半高度显示。</translation>
-<translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可以在设置中更改选项。</translation>
+<translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可在设置中更改默认搜索引擎。</translation>
 <translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 英寸</translation>
 <translation id="9049981332609050619">您试图访问 <ph name="DOMAIN" />，但服务器提供的证书无效。</translation>

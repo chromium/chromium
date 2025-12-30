@@ -1445,6 +1445,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3342018947887487892">Depois, um site que você visitar poderá pedir os temas ou anúncios sugeridos em sites acessados.</translation>
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
+<translation id="3349610303043713601">Navegar com a IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Voltar 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de esporte</translation>
@@ -3665,7 +3666,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de usar recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de servir de base para recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6935077351544118151">Agora é possível preencher automaticamente cartões de fidelidade da Carteira do Google</translation>
 <translation id="6935082727755903526">Vagas de emprego nas áreas contábil e financeira</translation>

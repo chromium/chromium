@@ -1442,6 +1442,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3342018947887487892">Geroago, baliteke bisitatzen duzun webguneek informazio hori eskatzea (iragarkien gaiak zein bisitatutako webguneek iradokitako iragarkiak).</translation>
 <translation id="334438173029876234">Skate-ekipamendua</translation>
 <translation id="3347146863028219517">Eskia eta snowboarda</translation>
+<translation id="3349610303043713601">Arakatu AA erabilita</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Erreproduzitu 10 segundo berriro</translation>
 <translation id="3352881017886802007">Kirol-jokoak</translation>
@@ -3045,7 +3046,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5937560539988385583">Itzuli da orria</translation>
 <translation id="5938153366081463283">Gehitu txartel birtual bat</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5938866385061293322">Iritzi independenteen webguneetatik (adibidez, Trustpilot, ScamAdviser eta Google) dator informazio hau. AAk sortzen ditu laburpenak.</translation>
+<translation id="5938866385061293322">Iritzi independenteen webguneetatik (adibidez, Trustpilot, ScamAdviser eta Google) dator informazio hau. AA bidez sortzen dira laburpenak.</translation>
 <translation id="5943775258256265106">{NUM_MINS,plural, =1{Duela minutu bat sortua}other{Duela {NUM_MINS} minutu sortua}}</translation>
 <translation id="5944297261866530437">Ehuna (oso distiratsua)</translation>
 <translation id="5950901984834744590">Bizar-labanak eta bizarra kentzeko makinak</translation>
