@@ -2236,6 +2236,24 @@ TEST_F(AutofillStructuredAddress, ParseStreetAddressPL) {
        .apartment = "m.10",
        .apartment_type = "m.",
        .apartment_num = "10"},
+      {.country_code = "PL",
+       .street_address = "Ulubiona 9A/m.10",
+       .street_location = "Ulubiona 9A/m.10",
+       .street_name = "Ulubiona",
+       .building_and_unit = "9A/m.10",
+       .house_number = "9A",
+       .apartment = "m.10",
+       .apartment_type = "m.",
+       .apartment_num = "10"},
+      {.country_code = "PL",
+       .street_address = "ul.Ulubiona 9A/m.10",
+       .street_location = "ul.Ulubiona 9A/m.10",
+       .street_name = "Ulubiona",
+       .building_and_unit = "9A/m.10",
+       .house_number = "9A",
+       .apartment = "m.10",
+       .apartment_type = "m.",
+       .apartment_num = "10"}
   };
 
   for (const auto& test_case : test_cases) {
