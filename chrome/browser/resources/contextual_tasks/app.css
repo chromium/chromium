@@ -229,6 +229,7 @@ error-page {
   height: 780px;
   justify-content: center;
   position: absolute;
+  pointer-events: none;
   width: 100%;
 }
 
