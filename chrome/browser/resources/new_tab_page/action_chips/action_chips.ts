@@ -240,6 +240,10 @@ export class ActionChipsElement extends CrLitElement {
   protected isRecentTabChip_(chip: ActionChip) {
     return chip.type === ChipType.kRecentTab;
   }
+
+  protected showDashSimplifiedUI_(chip: ActionChip) {
+    return chip.type !== ChipType.kDeepDive && this.showSimplifiedUI_;
+  }
 }
 
 declare global {
