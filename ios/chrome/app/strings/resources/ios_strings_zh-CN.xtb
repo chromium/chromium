@@ -126,6 +126,7 @@
 <translation id="1455660774629812862">不隐藏</translation>
 <translation id="1456545332132818232"><ph name="PRODUCT_NAME" />的商品评价，<ph name="STARS" /> 星（最高 <ph name="MAX_STARS" /> 星），<ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">减少输入，节省时间</translation>
+<translation id="1466035273550360103">没有已打开的标签页</translation>
 <translation id="1469381646033328562">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">已更改</translation>
@@ -1568,6 +1569,7 @@
 <translation id="6807287147325542056">其他应用中的密码</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
+<translation id="6826004672264649705">正在跟踪此商品。打开即可查看价格历史记录</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>

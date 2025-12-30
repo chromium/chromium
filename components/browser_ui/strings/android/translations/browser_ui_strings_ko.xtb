@@ -134,7 +134,6 @@
 <translation id="2411116727035790889">바로가기 사용 설정</translation>
 <translation id="2433507940547922241">모양</translation>
 <translation id="2434158240863470628">다운로드 완료: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2438120137003069591">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안이 취약해졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="2442870161001914531">항상 데스크톱 사이트 요청</translation>
 <translation id="2445311670906052406">이제 Chrome에서 내 기기와 최근 탭을 공유합니다. 최근 탭이 기기의 앱 목록과 검색 결과에 표시됩니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="245322989586167203">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 포트에 연결합니다.</translation>
@@ -225,7 +224,6 @@
 <translation id="3242646949159196181">사용 설정하면 사이트에서 소리를 재생할 수 있습니다. 사용 중지하면 사이트에서 소리를 재생할 수 없습니다.</translation>
 <translation id="3273479183583863618">탭에 가격 인하 표시</translation>
 <translation id="3277252321222022663">사이트의 센서 액세스 허용(권장)</translation>
-<translation id="327891165872793509">Chrome은 탐색 중인 사용자를 추적하려는 목적으로 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키의 액세스를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="3285500645985761267">관련 사이트에서 내 그룹 활동을 볼 수 있도록 허용</translation>
 <translation id="3295019059349372795">11장: 오즈의 멋진 에메랄드 도시</translation>
 <translation id="3295602654194328831">정보 숨기기</translation>
@@ -323,14 +321,12 @@
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
-<translation id="4336566011000459927">오늘 Chrome에서 다시 쿠키를 제한합니다</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />의 모든 사이트</translation>
 <translation id="4340799661701629185">사이트에서 알림을 전송하도록 허용하지 않음</translation>
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
 <translation id="4402755511846832236">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 차단합니다.</translation>
 <translation id="4412683424767388419">Chrome 색상 하단 시트가 절반 높이로 열림</translation>
 <translation id="4412992751769744546">서드 파티 쿠키 허용</translation>
-<translation id="4419929467120297501">Chrome에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 사이트를 차단합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키의 액세스를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="4425416282877905577">Serif 글꼴</translation>
 <translation id="443121186588148776">직렬 포트</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
@@ -407,7 +403,6 @@
 <translation id="5246825184569358663">이 작업을 실행하면 쿠키를 포함한 모든 로컬 데이터가 삭제되고, <ph name="DOMAIN" /> 및 모든 하위 사이트에 대한 권한이 모두 재설정됩니다.</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
-<translation id="5292915569214461965">탐색 중인 사용자를 추적하려는 목적으로 사이트에서 서드 파티 쿠키를 사용하지 못하도록 차단했습니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키의 액세스를 관리<ph name="END_LINK" />하세요.</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5301954838959518834">확인</translation>
 <translation id="5317780077021120954">저장</translation>
@@ -494,7 +489,6 @@
 <translation id="6181444274883918285">사이트 예외 추가</translation>
 <translation id="6192792657125177640">예외</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 쿠키가 다시 차단됩니다}}</translation>
-<translation id="6195163219142236913">서드 파티 쿠키 제한됨</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6207207788774442484">데이터 삭제 및 권한 재설정</translation>
@@ -659,7 +653,6 @@
 <translation id="8087000398470557479">이 콘텐츠의 출처는 Google에서 제공하는 <ph name="DOMAIN_NAME" />입니다.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> 옵션 더보기</translation>
 <translation id="8112925981674547014">앱 목록의 탭 보기</translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{내일 Chrome에서 다시 쿠키를 제한합니다}other{#일 후 Chrome에서 다시 쿠키를 제한합니다}}</translation>
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8117244575099414087">사용 설정하면 사이트에서 기기의 센서를 사용할 수 있습니다. 사용 중지하면 사이트에서 센서를 사용할 수 없습니다.</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
@@ -744,7 +737,6 @@
 <translation id="8926389886865778422">이 메시지 그만 보기</translation>
 <translation id="8926666909099850184">기기에서 NFC가 사용 중지되어 있습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 NFC를 사용 설정하세요.</translation>
 <translation id="8928445016601307354">사이트에서 NFC 기기의 정보를 보고 변경할 수 없도록 차단</translation>
-<translation id="8944485226638699751">제한됨</translation>
 <translation id="895054485242522631">사이트에서 움직임 감지 센서를 사용할 수 있음</translation>
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>

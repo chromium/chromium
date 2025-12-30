@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">ୟୁଜର</translation>
 <translation id="1125371304736839151">ବ୍ରାଉଜରର ଶୀର୍ଷରେ Gemini ଦେଖାନ୍ତୁ</translation>
 <translation id="1125550662859510761">ଏପରି ଜଣାପଡ଼ୁଛି <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ମୂଳ)</translation>
+<translation id="1125816658532547876">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1125921926864945797">ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲ</translation>
 <translation id="1128591060186966949">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1129348283834595293">ସାଇବରପଙ୍କ</translation>
@@ -564,6 +565,7 @@
 <translation id="1372841398847029212">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="1373176046406139583">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍ ଅନଲକ୍ ଥିବା ସମୟରେ ଆପଣଙ୍କ ସହ କିଏ ସେୟାର୍ କରିପାରିବେ ତାହା ଆପଣଙ୍କ ଡିଭାଇସ୍ ଭିଜିବିଲିଟୀ ନିୟନ୍ତ୍ରଣ କରିଥାଏ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">ନେଟ୍‍ୱର୍କ "<ph name="NETWORK_NAME" />" ପାଇଁ ଆବଶ୍ୟକ ସାର୍ଟିଫିକେଟ୍‌ ଇନ୍‍ଷ୍ଟଲ୍‌ କରାଯାଇନାହିଁ ନହେଲେ ଏହା ଆଉ ବୈଧ ନାହିଁ।  ଦୟାକରି, ଏକ ନୂଆ ସାର୍ଟିଫିକେଟ୍‌ ପ୍ରାପ୍ତ କରନ୍ତୁ ଏବଂ ପୁଣି ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟାକରନ୍ତୁ।</translation>
+<translation id="1374948751106271187">ଆପଣ ଅନ ଦି ଗୋରେ ଥିବା ସମୟରେ ସୁରକ୍ଷାର ଏକ ଅତିରିକ୍ତ ଲେୟର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1375557162880614858">ଆପଣ ChromeOS Flex ପାଇଁ ବିଲ୍ଟ-ଇନ ସ୍କ୍ରିନ ରିଡର, ChromeVoxକୁ ସକ୍ରିୟ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="1375938286942050085">ସେଟଅପ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି! ପରବର୍ତ୍ତୀ ଗେମିଂ ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="137651782282853227">ସେଭ୍ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ଏଠାରେ ଦୃଶ୍ୟମାନ ହେବ</translation>
@@ -1254,6 +1256,7 @@
 <translation id="183445248400150852">ଆପଣଙ୍କ କୀବୋର୍ଡର ଇନପୁଟକୁ ଓଭରରାଇଡ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଏହି ଫିଚରକୁ ବ୍ୟବହାର କରେ, ଯେପରି ଗେମ୍ସ କିମ୍ବା ରିମୋଟ ଡେସ୍କଟପ ଆପ୍ସ ପାଇଁ</translation>
 <translation id="1834503245783133039"><ph name="FILE_NAME" />: ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହେଲା</translation>
 <translation id="1835261175655098052">Linux ଅପଗ୍ରେଡ୍ କରାଯାଉଛି</translation>
+<translation id="1837292628323740716">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ଅନୁରୋଧକୁ ଅଗ୍ରାହ୍ୟ କରିଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1839021455997460752">ଆପଣଙ୍କର ଇମେଲ ଠିକଣା</translation>
@@ -8442,6 +8445,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6783036716881942511">ଏହି ଡିଭାଇସକୁ ଭୁଲି ଯିବେ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ସେଟିଂସ</translation>
 <translation id="6784523122863989144">ପ୍ରୋଫାଇଲ୍ ସମର୍ଥିତ ଅଟେ</translation>
+<translation id="678520006562636090">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Google Lens ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6785594991951195537">ଆପଣଙ୍କ <ph name="PASSWORD_DOMAIN" /> ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6785739405821760313">ସେଭ କରାଯାଇଥିବା ଡେସ୍କଗୁଡ଼ିକୁ ଦେଖିବା। ନାଭିଗେଟ କରିବା ପାଇଁ ଟାବକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="6785915470941880363">ଓଲଟା ସ୍କ୍ରଲିଂ <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>

@@ -1082,6 +1082,7 @@
 <translation id="1709085899471866534">Ակնթարթորեն դիտեք ոչ ակտիվ ներդիրները։ Դուք ցանկացած պահի կարող եք անջատել այս նոր տեսքը։</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (օրիգինալ)</translation>
 <translation id="1709217939274742847">Ընտրեք տոմս՝ նույնականացման համար օգտագործելու համար: <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Ցուցադրել ներդիրները վերևում</translation>
 <translation id="1709762881904163296">Ցանցի կարգավորումներ</translation>
 <translation id="1709916727352927457">Մուտքի բանալու ջնջում</translation>
 <translation id="1709972045049031556">Սխալ առաջացավ</translation>
@@ -4879,6 +4880,7 @@
 <translation id="4281844954008187215">Օգտագործման պայմաններ</translation>
 <translation id="4281849573951338030">Անհատականացնել գրչի կոճակները</translation>
 <translation id="4282196459431406533">Smart Lock-ը միացված է</translation>
+<translation id="4283635301190260296">Ծալել ուղղաձիգ ներդիրները</translation>
 <translation id="4284903252249997120">ChromeVox էկրանի ընթերցիչ և «Ընտրեք և լսեք» գործառույթ</translation>
 <translation id="4285418559658561636">Թարմացնել գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
@@ -8540,6 +8542,7 @@
 <translation id="6833753236242482566">Հավասարակշռված (խորհուրդ է տրվում)</translation>
 <translation id="6835624277262316125">Երբ ձեր աշխատավայրի հասցեն նշված է, Google-ի ծառայություններից օգտվելն ավելի հեշտ է․ դուք ստանում եք ավելի ճշգրիտ երթուղիներ Google Քարտեզներում, որոնման ավելի համապատասխան արդյունքներ և այլն։ Դուք կարող եք փոփոխել կամ ջնջել ձեր հասցեն <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
+<translation id="6836441935577925845">Ցուցադրել ներդիրները կողային հատվածում</translation>
 <translation id="6838992358006915573">Խոշորացույցի տեղափոխում ChromeVox-ի ֆոկուսավորման միջոցով</translation>
 <translation id="6839916869147598086">Մուտքի էջը փոխվել է</translation>
 <translation id="6840155290835956714">Հարցնել՝ մինչ ուղարկելը</translation>

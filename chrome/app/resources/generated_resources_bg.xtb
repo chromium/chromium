@@ -1085,6 +1085,7 @@
 <translation id="1709085899471866534">Виждайте неактивните раздели с един поглед. Можете да изключите този нов облик по всяко време от настройките.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандартно)</translation>
 <translation id="1709217939274742847">Изберете пропуск, който да използвате за удостоверяване. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Показване на разделите в горната част</translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
 <translation id="1709916727352927457">Изтриване на кода за достъп</translation>
 <translation id="1709972045049031556">Споделянето не е възможно</translation>
@@ -4891,6 +4892,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4281849573951338030">Персонализиране на бутоните на писалката</translation>
 <translation id="4282196459431406533">Функцията Smart Lock е включена</translation>
+<translation id="4283635301190260296">Свиване на вертикалните раздели</translation>
 <translation id="4284903252249997120">Екранният четец ChromeVox и функцията „Прочитане на глас“</translation>
 <translation id="4285418559658561636">Актуализиране на паролата</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
@@ -8555,6 +8557,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6833753236242482566">Балансирано (препоръчително)</translation>
 <translation id="6835624277262316125">Служебният ви адрес може да ви помага да изпълнявате различни задачи в услугите на Google, като например да получавате по-подходящи резултати от търсенето и упътвания в Google Карти. Можете да редактирате или изтриете адреса си в <ph name="BEGIN_LINK" />профила си в Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Показване на разделите отстрани</translation>
 <translation id="6838992358006915573">Функцията „Лупа“ следва фокуса на ChromeVox</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6840155290835956714">Извеждане на запитване преди изпращане</translation>

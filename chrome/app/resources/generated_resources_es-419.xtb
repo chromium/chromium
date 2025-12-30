@@ -1077,6 +1077,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1709085899471866534">Consulta de un vistazo cuándo las pestañas están inactivas. Puedes desactivar este nuevo diseño en cualquier momento desde la configuración.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Elige un ticket para usar en la autenticación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Mostrar pestañas en la parte superior</translation>
 <translation id="1709762881904163296">Configuración de red</translation>
 <translation id="1709916727352927457">Borra la llave de acceso</translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
@@ -4878,6 +4879,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4281849573951338030">Personalizar los botones del lápiz</translation>
 <translation id="4282196459431406533">Smart Lock está activado</translation>
+<translation id="4283635301190260296">Contraer pestañas verticales</translation>
 <translation id="4284903252249997120">Seleccionar para pronunciar y lector de pantalla de ChromeVox</translation>
 <translation id="4285418559658561636">Actualizar contraseña</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
@@ -8541,6 +8543,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6833753236242482566">Equilibrado (recomendado)</translation>
 <translation id="6835624277262316125">Tu dirección de trabajo puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes y direcciones en Google Maps. Puedes editar o borrar tu dirección en tu <ph name="BEGIN_LINK" />Cuenta de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Mostrar pestañas en la parte lateral</translation>
 <translation id="6838992358006915573">La lupa sigue el enfoque de ChromeVox</translation>
 <translation id="6839916869147598086">Se modificó el acceso</translation>
 <translation id="6840155290835956714">Preguntar antes de enviar</translation>

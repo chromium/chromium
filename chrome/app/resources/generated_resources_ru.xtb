@@ -1082,6 +1082,7 @@
 <translation id="1709085899471866534">Мгновенно находите неактивные вкладки. Обновленный интерфейс можно в любое время отключить в настройках.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оригинальное)</translation>
 <translation id="1709217939274742847">Выберите билет для аутентификации. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Показать вкладки сверху</translation>
 <translation id="1709762881904163296">Настройки сети</translation>
 <translation id="1709916727352927457">Удаление ключа доступа</translation>
 <translation id="1709972045049031556">Ошибка</translation>
@@ -4883,6 +4884,7 @@
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4281849573951338030">Настроить кнопки пера</translation>
 <translation id="4282196459431406533">Функция Smart Lock включена</translation>
+<translation id="4283635301190260296">Свернуть вертикальные вкладки</translation>
 <translation id="4284903252249997120">Программа ChromeVox для чтения с экрана и озвучивания при нажатии</translation>
 <translation id="4285418559658561636">Обновить пароль</translation>
 <translation id="4285498937028063278">Открепить</translation>
@@ -8551,6 +8553,7 @@
 <translation id="6833753236242482566">Сбалансированная (рекомендуется)</translation>
 <translation id="6835624277262316125">С рабочим адресом сервисы Google становятся лучше: например, вы получаете более подходящие результаты в Поиске и маршруты в Картах. Настроить или удалить адрес можно <ph name="BEGIN_LINK" />в вашем аккаунте Google, <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
+<translation id="6836441935577925845">Показать вкладки сбоку</translation>
 <translation id="6838992358006915573">Перемещение лупы с помощью ChromeVox</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
 <translation id="6840155290835956714">Запрашивать разрешение перед отправкой</translation>

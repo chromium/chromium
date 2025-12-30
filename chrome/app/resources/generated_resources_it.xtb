@@ -1080,6 +1080,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1709085899471866534">Controlla con un'occhiata le schede non attive. Puoi disattivare questo nuovo aspetto nelle impostazioni in qualsiasi momento.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (formato nativo)</translation>
 <translation id="1709217939274742847">Scegli una richiesta da usare per l'autenticazione. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Mostra schede in alto</translation>
 <translation id="1709762881904163296">Impostazioni di rete</translation>
 <translation id="1709916727352927457">Elimina passkey</translation>
 <translation id="1709972045049031556">Impossibile condividere</translation>
@@ -4881,6 +4882,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4281849573951338030">Personalizza i pulsanti della penna</translation>
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
+<translation id="4283635301190260296">Comprimi schede verticali</translation>
 <translation id="4284903252249997120">Screen reader ChromeVox e Seleziona per ascoltare</translation>
 <translation id="4285418559658561636">Aggiorna password</translation>
 <translation id="4285498937028063278">Stacca</translation>
@@ -8540,6 +8542,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6833753236242482566">Bilanciato (consigliato)</translation>
 <translation id="6835624277262316125">Il tuo indirizzo di lavoro può aiutarti a svolgere attività sui servizi Google, ad esempio a ricevere risultati di ricerca più pertinenti e indicazioni stradali in Google Maps. Puoi modificare o eliminare il tuo indirizzo nel tuo <ph name="BEGIN_LINK" />Account Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Mostra schede di lato</translation>
 <translation id="6838992358006915573">La funzionalità di ingrandimento segue lo stato attivo di ChromeVox</translation>
 <translation id="6839916869147598086">L'accesso è stato modificato</translation>
 <translation id="6840155290835956714">Chiedi prima di inviare</translation>

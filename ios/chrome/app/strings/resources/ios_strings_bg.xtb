@@ -126,6 +126,7 @@
 <translation id="1455660774629812862">Без скриване</translation>
 <translation id="1456545332132818232">Отзиви за продукта за <ph name="PRODUCT_NAME" />, <ph name="STARS" /> от <ph name="MAX_STARS" /> в сайта <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Пестете време, въвеждайте по-малко</translation>
+<translation id="1466035273550360103">Няма отворени раздели</translation>
 <translation id="1469381646033328562">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Променено</translation>
@@ -1568,6 +1569,7 @@
 <translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
+<translation id="6826004672264649705">Понастоящем проследявате този продукт. Отворете, за да видите историята на цената</translation>
 <translation id="6830728435402077660">Няма защита</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>

@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1125371304736839151">ബ്രൗസറിന്റെ മുകളിൽ Gemini കാണിക്കുക</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (നേറ്റീവ്) പോലെ തോന്നുന്നു</translation>
+<translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> എന്നതിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="1125921926864945797">വാൾപേപ്പറും സ്റ്റൈലും</translation>
 <translation id="1128591060186966949">തിരയൽ യന്ത്രം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1129348283834595293">സൈബർപങ്ക്</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് സമന്വയിപ്പിക്കുക</translation>
 <translation id="1373176046406139583">സ്ക്രീൻ അൺലോക്കായിരിക്കുമ്പോൾ ആർക്കൊക്കെ നിങ്ങളുമായി പങ്കിടാനാകുമെന്നത് നിങ്ങളുടെ ഉപകരണത്തിന്റെ ദൃശ്യപരത നിയന്ത്രിക്കുന്നു. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" എന്ന നെറ്റ്‌വർക്കിന് ആവശ്യമായ സർട്ടിഫിക്കറ്റ്  ഇൻസ്റ്റാൾ ചെയ്‌തിട്ടില്ല അല്ലെങ്കിൽ ഇനി സാധുവായിരിക്കില്ല. പുതിയ സർട്ടിഫിക്കറ്റ് ലഭ്യമാക്കിയതിനുശേഷം വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുക.</translation>
+<translation id="1374948751106271187">നിങ്ങൾ എവിടെയായിരുന്നാലും, അധിക പരിരക്ഷ ചേർക്കുക</translation>
 <translation id="1375557162880614858">ChromeOS Flex-നുള്ള ബിൽറ്റ് ഇൻ സ്ക്രീൻ റീഡർ ആയ ChromeVox സജീവമാക്കണോ?</translation>
 <translation id="1375938286942050085">സജ്ജീകരണം പൂർത്തിയായി! അടുത്ത്, നിങ്ങളുടെ ഉപകരണം ഗെയിമിംഗിനായി സജ്ജീകരിക്കൂ</translation>
 <translation id="137651782282853227">സംരക്ഷിച്ച വിലാസങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -1254,6 +1256,7 @@
 <translation id="183445248400150852">നിങ്ങളുടെ കീബോർഡിന്റെ ഇൻപുട്ട് അസാധുവാക്കാൻ (ഉദാഹരണത്തിന് ഗെയിമുകളിലും റിമോട്ട് ഡെസ്‌ക്ടോപ്പ് ആപ്പുകളിലും) സൈറ്റുകൾ ഈ ഫീച്ചർ ഉപയോഗിക്കുന്നു</translation>
 <translation id="1834503245783133039">ഡൗൺലോഡ് പരാജയപ്പെട്ടു: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux അപ്‌ഗ്രേഡ് ചെയ്യുന്നു</translation>
+<translation id="1837292628323740716">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലെ മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="1837441256780906162">Microsoft OneDrive അഭ്യർത്ഥന നിരസിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839021455997460752">നിങ്ങളുടെ ഇമെയിൽ വിലാസം</translation>
@@ -8443,6 +8446,7 @@
 <translation id="6783036716881942511">ഈ ഉപകരണം മറക്കണോ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ക്രമീകരണം</translation>
 <translation id="6784523122863989144">പ്രൊഫൈലിന് പിന്തുണയുണ്ട്</translation>
+<translation id="678520006562636090">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Google Lens ഉപയോഗിച്ചുനോക്കൂ</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> ഉപയോഗിക്കുക</translation>
 <translation id="6785739405821760313">സംരക്ഷിച്ച ഡെസ്ക്കുകൾ കാണുന്നു. നാവിഗേറ്റ് ചെയ്യാൻ ടാബ് അമർത്തുക.</translation>
 <translation id="6785915470941880363">വിപരീതദിശയിലുള്ള സ്ക്രോൾ ചെയ്യൽ <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
