@@ -5,11 +5,13 @@
 import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Point} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
+import type {Theme} from './actor_overlay.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {ActorOverlayBrowserProxy} from './browser_proxy.js';
@@ -42,6 +44,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   private eventTracker_: EventTracker = new EventTracker();
   private setScrimBackgroundListenerId_: number | null = null;
   private setBorderGlowVisibilityListenerId_: number | null = null;
+  private setThemeListenerId_: number|null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
@@ -70,6 +73,10 @@ export class ActorOverlayAppElement extends CrLitElement {
         this.setBorderGlowVisibility.bind(this));
     proxy.handler.getCurrentBorderGlowVisibility().then(
         ({isVisible}) => this.setBorderGlowVisibility(isVisible));
+
+    // Theme
+    this.setThemeListenerId_ =
+        proxy.callbackRouter.setTheme.addListener(this.setTheme.bind(this));
   }
 
   override disconnectedCallback() {
@@ -82,6 +89,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     assert(this.setBorderGlowVisibilityListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
       this.setBorderGlowVisibilityListenerId_);
+    assert(this.setThemeListenerId_);
+    ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
+        this.setThemeListenerId_);
   }
 
   // Prevents user scroll gestures (mouse wheel, touchpad) from moving the
@@ -98,6 +108,13 @@ export class ActorOverlayAppElement extends CrLitElement {
 
   private setBorderGlowVisibility(isVisible: boolean) {
     this.borderGlowVisible_ = this.isStandaloneBorderGlowEnabled_ && isVisible;
+  }
+
+  private setTheme(theme: Theme) {
+    this.style.setProperty(
+        '--actor-border-color', skColorToRgba(theme.borderColor));
+    this.style.setProperty(
+        '--actor-border-glow-color', skColorToRgba(theme.borderGlowColor));
   }
 
   // TODO(crbug.com/422539773): Make function private once it's called via the

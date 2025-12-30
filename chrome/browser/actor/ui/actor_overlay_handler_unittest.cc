@@ -9,6 +9,8 @@
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -48,11 +50,15 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
     set_border_glow_call_count_++;
   }
 
+  // mojom::ActorOverlayPage
+  void SetTheme(mojom::ThemePtr theme) override { set_theme_call_count_++; }
+
   // Test accessors
   bool is_scrim_background_visible() { return is_scrim_background_visible_; }
   int scrim_background_call_count() { return set_scrim_background_call_count_; }
   bool is_border_glow_visible() { return is_border_glow_visible_; }
   int border_glow_call_count() { return set_border_glow_call_count_; }
+  int set_theme_call_count() { return set_theme_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
@@ -60,6 +66,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int set_scrim_background_call_count_ = 0;
   bool is_border_glow_visible_ = false;
   int set_border_glow_call_count_ = 0;
+  int set_theme_call_count_ = 0;
 };
 
 class ActorOverlayHandlerTest : public testing::Test {
@@ -148,6 +155,28 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
 
   EXPECT_FALSE(fake_page_.is_border_glow_visible());
   EXPECT_EQ(fake_page_.border_glow_call_count(), 2);
+}
+
+TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
+  // Flag off
+  {
+    webui::GetNativeThemeDeprecated(web_contents_.get())
+        ->NotifyOnNativeThemeUpdated();
+    fake_page_.FlushForTesting();
+
+    EXPECT_EQ(fake_page_.set_theme_call_count(), 0);
+  }
+  // Flag on
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(features::kActorUiThemed,
+                                                       {});
+    webui::GetNativeThemeDeprecated(web_contents_.get())
+        ->NotifyOnNativeThemeUpdated();
+    fake_page_.FlushForTesting();
+
+    EXPECT_EQ(fake_page_.set_theme_call_count(), 1);
+  }
 }
 
 TEST_F(ActorOverlayHandlerTest, HandlesNullTab) {

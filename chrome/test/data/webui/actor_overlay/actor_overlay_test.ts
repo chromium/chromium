@@ -61,6 +61,22 @@ suite('Scrim', function() {
     assertFalse(page.classList.contains('background-visible'));
   });
 
+  test('SetTheme', async function() {
+    const mockTheme = {
+      borderColor: {value: 0xFFFF0000},
+      borderGlowColor: {value: 0xFF0000FF},
+    };
+    testRemote.setTheme(mockTheme);
+    await microtasksFinished();
+
+    assertEquals(
+        'rgba(255, 0, 0, 1.00)',
+        page.style.getPropertyValue('--actor-border-color'));
+    assertEquals(
+        'rgba(0, 0, 255, 1.00)',
+        page.style.getPropertyValue('--actor-border-glow-color'));
+  });
+
   test('MagicCursorDisabled', function() {
     const magicCursor =
         page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
