@@ -355,3 +355,7 @@ ntp-lens-upload-dialog {
 #composeboxDialog::backdrop {
   display: none;
 }
+
+#undoToast {
+  flex-grow: 1;
+}

@@ -1887,6 +1887,129 @@ suite('NewTabPageAppTest', () => {
             }));
   });
 
+  suite('AutoRemovalToast', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: true,
+        shortcutsEnabled: true,
+      });
+    });
+
+    test('displays single toast', async () => {
+      // Arrange.
+      const modules = app.shadowRoot.querySelector('ntp-modules');
+      assertTrue(!!modules);
+
+      // Act.
+      modules.dispatchEvent(new CustomEvent('modules-auto-removed', {
+        detail: {message: 'Module removed', undo: () => {}},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(app.$.undoToast.open);
+      assertEquals('Module removed', app.$.undoToastMessage.textContent.trim());
+    });
+
+    test('queues multiple toasts', async () => {
+      // Arrange.
+      const modules = app.shadowRoot.querySelector('ntp-modules');
+      assertTrue(!!modules);
+      const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
+      assertTrue(!!mostVisited);
+
+      // Act - dispatch the first toast.
+      modules.dispatchEvent(new CustomEvent('modules-auto-removed', {
+        detail: {message: 'Modules hidden', undo: () => {}},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Act - dispatch the second toast.
+      mostVisited.dispatchEvent(new CustomEvent('most-visited-auto-removed', {
+        detail: {message: 'Shortcuts hidden', undo: () => {}},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(app.$.undoToast.open);
+      assertEquals('Modules hidden', app.$.undoToastMessage.textContent.trim());
+
+      // Act - clicking undo on the first toast.
+      let undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
+      assertTrue(!!undoButton);
+      undoButton.click();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(app.$.undoToast.open);
+      assertEquals(
+          'Shortcuts hidden', app.$.undoToastMessage.textContent.trim());
+
+      // Act - clicking undo on the second toast.
+      undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
+      assertTrue(!!undoButton);
+      undoButton.click();
+      await microtasksFinished();
+
+      // Assert.
+      assertFalse(app.$.undoToast.open);
+    });
+
+    test('toast with null undo callback', async () => {
+      // Arrange.
+      const modules = app.shadowRoot.querySelector('ntp-modules');
+      assertTrue(!!modules);
+      const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
+      assertTrue(!!mostVisited);
+
+      // Act - dispatch the first toast with null callback.
+      modules.dispatchEvent(new CustomEvent('modules-auto-removed', {
+        detail: {message: 'Module removed', undo: null},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Act - dispatch the second toast with non-null callback.
+      mostVisited.dispatchEvent(new CustomEvent('most-visited-auto-removed', {
+        detail: {message: 'Shortcuts hidden', undo: () => {}},
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(app.$.undoToast.open);
+      assertEquals('Module removed', app.$.undoToastMessage.textContent.trim());
+
+      // Act - clicking undo on the first toast does not crash.
+      let undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
+      assertTrue(!!undoButton);
+      undoButton.click();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(app.$.undoToast.open);
+      assertEquals(
+          'Shortcuts hidden', app.$.undoToastMessage.textContent.trim());
+
+      // Act - clicking undo on the second toast.
+      undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
+      assertTrue(!!undoButton);
+      undoButton.click();
+      await microtasksFinished();
+
+      // Assert - no crash and toast closed.
+      assertFalse(app.$.undoToast.open);
+    });
+  });
+
   suite('NewTabFooter', () => {
     test('hide/show customize chrome and attribution buttons', async () => {
       // Arrange.
