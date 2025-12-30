@@ -1827,8 +1827,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
 
+// TODO(crbug.com/470861729): Crashes on linux blink web tests. Re-enable after
+// fixing.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NavigationToAndFromContextualTasks \
+  DISABLED_NavigationToAndFromContextualTasks
+#else
+#define MAYBE_NavigationToAndFromContextualTasks \
+  NavigationToAndFromContextualTasks
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
-                       NavigationToAndFromContextualTasks) {
+                       MAYBE_NavigationToAndFromContextualTasks) {
   // Navigate to about:blank.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
