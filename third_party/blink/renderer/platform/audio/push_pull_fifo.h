@@ -46,28 +46,27 @@ class PLATFORM_EXPORT PushPullFIFO final {
     size_t frames_to_render = 0;
   };
 
-  // ||render_quantum_frames| is the render size used by the audio graph.  It
-  // |defaults to 128, the original and default render size.
+  // `render_quantum_frames` is the render size used by the audio graph.
   explicit PushPullFIFO(unsigned number_of_channels,
                         uint32_t fifo_length,
-                        unsigned render_quantum_frames = 128);
+                        unsigned render_quantum_frames);
   PushPullFIFO(const PushPullFIFO&) = delete;
   PushPullFIFO& operator=(const PushPullFIFO&) = delete;
   ~PushPullFIFO();
 
   // Pushes the rendered frames by WebAudio engine.
-  //  - The |input_bus| length has a length equal to |render_quantum_frames_|,
+  //  - The `input_bus` length has a length equal to `render_quantum_frames_`,
   //  fixed.
   //  - In case of overflow (FIFO full while push), the existing frames in FIFO
-  //    will be overwritten and |index_read_| will be forcibly moved to
-  //    |index_write_| to avoid reading overwritten frames.
+  //    will be overwritten and `index_read_` will be forcibly moved to
+  //    `index_write_` to avoid reading overwritten frames.
   void Push(const AudioBus* input_bus);
 
-  // Pulls |frames_requested| by the audio device thread and returns the actual
+  // Pulls `frames_requested` by the audio device thread and returns the actual
   // number of frames to be rendered by the source. (i.e. WebAudio graph)
-  //  - If |frames_requested| is bigger than the length of |output_bus|, it
+  //  - If `frames_requested` is bigger than the length of `output_bus`, it
   //    violates SECURITY_CHECK().
-  //  - If |frames_requested| is bigger than FIFO length, it violates
+  //  - If `frames_requested` is bigger than FIFO length, it violates
   //    SECURITY_CHECK().
   //  - In case of underflow (FIFO empty while pull), the remaining space in the
   //    requested output bus will be filled with silence. Thus it will fulfill
