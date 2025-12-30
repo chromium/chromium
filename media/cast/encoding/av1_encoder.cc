@@ -5,6 +5,7 @@
 #include "media/cast/encoding/av1_encoder.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -288,8 +289,12 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
     encoded_frame->rtp_timestamp =
         ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
     encoded_frame->reference_time = reference_time;
+    // SAFETY: The data and size are provided by libaom's aom_codec_get_cx_data
+    // function. The lifetime of the buffer is valid until the next call to
+    // aom_codec_get_cx_data, and the data is immediately copied into a
+    // base::HeapArray.
     encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(
-        UNSAFE_TODO(base::span<const uint8_t>(
+        UNSAFE_BUFFERS(base::span<const uint8_t>(
             static_cast<const uint8_t*>(pkt->data.frame.buf),
             pkt->data.frame.sz)));
     break;  // Done, since all data is provided in one CX_FRAME_PKT packet.
