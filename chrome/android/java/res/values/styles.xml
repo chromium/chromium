@@ -592,7 +592,7 @@ found in the LICENSE file.
 
      <!-- Magic Stack styles -->
     <style name="TextAppearance.ShoppingPriceDropSmallText" parent="TextAppearance.TextSmall.Secondary">
-        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
+        <item name="android:textColor">@color/price_indicator_text_color</item>
     </style>
 
     <!--

@@ -7,6 +7,6 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="TextAppearance.DiscountCodeText" parent="TextAppearance.TextSmall.Primary">
-        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
+        <item name="android:textColor">@color/price_indicator_text_color</item>
     </style>
 </resources>

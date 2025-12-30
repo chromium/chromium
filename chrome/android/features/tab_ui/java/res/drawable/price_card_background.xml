@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/price_drop_annotation_bg_color"/>
+    <solid android:color="@color/price_indicator_bg_color"/>
     <corners android:radius="@dimen/tab_grid_price_card_radius"/>
 </shape>
