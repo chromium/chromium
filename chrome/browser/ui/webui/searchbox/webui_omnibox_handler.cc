@@ -52,6 +52,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -86,6 +87,28 @@ searchbox::mojom::SelectionLineState ConvertLineState(
 
 }  // namespace
 
+WebuiOmniboxHandler::WebContentsObserver::WebContentsObserver(
+    WebuiOmniboxHandler* handler,
+    content::WebContents* web_contents)
+    : handler_(handler) {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (browser_window_interface) {
+    Observe(
+        browser_window_interface->GetTabStripModel()->GetActiveWebContents());
+  }
+}
+
+void WebuiOmniboxHandler::WebContentsObserver::ScopedObserve(
+    content::WebContents* web_contents) {
+  Observe(web_contents);
+}
+
+void WebuiOmniboxHandler::WebContentsObserver::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  handler_->OnNavigationFinished(handle);
+}
+
 WebuiOmniboxHandler::WebuiOmniboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     MetricsReporter* metrics_reporter,
@@ -97,6 +120,7 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
                                  web_ui->GetWebContents(),
                                  /*controller=*/nullptr,
                                  std::move(get_session_callback)),
+      web_contents_observer_(/*handler=*/this, web_ui->GetWebContents()),
       metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.
@@ -186,6 +210,24 @@ void WebuiOmniboxHandler::OnSelectionChanged(
       searchbox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
+}
+
+void WebuiOmniboxHandler::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  web_contents_observer_.ScopedObserve(selection.new_contents);
+  ContextualSearchboxHandler::OnTabStripModelChanged(tab_strip_model, change,
+                                                     selection);
+}
+
+void WebuiOmniboxHandler::OnNavigationFinished(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame()) {
+    if (IsRemoteBound()) {
+      page_->OnTabStripChanged();
+    }
+  }
 }
 
 void WebuiOmniboxHandler::ActivateKeyword(
