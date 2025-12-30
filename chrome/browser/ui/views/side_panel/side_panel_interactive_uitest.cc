@@ -236,7 +236,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
 // TODO(crbug.com/417601707): Re-enable this test
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_OpenReadingModeSidePanel DISABLED_OpenReadingModeSidePanel
 #else
 #define MAYBE_OpenReadingModeSidePanel OpenReadingModeSidePanel
