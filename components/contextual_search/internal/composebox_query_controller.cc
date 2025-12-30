@@ -985,8 +985,11 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
   request_headers.push_back(kContentType);
 
   // Get client experiment variations to include in the request.
-  std::vector<std::string> cors_exempt_headers =
-      lens::CreateVariationsHeaders(variations_client_);
+  std::vector<std::string> cors_exempt_headers;
+  // The variations client may be null in tests.
+  if (variations_client_) {
+    cors_exempt_headers = lens::CreateVariationsHeaders(variations_client_);
+  }
 
   // Generate the URL to fetch.
   GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
@@ -1508,8 +1511,11 @@ void ComposeboxQueryController::PerformFetchRequest(
   }
 
   // Get client experiment variations to include in the request.
-  std::vector<std::string> cors_exempt_headers =
-      lens::CreateVariationsHeaders(variations_client_);
+  std::vector<std::string> cors_exempt_headers;
+  // The variations client may be null in tests.
+  if (variations_client_) {
+    cors_exempt_headers = lens::CreateVariationsHeaders(variations_client_);
+  }
 
   // Generate the URL to fetch to and include the server session id if present.
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
