@@ -74,6 +74,15 @@ void ActorOverlayHandler::OnNativeThemeUpdated(
 void ActorOverlayHandler::OnThemeChanged() {
   if (base::FeatureList::IsEnabled(features::kActorUiThemed)) {
     auto theme = mojom::Theme::New();
+    const ::ui::ColorProvider& color_provider =
+        web_contents_->GetColorProvider();
+    std::vector<SkColor> scrim_colors;
+    // Hex: 0x3D is 0.24 opacity
+    scrim_colors = {
+        SkColorSetA(color_provider.GetColor(kColorActorUiScrimStart), 0x3D),
+        SkColorSetA(color_provider.GetColor(kColorActorUiScrimMiddle), 0x3D),
+        SkColorSetA(color_provider.GetColor(kColorActorUiScrimEnd), 0x3D)};
+    theme->scrim_colors = scrim_colors;
     theme->border_color =
         web_contents_->GetColorProvider().GetColor(kColorActorUiOverlayBorder);
     theme->border_glow_color = web_contents_->GetColorProvider().GetColor(

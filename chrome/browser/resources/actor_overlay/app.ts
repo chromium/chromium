@@ -115,6 +115,12 @@ export class ActorOverlayAppElement extends CrLitElement {
         '--actor-border-color', skColorToRgba(theme.borderColor));
     this.style.setProperty(
         '--actor-border-glow-color', skColorToRgba(theme.borderGlowColor));
+    this.style.setProperty(
+        '--actor-scrim-background-val1', skColorToRgba(theme.scrimColors[0]!));
+    this.style.setProperty(
+        '--actor-scrim-background-val2', skColorToRgba(theme.scrimColors[1]!));
+    this.style.setProperty(
+        '--actor-scrim-background-val3', skColorToRgba(theme.scrimColors[2]!));
   }
 
   // TODO(crbug.com/422539773): Make function private once it's called via the

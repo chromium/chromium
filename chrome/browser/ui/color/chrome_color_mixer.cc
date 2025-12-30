@@ -82,6 +82,17 @@ ui::ColorTransform SelectActorUiColorBasedOnNearWhiteInput() {
       });
 }
 
+// Blend the custom color (based on the tab frame of a custom theme) on
+// the provided alpha.
+ui::ColorTransform GetActorUiScrimColor(SkAlpha alpha) {
+  return base::BindRepeating(
+      [](SkAlpha alpha, SkColor input_color, const ui::ColorMixer& mixer) {
+        return color_utils::BlendTowardMaxContrast(
+            mixer.GetResultColor(ui::kColorFrameActive), alpha);
+      },
+      alpha);
+}
+
 ui::ColorTransform GetToolbarTopSeparatorColorTransform(
     ui::ColorTransform toolbar_color_transform,
     ui::ColorTransform frame_color_transform) {
@@ -132,6 +143,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorActorUiOverlayBorder] = SelectActorUiColorBasedOnNearWhiteInput();
   mixer[kColorActorUiOverlayBorderGlow] =
       SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiScrimStart] = GetActorUiScrimColor(
+      /*alpha=*/0x66);
+  mixer[kColorActorUiScrimMiddle] = GetActorUiScrimColor(
+      /*alpha=*/0x00);
+  mixer[kColorActorUiScrimEnd] = GetActorUiScrimColor(
+      /*alpha=*/0x26);
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(
       ui::kColorAlertLowSeverity, kColorToolbar);
   mixer[kColorAppMenuHighlightSeverityHigh] = {

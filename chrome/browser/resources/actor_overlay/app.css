@@ -14,7 +14,9 @@
 }
 
 :host(.background-visible) {
-  background: linear-gradient(77deg, rgba(49, 134, 255, 0.25) 6.99%, rgba(52, 107, 241, 0.25) 45.46%, rgba(79, 160, 255, 0.25) 88.2%);
+  background: linear-gradient(77deg, var(--actor-scrim-background-val1, #7CACF83D) 6.99%,
+        var(--actor-scrim-background-val2, #0B57D03D) 45.46%,
+        var(--actor-scrim-background-val3, #1B6EF33D) 88.2%);
   cursor: not-allowed;
 }
 

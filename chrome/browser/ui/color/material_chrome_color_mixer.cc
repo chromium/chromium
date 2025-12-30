@@ -270,7 +270,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorActorUiHandoffButtonBorder] = {ui::kColorSysActorUiBorder};
   mixer[kColorActorUiOverlayBorder] = {ui::kColorSysActorUiBorder};
-  mixer[kColorActorUiOverlayBorderGlow] = {ui::kColorSysActorUiGlow};
+  mixer[kColorActorUiOverlayBorderGlow] = {ui::kColorSysActorUiGradientEnd};
+  mixer[kColorActorUiScrimStart] = {ui::kColorSysActorUiGradientStart};
+  mixer[kColorActorUiScrimMiddle] = {ui::kColorSysActorUiGradientMiddle};
+  mixer[kColorActorUiScrimEnd] = {ui::kColorSysActorUiGradientEnd};
   mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
