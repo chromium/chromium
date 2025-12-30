@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
 
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller->GetPresentationState() ==
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->SetWebUIWrapperForTest(std::move(wrapper));
 
   // Show Reading Mode.
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open Side Panel immediately followed by opening Immersive UI (before the
   // WebUI has a chance to load)
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
   // Verify Immersive UI is open (and did not crash)
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
@@ -860,8 +860,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   content::WebContents* immersive_ui_web_contents = GetImmersiveWebContents();
   ASSERT_TRUE(immersive_ui_web_contents);
 
-  // Open Side Panel via ShowUI
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  // Open Side Panel
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   // Verify Immersive UI is closed
   views::View* overlay_view = GetImmersiveOverlay();
@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
-  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));

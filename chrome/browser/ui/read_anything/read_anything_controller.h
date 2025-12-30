@@ -103,15 +103,12 @@ class ReadAnythingController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Called by ReadAnythingSidePanelController when the WebUI is
-  // shown/hidden.
+  // Called when the WebUI is shown/hidden.
   void OnEntryShown(std::optional<ReadAnythingOpenTrigger> trigger);
   void OnEntryHidden();
 
-  // Displays the Reading Mode UI by utilizing the SidePanelUI on the active
-  // tab.
-  // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
-  void ShowUI(SidePanelOpenTrigger trigger);
+  // Displays the Reading Mode UI in the Side Panel.
+  void ShowSidePanelUI(SidePanelOpenTrigger trigger);
 
   // Displays the Immersive Reading Mode UI in a full screen overlay.
   void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
@@ -125,8 +122,7 @@ class ReadAnythingController {
   // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
   void TogglePresentation();
 
-  // Toggles the Reading Mode UI by utilizing the SidePanelUI on the active
-  // tab.
+  // Toggles the Reading Mode Side Panel UI.
   void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
 
   // Returns the current presentation_state_ of the Reading Mode feature. This

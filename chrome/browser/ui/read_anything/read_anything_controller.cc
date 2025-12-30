@@ -242,11 +242,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
       GetOrCreateWebUIWrapper(PresentationState::kInImmersiveOverlay), trigger);
 }
 
-// TODO(crbug.com/447418049): Open immersive reading mode via this
-// entrypoint. Currently just open side panel reading mode via
-// ReadAnythingController when is_immersive_read_anything_enabled_ flag is
-// enabled.
-void ReadAnythingController::ShowUI(SidePanelOpenTrigger trigger) {
+void ReadAnythingController::ShowSidePanelUI(SidePanelOpenTrigger trigger) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI();
     // Ensure we got the web_ui_wrapper_ back from the immersive overlay if one
@@ -298,7 +294,8 @@ void ReadAnythingController::ToggleImmersiveUI(
 
 void ReadAnythingController::TogglePresentation() {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
-    ShowUI(SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+    ShowSidePanelUI(
+        SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
   } else if (GetPresentationState() == PresentationState::kInSidePanel) {
     ShowImmersiveUI(
         ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
