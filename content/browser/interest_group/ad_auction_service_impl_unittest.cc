@@ -10971,8 +10971,6 @@ class AdAuctionServiceImplKAnonTest
       case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
         enabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
-        disabled_features.push_back(
-            features::kCookieDeprecationFacilitatedTesting);
         break;
       case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
@@ -13162,7 +13160,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
           blink::features::kFledgeConsiderKAnonymity,
           blink::features::kFledgeEnforceKAnonymity,
       },
-      {features::kCookieDeprecationFacilitatedTesting});
+      {});
   ProvideKeys();
   NavigateAndCommit(kUrlA);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
@@ -17897,15 +17895,13 @@ class AdAuctionServiceImplBAndAKAnonEnabledTest
             /*enabled_features=*/{features::kEnableBandAKAnonEnforcement,
                                   blink::features::kFledgeConsiderKAnonymity},
             /*disabled_features=*/{blink::features::kFledgeEnforceKAnonymity});
-
         break;
       case KAnonState::kEnforceOnDeviceEnforceOnServer:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                                   blink::features::kFledgeEnforceKAnonymity,
                                   features::kEnableBandAKAnonEnforcement},
-            /*disabled_features=*/{
-                features::kCookieDeprecationFacilitatedTesting});
+            /*disabled_features=*/{});
         break;
     }
   }
@@ -20286,9 +20282,7 @@ class AdAuctionServiceImplFacilitatedTestingTest
   AdAuctionServiceImplFacilitatedTestingTest() {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kCookieDeprecationFacilitatedTesting,
-          {{"label", "LabelForTesting"}}},
-         {features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
+        {{features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
         /*disabled_features=*/{});
   }
 

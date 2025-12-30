@@ -215,33 +215,6 @@ BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
 
 BASE_FEATURE(kCompositeBGColorAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Gate access to cookie deprecation API which allows developers to opt in
-// server side testing without cookies.
-// (See https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing)
-BASE_FEATURE(kCookieDeprecationFacilitatedTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Set whether to enable cookie deprecation API for off-the-record profiles.
-const base::FeatureParam<bool>
-    kCookieDeprecationFacilitatedTestingEnableOTRProfiles{
-        &kCookieDeprecationFacilitatedTesting, "enable_otr_profiles", false};
-
-// The experiment label for the cookie deprecation (Mode A/B) study.
-const base::FeatureParam<std::string> kCookieDeprecationLabel{
-    &kCookieDeprecationFacilitatedTesting, kCookieDeprecationLabelName, ""};
-// Set whether Ads APIs should be disabled for third-party cookie deprecation.
-const base::FeatureParam<bool> kCookieDeprecationTestingDisableAdsAPIs{
-    &features::kCookieDeprecationFacilitatedTesting,
-    /*name=*/kCookieDeprecationTestingDisableAdsAPIsName,
-    /*default_value=*/false};
-
-const char kCookieDeprecationLabelName[] = "label";
-
-const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
-
-// Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
-// in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until

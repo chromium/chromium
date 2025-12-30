@@ -359,8 +359,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {"CompressionDictionaryTransport",
            raw_ref(network::features::kCompressionDictionaryTransport)},
-          {"CookieDeprecationFacilitatedTesting",
-           raw_ref(features::kCookieDeprecationFacilitatedTesting)},
           {"CookieStoreAPIMaxAge",
            raw_ref(blink::features::kCookieStoreAPIMaxAge)},
           {"DocumentPolicyIncludeJSCallStacksInCrashReports",

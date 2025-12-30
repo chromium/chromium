@@ -804,8 +804,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
-         blink::features::kFledgeRealTimeReporting,
-         features::kCookieDeprecationFacilitatedTesting});
+         blink::features::kFledgeRealTimeReporting});
   }
 
   ~InterestGroupBrowserTest() override { content_browser_client_.reset(); }

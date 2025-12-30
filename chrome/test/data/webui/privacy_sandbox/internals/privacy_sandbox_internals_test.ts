@@ -73,7 +73,7 @@ suite('PrivacySandboxInternalsSearchTest', function() {
       value: {boolValue: false},
     },
     {name: 'profile.cookie_controls_mode', value: {intValue: 2}},
-    {name: 'tpcd_experiment.pref', value: {intValue: 0}},
+
   ];
 
   setup(async function() {
@@ -530,7 +530,7 @@ suite('InternalsPageTest', function() {
     const mockPrefs: PrivacySandboxInternalsPref[] = [
       {name: 'privacy_sandbox.some_pref', value: {boolValue: true}},
       {name: 'tracking_protection.some_pref', value: {boolValue: true}},
-      {name: 'tpcd_experiment.some_pref', value: {boolValue: true}},
+      {name: 'profile.cookie_controls_mode', value: {intValue: 1}},
     ];
 
     browserProxy.testHandler.setPrefs(mockPrefs);

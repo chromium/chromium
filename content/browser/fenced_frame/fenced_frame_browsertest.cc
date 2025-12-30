@@ -7022,7 +7022,7 @@ class FencedFrameReportEventBrowserTest
   FencedFrameReportEventBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kAllowURNsInIframes, {}}},
-        /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
+        /*disabled_features=*/{});
   }
 
   // An object representing a single step of a reportEvent test.

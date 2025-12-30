@@ -262,8 +262,7 @@ class AdjustableAuction : public ContentBrowserTest {
          blink::features::kAllowURNsInIframes,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot},
         /*disabled_features=*/
-        {blink::features::kFledgeEnforceKAnonymity,
-         features::kCookieDeprecationFacilitatedTesting});
+        {blink::features::kFledgeEnforceKAnonymity});
   }
 
   ~AdjustableAuction() override { content_browser_client_.reset(); }

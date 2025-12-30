@@ -83,15 +83,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCapturedSurfaceControlKillswitch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kClearCrossSiteCrossBrowsingContextGroupWindowName);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kCookieDeprecationFacilitatedTesting);
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kCookieDeprecationFacilitatedTestingEnableOTRProfiles;
-CONTENT_EXPORT extern const base::FeatureParam<std::string>
-    kCookieDeprecationLabel;
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kCookieDeprecationTestingDisableAdsAPIs;
-CONTENT_EXPORT extern const char kCookieDeprecationLabelName[];
-CONTENT_EXPORT extern const char kCookieDeprecationTestingDisableAdsAPIsName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kWarmupSpareProcessCreationWhenDeferRFH;

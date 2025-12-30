@@ -110,11 +110,6 @@ struct SerializedBiddersMap {
 };
 
 bool KAnonIsEnabled() {
-  // K-anonymity enforcement is always disabled for the testing population.
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(
              blink::features::kFledgeConsiderKAnonymity) &&
          base::FeatureList::IsEnabled(

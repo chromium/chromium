@@ -32,7 +32,6 @@ interface CachedItem {
 }
 
 const tpcdExperimentPrefPrefixes: string[] = [
-  'tpcd_experiment.',
   'uninstall_metrics.installation_date2',
   'profile.cookie_controls_mode',
   'profile.cookie_block_truncated',
