@@ -45,8 +45,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -55,7 +53,6 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstan
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -193,16 +190,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     public void setIsIncognitoBranded(boolean isIncognitoBranded) {
         mIsIncognitoBranded = isIncognitoBranded;
-        if (isCpaSpecUpdateEnabled()) {
-            // When isCpaSpecUpdateEnabled, logic for setting the background resource is in
-            // #updateButtonWithAnimation.
-            return;
-        }
-        @DrawableRes int backgroundDrawableRes = R.drawable.optional_button_background;
-        if (isIncognitoBranded) {
-            backgroundDrawableRes = R.drawable.optional_button_background_baseline;
-        }
-        mButton.setBackgroundResource(backgroundDrawableRes);
+        // Logic for setting the background resource is in #updateButtonWithAnimation.
     }
 
     private void setBackgroundResourceHelper(boolean isCpaCheckedState) {
@@ -294,19 +282,16 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         boolean isCpaCheckedState = buttonData.getButtonSpec().isChecked();
 
-        if (isCpaSpecUpdateEnabled()) {
-            // Change the CPA background to a square if the button data instance is owned by
-            // PriceTrackingButtonController and is a "checked" state.
-            @DrawableRes
-            int resId =
-                    isCpaCheckedState
-                            ? R.drawable
-                                    .modern_toolbar_text_box_background_with_primary_color_square
-                            : R.drawable.modern_toolbar_text_box_background;
+        // Change the CPA background to a square if the button data instance is owned by
+        // PriceTrackingButtonController and is a "checked" state.
+        @DrawableRes
+        int resId =
+                isCpaCheckedState
+                        ? R.drawable.modern_toolbar_text_box_background_with_primary_color_square
+                        : R.drawable.modern_toolbar_text_box_background;
 
-            mBackground.setImageDrawable(AppCompatResources.getDrawable(getContext(), resId));
-            setBackgroundResourceHelper(isCpaCheckedState);
-        }
+        mBackground.setImageDrawable(AppCompatResources.getDrawable(getContext(), resId));
+        setBackgroundResourceHelper(isCpaCheckedState);
 
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
         @StringRes int chipLabelResId = buttonSpec.getActionChipLabelResId();
@@ -489,7 +474,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mAnimationImage = findViewById(R.id.swappable_icon_animation_image);
         mActionChipLabel = findViewById(R.id.action_chip_label);
 
-        // If isCpaSpecUpdateEnabled, overriding the background in #updateButtonWithAnimation.
+        // The background is overridden in #updateButtonWithAnimation.
         mBackground.setImageDrawable(
                 AppCompatResources.getDrawable(
                         getContext(), R.drawable.modern_toolbar_text_box_background));
@@ -586,9 +571,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         transition.addTransition(slide).addTransition(shrink).addTransition(fade);
         transition.setDuration(SWAP_TRANSITION_DURATION_MS);
-        if (isCpaSpecUpdateEnabled()) {
-            transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
-        }
+        transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
         transition.addListener(this);
 
         return transition;
@@ -619,9 +602,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 .addTransition(changeBounds);
 
         transition.setDuration(HIDE_TRANSITION_DURATION_MS);
-        if (isCpaSpecUpdateEnabled()) {
-            transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
-        }
+        transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
         transition.addListener(this);
 
         return transition;
@@ -645,9 +626,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 .addTransition(shrinkTransition);
 
         transitionSet.setDuration(SWAP_TRANSITION_DURATION_MS);
-        if (isCpaSpecUpdateEnabled()) {
-            transitionSet.setInterpolator(Interpolators.DEFAULT_SPATIAL);
-        }
+        transitionSet.setInterpolator(Interpolators.DEFAULT_SPATIAL);
         transitionSet.addListener(this);
 
         return transitionSet;
@@ -957,14 +936,5 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     private int getDimensionPixelSize(@DimenRes int dimenId) {
         return getResources().getDimensionPixelSize(dimenId);
-    }
-
-    // ============================================================================================
-    // Flags
-    // ============================================================================================
-    public static boolean isCpaSpecUpdateEnabled() {
-        return ChromeFeatureList.sCpaSpecUpdate.isEnabled()
-                || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
-                || ThemeModuleUtils.isForceEnableDependencies();
     }
 }

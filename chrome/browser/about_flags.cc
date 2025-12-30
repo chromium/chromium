@@ -12137,11 +12137,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherSurfaceColorUpdate)},
 
-    // Contextual Page Action button.
-    {"cpa-spec-update", flag_descriptions::kCpaSpecUpdateName,
-     flag_descriptions::kCpaSpecUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCpaSpecUpdate)},
-
     // Android Automotive back button bar streamline.
     {"automotive-back-button-bar-streamline",
      flag_descriptions::kAutomotiveBackButtonBarStreamlineName,

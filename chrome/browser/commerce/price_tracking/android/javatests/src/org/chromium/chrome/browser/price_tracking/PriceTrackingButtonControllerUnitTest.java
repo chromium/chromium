@@ -222,7 +222,6 @@ public class PriceTrackingButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CPA_SPEC_UPDATE})
     public void testPriceTrackingButton_testIsCheckedState() {
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
         // Initialize to false.

@@ -5284,11 +5284,6 @@ inline constexpr char
         "Management "
         "API to 3P password managers if 3P mode autofill is on.";
 
-inline constexpr char kCpaSpecUpdateName[] = "CpaSpecUpdate";
-inline constexpr char kCpaSpecUpdateDescription[] =
-    "Updates the Cpa button animation and changes the shape of the checked "
-    "state button for stateful CPAs.";
-
 inline constexpr char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 inline constexpr char kDeprecatedExternalPickerFunctionDescription[] =
