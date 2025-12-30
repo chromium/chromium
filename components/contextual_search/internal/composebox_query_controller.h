@@ -79,9 +79,9 @@ class ComposeboxQueryController
 
   // ContextualSearchContextController:
   void InitializeIfNeeded() override;
-  void CreateSearchUrl(std::unique_ptr<CreateSearchUrlRequestInfo>
-                           search_url_request_info,
-                       base::OnceCallback<void(GURL)> callback) override;
+  void CreateSearchUrl(
+      std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+      base::OnceCallback<void(GURL)> callback) override;
   lens::ClientToAimMessage CreateClientToAimRequest(
       std::unique_ptr<CreateClientToAimRequestInfo>
           create_client_to_aim_request_info) override;
@@ -426,6 +426,15 @@ class ComposeboxQueryController
       const std::optional<std::string>& query_text,
       std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
       std::map<std::string, std::string>& url_params_map);
+
+  // Constructs the visual search interaction data based on the file info and
+  // interaction request data.
+  std::optional<lens::LensOverlayVisualSearchInteractionData>
+  ConstructVisualSearchInteractionData(
+      const FileInfo* file_info,
+      const std::optional<std::string>& query_text,
+      std::optional<lens::LensOverlaySelectionType>
+          lens_overlay_selection_type);
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;

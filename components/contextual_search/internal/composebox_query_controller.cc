@@ -569,8 +569,29 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     }
   }
 
-  // TODO(crbug.com/463697733): Determine if the visual search interaction data
-  // is needed.
+  // Add the latest visual search interaction data to the query if it exists.
+  // Only check the first file token since the interaction should be associated
+  // with the a single contextual input.
+  if (!create_client_to_aim_request_info->file_tokens.empty()) {
+    auto* file_info =
+        GetFileInfo(create_client_to_aim_request_info->file_tokens[0]);
+    if (file_info &&
+        IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status)) {
+      std::optional<lens::LensOverlayVisualSearchInteractionData>
+          visual_search_interaction_data = ConstructVisualSearchInteractionData(
+              static_cast<const FileInfo*>(file_info),
+              create_client_to_aim_request_info->query_text, std::nullopt);
+      if (visual_search_interaction_data.has_value()) {
+        for (auto& lens_image_query_data :
+             *submit_query->mutable_payload()
+                  ->mutable_lens_image_query_data()) {
+          lens_image_query_data.mutable_visual_search_interaction_data()
+              ->CopyFrom(visual_search_interaction_data.value());
+        }
+      }
+    }
+  }
+
   return client_to_aim_message;
 }
 
@@ -1665,9 +1686,33 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
     const std::optional<std::string>& query_text,
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
     std::map<std::string, std::string>& url_params_map) {
+  std::optional<lens::LensOverlayVisualSearchInteractionData> interaction_data =
+      ConstructVisualSearchInteractionData(file_info, query_text,
+                                           lens_overlay_selection_type);
+
+  if (!interaction_data.has_value()) {
+    return;
+  }
+
+  std::string serialized_proto;
+  CHECK(interaction_data->SerializeToString(&serialized_proto));
+  std::string encoded_proto;
+  base::Base64UrlEncode(serialized_proto,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_proto);
+
+  url_params_map.insert(
+      {kVisualSearchInteractionQueryParameterKey, encoded_proto});
+}
+
+std::optional<lens::LensOverlayVisualSearchInteractionData>
+ComposeboxQueryController::ConstructVisualSearchInteractionData(
+    const FileInfo* file_info,
+    const std::optional<std::string>& query_text,
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type) {
   if (!file_info ||
       !IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status)) {
-    return;
+    return std::nullopt;
   }
 
   // Set the interaction data based on the last file request type.
@@ -1748,13 +1793,5 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
     interaction_data.mutable_zoomed_crop()->set_zoom(1);
   }
 
-  std::string serialized_proto;
-  CHECK(interaction_data.SerializeToString(&serialized_proto));
-  std::string encoded_proto;
-  base::Base64UrlEncode(serialized_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_proto);
-
-  url_params_map.insert(
-      {kVisualSearchInteractionQueryParameterKey, encoded_proto});
+  return interaction_data;
 }
