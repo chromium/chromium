@@ -20,6 +20,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -299,6 +301,52 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
                          gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
                          ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
+  }
+}
+
+TEST_F(WindowUtilTest, InteriorTargeterWithCustomInsets) {
+  auto window = CreateTestWindow();
+  window->SetBounds({0, 0, 100, 100});
+
+  WindowState::Get(window.get())->Maximize();
+  InstallResizeHandleWindowTargeterForWindow(
+      window.get(), chromeos::ResizeBorderInsets{.for_mouse = gfx::Insets(5),
+                                                 .for_touch = gfx::Insets(10)});
+
+  auto* child =
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = window.get(),
+           .bounds = gfx::Rect(window->bounds().size())})
+          .release();
+
+  ui::EventTarget* root_target = window->GetRootWindow();
+  auto* targeter = root_target->GetEventTargeter();
+  {
+    gfx::Point location{2, 2};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(child, targeter->FindTargetForEvent(root_target, &mouse));
+  }
+
+  // InteriorEventTargeter is now active and should pass an event at the edge to
+  // its parent.
+  WindowState::Get(window.get())->Restore();
+
+  {
+    gfx::Point location{2, 2};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
+  }
+
+  {
+    gfx::PointF location{9, 9};
+    ui::TouchEvent touch(ui::EventType::kTouchPressed, location, location,
+                         ui::EventTimeForNow(),
+                         ui::PointerDetails(ui::EventPointerType::kTouch));
+    EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &touch));
   }
 }
 

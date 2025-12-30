@@ -14,6 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
@@ -25,13 +26,29 @@ namespace chromeos {
 
 using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 
+namespace {
+
+gfx::Insets GetResizeBorderInsets(aura::Window* frame_window,
+                                  bool is_touch_down) {
+  if (auto* insets = frame_window->GetProperty(chromeos::kResizeBorderInsets);
+      insets) {
+    return is_touch_down ? insets->for_touch : insets->for_mouse;
+  }
+
+  return gfx::Insets();
+}
+
+}  // namespace
+
 int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget) {
   gfx::Rect expanded_bounds = view->bounds();
   int outside_bounds = chromeos::kResizeOutsideBoundsSize;
 
-  if (aura::Env::GetInstance()->is_touch_down())
+  const bool is_touch_down = aura::Env::GetInstance()->is_touch_down();
+  if (is_touch_down) {
     outside_bounds *= chromeos::kResizeOutsideBoundsScaleForTouch;
+  }
   expanded_bounds.Inset(-outside_bounds);
 
   if (!expanded_bounds.Contains(point_in_widget))
@@ -40,15 +57,15 @@ int FrameBorderNonClientHitTest(views::FrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  const bool has_resize_border =
-      ShouldShowResizeBorder(widget->GetNativeWindow());
-  const int resize_border_size =
-      has_resize_border ? chromeos::kResizeInsideBoundsSize : 0;
+  aura::Window* frame_window = widget->GetNativeWindow();
+  const bool has_resize_border = ShouldShowResizeBorder(frame_window);
+  const gfx::Insets resize_border_insets =
+      has_resize_border ? GetResizeBorderInsets(frame_window, is_touch_down)
+                        : gfx::Insets();
 
   int frame_component = view->GetHTComponentForFrame(
-      point_in_widget, gfx::Insets(resize_border_size),
-      chromeos::kResizeAreaCornerSize, chromeos::kResizeAreaCornerSize,
-      has_resize_border);
+      point_in_widget, resize_border_insets, chromeos::kResizeAreaCornerSize,
+      chromeos::kResizeAreaCornerSize, has_resize_border);
   if (frame_component != HTNOWHERE)
     return frame_component;
 
