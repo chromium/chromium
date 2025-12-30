@@ -139,10 +139,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_UNSPANNED_GRADIENTS
 
-// Ensures Chromium is not using any mutable path APIs.  Only remove after the
-// editing methods on SkPath are truly gone.
-#define SK_HIDE_PATH_EDIT_METHODS
-
 #define SK_DISABLE_LEGACY_NONCONST_ENCODED_IMAGE_DATA
 #define SK_DISABLE_LEGACY_NONCONST_SERIAL_PROCS
 
