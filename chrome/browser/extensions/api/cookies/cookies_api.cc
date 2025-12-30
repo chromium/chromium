@@ -256,8 +256,16 @@ void CookiesEventRouter::MaybeStartListening() {
     BindToCookieManager(&receiver_, original_profile);
   }
 
-  if (!otr_receiver_.is_bound() && otr_profile) {
+  // Start observing the OTR profile iff we are not already doing so. In most
+  // cases, we should already be observing because
+  // `OnOffTheRecordProfileCreated()` starts the observation. However, in the
+  // case where the OTR profile already exists when this CookiesEventRouter is
+  // created, we need to start observing it here.
+  if (otr_profile && !otr_profile_observation_.IsObserving()) {
     otr_profile_observation_.Observe(otr_profile);
+  }
+
+  if (!otr_receiver_.is_bound() && otr_profile) {
     BindToCookieManager(&otr_receiver_, otr_profile);
   }
 }
