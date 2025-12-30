@@ -53,6 +53,9 @@ NSString* const
     kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier =
         @"badgeButtonPermissionsMicrophoneAcceptedAXID";
 
+NSString* const kBadgeButtonReaderModeAccessibilityIdentifier =
+    @"badgeButtonReaderModeAXID";
+
 NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier =
     @"badgeUnreadIndicatorAXID";
 

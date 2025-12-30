@@ -303,7 +303,8 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   if (IsProactiveSuggestionsFrameworkEnabled()) {
     // When framework enabled, reader mode chip visibility follows desired state
     // directly.
-    readerModeChipShouldBeVisibleFinal = _readerModeChipShouldBeVisible;
+    readerModeChipShouldBeVisibleFinal =
+        _readerModeChipShouldBeVisible && _incognito;
   } else {
     // The Reader mode chip (which wants to be visible when Reader mode is
     // active) should not be visible if the contextual panel is currently
@@ -321,7 +322,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
   // Other badges can be visible only outside of Reader mode unless badge
   // support is explicitly enabled.
-  if (!readerModeChipShouldBeVisibleFinal) {
+  if (!_readerModeChipShouldBeVisible) {
     // The contextual panel entrypoint can only be visible if it wants to be
     // visible and if one of these conditions is verified:
     // 1. The contextual panel has a loud moment (animating to large entrypoint)

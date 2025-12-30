@@ -79,6 +79,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

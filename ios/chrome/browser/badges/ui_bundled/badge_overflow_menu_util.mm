@@ -84,6 +84,8 @@ UIAction* GetOverflowMenuElementForBadgeType(
                                                  kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;
+    case kBadgeTypeReaderMode:
+      NOTREACHED() << "Reader Mode badge should not be in overflow menu";
     case kBadgeTypeIncognito:
       NOTREACHED() << "An overflow menu badge should not be an Incognito badge";
     case kBadgeTypeOverflow:

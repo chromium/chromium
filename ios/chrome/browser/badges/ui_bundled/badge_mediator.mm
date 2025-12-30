@@ -57,15 +57,29 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 // Helper method to determine if the `infobarType` is supported in Reader
 // Mode.
-bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType) {
-  if (IsProactiveSuggestionsFrameworkEnabled() ||
-      IsReaderModeBadgeSupportEnabled()) {
-    return true;
+bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
+                                        bool is_incognito) {
+  switch (infobarType) {
+    case InfobarType::kInfobarTypePermissions:
+      return true;
+    case InfobarType::kInfobarTypeReaderMode:
+      return IsProactiveSuggestionsFrameworkEnabled() && !is_incognito;
+    case InfobarType::kInfobarTypeConfirm:
+    case InfobarType::kInfobarTypePasswordSave:
+    case InfobarType::kInfobarTypePasswordUpdate:
+    case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeTranslate:
+    case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+    case InfobarType::kInfobarTypeSyncError:
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+    case InfobarType::kInfobarTypeSignin:
+    case InfobarType::kInfobarTypeCollaborationGroup:
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+    case InfobarType::kInfobarTypeSaveCvc:
+      return IsProactiveSuggestionsFrameworkEnabled() ||
+             IsReaderModeBadgeSupportEnabled();
   }
-  if (infobarType == InfobarType::kInfobarTypePermissions) {
-    return true;
-  }
-  return false;
 }
 
 // TODO(crbug.com/458142962): Migrate to LocationBarBadgeType.
@@ -89,6 +103,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
       return LocationBarBadgeType::kSaveAddressProfile;
     case BadgeType::kBadgeTypeOverflow:
       return LocationBarBadgeType::kOverflow;
+    case BadgeType::kBadgeTypeReaderMode:
+      return LocationBarBadgeType::kReaderMode;
     // Incognito badge is handled separately.
     case BadgeType::kBadgeTypeIncognito:
     case BadgeType::kBadgeTypeNone:
@@ -236,9 +252,12 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
   std::map<InfobarType, BadgeState> badgeStatesForInfobarType =
       self.badgeTabHelper->GetInfobarBadgeStates();
+  const bool is_incognito =
+      self.webState && self.webState->GetBrowserState()->IsOffTheRecord();
   for (auto& infobarTypeBadgeStatePair : badgeStatesForInfobarType) {
     if (isReaderModeActive &&
-        !IsInfobarTypeSupportedInReaderMode(infobarTypeBadgeStatePair.first)) {
+        !IsInfobarTypeSupportedInReaderMode(infobarTypeBadgeStatePair.first,
+                                            is_incognito)) {
       continue;
     }
     BadgeType badgeType =
@@ -464,6 +483,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
       case InfobarType::kInfobarTypeCollaborationGroup:
       case InfobarType::kInfobarTypeCollaborationOutOfDate:
       case InfobarType::kInfobarTypeSaveCvc:
+      case InfobarType::kInfobarTypeReaderMode:
         return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
     }
   } else {

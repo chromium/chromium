@@ -7,20 +7,31 @@
 #import "base/scoped_observation.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_delegate.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -874,6 +885,34 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
   EXPECT_THAT(ukm_entries,
               testing::ElementsAre(static_cast<int>(
                   ReaderModeDistillerResult::kPageIsNotDistillable)));
+}
+
+// Tests that the Reader Mode infobar is added when Reader Mode is activated
+// and the proactive suggestions framework is enabled.
+// Tests that the Reader Mode infobar is added when Reader Mode is activated
+// and the proactive suggestions framework is enabled.
+// Tests that the Reader Mode infobar is added when Reader Mode is activated
+// and the proactive suggestions framework is enabled.
+TEST_F(ReaderModeTabHelperTest, AddsInfobarWhenActivated) {
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_EQ(infobars::InfoBarDelegate::READER_MODE_INFOBAR_DELEGATE_IOS,
+            infobar_manager->infobars()[0]->delegate()->GetIdentifier());
+
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kUserDeactivated);
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -887,9 +887,14 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   // Tap the Reader mode chip.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kReaderModeChipViewAccessibilityIdentifier)]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_anyOf(grey_accessibilityID(
+                             kReaderModeChipViewAccessibilityIdentifier),
+                         grey_accessibilityID(
+                             kBadgeButtonReaderModeAccessibilityIdentifier),
+                         nil),
+              grey_interactable(), nil)] performAction:grey_tap()];
 
   // Verify the bottom sheet appears.
   id<GREYMatcher> bottomSheet =

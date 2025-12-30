@@ -245,6 +245,9 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeReaderMode:
+      // Reader Mode infobar does not support banners.
+      NOTREACHED();
   }
 }
 
@@ -308,6 +311,9 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBannerDismissTypeHistogram,
                                 dismissType);
       break;
+    case InfobarType::kInfobarTypeReaderMode:
+      // Reader Mode infobar does not support banners.
+      NOTREACHED();
   }
 }
 
@@ -367,6 +373,9 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeReaderMode:
+      // Reader Mode infobar does not support modals.
+      NOTREACHED();
   }
 }
 
@@ -421,6 +430,9 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBadgeTappedHistogram, state);
       break;
+    case InfobarType::kInfobarTypeReaderMode:
+      // Reader Mode infobar badge is not interactive.
+      NOTREACHED();
   }
 }
 
