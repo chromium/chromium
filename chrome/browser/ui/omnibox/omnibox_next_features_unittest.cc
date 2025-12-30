@@ -86,7 +86,7 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   EXPECT_EQ(attachment_upload.max_size_bytes(), 200000000);
   EXPECT_THAT(attachment_upload.mime_types_allowed(), ".pdf,application/pdf");
 
-  EXPECT_EQ(composebox.max_num_files(), 1);
+  EXPECT_EQ(composebox.max_num_files(), 10);
   EXPECT_EQ(composebox.input_placeholder_text(),
             l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);
