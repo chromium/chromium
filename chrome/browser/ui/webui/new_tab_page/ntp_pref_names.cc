@@ -44,4 +44,7 @@ const char kNtpModuleStalenessCountDict[] = "ntp.module_staleness_count_dict";
 // disabled for all modules.
 const char kNtpModulesAutoRemovalDisabledDict[] =
     "ntp.modules_auto_removal_disabled";
+// Tracks the number of times the user has clicked on the context menu
+// entrypoint when the context menu description is displayed.
+const char kNtpContextMenuClickCount[] = "ntp.context_menu_click_count";
 }  // namespace ntp_prefs

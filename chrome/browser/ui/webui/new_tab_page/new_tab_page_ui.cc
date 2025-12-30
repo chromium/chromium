@@ -165,6 +165,7 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
+constexpr int kContextMenuDescriptionClickThreshold = 2;
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -633,8 +634,23 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
+
+  bool show_context_menu_description =
+      ntp_composebox::kShowContextMenuDescription.Get() &&
+      ntp_realbox::kRealboxLayoutMode.Get() !=
+          ntp_realbox::RealboxLayoutMode::kCompact;
+  if (show_context_menu_description &&
+      ntp_composebox::kEnableEphemeralContextMenuDescription.Get()) {
+    show_context_menu_description =
+        (profile->GetPrefs()->GetInteger(ntp_prefs::kNtpContextMenuClickCount) <
+         kContextMenuDescriptionClickThreshold);
+  }
   source->AddBoolean("composeboxShowContextMenuDescription",
-                     ntp_composebox::kShowContextMenuDescription.Get());
+                     show_context_menu_description);
+
+  source->AddBoolean(
+      "enableEphemeralContextMenuDescription",
+      ntp_composebox::kEnableEphemeralContextMenuDescription.Get());
   source->AddBoolean("composeboxContextDragAndDropEnabled",
                      ntp_composebox::kEnableContextDragAndDrop.Get());
 
@@ -900,6 +916,7 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(ntp_prefs::kNtpModuleStalenessCountDict);
   registry->RegisterDictionaryPref(
       ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  registry->RegisterIntegerPref(ntp_prefs::kNtpContextMenuClickCount, 0);
 }
 
 // static
@@ -917,6 +934,7 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::Value::Dict());
   prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
                  base::Value::Dict());
+  prefs->SetInteger(ntp_prefs::kNtpContextMenuClickCount, 0);
 }
 
 // static

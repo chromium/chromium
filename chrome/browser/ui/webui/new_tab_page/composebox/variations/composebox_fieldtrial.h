@@ -56,6 +56,9 @@ extern const base::FeatureParam<int> kMaxNumFiles;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
 extern const base::FeatureParam<bool> kShowContextMenuDescription;
+// Whether or not to show the context menu description only when the user
+// hovers over the button.
+extern const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription;
 // Whether or not to enable viewport images with page context uploads.
 extern const base::FeatureParam<bool> kEnableViewportImages;
 // Whether to show the tools and models picker in the composebox.

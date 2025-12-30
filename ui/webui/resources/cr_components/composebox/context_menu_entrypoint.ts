@@ -189,18 +189,16 @@ export class ContextMenuEntrypointElement extends
     const metricName =
         'ContextualSearch.ContextMenuEntry.Clicked.' + this.metricsSource_;
     chrome.metricsPrivate.recordBoolean(metricName, true);
-    if (this.entrypointName === 'Omnibox') {
-      const entrypoint =
-          this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
-      assert(entrypoint);
-      this.fire('context-menu-entrypoint-click', {
-        x: entrypoint.getBoundingClientRect().left,
-        y: entrypoint.getBoundingClientRect().bottom,
-      });
-      return;
+    const entrypoint =
+        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assert(entrypoint);
+    this.fire('context-menu-entrypoint-click', {
+      x: entrypoint.getBoundingClientRect().left,
+      y: entrypoint.getBoundingClientRect().bottom,
+    });
+    if (this.entrypointName !== 'Omnibox') {
+      this.showMenuAtEntrypoint_();
     }
-
-    this.showMenuAtEntrypoint_();
   }
 
   protected onTabClick_(e: Event) {

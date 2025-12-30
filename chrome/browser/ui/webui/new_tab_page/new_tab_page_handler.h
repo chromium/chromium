@@ -158,6 +158,7 @@ class NewTabPageHandler
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
   void MaybeTriggerAutomaticCustomizeChromePromo() override;
+  void RecordContextMenuClick() override;
 
  private:
   // ui::NativeThemeObserver:

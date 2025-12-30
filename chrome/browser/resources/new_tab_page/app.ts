@@ -404,6 +404,10 @@ export class AppElement extends AppElementBase {
       GlifAnimationState.INELIGIBLE;
   protected enableModalComposebox_: boolean =
       loadTimeData.getBoolean('enableModalComposebox');
+  protected ephemeralContextMenuDescriptionEnabled_: boolean =
+      loadTimeData.getBoolean('enableEphemeralContextMenuDescription') ?? false;
+  protected showContextMenuDescription_: boolean =
+      loadTimeData.getBoolean('composeboxShowContextMenuDescription');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -920,6 +924,13 @@ export class AppElement extends AppElementBase {
 
   protected onCloseLensSearch_() {
     this.showLensUploadDialog_ = false;
+  }
+
+  protected onContextMenuEntrypointClick_() {
+    if (this.ephemeralContextMenuDescriptionEnabled_ &&
+        this.showContextMenuDescription_) {
+      this.pageHandler_.recordContextMenuClick();
+    }
   }
 
   protected onCustomizeClick_() {
