@@ -932,6 +932,25 @@ export class SearchboxElement extends SearchboxElementBase implements
       }
     }
 
+    if (this.composeButtonEnabled && e.key === 'Tab' &&
+        this.lastInput_.inline &&
+        this.$.input === this.shadowRoot.activeElement) {
+      if (e.shiftKey) {
+        this.updateInput_({inline: ''});
+        return;
+      }
+
+      const newText = this.lastInput_.text + this.lastInput_.inline;
+      this.updateInput_({
+        text: newText,
+        inline: '',
+        moveCursorToEnd: true,
+      });
+      this.queryAutocomplete_(newText);
+      e.preventDefault();
+      return;
+    }
+
     if (e.key === 'Backspace' || e.key === 'Tab') {
       return;
     }

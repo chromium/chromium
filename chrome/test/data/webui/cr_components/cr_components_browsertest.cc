@@ -110,6 +110,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxIconTest) {
   RunTest("cr_components/searchbox/searchbox_icon_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxFocusTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/searchbox/searchbox_focus_test.js", "mocha.run()");
+}
+
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryClustersTest() {
