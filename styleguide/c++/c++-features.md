@@ -36,7 +36,10 @@ The current status of existing standards and Abseil features is:
 *   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
     features below_
 *   **C++23:** _Not yet supported_
-*   **Abseil:** _Default allowed; see banned features below_
+*   **Abseil:** _Default allowed; see banned/TBD features below. The following
+    dates represent the start of the two-year TBD periods for certain parts of
+    Abseil:_
+      * absl::linked_hash_set & map: Initially added to third_party Dec 30, 2025
 
 ## Banned features and third-party code
 
@@ -1979,7 +1982,7 @@ this and migrate to it.
 ### Nullability annotations <sup>[banned]</sup>
 
 ```c++
-void PaySalary(absl::NotNull<Employee *> employee) {
+void PaySalary(Employee* absl_nonnull employee) {
   pay(*employee);  // OK to dereference
 }
 ```
@@ -1999,7 +2002,7 @@ enforcement.
 
 ```c++
 absl::optional<int> Func(bool b) {
-  return b ? absl::make_optional(1) : abl::nullopt;
+  return b ? absl::make_optional(1) : absl::nullopt;
 }
 ```
 
@@ -2075,7 +2078,7 @@ absl::string_view
 **Notes:**
 *** promo
 Originally banned due to only working with 8-bit characters. Now it is
-unnecessary because, in Chromium, it is the same type as `std::string_view`.
+unnecessary because it is the same type as `std::string_view`.
 Please use `std::string_view` instead.
 ***
 
@@ -2195,3 +2198,28 @@ absl::move;
 *** promo
 These are just aliases to the std counterparts these days. Use std instead.
 ***
+
+## Abseil TBD Features {#absl-review}
+
+The following Abseil library features are not allowed in the Chromium codebase.
+See the top of this page on how to propose moving a feature from this list into
+the allowed or banned sections.
+
+### absl::linked_hash_set, absl::linked_hash_map <sup>[tbd]</sup>
+
+```c++
+absl::linked_hash_set<int> m;
+m.insert(2);
+m.insert(1);
+m.insert(3);
+EXPECT_THAT(m, ElementsAre(2, 1, 3));
+```
+
+**Description:** A simple insertion-ordered set or map. It provides O(1)
+amortized insertions and lookups, as well as iteration in the insertion order.
+
+**Documentation:**
+*   [linked_hash_set.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_set.h)
+*   [linked_hash_map.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_map.h)
+
+
