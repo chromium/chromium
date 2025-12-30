@@ -50,6 +50,22 @@
   }
 }
 
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  [self updateConsumer];
+}
+
+#pragma mark - AppBarMutator
+
+- (void)createNewTab {
+  // TODO(crbug.com/472279443): Add the logic to add a new tab. This might be a
+  // bit different if the TabGrid is presented as there is a lot of custom
+  // logic.
+}
+
 #pragma mark - Private
 
 // Updates the consumer with the current state of the web state list.
@@ -58,14 +74,6 @@
     return;
   }
   [self.consumer updateTabCount:self.webStateList->count()];
-}
-
-#pragma mark - WebStateListObserving
-
-- (void)didChangeWebStateList:(WebStateList*)webStateList
-                       change:(const WebStateListChange&)change
-                       status:(const WebStateListStatus&)status {
-  [self updateConsumer];
 }
 
 @end

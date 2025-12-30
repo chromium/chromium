@@ -30,6 +30,9 @@
   _mediator = [[AppBarMediator alloc] init];
   _mediator.consumer = _viewController;
   _mediator.webStateList = _regularBrowser->GetWebStateList();
+
+  _viewController.mutator = _mediator;
+
   // TODO(crbug.com/472279443): Add incognito browser support.
 }
 

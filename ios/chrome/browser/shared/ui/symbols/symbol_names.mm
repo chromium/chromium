@@ -82,6 +82,8 @@ NSString* const kCameraFillSymbol = @"custom_camera_fill";
 // ****************************************************************************
 // Default symbol names.
 // ****************************************************************************
+NSString* const kAppSymbol = @"app";
+NSString* const kAppFillSymbol = @"app.fill";
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
 NSString* const kChartLineDowntrendXYAxisSymbol =
     @"chart.line.downtrend.xyaxis";

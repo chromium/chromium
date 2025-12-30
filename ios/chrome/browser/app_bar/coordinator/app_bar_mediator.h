@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
+
 @protocol AppBarConsumer;
 class WebStateList;
 
 // Mediator for the app bar coordinator.
-@interface AppBarMediator : NSObject
+@interface AppBarMediator : NSObject <AppBarMutator>
 
 // The web state list observed by this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;

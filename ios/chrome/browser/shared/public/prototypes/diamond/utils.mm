@@ -49,9 +49,6 @@ NSString* kDiamondLeaveTabGridNotification =
     @"kDiamondLeaveTabGridNotification";
 NSString* kDiamondLongPressButton = @"kDiamondLongPressButton";
 
-NSString* const kAppSymbol = @"app";
-NSString* const kAppFillSymbol = @"app.fill";
-
 void DiamondPrototypeStartGemini(bool from_tab_grid,
                                  bool incognito_grid,
                                  Browser* regular_browser,

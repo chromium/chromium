@@ -9,8 +9,13 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 
+@protocol AppBarMutator;
+
 // View controller for the app bar.
 @interface AppBarViewController : UIViewController <AppBarConsumer>
+
+// The mutator.
+@property(nonatomic, weak) id<AppBarMutator> mutator;
 
 @end
 
