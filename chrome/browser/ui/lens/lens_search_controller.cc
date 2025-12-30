@@ -604,6 +604,16 @@ LensSearchController::lens_session_metrics_logger() {
   return lens_session_metrics_logger_.get();
 }
 
+lens::LensOverlayGen204Controller* LensSearchController::gen204_controller() {
+  CheckInitialized(initialized_);
+  return gen204_controller_.get();
+}
+
+std::optional<lens::LensOverlayInvocationSource>
+LensSearchController::invocation_source() {
+  return invocation_source_;
+}
+
 std::unique_ptr<LensOverlayController>
 LensSearchController::CreateLensOverlayController(
     tabs::TabInterface* tab,
@@ -687,6 +697,7 @@ void LensSearchController::StartLensSession(
     lens::LensOverlayInvocationSource invocation_source,
     bool suppress_contextualization) {
   state_ = State::kInitializing;
+  invocation_source_ = invocation_source;
 
   // Create the query controller to be used for the current invocation.
   CHECK(!lens_overlay_query_controller_);
@@ -789,6 +800,7 @@ void LensSearchController::CloseLensPart2(
   // dangling ptrs.
   lens_overlay_query_controller_.reset();
   query_router_.reset();
+  invocation_source_.reset();
 
   // Record end of session metrics.
   lens_session_metrics_logger_->RecordEndOfSessionMetrics(dismissal_source);

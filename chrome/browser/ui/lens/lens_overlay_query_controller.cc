@@ -446,7 +446,9 @@ void LensOverlayQueryController::StartQueryFlow(
 
 void LensOverlayQueryController::EndQuery() {
   ResetPageContentData();
-  gen204_controller_->OnQueryFlowEnd();
+  if (gen204_id_ != 0) {
+    gen204_controller_->OnQueryFlowEnd();
+  }
   full_image_endpoint_fetcher_.reset();
   interaction_endpoint_fetcher_.reset();
   pending_interaction_callback_.Reset();

@@ -107,36 +107,41 @@ class LensOverlayUrlBuilderTest : public testing::Test {
 
 TEST_F(LensOverlayUrlBuilderTest, AppendLensOverlaySidePanelParams) {
   std::map<std::string, std::string> params;
+  uint64_t gen204_id = 0;
 
   // Test multimodal
-  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/true,
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/true,
                                          /*has_image=*/true);
   EXPECT_EQ(params["lns_fp"], "1");
   EXPECT_EQ(params["lns_mode"], "mu");
+  EXPECT_EQ(params["plla"], "0");
 
   params.clear();
 
   // Test text only
-  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/true,
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/true,
                                          /*has_image=*/false);
   EXPECT_EQ(params["lns_fp"], "1");
   EXPECT_EQ(params["lns_mode"], "text");
+  EXPECT_EQ(params["plla"], "0");
 
   params.clear();
 
   // Test image only
-  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/false,
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/false,
                                          /*has_image=*/true);
   EXPECT_EQ(params["lns_fp"], "1");
   EXPECT_EQ(params["lns_mode"], "un");
+  EXPECT_EQ(params["plla"], "0");
 
   params.clear();
 
   // Test no input (should not crash, but also not set mode)
-  lens::AppendLensOverlaySidePanelParams(params, /*has_text=*/false,
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/false,
                                          /*has_image=*/false);
   EXPECT_EQ(params["lns_fp"], "1");
   EXPECT_FALSE(params.contains("lns_mode"));
+  EXPECT_EQ(params["plla"], "0");
 }
 
 TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {

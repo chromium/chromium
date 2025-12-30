@@ -57,6 +57,12 @@ class LensQueryFlowRouter
   // it.
   void MaybeResumeQueryFlow();
 
+  // Sends a task completion Gen204 ping for certain user actions.
+  void SendTaskCompletionGen204IfEnabled(lens::mojom::UserAction user_action);
+
+  // Sends a semantic event Gen204 ping.
+  void SendSemanticEventGen204IfEnabled(lens::mojom::SemanticEvent event);
+
   // Returns the suggest inputs for the current page.
   std::optional<lens::proto::LensOverlaySuggestInputs> GetSuggestInputs();
 
@@ -128,6 +134,10 @@ class LensQueryFlowRouter
 
   LensOverlayQueryController* lens_overlay_query_controller() const {
     return lens_search_controller_->lens_overlay_query_controller();
+  }
+
+  LensOverlayGen204Controller* gen204_controller() const {
+    return lens_search_controller_->gen204_controller();
   }
 
   LensSearchContextualizationController*
@@ -218,6 +228,9 @@ class LensQueryFlowRouter
 
   // The callback for when the suggest inputs are ready.
   base::RepeatingClosure suggest_inputs_ready_callback_;
+
+  // The current gen204 id for logging, set on each overlay invocation.
+  uint64_t gen204_id_ = 0;
 
   // An optional value representing the file token for the tab and full image
   // viewport uploaded when the overlay first opens.

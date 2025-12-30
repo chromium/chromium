@@ -739,13 +739,12 @@ void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
   ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
       .SetUserAction(static_cast<int64_t>(user_action))
       .Record(ukm::UkmRecorder::Get());
-  GetLensOverlayQueryController()->SendTaskCompletionGen204IfEnabled(
-      user_action);
+  GetLensQueryFlowRouter()->SendTaskCompletionGen204IfEnabled(user_action);
 }
 
 void LensOverlayController::RecordLensOverlaySemanticEvent(
     lens::mojom::SemanticEvent event) {
-  GetLensOverlayQueryController()->SendSemanticEventGen204IfEnabled(event);
+  GetLensQueryFlowRouter()->SendSemanticEventGen204IfEnabled(event);
 }
 
 void LensOverlayController::SaveAsImage(

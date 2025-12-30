@@ -32,6 +32,16 @@ class MockLensSearchController : public LensSearchController {
               (override));
 
   MOCK_METHOD(LensOverlayController*, lens_overlay_controller, (), (override));
+
+  MOCK_METHOD(lens::LensOverlayGen204Controller*,
+              gen204_controller,
+              (),
+              (override));
+
+  MOCK_METHOD(std::optional<lens::LensOverlayInvocationSource>,
+              invocation_source,
+              (),
+              (override));
 };
 
 class TestLensSearchController : public LensSearchController {

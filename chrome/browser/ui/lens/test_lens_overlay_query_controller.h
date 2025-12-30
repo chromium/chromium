@@ -83,6 +83,19 @@ class MockLensOverlayQueryController : public LensOverlayQueryController {
               SetSuggestInputsReadyCallback,
               (base::RepeatingClosure),
               ());
+
+  MOCK_METHOD(void,
+              SendTaskCompletionGen204IfEnabled,
+              (std::string,
+               lens::mojom::UserAction,
+               lens::LensOverlayRequestId),
+              (override));
+
+  MOCK_METHOD(void,
+              SendSemanticEventGen204IfEnabled,
+              (lens::mojom::SemanticEvent,
+               std::optional<lens::LensOverlayRequestId>),
+              (override));
 };
 
 class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {

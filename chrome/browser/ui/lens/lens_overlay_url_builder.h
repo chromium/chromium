@@ -29,6 +29,7 @@ void AppendStickinessSignalForFormula(
 
 void AppendLensOverlaySidePanelParams(
     std::map<std::string, std::string>& params,
+    uint64_t gen204_id,
     bool has_text,
     bool has_image);
 

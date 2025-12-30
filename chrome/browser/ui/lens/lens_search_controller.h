@@ -238,6 +238,12 @@ class LensSearchController {
   // Returns the LensSessionMetricsLogger.
   lens::LensSessionMetricsLogger* lens_session_metrics_logger();
 
+  // Returns the LensOverlayGen204Controller.
+  virtual lens::LensOverlayGen204Controller* gen204_controller();
+
+  // Returns the current invocation source.
+  virtual std::optional<lens::LensOverlayInvocationSource> invocation_source();
+
   lens::LensPermissionBubbleController*
   get_lens_permission_bubble_controller_for_testing() {
     return lens_permission_bubble_controller_.get();
@@ -442,6 +448,9 @@ class LensSearchController {
 
   // Whether the handshake with the Lens backend is complete.
   bool is_handshake_complete_ = false;
+
+  // The invocation source of the current Lens session.
+  std::optional<lens::LensOverlayInvocationSource> invocation_source_;
 
   // If the side panel needed to be closed before dismissing Lens, this
   // stores the original dismissal_source so it is properly recorded when the
