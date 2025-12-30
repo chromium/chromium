@@ -220,7 +220,7 @@ impl PartialEq<Luv> for Luv {
 }
 
 impl PartialEq<LCh> for LCh {
-    /// Compares two colours ignoring chromaticity if L\* is zero and hue if C\*
+    /// Compares two colors ignoring chromaticity if L\* is zero and hue if C\*
     /// is zero.  Hues which are τ apart are compared equal.
     #[inline]
     fn eq(&self, other: &Self) -> bool {

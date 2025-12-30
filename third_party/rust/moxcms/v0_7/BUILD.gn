@@ -138,7 +138,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "moxcms"
   cargo_pkg_description = "Simple Color Management in Rust"
   cargo_pkg_repository = "https://github.com/awxkee/moxcms.git"
-  cargo_pkg_version = "0.7.10"
+  cargo_pkg_version = "0.7.11"
 
   allow_unsafe = true
 

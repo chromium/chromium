@@ -158,7 +158,7 @@ impl DataColorSpace {
     pub fn check_layout(self, layout: Layout) -> Result<(), CmsError> {
         let unsupported: bool = match self {
             DataColorSpace::Xyz => layout != Layout::Rgb,
-            DataColorSpace::Lab => layout != Layout::Rgb,
+            DataColorSpace::Lab => layout != Layout::Rgb && layout != Layout::Rgba,
             DataColorSpace::Luv => layout != Layout::Rgb,
             DataColorSpace::YCbr => layout != Layout::Rgb,
             DataColorSpace::Yxy => layout != Layout::Rgb,

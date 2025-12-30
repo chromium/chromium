@@ -31,8 +31,8 @@ use crate::cicp::create_rec709_parametric;
 use crate::trc::{ToneReprCurve, curve_from_gamma};
 use crate::{
     CicpColorPrimaries, CicpProfile, ColorPrimaries, ColorProfile, DataColorSpace,
-    LocalizableString, Matrix3d, MatrixCoefficients, ProfileClass, ProfileText, RenderingIntent,
-    TransferCharacteristics, XyY,
+    LocalizableString, LutMultidimensionalType, LutWarehouse, Matrix3d, MatrixCoefficients,
+    ProfileClass, ProfileText, RenderingIntent, TransferCharacteristics, Vector3, XyY,
 };
 use pxfm::{copysignk, exp, floor, pow};
 
@@ -536,6 +536,69 @@ impl ColorProfile {
             "US".to_string(),
             "Public Domain".to_string(),
         )]));
+        profile
+    }
+
+    /// Creates new Generic CIE LAB profile
+    pub fn new_lab() -> ColorProfile {
+        let mut profile = ColorProfile {
+            profile_class: ProfileClass::DisplayDevice,
+            rendering_intent: RenderingIntent::Perceptual,
+            color_space: DataColorSpace::Lab,
+            pcs: DataColorSpace::Xyz,
+            chromatic_adaptation: Some(BRADFORD_D),
+            white_point: WHITE_POINT_D50.to_xyzd(),
+            media_white_point: Some(WHITE_POINT_D65.to_xyzd()),
+            ..Default::default()
+        };
+
+        let b_to_a_lut = LutWarehouse::Multidimensional(LutMultidimensionalType {
+            num_input_channels: 3,
+            num_output_channels: 3,
+            grid_points: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            clut: None,
+            b_curves: vec![
+                ToneReprCurve::Lut(vec![]),
+                ToneReprCurve::Lut(vec![]),
+                ToneReprCurve::Lut(vec![]),
+            ],
+            matrix: Matrix3d::IDENTITY,
+            a_curves: vec![],
+            m_curves: vec![],
+            bias: Vector3::default(),
+        });
+        profile.lut_b_to_a_perceptual = Some(b_to_a_lut.clone());
+        profile.lut_b_to_a_colorimetric = Some(b_to_a_lut);
+
+        let a_to_b = LutWarehouse::Multidimensional(LutMultidimensionalType {
+            num_input_channels: 3,
+            num_output_channels: 3,
+            grid_points: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            clut: None,
+            b_curves: vec![
+                ToneReprCurve::Lut(vec![]),
+                ToneReprCurve::Lut(vec![]),
+                ToneReprCurve::Lut(vec![]),
+            ],
+            matrix: Matrix3d::IDENTITY,
+            a_curves: vec![],
+            m_curves: vec![],
+            bias: Vector3::default(),
+        });
+        profile.lut_a_to_b_colorimetric = Some(a_to_b.clone());
+        profile.lut_a_to_b_perceptual = Some(a_to_b);
+
+        profile.description = Some(ProfileText::Localizable(vec![LocalizableString::new(
+            "en".to_string(),
+            "US".to_string(),
+            "Generic L*a*b* Profile".to_string(),
+        )]));
+        profile.copyright = Some(ProfileText::Localizable(vec![LocalizableString::new(
+            "en".to_string(),
+            "US".to_string(),
+            "Public Domain".to_string(),
+        )]));
+
         profile
     }
 }

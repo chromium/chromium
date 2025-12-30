@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85.0"
 name = "moxcms"
-version = "0.7.10"
+version = "0.7.11"
 authors = ["Radzivon Bartoshyk"]
 build = false
 exclude = [

@@ -2,7 +2,7 @@ workspace = { members = ["app", "fuzz"] }
 
 [package]
 name = "moxcms"
-version = "0.7.10"
+version = "0.7.11"
 edition = "2024"
 description = "Simple Color Management in Rust"
 readme = "./README.md"
