@@ -14,6 +14,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Unit tests for {@link PriceWelcomeMessageController}. */
@@ -45,9 +48,10 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Context mContext;
     @Mock private TabSwitcherMessageManager mTabSwitcherMessageManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private MessageCardProvider mMessageCardProvider;
+    @Mock private MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     @Mock private Profile mProfile;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private PriceMessageService mPriceMessageService;
@@ -152,8 +156,7 @@ public class PriceWelcomeMessageControllerUnitTest {
         mController.removePriceWelcomeMessage();
 
         verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        eq(TabProperties.UiType.PRICE_MESSAGE), eq(MessageType.PRICE_MESSAGE));
+                .removeSpecialListItem(eq(UiType.PRICE_MESSAGE), eq(MessageType.PRICE_MESSAGE));
         verify(mPriceMessageUpdateObserver).onRemovePriceWelcomeMessage();
     }
 
@@ -219,6 +222,7 @@ public class PriceWelcomeMessageControllerUnitTest {
         ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
+                        mContext,
                         mTabSwitcherMessageManager,
                         spySupplier,
                         mMessageCardProvider,
@@ -236,6 +240,7 @@ public class PriceWelcomeMessageControllerUnitTest {
         ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
+                        mContext,
                         mTabSwitcherMessageManager,
                         spySupplier,
                         mMessageCardProvider,

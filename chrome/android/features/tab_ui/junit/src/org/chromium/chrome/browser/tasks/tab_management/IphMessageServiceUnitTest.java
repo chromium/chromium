@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -35,13 +38,15 @@ import org.chromium.components.feature_engagement.Tracker;
 public class IphMessageServiceUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Context mContext;
+
     @Mock private TabSwitcherIphController mIphController;
 
     @Mock private Profile mProfile;
 
     @Mock private Tracker mTracker;
 
-    @Mock private MessageService.MessageObserver mMessageObserver;
+    @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
 
     private IphMessageService mIphMessageService;
 
@@ -49,7 +54,7 @@ public class IphMessageServiceUnitTest {
     public void setUp() {
         IphMessageService.setSkipIphInTestsForTesting(false);
         TrackerFactory.setTrackerForTests(mTracker);
-        mIphMessageService = new IphMessageService(() -> mProfile, mIphController);
+        mIphMessageService = new IphMessageService(mContext, () -> mProfile, mIphController);
     }
 
     @Test
@@ -60,6 +65,7 @@ public class IphMessageServiceUnitTest {
 
     @Test
     public void testDismiss() {
+        mIphMessageService.initialize(mServiceDismissActionProvider);
         mIphMessageService.dismiss();
         verify(mTracker, times(1))
                 .shouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
@@ -67,23 +73,21 @@ public class IphMessageServiceUnitTest {
     }
 
     @Test
-    public void testAddObserver_NotInitialized() {
+    public void testInitialize_TrackerNotInitialized() {
         doReturn(false).when(mTracker).isInitialized();
-        mIphMessageService.addObserver(mMessageObserver);
-        assertTrue(mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
+        mIphMessageService.initialize(mServiceDismissActionProvider);
         verify(mTracker, times(1))
                 .addOnInitializedCallback(mIphMessageService.getInitializedCallbackForTesting());
     }
 
     @Test
-    public void testAddObserver_Initialized() {
+    public void testInitialize_TrackerInitialized() {
         doReturn(true)
                 .when(mTracker)
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
-        mIphMessageService.addObserver(mMessageObserver);
-        assertTrue(mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
-        verify(mMessageObserver, times(1)).messageReady(eq(MessageType.IPH), any());
+        mIphMessageService.initialize(mServiceDismissActionProvider);
+        assertFalse(mIphMessageService.getMessageItems().isEmpty());
     }
 
     @Test
@@ -92,10 +96,10 @@ public class IphMessageServiceUnitTest {
                 .when(mTracker)
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(false).when(mTracker).isInitialized();
-        mIphMessageService.addObserver(mMessageObserver);
+        mIphMessageService.initialize(mServiceDismissActionProvider);
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
-        verify(mMessageObserver, times(1)).messageReady(eq(MessageType.IPH), any());
+        assertFalse(mIphMessageService.getMessageItems().isEmpty());
     }
 
     @Test
@@ -103,8 +107,8 @@ public class IphMessageServiceUnitTest {
         doReturn(false)
                 .when(mTracker)
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
-        mIphMessageService.addObserver(mMessageObserver);
+        mIphMessageService.initialize(mServiceDismissActionProvider);
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
-        verify(mMessageObserver, times(0)).messageReady(eq(MessageType.IPH), any());
+        assertTrue(mIphMessageService.getMessageItems().isEmpty());
     }
 }

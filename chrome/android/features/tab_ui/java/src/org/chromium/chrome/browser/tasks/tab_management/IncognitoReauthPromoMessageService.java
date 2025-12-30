@@ -144,9 +144,7 @@ public class IncognitoReauthPromoMessageService
         activityLifecycleDispatcher.register(this);
     }
 
-    @Override
     public void destroy() {
-        super.destroy();
         mIncognitoReauthManager.destroy();
         // Duplicate unregister is safe if dismiss() was invoked.
         mActivityLifecycleDispatcher.unregister(this);
@@ -154,7 +152,7 @@ public class IncognitoReauthPromoMessageService
 
     @VisibleForTesting
     void dismiss() {
-        sendInvalidNotification();
+        invalidateMessages();
         disableIncognitoReauthPromoMessage();
         recordPromoImpressionsCount();
 
@@ -202,13 +200,14 @@ public class IncognitoReauthPromoMessageService
             return false;
         }
 
-        sendAvailabilityNotification(this::buildViewModel);
+        queueMessage(this::buildViewModel);
         return true;
     }
 
     @Override
-    public void addObserver(MessageObserver<@MessageType Integer> observer) {
-        super.addObserver(observer);
+    public void initialize(
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
+        super.initialize(serviceDismissActionProvider);
         preparePromoMessage();
     }
 
@@ -313,9 +312,9 @@ public class IncognitoReauthPromoMessageService
     }
 
     private PropertyModel buildViewModel(
-            Context context, ServiceDismissActionProvider serviceActionProvider) {
+            ServiceDismissActionProvider<@MessageType Integer> serviceActionProvider) {
         return IncognitoReauthPromoViewModel.create(
-                context,
+                mContext,
                 serviceActionProvider,
                 new IncognitoReauthMessageData(this::review, this::dismiss));
     }
@@ -345,7 +344,7 @@ public class IncognitoReauthPromoMessageService
             } else {
                 // For all other cases, we only send an invalidate message but don't disable the
                 // promo card completely.
-                sendInvalidNotification();
+                invalidateMessages();
                 mShouldTriggerPrepareMessage = true;
             }
         } else {

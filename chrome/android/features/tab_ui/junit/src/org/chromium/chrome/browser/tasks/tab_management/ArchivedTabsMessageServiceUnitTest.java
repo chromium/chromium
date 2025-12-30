@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -94,7 +95,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private MessageService.MessageObserver<@MessageType Integer> mMessageObserver;
+    @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
     @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
@@ -170,7 +171,7 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mLayoutStateProviderSupplier);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
-        mArchivedTabsMessageService.addObserver(mMessageObserver);
+        mArchivedTabsMessageService.initialize(mServiceDismissActionProvider);
         mArchivedTabsMessageService.setOnTabSelectingListener(mOnTabSelectingListener);
 
         // When the service is created, this getter will return null. Only set up the mock right
@@ -192,12 +193,11 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         mTabCountSupplier.set(1);
         assertEquals(1, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        verify(mMessageObserver, times(1))
-                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        assertNotNull(mArchivedTabsMessageService.getNextMessageItem());
 
         mTabCountSupplier.set(0);
         assertEquals(0, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mServiceDismissActionProvider).dismiss(MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mAppendMessageRunnable).run();
     }
 
@@ -210,21 +210,19 @@ public class ArchivedTabsMessageServiceUnitTest {
         mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
 
-        verify(mMessageObserver, times(1))
-                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
+
         mTabCountSupplier.set(8);
         assertEquals(8, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         // Sending another message to the queue should exit early without sending a message.
-        verify(mMessageObserver, times(1))
-                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
         verify(mAppendMessageRunnable, times(1)).run();
 
         // After invalidating the previous message, a new message should be sent.
         mArchivedTabsMessageService.maybeInvalidatePreviouslySentMessage();
         mArchivedTabsMessageService.maybeSendMessageToQueue(8);
-        verify(mMessageObserver, times(2))
-                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
-        verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
+        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
+        verify(mServiceDismissActionProvider).dismiss(MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mAppendMessageRunnable, times(2)).run();
     }
 
@@ -311,7 +309,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
 
-        verify(mMessageObserver).messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        assertNotNull(mArchivedTabsMessageService.getNextMessageItem());
         mTabCountSupplier.set(8);
         doReturn(true)
                 .when(mTabListCoordinator)

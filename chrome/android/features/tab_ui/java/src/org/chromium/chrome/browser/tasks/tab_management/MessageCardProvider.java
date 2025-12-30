@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,37 +25,12 @@ import java.util.Map;
  */
 @NullMarked
 public class MessageCardProvider<MessageT, UiT> {
-    private final Context mContext;
     private final ServiceDismissActionProvider<MessageT> mServiceDismissActionProvider;
     private final Map<MessageT, MessageService<MessageT, UiT>> mMessageServices = new HashMap<>();
-    private final MessageService.MessageObserver<MessageT> mObserver =
-            new MessageService.MessageObserver<>() {
-                @Override
-                public void messageReady(MessageT type, MessageModelFactory<MessageT> factory) {
-                    MessageService<MessageT, UiT> service = mMessageServices.get(type);
-                    if (service == null) return;
-
-                    PropertyModel model =
-                            factory.build(
-                                    mContext, MessageCardProvider.this::invalidateShownMessage);
-                    service.addMessage(new Message<>(type, model));
-                }
-
-                @Override
-                public void messageInvalidate(MessageT type) {
-                    MessageService<MessageT, UiT> service = mMessageServices.get(type);
-                    if (service == null) return;
-
-                    service.invalidateMessages();
-                    invalidateShownMessage(type);
-                }
-            };
 
     private @Nullable MessageHostDelegate<MessageT, UiT> mMessageHostDelegate;
 
-    MessageCardProvider(
-            Context context, ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
-        mContext = context;
+    MessageCardProvider(ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
         mServiceDismissActionProvider = serviceDismissActionProvider;
     }
 
@@ -86,9 +57,8 @@ public class MessageCardProvider<MessageT, UiT> {
             mMessageHostDelegate.registerService(service);
         }
 
-        // TODO(crbug.com/439557010): Simplify the observer interactions.
         mMessageServices.put(service.getMessageType(), service);
-        service.addObserver(mObserver);
+        service.initialize(mServiceDismissActionProvider);
     }
 
     /**
@@ -122,21 +92,7 @@ public class MessageCardProvider<MessageT, UiT> {
 
     /** Clean up all member fields. */
     public void destroy() {
-        List<MessageService<MessageT, UiT>> services = getMessageServices();
-        for (int i = 0; i < services.size(); i++) {
-            MessageService<MessageT, UiT> service = services.get(i);
-            mMessageServices.remove(service.getMessageType());
-            service.removeObserver(mObserver);
-        }
-    }
-
-    @VisibleForTesting
-    void invalidateShownMessage(MessageT type) {
-        MessageService<MessageT, UiT> service = mMessageServices.get(type);
-        if (service == null) return;
-
-        service.invalidateShownMessage();
-        mServiceDismissActionProvider.dismiss(type);
+        mMessageServices.clear();
     }
 
     @VisibleForTesting

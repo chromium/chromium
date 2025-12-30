@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -125,6 +127,7 @@ public class PriceWelcomeMessageController {
      * @param tabListCoordinatorSupplier Supplies the {@link TabListCoordinator}.
      */
     public static PriceWelcomeMessageController build(
+            Context context,
             TabSwitcherMessageManager tabSwitcherMessageManager,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
@@ -135,6 +138,7 @@ public class PriceWelcomeMessageController {
         PriceMessageService priceMessageService =
                 PriceTrackingFeatures.isPriceAnnotationsEnabled(profile)
                         ? new PriceMessageService(
+                                context,
                                 profile,
                                 tabListCoordinatorSupplier::get,
                                 priceWelcomeMessageReviewActionProviderSupplier)

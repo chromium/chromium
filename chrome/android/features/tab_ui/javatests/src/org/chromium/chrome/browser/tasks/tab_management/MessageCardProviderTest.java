@@ -155,8 +155,7 @@ public class MessageCardProviderTest {
                                     R.layout.tab_grid_message_card_item,
                                     MessageCardViewBinder::bind);
 
-                    mCoordinator =
-                            new MessageCardProvider<>(sActivity, mServiceDismissActionProvider);
+                    mCoordinator = new MessageCardProvider<>(mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
@@ -227,8 +226,8 @@ public class MessageCardProviderTest {
     }
 
     private void sendAvailabilityNotification() {
-        mPriceService.sendAvailabilityNotification(
-                (a, b) ->
+        mPriceService.queueMessage(
+                dismiss ->
                         PriceMessageCardViewModel.create(
                                 sActivity,
                                 c -> {},

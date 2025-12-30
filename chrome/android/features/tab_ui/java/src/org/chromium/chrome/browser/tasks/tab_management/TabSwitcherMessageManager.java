@@ -234,7 +234,7 @@ public class TabSwitcherMessageManager {
 
         mMessageCardProvider =
                 new MessageCardProvider<@MessageType Integer, @UiType Integer>(
-                        activity, this::dismissHandler);
+                        this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
                 new TabGridIphDialogCoordinator(activity, mModalDialogManager);
@@ -339,7 +339,8 @@ public class TabSwitcherMessageManager {
         mMessageCardProvider.subscribeMessageService(mArchivedTabsMessageService);
 
         IphMessageService iphMessageService =
-                new IphMessageService(this::getCurrentProfile, mTabGridIphDialogCoordinator);
+                new IphMessageService(
+                        mActivity, this::getCurrentProfile, mTabGridIphDialogCoordinator);
         mMessageCardProvider.subscribeMessageService(iphMessageService);
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
@@ -367,6 +368,7 @@ public class TabSwitcherMessageManager {
         }
         mPriceWelcomeMessageController =
                 PriceWelcomeMessageController.build(
+                        mActivity,
                         this,
                         mCurrentTabGroupModelFilterSupplier,
                         mMessageCardProvider,
@@ -442,9 +444,6 @@ public class TabSwitcherMessageManager {
         mTabGridIphDialogCoordinator.destroy();
         if (mIncognitoReauthPromoMessageService != null) {
             mIncognitoReauthPromoMessageService.destroy();
-        }
-        if (mTabGroupSuggestionMessageService != null) {
-            mTabGroupSuggestionMessageService.destroy();
         }
         if (mArchivedTabsMessageService != null) {
             mArchivedTabsMessageService.destroy();

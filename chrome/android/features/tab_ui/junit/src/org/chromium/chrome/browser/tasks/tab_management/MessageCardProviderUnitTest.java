@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -67,7 +68,7 @@ public class MessageCardProviderUnitTest {
     @Before
     public void setUp() {
         doNothing().when(mServiceDismissActionProvider).dismiss(anyInt());
-        mProvider = new MessageCardProvider<>(mContext, mServiceDismissActionProvider);
+        mProvider = new MessageCardProvider<>(mServiceDismissActionProvider);
         mProvider.subscribeMessageService(initService(MessageType.FOR_TESTING));
         mProvider.subscribeMessageService(initService(MessageType.PRICE_MESSAGE));
         mProvider.subscribeMessageService(initService(MessageType.IPH));
@@ -83,30 +84,31 @@ public class MessageCardProviderUnitTest {
                 when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> {});
                 when(mPriceMessageData.getAcceptActionProvider()).thenReturn(() -> {});
                 when(mPriceMessageData.getType()).thenReturn(PriceMessageType.PRICE_WELCOME);
-                service.sendAvailabilityNotification(
-                        (a, b) ->
+                service.queueMessage(
+                        dismiss ->
                                 PriceMessageCardViewModel.create(
-                                        a,
-                                        b,
+                                        mContext,
+                                        dismiss,
                                         mPriceMessageData,
                                         new PriceDropNotificationManagerImpl(mock())));
                 break;
             case MessageType.IPH:
                 when(mIphMessageData.getDismissActionProvider()).thenReturn(() -> {});
                 when(mIphMessageData.getAcceptActionProvider()).thenReturn(() -> {});
-                service.sendAvailabilityNotification(
-                        (a, b) -> IphMessageCardViewModel.create(a, b, mIphMessageData));
+                service.queueMessage(
+                        dismiss ->
+                                IphMessageCardViewModel.create(mContext, dismiss, mIphMessageData));
                 break;
             case MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE:
                 when(mIncognitoReauthMessageData.getAcceptActionProvider()).thenReturn(() -> {});
-                service.sendAvailabilityNotification(
-                        (a, b) ->
+                service.queueMessage(
+                        dismiss ->
                                 IncognitoReauthPromoViewModel.create(
-                                        a, b, mIncognitoReauthMessageData));
+                                        mContext, dismiss, mIncognitoReauthMessageData));
                 break;
             default:
-                service.sendAvailabilityNotification(
-                        (a, b) -> new PropertyModel(MessageCardViewProperties.ALL_KEYS));
+                service.queueMessage(
+                        dismiss -> new PropertyModel(MessageCardViewProperties.ALL_KEYS));
         }
     }
 
@@ -192,7 +194,8 @@ public class MessageCardProviderUnitTest {
         }
 
         // Test message updated after invalidation, and the updated message is persisted.
-        mProvider.invalidateShownMessage(MessageType.FOR_TESTING);
+        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
+        enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
         Message<@MessageType Integer> newMessage =
                 mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
         Assert.assertNotEquals(testingMessage1, newMessage);
@@ -204,7 +207,7 @@ public class MessageCardProviderUnitTest {
     }
 
     @Test
-    public void getNextMessageItemForTypeTest_ReturnNextMessageIfShownMessageIsInvalided() {
+    public void getNextMessageItemForTypeTest_ReturnNullIfShownMessageIsInvalided() {
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
 
@@ -212,26 +215,22 @@ public class MessageCardProviderUnitTest {
                 getMessageItemsForService(MessageType.FOR_TESTING);
         assertEquals(2, messages.size());
         final Message<@MessageType Integer> testingMessage1 = messages.get(0);
-        final Message<@MessageType Integer> testingMessage2 = messages.get(1);
 
         Message<@MessageType Integer> message =
                 mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
         assertEquals(testingMessage1, message);
 
-        mProvider.invalidateShownMessage(MessageType.FOR_TESTING);
+        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
 
         message = mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
-        assertEquals(testingMessage2, message);
-
-        mProvider.invalidateShownMessage(MessageType.FOR_TESTING);
-        Assert.assertNull(mProvider.getNextMessageItemForType(MessageType.FOR_TESTING));
+        Assert.assertNull(message);
     }
 
     @Test
     public void invalidate_allMessages() {
         enqueueMessageItem(MessageType.PRICE_MESSAGE, -1);
 
-        mProvider.getMessageServicesMap().get(MessageType.PRICE_MESSAGE).sendInvalidNotification();
+        mProvider.getMessageServicesMap().get(MessageType.PRICE_MESSAGE).invalidateMessages();
 
         Assert.assertNull(getShownMessageFromService(MessageType.PRICE_MESSAGE));
         assertTrue(getMessageItemsForService(MessageType.PRICE_MESSAGE).isEmpty());
@@ -240,7 +239,7 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
 
-        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).sendInvalidNotification();
+        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
         Assert.assertNull(getShownMessageFromService(MessageType.FOR_TESTING));
         assertTrue(getMessageItemsForService(MessageType.FOR_TESTING).isEmpty());
     }
@@ -250,7 +249,7 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.PRICE_MESSAGE, -1);
 
         mProvider.getNextMessageItemForType(MessageType.PRICE_MESSAGE);
-        mProvider.invalidateShownMessage(MessageType.PRICE_MESSAGE);
+        mProvider.getMessageServicesMap().get(MessageType.PRICE_MESSAGE).invalidateMessages();
 
         verify(mServiceDismissActionProvider).dismiss(anyInt());
         Assert.assertNull(getShownMessageFromService(MessageType.PRICE_MESSAGE));
@@ -261,9 +260,31 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
 
         mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
-        mProvider.invalidateShownMessage(MessageType.FOR_TESTING);
+        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
         Assert.assertNull(getShownMessageFromService(MessageType.FOR_TESTING));
-        assertFalse(getMessageItemsForService(MessageType.FOR_TESTING).isEmpty());
+        assertTrue(getMessageItemsForService(MessageType.FOR_TESTING).isEmpty());
+    }
+
+    @Test
+    public void subscribeMessageService() {
+        MessageService<Integer, Integer> service = mock();
+        when(service.getMessageType()).thenReturn(MessageType.ALL);
+
+        mProvider.subscribeMessageService(service);
+
+        verify(service).initialize(mServiceDismissActionProvider);
+    }
+
+    @Test
+    public void queueMessage() {
+        MessageService<Integer, Integer> service =
+                mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING);
+        assertNotNull(service);
+
+        MessageModelFactory<Integer> factory = mock();
+        service.queueMessage(factory);
+
+        verify(factory).build(mServiceDismissActionProvider);
     }
 
     @Test

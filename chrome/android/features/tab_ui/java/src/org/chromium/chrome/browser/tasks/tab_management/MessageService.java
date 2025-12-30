@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
@@ -61,43 +61,19 @@ public class MessageService<MessageT, UiT> {
         /**
          * Builds the property model for the message.
          *
-         * @param context The context for the message.
          * @param msgServiceDismissRunnable To be called when the message is dismissed to inform the
          *     message service.
          */
-        PropertyModel build(
-                Context context, ServiceDismissActionProvider<MessageT> msgServiceDismissRunnable);
+        PropertyModel build(ServiceDismissActionProvider<MessageT> msgServiceDismissRunnable);
     }
 
-    /**
-     * An interface to be notified about changes to a Message.
-     *
-     * @param <MessageT> The message type.
-     */
-    public interface MessageObserver<MessageT> {
-        /**
-         * Called when a message is available.
-         *
-         * @param type The type of the message.
-         * @param data {@link MessageModelFactory} associated with the message.
-         */
-        void messageReady(MessageT type, MessageModelFactory<MessageT> data);
-
-        /**
-         * Called when a message is invalidated.
-         *
-         * @param type The type of the message.
-         */
-        void messageInvalidate(MessageT type);
-    }
-
-    private final ObserverList<MessageObserver<MessageT>> mObservers = new ObserverList<>();
     private final MessageT mMessageType;
     private final UiT mUiType;
     private final @LayoutRes int mLayoutRes;
     private final ViewBinder<PropertyModel, ? extends View, PropertyKey> mBinder;
     private final Deque<Message<MessageT>> mMessageItems = new ArrayDeque<>();
     private @Nullable Message<MessageT> mShownMessage;
+    @MonotonicNonNull private ServiceDismissActionProvider<MessageT> mServiceDismissActionProvider;
 
     MessageService(
             MessageT messageType,
@@ -110,54 +86,28 @@ public class MessageService<MessageT, UiT> {
         mBinder = binder;
     }
 
+    /**
+     * Initializes the service and sets the service dismiss runnable.
+     *
+     * @param serviceDismissActionProvider Performs a cleanup operations to remove a given message
+     *     from the UI.
+     */
+    @Initializer
     @CallSuper
-    public void destroy() {
-        mObservers.clear();
+    public void initialize(ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
+        assert mServiceDismissActionProvider == null;
+        mServiceDismissActionProvider = serviceDismissActionProvider;
     }
 
     /**
-     * Add a {@link MessageObserver} to be notified when message from external service changes.
-     *
-     * @param observer The observer to add.
+     * Queues a message item, allowing it to be shown at the next {@link #getNextMessageItem()}
+     * call.
      */
-    public void addObserver(MessageObserver<MessageT> observer) {
-        mObservers.addObserver(observer);
-    }
+    public void queueMessage(MessageModelFactory<MessageT> data) {
+        assert mServiceDismissActionProvider != null;
 
-    /**
-     * Remove a {@link MessageObserver}.
-     *
-     * @param observer The observer to remove.
-     */
-    public void removeObserver(MessageObserver<MessageT> observer) {
-        mObservers.removeObserver(observer);
-    }
-
-    /**
-     * Notifies all {@link MessageObserver} that a message is available.
-     *
-     * @param data The factory to build the message model.
-     */
-    public void sendAvailabilityNotification(MessageModelFactory<MessageT> data) {
-        for (MessageObserver<MessageT> observer : mObservers) {
-            observer.messageReady(mMessageType, data);
-        }
-    }
-
-    /** Notifies all {@link MessageObserver} that a message was invalidated. */
-    public void sendInvalidNotification() {
-        for (MessageObserver<MessageT> observer : mObservers) {
-            observer.messageInvalidate(mMessageType);
-        }
-    }
-
-    /**
-     * Add a message to the message list.
-     *
-     * @param message The message to add.
-     */
-    public void addMessage(Message<MessageT> message) {
-        mMessageItems.add(message);
+        PropertyModel model = data.build(mServiceDismissActionProvider);
+        mMessageItems.add(new Message<>(mMessageType, model));
     }
 
     /**
@@ -166,7 +116,18 @@ public class MessageService<MessageT, UiT> {
      */
     public void invalidateMessages() {
         mMessageItems.clear();
+        dismissShownMessage();
+    }
+
+    /**
+     * Invalidates the currently shown message and removes it from the UI. Used when it is not
+     * required to clear the entire message queue.
+     */
+    public void dismissShownMessage() {
+        assert mServiceDismissActionProvider != null;
+
         mShownMessage = null;
+        mServiceDismissActionProvider.dismiss(mMessageType);
     }
 
     /**
@@ -188,18 +149,6 @@ public class MessageService<MessageT, UiT> {
     public boolean isMessageShown(int identifier) {
         if (mShownMessage == null) return false;
         return mShownMessage.model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER) == identifier;
-    }
-
-    /**
-     * Invalidate the currently shown message. The next message in the queue will be shown on the
-     * next call to {@link #getNextMessageItem()}.
-     */
-    public void invalidateShownMessage() {
-        mShownMessage = null;
-    }
-
-    protected ObserverList<MessageObserver<MessageT>> getObserversForTesting() {
-        return mObservers;
     }
 
     @VisibleForTesting

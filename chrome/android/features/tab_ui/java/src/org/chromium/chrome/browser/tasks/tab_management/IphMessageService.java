@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 public class IphMessageService extends MessageService<@MessageType Integer, @UiType Integer> {
     private static boolean sSkipIphInTests = true;
 
+    private final Context mContext;
     private final TabSwitcherIphController mIphController;
     private final Supplier<Profile> mProfileSupplier;
     private Tracker mTracker;
@@ -39,12 +40,12 @@ public class IphMessageService extends MessageService<@MessageType Integer, @UiT
             (result) -> {
                 if (wouldTriggerIph()) {
                     assert mTracker.isInitialized();
-                    sendAvailabilityNotification(this::buildModel);
+                    queueMessage(this::buildModel);
                 }
             };
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    static class IphMessageData {
+    public static class IphMessageData {
         private final MessageCardView.ActionProvider mAcceptActionProvider;
         private final MessageCardView.ActionProvider mDismissActionProvider;
         private final boolean mIsIncognito;
@@ -78,12 +79,16 @@ public class IphMessageService extends MessageService<@MessageType Integer, @UiT
         }
     }
 
-    IphMessageService(Supplier<Profile> profileSupplier, TabSwitcherIphController controller) {
+    IphMessageService(
+            Context context,
+            Supplier<Profile> profileSupplier,
+            TabSwitcherIphController controller) {
         super(
                 MessageType.IPH,
                 UiType.IPH_MESSAGE,
                 R.layout.tab_grid_message_card_item,
                 MessageCardViewBinder::bind);
+        mContext = context;
         mIphController = controller;
         mTracker = TrackerFactory.getTrackerForProfile(profileSupplier.get());
         mProfileSupplier = profileSupplier;
@@ -99,11 +104,13 @@ public class IphMessageService extends MessageService<@MessageType Integer, @UiT
     protected void dismiss() {
         mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         mTracker.dismissed(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+        dismissShownMessage();
     }
 
     @Override
-    public void addObserver(MessageObserver<@MessageType Integer> observer) {
-        super.addObserver(observer);
+    public void initialize(
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
+        super.initialize(serviceDismissActionProvider);
         if (mTracker.isInitialized()) {
             mInitializedCallback.onResult(true);
         } else {
@@ -134,11 +141,10 @@ public class IphMessageService extends MessageService<@MessageType Integer, @UiT
     }
 
     private PropertyModel buildModel(
-            Context context,
             ServiceDismissActionProvider<@MessageType Integer> serviceActionProvider) {
         boolean isIncognito = mProfileSupplier.get().isIncognitoBranded();
         return IphMessageCardViewModel.create(
-                context,
+                mContext,
                 serviceActionProvider,
                 new IphMessageData(this::review, this::dismiss, isIncognito));
     }

@@ -144,7 +144,7 @@ public class TabGroupSuggestionMessageService
      */
     public void dismissMessage(Runnable onDismissMessageListener) {
         if (!mMessageCurrentlyShown) return;
-        sendInvalidNotification();
+        invalidateMessages();
         mMessageCurrentlyShown = false;
         onDismissMessageListener.run();
     }
@@ -168,7 +168,7 @@ public class TabGroupSuggestionMessageService
                         mContext,
                         () -> onAcceptMessage(tabIdsSortedByIndex, responseListener),
                         () -> dismissMessage(responseListener::onSuggestionDismissed));
-        sendAvailabilityNotification((a, b) -> TabGroupSuggestionMessageViewModel.create(data));
+        queueMessage(dismiss -> TabGroupSuggestionMessageViewModel.create(data));
         mMessageCurrentlyShown = true;
 
         @TabId int lastTabId = tabIdsSortedByIndex.get(tabIdsSortedByIndex.size() - 1);

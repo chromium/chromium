@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -241,9 +242,7 @@ public class ArchivedTabsMessageService
         mModel.set(ICON_HIGHLIGHTED, mShowTwoStepIph);
     }
 
-    @Override
     public void destroy() {
-        super.destroy();
         if (mTabArchiveSettings != null) {
             mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }
@@ -291,8 +290,9 @@ public class ArchivedTabsMessageService
     }
 
     @Override
-    public void addObserver(MessageService.MessageObserver<@MessageType Integer> obs) {
-        super.addObserver(obs);
+    public void initialize(
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
+        super.initialize(serviceDismissActionProvider);
         maybeSendMessageToQueue(mTabCountSupplier.get());
     }
 
@@ -310,7 +310,7 @@ public class ArchivedTabsMessageService
         if (mTabGroupSyncService == null) return;
         if (tabCount <= 0) return;
         updateModelProperties(tabCount);
-        sendAvailabilityNotification((a, b) -> mModel);
+        queueMessage(dismiss -> mModel);
         mMessageSentToQueue = true;
         mAppendMessageRunnable.run();
     }
@@ -318,7 +318,7 @@ public class ArchivedTabsMessageService
     @VisibleForTesting
     void maybeInvalidatePreviouslySentMessage() {
         if (!mMessageSentToQueue) return;
-        sendInvalidNotification();
+        invalidateMessages();
         mMessageSentToQueue = false;
     }
 

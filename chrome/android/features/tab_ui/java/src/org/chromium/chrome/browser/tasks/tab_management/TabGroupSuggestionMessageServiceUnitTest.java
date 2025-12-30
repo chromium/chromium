@@ -46,9 +46,11 @@ import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupSuggestionMessageService.StartMergeAnimation;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupSuggestionMessageService.TabGroupSuggestionMessageData;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -82,8 +84,9 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
     @Mock private Tab mTab4;
+    @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
 
-    @Captor private ArgumentCaptor<MessageModelFactory> mMessageDataCaptor;
+    @Captor private ArgumentCaptor<MessageModelFactory<@MessageType Integer>> mMessageDataCaptor;
 
     private TabGroupSuggestionMessageService mTabGroupSuggestionMessageService;
 
@@ -100,6 +103,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                                 tabGroupModelFilterSupplier,
                                 mAddOnMessageAfterTabCallback,
                                 mStartMergeAnimation));
+        mTabGroupSuggestionMessageService.initialize(mServiceDismissActionProvider);
 
         doAnswer(
                         invocation -> {
@@ -143,8 +147,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
 
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
         verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
     }
 
@@ -154,7 +157,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 Collections.emptyList(), mSuggestionLifecycleObserver);
 
         verify(mTabGroupSuggestionMessageService, never())
-                .sendAvailabilityNotification(any(MessageModelFactory.class));
+                .queueMessage(any(MessageModelFactory.class));
         verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
     }
 
@@ -165,15 +168,13 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds1, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
         verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
 
         reset(mAddOnMessageAfterTabCallback);
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds2, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
         verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
     }
 
@@ -184,8 +185,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
 
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
         verify(mAddOnMessageAfterTabCallback).onResult(TAB3_ID);
     }
 
@@ -195,7 +195,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 List.of(TAB1_ID, TAB2_ID), mSuggestionLifecycleObserver);
         mTabGroupSuggestionMessageService.dismissMessage(mOnDismissMessageListener);
 
-        verify(mTabGroupSuggestionMessageService).sendInvalidNotification();
+        verify(mTabGroupSuggestionMessageService).invalidateMessages();
         verify(mOnDismissMessageListener).run();
     }
 
@@ -203,7 +203,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     public void testDismissMessage_whenNotShowing() {
         mTabGroupSuggestionMessageService.dismissMessage(mOnDismissMessageListener);
 
-        verify(mTabGroupSuggestionMessageService, never()).sendInvalidNotification();
+        verify(mTabGroupSuggestionMessageService, never()).invalidateMessages();
         verify(mOnDismissMessageListener, never()).run();
     }
 
@@ -216,11 +216,10 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
-        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
-        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+        MessageModelFactory<@MessageType Integer> modelFactory = mMessageDataCaptor.getValue();
+        PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
         MessageCardView.ActionProvider reviewAction = model.get(UI_ACTION_PROVIDER);
 
         reviewAction.action();
@@ -244,11 +243,10 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
-        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
-        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+        MessageModelFactory<@MessageType Integer> modelFactory = mMessageDataCaptor.getValue();
+        PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
         MessageCardView.ActionProvider reviewAction = model.get(UI_ACTION_PROVIDER);
         reviewAction.action();
 
@@ -263,11 +261,10 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
-        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
-        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+        MessageModelFactory<@MessageType Integer> modelFactory = mMessageDataCaptor.getValue();
+        PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
         MessageCardView.ActionProvider dismissAction = model.get(UI_DISMISS_ACTION_PROVIDER);
 
         dismissAction.action();
@@ -286,11 +283,10 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
-        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
-        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+        MessageModelFactory<@MessageType Integer> modelFactory = mMessageDataCaptor.getValue();
+        PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
         MessageCardView.ActionProvider reviewAction = model.get(UI_ACTION_PROVIDER);
 
         reviewAction.action();
@@ -352,11 +348,10 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService)
-                .sendAvailabilityNotification(mMessageDataCaptor.capture());
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
         MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
-        PropertyModel model = modelFactory.build(mContext, ignored -> {});
+        PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
 
         assertEquals(false, model.get(MessageCardViewProperties.IS_INCOGNITO));
     }
