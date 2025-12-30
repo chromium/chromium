@@ -863,8 +863,21 @@ bool ContextualTasksUI::IsZeroState(
     const GURL& url,
     contextual_tasks::ContextualTasksUiService* ui_service) {
   std::string query_value;
+  std::string mstk_value;
+  std::string vsrid_value;
+  std::string cinpts_value;
   net::GetValueForKeyInQuery(url, "q", &query_value);
-  return ui_service->IsAiUrl(url) && query_value.empty();
+  net::GetValueForKeyInQuery(url, "mstk", &mstk_value);
+  net::GetValueForKeyInQuery(url, "vsrid", &vsrid_value);
+  net::GetValueForKeyInQuery(url, "cinpts", &cinpts_value);
+
+  // If the URL is an AI URL and there's no query or mstk, it's zero state. If
+  // there is either a query or mstk, assume it's not zero state. If there is a
+  // vsrid/cinpts, assume it's not zero state since there will soon be an mstk.
+  // TODO(crbug.com/472336339): Find a more robust way to determine if the page
+  // is zero state instead of query params.
+  return ui_service->IsAiUrl(url) && query_value.empty() &&
+         mstk_value.empty() && vsrid_value.empty() && cinpts_value.empty();
 }
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
