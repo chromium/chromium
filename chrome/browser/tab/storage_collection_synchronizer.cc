@@ -43,6 +43,7 @@ StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     : collection_(collection), service_(service) {}
 
 void StorageCollectionSynchronizer::FullSave() {
+  service_->Save(collection_);
   CollectionSaveCrawler crawler(service_);
   DirectChildWalker walker(collection_, &crawler);
   walker.Walk();
