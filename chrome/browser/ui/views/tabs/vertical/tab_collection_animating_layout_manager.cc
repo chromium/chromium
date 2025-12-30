@@ -155,6 +155,14 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   }
 }
 
+void TabCollectionAnimatingLayoutManager::ResetToTargetLayout() {
+  RecalculateTarget();
+  animation_.Reset(0.0);
+  starting_layout_ = target_layout_;
+  current_layout_ = target_layout_;
+  InvalidateHost(/*mark_layouts_changed=*/false);
+}
+
 views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     double value) const {
   views::ProposedLayout result;

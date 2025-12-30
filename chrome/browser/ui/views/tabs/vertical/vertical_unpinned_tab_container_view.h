@@ -37,8 +37,8 @@ class VerticalUnpinnedTabContainerView : public views::View,
   TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
                                    const gfx::Point& point_in_screen) override;
   void OnTabDragEntered() override {}
-  void OnTabDragExited() override {}
-  void OnTabDragEnded() override {}
+  void OnTabDragExited() override;
+  void OnTabDragEnded() override;
   bool CanDropTab() override;
   void HandleTabDrop(TabDragTarget::DragController& controller) override {}
   base::CallbackListSubscription RegisterWillDestroyCallback(
@@ -47,10 +47,21 @@ class VerticalUnpinnedTabContainerView : public views::View,
  private:
   void ResetCollectionNode();
 
+  // Updates state related to dragging tabs, to be used when this container
+  // starts handling a drag.
+  void InitializeDragState(TabDragTarget::DragController& controller);
+
+  // Clears drag state and removes the transformations that were being used for
+  // the drag.
+  void ResetDragState();
+
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
+
+  std::set<raw_ptr<views::View>> dragging_views_;
+  gfx::Point last_drag_point_;
 
   base::OnceClosureList on_will_destroy_callback_list_;
 };

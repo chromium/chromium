@@ -41,6 +41,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  // Snaps the container to the target layout.
+  void ResetToTargetLayout();
+
  protected:
   // LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(

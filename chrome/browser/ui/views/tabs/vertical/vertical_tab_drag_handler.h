@@ -39,6 +39,11 @@ class VerticalTabDragHandler {
 
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
+
+  // For vertical tabs, `TabSlotView` doesn't represent the actual tab
+  // view. This method converts `view` to its actual tab view, or nullptr
+  // if this handler doesn't manage it.
+  static views::View* ViewFromTabSlot(TabSlotView* view);
 };
 
 // Implements a minimal drag context to interact with the central

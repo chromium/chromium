@@ -62,6 +62,14 @@ ui::mojom::DragEventSource EventSourceFromEvent(const ui::LocatedEvent& event) {
 
 }  // namespace
 
+// static
+views::View* VerticalTabDragHandler::ViewFromTabSlot(TabSlotView* view) {
+  if (auto* shim_view = views::AsViewClass<TabSlotShimView>(view)) {
+    return shim_view->parent();
+  }
+  return nullptr;
+}
+
 VerticalTabDragHandlerImpl::VerticalTabDragHandlerImpl(
     TabStripModel& tab_strip_model,
     TabCollectionNode& root_node)
