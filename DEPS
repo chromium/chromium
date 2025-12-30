@@ -4031,6 +4031,8 @@ include_rules = [
   '-third_party/abseil-cpp/absl/base/nullability.h',
   '-third_party/abseil-cpp/absl/container/btree_map.h',
   '-third_party/abseil-cpp/absl/container/btree_set.h',
+  '-third_party/abseil-cpp/absl/container/linked_hash_map.h',
+  '-third_party/abseil-cpp/absl/container/linked_hash_set.h',
   '-third_party/abseil-cpp/absl/flags',
   '-third_party/abseil-cpp/absl/functional/any_invocable.h',
   '-third_party/abseil-cpp/absl/functional/bind_front.h',

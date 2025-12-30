@@ -32,8 +32,8 @@
 #include "absl/base/nullability.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/charset.h"
+#include "absl/strings/internal/append_and_overwrite.h"
 #include "absl/strings/internal/escaping.h"
-#include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/internal/utf8.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/resize_and_overwrite.h"
@@ -446,22 +446,22 @@ void CEscapeAndAppendInternal(absl::string_view src,
 
   // We keep 3 slop bytes so that we can call `little_endian::Store32`
   // invariably regardless of the length of the escaped character.
-  constexpr size_t slop_bytes = 3;
+  constexpr size_t kSlopBytes = 3;
   size_t cur_dest_len = dest->size();
-  size_t new_dest_len = cur_dest_len + escaped_len + slop_bytes;
-  ABSL_INTERNAL_CHECK(new_dest_len > cur_dest_len, "std::string size overflow");
-  strings_internal::AppendUninitializedTraits<std::string>::Append(
-      dest, escaped_len + slop_bytes);
-  char* append_ptr = &(*dest)[cur_dest_len];
-
-  for (char c : src) {
-    unsigned char uc = static_cast<unsigned char>(c);
-    size_t char_len = kCEscapedLen[uc];
-    uint32_t little_endian_uint32 = kCEscapedLittleEndianUint32Array[uc];
-    little_endian::Store32(append_ptr, little_endian_uint32);
-    append_ptr += char_len;
-  }
-  dest->resize(new_dest_len - slop_bytes);
+  size_t append_buf_len = cur_dest_len + escaped_len + kSlopBytes;
+  ABSL_INTERNAL_CHECK(append_buf_len > cur_dest_len,
+                      "std::string size overflow");
+  strings_internal::StringAppendAndOverwrite(
+      *dest, append_buf_len, [src, escaped_len](char* append_ptr, size_t) {
+        for (char c : src) {
+          unsigned char uc = static_cast<unsigned char>(c);
+          size_t char_len = kCEscapedLen[uc];
+          uint32_t little_endian_uint32 = kCEscapedLittleEndianUint32Array[uc];
+          little_endian::Store32(append_ptr, little_endian_uint32);
+          append_ptr += char_len;
+        }
+        return escaped_len;
+      });
 }
 
 // Reverses the mapping in Base64EscapeInternal; see that method's
