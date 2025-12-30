@@ -270,17 +270,10 @@ NSString* const kDataImportCredentialConflictResolutionSection =
                            target:self
                            action:@selector(didTapCancelButton)];
   /// Navigation bar: continue button.
-  NSString* continueButtonTitle = l10n_util::GetNSString(IDS_CONTINUE);
-  UIBarButtonItem* continueButton =
-      [self newButtonWithTitle:continueButtonTitle
-                        action:@selector(didTapContinueButton)];
-  NSDictionary<NSString*, UIFont*>* continueButtonAttributes = @{
-    NSFontAttributeName : [UIFont systemFontOfSize:UIFont.buttonFontSize
-                                            weight:UIFontWeightSemibold]
-  };
-  [continueButton setTitleTextAttributes:continueButtonAttributes
-                                forState:UIControlStateNormal];
-  self.navigationItem.rightBarButtonItem = continueButton;
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(didTapContinueButton)];
   /// Toolbar select buttons.
   NSString* selectButtonTitle = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_SELECT_ALL);

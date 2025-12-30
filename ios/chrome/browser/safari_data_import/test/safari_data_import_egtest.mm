@@ -28,10 +28,11 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::ButtonStackSecondaryButton;
-using chrome_test_util::StaticTextWithAccessibilityLabelId;
-
 namespace {
+
+using ::chrome_test_util::ButtonStackSecondaryButton;
+using ::chrome_test_util::NavigationBarDoneButton;
+using ::chrome_test_util::StaticTextWithAccessibilityLabelId;
 
 /// User name and passwords for conflicted passwords in the valid ZIP file.
 NSString* const kURL = @"https://sebsg.github.io/";
@@ -353,8 +354,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
         assertWithMatcher:grey_sufficientlyVisible()];
     ExpectPasswordConflictCellAtIndexSelected(0, YES);
     ExpectPasswordConflictCellAtIndexSelected(1, NO);
-    [[EarlGrey selectElementWithMatcher:grey_buttonTitle(l10n_util::GetNSString(
-                                            IDS_CONTINUE))]
+    [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
         performAction:grey_tap()];
     /// Dismiss the workflow after import completes. Verify that NTP logo is
     /// interactable, which means that the entry point is dismissed.
