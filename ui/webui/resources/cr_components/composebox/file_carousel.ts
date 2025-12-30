@@ -9,7 +9,7 @@ import type {ComposeboxFile} from './common.js';
 import {getCss} from './file_carousel.css.js';
 import {getHtml} from './file_carousel.html.js';
 
-const DEBOUNCE_TIMEOUT: number = 20;
+const DEBOUNCE_TIMEOUT_MS: number = 20;
 const CAROUSEL_HEIGHT_PADDING = 18;
 
 function debounce(context: Object, func: () => void, delay: number) {
@@ -53,7 +53,7 @@ export class ComposeboxFileCarouselElement extends CrLitElement {
         composed: true,
         detail: {height: height},
       }));
-    }, DEBOUNCE_TIMEOUT));
+    }, DEBOUNCE_TIMEOUT_MS));
     this.resizeObserver_.observe(this);
   }
 

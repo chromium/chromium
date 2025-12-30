@@ -48,7 +48,7 @@ export enum VoiceSearchAction {
   QUERY_SUBMITTED = 1,
 }
 
-const DEBOUNCE_TIMEOUT: number = 20;
+const DEBOUNCE_TIMEOUT_MS: number = 20;
 
 function debounce(context: Object, func: () => void, delay: number) {
   let timeout: number;
@@ -344,7 +344,7 @@ export class ComposeboxElement extends I18nMixinLit
   private setupResizeObservers_() {
     const composeboxResizeObserver = new ResizeObserver(debounce(this, () => {
       this.fire('composebox-resize', {height: this.offsetHeight});
-    }, DEBOUNCE_TIMEOUT));
+    }, DEBOUNCE_TIMEOUT_MS));
     this.resizeObservers_.push(composeboxResizeObserver);
     composeboxResizeObserver.observe(this);
 
@@ -353,7 +353,7 @@ export class ComposeboxElement extends I18nMixinLit
           this.fire(
               'composebox-resize',
               {dropdownHeight: this.$.matches.offsetHeight});
-        }, DEBOUNCE_TIMEOUT));
+        }, DEBOUNCE_TIMEOUT_MS));
     this.resizeObservers_.push(composeboxDropdownResizeObserver);
     composeboxDropdownResizeObserver.observe(this.$.matches);
   }
