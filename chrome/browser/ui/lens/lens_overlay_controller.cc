@@ -3024,6 +3024,7 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession() {
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
       !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
     GetLensOverlayQueryController()->GrantPermissionForSession();
+    GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
     user_interacted_without_accepting_privacy_notice = true;
     lens::RecordNonBlockingPrivacyNoticeAccepted(
         lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kLensInteraction,
@@ -3038,6 +3039,7 @@ void LensOverlayController::AcceptPrivacyNotice() {
   lens::RecordNonBlockingPrivacyNoticeAccepted(
       lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kAccepted,
       invocation_source_);
+  GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
   GetLensQueryFlowRouter()->MaybeRestartQueryFlow();
   GetContextualizationController()->TryUpdatePageContextualization(
       base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
