@@ -283,22 +283,22 @@ void TabsEventRouter::OnTabStripModelChanged(
   }
 }
 
-void TabsEventRouter::TabChangedAt(WebContents* contents,
-                                   int index,
-                                   TabChangeType change_type) {
-  TabEntry* entry = GetTabEntry(contents);
+void TabsEventRouter::OnTabChangedAt(tabs::TabInterface* tab,
+                                     int index,
+                                     TabChangeType change_type) {
+  TabEntry* entry = GetTabEntry(tab->GetContents());
   // TabClosingAt() may have already removed the entry for |contents| even
   // though the tab has not yet been detached.
   if (entry)
     TabUpdated(entry, entry->UpdateLoadState());
 }
 
-void TabsEventRouter::TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                                            WebContents* contents,
-                                            int index) {
+void TabsEventRouter::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                              int index) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kPinnedKey);
-  DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+  DispatchTabUpdatedEvent(tab->GetContents(),
+                          std::move(changed_property_names));
 }
 
 void TabsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {

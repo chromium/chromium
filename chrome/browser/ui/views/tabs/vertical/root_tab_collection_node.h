@@ -27,6 +27,9 @@ class RootTabCollectionNode : public TabCollectionNode,
       CustomAddChildViewCallback add_node_view_to_parent);
   ~RootTabCollectionNode() override;
 
+ private:
+  using SelectionHandles = base::flat_set<tabs::TabHandle>;
+
   // tabs::TabCollectionObserver
   void OnChildrenAdded(const tabs::TabCollection::Position& position,
                        const tabs::TabCollectionNodes& handles,
@@ -42,18 +45,15 @@ class RootTabCollectionNode : public TabCollectionNode,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int model_index,
-                    TabChangeType change_type) override;
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int model_index) override;
-  void TabBlockedStateChanged(content::WebContents* contents,
-                              int model_index) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int model_index,
+                      TabChangeType change_type) override;
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                               int model_index) override;
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                int model_index) override;
 
- private:
-  using SelectionHandles = base::flat_set<tabs::TabHandle>;
-  void UpdateTabData(content::WebContents* contents, int model_index);
+  void UpdateTabData(tabs::TabInterface* tab, int model_index);
 
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;

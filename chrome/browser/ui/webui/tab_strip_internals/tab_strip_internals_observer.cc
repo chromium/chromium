@@ -58,21 +58,20 @@ void TabStripInternalsObserver::OnSplitTabChanged(
   FireUpdate();
 }
 
-void TabStripInternalsObserver::TabChangedAt(content::WebContents* /*contents*/,
-                                             int /*index*/,
-                                             TabChangeType /*change_type*/) {
+void TabStripInternalsObserver::OnTabChangedAt(tabs::TabInterface* /*tab*/,
+                                               int /*index*/,
+                                               TabChangeType /*change_type*/) {
   FireUpdate();
 }
 
-void TabStripInternalsObserver::TabPinnedStateChanged(
-    TabStripModel* /*tab_strip_model*/,
-    content::WebContents* /*contents*/,
+void TabStripInternalsObserver::OnTabPinnedStateChanged(
+    tabs::TabInterface* /*tab*/,
     int /*index*/) {
   FireUpdate();
 }
 
-void TabStripInternalsObserver::TabBlockedStateChanged(
-    content::WebContents* /*contents*/,
+void TabStripInternalsObserver::OnTabBlockedStateChanged(
+    tabs::TabInterface* /*tab*/,
     int /*index*/) {
   FireUpdate();
 }

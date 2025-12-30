@@ -92,9 +92,10 @@ void TabClusterUIClient::OnTabStripModelChanged(
   }
 }
 
-void TabClusterUIClient::TabChangedAt(content::WebContents* contents,
-                                      int index,
-                                      TabChangeType change_type) {
+void TabClusterUIClient::OnTabChangedAt(tabs::TabInterface* tab,
+                                        int index,
+                                        TabChangeType change_type) {
+  content::WebContents* contents = tab->GetContents();
   // Some tests may manually add tabs to browser such that the newly added tabs
   // may start loading before being inserted into the tab strip.
   if (!base::Contains(contents_item_map_, contents)) {

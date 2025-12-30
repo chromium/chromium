@@ -164,8 +164,8 @@ void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
   MaybeShowIPH();
 }
 
-void ExtensionsToolbarContainerViewController::TabChangedAt(
-    content::WebContents* contents,
+void ExtensionsToolbarContainerViewController::OnTabChangedAt(
+    tabs::TabInterface* tab,
     int index,
     TabChangeType change_type) {
   // Ignore changes that don't affect all the tab contents (e.g loading
@@ -187,7 +187,9 @@ void ExtensionsToolbarContainerViewController::TabChangedAt(
       extensions_container_->GetRequestAccessButton();
   if (request_access_button && request_access_button->IsShowingConfirmation() &&
       !request_access_button->IsShowingConfirmationFor(
-          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+          tab->GetContents()
+              ->GetPrimaryMainFrame()
+              ->GetLastCommittedOrigin())) {
     extensions_container_->CollapseConfirmation();
   }
 

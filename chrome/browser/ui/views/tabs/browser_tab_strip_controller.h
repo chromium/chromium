@@ -27,9 +27,9 @@ class BrowserFrameView;
 class Tab;
 class TabGroup;
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace tab_groups {
 class TabGroupId;
@@ -54,8 +54,6 @@ class BrowserTabStripController : public TabStripController,
   void InitFromModel(TabStrip* tabstrip);
 
   TabStripModel* model() const { return model_; }
-
-  bool IsTabPinned(const Tab* tab) const;
 
   // TabStripController implementation:
   ui::ListSelectionModel GetSelectionModel() const override;
@@ -132,46 +130,45 @@ class BrowserTabStripController : public TabStripController,
   bool IsLockedForOnTask() override;
 #endif
 
-  // TabStripModelObserver implementation:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void OnTabWillBeAdded() override;
-  void OnTabWillBeRemoved(content::WebContents* contents, int index) override;
-  void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int model_index,
-                    TabChangeType change_type) override;
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int model_index) override;
-  void TabBlockedStateChanged(content::WebContents* contents,
-                              int model_index) override;
-  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
-                              std::optional<tab_groups::TabGroupId> old_group,
-                              std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
-  void SetTabNeedsAttentionAt(int index, bool attention) override;
-  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
-                                 bool attention) override;
-  void OnSplitTabChanged(const SplitTabChange& change) override;
-  void OnTabGroupFocusChanged(
-      std::optional<tab_groups::TabGroupId> new_group_id,
-      std::optional<tab_groups::TabGroupId> old_group_id) override;
-
   const Browser* browser() const { return browser_view_->browser(); }
 
   // Test-specific methods.
   void CloseContextMenuForTesting();
 
  private:
+  // TabStripModelObserver implementation:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+  void OnTabWillBeAdded() override;
+  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+  void OnTabChangedAt(tabs::TabInterface* contents,
+                      int model_index,
+                      TabChangeType change_type) override;
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                               int model_index) override;
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                int model_index) override;
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override;
+  void OnTabNeedsAttentionChanged(int index, bool attention) override;
+  void OnTabGroupNeedsAttentionChanged(const tab_groups::TabGroupId& group,
+                                       bool attention) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_group_id,
+      std::optional<tab_groups::TabGroupId> old_group_id) override;
+
   BrowserFrameView* GetFrameView();
   const BrowserFrameView* GetFrameView() const;
 
   // Invokes tabstrip_->SetTabData.
-  void SetTabDataAt(content::WebContents* web_contents, int model_index);
+  void SetTabDataAt(int model_index);
 
   // Adds tabs to the view model.
   void AddTabs(std::vector<std::pair<tabs::TabInterface*, int>> contents_list);

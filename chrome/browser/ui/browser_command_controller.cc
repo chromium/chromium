@@ -1399,9 +1399,8 @@ void BrowserCommandController::OnTabStripModelChanged(
   UpdateCommandsForTabStripStateChanged();
 }
 
-void BrowserCommandController::TabBlockedStateChanged(
-    content::WebContents* contents,
-    int index) {
+void BrowserCommandController::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                        int index) {
   PrintingStateChanged();
   FullscreenStateChanged();
   UpdateCommandsForFind();

@@ -371,10 +371,10 @@ void CustomTabBarView::OnThemeChanged() {
   title_origin_view_->SetColors(background_color_);
 }
 
-void CustomTabBarView::TabChangedAt(content::WebContents* contents,
-                                    int index,
-                                    TabChangeType change_type) {
-  if (delegate_->GetWebContents() == contents) {
+void CustomTabBarView::OnTabChangedAt(tabs::TabInterface* tab,
+                                      int index,
+                                      TabChangeType change_type) {
+  if (delegate_->GetWebContents() == tab->GetContents()) {
     UpdateContents();
   }
 }

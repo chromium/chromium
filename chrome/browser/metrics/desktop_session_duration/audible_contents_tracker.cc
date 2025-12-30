@@ -58,13 +58,14 @@ void AudibleContentsTracker::OnTabStripModelChanged(
   }
 }
 
-void AudibleContentsTracker::TabChangedAt(content::WebContents* web_contents,
-                                          int index,
-                                          TabChangeType change_type) {
+void AudibleContentsTracker::OnTabChangedAt(tabs::TabInterface* tab,
+                                            int index,
+                                            TabChangeType change_type) {
   // Ignore 'loading' and 'title' changes.
   if (change_type != TabChangeType::kAll)
     return;
 
+  auto* web_contents = tab->GetContents();
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audible_helper->WasRecentlyAudible())
     AddAudibleWebContents(web_contents);

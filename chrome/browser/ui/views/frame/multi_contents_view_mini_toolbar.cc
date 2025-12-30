@@ -209,10 +209,10 @@ void MultiContentsViewMiniToolbar::ClearWebContents(views::WebView*) {
   web_contents_ = nullptr;
 }
 
-void MultiContentsViewMiniToolbar::TabChangedAt(content::WebContents* contents,
-                                                int index,
-                                                TabChangeType change_type) {
-  if (!web_contents_ || contents != web_contents_) {
+void MultiContentsViewMiniToolbar::OnTabChangedAt(tabs::TabInterface* tab,
+                                                  int index,
+                                                  TabChangeType change_type) {
+  if (!web_contents_ || tab->GetContents() != web_contents_) {
     return;
   }
   TabStripModel* model = browser_view_->browser()->tab_strip_model();

@@ -557,16 +557,16 @@ void GlicPinnedTabManager::OnTabStripModelChanged(
   pin_candidate_updater_->RequestUpdate();
 }
 
-void GlicPinnedTabManager::TabChangedAt(content::WebContents* contents,
-                                        int index,
-                                        TabChangeType change_type) {
+void GlicPinnedTabManager::OnTabChangedAt(tabs::TabInterface* tab,
+                                          int index,
+                                          TabChangeType change_type) {
   if (!pin_candidates_observer_) {
     return;
   }
   pin_candidate_updater_->RequestUpdate();
 }
 
-void GlicPinnedTabManager::OnTabWillBeRemoved(content::WebContents* contents,
+void GlicPinnedTabManager::OnTabWillBeRemoved(tabs::TabInterface* tab,
                                               int index) {
   if (!pin_candidates_observer_) {
     return;

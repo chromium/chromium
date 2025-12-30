@@ -379,16 +379,14 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     return latest_selection_change_;
   }
 
-  void TabChangedAt(WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
-    states_.emplace_back(contents, index, CHANGE);
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override {
+    states_.emplace_back(tab->GetContents(), index, CHANGE);
   }
 
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             WebContents* contents,
-                             int index) override {
-    states_.emplace_back(contents, index, PINNED);
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override {
+    states_.emplace_back(tab->GetContents(), index, PINNED);
   }
 
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override {

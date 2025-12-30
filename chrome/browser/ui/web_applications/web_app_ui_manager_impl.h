@@ -197,7 +197,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TabStripModelObserver:
-  void TabCloseCancelled(const content::WebContents* contents) override;
+  void OnTabCloseCancelled(const tabs::TabInterface* contents) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

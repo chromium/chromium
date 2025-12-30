@@ -94,7 +94,7 @@ class TabStripModelChange {
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  // WebContents were inserted. This implicitly changes the existing selection
+  // Tabs were inserted. This implicitly changes the existing selection
   // model by calling IncrementFrom(index) on each index in |contents[i].index|.
   struct Insert {
     Insert();
@@ -129,7 +129,7 @@ class TabStripModelChange {
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  // WebContents were removed at |indices_before_removal|. This implicitly
+  // Tabs were removed at |indices_before_removal|. This implicitly
   // changes the existing selection model by calling DecrementFrom(index).
   struct Remove {
     Remove();
@@ -237,8 +237,6 @@ struct TabStripSelectionChange {
     return old_contents != new_contents;
   }
 
-  // TODO(sangwoo.ko) Do we need something to indicate that the change
-  // was made implicitly?
   bool selection_changed() const {
     return selected_tabs_were_removed || old_model != new_model;
   }
@@ -524,7 +522,7 @@ class TabStripModelObserver {
   // activation changes. |selection| is determined by comparing the state of
   // TabStripModel before the |change| and after the |change| are applied.
   // When only selection/activation was changed without any change about
-  // WebContents, |change| can be empty.
+  // the Tab, |change| can be empty.
   virtual void OnTabStripModelChanged(TabStripModel* tab_strip_model,
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
@@ -541,7 +539,42 @@ class TabStripModelObserver {
   // supported is the drag controller completing a drag before a tab is removed.
   // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
   // e.g. via OnTabStripModelWillChange().
-  virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
+  virtual void OnTabWillBeRemoved(tabs::TabInterface* tab, int index);
+
+  // Called when a tab is attempted to be closed but the closure is not
+  // permitted by the `TabStripModel::IsTabClosable` oracle.
+  virtual void OnTabCloseCancelled(const tabs::TabInterface* tab);
+
+  // The specified Tab at |index| changed in some way. |tab|
+  // may be an entirely different object and the old value is no longer
+  // available by the time this message is delivered.
+  //
+  // See tab_change_type.h for a description of |change_type|.
+  virtual void OnTabChangedAt(tabs::TabInterface* tab,
+                              int index,
+                              TabChangeType change_type);
+
+  // Invoked when the pinned state of a tab changes.
+  virtual void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index);
+
+  // Invoked when the blocked state of a tab changes.
+  // NOTE: This is invoked when a tab becomes blocked/unblocked by a tab modal
+  // window.
+  virtual void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index);
+
+  // The specified tab at `index` requires the display of a UI indication to the
+  // user that it needs their attention. The UI indication is set iff
+  // `attention` is true.
+  virtual void OnTabNeedsAttentionChanged(int index, bool attention);
+
+  // Called when the tab at `index` is added to the group with id `new_group` or
+  // removed from a group with id `old_group`.
+  virtual void TabGroupedStateChanged(
+      TabStripModel* tab_strip_model,
+      std::optional<tab_groups::TabGroupId> old_group,
+      std::optional<tab_groups::TabGroupId> new_group,
+      tabs::TabInterface* tab,
+      int index);
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
@@ -554,6 +587,12 @@ class TabStripModelObserver {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);
 
+  // Similar to OnTabNeedsAttentionChanged but for Tab Groups. The UI indication
+  // is set iff `attention` is true.
+  virtual void OnTabGroupNeedsAttentionChanged(
+      const tab_groups::TabGroupId& group,
+      bool attention);
+
   // Notfies us when a Tab Group is added to the Tab Group Model.
   virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
 
@@ -564,43 +603,10 @@ class TabStripModelObserver {
   // The |change| provides details of the change to split tab.
   virtual void OnSplitTabChanged(const SplitTabChange& change);
 
-  // The specified WebContents at |index| changed in some way. |contents|
-  // may be an entirely different object and the old value is no longer
-  // available by the time this message is delivered.
-  //
-  // See tab_change_type.h for a description of |change_type|.
-  virtual void TabChangedAt(content::WebContents* contents,
-                            int index,
-                            TabChangeType change_type);
-
-  // Invoked when the pinned state of a tab changes.
-  virtual void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                                     content::WebContents* contents,
-                                     int index);
-
-  // Invoked when the blocked state of a tab changes.
-  // NOTE: This is invoked when a tab becomes blocked/unblocked by a tab modal
-  // window.
-  virtual void TabBlockedStateChanged(content::WebContents* contents,
-                                      int index);
-
-  // Called when the tab at `index` is added to the group with id `new_group` or
-  // removed from a group with id `old_group`.
-  virtual void TabGroupedStateChanged(
-      TabStripModel* tab_strip_model,
-      std::optional<tab_groups::TabGroupId> old_group,
-      std::optional<tab_groups::TabGroupId> new_group,
-      tabs::TabInterface* tab,
-      int index);
-
   // The TabStripModel now no longer has any tabs. The implementer may
   // use this as a trigger to try and close the window containing the
   // TabStripModel, for example...
   virtual void TabStripEmpty();
-
-  // Called when a tab is attempted to be closed but the closure is not
-  // permitted by the `TabStripModel::IsTabClosable` oracle.
-  virtual void TabCloseCancelled(const content::WebContents* contents);
 
   // Sent any time an attempt is made to close all the tabs. This is not
   // necessarily the result of CloseAllTabs(). For example, if the user closes
@@ -614,16 +620,6 @@ class TabStripModelObserver {
   virtual void WillCloseAllTabs(TabStripModel* tab_strip_model);
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                    CloseAllStoppedReason reason);
-
-  // The specified tab at `index` requires the display of a UI indication to the
-  // user that it needs their attention. The UI indication is set iff
-  // `attention` is true.
-  virtual void SetTabNeedsAttentionAt(int index, bool attention);
-
-  // Similar to SetTabNeedsAttentionAt but for Tab Groups. The UI indication is
-  // set iff `attention` is true.
-  virtual void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
-                                         bool attention);
 
   // Called when an observed TabStripModel is beginning destruction.
   virtual void OnTabStripModelDestroyed(TabStripModel* tab_strip_model);

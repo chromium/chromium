@@ -181,7 +181,7 @@ TabStripPageHandler::TabStripPageHandler(
           base::BindRepeating(&TabStripPageHandler::HandleThumbnailUpdate,
                               base::Unretained(this))),
       tab_before_unload_tracker_(
-          base::BindRepeating(&TabStripPageHandler::OnTabCloseCancelled,
+          base::BindRepeating(&TabStripPageHandler::HandleTabCloseCancelled,
                               base::Unretained(this))),
       context_menu_after_tap_(base::FeatureList::IsEnabled(
           features::kWebUITabStripContextMenuAfterTap)),
@@ -349,27 +349,21 @@ void TabStripPageHandler::OnTabStripModelChanged(
   }
 }
 
-void TabStripPageHandler::TabChangedAt(content::WebContents* contents,
-                                       int index,
-                                       TabChangeType change_type) {
+void TabStripPageHandler::OnTabChangedAt(tabs::TabInterface* tab,
+                                         int index,
+                                         TabChangeType change_type) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabChangedAt");
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
-void TabStripPageHandler::TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                                                content::WebContents* contents,
-                                                int index) {
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+void TabStripPageHandler::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                                  int index) {
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
-void TabStripPageHandler::TabBlockedStateChanged(content::WebContents* contents,
-                                                 int index) {
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+void TabStripPageHandler::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                   int index) {
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
 bool TabStripPageHandler::PreHandleGestureEvent(
@@ -878,7 +872,7 @@ void TabStripPageHandler::HandleThumbnailUpdate(
   page_->TabThumbnailUpdated(tab_id, data_uri);
 }
 
-void TabStripPageHandler::OnTabCloseCancelled(content::WebContents* tab) {
+void TabStripPageHandler::HandleTabCloseCancelled(content::WebContents* tab) {
   tab_before_unload_tracker_.Unobserve(tab);
   const SessionID::id_type tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   page_->TabCloseCancelled(tab_id);

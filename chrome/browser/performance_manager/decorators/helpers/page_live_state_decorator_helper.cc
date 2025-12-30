@@ -186,12 +186,9 @@ class ActiveTabObserver : public TabStripModelObserver,
     }
   }
 
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index) override {
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PageLiveStateDecorator::SetIsPinnedTab(contents,
-                                           tab_strip_model->IsTabPinned(index));
+    PageLiveStateDecorator::SetIsPinnedTab(tab->GetContents(), tab->IsPinned());
   }
 
   // BrowserListObserver:

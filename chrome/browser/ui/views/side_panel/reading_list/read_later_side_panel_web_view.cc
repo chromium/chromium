@@ -56,12 +56,12 @@ void ReadLaterSidePanelWebView::OnTabStripModelChanged(
   }
 }
 
-void ReadLaterSidePanelWebView::TabChangedAt(content::WebContents* contents,
-                                             int index,
-                                             TabChangeType change_type) {
+void ReadLaterSidePanelWebView::OnTabChangedAt(tabs::TabInterface* tab,
+                                               int index,
+                                               TabChangeType change_type) {
   if (GetVisible() && index == tab_strip_model_->active_index() &&
       change_type == TabChangeType::kAll) {
-    UpdateActiveURL(tab_strip_model_->GetWebContentsAt(index));
+    UpdateActiveURL(tab->GetContents());
   }
 }
 

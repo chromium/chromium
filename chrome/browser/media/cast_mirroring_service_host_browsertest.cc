@@ -421,9 +421,9 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
       browser_->tab_strip_model()->AddObserver(this);
     }
 
-    void TabChangedAt(content::WebContents* contents,
-                      int index,
-                      TabChangeType change_type) override {
+    void OnTabChangedAt(tabs::TabInterface* tab,
+                        int index,
+                        TabChangeType change_type) override {
       std::move(on_tab_changed_).Run();
     }
 

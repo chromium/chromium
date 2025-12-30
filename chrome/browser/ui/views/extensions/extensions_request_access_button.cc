@@ -157,10 +157,10 @@ void ExtensionsRequestAccessButton::OnTabStripModelChanged(
   }
 }
 
-void ExtensionsRequestAccessButton::TabChangedAt(content::WebContents* contents,
-                                                 int index,
-                                                 TabChangeType change_type) {
-  if (contents == GetActiveWebContents()) {
+void ExtensionsRequestAccessButton::OnTabChangedAt(tabs::TabInterface* tab,
+                                                   int index,
+                                                   TabChangeType change_type) {
+  if (tab->IsActivated()) {
     UpdateTooltipText();
   }
 }

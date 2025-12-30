@@ -426,9 +426,9 @@ std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   return std::u16string();
 }
 
-void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,
-                                      int index,
-                                      TabChangeType change_type) {
+void ExtensionsMenuView::OnTabChangedAt(tabs::TabInterface* tab,
+                                        int index,
+                                        TabChangeType change_type) {
   Update();
 }
 

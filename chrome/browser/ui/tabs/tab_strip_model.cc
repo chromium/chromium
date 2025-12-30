@@ -712,7 +712,7 @@ TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
 
     // Notify observers that the tab will be removed.
     for (auto& observer : observers_) {
-      observer.OnTabWillBeRemoved(tab->GetContents(), index);
+      observer.OnTabWillBeRemoved(tab, index);
     }
 
     // Fix opener relationships before removing the tab.
@@ -908,7 +908,7 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
   const bool was_pinned_at_time_of_removal = tab->IsPinned();
 
   for (auto& observer : observers_) {
-    observer.OnTabWillBeRemoved(tab->GetContents(), index_at_time_of_removal);
+    observer.OnTabWillBeRemoved(tab, index_at_time_of_removal);
   }
 
   FixOpeners(index_at_time_of_removal);
@@ -1204,20 +1204,20 @@ int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
   return kNoTab;
 }
 
-void TabStripModel::NotifyTabChanged(const tabs::TabInterface* const tab,
+void TabStripModel::NotifyTabChanged(tabs::TabInterface* tab,
                                      TabChangeType change_type) {
   const int index = GetIndexOfTab(tab);
   for (auto& observer : observers_) {
-    observer.TabChangedAt(tab->GetContents(), index, change_type);
+    observer.OnTabChangedAt(tab, index, change_type);
   }
 }
 
 void TabStripModel::UpdateWebContentsStateAt(int index,
                                              TabChangeType change_type) {
-  const tabs::TabInterface* const tab = GetTabAtIndex(index);
+  tabs::TabInterface* tab = GetTabAtIndex(index);
 
   for (auto& observer : observers_) {
-    observer.TabChangedAt(tab->GetContents(), index, change_type);
+    observer.OnTabChangedAt(tab, index, change_type);
   }
 }
 
@@ -1225,7 +1225,7 @@ void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
   CHECK(ContainsIndex(index));
 
   for (auto& observer : observers_) {
-    observer.SetTabNeedsAttentionAt(index, attention);
+    observer.OnTabNeedsAttentionChanged(index, attention);
   }
 }
 
@@ -1235,7 +1235,7 @@ void TabStripModel::SetTabGroupNeedsAttention(
   CHECK(group_model_->ContainsTabGroup(group));
 
   for (auto& observer : observers_) {
-    observer.SetTabGroupNeedsAttention(group, attention);
+    observer.OnTabGroupNeedsAttentionChanged(group, attention);
   }
 }
 
@@ -1378,7 +1378,7 @@ void TabStripModel::SetTabBlocked(int index, bool blocked) {
   }
   tab_model->set_blocked(blocked);
   for (auto& observer : observers_) {
-    observer.TabBlockedStateChanged(tab_model->GetContents(), index);
+    observer.OnTabBlockedStateChanged(tab_model, index);
   }
 }
 
@@ -3732,7 +3732,7 @@ void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
       filtered_items.push_back(contents);
     } else {
       for (auto& observer : observers_) {
-        observer.TabCloseCancelled(contents);
+        observer.OnTabCloseCancelled(GetTabForWebContents(contents));
       }
     }
   }
@@ -4738,7 +4738,7 @@ void TabStripModel::MoveTabToIndexImpl(
 
   if (initial_pinned_state != tab->IsPinned()) {
     for (auto& observer : observers_) {
-      observer.TabPinnedStateChanged(this, tab->GetContents(), final_index);
+      observer.OnTabPinnedStateChanged(tab, final_index);
     }
   }
 
@@ -5161,7 +5161,7 @@ void TabStripModel::MoveTabsWithNotifications(
 
     if (notification.initial_pinned != tab->IsPinned()) {
       for (auto& observer : observers_) {
-        observer.TabPinnedStateChanged(this, tab->GetContents(), final_index);
+        observer.OnTabPinnedStateChanged(tab, final_index);
       }
     }
   }

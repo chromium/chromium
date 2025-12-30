@@ -1573,9 +1573,9 @@ void TabSearchPageHandler::OnTabStripModelChanged(
   ScheduleDebounce();
 }
 
-void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
-                                        int index,
-                                        TabChangeType change_type) {
+void TabSearchPageHandler::OnTabChangedAt(tabs::TabInterface* tab,
+                                          int index,
+                                          TabChangeType change_type) {
   if (!IsWebContentsVisible()) {
     return;
   }
@@ -1584,8 +1584,6 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   if (change_type != TabChangeType::kAll) {
     return;
   }
-
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
 
   TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
   const bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");

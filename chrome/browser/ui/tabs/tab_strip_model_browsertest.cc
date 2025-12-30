@@ -104,8 +104,8 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
 
   // TabStripModelObserver:
   MOCK_METHOD(void,
-              TabCloseCancelled,
-              (const content::WebContents* contents),
+              OnTabCloseCancelled,
+              (const tabs::TabInterface* tab),
               (override));
 
  protected:
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
   EXPECT_EQ(!kShouldPreventClose, tab_strip_model->IsTabClosable(
                                       tab_strip_model->GetActiveWebContents()));
 
-  EXPECT_CALL(*this, TabCloseCancelled(_)).Times(kShouldPreventClose ? 1 : 0);
+  EXPECT_CALL(*this, OnTabCloseCancelled(_)).Times(kShouldPreventClose ? 1 : 0);
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(kShouldPreventClose ? 1 : 0, tab_strip_model->count());
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       tab_strip_model->IsTabClosable(tab_strip_model->GetActiveWebContents()));
 
-  EXPECT_CALL(*this, TabCloseCancelled(_)).Times(0);
+  EXPECT_CALL(*this, OnTabCloseCancelled(_)).Times(0);
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(0, tab_strip_model->count());

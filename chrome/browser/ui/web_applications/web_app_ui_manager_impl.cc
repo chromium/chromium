@@ -666,8 +666,8 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void WebAppUiManagerImpl::TabCloseCancelled(
-    const content::WebContents* contents) {
+void WebAppUiManagerImpl::OnTabCloseCancelled(const tabs::TabInterface* tab) {
+  const content::WebContents* contents = tab->GetContents();
   CHECK(contents);
   const WebAppTabHelper* tab_helper =
       WebAppTabHelper::FromWebContents(contents);

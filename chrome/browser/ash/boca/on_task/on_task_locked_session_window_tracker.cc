@@ -254,9 +254,9 @@ void LockedSessionWindowTracker::ShowURLBlockedToast() {
 }
 
 // TabStripModel Implementation
-void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
-                                              int index,
-                                              TabChangeType change_type) {
+void LockedSessionWindowTracker::OnTabChangedAt(tabs::TabInterface* tab,
+                                                int index,
+                                                TabChangeType change_type) {
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();
   }
@@ -268,11 +268,10 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
     on_task_pod_controller_->OnPageNavigationContextChanged();
   }
 
-  if (browser_ &&
-      browser_->GetBrowser().tab_strip_model()->active_index() == index) {
+  if (tab->IsActivated()) {
     // Only fire for active tab.
     for (auto& observer : observers_) {
-      observer.OnActiveTabChanged(contents->GetTitle());
+      observer.OnActiveTabChanged(tab->GetContents()->GetTitle());
     }
   }
 }
@@ -333,12 +332,12 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
   }
 }
 
-void LockedSessionWindowTracker::OnTabWillBeRemoved(
-    content::WebContents* contents,
-    int index) {
-  on_task_blocklist()->RemoveParentFilter(contents);
-  on_task_blocklist()->RemoveChildFilter(contents);
-  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
+void LockedSessionWindowTracker::OnTabWillBeRemoved(tabs::TabInterface* tab,
+                                                    int index) {
+  on_task_blocklist()->RemoveParentFilter(tab->GetContents());
+  on_task_blocklist()->RemoveChildFilter(tab->GetContents());
+  const SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
   for (auto& observer : observers_) {
     observer.OnTabRemoved(tab_id);
   }

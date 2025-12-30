@@ -1690,17 +1690,15 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   }
 }
 
-void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                                    WebContents* contents,
-                                    int index) {
+void Browser::OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
   if (session_service) {
     session_service->SetPinnedState(
-        session_id(), sessions::SessionTabHelper::IdForTab(contents),
-        tab_strip_model_->IsTabPinned(index));
+        session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
+        tab->IsPinned());
   }
 }
 

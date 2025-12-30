@@ -350,14 +350,41 @@ void TabStripModelObserver::OnTabStripModelChanged(
 
 void TabStripModelObserver::OnTabWillBeAdded() {}
 
-void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
+void TabStripModelObserver::OnTabWillBeRemoved(tabs::TabInterface* tab,
                                                int index) {}
+
+void TabStripModelObserver::OnTabCloseCancelled(const tabs::TabInterface* tab) {
+}
+
+void TabStripModelObserver::OnTabChangedAt(tabs::TabInterface* tab,
+                                           int index,
+                                           TabChangeType change_type) {}
+
+void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                                    int index) {}
+
+void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                     int index) {}
+
+void TabStripModelObserver::OnTabNeedsAttentionChanged(int index,
+                                                       bool attention) {}
+
+void TabStripModelObserver::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {}
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
 void TabStripModelObserver::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {}
+
+void TabStripModelObserver::OnTabGroupNeedsAttentionChanged(
+    const tab_groups::TabGroupId& group,
+    bool attention) {}
 
 void TabStripModelObserver::OnTabGroupAdded(
     const tab_groups::TabGroupId& group_id) {}
@@ -367,38 +394,13 @@ void TabStripModelObserver::OnTabGroupWillBeRemoved(
 
 void TabStripModelObserver::OnSplitTabChanged(const SplitTabChange& change) {}
 
-void TabStripModelObserver::TabChangedAt(WebContents* contents,
-                                         int index,
-                                         TabChangeType change_type) {}
-
-void TabStripModelObserver::TabPinnedStateChanged(
-    TabStripModel* tab_strip_model,
-    WebContents* contents,
-    int index) {}
-
-void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
-                                                   int index) {}
-
-void TabStripModelObserver::TabGroupedStateChanged(
-    TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group,
-    std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {}
-
 void TabStripModelObserver::TabStripEmpty() {}
-
-void TabStripModelObserver::TabCloseCancelled(
-    const content::WebContents* contents) {}
 
 void TabStripModelObserver::WillCloseAllTabs(TabStripModel* tab_strip_model) {}
 
 void TabStripModelObserver::CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                                 CloseAllStoppedReason reason) {}
-void TabStripModelObserver::SetTabNeedsAttentionAt(int index, bool attention) {}
-void TabStripModelObserver::SetTabGroupNeedsAttention(
-    const tab_groups::TabGroupId& group,
-    bool attention) {}
+
 void TabStripModelObserver::OnTabStripModelDestroyed(TabStripModel* model) {}
 
 // static

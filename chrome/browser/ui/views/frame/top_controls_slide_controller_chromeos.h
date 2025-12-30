@@ -65,7 +65,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void SetTabNeedsAttentionAt(int index, bool attention) override;
+  void OnTabNeedsAttentionChanged(int index, bool attention) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

@@ -211,9 +211,9 @@ void TabMenuBridge::OnTabStripModelChanged(
   AddDynamicItemsFromModel();
 }
 
-void TabMenuBridge::TabChangedAt(content::WebContents* contents,
-                                 int index,
-                                 TabChangeType change_type) {
+void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
+                                   int index,
+                                   TabChangeType change_type) {
   DCHECK(model_);
 
   // Ignore loading state changes - they happen very often during page load and
@@ -241,7 +241,7 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
   }
 
   NSMenuItem* item = [menu_item_.submenu itemAtIndex:menu_index];
-  UpdateItemForWebContents(item, contents, model_);
+  UpdateItemForWebContents(item, tab->GetContents(), model_);
 }
 
 // If a tab group is changed, update group indicator for each tab.

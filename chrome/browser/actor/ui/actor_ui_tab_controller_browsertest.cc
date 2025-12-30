@@ -46,9 +46,9 @@ using base::test::TestFuture;
 class FutureTabStripModelObserver : public TabStripModelObserver {
  public:
   // TabStripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override {
     if (change_type == TabChangeType::kAll) {
       Reset();
       future_.SetValue();

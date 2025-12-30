@@ -209,9 +209,6 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   AddTabs(tabs_to_add);
 }
 
-bool BrowserTabStripController::IsTabPinned(const Tab* tab) const {
-  return IsTabPinned(tabstrip_->GetModelIndexOf(tab).value());
-}
 ui::ListSelectionModel BrowserTabStripController::GetSelectionModel() const {
   return model_->selection_model();
 }
@@ -781,7 +778,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     }
     case TabStripModelChange::kReplaced: {
       auto* replace = change.GetReplace();
-      SetTabDataAt(replace->new_contents, replace->index);
+      SetTabDataAt(replace->index);
       break;
     }
     case TabStripModelChange::kSelectionOnly:
@@ -800,7 +797,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     std::optional<size_t> index = selection.new_model.active();
     if (new_contents && new_tab_interface && index.has_value()) {
       TabUIHelper::From(new_tab_interface)->SetWasActiveAtLeastOnce();
-      SetTabDataAt(new_contents, index.value());
+      SetTabDataAt(index.value());
     }
   }
 
@@ -813,10 +810,9 @@ void BrowserTabStripController::OnTabWillBeAdded() {
   tabstrip_->EndDrag(EndDragReason::kModelAddedTab);
 }
 
-void BrowserTabStripController::OnTabWillBeRemoved(
-    content::WebContents* contents,
-    int index) {
-  tabstrip_->OnTabWillBeRemoved(contents, index);
+void BrowserTabStripController::OnTabWillBeRemoved(tabs::TabInterface* tab,
+                                                   int index) {
+  tabstrip_->OnTabWillBeRemoved(tab->GetContents(), index);
 }
 
 void BrowserTabStripController::OnTabGroupChanged(
@@ -882,22 +878,21 @@ void BrowserTabStripController::OnTabGroupChanged(
   }
 }
 
-void BrowserTabStripController::TabChangedAt(WebContents* contents,
-                                             int model_index,
-                                             TabChangeType change_type) {
-  SetTabDataAt(contents, model_index);
+void BrowserTabStripController::OnTabChangedAt(tabs::TabInterface* tab,
+                                               int model_index,
+                                               TabChangeType change_type) {
+  SetTabDataAt(model_index);
 }
 
-void BrowserTabStripController::TabPinnedStateChanged(
-    TabStripModel* tab_strip_model,
-    WebContents* contents,
+void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                                        int model_index) {
+  SetTabDataAt(model_index);
+}
+
+void BrowserTabStripController::OnTabBlockedStateChanged(
+    tabs::TabInterface* tab,
     int model_index) {
-  SetTabDataAt(contents, model_index);
-}
-
-void BrowserTabStripController::TabBlockedStateChanged(WebContents* contents,
-                                                       int model_index) {
-  SetTabDataAt(contents, model_index);
+  SetTabDataAt(model_index);
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(
@@ -917,17 +912,16 @@ void BrowserTabStripController::TabGroupedStateChanged(
   }
 }
 
-void BrowserTabStripController::SetTabNeedsAttentionAt(int index,
-                                                       bool attention) {
+void BrowserTabStripController::OnTabNeedsAttentionChanged(int index,
+                                                           bool attention) {
   tabstrip_->SetTabNeedsAttention(index, attention);
 }
 
-void BrowserTabStripController::SetTabGroupNeedsAttention(
+void BrowserTabStripController::OnTabGroupNeedsAttentionChanged(
     const tab_groups::TabGroupId& group,
     bool attention) {
   tabstrip_->SetTabGroupNeedsAttention(group, attention);
 }
-
 
 void BrowserTabStripController::OnSplitTabChanged(
     const SplitTabChange& change) {
@@ -1001,8 +995,7 @@ const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
   return browser_view_->browser_widget()->GetFrameView();
 }
 
-void BrowserTabStripController::SetTabDataAt(content::WebContents* web_contents,
-                                             int model_index) {
+void BrowserTabStripController::SetTabDataAt(int model_index) {
   tabstrip_->SetTabData(model_index,
                         TabRendererData::FromTabInModel(model_, model_index));
 }

@@ -510,7 +510,7 @@ void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
   UpdateBrowserControlsStateShown(new_active_contents, /*animate=*/true);
 }
 
-void TopControlsSlideControllerChromeOS::SetTabNeedsAttentionAt(
+void TopControlsSlideControllerChromeOS::OnTabNeedsAttentionChanged(
     int index,
     bool attention) {
   UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);

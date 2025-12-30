@@ -60,11 +60,11 @@ class TestTitleObserver : public TabStripModelObserver {
   }
 
   // TabstripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override {
     content::NavigationEntry* entry =
-        contents->GetController().GetVisibleEntry();
+        tab->GetContents()->GetController().GetVisibleEntry();
     std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
     if (title != target_title_) {

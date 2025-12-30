@@ -325,12 +325,13 @@ void TabLifecycleUnitSource::OnTabStripModelChanged(
   }
 }
 
-void TabLifecycleUnitSource::TabChangedAt(content::WebContents* contents,
-                                          int index,
-                                          TabChangeType change_type) {
+void TabLifecycleUnitSource::OnTabChangedAt(tabs::TabInterface* tab,
+                                            int index,
+                                            TabChangeType change_type) {
   if (change_type != TabChangeType::kAll) {
     return;
   }
+  content::WebContents* contents = tab->GetContents();
   TabLifecycleUnit* lifecycle_unit = GetTabLifecycleUnit(contents);
   // This can be called before OnTabStripModelChanged() and |lifecycle_unit|
   // will be null in that case. http://crbug.com/877940

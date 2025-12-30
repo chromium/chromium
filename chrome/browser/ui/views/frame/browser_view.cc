@@ -3577,9 +3577,11 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
   }
 }
 
-void BrowserView::TabChangedAt(content::WebContents* contents,
-                               int index,
-                               TabChangeType change_type) {
+void BrowserView::OnTabChangedAt(tabs::TabInterface* tab,
+                                 int index,
+                                 TabChangeType change_type) {
+  content::WebContents* contents = tab->GetContents();
+
   if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
     return;
   }
