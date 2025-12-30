@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.145"
+version = "1.0.148"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -9,14 +9,14 @@ edition = "2021"
 keywords = ["json", "serde", "serialization"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/json"
-rust-version = "1.61"
+rust-version = "1.68"
 
 [dependencies]
 indexmap = { version = "2.2.3", optional = true }
 itoa = "1.0"
 memchr = { version = "2", default-features = false }
-ryu = "1.0"
 serde_core = { version = "1.0.220", default-features = false }
+zmij = "1.0"
 
 [target.'cfg(any())'.dependencies]
 serde = { version = "1.0.220", default-features = false }
@@ -37,6 +37,7 @@ features = ["preserve_order", "raw_value", "unbounded_depth"]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",

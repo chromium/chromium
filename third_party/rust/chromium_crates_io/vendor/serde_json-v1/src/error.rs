@@ -471,7 +471,7 @@ impl<'a> Display for JsonUnexpected<'a> {
             de::Unexpected::Float(value) => write!(
                 formatter,
                 "floating point `{}`",
-                ryu::Buffer::new().format(value),
+                zmij::Buffer::new().format(value),
             ),
             unexp => Display::fmt(&unexp, formatter),
         }

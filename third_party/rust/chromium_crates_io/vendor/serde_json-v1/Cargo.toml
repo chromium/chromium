@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.68"
 name = "serde_json"
-version = "1.0.145"
+version = "1.0.148"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -49,6 +49,7 @@ features = [
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
@@ -120,12 +121,12 @@ version = "1.0"
 version = "2"
 default-features = false
 
-[dependencies.ryu]
-version = "1.0"
-
 [dependencies.serde_core]
 version = "1.0.220"
 default-features = false
+
+[dependencies.zmij]
+version = "1.0"
 
 [dev-dependencies.automod]
 version = "1.0.11"
