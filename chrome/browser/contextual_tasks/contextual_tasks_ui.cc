@@ -532,22 +532,16 @@ void ContextualTasksUI::CreatePageHandler(
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksUI::GetOrCreateContextualSessionHandle() {
   if (!session_handle_) {
-    // Take ownership of a session handle if one was already provided. The
-    // session handle may have been set in the WebContents helper by Lens after
-    // `this` is initialized. Otherwise, create a new session.
-    session_handle_ = TryTakeSessionHandleFromWebContents(web_ui());
-    if (!session_handle_) {
-      auto* service = ContextualSearchServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()));
-      if (service) {
-        session_handle_ = service->CreateSession(
-            ntp_composebox::CreateQueryControllerConfigParams(),
-            contextual_search::ContextualSearchSource::kContextualTasks);
-        // TODO(crbug.com/469875164): Determine what to do with the return value
-        // of this call, or move this call to a different location.
-        session_handle_->CheckSearchContentSharingSettings(
-            Profile::FromWebUI(web_ui())->GetPrefs());
-      }
+    auto* service = ContextualSearchServiceFactory::GetForProfile(
+        Profile::FromWebUI(web_ui()));
+    if (service) {
+      session_handle_ = service->CreateSession(
+          ntp_composebox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kContextualTasks);
+      // TODO(crbug.com/469875164): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      session_handle_->CheckSearchContentSharingSettings(
+          Profile::FromWebUI(web_ui())->GetPrefs());
     }
   }
   return session_handle_.get();
