@@ -30,6 +30,7 @@ if (!is_android) {
     "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd",
     "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd",
     "../../chrome/browser/resources/downloads/internal/icons.html",
+    "../../chrome/browser/resources/history/internal/icons.html",
     "../../chrome/browser/resources/settings/internal/icons.html",
     "../../third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd",
     "../../third_party/widevine/cdm/linux/x64/manifest.json",

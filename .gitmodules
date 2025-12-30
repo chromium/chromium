@@ -684,6 +684,10 @@
 	path = chrome/browser/resources/settings/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/settings_internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/resources/history/internal"]
+	path = chrome/browser/resources/history/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/resources/history/internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/webui_browser/internal"]
 	path = chrome/browser/resources/webui_browser/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/webui_browser/internal
