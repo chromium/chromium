@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>apotapchuk@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>Tracks cryptohome failure during kiosk launch.</summary>

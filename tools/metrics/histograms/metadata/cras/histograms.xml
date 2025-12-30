@@ -669,7 +669,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.InternalSoundcardStatus{Second}"
-    enum="InternalSoundcardStatus" expires_after="2026-04-26">
+    enum="InternalSoundcardStatus" expires_after="2026-06-28">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

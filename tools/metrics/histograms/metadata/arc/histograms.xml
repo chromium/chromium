@@ -1720,7 +1720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode" enum="ArcOptInSilentAuthCode"
-    expires_after="2026-04-19">
+    expires_after="2026-06-28">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -1730,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.Reauthorization"
-    enum="ArcOptInSilentAuthCode" expires_after="2026-04-19">
+    enum="ArcOptInSilentAuthCode" expires_after="2026-06-28">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>

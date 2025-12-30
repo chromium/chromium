@@ -7666,7 +7666,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.DataSize" units="bytes"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>olivierli@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>

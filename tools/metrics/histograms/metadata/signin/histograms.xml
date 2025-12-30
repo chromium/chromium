@@ -1753,7 +1753,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GaiaPageVisited" enum="GaiaPage"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

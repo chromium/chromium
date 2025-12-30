@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics2.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
-    units="microseconds" expires_after="2026-04-26">
+    units="microseconds" expires_after="2026-06-28">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1539,7 +1539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.CancelReason" enum="FedCmCancelReason"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2227,7 +2227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.MismatchDialogShownDuration" units="ms"
-    expires_after="2026-04-19">
+    expires_after="2026-06-28">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -3126,7 +3126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedTotal4" units="tokens"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -4610,7 +4610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.DeferedRequestWaitingOnCodeCache"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>olivierli@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>

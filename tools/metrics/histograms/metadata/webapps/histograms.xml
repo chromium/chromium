@@ -2124,7 +2124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.Redirection.FinalResult"
-    enum="NavigationCapturingRedirectionResult" expires_after="2026-04-29">
+    enum="NavigationCapturingRedirectionResult" expires_after="2026-06-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2134,7 +2134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.Result"
-    enum="NavigationCapturingResult" expires_after="2026-04-29">
+    enum="NavigationCapturingResult" expires_after="2026-06-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

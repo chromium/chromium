@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
-    enum="BooleanAvailable" expires_after="2026-04-26">
+    enum="BooleanAvailable" expires_after="2026-06-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2026-04-26">
+    enum="ULPTopLanguageMatch" expires_after="2026-06-28">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
