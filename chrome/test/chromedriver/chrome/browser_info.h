@@ -5,6 +5,9 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_BROWSER_INFO_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_BROWSER_INFO_H_
 
+#include <string>
+#include <string_view>
+
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -39,23 +42,23 @@ struct BrowserInfo {
 
   Status FillFromBrowserVersionResponse(const base::Value::Dict& response);
 
-  Status ParseBrowserInfo(const std::string& data);
+  Status ParseBrowserInfo(std::string_view data);
 
-  static Status ParseBrowserInfo(const std::string& data,
+  static Status ParseBrowserInfo(std::string_view data,
                                  BrowserInfo* browser_info);
 
   static Status ParseBrowserString(bool has_android_package,
-                                   const std::string& browser_string,
+                                   std::string_view browser_string,
                                    BrowserInfo* browser_info);
 
-  static Status ParseBrowserVersionString(const std::string& browser_version,
+  static Status ParseBrowserVersionString(std::string_view browser_version,
                                           int* major_version,
                                           int* build_no);
 
-  static Status ParseBlinkVersionString(const std::string& blink_version,
+  static Status ParseBlinkVersionString(std::string_view blink_version,
                                         int* blink_revision);
 
-  static bool IsGitHash(const std::string& revision);
+  static bool IsGitHash(std::string_view revision);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_BROWSER_INFO_H_
