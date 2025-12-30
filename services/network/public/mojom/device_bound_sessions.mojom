@@ -262,3 +262,36 @@ struct DeviceBoundSessionCookieCravingDisplay {
   // The `SameSite` attribute of the craving attributes.
   CookieSameSite same_site;
 };
+
+// Whether a URL rule is included or excluded. Used for DevTools.
+enum DeviceBoundSessionInclusionResult {
+  kExclude = 0,
+  kInclude = 1,
+};
+
+// Mojo representation of a URL Rule.
+struct DeviceBoundSessionUrlRuleDisplay {
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type`.
+  DeviceBoundSessionInclusionResult rule_type;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern`.
+  string host_pattern;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix`.
+  string path_prefix;
+};
+
+// Mojo representation of session inclusion rules.
+struct DeviceBoundSessionInclusionRulesDisplay {
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::origin_`.
+  string origin;
+  // Whether the whole site is included. See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::include_site_` for more
+  // details; this boolean is true if that value is populated.
+  bool include_site;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
+  array<DeviceBoundSessionUrlRuleDisplay> url_rules;
+};

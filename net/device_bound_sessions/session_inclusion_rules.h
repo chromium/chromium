@@ -19,6 +19,7 @@
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
+struct SessionInclusionRulesDisplay;
 
 namespace proto {
 class SessionInclusionRules;
@@ -78,6 +79,10 @@ class NET_EXPORT SessionInclusionRules final {
   proto::SessionInclusionRules ToProto() const;
   static std::optional<SessionInclusionRules> CreateFromProto(
       const proto::SessionInclusionRules& proto);
+
+  // Returns a display-friendly version of this SessionInclusionRules. Used for
+  // DevTools.
+  SessionInclusionRulesDisplay ToDisplay() const;
 
   std::string DebugString() const;
 

@@ -17,6 +17,8 @@
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_inclusion_rules_display.h"
+#include "net/device_bound_sessions/url_rule_display.h"
 
 namespace net::device_bound_sessions {
 
@@ -86,6 +88,9 @@ struct SessionInclusionRules::UrlRule {
   // Returns whether the given `url` matches this rule. Note that this
   // function does not check the scheme and port portions of the URL/origin.
   bool MatchesHostAndPath(const GURL& url) const;
+
+  // Returns a display-friendly version of this UrlRule. Used for DevTools.
+  UrlRuleDisplay ToDisplay() const;
 };
 
 // static
@@ -260,6 +265,10 @@ bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
   return true;
 }
 
+UrlRuleDisplay SessionInclusionRules::UrlRule::ToDisplay() const {
+  return UrlRuleDisplay(rule_type, host_pattern, path_prefix);
+}
+
 size_t SessionInclusionRules::num_url_rules_for_testing() const {
   return url_rules_.size();
 }
@@ -317,6 +326,16 @@ std::optional<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
   }
 
   return std::move(*inclusion_rules_or_error);
+}
+
+SessionInclusionRulesDisplay SessionInclusionRules::ToDisplay() const {
+  std::vector<UrlRuleDisplay> display_rules;
+  display_rules.reserve(url_rules_.size());
+  for (const auto& rule : url_rules_) {
+    display_rules.push_back(rule.ToDisplay());
+  }
+  return SessionInclusionRulesDisplay(
+      origin_.Serialize(), include_site_.has_value(), std::move(display_rules));
 }
 
 std::string SessionInclusionRules::DebugString() const {

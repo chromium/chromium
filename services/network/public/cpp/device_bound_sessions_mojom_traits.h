@@ -10,10 +10,13 @@
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
+#include "net/device_bound_sessions/url_rule_display.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
 namespace net::device_bound_sessions {
 struct CookieCravingDisplay;
+enum class InclusionResult;
+struct SessionInclusionRulesDisplay;
 }
 
 namespace net {
@@ -636,6 +639,16 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
 };
 
 template <>
+struct EnumTraits<network::mojom::DeviceBoundSessionInclusionResult,
+                  net::device_bound_sessions::InclusionResult> {
+  static network::mojom::DeviceBoundSessionInclusionResult ToMojom(
+      net::device_bound_sessions::InclusionResult inclusion_result);
+
+  static bool FromMojom(network::mojom::DeviceBoundSessionInclusionResult input,
+                        net::device_bound_sessions::InclusionResult* output);
+};
+
+template <>
 struct StructTraits<
     network::mojom::DeviceBoundSessionScopeSpecificationDataView,
     net::device_bound_sessions::SessionParams::Scope::Specification> {
@@ -758,6 +771,41 @@ struct StructTraits<
   static bool Read(
       network::mojom::DeviceBoundSessionCookieCravingDisplayDataView data,
       net::device_bound_sessions::CookieCravingDisplay* out);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionUrlRuleDisplayDataView,
+                    net::device_bound_sessions::UrlRuleDisplay> {
+  static net::device_bound_sessions::InclusionResult rule_type(
+      const net::device_bound_sessions::UrlRuleDisplay& r);
+
+  static const std::string& host_pattern(
+      const net::device_bound_sessions::UrlRuleDisplay& r);
+
+  static const std::string& path_prefix(
+      const net::device_bound_sessions::UrlRuleDisplay& r);
+
+  static bool Read(
+      network::mojom::DeviceBoundSessionUrlRuleDisplayDataView data,
+      net::device_bound_sessions::UrlRuleDisplay* out);
+};
+
+template <>
+struct StructTraits<
+    network::mojom::DeviceBoundSessionInclusionRulesDisplayDataView,
+    net::device_bound_sessions::SessionInclusionRulesDisplay> {
+  static const std::string& origin(
+      const net::device_bound_sessions::SessionInclusionRulesDisplay& r);
+
+  static bool include_site(
+      const net::device_bound_sessions::SessionInclusionRulesDisplay& r);
+
+  static const std::vector<net::device_bound_sessions::UrlRuleDisplay>&
+  url_rules(const net::device_bound_sessions::SessionInclusionRulesDisplay& r);
+
+  static bool Read(
+      network::mojom::DeviceBoundSessionInclusionRulesDisplayDataView data,
+      net::device_bound_sessions::SessionInclusionRulesDisplay* out);
 };
 
 }  // namespace mojo

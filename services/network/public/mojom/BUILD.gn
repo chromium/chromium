@@ -1013,6 +1013,10 @@ mojom("url_loader_base") {
           cpp = "::net::device_bound_sessions::DeletionReason"
         },
         {
+          mojom = "network.mojom.DeviceBoundSessionInclusionResult"
+          cpp = "::net::device_bound_sessions::InclusionResult"
+        },
+        {
           mojom = "network.mojom.DeviceBoundSessionParams"
           cpp = "::net::device_bound_sessions::SessionParams"
           move_only = true
@@ -1020,6 +1024,14 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.DeviceBoundSessionError"
           cpp = "::net::device_bound_sessions::SessionError::ErrorType"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionInclusionRulesDisplay"
+          cpp = "::net::device_bound_sessions::SessionInclusionRulesDisplay"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionUrlRuleDisplay"
+          cpp = "::net::device_bound_sessions::UrlRuleDisplay"
         },
         {
           mojom = "network.mojom.DeviceBoundSessionCookieCravingDisplay"

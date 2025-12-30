@@ -11,6 +11,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_inclusion_rules_display.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -695,6 +696,40 @@ TEST_F(SessionInclusionRulesTest, FailCreateFromInvalidProto) {
     proto::SessionInclusionRules p(proto);
     p.mutable_url_rules(0)->clear_path_prefix();
     EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
+  }
+}
+
+TEST_F(SessionInclusionRulesTest, ToDisplay) {
+  // Create a valid SessionInclusionRules object with default inclusion rule and
+  // a couple of additional URL rules.
+  url::Origin root_site_origin = url::Origin::Create(GURL("https://site.test"));
+  AssertDomainAndRegistry(root_site_origin, "site.test");
+
+  SessionParams::Scope params;
+  params.include_site = true;
+  params.specifications = {{RuleType::kExclude, "excluded.site.test", "/"},
+                           {RuleType::kInclude, "included.site.test", "/"}};
+  auto inclusion_rules_or_error = SessionInclusionRules::Create(
+      root_site_origin, std::move(params), GURL());
+  ASSERT_TRUE(inclusion_rules_or_error.has_value());
+  SessionInclusionRules& rules = *inclusion_rules_or_error;
+
+  // Create a corresponding display object and validate.
+  SessionInclusionRulesDisplay display = rules.ToDisplay();
+  EXPECT_EQ(root_site_origin.Serialize(), display.origin);
+  EXPECT_TRUE(display.include_site);
+  ASSERT_EQ(display.url_rules.size(), 2);
+  {
+    const auto& rule = display.url_rules[0];
+    EXPECT_EQ(rule.rule_type, InclusionResult::kExclude);
+    EXPECT_EQ(rule.host_pattern, "excluded.site.test");
+    EXPECT_EQ(rule.path_prefix, "/");
+  }
+  {
+    const auto& rule = display.url_rules[1];
+    EXPECT_EQ(rule.rule_type, InclusionResult::kInclude);
+    EXPECT_EQ(rule.host_pattern, "included.site.test");
+    EXPECT_EQ(rule.path_prefix, "/");
   }
 }
 
