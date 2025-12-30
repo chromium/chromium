@@ -119,9 +119,6 @@ class ExtensionTabUtil {
       bool also_match_incognito_profile,
       std::string* error_message);
 
-  // Returns the tabs:: API constant for the window type of the `browser`.
-  static std::string GetBrowserWindowTypeText(BrowserWindowInterface& browser);
-
   // Creates a Tab object (see chrome/common/extensions/api/tabs.json) with
   // information about the state of a browser tab for the given `web_contents`.
   // This will scrub the tab of sensitive data (URL, favicon, title) according
@@ -188,10 +185,6 @@ class ExtensionTabUtil {
                                TabStripModel** tab_strip_model,
                                int* tab_index);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  // Returns the active tab's WebContents if there is an active tab. Returns
-  // null if there is no active tab.
-  static content::WebContents* GetActiveTab(BrowserWindowInterface* browser);
 
   // Any out parameter (`window`, `contents`, & `tab_index`) may be null.
   //

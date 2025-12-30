@@ -322,12 +322,6 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
 }
 
 // static
-std::string ExtensionTabUtil::GetBrowserWindowTypeText(
-    BrowserWindowInterface& browser) {
-  return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
-}
-
-// static
 api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     WebContents* contents,
     ScrubTabBehavior scrub_tab_behavior,
@@ -626,11 +620,6 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
   return found;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-content::WebContents* ExtensionTabUtil::GetActiveTab(
-    BrowserWindowInterface* browser) {
-  return WindowControllerFromBrowser(browser)->GetActiveTab();
-}
 
 // static
 bool ExtensionTabUtil::GetTabById(int tab_id,
