@@ -222,9 +222,11 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3352986031709923790">kona ya juu kulia ya eneo la utafutaji: kulia asilimia <ph name="RIGHT" />, juu asilimia <ph name="TOP" /></translation>
 <translation id="3366305173356742781">Data ya Chromium kwenye akaunti yako</translation>
 <translation id="3369405342922656244">Tafuta ukurasa huu ukitumia kipengele cha Kutafuta kwa Picha</translation>
+<translation id="3375770072980084583">Kutumia manenosiri yako kwenye Chromium katika simu yako</translation>
 <translation id="3387527074123400161">Mfumo wa uendeshaji wa Chromium</translation>
 <translation id="3406848076815591792">Ungependa kutumia wasifu uliopo wa Chromium?</translation>
 <translation id="3412460710772753638">Katika Kidhibiti cha Manenosiri kwenye kifaa hiki</translation>
+<translation id="3455907671758333080">Panua idhini ya kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa ukitumia Chromium kwenye simu yako</translation>
 <translation id="3461644266919055473">Inabadilisha Chromium upendavyo...</translation>
 <translation id="347328004046849135">Chromium itakuarifu ukiingia katika akaunti ukitumia nenosiri lililoathiriwa</translation>
 <translation id="3474745554856756813">Hatua hii itafuta vipengee <ph name="ITEMS_COUNT" /> kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
@@ -251,6 +253,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3798048725356732506">Wasifu kwenye Chromium hukusaidia kutenganisha shughuli mbalimbali. Weka wasifu mpya sasa.</translation>
 <translation id="3802055581630249637">Chromium hupakia mapema kurasa unazoweza kutembelea, ili zipakiwe kwa haraka zaidi unapozitembelea</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
+<translation id="3823384748599722168">Ili utumie manenosiri yako yaliyohifadhiwa, fuata msimbo wa QR, pakua Chromium inayotumika kwenye iOS kisha uingie katika Akaunti yako ya Google</translation>
 <translation id="3846683726093018685">**Andaa muhtasari:** Kwa kutumia sentesi moja yenye maneno yasiyozidi 30, elezea mada na madhumuni ya msingi ya maudhui yaliyo katika picha ya skrini.
 
           **Pendekeza Maswali:** Tayarisha orodha iliyowekewa vitone yenye maswali 3 hadi 5 ya kuchochea mawazo ambayo mtumiaji anaweza kuuliza ili kuelewa vyema zaidi kuhusu picha ya skrini. Maswali haya yanapaswa kujumuisha angalau swali moja mahususi kwa kipengee cha picha, muundo wake au sehemu kilipowekwa.</translation>
@@ -326,6 +329,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4548534452171747496">Chromium hupakia kurasa mapema, hali inayofanya shughuli za utafutaji na kuvinjari ziwe za haraka zaidi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu kurasa zinazopakiwa mapema<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Umeingia katika akaunti kama <ph name="USER_EMAIL_ADDRESS" />. Sasa unaweza kupata alamisho, historia, na mipangilio yako mingine kwenye vifaa vyako vyote vilivyoingia katika akaunti.</translation>
 <translation id="4570813286784708942">Chromium imezuia upakuaji huu kwa sababu umezima kipengele cha Kuvinjari Salama na faili husika haiwezi kuthibitishwa</translation>
+<translation id="4583692638088316420">Jaribu Lenzi ya Google ukitumia Chromium kwenye simu yako</translation>
 <translation id="4594305310729380060">Kwenye Kidhibiti cha Manenosiri katika kifaa hiki</translation>
 <translation id="459535195905078186">Programu za Chromium</translation>
 <translation id="4598116752460667024">Tafuta mchakato wowote kwenye orodha.</translation>
@@ -357,6 +361,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4987820182225656817">Walioalikwa wanaweza kutumia Chromium bila kuacha kitu chochote nyuma.</translation>
 <translation id="4992938037305302429">Akaunti yako katika Chromium</translation>
 <translation id="4994636714258228724">Jiongeze kwenye Chrome</translation>
+<translation id="5083712646171654472">Gemini kwenye Chromium hutumia kipengele cha kuvinjari kiotomatiki kufanya kazi katika vichupo vyako na kukamilisha majukumu unayoipa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium inahitaji ruhusa ya kufuatilia mijongeo ya mikono</translation>
 <translation id="5141988424377517949">Hujazitembelea hivi majuzi. Chromium imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Unafikiria nini leo?</translation>
@@ -369,6 +374,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5254739261293693943">Uliza kuhusu video hii</translation>
 <translation id="5277894862589591112">Ili utumie mabadiliko uliyofanya, fungua Chromium upya</translation>
 <translation id="5286907366254680517">Imetambua</translation>
+<translation id="5289287148052354622">Pakua programu ya Chromium</translation>
 <translation id="5294316920224716406">Unapovinjari katika hali fiche, Chromium itakutahadharisha kabla ya kupakia tovuti kwa kutumia muunganisho usio salama</translation>
 <translation id="5313228254328109263">Huduma ya Ndani ya Kisasishaji cha Chromium</translation>
 <translation id="5346389065299425353">Boresha utafutaji wako kwa kuweka vichupo, faili na zana nyingi</translation>
@@ -583,6 +589,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7617377681829253106">Chromium imeboreshwa</translation>
 <translation id="7622753900276619808">Sasa una vipengele zaidi vinavyopatikana katika Chromium</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
+<translation id="7656340475565475526">Ruhusu Chromium ivinjari kwa niaba yako</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7686590090926151193">Chromium si kivinjari chako chaguomsingi</translation>
 <translation id="7689606757190482937">Sawazisha na uweke mapendeleo kwenye Chromium katika vifaa vyako vyote</translation>
@@ -608,7 +615,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7888981273428720788">Ifanye Chromium iwe kivinjari chako chaguomsingi</translation>
 <translation id="7934340546140346950">Chromium husasisha kiotomatiki miunganisho isiyo salama kuwa HTTPS inapowezekana</translation>
 <translation id="7937630085815544518">Uliingia kwenye Chromium kama <ph name="USER_EMAIL_ADDRESS" />. Tafadhali tumia akaunti hiyo hiyo kuingia tena.</translation>
-<translation id="7953047982688951904">Pakua Chromium kwenye simu yako ili uweke safu ya ziada ya ulinzi popote ulipo</translation>
 <translation id="7975919845073681630">Huu ni usakinishaji wa pili wa Chromium, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
 <translation id="7997934263947464652">Viendelezi, programu na mandhari kutoka kwenye vyanzo visivyojulikana vinaweza kuathiri kifaa chako. Chromium inapendekeza usakinishaji kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> tu</translation>
 <translation id="8004582292198964060">Kivinjari</translation>
@@ -635,6 +641,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8254601181414348851">Ungependa kuingia katika akaunti kwenye Chromium ukitumia wasifu mpya?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium inakuonya<ph name="END_LINK" /> kuhusu tovuti na vipakuliwa ambavyo si salama</translation>
 <translation id="8295827201165805317">Hujazitembelea hivi majuzi. Chromium imeondoa <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako katika programu ya Chromium inayotumika kwenye iOS</translation>
 <translation id="8313851650939857356">Hitilafu ya kuwasha: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Shirika lako hufunga Chromium isipotumika kwa <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Hifadhi ikiwa picha</translation>

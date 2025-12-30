@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1816835383954230954">Күйгүзүлсө, Chrome ылдамыраак иштейт жана JavaScript'ти колдонгон функциялар туура иштеши керек. Өчүрүлсө, майнаптуулук төмөндөйт, бирок V8 чабуулдарга туруктуураак болуп калат.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> колдонмосуна AR'ди колдоонуусуна уруксат берүү үчүн камераны <ph name="BEGIN_LINK" />Android параметрлеринен<ph name="END_LINK" /> күйгүзүңүз.</translation>
+<translation id="1822318649925991542">Серептөөнү ыңгайлаштыруу үчүн абалын өзгөртүңүз</translation>
 <translation id="1848033246551405023">Sans Serif ариби</translation>
 <translation id="1861262398884155592">Бул папка бош</translation>
 <translation id="1881806992065048905">Ылдыйкы экрандагы жаңы өтмөктөр бети</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Бул жолу уруксат берилген • Так</translation>
 <translation id="2544997614631598250">Теманын түсү: күңүрт</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
+<translation id="2553552004849639664">Chrome'дун Интернеттеги коркунучтарга каршы эң күчтүү коргоо куралын колдонуңуз</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Өтмөктөр тобу сакталды</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ дагы 1)}other{(+ дагы #)}}</translation>
 <translation id="5403592356182871684">Ысымдар</translation>
+<translation id="5407203562970638234">Коопсуздукту бекемдеңиз</translation>
 <translation id="5438097262470833822">Ушуну менен <ph name="WEBSITE" /> сайтынын уруксаттары баштапкы абалга келет</translation>
 <translation id="5459413148890178711">Бул параметр күйүп турганда, сайттар жайгашкан жериңизди колдонууга уруксат сурашы мүмкүн. Бул параметр өчүп турганда, сайттар жайгашкан жериңизди көрө алышпайт.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ичинен <ph name="ELAPSED_TIME" /> өттү.</translation>

@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3254806613790954367">Your last open tab across all your devices</translation>
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
-<translation id="3266338926702638258">Show price history for this product</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Hide Recent tabs</translation>
 <translation id="4578835633387306383">Turn on…</translation>
 <translation id="4580716718466706433">Go to 'Password Manager'</translation>
+<translation id="4585751637295612750">Open a new tab to add it to your question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page added to your reading list}other{{count} pages added to your reading list}}</translation>
 <translation id="459644946100970322">Turn on price alerts?</translation>

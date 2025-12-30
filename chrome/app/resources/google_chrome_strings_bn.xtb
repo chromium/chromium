@@ -273,6 +273,7 @@
 <translation id="3889417619312448367">Google Chrome আনইনস্টল করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3906096710440765802">আপনার সব ডিভাইসে পাসওয়ার্ড, বুকমার্ক এবং আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
+<translation id="3921132130819999051">Chrome-কে আপনার হয়ে ব্রাউজ করতে দিন</translation>
 <translation id="3941890832296813527">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার ফাইলের নাম ভুল বা সেটি কাজ করে না।</translation>
 <translation id="395904275706073188">সুরক্ষিত পৃষ্ঠা পড়া যাবে না। অন্য কোনও পৃষ্ঠা পড়ার চেষ্টা করুন।</translation>
 <translation id="3968962723676998462">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
@@ -404,7 +405,6 @@
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-র সাথে ব্যবহার করার জন্য Chrome প্রোফাইল বেছে নিন</translation>
 <translation id="5468572406162360320">এইসব ফিচার উন্নত করতে, Chrome, এগুলির সাথে আপনার ইন্ট্যার‌্যাকশন সংক্রান্ত তথ্য Google-এর কাছে পাঠায়। এই ডেটা হিউম্যান রিভিউয়ারের দ্বারা পড়া, প্রসেস করা ও অ্যানোটেট করা হতে পারে।</translation>
-<translation id="5510398294750420479">আপনার ফোনে Chrome ডাউনলোড করুন যাতে যেতে যেতেও সুরক্ষার অতিরিক্ত স্তর যোগ করতে পারেন</translation>
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome-এর ব্যবহার আরও দ্রুত করে তোলা</translation>
 <translation id="5550137307985173298">Chrome-কে নতুন লুক দিতে নতুন ট্যাব পৃষ্ঠায় 'Chrome কাস্টমাইজ করুন' বোতামে ক্লিক করুন</translation>
@@ -482,6 +482,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6180522807229584611">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এটি নিষ্ক্রিয় করতে দিন।</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
+<translation id="6183773856988300112">Gemini in Chrome আপনার ট্যাবে কাজ করতে ও আপনি যে টাস্ক দেন সেটি সম্পূর্ণ করতে অটোমেটিক ব্রাউজ ব্যবহার করে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chrome কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
 

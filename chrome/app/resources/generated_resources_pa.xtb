@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1125371304736839151">Gemini ਨੂੰ ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਸਿਖਰ 'ਤੇ ਦਿਖਾਓ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ਵਰਗਾ ਲੱਗਦਾ ਹੈ (ਮੂਲ)</translation>
+<translation id="1125816658532547876">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="1125921926864945797">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ</translation>
 <translation id="1128591060186966949">ਖੋਜ ਇੰਜਣ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="1129348283834595293">ਸਾਈਬਰਪੰਕ</translation>
@@ -566,6 +567,7 @@
 <translation id="1372841398847029212">ਆਪਣੇ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1373176046406139583">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਦਿਖਣਯੋਗਤਾ ਇਹ ਕੰਟਰੋਲ ਕਰਦੀ ਹੈ ਕਿ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਅਣਲਾਕ ਹੋਣ 'ਤੇ ਤੁਹਾਡੇ ਨਾਲ ਕੌਣ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕਰ ਸਕਦਾ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">ਨੈੱਟਵਰਕ "<ph name="NETWORK_NAME" />" ਵੱਲੋਂ ਲੋੜੀਂਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ ਜਾਂ ਹੁਣ ਪ੍ਰਮਾਣਿਕ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨਵਾਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕਨੈਕਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="1374948751106271187">ਤੁਰਦੇ-ਫਿਰਦੇ ਸੁਰੱਖਿਆ ਦੀ ਇੱਕ ਵਾਧੂ ਤਹਿ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1375557162880614858">ਕੀ ਤੁਸੀਂ ChromeOS Flex ਦੇ ਬਿਲਟ-ਇਨ ਸਕ੍ਰੀਨ ਰੀਡਰ ChromeVox ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1375938286942050085">ਸੈੱਟਅੱਪ ਪੂਰਾ ਹੋਇਆ! ਅੱਗੇ ਗੇਮਿੰਗ ਲਈ ਆਪਣਾ ਡੀਵਾਈਸ ਤਿਆਰ ਕਰੋ</translation>
 <translation id="137651782282853227">ਰੱਖਿਅਤ ਕੀਤੇ ਪਤੇ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ</translation>
@@ -992,7 +994,6 @@
 <translation id="1650801028905250434">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; Files ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1651008383952180276">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਾਖਲ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="1651609627703324721">ਇਹ ਟੈਬ ਕਿਸੇ ਹੈੱਡਸੈੱਟ ਵਿੱਚ VR ਸਮੱਗਰੀ ਨੂੰ ਪੇਸ਼ ਕਰ ਰਹੀ ਹੈ</translation>
-<translation id="1651633344379798952">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
 <translation id="1652281434788353738">ਵਿਚਾਰਸ਼ੀਲ</translation>
 <translation id="1652326691684645429">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1652862280638399816">macOS Keychain ਨਾਲ Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Chromium ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ ਅਤੇ Keychain ਨੂੰ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ। ਮੁੜ-ਲਾਂਚ ਕਰਨ ਤੋਂ ਬਾਅਦ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ।</translation>
@@ -1222,7 +1223,6 @@
 <translation id="1808805149659872686">ਨਵਾਂ ਇੰਦਰਾਜ</translation>
 <translation id="1809201888580326312">ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਲਈ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਨਾ ਕਰਨ ਦੀ ਚੋਣ ਕੀਤੀ ਹੈ</translation>
 <translation id="1809734401532861917"><ph name="USER_EMAIL_ADDRESS" /> ਵਿੱਚ ਮੇਰੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="1810070166657251157">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਵਰਤਣ ਲਈ, QR ਕੋਡ ਦਾ ਅਨੁਸਰਣ ਕਰੋ, iOS ਲਈ Chrome ਡਾਊਨਲੋਡ ਕਰੋ ਅਤੇ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1810366086647840386">ਇਮੇਜ ਸਰਵਰ</translation>
 <translation id="1811908311154949291">ਇਨਕੋਗਨਿਟੋ ਫੈਂਸਡ ਫ੍ਰੇਮ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਨਹੀਂ ਰੱਖ ਸਕਦਾ</translation>
@@ -1269,6 +1269,7 @@
 <translation id="183445248400150852">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਇਨਪੁੱਟ ਨੂੰ ਓਵਰਰਾਈਡ ਕਰਨ ਲਈ, ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਗੇਮਾਂ ਜਾਂ ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਐਪਾਂ ਲਈ</translation>
 <translation id="1834503245783133039">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="1837292628323740716">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵਧਾਓ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ਨੇ ਬੇਨਤੀ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1838374766361614909">ਖੋਜ ਹਟਾਓ</translation>
 <translation id="1839021455997460752">ਤੁਹਾਡਾ ਈਮੇਲ ਪਤਾ</translation>
@@ -1783,6 +1784,7 @@
 <translation id="2184272387334793084">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2184515124301515068">Chrome ਨੂੰ ਚੁਣਨ ਦਿਓ ਕਿ ਸਾਈਟਾਂ ਕਦੋਂ ਧੁਨੀ ਚਲਾ ਸਕਦੀਆਂ ਹਨ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Gemini ਨਾਲ ਨਵੀਂ ਚੈਟ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2186711480981247270">ਪੰਨੇ ਨੂੰ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2187675480456493911">ਤੁਹਾਡੇ ਖਾਤੇ 'ਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਗਿਆ। ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸੋਧੀਆਂ ਗਈਆਂ ਸੈਟਿੰਗਾਂ ਦਾ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">ਐਕਸਟੈਂਸ਼ਨਾਂ ਅੱਪਡੇਟ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
@@ -2444,6 +2446,7 @@
 <translation id="2627424346328942291">ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="2628258844236035475">ਕੀ Chrome ਆਟੋਫਿਲ ਤੋਂ ਆਪਣੇ ਘਰ ਦਾ ਪਤਾ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="2628770867680720336">ADB ਡੀਬੱਗਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ ਇਸ Chromebook ਨੂੰ ਫੈਕਟਰੀ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Gemini ਨਾਲ ਨਵੀਂ ਚੈਟ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2629227353894235473">Android ਐਪਾਂ ਦਾ ਵਿਕਾਸ ਕਰੋ</translation>
 <translation id="2629437048544561682">ਕੈਨਵਸ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="2631498379019108537">ਸ਼ੈਲਫ਼ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ  ਦਿਖਾਓ </translation>
@@ -3377,7 +3380,6 @@
 <translation id="3269612321104318480">ਹਲਕਾ ਹਰਾ-ਨੀਲਾ ਅਤੇ ਸਫ਼ੈਦ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="3270965368676314374">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਪੜ੍ਹੋ, ਬਦਲੋ ਅਤੇ ਮਿਟਾਓ</translation>
-<translation id="3273033807960054795">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="3275778809241512831">ਤੁਹਾਡੀ ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਇਸ ਵੇਲੇ ਅਸੁਰੱਖਿਅਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਉਹਨਾਂ ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਤੋਂ ਹਟਾ ਦਿਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਇਸ ਨਾਲ ਵਰਤਿਆ ਸੀ। ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ।</translation>
 <translation id="3275778913554317645">window ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
@@ -5105,7 +5107,6 @@
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="4423525817792153232">ਆਪਣੇ ਸਾਰੇ ਦੰਦ ਦਿਖਾਓ</translation>
-<translation id="4424107154724312436">iOS 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
 <translation id="4424262960694990728">ਕਾਰਵਾਈ ਦੀ ਲੋੜ</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ਡੀਵਾਈਸਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦੇਣ ਨਾਲ ਸਾਨੂੰ, ChromeOS ਵਿੱਚ ਕੀ ਠੀਕ ਕਰਨਾ ਹੈ ਅਤੇ ਕੀ ਸੁਧਾਰ ਕਰਨਾ ਹੈ, ਇਸ ਨੂੰ ਤਰਜੀਹ ਦੇਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਅਜਿਹੀਆਂ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ChromeOS ਕਦੋਂ ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ, ਕਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵਰਤੀਆਂ ਗਈਆਂ ਸਨ ਅਤੇ ਆਮ ਤੌਰ 'ਤੇ ਕਿੰਨੀ ਮੈਮੋਰੀ ਵਰਤੀ ਗਈ ਸੀ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੀਆਂ Chrome ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਦੀ ਆਗਿਆ ਦੇਣਾ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
@@ -5583,7 +5584,6 @@
 <translation id="4767427586072640478">ਬੰਦ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4769632191812288342">ਤੁਸੀਂ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="4770119228883592393">ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ ⌘ + Option + ਹੇਠਾਂ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
-<translation id="4770755495532014179">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ iPhone 'ਤੇ ਵਰਤੋ</translation>
 <translation id="4772914216048388646">ਵਿਵਸਥਿਤ</translation>
 <translation id="4773112038801431077">Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ</translation>
 <translation id="4773122030389014189">“<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -6401,6 +6401,7 @@
 <translation id="5335370353987155592">Gemini ਦੀ ਵਰਤੋਂ ਧਿਆਨ ਨਾਲ ਅਤੇ <ph name="BEGIN_LINK1" />ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ<ph name="LINK_END1" /> ਕਰੋ। ਤੁਸੀਂ ਕਿਸੇ ਕਾਰਜ ਦੌਰਾਨ Gemini ਦੀਆਂ ਕਾਰਵਾਈਆਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰ ਹੁੰਦੇ ਹੋ, ਜਿਸ ਵਿੱਚ ਗਲਤੀਆਂ ਅਤੇ ਖਰੀਦਦਾਰੀਆਂ ਵਰਗੇ <ph name="BEGIN_LINK2" />ਅਣਕਿਆਸੇ ਨਤੀਜੇ<ph name="LINK_END2" /> ਸ਼ਾਮਲ ਹਨ।</translation>
 <translation id="5336688142483283574">ਇਸ ਪੰਨੇ ਨੂੰ ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਅਤੇ <ph name="SEARCH_ENGINE" /> ਸਰਗਰਮੀ ਤੋਂ ਵੀ ਹਟਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="5336689872433667741">ਕਰਸਰ ਅਤੇ ਟੱਚਪੈਡ</translation>
+<translation id="5337035808300170502">ਅਸਲ ਆਕਾਰ</translation>
 <translation id="5337207153202941678">'ਉਜਾਗਰ ਕਰੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5337771866151525739">ਤੀਜੀ ਪਾਰਟੀ ਵੱਲੋਂ ਇੰਸਟੌਲ ਕੀਤਾ।</translation>
 <translation id="5337926771328966926">ਮੌਜੂਦਾ ਡੀਵਾਈਸ ਦਾ ਨਾਮ <ph name="DEVICE_NAME" /> ਹੈ</translation>
@@ -6465,6 +6466,7 @@
 <translation id="5388719243178419614">ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਚਿੱਤਰ ਫ਼ਾਈਲ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="5388885445722491159">ਜੋੜਾਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="5389224261615877010">ਸਤਰੰਗ</translation>
+<translation id="538945906186309152">Gemini ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5389794555912875905">ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ 'ਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀਆਂ ਦੇਖੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="5389943529251318913">ਮਾਊਸ ਸਪੀਡ ਨੂੰ ਇੰਨਾ ਘਟਾਓ</translation>
 <translation id="5390112241331447203">ਵਿਚਾਰ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਭੇਜੀ system_logs.txt ਫ਼ਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ।</translation>
@@ -6734,7 +6736,6 @@
 <translation id="556321030400250233">ਸਥਾਨਕ ਜਾਂ ਸਾਂਝੀ ਕੀਤੀ ਫ਼ਾਈਲ</translation>
 <translation id="5563234215388768762">Google 'ਤੇ ਖੋਜੋ ਜਾਂ ਕੋਈ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="5563824734298958390">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
-<translation id="5564450015351086922">iOS 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
 <translation id="5565735124758917034">ਸਕਿਰਿਆ</translation>
 <translation id="5568069709869097550">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5568525251731145240">ਕੀ <ph name="SITE_NAME" />, ਇਸਦੇ ਅਧੀਨ ਆਉਂਦੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਅਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਲਈ ਸਾਈਟ ਡਾਟਾ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -7937,7 +7938,6 @@
 <translation id="6410328738210026208">ਚੈਨਲ ਅਤੇ ਪਾਵਰਵਾਸ਼ ਬਦਲੋ</translation>
 <translation id="6410390304316730527">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਜਿਹੇ ਹਮਲਾਵਾਰਾਂ ਤੋਂ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ ਜੋ ਖਰਾਬ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਪਾਸਵਰਡ, ਫ਼ੋਨ ਨੰਬਰ, ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡਾਂ ਵਰਗੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦਾ ਖੁਲਾਸਾ ਕਰਨ ਵਰਗੇ ਖਤਰਨਾਕ ਕੰਮ ਕਰਕੇ ਤੁਹਾਡੇ ਨਾਲ ਚਾਲਬਾਜ਼ੀ ਕਰ ਸਕਦੇ ਹਨ। ਜੇ ਤੁਸੀਂ ਇਸਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ ਅਣਪਛਾਤੀਆਂ ਅਤੇ ਅਪ੍ਰਸਿੱਧ ਸਾਈਟਾਂ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਸਮੇਂ ਸਾਵਧਾਨ ਰਹੋ।</translation>
 <translation id="6411135999030237579">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਦੁਹਰਾਉਣ ਲਈ ਕੁੰਜੀ ਨੂੰ ਦਬਾਈ ਰੱਖੋ</translation>
-<translation id="6411516120707127482">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
 <translation id="6414618057231176439">ਚੁਣੋ ਕਿ <ph name="VM_NAME" /> ਦਾ ਕਿਹੜਾ ਵਰਜਨ ਸਥਾਪਤ ਕਰਨਾ ਹੈ।</translation>
 <translation id="641469293210305670">ਅੱਪਡੇਟ ਅਤੇ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6415757856498750027">"ư" ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ "w" ਟਾਈਪ ਕਰੋ</translation>
@@ -7984,7 +7984,6 @@
 <translation id="6445450263907939268">ਜੇਕਰ ਤੁਸੀਂ ਇਹ ਬਦਲਾਵ ਨਹੀਂ ਚਾਹੁੰਦੇ ਸੀ, ਤਾਂ ਤੁਸੀਂ ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6446213738085045933">ਡੈਸਕਟਾਪ ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
-<translation id="6449835059180426406">ਆਪਣੇ iOS ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="6450876761651513209">ਆਪਣੀਆਂ ਪ੍ਰਾਈਵੇਸੀ-ਸੰਬੰਧਿਤ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ਅਤੇ 1 ਹੋਰ ਟੈਬ}other{<ph name="PAGE_TITLE" /> ਅਤੇ # ਹੋਰ ਟੈਬਾਂ}}</translation>
 <translation id="6451689256222386810">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਸਿੰਕ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" />।</translation>
@@ -8467,6 +8466,7 @@
 <translation id="6783036716881942511">ਕੀ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਭੁੱਲਣਾ ਹੈ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ਸੈਟਿੰਗਾਂ</translation>
 <translation id="6784523122863989144">ਪ੍ਰੋਫਾਈਲ ਸਮਰਥਿਤ ਹੈ</translation>
+<translation id="678520006562636090">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Lens ਅਜ਼ਮਾਓ</translation>
 <translation id="6785594991951195537">ਆਪਣੇ <ph name="PASSWORD_DOMAIN" /> ਨੂੰ ਵਰਤੋ</translation>
 <translation id="6785739405821760313">ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਦੇਖੇ ਜਾ ਰਹੇ ਹਨ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Tab ਦਬਾਓ।</translation>
 <translation id="6785915470941880363">ਉਲਟ ਸਕ੍ਰੋਲਿੰਗ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
@@ -8876,7 +8876,7 @@
 <translation id="7052147783849658969">ਫ਼ਿਲਹਾਲ ਕੋਈ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨਹੀਂ ਹੈ</translation>
 <translation id="7052762602787632571">&amp;ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ...</translation>
 <translation id="705352103640172578">ਵਾਟਰਫ਼ਾਲ</translation>
-<translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
+<translation id="7053983685419859001">ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
 <translation id="7055451306017383754">ਸਾਂਝਾਕਰਨ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਫੋਲਡਰ ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ। ਅਗਲੀ ਵਾਰ Parallels Desktop ਬੰਦ ਹੋਣ 'ਤੇ ਫੋਲਡਰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7056418393177503237">{0,plural, =1{ਇਨਕੋਗਨਿਟੋ}one{# ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹੋ}other{# ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਖੋਲ੍ਹੋ}}</translation>
@@ -8897,7 +8897,6 @@
 <translation id="7066572364168923329">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਦਾ ਸੈੱਟਅੱਪ ਚੁਣੋ</translation>
 <translation id="7067396782363924830">ਸਰਗਰਮ ਰੰਗ</translation>
 <translation id="7067725467529581407">ਇਹ ਦੁਬਾਰਾ ਨਾ  ਦਿਖਾਓ ।</translation>
-<translation id="7067779359472606732">ਰਿਮਾਈਂਡਰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਭੇਜਿਆ ਗਿਆ</translation>
 <translation id="7068279399556423026">ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7068539819344620805">ਤੁਸੀਂ ਹੁਣ ਵਿਉਂਤਬੱਧ Chrome ਮੀਨੂ ਤੋਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਨਵੀਂ ਦਿੱਖ ਦੇ ਸਕਦੇ ਹੋ</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> ਅਤੇ ਕੁਝ ਹੋਰ ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -10053,7 +10052,6 @@
 <translation id="786073089922909430">ਸੇਵਾ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ਡਾਊਨਲੋਡਸ</translation>
 <translation id="7861846108263890455">Google ਖਾਤੇ ਦੀ ਭਾਸ਼ਾ</translation>
-<translation id="7863211248337747225">ਐਪ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> ਮਿੰਟਾਂ ਵਿੱਚ</translation>
 <translation id="7864539943188674973">Bluetooth ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਓ</translation>
 <translation id="7864825798076155402">ਕੀ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
@@ -10379,7 +10377,6 @@
 <translation id="8068904756674285749">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀ ਖੋਜ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਨੂੰ ਲੱਭਣ ਲਈ, ਆਮ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਸਵਾਲ ਵੀ ਪੁੱਛ ਸਕਦੇ ਹੋ ਅਤੇ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ। ਸੈਟਿੰਗ ਬੰਦ ਹੈ।</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" /> ਟਿਕਾਣੇ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ</translation>
 <translation id="8070662218171013510">ਛੋਹ ਪ੍ਰਤੀਕਰਮ</translation>
-<translation id="8071033114691184017">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ iPhone 'ਤੇ ਵਰਤੋ</translation>
 <translation id="8071432093239591881">ਚਿੱਤਰ ਵਜੋਂ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ਐਪ ਡਾਟਾ ਕਿਸੇ ਐਪ ਵੱਲੋਂ (ਵਿਕਾਸਕਾਰ ਸੈਟਿੰਗਾਂ 'ਤੇ ਅਧਾਰਿਤ) ਰੱਖਿਅਤ ਕੀਤਾ ਕੋਈ ਵੀ ਡਾਟਾ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਸੰਪਰਕਾਂ, ਸੁਨੇਹਿਆਂ ਅਤੇ ਫ਼ੋਟੋਆਂ ਵਰਗਾ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਬੈਕਅੱਪ ਡਾਟੇ ਨੂੰ ਤੁਹਾਡੇ ਬੱਚੇ ਦੇ 'ਡਰਾਈਵ' ਸਟੋਰੇਜ ਕੋਟੇ ਵਿੱਚ ਨਹੀਂ ਗਿਣਿਆ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH2" />

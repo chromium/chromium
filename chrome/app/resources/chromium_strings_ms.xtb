@@ -220,9 +220,11 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3352986031709923790">penjuru atas sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Data Chromium pada akaun anda</translation>
 <translation id="3369405342922656244">Cari halaman ini dengan Carian Imej</translation>
+<translation id="3375770072980084583">Gunakan kata laluan anda dengan Chromium pada telefon anda</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Tukar kepada profil Chromium yang sedia ada?</translation>
 <translation id="3412460710772753638">Dalam Password Manager pada peranti ini</translation>
+<translation id="3455907671758333080">Lanjutkan Penyemakan Imbas Selamat Dipertingkat dengan Chromium pada telefon anda</translation>
 <translation id="3461644266919055473">Menyesuaikan Chromium anda...</translation>
 <translation id="347328004046849135">Chromium akan memberitahu anda apabila anda log masuk menggunakan kata laluan yang terjejas</translation>
 <translation id="3474745554856756813">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -249,6 +251,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3798048725356732506">Profil Chromium membantu anda mengasingkan bahagian kehidupan anda yang berbeza. Tambahkan profil baharu sekarang.</translation>
 <translation id="3802055581630249637">Chromium mempramuat halaman yang mungkin anda lawati supaya halaman tersebut dimuatkan dengan lebih pantas apabila dilawati</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3823384748599722168">Untuk menggunakan kata laluan anda yang disimpan, ikut kod QR, muat turun Chromium untuk iOS dan log masuk ke Google Account anda</translation>
 <translation id="3846683726093018685">**Ringkaskan:** Dalam satu ayat dengan kurang daripada 30 patah perkataan, perihalkan subjek utama dan tujuan kandungan dalam tangkapan skrin.
 
           **Cadangkan Soalan:** Jana senarai berbulet 3-5 soalan yang mencabar minda yang boleh ditanya oleh pengguna untuk memahami tangkapan skrin dengan lebih baik. Soalan ini hendaklah mengandungi sekurang-kurangnya satu soalan yang khusus tentang objek visual, reka bentuk atau peletakan objek tersebut.</translation>
@@ -324,6 +327,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4548534452171747496">Chromium mempramuatkan halaman yang menjadikan penyemakan imbas dan carian lebih pantas. <ph name="BEGIN_LINK" />Ketahui halaman pramuat dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />. Sekarang anda boleh mengakses penanda halaman, sejarah dan tetapan anda yang lain pada semua peranti yang anda gunakan untuk log masuk.</translation>
 <translation id="4570813286784708942">Chromium menyekat muat turun ini kerana anda mematikan Penyemakan Imbas Selamat dan fail tidak dapat disahkan</translation>
+<translation id="4583692638088316420">Cuba Google Lens dengan Chromium pada telefon anda</translation>
 <translation id="4594305310729380060">Pada Password Manager pada peranti ini</translation>
 <translation id="459535195905078186">Apl Chromium</translation>
 <translation id="4598116752460667024">Cari sebarang proses daripada senarai.</translation>
@@ -355,6 +359,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4987820182225656817">Tetamu boleh menggunakan Chromium tanpa meninggalkan apa-apa.</translation>
 <translation id="4992938037305302429">Akaun Anda dalam Chromium</translation>
 <translation id="4994636714258228724">Tambahkan diri anda kepada Chromium</translation>
+<translation id="5083712646171654472">Gemini dalam Chromium menggunakan penyemakan imbas automatik untuk berfungsi dalam tab anda dan melengkapkan tugasan yang anda berikan kepada Gemini. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium memerlukan kebenaran untuk menjejaki tangan anda</translation>
 <translation id="5141988424377517949">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Apakah yang anda fikirkan hari ini?</translation>
@@ -367,6 +372,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5254739261293693943">Tanya tentang video ini</translation>
 <translation id="5277894862589591112">Untuk menggunakan perubahan anda, mulakan semula Chromium</translation>
 <translation id="5286907366254680517">Dikesan</translation>
+<translation id="5289287148052354622">Dapatkan apl Chromium</translation>
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="5313228254328109263">Perkhidmatan Dalaman Pengemas Kini Chromium</translation>
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
@@ -581,6 +587,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7617377681829253106">Chromium kini lebih baik</translation>
 <translation id="7622753900276619808">Kini anda mempunyai lebih banyak ciri yang tersedia dalam Chromium</translation>
 <translation id="7649070708921625228">Bantuan</translation>
+<translation id="7656340475565475526">Benarkan Chromium menyemak imbas untuk anda</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7686590090926151193">Chromium bukan penyemak imbas lalai anda</translation>
 <translation id="7689606757190482937">Segerakkan dan peribadikan Chromium pada semua peranti anda</translation>
@@ -606,7 +613,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7888981273428720788">Tetapkan Chromium sebagai lalai anda</translation>
 <translation id="7934340546140346950">Chromium meningkatkan sambungan tidak selamat kepada HTTPS secara automatik jika boleh</translation>
 <translation id="7937630085815544518">Anda telah log masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
-<translation id="7953047982688951904">Muat turun Chromium pada telefon anda untuk menambahkan lapisan perlindungan tambahan semasa dalam perjalanan</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan kedua Chromium dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="7997934263947464652">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
@@ -633,6 +639,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium memberi anda amaran<ph name="END_LINK" /> tentang laman dan muat turun tidak selamat</translation>
 <translation id="8295827201165805317">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Beli-belah, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda pada apl Chromium iOS</translation>
 <translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai imej</translation>

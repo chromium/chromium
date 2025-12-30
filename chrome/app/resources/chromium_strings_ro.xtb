@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">Invitații pot folosi Chromium fără a lăsa nicio urmă.</translation>
 <translation id="4992938037305302429">Contul tău în Chromium</translation>
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
+<translation id="5083712646171654472">Gemini folosește navigarea automată în Chromium ca să lucreze în filele tale și să finalizeze activitățile pe care i le aloci. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium are nevoie de permisiune pentru a-ți urmări mâinile</translation>
 <translation id="5141988424377517949">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">La ce te gândești astăzi?</translation>
@@ -581,6 +582,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7617377681829253106">Chromium a devenit și mai bun</translation>
 <translation id="7622753900276619808">Acum ai mai multe funcții disponibile în Chromium</translation>
 <translation id="7649070708921625228">Ajutor</translation>
+<translation id="7656340475565475526">Permite browserului Chromium să navigheze pentru tine</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7686590090926151193">Chromium nu este browserul prestabilit</translation>
 <translation id="7689606757190482937">Sincronizează și personalizează Chromium pe toate dispozitivele</translation>
@@ -606,7 +608,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7888981273428720788">Setează Chromium ca browser prestabilit</translation>
 <translation id="7934340546140346950">Chromium face automat upgrade conexiunilor nesecurizate la HTTPS, dacă este posibil</translation>
 <translation id="7937630085815544518">Ai fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Folosește același cont pentru a te conecta din nou.</translation>
-<translation id="7953047982688951904">Descarcă Chromium pe telefon pentru a adăuga un nivel suplimentar de protecție când ești în mișcare</translation>
 <translation id="7975919845073681630">Aceasta este o instalare secundară a browserului Chromium și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="7997934263947464652">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chromium recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Browser</translation>

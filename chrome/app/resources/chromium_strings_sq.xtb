@@ -356,6 +356,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4992938037305302429">Llogaria jote në Chromium</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
+<translation id="5083712646171654472">Gemini në Chromium përdor shfletimin automatik për të punuar në skedat e tua dhe për të përfunduar detyrat që ti i jep. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
 <translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="5167819546851111585">Çfarë ke në mendje sot?</translation>
@@ -582,6 +583,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7617377681829253106">Chromium sapo është përmirësuar</translation>
 <translation id="7622753900276619808">Tani ke më shumë veçori të disponueshme në Chromium</translation>
 <translation id="7649070708921625228">Ndihma</translation>
+<translation id="7656340475565475526">Lejo që Chromium të shfletojë për ty</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>
 <translation id="7689606757190482937">Sinkronizo dhe personalizo Chromium nëpër pajisjet e tua</translation>
@@ -607,7 +609,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7888981273428720788">Cakto Chromium si parazgjedhje</translation>
 <translation id="7934340546140346950">Chromium i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
-<translation id="7953047982688951904">Shkarko Chromium në telefon për të shtuar një shtresë shtesë mbrojtjeje kur je në lëvizje</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="7997934263947464652">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chromium rekomandon që t'i instalosh ato vetëm nga<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Shfletuesi</translation>

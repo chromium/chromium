@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1816835383954230954">ເມື່ອເປີດຢູ່, Chrome ຈະເຮັດວຽກໄດ້ໄວຂຶ້ນ ແລະ ຄຸນສົມບັດທີ່ໃຊ້ JavaScript ຄວນເຮັດວຽກຕາມທີ່ອອກແບບໄວ້. ເມື່ອປິດຢຸດ, ການດໍາເນີນການນີ້ຈະຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ V8 ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ.</translation>
 <translation id="1818308510395330587">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ໃຊ້ AR, ກະລຸນາເປີດກ້ອງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
+<translation id="1822318649925991542">ສະຫຼັບຕຳແໜ່ງເພື່ອປັບແຕ່ງປະສົບການໃນການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="1848033246551405023">ຟອນ Sans Serif</translation>
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1881806992065048905">ຊີດລຸ່ມສຸດລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ອະນຸຍາດໃນເທື່ອນີ້ • ແບບລະອຽດ</translation>
 <translation id="2544997614631598250">ຮູບແບບສີສັນສີມືດ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
+<translation id="2553552004849639664">ຮັບການປ້ອງກັນໄພຄຸກຄາມທາງອອນລາຍທີ່ດີທີ່ສຸດຂອງ Chrome</translation>
 <translation id="2570922361219980984">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້ນຳອີກ. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">ຂະ​ຫຍາຍແລ້ວ - ຄລິກ​ເພື່ອຫຍໍ້ລົງ.</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ອີກ 1 ລາຍການ)}other{(ອີກ # ລາຍການ)}}</translation>
 <translation id="5403592356182871684">ຊື່</translation>
+<translation id="5407203562970638234">ປັບປຸງການຮັກສາຄວາມປອດໄພຂອງທ່ານໃຫ້ດີຂຶ້ນ</translation>
 <translation id="5438097262470833822">ຕົວເລືອກນີ້ຈະຣີເຊັດການອະນຸຍາດສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍສະຖານທີ່ຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດເຫັນສະຖານທີ່ຂອງທ່ານໄດ້.</translation>
 <translation id="5489227211564503167">ເວລາຜ່ານໄປ <ph name="ELAPSED_TIME" /> ຈາກທັງໝົດ <ph name="TOTAL_TIME" />.</translation>

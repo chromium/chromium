@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Чување промене није успело.</translation>
 <translation id="3254806613790954367">Последња отворена картица на свим уређајима</translation>
 <translation id="325717987950204592">Додирните Приватност и безбедност</translation>
-<translation id="3266338926702638258">Прикажи историју цена за овај производ</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Сакриј Недавне картице</translation>
 <translation id="4578835633387306383">Укључи…</translation>
 <translation id="4580716718466706433">Идите у Менаџер лозинки</translation>
+<translation id="4585751637295612750">Отворите нову картицу да бисте је додали у питање</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страница је додата на листу за читање}one{{count} страница је додата на листу за читање}few{{count} странице су додате на листу за читање}other{{count} страница је додато на листу за читање}}</translation>
 <translation id="459644946100970322">Желите да укључите обавештења о ценама?</translation>

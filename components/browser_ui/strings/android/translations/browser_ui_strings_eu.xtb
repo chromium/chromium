@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-ri buruzko aholkuak</translation>
 <translation id="1816835383954230954">Aktibatuta dagoenean, Chrome-k bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete. Desaktibatuta dagoenean, errendimendua gutxitzen du, baina V8 erasoen aurrean indartzen du.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari EA erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Aldatu posizioa arakatzeko modua pertsonalizatzeko</translation>
 <translation id="1848033246551405023">Letra: Sans Serif</translation>
 <translation id="1861262398884155592">Hutsik dago karpeta</translation>
 <translation id="1881806992065048905">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura duena</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Zerrendako webgune guztiak zoom lehenetsira berrezarriko dira</translation>
 <translation id="1989112275319619282">Arakatu</translation>
 <translation id="1994173015038366702">Webgunearen URLa</translation>
+<translation id="1994558116414798016">Lexend letra</translation>
 <translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2025115093177348061">Errealitate areagotua</translation>
 <translation id="2028449514182362831">Mugimendu-sentsoreak behar dituzten eginbideek ez dute funtzionatuko</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Gaiaren kolorea: argia</translation>
 <translation id="2096716221239095980">Ezabatu datu guztiak</translation>
 <translation id="2102396546234652240">Ez eman mikrofonoa erabiltzeko baimena webguneei</translation>
+<translation id="2115808389282428160">Ez eman gailuko beste aplikazio eta zerbitzu batzuk erabiltzeko baimena webguneei</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="2146263598007866206">Baliteke webguneek erlazionatutako fitxategiak automatikoki deskargatzea, denbora aurrezteko</translation>
 <translation id="2148716181193084225">Gaur</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Oraingoan baimenduta • Zehatza</translation>
 <translation id="2544997614631598250">Gaiaren kolorea: iluna</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
+<translation id="2553552004849639664">Lortu Chrome-ren sareko mehatxuen aurkako babesik sendoena</translation>
 <translation id="2570922361219980984">Kokapenerako sarbidea desaktibatuta dago gailu honetan ere. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Zabalduta; egin klik tolesteko.</translation>
 <translation id="2586657967955657006">Arbela</translation>
@@ -159,6 +163,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="2621115761605608342">Baimendu JavaScript erabiltzea webgune zehatz batean.</translation>
 <translation id="2626708220538466178">Pantailaren behealdean ainguratutako orria, arakatzaile lehenetsiari buruzkoa, itxita dago</translation>
 <translation id="2653659639078652383">Bidali</translation>
+<translation id="2665056444046933274">Webguneek gailu honetako beste aplikazio eta zerbitzu batzuk erabiltzeko balia dezakete eginbide hau</translation>
 <translation id="2670403088701171361">Ez eman arbeleko testua edo irudiak ikusteko baimena webguneei</translation>
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2682367912565197520">Ezabatu gordetako zoom-maila</translation>
@@ -202,8 +207,10 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="311394601889664316">Ez eman gailuko fitxategiak edo karpetak editatzeko baimena webguneei</translation>
 <translation id="3114012059975132928">Bideo-erreproduzigailua</translation>
 <translation id="3115898365077584848">Erakutsi informazioa</translation>
+<translation id="3120204271988747891">Webguneek sare lokaleko beste gailu batzuk erabiltzeko baimena eska dezakete</translation>
 <translation id="3123473560110926937">Webgune batzuetan blokeatu dira iragarkiak</translation>
 <translation id="3132996321662585180">Freskatu egunero</translation>
+<translation id="3134859781443140237">Tokiko sarea</translation>
 <translation id="3143754809889689516">Erreproduzitu hasieratik</translation>
 <translation id="3164169438034704658">Kokapen zehatza aktibatzeko, joan <ph name="BEGIN_LINK" />Android-en ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="3165022941318558018">Eman hirugarrenen cookieak erabiltzeko baimena webgune bati</translation>
@@ -214,6 +221,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3223425961342298674">Ukatu da kokapena erabiltzeko baimena</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3232293466644486101">Ezabatu arakatze-datuak…</translation>
+<translation id="3241320538788585298">Loopback sarea</translation>
 <translation id="3242646949159196181">Aktibatuta dagoenean, webguneek soinua erreproduzi dezakete. Desaktibatuta dagoenean, webguneek ezin dute erreproduzitu soinurik.</translation>
 <translation id="3273479183583863618">Fitxetako prezio-jaitsierak</translation>
 <translation id="3277252321222022663">Eman sentsoreak erabiltzeko baimena webguneei (gomendatua)</translation>
@@ -409,6 +417,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="5373874281522292782">Fitxa taldeak gorde egiten dira</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
+<translation id="5407203562970638234">Hobetu zure segurtasuna</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> webgunearen baimenak berrezarriko dira</translation>
 <translation id="5459413148890178711">Aktibatuta dagoenean, webguneek kokapena eska diezazukete. Desaktibatuta dagoenean, webguneek ezin dute ikusi zure kokapena.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
@@ -423,6 +432,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blokeatuta dago</translation>
 <translation id="560980142378233747">Horrek esan nahi du webgunearen eginbideek funtzionatu beharko luketela, baina arakatzean agian babes txikiagoa daukazula. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Pantailaren behealdean ainguratutako orria, fitxa berriaren orriaren txartelak dituena</translation>
+<translation id="5621413808884657932">Aktibatuta dagoenean, webguneek gailuko beste aplikazio eta zerbitzu batzuk erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dituzte erabili gailuko beste aplikazio eta zerbitzurik.</translation>
 <translation id="5632485077360054581">Erakutsi nola</translation>
 <translation id="5649053991847567735">Deskarga automatikoak</translation>
 <translation id="5668404140385795438">Gainidatzi zoom-maila ez handiagotzeko webgune baten eskaera</translation>
@@ -543,6 +553,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6842868554183332230">Webguneek gailua noiz erabiltzen ari zaren hauteman ohi dute, txat-aplikazioetan zer eskuragarritasun duzun zehazteko</translation>
 <translation id="6864395892908308021">Gailu honek ezin du irakurri NFC</translation>
 <translation id="6870169401250095575">Ezkutatu segurtasun-egiaztapenaren txartela</translation>
+<translation id="6882736949427544336">Ez eman sare lokaleko beste gailuak erabiltzeko baimenik webguneei</translation>
 <translation id="6900883974539674431">Sortu automatikoki gordetzen eta zure gailu guztietan eguneratzen diren fitxa taldeak</translation>
 <translation id="6912998170423641340">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="6945221475159498467">Hautatu</translation>
@@ -604,6 +615,8 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7586676035079382730">Ukatu da jakinarazpenak bidaltzeko baimena</translation>
 <translation id="7594634374516752650">Bluetooth bidezko gailu batera konektatuta zaude</translation>
 <translation id="7617547684249261169">Historia, cookieak, webguneetako datuak eta beste datu batzuk ezaba ditzakezu, guztiak edo batzuk bakarrik</translation>
+<translation id="762200934554267613">Webguneek gailuko beste aplikazio eta zerbitzu batzuk erabiltzeko baimena eska dezakete</translation>
+<translation id="7627749368210392160">Webguneek sare lokaleko beste gailu batzuk erabiltzeko balia dezakete eginbide hau</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7655411746932645568">Webguneek serieko ataketara konektatzea eska dezakete</translation>
 <translation id="7658239707568436148">Utzi</translation>
@@ -659,6 +672,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8211406090763984747">Konexioa segurua da</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Aktibatuta dagoenean, webguneek sare lokaleko beste gailu batzuk erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sare lokaleko beste gailurik.</translation>
 <translation id="8249310407154411074">Eraman goraino</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8284326494547611709">Azpitituluak</translation>
@@ -712,6 +726,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8737426583868847403">Zoom maila pertsonalizatu batekin gordetzen dituzun webguneak hemen agertuko dira</translation>
+<translation id="8748714929822124637">Ez eman sare lokaleko beste gailuak erabiltzeko baimenik webguneei</translation>
 <translation id="8751914237388039244">Hautatu irudi bat</translation>
 <translation id="8775741625735357092">Laster-marken barra aktiba dezakezu Ezarpenak &gt; Itxura atalean</translation>
 <translation id="8800034312320686233">Ez al du funtzionatzen webguneak?</translation>

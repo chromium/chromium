@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1816835383954230954">เมื่อเปิดใช้ Chrome จะทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ เมื่อปิดใช้ ตัวเลือกนี้จะลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="1822318649925991542">สลับตำแหน่งเพื่อปรับแต่งประสบการณ์การท่องเว็บ</translation>
 <translation id="1848033246551405023">แบบอักษร Sans Serif</translation>
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1881806992065048905">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">การดำเนินการนี้จะรีเซ็ตเว็บไซต์ทั้งหมดในรายการเป็นการซูมเริ่มต้น</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
+<translation id="1994558116414798016">แบบอักษร Lexend</translation>
 <translation id="2004697686368036666">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="2025115093177348061">เทคโนโลยีความจริงเสริม (AR)</translation>
 <translation id="2028449514182362831">ฟีเจอร์ที่ต้องใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวจะไม่ทำงาน</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">ธีมสีสว่าง</translation>
 <translation id="2096716221239095980">ลบข้อมูลทั้งหมด</translation>
 <translation id="2102396546234652240">ไม่อนุญาตให้เว็บไซต์ใช้ไมโครโฟนของคุณ</translation>
+<translation id="2115808389282428160">ไม่อนุญาตให้เว็บไซต์เข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="2117655453726830283">สไลด์ถัดไป</translation>
 <translation id="2146263598007866206">เว็บไซต์อาจดาวน์โหลดไฟล์ที่เกี่ยวข้องพร้อมกันโดยอัตโนมัติเพื่อช่วยคุณประหยัดเวลา</translation>
 <translation id="2148716181193084225">วันนี้</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">อนุญาตในครั้งนี้ • แน่นอน</translation>
 <translation id="2544997614631598250">ธีมสีมืด</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
+<translation id="2553552004849639664">รับการป้องกันภัยคุกคามทางออนไลน์ที่ดีที่สุดของ Chrome</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
@@ -159,6 +163,7 @@
 <translation id="2621115761605608342">อนุญาต JavaScript สำหรับเว็บไซต์ใดเว็บไซต์หนึ่ง</translation>
 <translation id="2626708220538466178">ปิด Bottom Sheet ของเบราว์เซอร์เริ่มต้นแล้ว</translation>
 <translation id="2653659639078652383">ส่ง</translation>
+<translation id="2665056444046933274">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="2670403088701171361">ไม่อนุญาตให้เว็บไซต์ดูข้อความหรือรูปภาพในคลิปบอร์ด</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2682367912565197520">ลบระดับการซูมที่บันทึกไว้</translation>
@@ -202,8 +207,10 @@
 <translation id="311394601889664316">ไม่อนุญาตให้เว็บไซต์แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
 <translation id="3114012059975132928">วิดีโอเพลเยอร์</translation>
 <translation id="3115898365077584848">แสดงข้อมูล</translation>
+<translation id="3120204271988747891">เว็บไซต์ขอเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณได้</translation>
 <translation id="3123473560110926937">บล็อกในบางเว็บไซต์</translation>
 <translation id="3132996321662585180">รีเฟรชทุกวัน</translation>
+<translation id="3134859781443140237">เครือข่ายภายใน</translation>
 <translation id="3143754809889689516">เริ่มเล่นตั้งแต่ต้น</translation>
 <translation id="3164169438034704658">คุณเปิดใช้ตำแหน่งที่แน่นอนได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="3165022941318558018">อนุญาตให้เว็บไซต์ใช้คุกกี้ของบุคคลที่สาม</translation>
@@ -214,6 +221,7 @@
 <translation id="3223425961342298674">ไม่อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3232293466644486101">ลบข้อมูลการท่องเว็บ…</translation>
+<translation id="3241320538788585298">เครือข่าย Loopback</translation>
 <translation id="3242646949159196181">เมื่อเปิด เว็บไซต์จะเล่นเสียงได้ เมื่อปิด เว็บไซต์จะเล่นเสียงไม่ได้</translation>
 <translation id="3273479183583863618">ดูราคาที่ต่ำลงได้ในแท็บ</translation>
 <translation id="3277252321222022663">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ (แนะนำ)</translation>
@@ -409,6 +417,7 @@
 <translation id="5373874281522292782">ระบบจะบันทึกกลุ่มแท็บไว้</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
 <translation id="5403592356182871684">ชื่อ</translation>
+<translation id="5407203562970638234">ยกระดับการรักษาความปลอดภัย</translation>
 <translation id="5438097262470833822">ตัวเลือกนี้จะรีเซ็ตสิทธิ์ของ <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">เมื่อเปิด เว็บไซต์จะขอทราบตำแหน่งของคุณได้ หากปิด เว็บไซต์จะไม่เห็นตำแหน่งของคุณ</translation>
 <translation id="5489227211564503167">เวลาผ่านไป <ph name="ELAPSED_TIME" /> จาก <ph name="TOTAL_TIME" /></translation>
@@ -423,6 +432,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ถูกบล็อก</translation>
 <translation id="560980142378233747">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Bottom Sheet ของการ์ดหน้าแท็บใหม่</translation>
+<translation id="5621413808884657932">เมื่อเปิด เว็บไซต์จะขอเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้ได้ เมื่อปิด เว็บไซต์จะเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้ไม่ได้</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5649053991847567735">การดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="5668404140385795438">ลบล้างคำขอของเว็บไซต์เพื่อป้องกันการซูมเข้า</translation>
@@ -543,6 +553,7 @@
 <translation id="6842868554183332230">โดยปกติแล้วเว็บไซต์จะตรวจจับเวลาที่คุณใช้งานอุปกรณ์อยู่เพื่อกำหนดความพร้อมใช้งานแอปแชท</translation>
 <translation id="6864395892908308021">อุปกรณ์นี้อ่าน NFC ไม่ได้</translation>
 <translation id="6870169401250095575">ซ่อนการ์ด "การตรวจสอบความปลอดภัย"</translation>
+<translation id="6882736949427544336">ไม่อนุญาตให้เว็บไซต์เข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายใน</translation>
 <translation id="6900883974539674431">สร้างกลุ่มแท็บที่จะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมด</translation>
 <translation id="6912998170423641340">บล็อกเว็บไซต์ไม่ให้อ่านข้อความและดูรูปภาพจากคลิปบอร์ด</translation>
 <translation id="6945221475159498467">เลือก</translation>
@@ -604,6 +615,8 @@
 <translation id="7586676035079382730">ไม่อนุญาตให้แสดงการแจ้งเตือน</translation>
 <translation id="7594634374516752650">เชื่อมต่อกับอุปกรณ์บลูทูธแล้ว</translation>
 <translation id="7617547684249261169">คุณสามารถลบประวัติการเข้าชม คุกกี้ ข้อมูลเว็บไซต์ และอื่นๆ บางส่วนหรือทั้งหมดได้</translation>
+<translation id="762200934554267613">เว็บไซต์ขอเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้ได้</translation>
+<translation id="7627749368210392160">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณ</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7655411746932645568">เว็บไซต์ขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
@@ -659,6 +672,7 @@
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">เมื่อเปิด เว็บไซต์จะขอเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณได้ เมื่อปิด เว็บไซต์จะเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณไม่ได้</translation>
 <translation id="8249310407154411074">เลื่อนไปบนสุด</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
@@ -712,6 +726,7 @@
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8737426583868847403">เว็บไซต์ที่คุณบันทึกระดับการซูมที่กำหนดเองไว้จะปรากฏที่นี่</translation>
+<translation id="8748714929822124637">ไม่อนุญาตให้เว็บไซต์เข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายใน</translation>
 <translation id="8751914237388039244">เลือกรูปภาพ</translation>
 <translation id="8775741625735357092">คุณเปิดแถบบุ๊กมาร์กได้ในการตั้งค่า &gt; ลักษณะที่ปรากฏ</translation>
 <translation id="8800034312320686233">หากเว็บไซต์ไม่ทำงาน</translation>

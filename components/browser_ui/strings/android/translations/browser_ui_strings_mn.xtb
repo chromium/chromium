@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1816835383954230954">Асаалттай байхад Chrome илүү хурдан ажилладаг бөгөөд JavaScript-г ашигладаг онцлогууд зориулалтын дагуу ажиллах ёстой. Унтраалттай байхад энэ нь гүйцэтгэлийг багасгах ч V8-г халдлагад илүү тэсвэртэй болгоно.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-д AR-г ашиглахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын Тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
+<translation id="1822318649925991542">Үзэх хэрэглээгээ тусгайлан өөрчлөхийн тулд байрлалыг сэлгэнэ үү</translation>
 <translation id="1848033246551405023">Санс сериф фонт</translation>
 <translation id="1861262398884155592">Энэ фолдер хоосон байна</translation>
 <translation id="1881806992065048905">Шинэ таб хуудасны харагдах байдлын доод хүснэгт</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Энэ удаад зөвшөөрсөн • Нарийвчилсан</translation>
 <translation id="2544997614631598250">Бараан өнгөний загвар</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
+<translation id="2553552004849639664">Онлайн заналхийллээс хамгаалах Chrome-н хамгийн хүчтэй хамгаалалтыг авна уу</translation>
 <translation id="2570922361219980984">Энэ төхөөрөмжид байршлын хандалт мөн адил унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="257931822824936280">Өргөжсөн, энд дарж задална уу.</translation>
 <translation id="2586657967955657006">Түр санах ой</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Таны табын бүлгүүдийг хадгалдаг</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
 <translation id="5403592356182871684">Нэр</translation>
+<translation id="5407203562970638234">Аюулгүй байдлаа сайжруулаарай</translation>
 <translation id="5438097262470833822">Энэ сонголт <ph name="WEBSITE" />-н зөвшөөрлийг шинэчилнэ</translation>
 <translation id="5459413148890178711">Асаалттай үед сайтууд таны байршлыг хүсэх боломжтой. Унтраалттай үед сайтууд таны байршлыг харах боломжгүй.</translation>
 <translation id="5489227211564503167">Өнгөрсөн цаг: <ph name="TOTAL_TIME" />-н <ph name="ELAPSED_TIME" />.</translation>

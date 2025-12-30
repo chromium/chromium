@@ -273,6 +273,7 @@
 <translation id="3889417619312448367">‏إزالة Google Chrome</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3906096710440765802">‏يُرجى تسجيل الدخول إلى Chrome للوصول إلى كلمات المرور والإشارات المرجعية وغيرها على جميع أجهزتك</translation>
+<translation id="3921132130819999051">‏ما رأيك بالاستفادة من قدرات Chrome في التصفّح؟</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="395904275706073188">لا يمكن قراءة الصفحات المحمية. ننصحك بتجربة الميزة على صفحة مختلفة.</translation>
 <translation id="3968962723676998462">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -404,7 +405,6 @@
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="5465210843490471889">‏يُرجى اختيار ملف شخصي على Chrome لاستخدامه مع <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏يُرسل Chrome تفاعلاتك مع هذه الميزات إلى Google للمساعدة في تحسينها. وقد يقرأ المراجعون هذه البيانات ويعالجونها ويضيفون تعليقات توضيحية إليها.</translation>
-<translation id="5510398294750420479">‏يكفي تنزيل متصفِّح Chrome على هاتفك للحصول على طبقة حماية إضافية أثناء التنقّل</translation>
 <translation id="5524890928877629608">أعلى يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="5530733413481476019">‏زيادة سرعة أداء Chrome</translation>
 <translation id="5550137307985173298">‏يمكنك النقر على زر "تخصيص Chrome" في صفحة "علامة تبويب جديدة" لإضفاء مظهر جديد عليه</translation>
@@ -482,6 +482,7 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Google Chrome</translation>
 <translation id="6180522807229584611">‏تستخدم علامة التبويب هذه موارد إضافية. لتحسين أداء التصفُّح، ننصح بالسماح لمتصفّح Chrome بإيقاف علامة التبويب هذه.</translation>
 <translation id="6182736845697986886">تعذَّر تثبيت التطبيق بسبب حدوث خطأ داخلي في خادم التحديث.</translation>
+<translation id="6183773856988300112">‏يستخدم "Gemini في Chrome" ميزة التصفّح التلقائي للعمل في علامات التبويب وإكمال المهام المطلوبة منه. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">‏حسابك في Chrome</translation>
 <translation id="6220551899604141979">‏ثبَّت الشريك <ph name="PARTNER_NAME" /> إضافة جديدة قد تؤدي إلى تغيير طريقة عمل Chrome.
 

@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Nie udało się zapisać zmiany.</translation>
 <translation id="3254806613790954367">Ostatnia otwarta karta na wszystkich Twoich urządzeniach</translation>
 <translation id="325717987950204592">Kliknij „Prywatność i bezpieczeństwo”</translation>
-<translation id="3266338926702638258">Pokaż historię cen tego produktu</translation>
 <translation id="3272527697863656322">Anuluj</translation>
 <translation id="3273510436356991673">Dostosuj ekran główny</translation>
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Ukryj opcję Ostatnie karty</translation>
 <translation id="4578835633387306383">Włącz…</translation>
 <translation id="4580716718466706433">Otwórz „Menedżera haseł”</translation>
+<translation id="4585751637295612750">Otwórz nową kartę, aby dodać ją do pytania</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4592672037257622855">{count,plural, =1{Dodano stronę do listy Do przeczytania}few{Dodano {count} strony do listy Do przeczytania}many{Dodano {count} stron do listy Do przeczytania}other{Dodano {count} strony do listy Do przeczytania}}</translation>
 <translation id="459644946100970322">Włączyć powiadomienia o cenie?</translation>

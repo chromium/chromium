@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium chrání vaše citlivá data pomocí Face ID.</translation>
 <translation id="1591119736686995611">Otevře mřížku karet prohlížeče Chromium.</translation>
 <translation id="16001233025397167">Bezpečnostní kontrola vás chrání před úniky dat, nebezpečnými weby a dalšími hrozbami. Nechte si zasílat upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chromium zjistí.</translation>
+<translation id="1614362805233822594">Pro zobrazené weby už ve Správci hesel hesla nebo přístupové klíče máte. Pokud chcete zobrazené přihlašovací údaje zachovat a přepsat jimi údaje ve Správci hesel, vyberte účet.</translation>
 <translation id="1617663976202781617">Data ze synchronizace prohlížeče Chromium</translation>
 <translation id="164952285225495380">Tento balíček již byl v prohlížeči Chromium sledován.</translation>
+<translation id="1703338211136118534">Následující hesla se do Správce hesel neimportovala, protože neodpovídají požadavkům.</translation>
 <translation id="1707458603865303524">Používejte Chromium, kdykoli klepnete na odkazy ve zprávách nebo jiných aplikacích.</translation>
 <translation id="1722370509450468186">Heslo bude uloženo do vašeho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Feed přizpůsobený pro vás</translation>
@@ -46,6 +48,7 @@
 <translation id="1847960401032164406">Mapy v prohlížeči Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium.</translation>
 <translation id="1965068424387304464">Tip pro Chromium: Ukládání hesel</translation>
+<translation id="1992653360331625459">Hesla pro tyto účty už ve Správci hesel máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="2006345422933397527">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2042889939382983733">Zobrazit historii prohlížeče Chromium</translation>
 <translation id="2052320862053429062">Chromium vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
@@ -64,6 +67,7 @@
 <translation id="2326738825692478496">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
 
 Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
+<translation id="2334943301233020675">Následující přístupové klíče se do Správce hesel neimportovaly, protože neodpovídají požadavkům.</translation>
 <translation id="2337722506862731008">Sdílet Chromium</translation>
 <translation id="2340423701577464731">Přidat položku do seznamu četby v prohlížeči Chromium</translation>
 <translation id="2374627437126809292">Chromium používá Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>

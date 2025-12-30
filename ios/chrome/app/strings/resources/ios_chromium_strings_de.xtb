@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen.</translation>
 <translation id="1591119736686995611">Öffnet das Chromium-Tabraster.</translation>
 <translation id="16001233025397167">Der Sicherheitscheck hilft dabei, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen. Du erhältst Benachrichtigungen bei Problemen mit dem Datenschutz oder der Sicherheit, die Chromium für dich erkennt.</translation>
+<translation id="1614362805233822594">Du hast bereits Passwörter oder Passkeys im Passwortmanager für die angezeigten Websites. Wähle ein Konto aus, um die angezeigten Anmeldedaten zu behalten und die Daten im Passwortmanager zu überschreiben.</translation>
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
 <translation id="164952285225495380">Dieses Paket wird bereits in Chromium verfolgt.</translation>
+<translation id="1703338211136118534">Die folgenden Passwörter wurden nicht in den Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
 <translation id="1707458603865303524">Öffne Links immer in Chromium, wenn du sie in Messages oder anderen Apps antippst.</translation>
 <translation id="1722370509450468186">Dein Passwort wird in deinem Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="1747088204252710672">Ein personalisierter Feed für dich</translation>
@@ -46,6 +48,7 @@
 <translation id="1847960401032164406">Maps in Chromium</translation>
 <translation id="1867772173333403444">4. Wähle Chromium aus</translation>
 <translation id="1965068424387304464">Chromium-Tipp: Passwörter speichern</translation>
+<translation id="1992653360331625459">Du hast bereits Passwörter für diese Konten im Passwortmanager. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
 <translation id="2006345422933397527">Chromium konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
 <translation id="2042889939382983733">Meinen Chromium-Verlauf ansehen</translation>
 <translation id="2052320862053429062">Chromium prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
@@ -64,6 +67,7 @@
 <translation id="2326738825692478496">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
 
 Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
+<translation id="2334943301233020675">Die folgenden Passkeys wurden nicht in den Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
 <translation id="2337722506862731008">Chromium teilen</translation>
 <translation id="2340423701577464731">Leselisteneintrag zu Chromium hinzufügen</translation>
 <translation id="2374627437126809292">Chromium nutzt Google Maps, um dir Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>

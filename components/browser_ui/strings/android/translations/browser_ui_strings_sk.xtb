@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1816835383954230954">Keď je prepínač zapnutý, Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní. Keď je vypnutý, zníži sa výkonnosť, ale optimalizátor V8 bude odolnejší voči útokom.</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
+<translation id="1822318649925991542">Zmenou umiestnenia si prispôsobíte prostredie prehliadania</translation>
 <translation id="1848033246551405023">Bezpätkové písmo</translation>
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
 <translation id="1881806992065048905">Dolný hárok vzhľadu stránky na novej karte</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Týmto resetujete všetky weby v zozname na predvolenú úroveň lupy</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="1994173015038366702">Webová adresa</translation>
+<translation id="1994558116414798016">Písmo Lexend</translation>
 <translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
 <translation id="2025115093177348061">Rozšírená realita</translation>
 <translation id="2028449514182362831">Funkcie vyžadujúce senzory pohybu nebudú fungovať</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Svetlá farba motívu</translation>
 <translation id="2096716221239095980">Odstrániť všetky dáta</translation>
 <translation id="2102396546234652240">Nepovoliť webom používať mikrofón</translation>
+<translation id="2115808389282428160">Nepovoliť webom prístup k iným aplikáciám a službám v tomto zariadení</translation>
 <translation id="2117655453726830283">Nasledujúca snímka</translation>
 <translation id="2146263598007866206">Weby môžu automaticky spolu sťahovať súvisiace súbory a šetriť tým váš čas</translation>
 <translation id="2148716181193084225">Dnes</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Momentálne povolená • Presná</translation>
 <translation id="2544997614631598250">Tmavá farba motívu</translation>
 <translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
+<translation id="2553552004849639664">Získajte najsilnejšiu ochranu Chromu pred hrozbami na internete</translation>
 <translation id="2570922361219980984">Prístup k polohe je vypnutý aj v tomto zariadení. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -159,6 +163,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
 <translation id="2626708220538466178">Dolný hárok predvoleného prehliadača je zavretý</translation>
 <translation id="2653659639078652383">Odoslať</translation>
+<translation id="2665056444046933274">Weby môžu pomocou tejto funkcie získať prístup k iným aplikáciám a službám v tomto zariadení</translation>
 <translation id="2670403088701171361">Nepovoliť webom zobrazovať text alebo obrázky v schránke</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2682367912565197520">Odstrániť uloženú úroveň lupy</translation>
@@ -202,8 +207,10 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="311394601889664316">Nepovoliť webom upravovať súbory alebo priečinky v zariadení</translation>
 <translation id="3114012059975132928">Prehrávač videa</translation>
 <translation id="3115898365077584848">Zobraziť informácie</translation>
+<translation id="3120204271988747891">Weby môžu žiadať o prístup k iným zariadeniam vo vašej miestnej sieti</translation>
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
+<translation id="3134859781443140237">Miestna sieť</translation>
 <translation id="3143754809889689516">Prehrať od začiatku</translation>
 <translation id="3164169438034704658">Presnú polohu môžete zapnúť v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Povoľte webu používať súbory cookie tretej strany</translation>
@@ -214,6 +221,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3223425961342298674">Poloha nie je povolená</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3232293466644486101">Odstrániť dáta prehliadania…</translation>
+<translation id="3241320538788585298">Sieť spätnej slučky</translation>
 <translation id="3242646949159196181">Keď je táto možnosť zapnutá, weby môžu prehrávať zvuk. Keď je táto možnosť vypnutá, weby nemôžu prehrávať zvuk.</translation>
 <translation id="3273479183583863618">Poklesy cien na kartách</translation>
 <translation id="3277252321222022663">Povoliť webom prístup k senzorom (odporúčané)</translation>
@@ -409,6 +417,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5373874281522292782">Vaše skupiny kariet sú uložené</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
+<translation id="5407203562970638234">Zlepšite svoje zabezpečenie</translation>
 <translation id="5438097262470833822">Týmto výberom resetujete povolenia pre web <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Keď je táto možnosť zapnutá, weby môžu žiadať o vašu polohu. Keď je táto funkcia vypnutá, weby nevidia vašu polohu.</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5591840828808741583">Blokované: <ph name="SITE_NAME" /></translation>
 <translation id="560980142378233747">Znamená to, že funkcie webu by mali pracovať podľa očakávaní, ale môžete mať menšiu ochranu pri prehliadaní. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Dolný hárok kariet na stránke na novej karte</translation>
+<translation id="5621413808884657932">Keď je táto možnosť zapnutá, weby môžu žiadať o prístup k iným aplikáciám a službám v tomto zariadení. Keď je táto možnosť vypnutá, weby nemajú prístup k iným aplikáciám a službám v tomto zariadení.</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
 <translation id="5668404140385795438">Ignorovať požiadavku webových stránok na zákaz priblíženia</translation>
@@ -543,6 +553,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="6842868554183332230">Weby zvyčajne zisťujú, či aktívne používate zariadenie, aby mohli určiť vašu dostupnosť v četových aplikáciách</translation>
 <translation id="6864395892908308021">Toto zariadenie nedokáže čítať NFC</translation>
 <translation id="6870169401250095575">Skryť kartu Kontrola bezpečnosti</translation>
+<translation id="6882736949427544336">Nepovoliť webom prístup k iným zariadeniam vo vašej miestnej sieti</translation>
 <translation id="6900883974539674431">Vytvárajte skupiny kariet, ktoré sa budú automaticky ukladať a aktualizovať vo všetkých vašich zariadeniach</translation>
 <translation id="6912998170423641340">Brániť webom v prístupe k textom a obrázkom v schránke</translation>
 <translation id="6945221475159498467">Vybrať</translation>
@@ -604,6 +615,8 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7586676035079382730">Upozornenia nie sú povolené</translation>
 <translation id="7594634374516752650">Pripojené k zariadeniu Bluetooth</translation>
 <translation id="7617547684249261169">Môžete odstrániť celú históriu alebo jej časť, súbory cookie, údaje webov a ďalšie položky</translation>
+<translation id="762200934554267613">Weby môžu žiadať o prístup k iným aplikáciám a službám v tomto zariadení</translation>
+<translation id="7627749368210392160">Weby môžu pomocou tejto funkcie získať prístup k iným zariadeniam vo vašej miestnej sieti</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7655411746932645568">Weby môžu žiadať o pripojenie k sériovým portom</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
@@ -659,6 +672,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8211406090763984747">Spojenie je zabezpečené</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Keď je táto možnosť zapnutá, weby môžu žiadať o prístup k iným zariadeniam vo vašej miestnej sieti. Keď je táto možnosť zapnutá, weby nemajú prístup k iným zariadeniam vo vašej miestnej sieti.</translation>
 <translation id="8249310407154411074">Presunúť na začiatok</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8284326494547611709">Titulky</translation>
@@ -712,6 +726,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8737426583868847403">Tu sa budú zobrazovať weby, pre ktoré uložíte vlastnú úroveň lupy</translation>
+<translation id="8748714929822124637">Nepovoliť webom prístup k iným zariadeniam vo vašej miestnej sieti</translation>
 <translation id="8751914237388039244">Vyberte obrázok</translation>
 <translation id="8775741625735357092">Panel so záložkami môžete zapnúť v sekcii Nastavenia &gt; Vzhľad</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>

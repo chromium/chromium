@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате каква информация от Chrome да се запазва в профила ви в Google</translation>
 <translation id="1122714970786750095">Електроника и електрически уреди</translation>
 <translation id="1123753900084781868">Понастоящем функцията „Надписи на живо“ не е налице</translation>
+<translation id="1124643885833329193">Точно местоположение</translation>
 <translation id="112840717907525620">Кешът на правилото е в добро състояние</translation>
 <translation id="1131264053432022307">Копирано от вас изображение</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – за да излезете от режима на цял екран, плъзнете от горната част на екрана и докоснете бутона за връщане назад</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">Добавяне на паспорт</translation>
 <translation id="2400271059665846158">Управлявайте картите си за лоялност в Google Wallet</translation>
 <translation id="2400600116338235695">Може да поиска разрешение да се свързва със серийни портове</translation>
+<translation id="2403474027143565107">Точно</translation>
 <translation id="240450251994300576">Алтернативно лого в заглавката</translation>
 <translation id="2404884497378469141">Опитайте отново да копирате файловете си</translation>
 <translation id="2413155254802890957">Стар</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">С цел по-голяма сигурност администраторът може да вижда и операционната система на устройството, версията на браузъра и какъв софтуер е инсталиран</translation>
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2577522251608256362">Квартал</translation>
 <translation id="2580031090587209073">Опции за споделяне</translation>
 <translation id="258027838577899739">Изтриване на всичко от историята</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> добави раздел</translation>
@@ -1628,6 +1631,7 @@
 <translation id="361438452008624280">Списъчен запис „<ph name="LANGUAGE_ID" />“: Неизвестен или неподдържан език.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да стартирате проверка на безопасността от настройките на Chrome</translation>
 <translation id="3615309852743236517">Маникюр и педикюр</translation>
+<translation id="3620034424637552643">Често се използва за упътвания, доставки и др.</translation>
 <translation id="3620239073311576716">Униформи и работно облекло</translation>
 <translation id="3621401353678567613">За да получавате сигнали за понижение на цената за продукти, които следите, включете известията от настройките.</translation>
 <translation id="362276910939193118">Цялата история</translation>
@@ -1895,6 +1899,7 @@
 <translation id="4036753017940930924">Парцели и земя</translation>
 <translation id="403724377879219932">Може да извежда запитвания за достъп до други устройства в локалната ви мрежа</translation>
 <translation id="4039506337798853114">За да се покаже курсорът, натиснете |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Приблизително</translation>
 <translation id="4045070493270310437">Повторно отваряне на разделите</translation>
 <translation id="4045226534284799755">Влезте в профила си в Microsoft, преди да опитате отново</translation>
 <translation id="4045441967987592849">Повторно отваряне</translation>
@@ -3637,7 +3642,6 @@
 <translation id="6850286078059909152">Цвят на текста</translation>
 <translation id="685163597635765693">Организацията ви е блокирала връзките към <ph name="HOST_NAME" /> в режим „инкогнито“.</translation>
 <translation id="6852204201400771460">Искате ли да презаредите приложението?</translation>
-<translation id="6854243285874308023">Google използва информация от страницата за плащане и други подходящи данни, за да предлага тези опции. За да скриете опциите за плащане по-късно, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="6854691830678097752">С цел по-бързо плащане запазете този код за проверка в профила си <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Управление на паролите…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
@@ -4081,7 +4085,6 @@
 <translation id="753556296624075801">Предоставено от Google</translation>
 <translation id="753713322968419914">Да се премахне ли домашният адрес от функцията на Chrome за автоматично попълване?</translation>
 <translation id="7537536606612762813">Задължително</translation>
-<translation id="7541043894191476250">Контекстни задачи</translation>
 <translation id="7543525346216957623">Попитайте родителя си</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> се стартира</translation>
 <translation id="7548892272833184391">Отстраняване на грешки във връзката</translation>
@@ -5015,6 +5018,7 @@
 <translation id="9090243919347147717">Прикачени файлове</translation>
 <translation id="9090548458280093580">Търсене в историята ви, базирано на AI</translation>
 <translation id="9090993752571911635">Доставчици на интернет услуги</translation>
+<translation id="9092305980625216393">Често се използва за времето, местни новини и др.</translation>
 <translation id="9093723786115107672">Спално облекло</translation>
 <translation id="9094424186948667194">Достъп до други приложения и услуги на това устройство</translation>
 <translation id="9094544726794842788">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати</translation>

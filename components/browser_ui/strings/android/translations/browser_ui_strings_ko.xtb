@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1816835383954230954">사용 설정하면 Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동합니다. 사용 중지하면 성능은 저하되지만 V8의 공격에 대한 저항력이 강화됩니다.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
+<translation id="1822318649925991542">위치를 전환하여 탐색 환경을 맞춤설정하세요.</translation>
 <translation id="1848033246551405023">Sans Serif 글꼴</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1881806992065048905">새 탭 페이지 모양 하단 시트</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">현재 허용됨 • 정확한 위치</translation>
 <translation id="2544997614631598250">어두운 테마 색상</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
+<translation id="2553552004849639664">온라인 위협에 대비한 Chrome의 가장 강력한 보호 기능을 이용하세요.</translation>
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">탭 그룹이 저장되었습니다</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
+<translation id="5407203562970638234">보안을 강화하세요</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" />의 권한이 재설정됩니다.</translation>
 <translation id="5459413148890178711">사용 설정하면 사이트에서 내 위치를 요청할 수 있습니다. 사용 중지하면 사이트에서 내 위치를 확인할 수 없습니다.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>

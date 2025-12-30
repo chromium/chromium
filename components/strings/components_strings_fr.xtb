@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Tabulation, puis sur Entrée pour gérer les infos Chrome que vous enregistrez dans votre compte Google</translation>
 <translation id="1122714970786750095">Appareils électroniques et électriques</translation>
 <translation id="1123753900084781868">Sous-titres instantanés non disponibles pour l'instant</translation>
+<translation id="1124643885833329193">Position exacte</translation>
 <translation id="112840717907525620">Cache de la règle valide.</translation>
 <translation id="1131264053432022307">Image copiée</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le plein écran, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
@@ -670,7 +671,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2090451897496479509">Pour en savoir plus, contactez le fournisseur</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Son</translation>
-<translation id="2093184051799735948">Effectuez une recherche sur <ph name="ENGINE_NAME" /> ou saisissez une URL</translation>
+<translation id="2093184051799735948">Rechercher sur <ph name="ENGINE_NAME" /> ou saisir une URL</translation>
 <translation id="2093982008204312032">Google Chrome tente de désactiver Windows Hello pour saisir les mots de passe.</translation>
 <translation id="2094505752054353250">Le domaine ne correspond pas</translation>
 <translation id="2094704029599359040">Informations sur la version</translation>
@@ -893,6 +894,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2400263725572336749">Ajouter un passeport</translation>
 <translation id="2400271059665846158">Gérez vos cartes de fidélité dans Google Wallet</translation>
 <translation id="2400600116338235695">Peut demander à se connecter aux ports série</translation>
+<translation id="2403474027143565107">Exacte</translation>
 <translation id="240450251994300576">Logo de l'en-tête secondaire</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
 <translation id="2413155254802890957">Ancienne</translation>
@@ -997,6 +999,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2571488850200220306">Pour assurer la sécurité, il peut aussi voir l'OS de l'appareil, la version du navigateur et les logiciels installés</translation>
 <translation id="2573170131138724450">Télévisions</translation>
 <translation id="257674075312929031">Groupe</translation>
+<translation id="2577522251608256362">Quartier</translation>
 <translation id="2580031090587209073">Options de partage</translation>
 <translation id="258027838577899739">Tout supprimer de l'historique</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> a ajouté un onglet</translation>
@@ -1283,6 +1286,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Image</translation>
 <translation id="3082007635241601060">Autoriser Google à utiliser vos paniers pour trouver des remises personnalisées, si disponibles</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" n'est pas un proxy valide.</translation>
 <translation id="3086269988715347183">Vous n'avez encore jamais approuvé <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Votre activité sur le Web est surveillée</translation>
 <translation id="3087734570205094154">En bas</translation>
@@ -1412,6 +1416,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3270041629388773465">Payez plus rapidement quand vos codes CVC sont enregistrés</translation>
+<translation id="3270343151253360050">Choisissez un autre mode de paiement pour finaliser cet achat</translation>
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> souhaite se connecter</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="361438452008624280">Entrée de la liste "<ph name="LANGUAGE_ID" />" : langue inconnue ou non compatible.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour effectuer un contrôle de sécurité dans les paramètres de Chrome</translation>
 <translation id="3615309852743236517">Manucure et pédicure</translation>
+<translation id="3620034424637552643">Souvent utilisée pour les itinéraires, les livraisons et plus</translation>
 <translation id="3620239073311576716">Uniformes et vêtements professionnels</translation>
 <translation id="3621401353678567613">Pour recevoir des alertes en cas de baisse de prix sur les produits que vous suivez, activez les notifications dans les paramètres.</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
@@ -1893,6 +1899,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4036753017940930924">Terrains et terres</translation>
 <translation id="403724377879219932">Peut demander à accéder à d'autres appareils sur votre réseau local</translation>
 <translation id="4039506337798853114">Pour afficher le curseur, appuyez sur |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Approximative</translation>
 <translation id="4045070493270310437">Rouvrir les onglets</translation>
 <translation id="4045226534284799755">Connectez-vous à votre compte Microsoft avant de réessayer</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
@@ -3211,6 +3218,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6164605812717770913">Un parent ou représentant légal a indiqué que tu n'avais pas l'autorisation d'accéder à ce site. Tu peux lui demander de le débloquer.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative d'extraction :</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" n'est pas une valeur valide.</translation>
 <translation id="617256461084925519">Google Chrome tente de confirmer votre identité afin de pouvoir indiquer vos informations de paiement.</translation>
 <translation id="6173208311907792313">Finalisez votre achat avec Windows Hello</translation>
 <translation id="6176387967264100435">Ce prix est élevé</translation>
@@ -3537,6 +3545,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6688851075017682769">Adresse de test par pays</translation>
 <translation id="6689249931105087298">Valeur relative avec compression des points noirs</translation>
 <translation id="6689271823431384964">Chrome propose d'enregistrer vos cartes dans votre compte Google, car vous êtes connecté. Vous pouvez modifier ce comportement dans les paramètres. Le nom du titulaire de la carte provient de votre compte.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" n'est pas un format de destination valide.</translation>
 <translation id="6691397311652656001">Libérez plus de <ph name="REQUIRED_FREE_DISK_SPACE" /> d'espace</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour accéder à Localiser votre appareil dans le compte Google</translation>
 <translation id="6695428916538794739">Films d'action et d'aventure</translation>
@@ -3549,6 +3558,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6702851555558236418">Logiciels audio et musicaux</translation>
 <translation id="6702919718839027939">Présenter</translation>
 <translation id="6704458454638854812">La propriété "custom_size" étant définie, le nom attendu est "custom".</translation>
+<translation id="670477556876354552">Veuillez redémarrer</translation>
 <translation id="6706005862292023715">Rideaux et habillages de fenêtres</translation>
 <translation id="6706210727756204531">Portée</translation>
 <translation id="6706678697074905703">Impossible d'enregistrer cet IBAN dans votre compte Google. Il a été enregistré dans Chrome sur cet appareil à la place.</translation>
@@ -4076,7 +4086,6 @@ Informations supplémentaires :
 <translation id="753556296624075801">Fourni par Google</translation>
 <translation id="753713322968419914">Supprimer l'adresse de votre domicile de la saisie automatique Chrome ?</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
-<translation id="7541043894191476250">Tâches contextuelles</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727">Lancement de <ph name="APP_NAME" />…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
@@ -4285,6 +4294,7 @@ Informations supplémentaires :
 <translation id="7870281855125116701">Remise trouvée</translation>
 <translation id="7871445724586827387">Changez le mot de passe de votre compte Google</translation>
 <translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets, et collaborer sur des idées</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" n'est pas un type de condition connu.</translation>
 <translation id="7877007680666472091">ID de contenus protégés</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été piraté</translation>
 <translation id="7881044256965445977">Rechercher les appareils sur votre réseau local et s'y connecter</translation>
@@ -5009,6 +5019,7 @@ Informations supplémentaires :
 <translation id="9090243919347147717">Pièces jointes</translation>
 <translation id="9090548458280093580">Effectuer une recherche optimisée par l'IA dans votre historique</translation>
 <translation id="9090993752571911635">Fournisseurs d'accès Internet (FAI)</translation>
+<translation id="9092305980625216393">Souvent utilisée pour la météo, les actualités locales et plus</translation>
 <translation id="9093723786115107672">Vêtements de nuit</translation>
 <translation id="9094424186948667194">Accéder à d'autres applis et services sur cet appareil</translation>
 <translation id="9094544726794842788">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas</translation>

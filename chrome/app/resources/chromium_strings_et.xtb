@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">Külastajad saavad kasutada Chromiumi jälgi jätmata.</translation>
 <translation id="4992938037305302429">Teie konto Chromiumis</translation>
 <translation id="4994636714258228724">Lisa Chromiumi</translation>
+<translation id="5083712646171654472">Gemini Chromiumis kasutab teie vahelehtedel töötamiseks ja antud ülesannete täitmiseks automaatset sirvimist. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium vajab teie käeliigutuste jälgimiseks luba</translation>
 <translation id="5141988424377517949">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Mis teil täna meeles mõlgub?</translation>
@@ -581,6 +582,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7617377681829253106">Chromium muutus just paremaks</translation>
 <translation id="7622753900276619808">Nüüd on teil Chromiumis rohkem funktsioone saadaval.</translation>
 <translation id="7649070708921625228">Abi</translation>
+<translation id="7656340475565475526">Laske Chromiumil teie eest sirvida</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>
 <translation id="7689606757190482937">Sünkroonige ja isikupärastage Chromium kõigis oma seadmetes</translation>
@@ -606,7 +608,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7888981273428720788">Määrake Chromium vaikebrauseriks</translation>
 <translation id="7934340546140346950">Chromium uuendab võimalusel ebaturvalised ühendused automaatselt HTTPS-ile</translation>
 <translation id="7937630085815544518">Olite Chromiumisse sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
-<translation id="7953047982688951904">Laadige telefonis alla Chromium, mis kaitseb teid liikvel olles paremini</translation>
 <translation id="7975919845073681630">See on Chromiumi sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
 <translation id="7997934263947464652">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chromium soovitab neid ainult järgmisest poest installida: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Brauser</translation>

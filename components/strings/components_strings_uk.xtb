@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати, які дані Chrome зберігати в обліковому записі Google.</translation>
 <translation id="1122714970786750095">Електроніка й електротехнічне обладнання</translation>
 <translation id="1123753900084781868">Живі субтитри зараз недоступні</translation>
+<translation id="1124643885833329193">Точне місцезнаходження</translation>
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
 <translation id="1131264053432022307">Скопійоване зображення</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, проведіть пальцем від верхнього краю екрана й натисніть кнопку "Назад"</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">Додати паспортні дані</translation>
 <translation id="2400271059665846158">Керуйте своїми картками постійного покупця в Google Гаманці</translation>
 <translation id="2400600116338235695">Може просити дозвіл підключатися до послідовних портів</translation>
+<translation id="2403474027143565107">Точне</translation>
 <translation id="240450251994300576">Логотип додаткового заголовка</translation>
 <translation id="2404884497378469141">Спробуйте повторно скопіювати файли</translation>
 <translation id="2413155254802890957">Старі дані</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">З міркувань безпеки він також може перевіряти ОС пристрою, версію вебпереглядача й установлене програмне забезпечення.</translation>
 <translation id="2573170131138724450">Телевізори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2577522251608256362">Околиці</translation>
 <translation id="2580031090587209073">Параметри спільного доступу</translation>
 <translation id="258027838577899739">Видалити всі записи з історії</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> додає вкладку</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">Операційні системи</translation>
 <translation id="3080254622891793721">Зображення</translation>
 <translation id="3082007635241601060">Надайте Google доступ до своїх кошиків, щоб наші системи могли знаходити для вас персоналізовані знижки</translation>
+<translation id="3085373848068196154"><ph name="PROXY_INVALID_PROXY" />: недійсний проксі-сервер.</translation>
 <translation id="3086269988715347183">Ви ще не схвалювали сайт <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Ваші дії в Інтернеті відстежуються</translation>
 <translation id="3087734570205094154">Низ</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">Пункт списку <ph name="LANGUAGE_ID" />: мова невідома або не підтримується.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3615309852743236517">Манікюр і педикюр</translation>
+<translation id="3620034424637552643">Зазвичай використовується для прокладання маршрутів, доставки тощо</translation>
 <translation id="3620239073311576716">Уніформа й робочий одяг</translation>
 <translation id="3621401353678567613">Щоб отримувати сповіщення про зниження цін на товари, які ви відстежуєте, увімкніть їх у налаштуваннях.</translation>
 <translation id="362276910939193118">Показати всю історію</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">Земельні ділянки</translation>
 <translation id="403724377879219932">Може запитувати дозвіл на доступ до інших пристроїв у вашій локальній мережі</translation>
 <translation id="4039506337798853114">Щоб показати курсор, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Приблизне</translation>
 <translation id="4045070493270310437">Повторно відкрити вкладки</translation>
 <translation id="4045226534284799755">Перш ніж повторити спробу, увійдіть в обліковий запис Microsoft</translation>
 <translation id="4045441967987592849">Повторно відкрити</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">Батько, мати чи опікун не дозволили тобі відвідувати цей сайт. Ти можеш попросити їх розблокувати його.</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6167577165590485365">Остання спроба отримання:</translation>
+<translation id="6171968084616623939"><ph name="PROXY_INVALID_SCHEME_HOST_PORT" />: недійсне значення.</translation>
 <translation id="617256461084925519">Google Chrome намагається підтвердити вашу особу, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="6173208311907792313">Завершіть покупку за допомогою Windows Hello</translation>
 <translation id="6176387967264100435">Це висока ціна</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">Тестові адреси за країною</translation>
 <translation id="6689249931105087298">Відносно стиснення чорної точки</translation>
 <translation id="6689271823431384964">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях. Ім'я власника картки взято з вашого облікового запису.</translation>
+<translation id="6690688090329768424"><ph name="PROXY_INVALID_DESTINATION" />: недійсний шаблон цільової сторінки.</translation>
 <translation id="6691397311652656001">На диску має бути більше <ph name="REQUIRED_FREE_DISK_SPACE" /> пам’яті</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити розділ "Знайти пристрій" в обліковому записі Google.</translation>
 <translation id="6695428916538794739">Бойовики й пригодницькі фільми</translation>
@@ -4077,7 +4085,6 @@
 <translation id="753556296624075801">Технологія Google</translation>
 <translation id="753713322968419914">Вилучити домашню адресу з автозаповнення в Chrome?</translation>
 <translation id="7537536606612762813">Обов’язкове</translation>
-<translation id="7541043894191476250">Контекстні завдання</translation>
 <translation id="7543525346216957623">Попросіть когось із батьків</translation>
 <translation id="7546409722674205727">Запуск додатка <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Як виправити помилки з’єднання</translation>
@@ -4286,6 +4293,7 @@
 <translation id="7870281855125116701">Знайдено знижку</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>
 <translation id="787226752901403048">Увійдіть у Chrome, щоб ділитися групами вкладок, приєднуватися до них і втілювати ідеї в життя разом з іншими користувачами</translation>
+<translation id="7874796722855317864"><ph name="PROXY_UNKNOWN_CONDITION" />: невідомий тип умови.</translation>
 <translation id="7877007680666472091">ідентифікатори захищеного контенту</translation>
 <translation id="7878562273885520351">Ваш пароль можуть зламати</translation>
 <translation id="7881044256965445977">Шукати пристрої в локальній мережі й підключатися до них</translation>
@@ -5011,6 +5019,7 @@
 <translation id="9090243919347147717">Вкладені файли</translation>
 <translation id="9090548458280093580">Шукайте інформацію в історії за допомогою ШІ</translation>
 <translation id="9090993752571911635">Постачальники послуг Інтернету (ISP)</translation>
+<translation id="9092305980625216393">Зазвичай використовується для прогнозу погоди, місцевих новин тощо</translation>
 <translation id="9093723786115107672">Одяг для сну</translation>
 <translation id="9094424186948667194">Доступ до інших додатків і сервісів на цьому пристрої</translation>
 <translation id="9094544726794842788">Якщо натиснути "Не подобається", відкриється форма, де ви зможете залишити докладний відгук про те, чому вам не подобаються ці результати</translation>

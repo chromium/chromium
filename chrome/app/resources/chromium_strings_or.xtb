@@ -356,6 +356,7 @@
 <translation id="4987820182225656817">କିଛି ପଛରେ ନଛାଡ଼ି ଅତିଥି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4992938037305302429">Chromiumରେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ</translation>
 <translation id="4994636714258228724">Chromium ସହ ନିଜକୁ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5083712646171654472">Chromiumରେ Gemini ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ କାମ କରିବା ଏବଂ ଆପଣ ଏହାକୁ ଦେଉଥିବା ଟାସ୍କଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ସ୍ୱତଃ ବ୍ରାଉଜ ବ୍ୟବହାର କରେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରିବା ପାଇଁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="5141988424377517949">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="5167819546851111585">ଆଜି ଆପଣଙ୍କ ମନରେ କଣ ଅଛି?</translation>
@@ -582,6 +583,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7617377681829253106">Chromium ବର୍ତ୍ତମାନ ଆହୁରି ଉନ୍ନତ ହୋଇଛି</translation>
 <translation id="7622753900276619808">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ Chromiumରେ ଅଧିକ ଫିଚର ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
+<translation id="7656340475565475526">Chromiumକୁ ଆପଣଙ୍କ ପାଇଁ ବ୍ରାଉଜ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7686590090926151193">Chromium ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନୁହେଁ</translation>
 <translation id="7689606757190482937">ଆପଣଙ୍କର ଡିଭାଇସ୍‍ଗୁଡ଼ିକରେ Chromium‍କୁ ସିଙ୍କ୍ ଓ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
@@ -607,7 +609,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7888981273428720788">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="7934340546140346950">ସମ୍ଭବ ହେଲେ Chromium ସ୍ୱତଃ ଅସୁରକ୍ଷିତ କନେକ୍ସନଗୁଡ଼ିକୁ HTTPSରେ ଅପଗ୍ରେଡ କରେ</translation>
 <translation id="7937630085815544518">ଆପଣ <ph name="USER_EMAIL_ADDRESS" />ରେ Chromiumକୁ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ଦୟାକରି ସାଇନ୍ ଇନ୍ କରିବା ଏହି ସମାନ ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="7953047982688951904">ଆପଣ ଅନ ଦି ଗୋରେ ଥିବା ସମୟରେ ସୁରକ୍ଷାର ଏକ ଅତିରିକ୍ତ ଲେୟର ଯୋଗ କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ Chromium ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="7975919845073681630">ଏହା Chromiumର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7997934263947464652">ଅଜଣା ସୋର୍ସରୁ ଏକ୍ସଟେନସନ, ଆପ ଏବଂ ଥିମଗୁଡ଼ିକ ଆପଣଙ୍କ ଡିଭାଇସକୁ କ୍ଷତି ପହଞ୍ଚାଇପାରିବ। କେବଳ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରୁ ସେଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିବା ପାଇଁ Chromium ସୁପାରିଶ କରେ</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>

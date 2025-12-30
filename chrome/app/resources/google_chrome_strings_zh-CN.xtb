@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
 <translation id="1880677175115548835">选择文字</translation>
+<translation id="1896602904211344018">获取 Chrome 应用</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1979600810166324878">在 iOS 版 Chrome 上启用增强型安全浏览功能，随时随地更安全地浏览网页</translation>
@@ -270,6 +271,7 @@
 <translation id="3889417619312448367">卸载 Google Chrome</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3906096710440765802">登录 Chrome 即可在所有设备上获取密码、书签等信息</translation>
+<translation id="3921132130819999051">让 Chrome 代您浏览</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="395904275706073188">无法读取受保护的页面，请尝试其他页面。</translation>
 <translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
@@ -374,6 +376,7 @@
 <translation id="5163087008893166964">欢迎使用 Chrome；已打开新的浏览器窗口</translation>
 <translation id="5166439563123238795">Chrome 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5167819546851111585">今天想聊点什么？</translation>
+<translation id="5169778651486082413">借助 Chrome 在手机上使用您的密码</translation>
 <translation id="5170938038195470297">您的个人资料来自新版 Google Chrome 浏览器，因此无法使用。某些功能可能无法使用。请指定其他个人资料目录，或使用新版 Chrome 浏览器。</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
@@ -399,7 +402,6 @@
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5465210843490471889">选择要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 资料</translation>
 <translation id="5468572406162360320">为帮助改进这些功能，Chrome 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
-<translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外安全保障</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">提高 Chrome 的运行速度</translation>
 <translation id="5550137307985173298">点击“新标签页”页面上的“自定义 Chrome”按钮，即可为 Chrome 换上全新外观</translation>
@@ -455,6 +457,7 @@
 <translation id="6008161919456049856">您在 Google 账号中保存的密码、支付方式和地址将从此设备中移除。如需在 Chrome 中重新使用这些数据，请重新登录。</translation>
 <translation id="6009821354356307391">继续提问</translation>
 <translation id="6014316319780893079">借助 <ph name="BEGIN_LINK" />Chrome 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
+<translation id="6018578474045062808">借助 Chrome 在手机上试用 Google 智能镜头</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -477,6 +480,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
+<translation id="6183773856988300112">Chrome 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />添加了一个扩展程序，可能会改变 Chrome 的工作方式。
 
@@ -503,6 +507,8 @@
 <translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
 <translation id="6426623519983252346">下次打开 Chrome iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
 <translation id="6434035853014503219">感谢您选择 Chrome 作为默认浏览器！</translation>
+<translation id="6438015621983209660">借助 Chrome 在手机上使用增强型安全浏览功能</translation>
+<translation id="6442774133615368941">在 iOS 版 Chrome 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -640,6 +646,7 @@
 <translation id="7832314606810669113">如需在您的所有设备上获取书签等信息，请登录 Chrome。登录后，此书签将保存到您的 Google 账号。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7849037457735762883">从上次停下的地方继续：Chrome 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
+<translation id="7869620795354551924">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chrome 应用，并登录您的 Google 账号</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
 <translation id="7887929410013642057">总是显示 AI 模式快捷方式</translation>

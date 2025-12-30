@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1816835383954230954">Ha be van kapcsolva, a Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük. Ha ki van kapcsolva, csökken a teljesítmény, de ellenállóbb lesz a V8 a támadásokkal szemben.</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="1822318649925991542">Módosítsa a pozíciót a böngészési élmény személyre szabásához</translation>
 <translation id="1848033246551405023">Sans Serif betűtípus</translation>
 <translation id="1861262398884155592">Ez a mappa üres</translation>
 <translation id="1881806992065048905">Az Új lap oldal megjelenésének alsó lapja</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Erre az alkalomra engedélyezve van • Pontos</translation>
 <translation id="2544997614631598250">Sötét színű téma</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
+<translation id="2553552004849639664">Szerezze be a Chrome legerősebb védelmét az online fenyegetésekkel szemben</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
@@ -415,6 +417,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5373874281522292782">A lapcsoportjait menti a rendszer</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
 <translation id="5403592356182871684">Nevek</translation>
+<translation id="5407203562970638234">A biztonság növelése</translation>
 <translation id="5438097262470833822">Ezzel visszaállítja a(z) <ph name="WEBSITE" /> webhelyhez tartozó engedélyeket.</translation>
 <translation id="5459413148890178711">Ha be van kapcsolva, a webhelyek lekérhetik az Ön tartózkodási helyét. Ha ki van kapcsolva, a webhelyek nem láthatják az Ön tartózkodási helyét.</translation>
 <translation id="5489227211564503167">Eltelt idő: <ph name="ELAPSED_TIME" />, ennyiből: <ph name="TOTAL_TIME" />.</translation>

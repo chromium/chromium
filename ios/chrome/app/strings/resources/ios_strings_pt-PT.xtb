@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Não foi possível guardar a alteração.</translation>
 <translation id="3254806613790954367">O último separador aberto em todos os seus dispositivos</translation>
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
-<translation id="3266338926702638258">Mostrar histórico de preços deste produto</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalizar o ecrã principal</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Ocultar Separadores recentes</translation>
 <translation id="4578835633387306383">Ativar…</translation>
 <translation id="4580716718466706433">Aceda ao "Gestor de Palavras-passe"</translation>
+<translation id="4585751637295612750">Abra um novo separador para o adicionar à sua pergunta</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Página adicionada à sua Lista de leitura}other{{count} páginas adicionadas à sua Lista de leitura}}</translation>
 <translation id="459644946100970322">Ativar alertas de preços?</translation>

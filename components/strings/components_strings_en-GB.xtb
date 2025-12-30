@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what Chrome info you save in your Google Account</translation>
 <translation id="1122714970786750095">Electronics and Electrical</translation>
 <translation id="1123753900084781868">Live Caption is not available at the moment</translation>
+<translation id="1124643885833329193">Exact location</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – to exit full screen, drag from the top and touch the back button</translation>
@@ -893,6 +894,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2400263725572336749">Add passport</translation>
 <translation id="2400271059665846158">Manage your loyalty cards in Google Wallet</translation>
 <translation id="2400600116338235695">Can ask to connect to serial ports</translation>
+<translation id="2403474027143565107">Precise</translation>
 <translation id="240450251994300576">Secondary header logo</translation>
 <translation id="2404884497378469141">Try copying your files again</translation>
 <translation id="2413155254802890957">Old</translation>
@@ -997,6 +999,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2571488850200220306">To help ensure security, it can also see the device's OS, browser version and what software is installed</translation>
 <translation id="2573170131138724450">Televisions</translation>
 <translation id="257674075312929031">Group</translation>
+<translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="2580031090587209073">Sharing options</translation>
 <translation id="258027838577899739">Delete all from history</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> added a tab</translation>
@@ -1283,6 +1286,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3082007635241601060">Let Google use your baskets to find personalised discounts when available</translation>
+<translation id="3085373848068196154">'<ph name="PROXY_INVALID_PROXY" />' is not a valid proxy.</translation>
 <translation id="3086269988715347183">You haven't approved <ph name="BLOCKED_URL" /> before</translation>
 <translation id="3086579638707268289">Your activity on the web is being monitored</translation>
 <translation id="3087734570205094154">Bottom</translation>
@@ -1412,6 +1416,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3270041629388773465">Check out faster when your CVCs are saved</translation>
+<translation id="3270343151253360050">Choose another payment method to complete this purchase</translation>
 <translation id="3270847123878663523">&amp;Undo Reorder</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> wants to connect</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="361438452008624280">List entry '<ph name="LANGUAGE_ID" />': unknown or unsupported language.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
 <translation id="3615309852743236517">Manicures and Pedicures</translation>
+<translation id="3620034424637552643">Often used for directions, deliveries and more</translation>
 <translation id="3620239073311576716">Uniforms and Workwear</translation>
 <translation id="3621401353678567613">To get price drop alerts for products that you track, turn on notifications in settings.</translation>
 <translation id="362276910939193118">Show full history</translation>
@@ -1893,6 +1899,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4036753017940930924">Lots and land</translation>
 <translation id="403724377879219932">Can ask to access other devices on your local network</translation>
 <translation id="4039506337798853114">To show your cursor, press |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Approximate</translation>
 <translation id="4045070493270310437">Reopen tabs</translation>
 <translation id="4045226534284799755">Sign in to your Microsoft account before trying again</translation>
 <translation id="4045441967987592849">Re-open</translation>
@@ -3211,6 +3218,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6164605812717770913">A parent or guardian said that this site isn't OK for you to visit. You can ask them to unblock it.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6167577165590485365">Last fetch attempted:</translation>
+<translation id="6171968084616623939"><ph name="PROXY_INVALID_SCHEME_HOST_PORT" /> is not a valid value.</translation>
 <translation id="617256461084925519">Google Chrome is trying to verify it's you so it can fill in your payment info.</translation>
 <translation id="6173208311907792313">Complete your purchase using Windows Hello</translation>
 <translation id="6176387967264100435">This price is high</translation>
@@ -3537,6 +3545,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6688851075017682769">Test address by country</translation>
 <translation id="6689249931105087298">Relative with black point compression</translation>
 <translation id="6689271823431384964">Chrome is offering to save your cards in your Google account because you are signed in. You can change this behaviour in settings. The cardholder name comes from your account.</translation>
+<translation id="6690688090329768424">'<ph name="PROXY_INVALID_DESTINATION" />' is not a valid destination pattern.</translation>
 <translation id="6691397311652656001">Free up more than <ph name="REQUIRED_FREE_DISK_SPACE" /> of space</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press Tab then Enter to find your device in the Google Account</translation>
 <translation id="6695428916538794739">Action and adventure films</translation>
@@ -3549,6 +3558,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6702851555558236418">Audio and music software</translation>
 <translation id="6702919718839027939">Present</translation>
 <translation id="6704458454638854812">The property 'custom_size' is set; expected name to be 'custom'.</translation>
+<translation id="670477556876354552">Restart required</translation>
 <translation id="6706005862292023715">Curtains and Window Treatments</translation>
 <translation id="6706210727756204531">Scope</translation>
 <translation id="6706678697074905703">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead.</translation>
@@ -4075,7 +4085,6 @@ Additional details:
 <translation id="753556296624075801">Powered by Google</translation>
 <translation id="753713322968419914">Remove home address from Chrome autofill?</translation>
 <translation id="7537536606612762813">Mandatory</translation>
-<translation id="7541043894191476250">Contextual tasks</translation>
 <translation id="7543525346216957623">Ask your parent</translation>
 <translation id="7546409722674205727">Starting <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Fix connection errors</translation>
@@ -4284,6 +4293,7 @@ Additional details:
 <translation id="7870281855125116701">Discount found</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>
 <translation id="787226752901403048">Sign in to Chrome to share and join tab groups, and work together on ideas</translation>
+<translation id="7874796722855317864">'<ph name="PROXY_UNKNOWN_CONDITION" />' is not a known condition type.</translation>
 <translation id="7877007680666472091">protected content IDs</translation>
 <translation id="7878562273885520351">Your password may be compromised</translation>
 <translation id="7881044256965445977">Look for and connect to any device on your local network</translation>
@@ -5008,6 +5018,7 @@ Additional details:
 <translation id="9090243919347147717">Attachments</translation>
 <translation id="9090548458280093580">Search your history, powered by AI</translation>
 <translation id="9090993752571911635">Internet service providers (ISPs)</translation>
+<translation id="9092305980625216393">Often used for weather, local news and more</translation>
 <translation id="9093723786115107672">Sleepwear</translation>
 <translation id="9094424186948667194">Access other apps and services on this device</translation>
 <translation id="9094544726794842788">Thumbs down opens a form for submitting detailed feedback on why you dislike these results</translation>

@@ -271,6 +271,7 @@
 <translation id="3889417619312448367">Hapus Penginstalan Google Chrome</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3906096710440765802">Login ke Chrome untuk mendapatkan sandi, bookmark, dan lainnya di semua perangkat Anda</translation>
+<translation id="3921132130819999051">Izinkan Chrome melakukan penjelajahan untuk Anda</translation>
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
 <translation id="395904275706073188">Halaman yang dilindungi tidak dapat dibaca. Coba halaman lain.</translation>
 <translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -400,7 +401,6 @@
 <translation id="5430073640787465221">File preferensi Anda rusak atau tidak valid. Google Chrome tidak dapat memulihkan setelan Anda.</translation>
 <translation id="5465210843490471889">Pilih profil Chrome yang akan digunakan dengan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Untuk membantu meningkatkan fitur ini, Chrome mengirim interaksi Anda dengan fitur tersebut ke Google. Data ini dapat dibaca, diproses, dan dianotasi oleh petugas peninjau.</translation>
-<translation id="5510398294750420479">Download Chrome di ponsel Anda untuk menambahkan lapisan perlindungan ekstra kapan saja di mana saja</translation>
 <translation id="5524890928877629608">pojok kiri atas area penelusuran: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Buat Chrome Lebih Cepat</translation>
 <translation id="5550137307985173298">Klik tombol Sesuaikan Chrome di Halaman Tab Baru untuk memberikan tampilan baru pada Chrome</translation>
@@ -478,6 +478,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tab ini menggunakan resource tambahan. Untuk meningkatkan performa Anda, izinkan Chrome menonaktifkannya.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
+<translation id="6183773856988300112">Gemini di Chrome menggunakan penjelajahan otomatis untuk bekerja di tab Anda dan menyelesaikan tugas yang Anda berikan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Akun Anda di Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> telah menambahkan ekstensi yang dapat mengubah cara kerja Chrome.
 

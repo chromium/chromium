@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3254806613790954367">آخر علامة تبويب مفتوحة على جميع أجهزتك</translation>
 <translation id="325717987950204592">النقر على "الخصوصية والأمان"</translation>
-<translation id="3266338926702638258">عرض سجلّ أسعار هذا المنتج</translation>
 <translation id="3272527697863656322">إلغاء</translation>
 <translation id="3273510436356991673">تخصيص شاشتك الرئيسية</translation>
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">إخفاء "علامات التبويب الأخيرة"</translation>
 <translation id="4578835633387306383">تفعيل…</translation>
 <translation id="4580716718466706433">الانتقال إلى "مدير كلمات المرور"</translation>
+<translation id="4585751637295612750">يمكنك فتح علامة تبويب جديدة لإضافتها إلى سؤالك</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4592672037257622855">{count,plural, =1{تمّت إضافة صفحة واحدة إلى "قائمة القراءة"}zero{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}two{تمّت إضافة صفحتَين ({count}) إلى "قائمة القراءة"}few{تمّت إضافة {count} صفحات إلى "قائمة القراءة"}many{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}other{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}}</translation>
 <translation id="459644946100970322">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>

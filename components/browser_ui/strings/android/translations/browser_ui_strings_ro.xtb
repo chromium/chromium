@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Sfaturi Chrome</translation>
 <translation id="1816835383954230954">Când opțiunea este activată, Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător. Când este dezactivată, performanța scade, dar motorul V8 devine mai rezistent la atacuri.</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Schimbă poziția pentru a-ți personaliza experiența de navigare.</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Acest dosar este gol</translation>
 <translation id="1881806992065048905">Foaia din partea de jos cu aspectul paginii Filă nouă</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Astfel, se va restabili zoomul prestabilit pentru toate site-urile din listă</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="1994173015038366702">Adresa URL a site-ului</translation>
+<translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Este posibil ca funcțiile din anumite site-uri să nu funcționeze</translation>
 <translation id="2025115093177348061">Realitate augmentată</translation>
 <translation id="2028449514182362831">Funcțiile care au nevoie de senzori de mișcare nu vor funcționa</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Culoarea temei deschisă</translation>
 <translation id="2096716221239095980">Șterge toate datele</translation>
 <translation id="2102396546234652240">Nu permite site-urilor să folosească microfonul</translation>
+<translation id="2115808389282428160">Nu permite site-urilor să acceseze alte aplicații și servicii de pe acest dispozitiv</translation>
 <translation id="2117655453726830283">Următorul slide</translation>
 <translation id="2146263598007866206">Site-urile pot descărca automat fișierele conexe împreună pentru a te ajuta să economisești timp</translation>
 <translation id="2148716181193084225">Astăzi</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Permisă de data aceasta • Exactă</translation>
 <translation id="2544997614631598250">Culoarea temei închisă</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
+<translation id="2553552004849639664">Beneficiază de cea mai puternică protecție Chrome împotriva amenințărilor online.</translation>
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -159,6 +163,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
 <translation id="2626708220538466178">Foaia din partea de jos a browserului prestabilit, închisă</translation>
 <translation id="2653659639078652383">Trimite</translation>
+<translation id="2665056444046933274">Site-urile pot folosi această funcție pentru a accesa alte aplicații și servicii de pe acest dispozitiv.</translation>
 <translation id="2670403088701171361">Nu permite site-urilor să vadă text sau imagini din clipboard</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2682367912565197520">Șterge nivelul de zoom salvat</translation>
@@ -202,8 +207,10 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="3114012059975132928">Player video</translation>
 <translation id="3115898365077584848">Afișează informațiile</translation>
+<translation id="3120204271988747891">Site-urile pot solicita permisiunea de a accesa alte dispozitive din rețeaua ta locală</translation>
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
 <translation id="3132996321662585180">Actualizează zilnic</translation>
+<translation id="3134859781443140237">Rețea locală</translation>
 <translation id="3143754809889689516">Redă de la început</translation>
 <translation id="3164169438034704658">Poți activa locația exactă în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permite ca un site să folosească cookie-uri terță parte</translation>
@@ -214,6 +221,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3232293466644486101">Șterge datele de navigare…</translation>
+<translation id="3241320538788585298">Rețea loopback</translation>
 <translation id="3242646949159196181">Când opțiunea este activată, site-urile pot reda sunet. Când opțiunea este dezactivată, site-urile nu pot reda sunet.</translation>
 <translation id="3273479183583863618">Scăderi de preț în file</translation>
 <translation id="3277252321222022663">Permite accesul site-urilor la senzori (recomandat)</translation>
@@ -409,6 +417,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5373874281522292782">Grupurile de file se salvează</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ încă 1)}few{(+ încă #)}other{(+ încă #)}}</translation>
 <translation id="5403592356182871684">Nume</translation>
+<translation id="5407203562970638234">Îmbunătățește-ți securitatea</translation>
 <translation id="5438097262470833822">Astfel, se vor reseta permisiunile pentru <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Când opțiunea este activată, site-urile pot solicita informații despre locație. Când opțiunea este dezactivată, site-urile nu îți pot vedea locația.</translation>
 <translation id="5489227211564503167">Timp scurs: <ph name="ELAPSED_TIME" /> din <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blocat</translation>
 <translation id="560980142378233747">Aceasta înseamnă că funcțiile site-ului ar trebui să ruleze conform așteptărilor, dar este posibil să ai mai puțină protecție la navigare. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Foaia din partea de jos a cardurilor din pagina Filă nouă</translation>
+<translation id="5621413808884657932">Când opțiunea este activată, site-urile pot solicita permisiunea de a accesa alte aplicații și servicii de pe acest dispozitiv. Când opțiunea este dezactivată, site-urile nu pot accesa alte aplicații și servicii de pe acest dispozitiv.</translation>
 <translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5649053991847567735">Descărcări automate</translation>
 <translation id="5668404140385795438">Ignoră solicitarea unui site de a împiedica mărirea</translation>
@@ -543,6 +553,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6842868554183332230">Site-urile detectează de obicei când folosești activ dispozitivul pentru a-ți seta disponibilitatea în aplicații de chat</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
 <translation id="6870169401250095575">Ascunde cardul Verificarea de siguranță</translation>
+<translation id="6882736949427544336">Nu permite site-urilor să acceseze alte dispozitive din rețeaua ta locală</translation>
 <translation id="6900883974539674431">Creează grupuri de file care se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
@@ -604,6 +615,8 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7586676035079382730">Notificările nu sunt permise</translation>
 <translation id="7594634374516752650">Conectat la un dispozitiv Bluetooth</translation>
 <translation id="7617547684249261169">Poți să ștergi parțial sau integral istoricul, cookie-urile, datele privind site-urile și multe altele</translation>
+<translation id="762200934554267613">Site-urile pot solicita permisiunea de a accesa alte aplicații și servicii de pe acest dispozitiv</translation>
+<translation id="7627749368210392160">Site-urile pot folosi această funcție pentru a accesa alte dispozitive din rețeaua ta locală.</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7655411746932645568">Site-urile pot solicita permisiunea de a se conecta la porturi seriale</translation>
 <translation id="7658239707568436148">Anulează</translation>
@@ -659,6 +672,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Când opțiunea este activată, site-urile pot solicita permisiunea de a accesa alte dispozitive din rețeaua ta locală. Când opțiunea este dezactivată, site-urile nu pot accesa alte dispozitive din rețeaua ta locală.</translation>
 <translation id="8249310407154411074">Mută la început</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8284326494547611709">Subtitrări</translation>
@@ -712,6 +726,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8737426583868847403">Site-urile pentru care salvezi un nivel de zoom personalizat vor apărea aici</translation>
+<translation id="8748714929822124637">Nu permite site-urilor să acceseze alte dispozitive din rețeaua ta locală.</translation>
 <translation id="8751914237388039244">Selectează o imagine</translation>
 <translation id="8775741625735357092">Poți să activezi bara de marcaje în Setări &gt; Aspect</translation>
 <translation id="8800034312320686233">Site-ul nu funcționează?</translation>

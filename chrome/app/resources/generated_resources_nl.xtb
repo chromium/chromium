@@ -196,6 +196,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125371304736839151">Gemini bovenaan de browser tonen</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
+<translation id="1125816658532547876">Gebruik je wachtwoorden op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Achtergrond en stijl</translation>
 <translation id="1128591060186966949">Zoekmachine bewerken</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -565,6 +566,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1372841398847029212">Synchroniseren met je account</translation>
 <translation id="1373176046406139583">Je apparaatzichtbaarheid bepaalt wie content met je kan delen terwijl je scherm ontgrendeld is. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Het certificaat dat wordt vereist door het netwerk '<ph name="NETWORK_NAME" />', is niet geïnstalleerd of is niet meer geldig. Haal een nieuw certificaat op en probeer opnieuw verbinding te maken.</translation>
+<translation id="1374948751106271187">Voeg een extra beveiligingslaag toe als je onderweg bent</translation>
 <translation id="1375557162880614858">Wil je ChromeVox, de ingebouwde schermlezer voor Chrome OS Flex, activeren?</translation>
 <translation id="1375938286942050085">Het instellen is afgerond. Maak je apparaat nu klaar voor games.</translation>
 <translation id="137651782282853227">Opgeslagen adressen worden hier getoond</translation>
@@ -990,7 +992,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1650801028905250434">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen. Je kunt dit altijd wijzigen via Instellingen &gt; Bestanden.</translation>
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
 <translation id="1651609627703324721">Dit tabblad presenteert VR-content aan een headset</translation>
-<translation id="1651633344379798952">Probeer Google Lens op je telefoon</translation>
 <translation id="1652281434788353738">Bedachtzaam</translation>
 <translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
 <translation id="1652862280638399816">Als je Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chromium en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
@@ -1212,7 +1213,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1808805149659872686">Nieuwe invoer</translation>
 <translation id="1809201888580326312">Je wilt wachtwoorden voor deze sites en apps niet opslaan</translation>
 <translation id="1809734401532861917">Mijn bookmarks, geschiedenis, wachtwoorden en andere instellingen toevoegen aan <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Als je de opgeslagen wachtwoorden op je telefoon wilt gebruiken, volg je de QR-code, download je Chrome voor iOS en log je in op je Google-account.</translation>
 <translation id="1810366086647840386">Afbeeldingsserver</translation>
 <translation id="1811908311154949291">Incognito fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> niet meer gebruiken</translation>
@@ -1259,6 +1259,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="183445248400150852">Sites gebruiken deze functie om de invoer van je toetsenbord te overschrijven, zoals voor games of Remote Desktop-apps</translation>
 <translation id="1834503245783133039">Download niet geslaagd: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux upgraden</translation>
+<translation id="1837292628323740716">Uitgebreide versie van Safe Browsing op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive heeft het verzoek afgewezen. Probeer het later opnieuw.</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1839021455997460752">Je e-mailadres</translation>
@@ -3362,7 +3363,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3269612321104318480">Lichtdonkergroen/wit</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Bestand}other{# bestanden}}</translation>
 <translation id="3270965368676314374">Foto's, muziek en andere media van je computer lezen, wijzigen en verwijderen</translation>
-<translation id="3273033807960054795">Uitgebreide versie van Safe Browsing uitbreiden</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> samenvouwen</translation>
 <translation id="3275778809241512831">Je interne beveiligingssleutel is momenteel niet beveiligd. Verwijder de sleutel uit services waarin je deze gebruikt. Reset de beveiligingssleutel om het probleem op te lossen.</translation>
 <translation id="3275778913554317645">Openen als venster</translation>
@@ -5089,7 +5089,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4421932782753506458">Pluisje</translation>
 <translation id="4423376891418188461">Instellingen herstellen</translation>
 <translation id="4423525817792153232">Al je tanden laten zien</translation>
-<translation id="4424107154724312436">Probeer Google Lens op iOS</translation>
 <translation id="4424262960694990728">Actie vereist</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Als je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer ChromeOS crasht, welke functies er zijn gebruikt en hoeveel geheugen er gewoonlijk wordt gebruikt.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
@@ -5567,7 +5566,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4767427586072640478">Meer informatie over uitgezette extensies</translation>
 <translation id="4769632191812288342">Je krijgt standaardbeveiliging</translation>
 <translation id="4770119228883592393">Rechten gevraagd, druk op ⌘ + Option + pijl-omlaag om te reageren</translation>
-<translation id="4770755495532014179">Dit wachtwoord gebruiken op je iPhone</translation>
 <translation id="4772914216048388646">Ordelijk</translation>
 <translation id="4773112038801431077">Linux upgraden</translation>
 <translation id="4773122030389014189">Tabbladgroep <ph name="GROUP_NAME" /> delen</translation>
@@ -6384,6 +6382,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5335370353987155592">Gebruik Gemini zorgvuldig en <ph name="BEGIN_LINK1" />veilig<ph name="LINK_END1" />. Jij bent verantwoordelijk voor de acties van Gemini tijdens een taak, waaronder fouten en <ph name="BEGIN_LINK2" />onverwachte resultaten<ph name="LINK_END2" /> zoals aankopen.</translation>
 <translation id="5336688142483283574">Deze pagina wordt ook verwijderd uit je geschiedenis en <ph name="SEARCH_ENGINE" />-activiteit.</translation>
 <translation id="5336689872433667741">Cursor en touchpad</translation>
+<translation id="5337035808300170502">Werkelijk formaat</translation>
 <translation id="5337207153202941678">Markeren uitzetten</translation>
 <translation id="5337771866151525739">Geïnstalleerd door derden.</translation>
 <translation id="5337926771328966926">De huidige apparaatnaam is <ph name="DEVICE_NAME" /></translation>
@@ -6718,7 +6717,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="556321030400250233">lokaal of gedeeld bestand</translation>
 <translation id="5563234215388768762">Zoek met Google of voer een URL in</translation>
 <translation id="5563824734298958390">Tabbladgroep verlaten?</translation>
-<translation id="5564450015351086922">Probeer Google Lens op iOS</translation>
 <translation id="5565735124758917034">Actief</translation>
 <translation id="5568069709869097550">Kan niet aanmelden</translation>
 <translation id="5568525251731145240">Sitegegevens en rechten verwijderen voor <ph name="SITE_NAME" />, alle onderliggende sites en geïnstalleerde apps?</translation>
@@ -7918,7 +7916,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6410328738210026208">Kanaal wijzigen en Powerwash uitvoeren</translation>
 <translation id="6410390304316730527">Safe Browsing beschermt je tegen aanvallers die je proberen te misleiden zodat je iets gevaarlijks doet, zoals schadelijke software installeren of persoonlijke informatie zoals wachtwoorden, telefoonnummers of creditcards openbaar maken. Als je deze functie uitzet, moet je voorzichtig zijn als je op onbekende of onbetrouwbare sites browst.</translation>
 <translation id="6411135999030237579">Ingedrukt houden om de toets automatisch te herhalen</translation>
-<translation id="6411516120707127482">Probeer Google Lens op je telefoon</translation>
 <translation id="6414618057231176439">Selecteer welke versie van <ph name="VM_NAME" /> je wilt installeren.</translation>
 <translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6415757856498750027">Typ 'w' om 'ư' te krijgen</translation>
@@ -7965,7 +7962,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6445450263907939268">Als je deze wijzigingen niet wilt aanbrengen, kun je je vorige instellingen herstellen.</translation>
 <translation id="6446213738085045933">Bureaubladsnelkoppeling maken</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449835059180426406">Je wachtwoorden gebruiken op je iOS-apparaten</translation>
 <translation id="6450876761651513209">Je privacygerelateerde instellingen wijzigen</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> en 1 ander tabblad}other{<ph name="PAGE_TITLE" /> en # andere tabbladen}}</translation>
 <translation id="6451689256222386810">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />stel je de synchronisatie opnieuw in<ph name="END_LINK" />.</translation>
@@ -8446,6 +8442,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6783036716881942511">Dit apparaat vergeten?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellingen</translation>
 <translation id="6784523122863989144">Profiel wordt ondersteund</translation>
+<translation id="678520006562636090">Probeer Google Lens op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Je <ph name="PASSWORD_DOMAIN" /> gebruiken</translation>
 <translation id="6785739405821760313">Opgeslagen bureaus worden weergegeven. Druk op Tab om te navigeren.</translation>
 <translation id="6785915470941880363">Omgekeerd scrollen <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -8877,7 +8874,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7066572364168923329">Je <ph name="DEVICE_TYPE" /> instellen</translation>
 <translation id="7067396782363924830">Omgevingskleuren</translation>
 <translation id="7067725467529581407">Nooit meer bekijken.</translation>
-<translation id="7067779359472606732">Herinnering naar je <ph name="DEVICE_TYPE" /> gestuurd</translation>
 <translation id="7068279399556423026">Log in om tabbladen van andere apparaten te bekijken</translation>
 <translation id="7068539819344620805">Je kunt je browser nu op elk moment een nieuwe look geven via het menu Chrome aanpassen</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> en nog een paar apps zijn geblokkeerd op je <ph name="DEVICE_TYPE" /></translation>
@@ -10032,7 +10028,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Taal van Google-account</translation>
-<translation id="7863211248337747225">App downloaden</translation>
 <translation id="7864114920800968141">Over <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Bluetooth uitzetten</translation>
 <translation id="7864825798076155402">Opslaan in je Google-account?</translation>
@@ -10359,7 +10354,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8068904756674285749">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht. Je kunt ook vragen stellen en antwoorden krijgen op basis van je browsegeschiedenis. De instelling staat uit.</translation>
 <translation id="8070572887926783747">Locatierechten voor <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Haptische feedback</translation>
-<translation id="8071033114691184017">Dit wachtwoord gebruiken op je iPhone</translation>
 <translation id="8071432093239591881">Afdrukken als afbeelding</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />App-gegevens kunnen alle gegevens omvatten die een app heeft opgeslagen (op basis van de instellingen van de ontwikkelaar), waaronder gegevens zoals contacten, berichten en foto's.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Back-upgegevens tellen niet mee voor het Drive-opslagquotum van je kind.<ph name="END_PARAGRAPH2" />

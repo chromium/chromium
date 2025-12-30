@@ -1303,6 +1303,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="654871471440386944">Zapnout procházení pomocí kurzoru?</translation>
 <translation id="6550891580932862748">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. Vaše nastavení Bezpečného prohlížení v jiných službách Google nebude dotčeno.</translation>
 <translation id="6554822972009632311">Filtr obsahu je zapnutý</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> další karta}few{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další karty}many{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další karty}other{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="6560414384669816528">Vyhledávat pomocí Sogou</translation>
 <translation id="656065428026159829">Zobrazit další</translation>

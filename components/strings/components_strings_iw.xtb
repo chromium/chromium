@@ -77,6 +77,7 @@
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. כדי לקבוע איזה מידע מ-Chrome יישמר בחשבון Google, צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="1122714970786750095">אלקטרוניקה וחשמל</translation>
 <translation id="1123753900084781868">הכתוביות המיידיות לא זמינות עכשיו.</translation>
+<translation id="1124643885833329193">מיקום מדויק</translation>
 <translation id="112840717907525620">המטמון של המדיניות תקין</translation>
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – כדי לצאת ממסך מלא, צריך לגרור מלמעלה וללחוץ על הכפתור "הקודם".</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">הוספת דרכון</translation>
 <translation id="2400271059665846158">‏ניהול כרטיסי מועדון הלקוחות ב-Google Wallet</translation>
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
+<translation id="2403474027143565107">מדויק</translation>
 <translation id="240450251994300576">לוגו משני בכותרת</translation>
 <translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
 <translation id="2413155254802890957">ישנה</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">כדי לשמור על האבטחה, יש לאדמין אפשרות לראות גם את מערכת ההפעלה של המכשיר, גרסת הדפדפן והתוכנה שמותקנת בו</translation>
 <translation id="2573170131138724450">טלוויזיות</translation>
 <translation id="257674075312929031">קבוצה</translation>
+<translation id="2577522251608256362">שכונה</translation>
 <translation id="2580031090587209073">אפשרויות שיתוף</translation>
 <translation id="258027838577899739">מחיקת כל הפריטים מההיסטוריה</translation>
 <translation id="258135245577667916">כרטיסייה נוספה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">מערכות הפעלה</translation>
 <translation id="3080254622891793721">גרפיקה</translation>
 <translation id="3082007635241601060">‏רוצה ש-Google תשתמש בעגלות הקניות כדי למצוא הנחות זמינות בהתאמה אישית?</translation>
+<translation id="3085373848068196154">‏‫"<ph name="PROXY_INVALID_PROXY" />" הוא לא שרת proxy תקין.</translation>
 <translation id="3086269988715347183">לא אישרת את <ph name="BLOCKED_URL" /> בעבר</translation>
 <translation id="3086579638707268289">הפעילות שלך באינטרנט נמצאת במעקב</translation>
 <translation id="3087734570205094154">תחתית</translation>
@@ -1412,6 +1416,7 @@
 <translation id="3266793032086590337">ערך (התנגשות)</translation>
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
 <translation id="3270041629388773465">‏התשלום מהיר יותר כשקודי האימות (CVC) שמורים</translation>
+<translation id="3270343151253360050">כדי להשלים את הרכישה, צריך לבחור אמצעי תשלום אחר</translation>
 <translation id="3270847123878663523">&amp;ביטול של שינוי סדר</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> רוצה להתחבר אל</translation>
 <translation id="3272091146646336650">‏12x19.2 אינץ' (Super B)</translation>
@@ -1626,6 +1631,7 @@
 <translation id="361438452008624280">רשומה ברשימה "<ph name="LANGUAGE_ID" />": שפה לא מוכרת או לא נתמכת.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="3615309852743236517">מניקור ופדיקור</translation>
+<translation id="3620034424637552643">לרוב משמש לקבלת מסלולים, משלוחים ועוד</translation>
 <translation id="3620239073311576716">מדים ובגדי עבודה</translation>
 <translation id="3621401353678567613">כדי לקבל התראות על ירידות במחיר של המוצרים שבמעקב, צריך להפעיל את ההתראות בהגדרות.</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
@@ -1893,6 +1899,7 @@
 <translation id="4036753017940930924">חלקות וקרקעות</translation>
 <translation id="403724377879219932">האתר יכול לבקש הרשאה להתחבר למכשירים אחרים ברשת המקומית</translation>
 <translation id="4039506337798853114">כדי להציג את הסמן, צריך ללחוץ על |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">משוער</translation>
 <translation id="4045070493270310437">פתיחה מחדש של כרטיסיות</translation>
 <translation id="4045226534284799755">‏צריך להיכנס לחשבון Microsoft לפני שמנסים שוב</translation>
 <translation id="4045441967987592849">פתיחה מחדש</translation>
@@ -3216,6 +3223,7 @@ Del</translation>
 <translation id="6164605812717770913">הורה או אפוטרופוס אמרו שאסור לך לבקר באתר הזה. עליך לבקש מהם לבטל את החסימה.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6167577165590485365">ניסיון האחזור האחרון:</translation>
+<translation id="6171968084616623939">‫"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" הוא לא ערך תקין.</translation>
 <translation id="617256461084925519">‏Google Chrome מנסה לאמת את זהותך לצורך מילוי פרטי התשלום שלך.</translation>
 <translation id="6173208311907792313">‏השלמת הרכישה באמצעות Windows Hello</translation>
 <translation id="6176387967264100435">המחיר הזה גבוה</translation>
@@ -3542,6 +3550,7 @@ Del</translation>
 <translation id="6688851075017682769">בדיקה של כתובת לפי מדינה</translation>
 <translation id="6689249931105087298">יחסי עם דחיסת נקודות שחורות</translation>
 <translation id="6689271823431384964">‏מאחר שנכנסת לחשבון, Chrome מציע לשמור את הכרטיסים שלך בחשבון Google. אפשר לשנות את ההתנהגות הזאת בהגדרות. שם בעל הכרטיס מגיע מהחשבון שלך.</translation>
+<translation id="6690688090329768424">‫"<ph name="PROXY_INVALID_DESTINATION" />" היא תבנית יעד לא תקינה.</translation>
 <translation id="6691397311652656001">צריך לפנות נפח של יותר מ-<ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לאתר את המכשיר דרך חשבון Google</translation>
 <translation id="6695428916538794739">סרטי פעולה והרפתקאות</translation>
@@ -3554,6 +3563,7 @@ Del</translation>
 <translation id="6702851555558236418">תוכנות מוזיקה ואודיו</translation>
 <translation id="6702919718839027939">הצגה</translation>
 <translation id="6704458454638854812">‏המאפיין 'custom_size' מוגדר, אבל שם המאפיין לא מוגדר כ-'custom'.</translation>
+<translation id="670477556876354552">נדרשת הפעלה מחדש</translation>
 <translation id="6706005862292023715">וילונות והצללה לחלונות</translation>
 <translation id="6706210727756204531">היקף</translation>
 <translation id="6706678697074905703">‏לא ניתן לשמור את ה-IBAN הזה בחשבון שלך ב-Google. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
@@ -4080,7 +4090,6 @@ Del</translation>
 <translation id="753556296624075801">‏מופעל על ידי Google</translation>
 <translation id="753713322968419914">‏להסיר את כתובת המגורים מהמילוי האוטומטי של Chrome?</translation>
 <translation id="7537536606612762813">חובה</translation>
-<translation id="7541043894191476250">משימות לפי הקשר</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
 <translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>
 <translation id="7548892272833184391">פתרון שגיאות חיבור</translation>
@@ -4289,6 +4298,7 @@ Del</translation>
 <translation id="7870281855125116701">נמצאה הנחה</translation>
 <translation id="7871445724586827387">‏שינוי הסיסמה לחשבון Google</translation>
 <translation id="787226752901403048">‏כדי לשתף קבוצות של כרטיסיות, להצטרף אליהן ולעבוד יחד על רעיונות, צריך להיכנס ל-Chrome</translation>
+<translation id="7874796722855317864">‫"<ph name="PROXY_UNKNOWN_CONDITION" />" הוא לא סוג תנאי ידוע.</translation>
 <translation id="7877007680666472091">‏תוכן מוגן ב-Content ID</translation>
 <translation id="7878562273885520351">ייתכן שאבטחת הסיסמה שלך נפגעה</translation>
 <translation id="7881044256965445977">לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
@@ -5013,6 +5023,7 @@ Del</translation>
 <translation id="9090243919347147717">קבצים מצורפים</translation>
 <translation id="9090548458280093580">‏חיפוש בהיסטוריה שלך, באמצעות AI</translation>
 <translation id="9090993752571911635">‏ספקי אינטרנט (ISP)</translation>
+<translation id="9092305980625216393">לרוב משמש לקבלת מידע על מזג האוויר, חדשות מקומיות ועוד</translation>
 <translation id="9093723786115107672">ביגוד לשינה</translation>
 <translation id="9094424186948667194">התחברות לאפליקציות ולשירותים אחרים במכשיר הזה</translation>
 <translation id="9094544726794842788">בסימון דיסלייק, נפתח טופס לשליחת משוב מפורט על הסיבה לכך שלא אהבת את התוצאות האלה</translation>

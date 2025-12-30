@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium-ek Face ID bidez babesten ditu zure kontuzko datuak.</translation>
 <translation id="1591119736686995611">Chromium-en fitxen sareta irekitzen du.</translation>
 <translation id="16001233025397167">Segurtasun-egiaztapenari esker, babestuta egongo zara datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean. Jaso Chromium-ek zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
+<translation id="1614362805233822594">Badauzkazu ikusgai dauden webguneetarako pasahitzak edo sarbide-gakoak Pasahitz-kudeatzailea zerbitzuan. Saioa hasteko ikusgai dagoen informazioa mantendu nahi baduzu, eta Pasahitz-kudeatzailea zerbitzuko informazioa gainidatzi, hautatu horretarako kontu bat.</translation>
 <translation id="1617663976202781617">Chromium-en sinkronizazioaren datuak</translation>
 <translation id="164952285225495380">Pakete honen jarraipena Chromium-en egin da jada.</translation>
+<translation id="1703338211136118534">Pasahitz hauek ez dira inportatu Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
 <translation id="1707458603865303524">Erabili Chromium mezuetako edo beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="1722370509450468186">Pasahitza kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Zuretzat sortutako jario pertsonalizatua</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps Chromium-en</translation>
 <translation id="1867772173333403444">4. Hautatu Chromium.</translation>
 <translation id="1965068424387304464">Chromium-erako aholkua: gorde pasahitzak</translation>
+<translation id="1992653360331625459">Jadanik badauzkazu kontu hauetarako pasahitzak Pasahitz-kudeatzailea zerbitzuan. Beheko pasahitzetako bat inportatzea aukeratzen baduzu, lehendik dagoena ordeztuko du.</translation>
 <translation id="2006345422933397527">Chromium-ek ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2042889939382983733">Ikusi Chromium-eko historia</translation>
 <translation id="2052320862053429062">Sarean argitaratu diren zerrendetan ea zure pasahitzak dauden egiaztatzen du noizean behin Chromium-ek. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
 
 Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datuak ezabatuko dira.</translation>
+<translation id="2334943301233020675">Sarbide-gako hauek ez dira inportatu Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
 <translation id="2337722506862731008">Partekatu Chromium</translation>
 <translation id="2340423701577464731">Gehitu irakurketa-zerrendako elementu bat Chromium-en</translation>
 <translation id="2374627437126809292">Chromium-ek Google Maps erabiltzen du hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko.</translation>

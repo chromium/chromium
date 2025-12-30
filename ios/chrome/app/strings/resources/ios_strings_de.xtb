@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1161663161838091892">Tabs und Verlauf synchronisieren, um fortzufahren</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} Kreditkarte}other{{count} Kreditkarten}}</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1172898394251786223">Nächstes Feld</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Geöffnete Tabs</translation>
 <translation id="1752547299766512813">Passwörter speichern</translation>
 <translation id="1764070164487214210">Route</translation>
+<translation id="1764511703783285459">Der andere Passwortmanager hat keine Passwörter oder Passkeys geteilt</translation>
 <translation id="1767766085187034454">Google Übersetzer</translation>
 <translation id="1771016937398045251">Menü „Tools“</translation>
 <translation id="1772468122139624049">Tabs können nicht aktualisiert werden</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Deine Änderung konnte nicht gespeichert werden.</translation>
 <translation id="3254806613790954367">Der zuletzt geöffnete Tab auf allen deinen Geräten</translation>
 <translation id="325717987950204592">Tippe auf „Datenschutz und Sicherheit“</translation>
-<translation id="3266338926702638258">Preisentwicklung für dieses Produkt anzeigen</translation>
 <translation id="3272527697863656322">Abbrechen</translation>
 <translation id="3273510436356991673">Startbildschirm personalisieren</translation>
 <translation id="3277021493514034324">Websiteadresse kopiert</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">„Letzte Tabs“ ausblenden</translation>
 <translation id="4578835633387306383">Aktivieren…</translation>
 <translation id="4580716718466706433">Rufe den Passwortmanager auf</translation>
+<translation id="4585751637295612750">Neuen Tab öffnen, um ihn zur Frage hinzuzufügen</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Seite wurde deiner Leseliste hinzugefügt}other{{count} Seiten wurden deiner Leseliste hinzugefügt}}</translation>
 <translation id="459644946100970322">Benachrichtigungen zu Preisaktualisierungen aktivieren?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Hinweis enthält mehr als 1.000 Zeichen</translation>
 <translation id="5087098519049306025">Preis-Tracking</translation>
 <translation id="5090832849094901128">Durch das Entfernen dieses Passworts wird dein <ph name="WEBSITE" />-Konto nicht gelöscht.</translation>
+<translation id="510580293474170715">Nichts importiert</translation>
 <translation id="5113960131843706315">Deine Inhalte werden aufgerufen…</translation>
 <translation id="5118462200606189584">Konto hinzufügen…</translation>
 <translation id="5118764316110575523">Aus</translation>
@@ -1449,6 +1452,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6410390304316730527">Safe Browsing schützt dich gegen Angreifer, die dich dazu verleiten möchten, Risiken einzugehen, wie z. B. schädliche Software zu installieren oder personenbezogene Daten wie Passwörter, Telefonnummern oder Kreditkartendaten preiszugeben. Wenn du Safe Browsing deaktivierst, sei besonders vorsichtig, wenn du auf unbekannten oder zweifelhaften Websites surfst.</translation>
 <translation id="6410883413783534063">Über Tabs kannst du mehrere Seiten gleichzeitig besuchen</translation>
 <translation id="6418346271604475326">PDF wird vorbereitet</translation>
+<translation id="6420292512900923139">Probleme beim Importieren deiner Daten</translation>
 <translation id="6421038304268477484">Übersetzter Text</translation>
 <translation id="6429213933892582367">Öffne „Passwortoptionen“</translation>
 <translation id="6435236283694032571">Zur Leseliste hinzufügen</translation>
@@ -1487,6 +1491,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6537746030088321027">beispiel.de</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6550891580932862748">Schützt dich nicht vor gefährlichen Websites, Downloads und Erweiterungen. Deine Safe Browsing-Einstellungen in anderen Google-Produkten sind davon nicht betroffen.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
 <translation id="6559301491397835130">{count,plural, =1{Lesezeichen unter „{title}“ gespeichert. Es wird nur auf diesem Gerät gespeichert.}other{Lesezeichen unter „{title}“ gespeichert. Sie werden nur auf diesem Gerät gespeichert.}}</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>

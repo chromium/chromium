@@ -274,6 +274,7 @@
 <translation id="3889417619312448367">Chrome 제거</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3906096710440765802">Chrome에 로그인하여 모든 기기에서 내 비밀번호, 북마크 등을 사용하세요.</translation>
+<translation id="3921132130819999051">Chrome이 대신 탐색하도록 허용</translation>
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="395904275706073188">보호된 페이지는 읽을 수 없습니다. 다른 페이지를 사용해 보세요.</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
@@ -407,7 +408,6 @@
 Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />와 함께 사용할 Chrome 프로필을 선택하세요</translation>
 <translation id="5468572406162360320">이러한 기능을 개선할 수 있도록 Chrome은 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
-<translation id="5510398294750420479">이동 중에 보안을 한층 더 강화하려면 휴대전화에 Chrome을 다운로드하세요.</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
 <translation id="5550137307985173298">새 탭 페이지에서 Chrome 맞춤설정 버튼을 클릭하여 Chrome에 새로운 디자인을 적용하세요</translation>
@@ -485,6 +485,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Chrome 베타</translation>
 <translation id="6180522807229584611">이 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chrome에서 이 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
+<translation id="6183773856988300112">Chrome의 Gemini는 자동 탐색을 사용하여 탭에서 작동하고 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Chrome의 내 계정</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />에서 Chrome 작동 방식에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
 

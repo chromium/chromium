@@ -196,6 +196,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1125371304736839151">Tunjukkan Gemini pada bahagian atas penyemak imbas</translation>
 <translation id="1125550662859510761">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asal)</translation>
+<translation id="1125816658532547876">Gunakan kata laluan anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1125921926864945797">Hiasan latar dan gaya</translation>
 <translation id="1128591060186966949">Edit enjin carian</translation>
 <translation id="1129348283834595293">Siberpunk</translation>
@@ -565,6 +566,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1372841398847029212">Segerakkan ke akaun anda</translation>
 <translation id="1373176046406139583">Keterlihatan peranti anda mengawal orang yang boleh berkongsi dengan anda semasa skrin anda dibuka kunci. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sijil yang diperlukan oleh rangkaian "<ph name="NETWORK_NAME" />" sama ada tidak dipasang atau tidak lagi sah.  Sila dapatkan sijil baharu dan cuba menyambung semula.</translation>
+<translation id="1374948751106271187">Tambahkan lapisan perlindungan tambahan semasa anda dalam perjalanan</translation>
 <translation id="1375557162880614858">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS Flex?</translation>
 <translation id="1375938286942050085">Persediaan selesai! Sediakan peranti anda untuk permainan</translation>
 <translation id="137651782282853227">Alamat yang disimpan akan kelihatan di sini</translation>
@@ -991,7 +993,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1650801028905250434">Fail anda dalam Drive Saya akan disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet. Anda boleh menukar tetapan ini pada bila-bila masa dalam Tetapan &gt; Fail.</translation>
 <translation id="1651008383952180276">Anda mesti memasukkan ungkapan laluan yang sama dua kali</translation>
 <translation id="1651609627703324721">Tab ini menayangkan kandungan VR pada set kepala</translation>
-<translation id="1651633344379798952">Cuba Google Lens pada telefon anda</translation>
 <translation id="1652281434788353738">Bertimbang rasa</translation>
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
 <translation id="1652862280638399816">Untuk menggunakan Password Manager dengan macOS Keychain, lancarkan semula Chromium dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
@@ -1221,7 +1222,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1808805149659872686">Entri baharu</translation>
 <translation id="1809201888580326312">Anda telah memilih untuk tidak menyimpan kata laluan bagi laman dan apl ini</translation>
 <translation id="1809734401532861917">Tambahkan penanda halaman, sejarah, kata laluan dan tetapan saya yang lain pada <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="1810070166657251157">Untuk menggunakan kata laluan yang disimpan pada telefon anda, ikut kod QR, muat turun Chrome untuk iOS dan log masuk Google Account anda.</translation>
 <translation id="1810366086647840386">Pelayan Imej</translation>
 <translation id="1811908311154949291">Bingkai Berpetak Inkognito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> tidak dapat diteruskan dengan menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1268,6 +1268,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="183445248400150852">Laman menggunakan ciri ini untuk menggantikan input papan kekunci anda, seperti permainan atau apl desktop jauh</translation>
 <translation id="1834503245783133039">Muat turun tidak berjaya: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Meningkatkan Linux</translation>
+<translation id="1837292628323740716">Pertingkatkan Penyemakan Imbas Selamat pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1837441256780906162">Microsoft OneDrive menolak permintaan tersebut. Sila cuba sebentar lagi.</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1839021455997460752">Alamat e-mel anda</translation>
@@ -3377,7 +3378,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3269612321104318480">Hijau kebiruan muda dan putih</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fail}other{# fail}}</translation>
 <translation id="3270965368676314374">Baca, ubah dan padam foto, muzik dan media lain daripada komputer anda</translation>
-<translation id="3273033807960054795">Lanjutkan Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="3275464924531706548">Runtuhkan <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Kunci keselamatan dalaman tidak selamat pada masa ini. Sila alih keluar kunci tersebut daripada mana-mana perkhidmatan yang menggunakan kunci itu. Untuk menyelesaikan isu ini, sila tetapkan semula kunci keselamatan.</translation>
 <translation id="3275778913554317645">Buka sebagai tetingkap</translation>
@@ -5105,7 +5105,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4421932782753506458">Gebu</translation>
 <translation id="4423376891418188461">Pulihkan Tetapan</translation>
 <translation id="4423525817792153232">Tunjukkan kesemua gigi anda</translation>
-<translation id="4424107154724312436">Cuba Google Lens pada iOS</translation>
 <translation id="4424262960694990728">Tindakan diperlukan</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan diperbaik pada ChromeOS. Laporan ini boleh mengandungi maklumat seperti waktu ranap sistem OS Chrome, ciri yang digunakan dan jumlah memori yang biasanya digunakan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti Chrome anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" /></translation>
@@ -5583,7 +5582,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4767427586072640478">Ketahui lebih lanjut tentang sambungan yang dilumpuhkan.</translation>
 <translation id="4769632191812288342">Anda mendapat perlindungan standard</translation>
 <translation id="4770119228883592393">Kebenaran diminta, tekan ⌘ + Pilihan + Anak panah ke bawah untuk memberikan respons</translation>
-<translation id="4770755495532014179">Gunakan kata laluan ini pada iPhone anda</translation>
 <translation id="4772914216048388646">Teratur</translation>
 <translation id="4773112038801431077">Tingkatkan Linux</translation>
 <translation id="4773122030389014189">Kongsi kumpulan tab “<ph name="GROUP_NAME" />”</translation>
@@ -6402,6 +6400,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5335370353987155592">Gunakan Gemini dengan berhati-hati dan <ph name="BEGIN_LINK1" />selamat<ph name="LINK_END1" />. Anda bertanggungjawab terhadap tindakan Gemini semasa melaksanakan tugas, termasuk kesilapan dan <ph name="BEGIN_LINK2" />keputusan yang tidak dijangka<ph name="LINK_END2" /> seperti pembelian.</translation>
 <translation id="5336688142483283574">Halaman ini juga akan dialih keluar daripada sejarah dan aktiviti<ph name="SEARCH_ENGINE" /> anda.</translation>
 <translation id="5336689872433667741">Kursor dan pad sentuh</translation>
+<translation id="5337035808300170502">Saiz sebenar</translation>
 <translation id="5337207153202941678">Matikan serlahan</translation>
 <translation id="5337771866151525739">Dipasang oleh pihak ketiga.</translation>
 <translation id="5337926771328966926">Nama semasa peranti ialah <ph name="DEVICE_NAME" /></translation>
@@ -6466,6 +6465,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5388719243178419614">Tidak dapat dimuat naik. Gagal memproses fail imej.</translation>
 <translation id="5388885445722491159">Dipasangkan</translation>
 <translation id="5389224261615877010">Pelangi</translation>
+<translation id="538945906186309152">Hidupkan pintasan papan kekunci Gemini</translation>
 <translation id="5389794555912875905">Berikan amaran sebelum mengakses laman yang tidak selamat (disyorkan)</translation>
 <translation id="5389943529251318913">Kurangkan kelajuan tetikus sebanyak</translation>
 <translation id="5390112241331447203">Sertakan fail system_logs.txt yang dihantar dalam laporan maklum balas.</translation>
@@ -6735,7 +6735,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="556321030400250233">fail setempat atau dikongsi</translation>
 <translation id="5563234215388768762">Cari di Google atau taip URL</translation>
 <translation id="5563824734298958390">Tinggalkan Kumpulan Tab?</translation>
-<translation id="5564450015351086922">Cuba Google Lens Pada iOS</translation>
 <translation id="5565735124758917034">Aktif</translation>
 <translation id="5568069709869097550">Tidak boleh log masuk</translation>
 <translation id="5568525251731145240">Padamkan data dan kebenaran laman untuk <ph name="SITE_NAME" />, semua laman yang ada dalam laman ini dan apl yang dipasang?</translation>
@@ -7938,7 +7937,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6410328738210026208">Tukar saluran dan Powerwash</translation>
 <translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas laman web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
 <translation id="6411135999030237579">Tekan dan tahan untuk mengulangi kekunci secara automatik</translation>
-<translation id="6411516120707127482">Cuba Google Lens Pada Telefon Anda</translation>
 <translation id="6414618057231176439">Pilih versi <ph name="VM_NAME" /> untuk dipasang.</translation>
 <translation id="641469293210305670">Pasang Kemas Kini dan Apl</translation>
 <translation id="6415757856498750027">Taip "w" untuk mendapatkan "ư"</translation>
@@ -7985,7 +7983,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6445450263907939268">Jika anda tidak mahu perubahan ini, anda boleh mengembalikan tetapan anda yang terdahulu.</translation>
 <translation id="6446213738085045933">Buat pintasan desktop</translation>
 <translation id="6447842834002726250">Kuki</translation>
-<translation id="6449835059180426406">Gunakan Kata Laluan Anda Pada Peranti iOS Anda</translation>
 <translation id="6450876761651513209">Ubah tetapan berkaitan privasi anda</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dan 1 tab lain}other{<ph name="PAGE_TITLE" /> dan # tab lain}}</translation>
 <translation id="6451689256222386810">Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" />.</translation>
@@ -8466,6 +8463,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6783036716881942511">Lupakan peranti ini?</translation>
 <translation id="6783667414610055871">Tetapan Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil disokong</translation>
+<translation id="678520006562636090">Cuba Google Lens pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6785594991951195537">Gunakan <ph name="PASSWORD_DOMAIN" /> anda</translation>
 <translation id="6785739405821760313">Melihat meja yang disimpan. Tekan tab untuk menavigasi.</translation>
 <translation id="6785915470941880363">Penatalan songsang <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -8897,7 +8895,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7066572364168923329">Pilih penyediaan <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="7067396782363924830">Warna ambien</translation>
 <translation id="7067725467529581407">Jangan sekali-kali tunjukkan ini lagi.</translation>
-<translation id="7067779359472606732">Peringatan Dihantar kepada <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="7068279399556423026">Log Masuk Untuk Melihat Tab Daripada Peranti Lain</translation>
 <translation id="7068539819344620805">Kini anda boleh memberi penyemak imbas anda rupa baharu pada bila-bila masa melalui menu Sesuaikan Chrome</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> dan beberapa apl lagi disekat pada <ph name="DEVICE_TYPE" /> anda</translation>
@@ -10053,7 +10050,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="786073089922909430">Perkhidmatan: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Muat turun</translation>
 <translation id="7861846108263890455">Bahasa Google Account</translation>
-<translation id="7863211248337747225">Dapatkan apl</translation>
 <translation id="7864114920800968141">Dalam <ph name="NUM_MIN" /> minit</translation>
 <translation id="7864539943188674973">Lumpuhkan Bluetooth</translation>
 <translation id="7864825798076155402">Simpan dalam Google Account anda?</translation>
@@ -10380,7 +10376,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8068904756674285749">Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati. Anda juga boleh bertanya soalan dan mendapatkan jawapan berdasarkan sejarah penyemakan imbas anda. Tetapan dimatikan.</translation>
 <translation id="8070572887926783747">Kebenaran lokasi <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Maklum balas haptik</translation>
-<translation id="8071033114691184017">Gunakan Kata Laluan Ini Pada iPhone Anda</translation>
 <translation id="8071432093239591881">Cetak sebagai imej</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Data apl boleh jadi sebarang data yang telah disimpan oleh apl (berdasarkan tetapan pembangun), termasuk data seperti kenalan, mesej dan foto.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Data sandaran tidak akan ditolak daripada kuota storan Drive anak anda.<ph name="END_PARAGRAPH2" />

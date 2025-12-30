@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1816835383954230954">When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Switch the position to customise your browsing experience</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1881806992065048905">New tab page appearance bottom sheet</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Allowed this time • Precise</translation>
 <translation id="2544997614631598250">Theme colour dark</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
+<translation id="2553552004849639664">Get Chrome's strongest protection against online threats</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -415,6 +417,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5373874281522292782">Your tab groups are saved</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
+<translation id="5407203562970638234">Enhance your security</translation>
 <translation id="5438097262470833822">This choice will reset permissions for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">When on, sites can ask for your location. When off, sites can't see your location.</translation>
 <translation id="5489227211564503167">Elapsed time <ph name="ELAPSED_TIME" /> of <ph name="TOTAL_TIME" />.</translation>

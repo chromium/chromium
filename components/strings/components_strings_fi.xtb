@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja sitten Enteriä, niin voit valita, mitä Chromen tietoja tallennetaan Google-tilillesi</translation>
 <translation id="1122714970786750095">Elektroniikka ja sähkölaitteet</translation>
 <translation id="1123753900084781868">Livetekstitys ei ole juuri nyt käytettävissä</translation>
+<translation id="1124643885833329193">Tarkka sijainti</translation>
 <translation id="112840717907525620">Käytännön välimuisti on OK</translation>
 <translation id="1131264053432022307">Kopioimasi kuva</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Poistu koko näytön tilasta vetämällä yläreunasta ja koskettamalla Takaisin-painiketta</translation>
@@ -893,6 +894,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2400263725572336749">Lisää passi</translation>
 <translation id="2400271059665846158">Hallinnoi kanta-asiakaskortteja Google Walletissa</translation>
 <translation id="2400600116338235695">Saa pyytää lupaa sarjaportteihin yhdistämiseen</translation>
+<translation id="2403474027143565107">Tarkka</translation>
 <translation id="240450251994300576">Toissijainen otsikkologo</translation>
 <translation id="2404884497378469141">Yritä kopioida tiedostot uudelleen</translation>
 <translation id="2413155254802890957">Vanha</translation>
@@ -997,6 +999,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2571488850200220306">Turvallisuuden takaamiseksi se voi myös nähdä laitteen käyttöjärjestelmän, selainversion ja asennetut ohjelmistot</translation>
 <translation id="2573170131138724450">Televisiot</translation>
 <translation id="257674075312929031">Ryhmä</translation>
+<translation id="2577522251608256362">Naapurusto</translation>
 <translation id="2580031090587209073">Jakamisasetukset</translation>
 <translation id="258027838577899739">Poista kaikki historiasta</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> lisäsi välilehden</translation>
@@ -1283,6 +1286,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
 <translation id="3082007635241601060">Salli Googlelle pääsy ostoskoreihisi, jotta se voi löytää sinulle personoituja alennuksia</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" ei ole kelvollinen välityspalvelin.</translation>
 <translation id="3086269988715347183">Et ole aiemmin hyväksynyt tätä: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Toimintaasi verkossa valvotaan</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
@@ -1628,6 +1632,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="361438452008624280">Luettelokohde <ph name="LANGUAGE_ID" />: Kieli on tuntematon tai sitä ei tueta.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tee turvatarkistus Chromen asetuksissa painamalla sarkainta ja sitten Enter</translation>
 <translation id="3615309852743236517">Käsi- ja jalkahoidot</translation>
+<translation id="3620034424637552643">Käytetään usein esimerkiksi reittiohjeisiin ja toimituksiin</translation>
 <translation id="3620239073311576716">Univormut ja työasut</translation>
 <translation id="3621401353678567613">Jos haluat hinnanlaskuilmoituksia seuraamistasi tuotteista, laita ilmoitukset päälle asetuksista.</translation>
 <translation id="362276910939193118">Näytä koko selaushistoria</translation>
@@ -1895,6 +1900,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4036753017940930924">Tontit ja maat</translation>
 <translation id="403724377879219932">Voi pyytää pääsyä muille paikallisessa verkossa oleville laitteille</translation>
 <translation id="4039506337798853114">Saat kohdistimen näkyviin painamalla |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Likimääräinen</translation>
 <translation id="4045070493270310437">Avaa välilehdet uudelleen</translation>
 <translation id="4045226534284799755">Kirjaudu Microsoft-tilillesi ennen kuin yrität uudelleen</translation>
 <translation id="4045441967987592849">Avaa uudelleen</translation>
@@ -3213,6 +3219,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6164605812717770913">Vanhempi tai huoltaja on ilmoittanut, ettet saa käydä tällä sivustolla. Voit pyytää häntä kumoamaan eston.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6167577165590485365">Hakua yritetty viimeksi:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ei ole kelvollinen arvo.</translation>
 <translation id="617256461084925519">Google Chrome yrittää vahvistaa henkilöllisyytesi, jotta se voi täyttää maksutietosi.</translation>
 <translation id="6173208311907792313">Suorita ostos loppuun Windows Hellon avulla</translation>
 <translation id="6176387967264100435">Tämä hinta on korkea</translation>
@@ -3539,6 +3546,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6688851075017682769">Testiosoite maan mukaan</translation>
 <translation id="6689249931105087298">Suhteellinen mustan pisteen pakkauksella</translation>
 <translation id="6689271823431384964">Chrome tarjoaa korttien tallentamista Google-tilillesi, koska olet kirjautuneena sisään. Voit muuttaa tätä koska tahansa asetuksista. Kortinhaltijan nimi on peräisin tililtäsi.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" ei ole kelvollinen kohdemalli.</translation>
 <translation id="6691397311652656001">Vapauta yli <ph name="REQUIRED_FREE_DISK_SPACE" /> tilaa</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja sitten Enter, niin voit käyttää laitteen paikannusta Google-tililläsi</translation>
 <translation id="6695428916538794739">Toiminta‑ ja seikkailuelokuvat</translation>
@@ -4078,7 +4086,6 @@ Lisätietoja:
 <translation id="753556296624075801">Palvelun tarjoaa Google</translation>
 <translation id="753713322968419914">Poistetaanko kotiosoite Chromen automaattisesta täytöstä?</translation>
 <translation id="7537536606612762813">Pakollinen</translation>
-<translation id="7541043894191476250">Kontekstuaaliset tehtävät</translation>
 <translation id="7543525346216957623">Pyydä lupaa vanhemmalta</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> käynnistyy</translation>
 <translation id="7548892272833184391">Yhteysvirheiden korjaaminen</translation>
@@ -4287,6 +4294,7 @@ Lisätietoja:
 <translation id="7870281855125116701">Alennus löydetty</translation>
 <translation id="7871445724586827387">Vaihda Google-tilin salasana</translation>
 <translation id="787226752901403048">Kirjaudu Chromeen, niin voit jakaa välilehtiryhmiä, liittyä niihin ja ideoida yhdessä</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ei ole tunnettu ehtotyyppi.</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
 <translation id="7881044256965445977">Etsi paikallisessa verkossa olevia laitteita ja muodosta niihin yhteys</translation>
@@ -5012,6 +5020,7 @@ Lisätietoja:
 <translation id="9090243919347147717">Liitteet</translation>
 <translation id="9090548458280093580">Hae historiasta tekoälyn avulla</translation>
 <translation id="9090993752571911635">Internetpalveluntarjoajat</translation>
+<translation id="9092305980625216393">Käytetään usein esimerkiksi säätietoihin ja paikallisuutisiin</translation>
 <translation id="9093723786115107672">Yöasut</translation>
 <translation id="9094424186948667194">Pääsy muihin sovelluksiin ja palveluihin tällä laitteella</translation>
 <translation id="9094544726794842788">En tykkää ‑painike avaa lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et pidä näistä tuloksista</translation>

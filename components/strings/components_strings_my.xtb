@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘တဘ်’ ကို နှိပ်ပြီးနောက် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="1122714970786750095">အီလက်ထရွန်းနစ်နှင့် လျှပ်စစ်</translation>
 <translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
+<translation id="1124643885833329193">တည်နေရာ အတိအကျ</translation>
 <translation id="112840717907525620">ပေါ်လစီ ကက်ရှ်အိုကေ</translation>
 <translation id="1131264053432022307">သင်မိတ္တူကူးထားသော ပုံ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ဖန်သားပြင်အပြည့်မှ ထွက်ရန် ထိပ်ဆုံးမှ ဖိဆွဲပြီး နောက်သို့ပြန်သည့် ခလုတ်ကို ထိပါ</translation>
@@ -894,6 +895,7 @@
 <translation id="2400263725572336749">နိုင်ငံကူးလက်မှတ် ထည့်ခြင်း</translation>
 <translation id="2400271059665846158">Google Wallet တွင် သင်၏ ဖောက်သည်ကတ်များကို စီမံနိုင်သည်</translation>
 <translation id="2400600116338235695">အစဉ်လိုက်ပို့တ်များသို့ ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="2403474027143565107">နေရာအတိအကျ</translation>
 <translation id="240450251994300576">ဒုတိယခေါင်းစီး လိုဂို</translation>
 <translation id="2404884497378469141">သင့်ဖိုင်များကို ထပ်မံကူးယူကြည့်ပါ</translation>
 <translation id="2413155254802890957">အဟောင်း</translation>
@@ -998,6 +1000,7 @@
 <translation id="2571488850200220306">လုံခြုံမှုရှိကြောင်း သေချာစေရန်အတွက် ၎င်းသည် ဤစက်၏ OS၊ ဘရောင်ဇာဗားရှင်းနှင့် ထည့်သွင်းထားသောဆော့ဖ်ဝဲတို့ကိုလည်း မြင်နိုင်ပါသည်</translation>
 <translation id="2573170131138724450">ရုပ်မြင်သံကြားစက်</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
+<translation id="2577522251608256362">အိမ်နီးချင်းများ</translation>
 <translation id="2580031090587209073">မျှဝေရန်နည်းလမ်းများ</translation>
 <translation id="258027838577899739">မှတ်တမ်းမှ အားလုံးဖျက်ရန်</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> က တဘ်ထည့်လိုက်သည်</translation>
@@ -1288,6 +1291,7 @@
 <translation id="3076865167425975822">လည်ပတ်သည့်စနစ်</translation>
 <translation id="3080254622891793721">ဂရပ်ဖစ်</translation>
 <translation id="3082007635241601060">ရနိုင်သည့်အခါ ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများရှာရန် Google ကို သင်၏ဈေးခြင်းတောင်းများ သုံးခွင့်ပြုနိုင်သည်</translation>
+<translation id="3085373848068196154">“<ph name="PROXY_INVALID_PROXY" />” သည် မှန်ကန်သော ပရောက်စီ မဟုတ်ပါ။</translation>
 <translation id="3086269988715347183"><ph name="BLOCKED_URL" /> ကို ယခင်က သင်ခွင့်ပြုမထားပါ</translation>
 <translation id="3086579638707268289">ဝဘ်ပေါ်တွင် သင့်လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နေပါသည်</translation>
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
@@ -1628,6 +1632,7 @@
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" စာရင်းထည့်သွင်းမှု- အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသော ဘာသာစကား။</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3615309852743236517">ခြေသည်း လက်သည်း သန့်ရှင်းရေး</translation>
+<translation id="3620034424637552643">ခရီးလမ်းညွှန်ချက်၊ ပို့ဆောင်မှု စသည်တို့အတွက် သုံးလေ့ရှိသည်</translation>
 <translation id="3620239073311576716">တူညီဝတ်စုံနှင့် လုပ်ငန်းခွင်ဝတ်စုံ</translation>
 <translation id="3621401353678567613">သင့်စောင့်ကြည့်သော ကုန်ပစ္စည်းများအတွက် ဈေးကျသည့် သတိပေးချက်များ ရရှိရန် ဆက်တင်များရှိ အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">မြေကွက်၊ ခြံ</translation>
 <translation id="403724377879219932">သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4039506337798853114">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
+<translation id="4042597221652780603">ခန့်မှန်းခြေ</translation>
 <translation id="4045070493270310437">တဘ်များ ပြန်ဖွင့်ရန်</translation>
 <translation id="4045226534284799755">ထပ်မစမ်းမီ သင့် Microsoft အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4045441967987592849">ပြန်ဖွင့်ရန်</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">ဤဝဘ်ဆိုက်ကို သင်ဝင်ကြည့်ရန်မသင့်ဟု မိဘ (သို့) အုပ်ထိန်းသူက ဆိုထားပါသည်။ ၎င်းကို ပြန်ဖွင့်ပေးရန် တောင်းဆိုနိုင်သည်။</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6167577165590485365">ရယူရန် နောက်ဆုံးကြိုးပမ်းချိန်-</translation>
+<translation id="6171968084616623939">“<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />” သည် မှန်ကန်သောတန်ဖိုး မဟုတ်ပါ။</translation>
 <translation id="617256461084925519">သင့်ငွေပေးချေမှု အချက်အလက်တွင် ဖြည့်နိုင်ရန် Google Chrome က သင်ဖြစ်ကြောင်း အတည်ပြုနေသည်။</translation>
 <translation id="6173208311907792313">Windows Hello ဖြင့် ဝယ်ယူမှုကို အပြီးသတ်ပါ</translation>
 <translation id="6176387967264100435">ဤဈေးက များသည်</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">နိုင်ငံအလိုက် စမ်းသပ်လိပ်စာ</translation>
 <translation id="6689249931105087298">အနက်ရောင်အမှတ် အချိုင့်နှင့် အညီ</translation>
 <translation id="6689271823431384964">လက်မှတ်ထိုးဝင်ထားသဖြင့် သင်၏ကတ်များကို သင့် Google အကောင့်တွင် သိမ်းရန် Chrome က ကမ်းလှမ်းထားပါသည်။ ဤလုပ်ဆောင်ပုံကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။ ကတ်ကိုင်ဆောင်သူ အမည်ကို သင့်အကောင့်မှ ရရှိပါသည်။</translation>
+<translation id="6690688090329768424">“<ph name="PROXY_INVALID_DESTINATION" />” သည် မှန်ကန်သော ဦးတည်ရာပုံစံ မဟုတ်ပါ။</translation>
 <translation id="6691397311652656001">နေရာလွတ် <ph name="REQUIRED_FREE_DISK_SPACE" /> ကျော် ပြုလုပ်ပါ</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ Google Account တွင် သင့်စက်ကိုရှာပါ</translation>
 <translation id="6695428916538794739">ဇာတ်ကြမ်း၊ စွန့်စားခန်း ရုပ်ရှင်</translation>
@@ -4077,7 +4085,6 @@
 <translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
 <translation id="753713322968419914">အိမ်လိပ်စာကို Chrome အော်တိုဖြည့်မှ ဖယ်ရှားမလား။</translation>
 <translation id="7537536606612762813">မလုပ်မနေရ</translation>
-<translation id="7541043894191476250">အခြေအနေအလိုက် လုပ်ဆောင်စရာ</translation>
 <translation id="7543525346216957623">သင့်မိဘကို မေးပါ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> စတင်နေသည်</translation>
 <translation id="7548892272833184391">ချိတ်ဆက်မှု အမှားများကို ပြုပြင်ရန်</translation>
@@ -4286,6 +4293,7 @@
 <translation id="7870281855125116701">လျှော့ဈေး တွေ့ထားသည်</translation>
 <translation id="7871445724586827387">သင့် Google Account စကားဝှက် ပြောင်းရန်</translation>
 <translation id="787226752901403048">တဘ်အုပ်စုများ မျှဝေရန်၊ ပါဝင်ရန်နှင့် စိတ်ကူးများ အတူအကောင်အထည်ဖော်ရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” သည် သိထားသော အခြေအနေအမျိုးအစား မဟုတ်ပါ။</translation>
 <translation id="7877007680666472091">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="7878562273885520351">သင့်စကားဝှက် အခိုးခံထားရနိုင်သည်</translation>
 <translation id="7881044256965445977">အိမ်တွင်းကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ရှာဖွေချိတ်ဆက်ပါ</translation>
@@ -5011,6 +5019,7 @@
 <translation id="9090243919347147717">ပူးတွဲပါဖိုင်များ</translation>
 <translation id="9090548458280093580">AI ဖြင့် ပံ့ပိုးထားသော သင့်မှတ်တမ်းကို ရှာပါ</translation>
 <translation id="9090993752571911635">အင်တာနက်ဝန်ဆောင်မှုပေးသူများ (ISP များ)</translation>
+<translation id="9092305980625216393">မိုးလေဝသ၊ ဒေသတွင်းသတင်း စသည်တို့အတွက် သုံးလေ့ရှိသည်</translation>
 <translation id="9093723786115107672">ညအိပ်ဝတ်စုံ</translation>
 <translation id="9094424186948667194">ဤစက်ရှိ အခြားအက်ပ်နှင့် ဝန်ဆောင်မှုများကို သုံးခွင့်</translation>
 <translation id="9094544726794842788">‘လက်မအောက်စိုက်’ ပါက ဤရလဒ်များကို ဘာကြောင့် သင်မနှစ်သက်ကြောင်း အသေးစိတ်တုံ့ပြန်မှု ပေးပို့ရန် ဖောင်ပွင့်လာသည်</translation>

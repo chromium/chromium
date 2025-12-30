@@ -3035,6 +3035,7 @@ Esta política no impide que los usuarios elijan archivos de <ph name="GOOGLE_DR
 <translation id="3030232909811556512">Si inhabilitas esta política, la imagen de avatar de <ph name="PRODUCT_OS_NAME" /> del usuario no podrá establecerse mediante archivos locales, la cámara del dispositivo ni la foto de perfil de Google del usuario.
 
 El usuario puede establecer la imagen de avatar de cualquiera de estas opciones si habilita esta política o no la configura.</translation>
+<translation id="3031370204150460535">Bloquea las integraciones de la app de Gemini para que no actúen directamente en los sitios especificados</translation>
 <translation id="3031796805169553856">Permitir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3032322294267258117">Controla la configuración para los usuarios autenticados mediante GAIA sin SAML.</translation>
 <translation id="3034855514833090741">Si habilitas la política, Asistente de Google mostrará el flujo de Voice Match durante su configuración inicial. Si inhabilitas la política, Asistente de Google no mostrará el flujo de Voice Match durante su configuración inicial.
@@ -4534,6 +4535,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si no se establece, se utilizará el período predeterminado de 259200000 milisegundos (tres días) para los dispositivos con <ph name="PRODUCT_OS_NAME" />.
 
       En el caso de las reversiones y otras actualizaciones de <ph name="PRODUCT_OS_NAME" /> que aplicarán la función Powerwash en el dispositivo, el usuario siempre recibirá una notificación cuando esté disponible, independientemente del valor de esta política.</translation>
+<translation id="4086132065708736174">Permite que las integraciones de la app de Gemini actúen directamente en los sitios especificados</translation>
 <translation id="4086150283035515220">Si habilitas la política, se les preguntará a los usuarios dónde guardar los archivos antes de descargarlos. Si la inhabilitas, las descargas se iniciarán inmediatamente; no se les preguntará a los usuarios dónde guardar los archivos.
 
       Si no estableces la política, los usuarios podrán cambiar esta configuración.</translation>
@@ -9995,6 +9997,13 @@ Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta h
 
           Si no la estableces, la función de corrección de colores estará inhabilitada en un principio, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Permite establecer una lista de patrones de URL que especifique en qué sitios las integraciones de la app de Gemini no pueden actuar directamente en las páginas web.
+
+Las URLs que no coinciden con la lista de entidades permitidas ni con la lista de entidades bloqueadas utilizan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Se permiten las URLs que coinciden con la lista de entidades permitidas y la lista de entidades bloqueadas.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Impedir que Chrome bloquee la navegación a protocolos externos dentro del iframe de la zona de pruebas</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta preservar los tokens de acceso para que el usuario no tenga que volver a acceder.</translation>
 <translation id="7331098674887251788">Permite que las integraciones de la app de Gemini actúen directamente en las páginas web.</translation>
@@ -11171,6 +11180,13 @@ Si el valor se establece como verdadero o no se establece, deben estar en una re
 Si se establece como falso, pueden unirse sin estar en una red administrada.</translation>
 <translation id="8183108371184777472">Impide la ejecución de la ventana del navegador</translation>
 <translation id="8185312100223853315">Etiqueta de perfil</translation>
+<translation id="8186370194423312090">Permite establecer una lista de patrones de URL que especifique en qué sitios las integraciones de la app de Gemini pueden actuar de directamente en las páginas web.
+
+Las URLs que no coinciden con la lista de entidades permitidas ni con la lista de entidades bloqueadas utilizan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Se permiten las URLs que coinciden con la lista de entidades permitidas y la lista de entidades bloqueadas.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Permite que los usuarios hagan comentarios</translation>
 <translation id="8195133650230097559">Ignora las solicitudes de bloqueo de activación para la administración de energía</translation>
 <translation id="8196558469954193908">Esta política permite la integración de la conexión HTTP/2 cuando se usan los certificados de cliente. Para lograr la integración, el nombre de host de la nueva conexión potencial y el de la conexión existente deben coincidir con uno o más patrones descritos en esta política, que está compuesta por una lista de hosts con el siguiente formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" coincide con "example.com" y todos los subdominios (p. ej. "sub.example.com"), mientras que ".example.net" coincide exactamente con "example.net".

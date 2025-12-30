@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium chráni vaše citlivé údaje pomocou funkcie Face ID.</translation>
 <translation id="1591119736686995611">Otvorí mriežku kariet v prehliadači Chromium.</translation>
 <translation id="16001233025397167">Kontrola bezpečnosti vás chráni pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami. Dostávajte upozornenia na všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás Chromium zistí.</translation>
+<translation id="1614362805233822594">Pre zobrazené weby už máte v Správcovi hesiel heslá alebo prístupové kľúče. Vyberte účet, v ktorom sa majú ponechať zobrazené prihlasovacie údaje, čím sa prepíšu údaje v Správcovi hesiel.</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
 <translation id="164952285225495380">Táto zásielka už bola v prehliadači Chromium sledovaná.</translation>
+<translation id="1703338211136118534">Nasledujúce heslá neboli importované do Správcu hesiel, pretože nespĺňajú požiadavky.</translation>
 <translation id="1707458603865303524">Chromium môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
 <translation id="1722370509450468186">Heslo bude uložené do vášho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Prispôsobený feed vytvorený pre vás</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Mapy v prehliadači Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium</translation>
 <translation id="1965068424387304464">Tip pre Chromium: Ukladanie hesiel</translation>
+<translation id="1992653360331625459">Heslá týchto účtov už máte v Správcovi hesiel. Ak importujete jedno z hesiel uvedených nižšie, nahradí existujúce.</translation>
 <translation id="2006345422933397527">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="2042889939382983733">Zobraziť históriu prehliadača Chromium</translation>
 <translation id="2052320862053429062">Chromium pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené.
 
 Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
+<translation id="2334943301233020675">Nasledujúce prístupové kľúče neboli importované do Správcu hesiel, pretože nespĺňajú požiadavky.</translation>
 <translation id="2337722506862731008">Zdieľať Chromium</translation>
 <translation id="2340423701577464731">Pridanie položky čitateľského zoznamu do prehliadača Chromium</translation>
 <translation id="2374627437126809292">Chromium vám pomocou Máp Google poskytuje trasy a miestne informácie o rozpoznaných adresách.</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Amathiphu e-Chrome</translation>
 <translation id="1816835383954230954">Uma ivuliwe, iChrome isebenza ngokushesha futhi izakhi ezisebenzisa iJavaScript kufanele zisebenze ngendlela eziklanywe ngayo. Uma ivaliwe, lokhu kunciphisa ukusebenza kodwa kwenza i-V8 imelane kakhulu nokuhlaselwa.</translation>
 <translation id="1818308510395330587">Ukuze uvumele i-<ph name="APP_NAME" /> isebenzise i-AR, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Shintsha isikhundla ukuze ubhrawuze izinto ezivumelana nomuntu siqu</translation>
 <translation id="1848033246551405023">Ifonti yeSans Serif</translation>
 <translation id="1861262398884155592">Le folda ayinalutho</translation>
 <translation id="1881806992065048905">Ukubonakala kweshidi eliphansi ekhasini lethebhu entsha</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Kuvunyelwe ngalesi sikhathi • Kunembile</translation>
 <translation id="2544997614631598250">Itimu yombala omnyama</translation>
 <translation id="2546283357679194313">Amakhukhi nedatha yesayithi</translation>
+<translation id="2553552004849639664">Thola ukuvikeleka okuqine kakhulu kweChrome ezinsongweni eziku-inthanethi</translation>
 <translation id="2570922361219980984">Ukufinyelela endaweni nakho kuvalelwe le divayisi. Kuvule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Inwetshiwe - chofoza ukuze ugoqe.</translation>
 <translation id="2586657967955657006">Ibhodi lokumanathisela</translation>
@@ -415,6 +417,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="5373874281522292782">Amaqembu wakho wamathebhu alondoloziwe</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 okuningi)}one{(+ # okuningi)}other{(+ # okuningi)}}</translation>
 <translation id="5403592356182871684">Amagama</translation>
+<translation id="5407203562970638234">Thuthukisa ukuzivikela</translation>
 <translation id="5438097262470833822">Le nketho izosetha kabusha izimvume ze-<ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Lapho ivuliwe, amasayithi angacela indawo yakho. Lapho ivaliwe, amasayithi awakwazi ukubona indawo yakho.</translation>
 <translation id="5489227211564503167">Isikhathi esidlulile singu-<ph name="ELAPSED_TIME" /> kwesingu-<ph name="TOTAL_TIME" />.</translation>

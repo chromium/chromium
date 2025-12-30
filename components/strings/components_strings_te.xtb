@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీరు సేవ్ చేసే Chrome సమాచారాన్ని మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1122714970786750095">ఎలక్ట్రానిక్స్ &amp; ఎలక్ట్రికల్</translation>
 <translation id="1123753900084781868">ప్రస్తుతానికి లైవ్ క్యాప్షన్ అందుబాటులో లేదు</translation>
+<translation id="1124643885833329193">సరైన లొకేషన్</translation>
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
 <translation id="1131264053432022307">మీరు కాపీ చేసిన చిత్రం</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అవ్వడానికి, పైనుండి లాగి, వెనుక బటన్‌ను తాకండి</translation>
@@ -888,6 +889,7 @@
 <translation id="2400263725572336749">పాస్‌పోర్ట్‌ను జోడించండి</translation>
 <translation id="2400271059665846158">Google Walletలో మీ లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2400600116338235695">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="2403474027143565107">ఖచ్చితమైన లొకేషన్</translation>
 <translation id="240450251994300576">రెండవ హెడర్ లోగో</translation>
 <translation id="2404884497378469141">మీ ఫైళ్లను మళ్లీ కాపీ చేయడానికి ట్రై చేయండి</translation>
 <translation id="2413155254802890957">పాతది</translation>
@@ -992,6 +994,7 @@
 <translation id="2571488850200220306">సెక్యూరిటీని నిర్ధారించడంలో సహాయపడటానికి, ఇది పరికరం OS, బ్రౌజర్ వెర్షన్‌ను, ఏ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేయబడిందో కూడా చూడగలదు</translation>
 <translation id="2573170131138724450">టెలివిజన్‌లు</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
+<translation id="2577522251608256362">పరిసరాలు</translation>
 <translation id="2580031090587209073">షేరింగ్ ఆప్షన్‌లు</translation>
 <translation id="258027838577899739">హిస్టరీ నుండి అన్నీ తొలగించండి</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను జోడించారు</translation>
@@ -1278,6 +1281,7 @@
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
 <translation id="3082007635241601060">వ్యక్తిగతీకరించిన డిస్కౌంట్‌లు అందుబాటులో ఉన్నప్పుడు కనుగొనడానికి, మీ కార్ట్‌లను ఉపయోగించడానికి Googleకు అనుమతినివ్వండి</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" అనేది చెల్లుబాటు అయ్యే ప్రాక్సీ కాదు.</translation>
 <translation id="3086269988715347183">మీరు ఇంతకు ముందు <ph name="BLOCKED_URL" />‌ను ఆమోదించలేదు</translation>
 <translation id="3086579638707268289">వెబ్‌లో మీ యాక్టివిటీ పర్యవేక్షించబడుతోంది</translation>
 <translation id="3087734570205094154">దిగువ</translation>
@@ -1622,6 +1626,7 @@
 <translation id="361438452008624280">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": తెలియని లేదా మద్దతు లేని భాష.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Tab'ను నొక్కి ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3615309852743236517">మ్యానిక్యూర్‌లు &amp; పెడిక్యూర్‌లు</translation>
+<translation id="3620034424637552643">తరచుగా దిశలు, డెలివరీలు, మరిన్నింటి కోసం ఉపయోగిస్తారు</translation>
 <translation id="3620239073311576716">యూనిఫామ్‌లు &amp; పనికి వెళ్లేటపుడు వేసుకునే దుస్తులు</translation>
 <translation id="3621401353678567613">మీరు ట్రాక్ చేసే ప్రోడక్ట్‌లకు సంబంధించిన ధర తగ్గుదల అలర్ట్‌లను పొందడానికి, సెట్టింగ్‌లలో నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="362276910939193118">పూర్తి హిస్టరీని చూపించు</translation>
@@ -1889,6 +1894,7 @@
 <translation id="4036753017940930924">స్థలాలు &amp; భూములు</translation>
 <translation id="403724377879219932">మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయమని అడగవచ్చు</translation>
 <translation id="4039506337798853114">మీ కర్సర్‌ను చూపడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
+<translation id="4042597221652780603">రమారమి లొకేషన్</translation>
 <translation id="4045070493270310437">ట్యాబ్‌లను మళ్లీ తెరవండి</translation>
 <translation id="4045226534284799755">మళ్లీ ట్రై చేయడానికి ముందు మీ Microsoft ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="4045441967987592849">మళ్లీ తెరవండి</translation>
@@ -3207,6 +3213,7 @@
 <translation id="6164605812717770913">తల్లి/తండ్రి లేదా గార్డియన్ ఈ సైట్ మీరు సందర్శించడానికి సరైనది కాదని అన్నారు. మీరు దీన్ని అన్‌బ్లాక్ చేయమని వారిని అడగవచ్చు.</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6167577165590485365">చివరిగా పొందడానికి ప్రయత్నించింది:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" అనేది చెల్లుబాటు అయ్యే విలువ కాదు.</translation>
 <translation id="617256461084925519">ఇది మీరేనని వెరిఫై చేయడానికి Google Chrome ట్రై చేస్తోంది, తద్వారా దీనిని మీ పేమెంట్ సమాచారంలో ఫిల్ చేయవచ్చు.</translation>
 <translation id="6173208311907792313">Windows Helloను ఉపయోగించి మీ కొనుగోలును పూర్తి చేయండి</translation>
 <translation id="6176387967264100435">ఈ ధర అధికంగా ఉంది</translation>
@@ -3533,6 +3540,7 @@
 <translation id="6688851075017682769">దేశం వారీగా అడ్రస్‌ను టెస్ట్ చేయండి</translation>
 <translation id="6689249931105087298">సంబంధిత బ్లాక్ పాయింట్ కంప్రెషన్</translation>
 <translation id="6689271823431384964">మీరు సైన్ ఇన్ చేసి ఉన్నందున, మీ కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేసుకోగల అవకాశాన్ని Chrome మీకు అందిస్తోంది. మీరు సెట్టింగ్‌లలో ఈ ప్రవర్తనను మార్చవచ్చు. కార్డుదారుడి పేరు మీ ఖాతా నుండి అందించబడింది.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" అనేది చెల్లుబాటు అయ్యే గమ్యస్థాన ప్యాటర్న్ కాదు.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> కంటే ఎక్కువ స్పేస్‌ను క్లియర్ చేయండి</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ఖాతాలో మీ పరికరాన్ని కనుగొనడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6695428916538794739">యాక్షన్ &amp; అడ్వెంచర్ సినిమాలు</translation>
@@ -4072,7 +4080,6 @@
 <translation id="753556296624075801">Google అందిస్తోంది</translation>
 <translation id="753713322968419914">Chrome ఆటోఫిల్ నుండి ఇంటి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="7537536606612762813">తప్పనిసరి</translation>
-<translation id="7541043894191476250">సందర్భోచితమైన టాస్క్‌లు</translation>
 <translation id="7543525346216957623">మీ తల్లి/తండ్రిని అడగండి</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ప్రారంభమవుతోంది</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>
@@ -4281,6 +4288,7 @@
 <translation id="7870281855125116701">డిస్కౌంట్ కనుగొనబడింది</translation>
 <translation id="7871445724586827387">మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చండి</translation>
 <translation id="787226752901403048">Chromeకు సైన్ ఇన్ చేసి ట్యాబ్ గ్రూప్‌లలో షేర్ చేయండి, చేరండి, వచ్చిన ఐడియాలపై కలిసి పని చేయండి</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" అనేది తెలిసిన కండీషన్ రకం కాదు.</translation>
 <translation id="7877007680666472091">సురక్షితమైన కంటెంట్ IDలు</translation>
 <translation id="7878562273885520351">మీ పాస్‌వర్డ్ ఎవరికైనా తెలిసిపోయి ఉండవచ్చు</translation>
 <translation id="7881044256965445977">సెర్చ్ చేసి, మీ లోకల్ నెట్‌వర్క్‌లో ఏదైనా పరికరానికి కనెక్ట్ చేయండి</translation>
@@ -5005,6 +5013,7 @@
 <translation id="9090243919347147717">అటాచ్‌మెంట్‌లు</translation>
 <translation id="9090548458280093580">AI సహాయంతో మీ బ్రౌజింగ్ హిస్టరీని సెర్చ్ చేయండి</translation>
 <translation id="9090993752571911635">ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు (ISPలు)</translation>
+<translation id="9092305980625216393">తరచుగా వాతావరణం, లోకల్ వార్తలు, ఇంకా మరిన్నింటి కోసం ఉపయోగిస్తారు</translation>
 <translation id="9093723786115107672">నైట్ డ్రెస్</translation>
 <translation id="9094424186948667194">ఈ డివైజ్‌లోని ఇతర యాప్‌లను, సర్వీస్‌లను యాక్సెస్ చేయండి</translation>
 <translation id="9094544726794842788">మీరు ఈ ఫలితాలను ఎందుకు డిస్‌లైక్ చేశారు అనే దాని గురించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను పంపడానికి 'బాగా లేదు' ఆప్షన్ మీ కోసం ఫారమ్‌ను తెరుస్తుంది</translation>

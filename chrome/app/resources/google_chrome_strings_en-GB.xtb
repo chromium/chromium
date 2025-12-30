@@ -89,6 +89,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1880677175115548835">Select text</translation>
+<translation id="1896602904211344018">Get the Chrome app</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
 <translation id="1979600810166324878">Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS</translation>
@@ -275,6 +276,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3906096710440765802">Sign in to Chrome to get your passwords, bookmarks and more on all your devices</translation>
+<translation id="3921132130819999051">Let Chrome browse for you</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="395904275706073188">Protected pages can't be read. Try a different page.</translation>
 <translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
 <translation id="5166439563123238795">Chrome needs permission to track your hands</translation>
 <translation id="5167819546851111585">What's on your mind today?</translation>
+<translation id="5169778651486082413">Use your passwords with Chrome on your phone</translation>
 <translation id="5170938038195470297">Your profile cannot be used because it is from a newer version of Google Chrome.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
@@ -408,7 +411,6 @@ Some features may be unavailable. Please specify a different profile directory o
 Google Chrome is unable to recover your settings.</translation>
 <translation id="5465210843490471889">Choose a Chrome profile to use with <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">To help improve these features, Chrome sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
-<translation id="5510398294750420479">Download Chrome on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Make Chrome Faster</translation>
 <translation id="5550137307985173298">Click the Customise Chrome button on the new tab page to give Chrome a new look</translation>
@@ -464,6 +466,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6008161919456049856">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
 <translation id="6009821354356307391">Ask a follow-up</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
+<translation id="6018578474045062808">Try Google Lens with Chrome on your phone</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6025087594896450715">Google Chrome will restart in <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Close</translation>
@@ -486,6 +489,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">This tab is using extra resources. To improve your performance, let Chrome make it inactive.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
+<translation id="6183773856988300112">Gemini in Chrome uses auto-browse to work in your tabs and complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Your account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chrome works.
 
@@ -512,6 +516,8 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6426623519983252346">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chrome iOS.</translation>
 <translation id="6434035853014503219">Thanks for choosing Chrome as your default browser!</translation>
+<translation id="6438015621983209660">Extend Enhanced Safe Browsing with Chrome on your phone</translation>
+<translation id="6442774133615368941">Shop, translate and identify what you see with your camera on the Chrome iOS app</translation>
 <translation id="6473905796280459355">Go to the About Chrome page</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
@@ -649,6 +655,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7832314606810669113">To get your bookmarks and more on all your devices, sign in to Chrome. This bookmark will be saved in your Google Account after you sign in.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continue where you left off: Chrome can restore your tabs every time you restart. To turn this on, go to</translation>
+<translation id="7869620795354551924">To use your saved passwords, follow the QR code, download Chrome for iOS and sign in to your Google Account</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
 <translation id="7887929410013642057">Always show AI Mode shortcuts</translation>

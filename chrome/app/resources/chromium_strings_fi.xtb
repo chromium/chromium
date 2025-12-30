@@ -220,9 +220,11 @@
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Tilisi Chromium-data</translation>
 <translation id="3369405342922656244">Hae tältä sivulta kuvahaulla</translation>
+<translation id="3375770072980084583">Käytä salasanoja Chromiumin avulla puhelimella</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3406848076815591792">Vaihdetaanko nykyiseen Chromium-profiiliin?</translation>
 <translation id="3412460710772753638">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
+<translation id="3455907671758333080">Laajenna parannettua selaussuojaa Chromiumin avulla puhelimella</translation>
 <translation id="3461644266919055473">Muokataan Chromiumia…</translation>
 <translation id="347328004046849135">Chromium ilmoittaa, kun kirjaudut sisään vaarantuneella salasanalla</translation>
 <translation id="3474745554856756813">Tämä poistaa <ph name="ITEMS_COUNT" /> kohdetta pysyvästi laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
@@ -249,6 +251,7 @@
 <translation id="3798048725356732506">Chromium-profiilien avulla voit pitää eri elämänalueet erillään. Lisää uusi profiili nyt.</translation>
 <translation id="3802055581630249637">Chromium esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
+<translation id="3823384748599722168">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chromium iOS:lle ja kirjaudu sisään Google-tilille</translation>
 <translation id="3846683726093018685">**Tee yhteenveto:** Kuvaile kuvakaappauksen sisällön ensisijaista aihetta ja tarkoitusta yhdellä alle 30 sanan lauseella.
 
           **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>
@@ -324,6 +327,7 @@
 <translation id="4548534452171747496">Chromium esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Olet kirjautunut Chromeen tilillä <ph name="USER_EMAIL_ADDRESS" />. Nyt voit käyttää kirjanmerkkejäsi, historiaa ja muita asetuksia kaikilla laitteilla, joihin olet kirjautunut.</translation>
 <translation id="4570813286784708942">Chromium on estänyt tämän latauksen, koska laitoit Selaussuojan pois päältä eikä tiedostoa voi vahvistaa</translation>
+<translation id="4583692638088316420">Kokeile Google Lensia Chromiumin avulla puhelimella</translation>
 <translation id="4594305310729380060">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
 <translation id="459535195905078186">Chromium-sovellukset</translation>
 <translation id="4598116752460667024">Hae mitä tahansa prosessia listalta.</translation>
@@ -355,6 +359,7 @@
 <translation id="4987820182225656817">Vierailijat voivat käyttää Chromiumia jälkiä jättämättä.</translation>
 <translation id="4992938037305302429">Tilisi Chromiumissa</translation>
 <translation id="4994636714258228724">Lisää itsesi Chromiumiin</translation>
+<translation id="5083712646171654472">Gemini in Chromium käyttää automaattista selausta, jotta se voi toimia välilehdilläsi ja hoitaa sille antamiasi tehtäviä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium tarvitsee luvan käsien liikkeen seuraamiseen</translation>
 <translation id="5141988424377517949">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Mitä mielessä tänään?</translation>
@@ -367,6 +372,7 @@
 <translation id="5254739261293693943">Kysy tästä videosta</translation>
 <translation id="5277894862589591112">Ota muutokset käyttöön käynnistämällä Chromium uudelleen</translation>
 <translation id="5286907366254680517">Tunnistettu</translation>
+<translation id="5289287148052354622">Lataa Chromium-sovellus</translation>
 <translation id="5294316920224716406">Kun selaat incognito-tilassa, Chromium varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
 <translation id="5313228254328109263">Chromiumin sisäinen päivityspalvelu</translation>
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
@@ -581,6 +587,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7617377681829253106">Chromium on nyt entistä parempi</translation>
 <translation id="7622753900276619808">Chromiumissa on nyt enemmän ominaisuuksia</translation>
 <translation id="7649070708921625228">Ohje</translation>
+<translation id="7656340475565475526">Anna Chromiumin selata puolestasi</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7686590090926151193">Chromium ei ole oletusselain.</translation>
 <translation id="7689606757190482937">Voit synkronoida Chromiumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
@@ -606,7 +613,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7888981273428720788">Valitse Chromium oletusselaimeksi</translation>
 <translation id="7934340546140346950">Chromium päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
-<translation id="7953047982688951904">Lataa Chromium puhelimelle, niin saat lisäsuojaa ollessasi liikkeellä</translation>
 <translation id="7975919845073681630">Tämä on Chromiumin toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
 <translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Selain</translation>
@@ -633,6 +639,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8254601181414348851">Haluatko kirjautua Chromiumiin uudella profiililla?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
 <translation id="8295827201165805317">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti tämän luvan: <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran avulla Chromiumin iOS-sovelluksen avulla</translation>
 <translation id="8313851650939857356">Käynnistysvirhe: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Kun Chromium on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>
 <translation id="8321888067342493336">Tallenna kuvana</translation>

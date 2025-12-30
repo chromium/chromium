@@ -2905,6 +2905,7 @@ Cette règle n'empêche pas les utilisateurs de choisir des fichiers dans <ph na
 <translation id="3030232909811556512">Si cette règle est désactivée, l'image d'avatar <ph name="PRODUCT_OS_NAME" /> de l'utilisateur ne peut pas être définie à partir de fichiers locaux, de l'appareil photo ou de la photo du profil Google de l'utilisateur.
 
 Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir l'image d'avatar à l'aide de ces options.</translation>
+<translation id="3031370204150460535">Empêcher les intégrations de l'appli Gemini d'agir directement sur les sites spécifiés</translation>
 <translation id="3031796805169553856">Autoriser l'envoi des modules WebAssembly en multi-origine</translation>
 <translation id="3032322294267258117">Permet de contrôler les paramètres des utilisateurs authentifiés via GAIA sans SAML.</translation>
 <translation id="3034855514833090741">Si la règle est activée, la procédure Voice Match pour l'Assistant Google s'affiche lors de la configuration initiale. Si la règle est désactivée, la procédure Voice Match pour l'Assistant Google ne s'affiche pas lors de la configuration initiale.
@@ -4359,6 +4360,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si cette règle n'est pas définie, le délai par défaut est fixé à 259 200 000 millisecondes (trois jours) pour les appareils <ph name="PRODUCT_OS_NAME" />.
 
       Pour le rollback et les autres mises à jour de <ph name="PRODUCT_OS_NAME" /> qui effectuent un Powerwash de l'appareil, l'utilisateur est toujours averti dès que la mise à jour est disponible, indépendamment de la valeur de cette règle.</translation>
+<translation id="4086132065708736174">Autoriser les intégrations de l'appli Gemini à agir directement sur les sites spécifiés</translation>
 <translation id="4086150283035515220">Si cette règle est activée, les utilisateurs doivent toujours spécifier le répertoire de destination d'un fichier avant de le télécharger. Si cette règle est désactivée, le téléchargement commence immédiatement. Les utilisateurs n'ont pas besoin de spécifier une destination.
 
       Si cette règle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -9566,6 +9568,13 @@ Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, 
 
           Si cette règle n'est pas configurée, la fonctionnalité de correction des couleurs est initialement désactivée, mais l'utilisateur peut l'activer à tout moment.</translation>
 <translation id="7323896582714668701">Paramètres de ligne de commande supplémentaires pour <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Permet de définir une liste de formats d'URL indiquant les sites sur lesquels les intégrations de l'appli Gemini ne peuvent pas agir directement sur les pages Web.
+
+Les URL qui ne correspondent ni à la liste d'autorisation, ni à la liste de blocage utilisent <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Les URL correspondant à la fois à la liste d'autorisation et à la liste de blocage sont autorisées.
+
+Pour en savoir plus sur les formats d‘URL valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Empêcher Chrome de bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7326394567531622570">Semblable à l'option "Nettoyer" (valeur 2), celle-ci essaie de conserver les jetons de connexion pour éviter à l'utilisateur de devoir se reconnecter.</translation>
 <translation id="7331098674887251788">Autorise les intégrations de l'appli Gemini à agir directement sur les pages Web</translation>
@@ -10705,6 +10714,13 @@ Si la règle est définie sur "True" ou n'est pas configurée, les appareils doi
 Si la règle est définie sur "False", les utilisateurs peuvent rejoindre une session sans être connectés à un réseau géré.</translation>
 <translation id="8183108371184777472">Empêcher l'ouverture de la fenêtre du navigateur</translation>
 <translation id="8185312100223853315">Libellé du profil</translation>
+<translation id="8186370194423312090">Permet de définir une liste de formats d'URL indiquant les sites sur lesquels les intégrations de l'appli Gemini peuvent agir directement sur les pages Web.
+
+Les URL qui ne correspondent ni à la liste d'autorisation, ni à la liste de blocage utilisent <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Les URL correspondant à la fois à la liste d'autorisation et à la liste de blocage sont autorisées.
+
+Pour en savoir plus sur les formats d‘URL valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Autoriser les commentaires des utilisateurs</translation>
 <translation id="8195133650230097559">Ignorer les demandes de wakelocks pour la gestion de l'alimentation</translation>
 <translation id="8196558469954193908">Permet de procéder au multiplexage des connexions HTTP/2 lorsque des certificats client sont utilisés. Pour ce faire, le nom d'hôte de la nouvelle connexion potentielle et celui d'une connexion existante doivent correspondre à un ou plusieurs modèles définis par cette règle. Celle-ci permet d'établir la liste des hôtes selon le format de filtrage <ph name="URL_BLOCKLIST_POLICY_NAME" />, où une correspondance est établie entre "example.com" et "example.com" (et tous les sous-domaines tels que "sub.example.com"), tandis que ".example.net" correspond exactement à "example.net".

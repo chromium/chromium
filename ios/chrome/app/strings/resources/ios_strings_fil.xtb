@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Hindi ma-save ang iyong pagbabago.</translation>
 <translation id="3254806613790954367">Ang iyong huling nakabukas na tab sa lahat ng device mo</translation>
 <translation id="325717987950204592">I-tap ang "Privacy at Seguridad"</translation>
-<translation id="3266338926702638258">Ipakita ang history ng presyo para sa produktong ito</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">I-hide ang Mga kamakailang tab</translation>
 <translation id="4578835633387306383">I-on…</translation>
 <translation id="4580716718466706433">Pumunta sa "Password Manager"</translation>
+<translation id="4585751637295612750">Magbukas ng bagong tab para idagdag ito sa iyong tanong</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4592672037257622855">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin}one{Naidagdag ang {count} page sa iyong listahan ng babasahin}other{Naidagdag ang {count} na page sa iyong listahan ng babasahin}}</translation>
 <translation id="459644946100970322">I-on ang mga alerto sa presyo?</translation>

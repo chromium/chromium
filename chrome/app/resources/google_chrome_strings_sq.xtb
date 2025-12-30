@@ -274,6 +274,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3889417619312448367">Çinstalo Google Chrome</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3906096710440765802">Identifikohu në Chrome për të marrë fjalëkalimet, faqeshënuesit dhe më shumë në të gjitha pajisjet e tua</translation>
+<translation id="3921132130819999051">Lejo që Chrome të shfletojë për ty</translation>
 <translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="395904275706073188">Faqet e mbrojtura nuk mund të lexohen. Provo një faqe tjetër.</translation>
 <translation id="3968962723676998462">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
@@ -407,7 +408,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="5465210843490471889">Zgjidh një profil të Chrome për ta përdorur me <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Për të ndihmuar në përmirësimin e këtyre veçorive, Chrome i dërgon Google ndërveprimet e tua me të. Këto të dhëna mund të lexohen, të përpunohen dhe të shënohen nga shqyrtues njerëzorë.</translation>
-<translation id="5510398294750420479">Shkarko Chrome në telefon për të shtuar një shtresë shtesë mbrojtjeje kur je në lëvizje</translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Bëje Chrome më të shpejtë</translation>
 <translation id="5550137307985173298">Kliko te butoni "Personalizo Chrome" në faqen e skedës së re për t'i dhënë Chrome një pamje të re</translation>
@@ -485,6 +485,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Kjo skedë po përdor burime shtesë. Për të përmirësuar performancën tënde, lejo që Chrome ta bëjë atë joaktive.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
+<translation id="6183773856988300112">Gemini në Chrome përdor shfletimin automatik për të punuar në skedat e tua dhe për të përfunduar detyrat që ti i jep. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Llogaria jote në Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chrome.
 

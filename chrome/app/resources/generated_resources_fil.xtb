@@ -196,6 +196,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1124772482545689468">User</translation>
 <translation id="1125371304736839151">Ipakita ang Gemini sa itaas ng browser</translation>
 <translation id="1125550662859510761">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
+<translation id="1125816658532547876">Gamitin ang iyong mga password sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="1125921926864945797">Wallpaper at istilo</translation>
 <translation id="1128591060186966949">I-edit ang search engine</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -566,6 +567,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1372841398847029212">I-sync sa iyong account</translation>
 <translation id="1373176046406139583">Kinokontrol ng pagiging visible ng device mo kung sino ang puwedeng magbahagi sa iyo habang naka-unlock ang screen mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Ang certificate na kinakailangan ng network na "<ph name="NETWORK_NAME" />" ay maaaring hindi naka-install o wala nang bisa.  Mangyaring kumuha ng isang bagong certificate at subukang kumonekta muli.</translation>
+<translation id="1374948751106271187">Magkaroon ng dagdag na layer ng proteksyon kapag on the go ka</translation>
 <translation id="1375557162880614858">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Tapos na ang pag-set up! Sunod na ihanda ang iyong device para sa gaming</translation>
 <translation id="137651782282853227">Lalabas dito ang mga na-save na address</translation>
@@ -992,7 +994,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1650801028905250434">Awtomatikong masi-sync sa Chromebook mo ang iyong mga file sa Aking Drive para ma-access mo ang mga ito nang walang koneksyon sa internet. Puwede mo itong baguhin sa anumang oras sa Mga Setting &gt; Mga File.</translation>
 <translation id="1651008383952180276">Dapat mong ilagay ang katulad na passphrase nang dalawang beses</translation>
 <translation id="1651609627703324721">Nagpe-present ang tab na ito ng VR content sa isang headset</translation>
-<translation id="1651633344379798952">Subukan ang Google Lens sa iyong telepono</translation>
 <translation id="1652281434788353738">Thoughtful</translation>
 <translation id="1652326691684645429">I-enable ang Nearby Share</translation>
 <translation id="1652862280638399816">Para magamit ang Password Manager sa macOS Keychain, ilunsad ulit ang Chromium at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
@@ -1222,7 +1223,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1808805149659872686">Bagong entry</translation>
 <translation id="1809201888580326312">Pinili mong huwag i-save ang mga password para sa mga site at app na ito</translation>
 <translation id="1809734401532861917">Idagdag ang aking mga bookmark, history, mga password, at iba pang setting sa <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para magamit ang iyong mga naka-save na password sa telepono mo, sundan ang QR code, i-download ang Chrome para sa iOS, at mag-sign in sa iyong Google Account.</translation>
 <translation id="1810366086647840386">Image Server</translation>
 <translation id="1811908311154949291">Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">Hindi makapagpatuloy ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1269,6 +1269,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="183445248400150852">Ginagamit ng mga site ang feature na ito para i-override ang input ng iyong keyboard, gaya sa mga laro o remote na desktop app</translation>
 <translation id="1834503245783133039">Hindi na-download: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Ina-upgrade ang Linux</translation>
+<translation id="1837292628323740716">Pahusayin ang Ligtas na Pag-browse sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Tinanggihan ng Microsoft OneDrive ang request. Pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1839021455997460752">Ang iyong email address</translation>
@@ -1783,6 +1784,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2184272387334793084">Mag-sign in para makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>
 <translation id="2184515124301515068">Hayaan ang Chrome na pumili kung kailan makakapag-play ng tunog ang mga site (inirerekomenda)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Magsimula ng bagong chat sa Gemini</translation>
 <translation id="2186711480981247270">Ibinahaging page mula sa ibang device</translation>
 <translation id="2187675480456493911">Naka-sync sa iba pang device sa iyong account. Hindi masi-sync ang mga setting na binago ng iba pang user. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Na-update ang mga extension</translation>
@@ -2444,6 +2446,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2627424346328942291">Hindi maibahagi</translation>
 <translation id="2628258844236035475">Alisin ang iyong address ng tahanan sa autofill sa Chrome?</translation>
 <translation id="2628770867680720336">Kinakailangang i-factory reset ang Chromebook na ito para ma-enable ang pag-debug ng ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Magsimula ng Bagong Chat sa Gemini</translation>
 <translation id="2629227353894235473">Mag-develop ng mga Android app</translation>
 <translation id="2629437048544561682">I-clear ang Canvas</translation>
 <translation id="2631498379019108537">Ipakita ang mga opsyon sa pag-input sa shelf</translation>
@@ -3376,7 +3379,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3269612321104318480">Light teal at puti</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}one{# file}other{# na file}}</translation>
 <translation id="3270965368676314374">Basahin, baguhin at i-delete ang mga larawan, musika at iba pang media sa iyong computer</translation>
-<translation id="3273033807960054795">I-extend ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="3275464924531706548">I-collapse ang <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Kasalukuyang hindi secure ang iyong internal na security key. Pakialis ito sa anumang serbisyo kung saan mo ito ginamit. Para lutasin ang isyu, paki-reset ang security key.</translation>
 <translation id="3275778913554317645">Buksan bilang window</translation>
@@ -5104,7 +5106,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4421932782753506458">Mingming</translation>
 <translation id="4423376891418188461">I-restore ang Mga Setting</translation>
 <translation id="4423525817792153232">Ipakita ang lahat ng iyong ngipin</translation>
-<translation id="4424107154724312436">Subukan ang Google Lens sa iOS</translation>
 <translation id="4424262960694990728">Kailangan ng aksyon</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Posibleng kasama sa mga ulat na ito ang mga bagay gaya kung kailan nagka-crash ang ChromeOS, aling mga feature ang ginamit, at kung gaano kalaking memory ang karaniwang nagamit.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihinto ang pagpayag sa mga ulat na ito anumang oras sa mga setting ng iyong Chrome device. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" /></translation>
@@ -5582,7 +5583,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4767427586072640478">Matuto pa tungkol sa mga naka-disable na extension.</translation>
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4770119228883592393">Humiling ng pahintulot, pindutin ang ⌘ + Option + Pababang arrow para tumugon</translation>
-<translation id="4770755495532014179">Gamitin ang password na ito sa iyong iPhone</translation>
 <translation id="4772914216048388646">Maayos</translation>
 <translation id="4773112038801431077">I-upgrade ang Linux</translation>
 <translation id="4773122030389014189">I-share ang grupo ng tab na “<ph name="GROUP_NAME" />”</translation>
@@ -6401,6 +6401,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5335370353987155592">Gamitin ang Gemini nang maingat at <ph name="BEGIN_LINK1" />ligtas<ph name="LINK_END1" />. Ikaw ang responsable sa mga aksyon ng Gemini habang may ginagawa, kabilang ang mga pagkakamali at <ph name="BEGIN_LINK2" />hindi inaasahang resulta<ph name="LINK_END2" /> tulad ng mga pagbili.</translation>
 <translation id="5336688142483283574">Aalisin din ang page na ito sa iyong history at aktibidad sa <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor at touchpad</translation>
+<translation id="5337035808300170502">Aktwal na laki</translation>
 <translation id="5337207153202941678">I-off ang highlight</translation>
 <translation id="5337771866151525739">Na-install ng third party.</translation>
 <translation id="5337926771328966926">Ang <ph name="DEVICE_NAME" /> ang kasalukuyang device</translation>
@@ -6465,6 +6466,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5388719243178419614">Hindi ma-upload. Hindi maiproseso ang image file.</translation>
 <translation id="5388885445722491159">Ipinares</translation>
 <translation id="5389224261615877010">Bahaghari</translation>
+<translation id="538945906186309152">I-on ang keyboard shortcut ng Gemini</translation>
 <translation id="5389794555912875905">Makakita ng mga babala bago makapunta sa mga hindi secure na site (inirerekomenda)</translation>
 <translation id="5389943529251318913">Bawasan ang bilis ng mouse nang</translation>
 <translation id="5390112241331447203">Isama ang file na system_logs.txt na ipinadala sa mga feedback report.</translation>
@@ -6734,7 +6736,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="556321030400250233">lokal o nakabahaging file</translation>
 <translation id="5563234215388768762">Maghanap sa Google o mag-type ng URL</translation>
 <translation id="5563824734298958390">Umalis sa Grupo ng Tab?</translation>
-<translation id="5564450015351086922">Subukan ang Google Lens sa iOS</translation>
 <translation id="5565735124758917034">Aktibo</translation>
 <translation id="5568069709869097550">Hindi makapag-sign in</translation>
 <translation id="5568525251731145240">I-delete ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" />, lahat ng site sa ilalim nito, at mga naka-install na app?</translation>
@@ -7937,7 +7938,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6410328738210026208">Baguhin ang channel at Powerwash</translation>
 <translation id="6410390304316730527">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga attacker na posibleng manlinlang sa iyong gumawa ng anumang mapanganib na bagay tulad ng pag-install ng nakakapinsalang software o paghahayag ng personal na impormasyon tulad ng mga password, numero ng telepono, o credit card. Kung io-off mo ito, maging maingat kapag nagba-browse sa mga hindi pamilyar o hindi mapagkakatiwalaang site.</translation>
 <translation id="6411135999030237579">Pindutin nang matagal para awtomatikong ulitin ang key</translation>
-<translation id="6411516120707127482">Subukan ang Google Lens sa Iyong Telepono</translation>
 <translation id="6414618057231176439">Piliin kung aling bersyon ng <ph name="VM_NAME" /> ang ii-install.</translation>
 <translation id="641469293210305670">Mag-install ng Mga Update at App</translation>
 <translation id="6415757856498750027">I-type ang "w" para makuha ang "ư"</translation>
@@ -7984,7 +7984,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6445450263907939268">Kung hindi mo gusto ang mga pagbabagong ito, maaari mong ipanumbalik ang mga dati mong setting.</translation>
 <translation id="6446213738085045933">Lumikha ng shortcut sa desktop</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449835059180426406">Gamitin ang Mga Password Mo sa Iyong Mga iOS Device</translation>
 <translation id="6450876761651513209">Baguhin ang iyong mga setting na nauugnay sa privacy</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> at 1 pang tab}one{<ph name="PAGE_TITLE" /> at # pang tab}other{<ph name="PAGE_TITLE" /> at # pang tab}}</translation>
 <translation id="6451689256222386810">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
@@ -8467,6 +8466,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6783036716881942511">Kalimutan ang device na ito?</translation>
 <translation id="6783667414610055871">Mga setting ng Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Sinusuportahan ang profile</translation>
+<translation id="678520006562636090">Subukan ang Google Lens sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Gamitin ang iyong <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Pagtingin sa mga naka-save na desk. Pindutin ang tab para mag-navigate.</translation>
 <translation id="6785915470941880363">Reverse na pag-scroll <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -8898,7 +8898,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7066572364168923329">Piliin ang setup ng iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Mga ambient na kulay</translation>
 <translation id="7067725467529581407">Huwag na itong ipakitang muli.</translation>
-<translation id="7067779359472606732">Ipinadala ang Paalala sa Iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Mag-sign In Para Makita ang Mga Tab Mula sa Iba Pang Device</translation>
 <translation id="7068539819344620805">Puwede mo na ngayong bigyan ng bagong hitsura ang iyong browser anumang oras mula sa menu na I-customize ang Chrome</translation>
 <translation id="7068591156533195518">Naka-block ang <ph name="APP_NAME" /> at ilan pang app sa iyong <ph name="DEVICE_TYPE" /></translation>
@@ -10054,7 +10053,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="786073089922909430">Serbisyo: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Mga download</translation>
 <translation id="7861846108263890455">Wika ng Google Account</translation>
-<translation id="7863211248337747225">Kunin ang app</translation>
 <translation id="7864114920800968141">Sa loob ng <ph name="NUM_MIN" /> (na) minuto</translation>
 <translation id="7864539943188674973">Huwag Paganahin ang Bluetooth</translation>
 <translation id="7864825798076155402">I-save sa iyong Google Account?</translation>
@@ -10381,7 +10379,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8068904756674285749">Gumamit ng pang-araw-araw na wika para maghanap sa iyong history ng pag-browse at makita ang mga site na binisita mo. Puwede ka ring magtanong at makakuha ng mga sagot batay sa iyong history ng pag-browse. Naka-off ang setting.</translation>
 <translation id="8070572887926783747">Pahintulot sa lokasyon sa <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Haptic na feedback</translation>
-<translation id="8071033114691184017">Gamitin ang Password na Ito Sa Iyong iPhone</translation>
 <translation id="8071432093239591881">I-print bilang larawan</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Ang data ng app ay maaaring anumang data na na-save ng app (batay sa mga setting ng developer), kabilang ang data gaya ng mga contact, mensahe, at larawan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hindi mabibilang sa quota sa storage ng Drive ng iyong anak ang data ng backup.<ph name="END_PARAGRAPH2" />

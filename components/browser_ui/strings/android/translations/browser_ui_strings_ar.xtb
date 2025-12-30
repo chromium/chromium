@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">‏نصائح قيّمة من Chrome</translation>
 <translation id="1816835383954230954">‏عند تفعيل هذا الخيار، سيعمل Chrome بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب. ويؤدي إيقافه إلى تقليل مستوى الأداء ولكنّه يجعل V8 أكثر مقاومة للهجمات.</translation>
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">يمكنك تبديل الموضع لتخصيص تجربة التصفُّح</translation>
 <translation id="1848033246551405023">‏خط Sans Serif</translation>
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
 <translation id="1881806992065048905">البطاقة السفلية لمظهر صفحة "علامة تبويب جديدة"</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">تم السماح هذه المرّة • دقيق</translation>
 <translation id="2544997614631598250">لون المظهر الداكن</translation>
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات الموقع الإلكتروني</translation>
+<translation id="2553552004849639664">‏يمكنك الحصول على أعلى مستوى في Chrome للحماية من التهديدات على الإنترنت</translation>
 <translation id="2570922361219980984">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز أيضًا. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">تم التوسيع - انقر للتصغير.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">تمّ حفظ مجموعات علامات التبويب</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 آخر)}zero{(+ # آخر)}two{(+ اثنين (#) آخرين)}few{(+ # أخرى)}many{(+ # آخر)}other{(+ # آخر)}}</translation>
 <translation id="5403592356182871684">الأسماء</translation>
+<translation id="5407203562970638234">تحسين مستوى الأمان</translation>
 <translation id="5438097262470833822">سيؤدي هذا الخيار إلى إعادة ضبط أذونات الموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب معرفة موقعك الجغرافي. وعند إيقافه، لا يمكن للمواقع الإلكترونية الاطّلاع على موقعك الجغرافي.</translation>
 <translation id="5489227211564503167">الوقت المنقضي <ph name="ELAPSED_TIME" /> من <ph name="TOTAL_TIME" /></translation>

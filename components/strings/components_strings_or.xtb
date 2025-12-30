@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣ କେଉଁ Chrome ସୂଚନା ସେଭ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ ଟାବ ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="1122714970786750095">ଇଲେକ୍ଟ୍ରୋନିକ୍ସ ଏବଂ ଇଲେକ୍ଟ୍ରିକାଲ</translation>
 <translation id="1123753900084781868">ବର୍ତ୍ତମାନ ଲାଇଭ୍ କ୍ୟାପସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="1124643885833329193">ପ୍ରକୃତ ଲୋକେସନ</translation>
 <translation id="112840717907525620">ନୀତି କେଚ୍‍ ଠିକ୍ ଅଛି</translation>
 <translation id="1131264053432022307">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ ଶୀର୍ଷରୁ ଡ୍ରାଗ କରନ୍ତୁ ଏବଂ ପଛକୁ ଫେରନ୍ତୁ ବଟନକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">ପାସପୋର୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2400271059665846158">Google Walletରେ ଥିବା ଆପଣଙ୍କ ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2400600116338235695">ସିରିଅଲ୍ ପୋର୍ଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="2403474027143565107">ସଠିକ</translation>
 <translation id="240450251994300576">ଦ୍ୱିତୀୟ ହେଡର ଲୋଗୋ</translation>
 <translation id="2404884497378469141">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି କପି କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">ସୁରକ୍ଷାକୁ ସକ୍ଷମ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏହା ଡିଭାଇସର OS, ବ୍ରାଉଜର ଭର୍ସନ ଏବଂ କେଉଁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରାଯାଇଛି ତାହା ମଧ୍ୟ ଦେଖିପାରିବ</translation>
 <translation id="2573170131138724450">ଟେଲିଭିଜନ</translation>
 <translation id="257674075312929031">ଗୋଷ୍ଠୀ</translation>
+<translation id="2577522251608256362">ପାଖାପାଖି ଅଞ୍ଚଳ</translation>
 <translation id="2580031090587209073">ସେୟାରିଂ ବିକଳ୍ପ</translation>
 <translation id="258027838577899739">ଇତିହାସରୁ ସବୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବ ଯୋଗ କରିଛନ୍ତି</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="3080254622891793721">ଗ୍ରାଫିକ୍</translation>
 <translation id="3082007635241601060">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ରିହାତିଗୁଡ଼ିକ ଉପଲବ୍ଧ ହେଲେ ତାହା ଖୋଜିବା ପାଇଁ Googleକୁ ଆପଣଙ୍କ କାର୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" ଏକ ବୈଧ ପ୍ରକ୍ସି ନୁହେଁ।</translation>
 <translation id="3086269988715347183">ଆପଣ ପୂର୍ବରୁ <ph name="BLOCKED_URL" /> ଅନୁମୋଦନ କରିନାହାଁନ୍ତି</translation>
 <translation id="3086579638707268289">ୱେବ୍‍‍ରେ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରାଯାଉଛି</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
@@ -1410,6 +1414,7 @@
 <translation id="3266793032086590337">ମୂଲ୍ୟ (ବିବାଦରେ ଅଛି)</translation>
 <translation id="3268451620468152448">ଖୋଲାଥିବା ଟାବ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3270041629388773465">ଆପଣଙ୍କ CVC ସେଭ କରାଯିବା ପରେ ଶୀଘ୍ର ଚେକଆଉଟ କରନ୍ତୁ</translation>
+<translation id="3270343151253360050">ଏହି କ୍ରୟକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ ପେମେଣ୍ଟ ପଦ୍ଧତି ବାଛନ୍ତୁ</translation>
 <translation id="3270847123878663523">ପୁନଃକ୍ରମକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3272091146646336650">ସୁପର B</translation>
@@ -1624,6 +1629,7 @@
 <translation id="361438452008624280">ତାଲିକାର ଏଣ୍ଟ୍ରି "<ph name="LANGUAGE_ID" />": ଅଜଣା କିମ୍ବା ଅସମର୍ଥିତ ଭାଷା।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଇବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3615309852743236517">ମେନିକ୍ୟୋର ଏବଂ ପେଡିକ୍ୟୋର</translation>
+<translation id="3620034424637552643">ପ୍ରାୟତଃ ଦିଗନିର୍ଦ୍ଦେଶ, ଡେଲିଭରୀ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବ୍ୟବହୃତ ହୁଏ</translation>
 <translation id="3620239073311576716">ୟୁନିଫର୍ମ ଏବଂ ୱାର୍କୱେର</translation>
 <translation id="3621401353678567613">ଆପଣ ଟ୍ରାକ କରୁଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ ପାଇଁ ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଇବାକୁ ସେଟିଂସରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="362276910939193118">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>
@@ -1890,6 +1896,7 @@
 <translation id="4036753017940930924">ଲଟ୍ସ ଏବଂ ଭୂମି</translation>
 <translation id="403724377879219932">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ପଚାରିପାରିବ</translation>
 <translation id="4039506337798853114">ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
+<translation id="4042597221652780603">ଆନୁମାନିକ</translation>
 <translation id="4045070493270310437">ଟାବଗୁଡ଼ିକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="4045226534284799755">ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ Microsoft ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4045441967987592849">ପୁଣି ଖୋଲନ୍ତୁ</translation>
@@ -3207,6 +3214,7 @@
 <translation id="6164605812717770913">ଏହି ସାଇଟ ଭିଜିଟ କରିବା ତୁମ ପାଇଁ ଠିକ ନୁହେଁ ବୋଲି ଜଣେ ବାପା କିମ୍ବା ମା ବା ଅଭିଭାବକ କହିଛନ୍ତି। ତୁମେ ସେମାନଙ୍କୁ ଏହାକୁ ଅନବ୍ଲକ କରିବାକୁ କହିପାରିବ।</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6167577165590485365">ଚେଷ୍ଟା କରାଯାଇଥିବା ଗତ ଫେଚ:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ଏକ ବୈଧ ମୂଲ୍ୟ ନୁହେଁ।</translation>
 <translation id="617256461084925519">Google Chrome ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି ଯାହା ଫଳରେ ଏହା ଆପଣଙ୍କ ପେମେଣ୍ଟ ସୂଚନାରେ ପୂରଣ ହୋଇପାରିବ।</translation>
 <translation id="6173208311907792313">Windows Hello ବ୍ୟବହାର କରି ଆପଣଙ୍କ କ୍ରୟକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="6176387967264100435">ଏହି ମୂଲ୍ୟ ଅଧିକ ଅଟେ</translation>
@@ -3533,6 +3541,7 @@
 <translation id="6688851075017682769">ଦେଶ ଅନୁସାରେ ଟେଷ୍ଟ ଠିକଣା</translation>
 <translation id="6689249931105087298">ବ୍ଲାକ୍ ପଏଣ୍ଟ କମ୍ପ୍ରେସନ୍ ସହିତ ରିଲେଟିଭ୍</translation>
 <translation id="6689271823431384964">ଆପଣ ସାଇନ୍ ଇନ୍ କରିଥିବା ଯୋଗୁଁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ କାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କରିବାକୁ Chrome ଅଫର୍ ଦେଉଛି। ଆପଣ ସେଟିଂସ୍‌ରେ ଏହି ଆଚରଣ ପରିବର୍ତ୍ତନ କରିପାରିବେ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟରୁ କାର୍ଡ ଧାରକଙ୍କ ନାମ ଆସିଛି।</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" ଏକ ବୈଧ ଡେଷ୍ଟିନେସନ ପାଟର୍ନ ନୁହେଁ।</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" />ରୁ ଅଧିକ ସ୍ପେସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଖୋଜିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="6695428916538794739">ଆକ୍ସନ ଏବଂ ଆଡଭେଞ୍ଚର ମୁଭିଗୁଡ଼ିକ</translation>
@@ -3545,6 +3554,7 @@
 <translation id="6702851555558236418">ଅଡିଓ ଏବଂ ମ୍ୟୁଜିକ ସଫ୍ଟୱେର</translation>
 <translation id="6702919718839027939">ବର୍ତ୍ତମାନ</translation>
 <translation id="6704458454638854812">"custom_size" ପ୍ରପର୍ଟି ସେଟ ହୋଇଛି, ଆଶା କରାଯାଉଥିବା ନାମ "କଷ୍ଟମ" ହେବା ଆବଶ୍ୟକ।</translation>
+<translation id="670477556876354552">ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="6706005862292023715">ପରଦା ଏବଂ ଝରକା ପାଇଁ ସାଜସଜ୍ଜା ସାମଗ୍ରୀ</translation>
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6706678697074905703">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହି IBANକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି।</translation>
@@ -4070,7 +4080,6 @@
 <translation id="753556296624075801">Google ଦ୍ଵାରା ପରିଚାଳିତ</translation>
 <translation id="753713322968419914">Chrome ଅଟୋଫିଲରୁ ଘର ଠିକଣାକୁ କାଢ଼ି ଦେବେ?</translation>
 <translation id="7537536606612762813">ବାଧ୍ୟତାମୂଳକ</translation>
-<translation id="7541043894191476250">ପ୍ରାସଙ୍ଗିକ ଟାସ୍କ</translation>
 <translation id="7543525346216957623">ନିଜର ଅଭିଭାବକଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ଆରମ୍ଭ ହେଉଛି</translation>
 <translation id="7548892272833184391">ସଂଯୋଗ ସମସ୍ୟାଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ</translation>
@@ -4279,6 +4288,7 @@
 <translation id="7870281855125116701">ରିହାତି ମିଳିଛି</translation>
 <translation id="7871445724586827387">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="787226752901403048">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ସେୟାର କରିବା ଓ ଯୋଗ ଦେବା ଏବଂ ଆଇଡିଆଗୁଡ଼ିକ ଉପରେ ଏକାଠି କାମ କରିବା ପାଇଁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ଏକ ଜଣାଶୁଣା ସର୍ତ୍ତ ପ୍ରକାର ନୁହେଁ।</translation>
 <translation id="7877007680666472091">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ IDଗୁଡ଼ିକ</translation>
 <translation id="7878562273885520351">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡରେ ହେର୍‍ଫେର୍‌ କରାଯାଇଥାଇପାରେ</translation>
 <translation id="7881044256965445977">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜନ୍ତୁ ଏବଂ କନେକ୍ଟ କରନ୍ତୁ</translation>
@@ -5003,6 +5013,7 @@
 <translation id="9090243919347147717">ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="9090548458280093580">AI ଦ୍ୱାରା ପରିଚାଳିତ ଆପଣଙ୍କ ଇତିହାସ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="9090993752571911635">ଇଣ୍ଟରନେଟ ସେବା ପ୍ରଦାନକାରୀଗୁଡ଼ିକ (ISPs)</translation>
+<translation id="9092305980625216393">ପ୍ରାୟତଃ ପାଣିପାଗ, ସ୍ଥାନୀୟ ନ୍ୟୁଜ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବ୍ୟବହୃତ ହୁଏ</translation>
 <translation id="9093723786115107672">ସ୍ଲିପୱେର</translation>
 <translation id="9094424186948667194">ଏହି ଡିଭାଇସରେ ଅନ୍ୟ ଆପ୍ସ ଏବଂ ସର୍ଭିସକୁ ଆକ୍ସେସ କରିବା</translation>
 <translation id="9094544726794842788">ଆପଣ କାହିଁକି ଏହି ଫଳାଫଳକୁ ନାପସନ୍ଦ କରନ୍ତି ସେ ବିଷୟରେ ସବିଶେଷ ମତାମତ ଦାଖଲ କରିବା ପାଇଁ ଥମ୍ବସ ଡାଉନ ଏକ ଫର୍ମକୁ ଖୋଲିଥାଏ</translation>

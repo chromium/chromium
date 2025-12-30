@@ -89,6 +89,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
 <translation id="1880677175115548835">Chagua maandishi</translation>
+<translation id="1896602904211344018">Pakua programu ya Chrome</translation>
 <translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
 <translation id="1953553007165777902">Inapakua... Zimesalia dakika <ph name="MINUTE" /></translation>
 <translation id="1979600810166324878">Imarisha usalama wako popote ulipo kwa kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa katika Chrome kwenye iOS</translation>
@@ -275,6 +276,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3889417619312448367">Ondoa Google Chrome</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="3906096710440765802">Ingia katika Chrome ili upate alamisho, manenosiri yako na zaidi kwenye vifaa vyako vyote</translation>
+<translation id="3921132130819999051">Ruhusu Chrome ivinjari kwa niaba yako</translation>
 <translation id="3941890832296813527">Hitilafu ya kusakinisha: Jina la faili ya kisakinishaji si sahihi au haliwezi kutumika.</translation>
 <translation id="395904275706073188">Huwezi kusoma kurasa zinazolindwa. Jaribu ukurasa tofauti.</translation>
 <translation id="3968962723676998462">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5163087008893166964">Karibu kwenye Chrome; dirisha jipya la kivinjari limefunguliwa</translation>
 <translation id="5166439563123238795">Chrome inahitaji ruhusa ya kufuatilia mijongeo ya mikono yako</translation>
 <translation id="5167819546851111585">Unafikiria nini leo?</translation>
+<translation id="5169778651486082413">Kutumia manenosiri yako kwenye Chrome katika simu yako</translation>
 <translation id="5170938038195470297">Wasifu wako huenda usitumike kwa sababu unatoka katika toleo jipya la Google Chrome.
 
 Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wasifu au tumia toleo jipya la Chrome.</translation>
@@ -408,7 +411,6 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5465210843490471889">Chagua wasifu wa Chrome wa kutumia kwenye <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Ili kusaidia kuboresha vipengele hivi, Chrome hutumia Google data ya jinsi unavyovitumia. Data hii inaweza kusomwa, kuchakatwa na kuwekewa vidokezo na wahakiki wanadamu.</translation>
-<translation id="5510398294750420479">Pakua Chrome kwenye simu yako ili uweke safu ya ziada ya ulinzi popote ulipo</translation>
 <translation id="5524890928877629608">kona ya juu kushoto ya eneo la utafutaji: kushoto asilimia <ph name="LEFT" />, juu asilimia <ph name="TOP" /></translation>
 <translation id="5530733413481476019">Ifanye Chrome Iwe na Kasi Zaidi ya Utendaji</translation>
 <translation id="5550137307985173298">Bofya kitufe cha Badilisha Chrome upendavyo kwenye Ukurasa Mpya wa Kichupo ili uipe Chrome mwonekano mpya</translation>
@@ -464,6 +466,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6008161919456049856">Manenosiri, njia za kulipa na anwani ulizohifadhi katika Akaunti yako ya Google zitaondolewa kwenye kifaa hiki. Ili uzitumie tena katika Chrome, ingia katika akaunti.</translation>
 <translation id="6009821354356307391">Uliza swali la nyongeza</translation>
 <translation id="6014316319780893079">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chrome<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
+<translation id="6018578474045062808">Jaribu Lenzi ya Google ukitumia Chrome kwenye simu yako</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
 <translation id="6025087594896450715">Google Chrome itazima kisha iwake baada ya <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -486,6 +489,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Toleo la Beta la Google Chrome</translation>
 <translation id="6180522807229584611">Kichupo hiki kinatumia nyenzo za ziada. Ruhusu Chrome ikifanye kisitumike ili kuboresha utendaji wako.</translation>
 <translation id="6182736845697986886">Imeshindwa kusakinisha kwa sababu ya hitilafu ya ndani ya seva ya usasishaji.</translation>
+<translation id="6183773856988300112">Gemini kwenye Chrome hutumia kipengele cha kuvinjari kiotomatiki kufanya kazi katika vichupo vyako na kukamilisha majukumu unayoipa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Akaunti yako katika Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ameweka kiendelezi kinachoweza kubadilisha jinsi Chrome inavyofanya kazi.
 
@@ -512,6 +516,8 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
 <translation id="6426623519983252346">Utaona kidokezo cha kujaribu <ph name="FEATURE_NAME" /> utakapofungua Chrome kwenye kifaa cha iOS tena.</translation>
 <translation id="6434035853014503219">Asante kwa kuchagua Chrome iwe kivinjari chako chaguomsingi!</translation>
+<translation id="6438015621983209660">Panua idhini ya kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa ukitumia Chrome kwenye simu yako</translation>
+<translation id="6442774133615368941">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako katika programu ya Chrome inayotumika kwenye iOS</translation>
 <translation id="6473905796280459355">Nenda kwenye ukurasa wa Kuhusu Chrome</translation>
 <translation id="6481963882741794338">Unganisha Chrome na huduma nyingine za Google ili upate mapendeleo na madhumuni mengine</translation>
 <translation id="648319183876919572">Kipengele cha Kuvinjari Salama Kilichoboreshwa hufanya mengi zaidi ili kukulinda dhidi ya tovuti na vipakuliwa hatarishi.</translation>
@@ -649,6 +655,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7832314606810669113">Ili upate alamisho zako na mengineyo kwenye vifaa vyako vyote, ingia katika Chrome. Alamisho hii itahifadhiwa kwenye Akaunti yako ya Google ukishaingia katika akaunti.</translation>
 <translation id="7845233973568007926">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena kompyuta yako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Endelea ulikoachia: Chrome inaweza kurejesha vichupo vyako kila wakati unapoifungua upya. Ili uwashe, nenda kwenye</translation>
+<translation id="7869620795354551924">Ili utumie manenosiri yako yaliyohifadhiwa, fuata msimbo wa QR, pakua Chrome inayotumika kwenye iOS kisha uingie katika Akaunti yako ya Google</translation>
 <translation id="7872446069773932638">Inapakua... Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Chagua maandishi ukitumia Lenzi ya Google</translation>
 <translation id="7887929410013642057">Onyesha Njia za Mkato za Matumizi ya AI Kila Wakati</translation>

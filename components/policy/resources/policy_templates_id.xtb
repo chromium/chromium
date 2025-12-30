@@ -3041,6 +3041,7 @@ Kebijakan ini tidak mencegah pengguna memilih file dari <ph name="GOOGLE_DRIVE_N
 <translation id="3030232909811556512">Jika kebijakan ini disetel ke nonaktif, gambar avatar <ph name="PRODUCT_OS_NAME" /> pengguna tidak dapat disetel menggunakan file lokal, kamera perangkat, atau foto profil Google pengguna.
 
 Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan ini disetel ke aktif atau tidak disetel.</translation>
+<translation id="3031370204150460535">Memblokir integrasi aplikasi Gemini untuk langsung bertindak di situs tertentu</translation>
 <translation id="3031796805169553856">Izinkan modul WebAssembly dikirim lintas asal</translation>
 <translation id="3032322294267258117">Mengontrol setelan untuk pengguna yang diautentikasi terhadap GAIA tanpa SAML.</translation>
 <translation id="3034855514833090741">Jika kebijakan disetel ke Aktif, alur Voice Match Asisten Google akan ditampilkan selama penyiapan awal. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan menampilkan alur Voice Match selama penyiapan awal.
@@ -4439,7 +4440,7 @@ Selama interval yang dibatasi, semua sesi yang sedang berlangsung akan ditutup d
 
 Pertimbangan:
 
-* Interval yang tumpang-tindih tidak didukung.
+* Interval yang tumpang tindih tidak didukung.
 * Jadwal pembatasan perangkat menggunakan zona waktu perangkat.
 * Untuk mencegah pengguna mengedit zona waktu perangkatnya, gunakan SystemTimezone.
 * Untuk mencegah pengguna mengedit waktu perangkatnya, gunakan SystemFeaturesDisableList untuk menonaktifkan Crosh, dan URLBlocklist untuk memblokir chrome://set-time.</translation>
@@ -4543,6 +4544,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
       Jika tidak disetel, jangka waktu default selama 259200000 milidetik (tiga hari) akan digunakan untuk perangkat <ph name="PRODUCT_OS_NAME" />.
 
       Untuk rollback dan update <ph name="PRODUCT_OS_NAME" /> lainnya yang akan melakukan powerwash perangkat, pengguna akan langsung diberi tahu saat update tersedia, apa pun nilai kebijakan ini.</translation>
+<translation id="4086132065708736174">Mengizinkan integrasi aplikasi Gemini untuk langsung bertindak di situs tertentu</translation>
 <translation id="4086150283035515220">Jika kebijakan disetel ke Aktif, pengguna akan ditanyai lokasi penyimpanan file sebelum mendownload. Jika kebijakan disetel ke Nonaktif, download akan dimulai secara otomatis dan pengguna tidak akan ditanyai lokasi penyimpanan file.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengubah setelan ini.</translation>
@@ -9813,7 +9815,7 @@ Jika kebijakan ini disetel ke Nonaktif, pengguna tidak dapat menyimpan kunci san
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
 <translation id="7196336906814426783">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
 
-Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang-tindih.
+Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang tindih.
 
 Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.
 
@@ -10007,6 +10009,13 @@ Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph nam
 
           Jika kebijakan ini tidak disetel, fitur koreksi warna pada awalnya akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="7323896582714668701">Parameter baris perintah tambahan untuk <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Memungkinkan untuk menetapkan daftar pola URL yang menentukan situs tempat integrasi aplikasi Gemini tidak dapat langsung bertindak di halaman web.
+
+URL yang tidak cocok dengan daftar yang diizinkan atau daftar yang tidak diizinkan menggunakan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URL yang cocok dengan daftar yang diizinkan dan daftar yang tidak diizinkan akan diizinkan.
+
+Untuk informasi selengkapnya tentang pola yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Cegah Chrome memblokir navigasi ke protokol eksternal di dalam iframe sandbox</translation>
 <translation id="7326394567531622570">Serupa dengan Wipe (nilai 2), namun mencoba untuk mempertahankan token login sehingga pengguna tidak perlu login lagi.</translation>
 <translation id="7331098674887251788">Mengizinkan integrasi aplikasi Gemini untuk langsung bertindak di halaman web</translation>
@@ -11178,6 +11187,13 @@ Jika nilai disetel ke benar (true) atau tidak disetel, pengguna harus berada di 
 Jika nilai disetel ke salah (false), pengguna dapat bergabung tanpa harus berada di jaringan terkelola.</translation>
 <translation id="8183108371184777472">Sembunyikan peluncuran jendela browser</translation>
 <translation id="8185312100223853315">Label Profil</translation>
+<translation id="8186370194423312090">Memungkinkan untuk menetapkan daftar pola URL yang menentukan situs tempat integrasi aplikasi Gemini dapat langsung bertindak di halaman web.
+
+URL yang tidak cocok dengan daftar yang diizinkan atau daftar yang tidak diizinkan menggunakan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URL yang cocok dengan daftar yang diizinkan dan daftar yang tidak diizinkan akan diizinkan.
+
+Untuk informasi selengkapnya tentang pola yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Izinkan masukan pengguna</translation>
 <translation id="8195133650230097559">Abaikan permintaan penguncian layar saat aktif untuk pengelolaan daya</translation>
 <translation id="8196558469954193908">Kebijakan ini memungkinkan koneksi HTTP/2 bergabung saat sertifikat klien sedang digunakan. Agar dapat bergabung, hostname untuk calon koneksi baru dan hostname untuk koneksi yang sudah ada harus cocok dengan satu atau beberapa pola yang dijelaskan oleh kebijakan ini. Kebijakan ini berupa daftar host yang menggunakan format filter <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" cocok dengan "example.com" dan semua subdomain (misalnya "sub.example.com"), sedangkan ".example.net" hanya cocok dengan "example.net".

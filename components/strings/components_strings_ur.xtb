@@ -77,6 +77,7 @@
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، آپ اپنے Google اکاؤنٹ میں Chrome کی کن معلومات کو محفوظ کرتے ہیں اس کا نظم کرنے کے لیے ٹیب پھر Enter کلید دبائیں</translation>
 <translation id="1122714970786750095">الیکٹرانکس اور الیکٹریکل</translation>
 <translation id="1123753900084781868">لائیو کیپشن ابھی دستیاب نہیں ہے</translation>
+<translation id="1124643885833329193">قطعی مقام</translation>
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">پاسپورٹ کی معلومات شامل کریں</translation>
 <translation id="2400271059665846158">‏‫Google والٹ میں اپنے لائلٹی کارڈز کا نظم کریں</translation>
 <translation id="2400600116338235695">سائٹ سیریل پورٹس سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
+<translation id="2403474027143565107">قطعی</translation>
 <translation id="240450251994300576">ثانوی ہیڈر لوگو</translation>
 <translation id="2404884497378469141">اپنی فائلز کو دوبارہ کاپی کرنے کی کوشش کریں</translation>
 <translation id="2413155254802890957">پرانا</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">‏سیکیورٹی کو یقینی بنانے میں مدد کے لیے، یہ آلہ کا OS، براؤزر ورژن اور کون سا سافٹ ویئر انسٹال ہوا ہے یہ بھی دیکھ سکتا ہے۔</translation>
 <translation id="2573170131138724450">ٹیلی ویژنز</translation>
 <translation id="257674075312929031">گروپ</translation>
+<translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2580031090587209073">اشتراک کے اختیارات</translation>
 <translation id="258027838577899739">سرگزشت سے سبھی کو حذف کریں</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب شامل کیا</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">آپریٹنگ سسٹمز</translation>
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3082007635241601060">‏Google کو اجازت دیں کہ وہ آپ کے کارٹس کو استعمال کر کے دستیاب ہونے پر آپ کے لئے ذاتی نوعیت کی رعایتیں تلاش کرے</translation>
+<translation id="3085373848068196154">‫"<ph name="PROXY_INVALID_PROXY" />" ایک درست پراکسی نہیں ہے۔</translation>
 <translation id="3086269988715347183">آپ نے <ph name="BLOCKED_URL" /> کو پہلے منظوری نہیں دی ہے</translation>
 <translation id="3086579638707268289">ویب پر کی جانے والی آپ کی سرگرمی کو مانیٹر کیا جا رہا ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
@@ -1628,6 +1632,7 @@
 <translation id="361438452008624280">فہرست کا اندراج "<ph name="LANGUAGE_ID" />": نامعلوم یا غیر تعاون یافتہ زبان۔</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3615309852743236517">مینی کیورز اور پیڈیکیورز</translation>
+<translation id="3620034424637552643">اکثر ڈائریکشنز، ڈیلیوریز اور مزید کے لیے استعمال کیا جاتا ہے</translation>
 <translation id="3620239073311576716">یونیفارم اور کام پر پہننے کا لباس</translation>
 <translation id="3621401353678567613">آپ جن پروڈکٹس کو ٹریک کر رہے ہیں، ان کی قیمت میں کمی سے متعلق الرٹس حاصل کرنے کیلئے ترتیبات میں اطلاعات کو آن کریں۔</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
@@ -1895,6 +1900,7 @@
 <translation id="4036753017940930924">لاٹ اور زمین</translation>
 <translation id="403724377879219932">آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی درخواست کر سکتی ہے</translation>
 <translation id="4039506337798853114">اپنا کرسر دکھانے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
+<translation id="4042597221652780603">تخمینی</translation>
 <translation id="4045070493270310437">ٹیبز دوبارہ کھولیں</translation>
 <translation id="4045226534284799755">‏دوبارہ کوشش کرنے سے پہلے، اپنے Microsoft اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
@@ -3214,6 +3220,7 @@
 <translation id="6164605812717770913">والدین یا سرپرست نے کہا کہ آپ کیلئے یہ سائٹ دیکھنا ٹھیک نہیں ہے۔ آپ ان سے اسے اَن بلاک کرنے کو کہہ سکتے ہیں۔</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6167577165590485365">بازیافت کی آخری کوشش:</translation>
+<translation id="6171968084616623939">‫"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ایک درست قدر نہیں ہے۔</translation>
 <translation id="617256461084925519">‏Google Chrome اس بات کی تصدیق کرنے کی کوشش کر رہا ہے کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
 <translation id="6173208311907792313">‏‫Windows Hello استعمال کر کے اپنی خریداری مکمل کریں</translation>
 <translation id="6176387967264100435">یہ قیمت زیادہ ہے</translation>
@@ -3540,6 +3547,7 @@
 <translation id="6688851075017682769">ملک کے لحاظ سے پتہ کی جانچ کریں</translation>
 <translation id="6689249931105087298">سیاہ پوائنٹ کمپریشن کے ساتھ متعلقہ</translation>
 <translation id="6689271823431384964">‏آپ کے سائن ان ہونے کی وجہ سے Chrome آپ کے کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کرنے کی پیشکش کر رہا ہے۔ آپ اس برتاؤ کو ترتیبات میں تبدیل کر سکتے ہیں۔ کارڈ ہولڈر کے نام کا تعلق آپ کے اکاؤنٹ سے ہے۔</translation>
+<translation id="6690688090329768424">‫"<ph name="PROXY_INVALID_DESTINATION" />" ایک درست منزل کا پیٹرن نہیں ہے۔</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> سے زیادہ جگہ خالی کریں</translation>
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google اکاؤنٹ میں اپنے آلہ کو تلاش کرنے کیلئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="6695428916538794739">ایکشن اور ایڈوینچر موویز</translation>
@@ -4078,7 +4086,6 @@
 <translation id="753556296624075801">‏Google کے ذریعے تقویت یافتہ</translation>
 <translation id="753713322968419914">‏‫Chrome آٹو فل سے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="7537536606612762813">لازمی</translation>
-<translation id="7541043894191476250">سیاق و سباق سے متعلق ٹاسکس</translation>
 <translation id="7543525346216957623">اپنے والدین سے پوچھیں</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> کی شروعات</translation>
 <translation id="7548892272833184391">کنکشن کی خرابیاں ٹھیک کریں</translation>
@@ -4287,6 +4294,7 @@
 <translation id="7870281855125116701">رعایت مل گئی</translation>
 <translation id="7871445724586827387">‏اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کریں</translation>
 <translation id="787226752901403048">‏ٹیب گروپس کا اشتراک کرنے اور ان میں شامل ہونے کے لیے Chrome میں سائن ان کریں اور آئیڈیاز پر مل کر کام کریں</translation>
+<translation id="7874796722855317864">‫"<ph name="PROXY_UNKNOWN_CONDITION" />" حالت کی معلوم قسم نہیں ہے۔</translation>
 <translation id="7877007680666472091">‏تحفظ یافتہ مواد کی IDs</translation>
 <translation id="7878562273885520351">لگتا ہے کسی نے آپ کے پاس ورڈ کے ساتھ چھیڑ چھاڑ کی ہے</translation>
 <translation id="7881044256965445977">اپنے مقامی نیٹ ورک پر کسی بھی آلے کو تلاش کریں اور اس سے منسلک ہوں</translation>
@@ -5011,6 +5019,7 @@
 <translation id="9090243919347147717">منسلکات</translation>
 <translation id="9090548458280093580">‏‫AI کے ذریعے تقویت یافتہ اپنی سرگزشت تلاش کریں</translation>
 <translation id="9090993752571911635">‏انٹرنیٹ سروس پرووائیڈرز (ISPs)</translation>
+<translation id="9092305980625216393">اکثر موسم، مقامی خبروں اور مزید کے لیے استعمال کیا جاتا ہے</translation>
 <translation id="9093723786115107672">شب خوابی کا لباس</translation>
 <translation id="9094424186948667194">اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی حاصل کریں</translation>
 <translation id="9094544726794842788">اظہار ناپسندیدگی آپ کو ان نتائج کو ناپسند کرنے کے بارے میں تفصیلی تاثرات جمع کرانے کے لیے ایک فارم کھولتا ہے</translation>

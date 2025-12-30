@@ -217,9 +217,11 @@
 <translation id="3352986031709923790">правый верхний угол области поиска: <ph name="RIGHT" /> % справа, <ph name="TOP" /> % сверху</translation>
 <translation id="3366305173356742781">Данные Chromium в вашем аккаунте</translation>
 <translation id="3369405342922656244">Найти эту страницу через поиск картинок</translation>
+<translation id="3375770072980084583">Используйте пароли в Chromium на телефоне</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Переключиться на существующий профиль Chromium?</translation>
 <translation id="3412460710772753638">В Менеджере паролей на этом устройстве</translation>
+<translation id="3455907671758333080">Расширьте возможности улучшенного Безопасного просмотра с помощью Chromium на телефоне</translation>
 <translation id="3461644266919055473">Настраиваем Chromium для вас…</translation>
 <translation id="347328004046849135">Вы получите уведомление от Chromium, если войдете в аккаунт с паролем, который был раскрыт.</translation>
 <translation id="3474745554856756813">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
@@ -246,6 +248,7 @@
 <translation id="3798048725356732506">Профили Chromium помогают разделять разные сферы жизни. Добавьте новый профиль.</translation>
 <translation id="3802055581630249637">Chromium предварительно загружает страницы, которые вы с большой вероятностью посетите, чтобы они открылись быстрее.</translation>
 <translation id="3810973564298564668">Управление</translation>
+<translation id="3823384748599722168">Чтобы использовать сохраненные пароли, перейдите по ссылке в QR-коде, скачайте Chromium для iOS и войдите в свой аккаунт Google.</translation>
 <translation id="3846683726093018685">**Краткий пересказ.** Опиши одним предложением до 30 слов основную тему и назначение контента со скриншота.
 
           **Рекомендуемые вопросы.** Создай маркированный список из 3–5 наводящих на размышления вопросов, которые пользователь может задать, чтобы лучше понять скриншот. Хотя бы один из них должен быть связан с визуальным объектом, его дизайном или расположением.</translation>
@@ -321,6 +324,7 @@
 <translation id="4548534452171747496">Chrome предварительно загружает страницы, ускоряя работу браузера и поиск. Подробнее <ph name="BEGIN_LINK" />о предзагрузке страниц<ph name="END_LINK" />…</translation>
 <translation id="4567424176335768812">Вы вошли с помощью аккаунта <ph name="USER_EMAIL_ADDRESS" />. Ваши закладки, история и другие настройки теперь доступны на всех устройствах, где вы используете этот аккаунт.</translation>
 <translation id="4570813286784708942">Chromium заблокировал скачивание, поскольку Безопасный просмотр отключен и файл невозможно проверить</translation>
+<translation id="4583692638088316420">Попробуйте Google Объектив в Chromium на телефоне</translation>
 <translation id="4594305310729380060">В Менеджере паролей на этом устройстве</translation>
 <translation id="459535195905078186">Приложения Chromium</translation>
 <translation id="4598116752460667024">Поиск любого процесса из списка.</translation>
@@ -352,6 +356,7 @@
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
 <translation id="4992938037305302429">Ваш аккаунт в Chromium</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
+<translation id="5083712646171654472">Gemini в Chromium будет автоматически искать информацию, чтобы выполнять задачи на вкладках браузера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium необходимо разрешение на отслеживание рук</translation>
 <translation id="5141988424377517949">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
 <translation id="5167819546851111585">О чем вы хотите узнать?</translation>
@@ -364,6 +369,7 @@
 <translation id="5254739261293693943">Задать вопрос о видео</translation>
 <translation id="5277894862589591112">Чтобы изменения вступили в силу, перезапустите Chromium.</translation>
 <translation id="5286907366254680517">Определен автоматически</translation>
+<translation id="5289287148052354622">Скачать Chromium</translation>
 <translation id="5294316920224716406">При работе в режиме инкогнито Chromium будет предупреждать вас о переходе на сайт с незащищенным соединением</translation>
 <translation id="5313228254328109263">Внутренний сервис Chromium Updater</translation>
 <translation id="5346389065299425353">Чтобы расширить поиск, добавьте несколько вкладок, файлов и инструментов</translation>
@@ -576,6 +582,7 @@
 <translation id="7617377681829253106">Chromium становится все лучше</translation>
 <translation id="7622753900276619808">Теперь вам доступно больше функций в Chromium.</translation>
 <translation id="7649070708921625228">Справка</translation>
+<translation id="7656340475565475526">Разрешить Chromium искать информацию в интернете</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7686590090926151193">Chromium не является браузером по умолчанию.</translation>
 <translation id="7689606757190482937">Синхронизируйте данные Chromium на всех устройствах</translation>
@@ -601,7 +608,6 @@
 <translation id="7888981273428720788">Сделайте Chromium браузером по умолчанию</translation>
 <translation id="7934340546140346950">Chromium автоматически использует HTTPS для незащищенных подключений, когда это возможно.</translation>
 <translation id="7937630085815544518">Ранее вы входили в Chromium как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
-<translation id="7953047982688951904">Скачайте Chromium на телефон для дополнительной защиты устройства.</translation>
 <translation id="7975919845073681630">Это дополнительная установка Chromium. Его нельзя сделать браузером по умолчанию.</translation>
 <translation id="7997934263947464652">Расширения, приложения и темы из неизвестных источников могут навредить устройству. Рекомендуем скачивать подобное ПО только из <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Браузер</translation>
@@ -628,6 +634,7 @@
 <translation id="8254601181414348851">Создать свой профиль Chromium?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium предупреждает<ph name="END_LINK" /> о небезопасных сайтах и файлах в интернете</translation>
 <translation id="8295827201165805317">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешение "<ph name="PERMISSION" />".</translation>
+<translation id="8296236834352487533">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру в приложении Chromium для iOS.</translation>
 <translation id="8313851650939857356">Ошибка при запуске: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша организация задала настройки, согласно которым браузер Chromium закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Сохранить как изображение</translation>

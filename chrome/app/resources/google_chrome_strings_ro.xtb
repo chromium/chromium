@@ -271,6 +271,7 @@
 <translation id="3889417619312448367">Dezinstalează Google Chrome</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="3906096710440765802">Conectează-te la Chrome pentru a accesa parolele, marcajele și altele pe toate dispozitivele tale</translation>
+<translation id="3921132130819999051">Permite browserului Chromium să navigheze pentru tine</translation>
 <translation id="3941890832296813527">Eroare la instalare: numele de fișier al programului de instalare nu este valid sau acceptat.</translation>
 <translation id="395904275706073188">Paginile protejate nu pot fi citite. Încearcă altă pagină.</translation>
 <translation id="3968962723676998462">Introdu expresia de acces pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
@@ -400,7 +401,6 @@
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5465210843490471889">Alege un profil Chrome pe care să-l folosești cu <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Pentru a contribui la îmbunătățirea acestor funcții, Chrome îți trimite interacțiunile cu acestea la Google. Aceste date pot fi citite, procesate și adnotate de evaluatori umani.</translation>
-<translation id="5510398294750420479">Descarcă Chrome pe telefon pentru a adăuga un nivel suplimentar de protecție când ești în mișcare</translation>
 <translation id="5524890928877629608">colțul din stânga sus al zonei de căutare: stânga <ph name="LEFT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Crește eficiența în Chrome</translation>
 <translation id="5550137307985173298">Dă clic pe butonul Personalizează Chrome din pagina Filă nouă pentru a-i oferi browserului Chrome un aspect nou</translation>
@@ -478,6 +478,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Această filă folosește resurse suplimentare. Pentru a-ți îmbunătăți performanța, permite-i browserului Chrome să le dezactiveze.</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
+<translation id="6183773856988300112">Gemini folosește navigarea automată în Chrome ca să lucreze în filele tale și să finalizeze activitățile pe care i le aloci. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Contul tău în Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a adăugat o extensie care poate schimba modul în care funcționează Chrome.
 

@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1880677175115548835">Zaznacz tekst</translation>
+<translation id="1896602904211344018">Pobierz aplikację Chrome</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
 <translation id="1979600810166324878">Zwiększ swoje bezpieczeństwo w dowolnym miejscu dzięki Ulepszonemu bezpiecznemu przeglądaniu w Chrome na iOS</translation>
@@ -270,6 +271,7 @@
 <translation id="3889417619312448367">Odinstaluj Google Chrome</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3906096710440765802">Zaloguj się w Chrome, aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
+<translation id="3921132130819999051">Pozwól Chrome przeglądać strony za Ciebie</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
 <translation id="395904275706073188">Zabezpieczonych stron nie można odczytywać. Wypróbuj inną stronę.</translation>
 <translation id="3968962723676998462">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
@@ -374,6 +376,7 @@
 <translation id="5163087008893166964">Witamy w Chrome. Zostało otwarte nowe okno przeglądarki.</translation>
 <translation id="5166439563123238795">Chrome potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5167819546851111585">Co dziś chodzi Ci po głowie?</translation>
+<translation id="5169778651486082413">Używaj haseł w Chrome na telefonie</translation>
 <translation id="5170938038195470297">Nie można użyć Twojego profilu, ponieważ został utworzony w nowszej wersji Google Chrome. Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chrome.</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>
 <translation id="5174983315706567306">Za mało miejsca na dysku.</translation>
@@ -399,7 +402,6 @@
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
 <translation id="5465210843490471889">Wybierz profil Chrome, którego chcesz używać z <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Aby pomóc nam w ulepszaniu tych funkcji, Chrome wysyła do Google informacje o Twoich interakcjach z nimi. Weryfikatorzy mogą odczytywać i przetwarzać te dane oraz dodawać do nich adnotacje.</translation>
-<translation id="5510398294750420479">Pobierz Chrome na telefon, aby zapewnić sobie dodatkową warstwę ochrony, gdziekolwiek jesteś</translation>
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Przyspiesz działanie Chrome</translation>
 <translation id="5550137307985173298">Kliknij przycisk Dostosuj Chrome na stronie nowej karty, aby zmienić wygląd przeglądarki</translation>
@@ -455,6 +457,7 @@
 <translation id="6008161919456049856">Hasła, formy płatności i adresy zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chrome, zaloguj się ponownie.</translation>
 <translation id="6009821354356307391">Zadaj pytanie</translation>
 <translation id="6014316319780893079">Dzięki <ph name="BEGIN_LINK" />narzędziom Chrome<ph name="END_LINK" /> możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
+<translation id="6018578474045062808">Wypróbuj Obiektyw Google w Chrome na telefonie</translation>
 <translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
 <translation id="6025087594896450715">Google Chrome uruchomi się ponownie za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -477,6 +480,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
+<translation id="6183773856988300112">Gemini w Chrome używa automatycznego przeglądania, aby działać na kartach i realizować zadania, o których wykonanie poprosisz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>
 <translation id="6220551899604141979">Rozszerzenie dodane przez: <ph name="PARTNER_NAME" /> może zmienić sposób działania Chrome.
 
@@ -503,6 +507,8 @@
 <translation id="6418662306461808273">Przełączyć na istniejący profil Chrome?</translation>
 <translation id="6426623519983252346">Gdy następnym razem otworzysz Chrome na iOS, zobaczysz prośbę o wypróbowanie funkcji <ph name="FEATURE_NAME" />.</translation>
 <translation id="6434035853014503219">Dziękujemy za wybranie Chrome jako przeglądarki domyślnej.</translation>
+<translation id="6438015621983209660">Korzystaj z Ulepszonego bezpiecznego przeglądania także na telefonie dzięki Chrome</translation>
+<translation id="6442774133615368941">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu w aplikacji Chrome na iOS</translation>
 <translation id="6473905796280459355">Otwórz stronę Chrome – informacje</translation>
 <translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
 <translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
@@ -640,6 +646,7 @@
 <translation id="7832314606810669113">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. Ta zakładka zostanie zapisana na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
 <translation id="7849037457735762883">Wznawianie przeglądania od tego samego miejsca: Chrome może po każdym ponownym uruchomieniu przywracać karty. Aby włączyć tę funkcję, otwórz</translation>
+<translation id="7869620795354551924">Aby korzystać z zapisanych haseł, użyj kodu QR, pobierz Chrome na iOS i zaloguj się na konto Google</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
 <translation id="7886087451482920026">Zaznacz tekst za pomocą Obiektywu Google</translation>
 <translation id="7887929410013642057">Zawsze pokazuj skróty do trybu AI</translation>

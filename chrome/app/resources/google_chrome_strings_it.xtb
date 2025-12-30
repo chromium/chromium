@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1880677175115548835">Seleziona testo</translation>
+<translation id="1896602904211344018">Installa l'app Chrome</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1979600810166324878">Maggiore sicurezza ovunque ti trovi con la Navigazione sicura avanzata su Chrome per iOS</translation>
@@ -270,6 +271,7 @@
 <translation id="3889417619312448367">Disinstalla Google Chrome</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3906096710440765802">Accedi a Chrome per trovare le password, i preferiti e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="3921132130819999051">Lascia che Chrome navighi per te</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="395904275706073188">Le pagine protette non possono essere lette. Prova con un'altra pagina.</translation>
 <translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -374,6 +376,7 @@
 <translation id="5163087008893166964">Ti diamo il benvenuto in Chrome; nuova finestra del browser aperta</translation>
 <translation id="5166439563123238795">Chrome deve avere l'autorizzazione per monitorare le tue mani</translation>
 <translation id="5167819546851111585">A cosa stai pensando oggi?</translation>
+<translation id="5169778651486082413">Usa le tue password con Chrome sullo smartphone</translation>
 <translation id="5170938038195470297">Non è possibile utilizzare il tuo profilo perché è associato a una versione di Google Chrome più recente. Alcune funzioni potrebbero non essere disponibili. Specifica una directory del profilo diversa o utilizza una versione di Chrome più recente.</translation>
 <translation id="5174969993834422967">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic sull'icona delle notifiche nell'angolo destro della barra degli indirizzi.</translation>
 <translation id="5174983315706567306">Spazio su disco insufficiente.</translation>
@@ -399,7 +402,6 @@
 <translation id="5430073640787465221">Il file delle preferenze è danneggiato o non valido. Google Chrome non è in grado di recuperare le impostazioni.</translation>
 <translation id="5465210843490471889">Scegli un profilo Chrome da utilizzare con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Per contribuire a migliorare queste funzionalità, Chrome invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
-<translation id="5510398294750420479">Scarica Chrome sul tuo smartphone per aggiungere un ulteriore livello di protezione ovunque ti trovi</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Rendi Chrome più veloce</translation>
 <translation id="5550137307985173298">Fai clic sul pulsante Personalizza Chrome nella pagina Nuova scheda per dare un nuovo aspetto a Chrome</translation>
@@ -455,6 +457,7 @@
 <translation id="6008161919456049856">Le password, i metodi di pagamento e gli indirizzi che hai salvato nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chrome, accedi nuovamente.</translation>
 <translation id="6009821354356307391">Fai una domanda aggiuntiva</translation>
 <translation id="6014316319780893079">Con gli <ph name="BEGIN_LINK" />strumenti di Chrome<ph name="END_LINK" /> puoi navigare in sicurezza e tenere tutto sotto controllo</translation>
+<translation id="6018578474045062808">Prova Google Lens con Chrome sul tuo smartphone</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6025087594896450715">Google Chrome verrà riavviato tra <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -477,6 +480,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Questa scheda utilizza risorse aggiuntive. Per migliorare le prestazioni, consenti a Chrome di renderla inattiva.</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
+<translation id="6183773856988300112">Gemini in Chrome utilizza la navigazione automatica per lavorare nelle tue schede e completare le attività che gli assegni. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Il tuo account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.
 
@@ -503,6 +507,8 @@
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="6426623519983252346">La prossima volta che aprirai Chrome su iOS, ti verrà chiesto di provare <ph name="FEATURE_NAME" />.</translation>
 <translation id="6434035853014503219">Grazie per aver scelto Chrome come browser predefinito.</translation>
+<translation id="6438015621983209660">Estendi la Navigazione sicura avanzata con Chrome sul tuo smartphone</translation>
+<translation id="6442774133615368941">Acquista, traduci e identifica ciò che vedi con la fotocamera sull'app Chrome per iOS</translation>
 <translation id="6473905796280459355">Vai alla pagina Informazioni su Chrome</translation>
 <translation id="6481963882741794338">Collega Chrome e altri servizi Google per la personalizzazione e altri scopi</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
@@ -640,6 +646,7 @@
 <translation id="7832314606810669113">Accedi a Chrome per vedere preferiti e altro ancora su tutti i tuoi dispositivi. Questo preferito verrà salvato nel tuo Account Google dopo che avrai eseguito l'accesso.</translation>
 <translation id="7845233973568007926">L'installazione è terminata. Dovrai riavviare il computer per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continua da dove avevi interrotto: Chrome può ripristinare le schede ogni volta che ricominci. Per attivare questa opzione, vai a</translation>
+<translation id="7869620795354551924">Per usare le password salvate, segui il codice QR, scarica Chrome per iOS e accedi al tuo Account Google</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Seleziona testo con Google Lens</translation>
 <translation id="7887929410013642057">Mostra sempre le scorciatoie di AI Mode</translation>

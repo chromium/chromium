@@ -88,6 +88,7 @@
 <translation id="1985716030964443178">Kjo do të rivendosë të gjitha sajtet në listën tënde te zmadhimi i parazgjedhur</translation>
 <translation id="1989112275319619282">Shfleto</translation>
 <translation id="1994173015038366702">URL-ja e sajtit</translation>
+<translation id="1994558116414798016">Fonti Lexend</translation>
 <translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
 <translation id="2025115093177348061">Realiteti i zgjeruar</translation>
 <translation id="2028449514182362831">Veçoritë që kanë nevojë për sensorët e lëvizjes nuk do të funksionojnë</translation>
@@ -98,6 +99,7 @@
 <translation id="2094208275686143364">Ngjyra e temës e ndritshme</translation>
 <translation id="2096716221239095980">Fshi të gjitha të dhënat</translation>
 <translation id="2102396546234652240">Mos lejo që sajtet të përdorin mikrofonin tënd</translation>
+<translation id="2115808389282428160">Mos lejo që sajtet të qasen në aplikacionet dhe shërbimet e tjera në këtë pajisje</translation>
 <translation id="2117655453726830283">Diapozitivi tjetër</translation>
 <translation id="2146263598007866206">Sajtet mund të shkarkojnë automatikisht skedarë përkatës së bashku për të të kursyer kohë</translation>
 <translation id="2148716181193084225">Sot</translation>
@@ -161,6 +163,7 @@
 <translation id="2621115761605608342">Lejo JavaScript për një sajt specifik</translation>
 <translation id="2626708220538466178">Fleta e poshtme e shfletuesit të parazgjedhur u mbyll</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
+<translation id="2665056444046933274">Sajtet mund ta përdorin këtë veçori për t'u qasur në aplikacionet dhe shërbimet e tjera në këtë pajisje</translation>
 <translation id="2670403088701171361">Mos lejo që sajtet të shikojnë tekstet ose imazhet në kujtesën e fragmenteve</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2682367912565197520">Fshi nivelin e ruajtur të zmadhimit</translation>
@@ -204,8 +207,10 @@
 <translation id="311394601889664316">Mos lejo që sajtet të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="3114012059975132928">Luajtësi i videos</translation>
 <translation id="3115898365077584848">Shfaq informacionin</translation>
+<translation id="3120204271988747891">Sajtet mund të kërkojnë të qasen në pajisjet e tjera në rrjetin tënd lokal</translation>
 <translation id="3123473560110926937">Bllokuar në disa sajte</translation>
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
+<translation id="3134859781443140237">Rrjeti lokal</translation>
 <translation id="3143754809889689516">Luaj nga fillimi</translation>
 <translation id="3164169438034704658">Mund ta aktivizosh vendndodhjen e saktë te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Lejo që një sajt të përdorë kukit e palëve të treta</translation>
@@ -216,6 +221,7 @@
 <translation id="3223425961342298674">Vendndodhja nuk lejohet</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3232293466644486101">Fshi të dhënat e shfletimit…</translation>
+<translation id="3241320538788585298">Rrjeti i përsëritjes</translation>
 <translation id="3242646949159196181">Kur cilësimi është aktiv, sajtet mund të luajnë tinguj. Kur cilësimi është joaktiv, sajtet nuk mund të luajnë tinguj.</translation>
 <translation id="3273479183583863618">Uljet e çmimeve në skeda</translation>
 <translation id="3277252321222022663">Lejoju faqeve të të hapin sensorët (rekomandohet)</translation>
@@ -426,6 +432,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> është bllokuar</translation>
 <translation id="560980142378233747">Kjo do të thotë që veçoritë e sajtit duhet të funksionojnë siç pritet, por mund të kesh më pak mbrojtje gjatë shfletimit. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Fleta e poshtme e kartave të faqeve të skedave të reja</translation>
+<translation id="5621413808884657932">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të qasen në aplikacionet dhe shërbimet e tjera në këtë pajisje. Kur cilësimi është joaktiv, sajtet nuk mund të qasen në aplikacionet dhe shërbimet e tjera në këtë pajisje.</translation>
 <translation id="5632485077360054581">Më trego mënyrën</translation>
 <translation id="5649053991847567735">Shkarkimet automatike</translation>
 <translation id="5668404140385795438">Zëvendësoje kërkesën e një sajti uebi për të parandaluar zmadhimin</translation>
@@ -546,6 +553,7 @@
 <translation id="6842868554183332230">Sajtet zakonisht zbulojnë se kur e përdor në mënyrë aktive pajisjen tënde për të caktuar disponueshmërinë në aplikacionet e bisedave</translation>
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
 <translation id="6870169401250095575">Fshih kartën "Kontrolli i sigurisë"</translation>
+<translation id="6882736949427544336">Mos i lejo sajtet të qasen në pajisjet e tjera në rrjetin tënd lokal</translation>
 <translation id="6900883974539674431">Krijo grupe skedash që ruhen dhe përditësohen automatikisht në të gjitha pajisjet e tua</translation>
 <translation id="6912998170423641340">Blloko sajtet që të mos lexojnë tekstin dhe imazhet nga kujtesa e fragmenteve</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
@@ -607,6 +615,8 @@
 <translation id="7586676035079382730">Njoftimet nuk lejohen</translation>
 <translation id="7594634374516752650">U lidh me një pajisje me Bluetooth</translation>
 <translation id="7617547684249261169">Mund të fshish disa ose të gjitha nga historiku, kukit, të dhënat e sajteve etj.</translation>
+<translation id="762200934554267613">Sajtet mund të kërkojnë qasje në aplikacionet dhe shërbimet e tjera në këtë pajisje</translation>
+<translation id="7627749368210392160">Sajtet mund ta përdorin këtë veçori për t'u qasur në pajisjet e tjera në rrjetin tënd lokal</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7655411746932645568">Sajtet mund të kërkojnë të lidhen me portat seriale</translation>
 <translation id="7658239707568436148">Anulo</translation>
@@ -662,6 +672,7 @@
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të qasen në pajisjet e tjera në rrjetin tënd lokal. Kur cilësimi është joaktiv, sajtet nuk mund të qasen në pajisjet e tjera në rrjetin tënd lokal.</translation>
 <translation id="8249310407154411074">Lëvize në krye</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8284326494547611709">Titrat</translation>
@@ -715,6 +726,7 @@
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8737426583868847403">Sajtet për të cilat ruan një nivel të personalizuar të zmadhimit do të shfaqen këtu</translation>
+<translation id="8748714929822124637">Mos i lejo sajtet të qasen në pajisjet e tjera në rrjetin tënd lokal</translation>
 <translation id="8751914237388039244">Zgjidh një imazh</translation>
 <translation id="8775741625735357092">Mund ta aktivizosh shiritin e faqeshënuesve te Cilësimet &gt; Paraqitja</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>

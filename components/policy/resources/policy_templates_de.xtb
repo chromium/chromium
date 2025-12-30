@@ -2419,6 +2419,11 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2707733461906745082">Profiltrennung</translation>
 <translation id="2707873794476722903">Safe Browsing ist im Standardmodus aktiv.</translation>
 <translation id="2709516037105925701">Autofill</translation>
+<translation id="2713265653152900248">Mit dieser Richtlinie kann im Inkognitomodus auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“). Beispielsweise werden alle Anfragen im Inkognitomodus blockiert, wenn du „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ auf * setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Die Richtlinie „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ hat Vorrang gegenüber „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen zu <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> möglich.
+
+Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Wenn du URLs für alle Nutzerprofile zulassen möchtest, verwende die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.</translation>
 <translation id="2713913573196284609">Dieser Wert wird ab M121 eingestellt. Ab M121 werden Werte als „EnabledBelowThreshold“ behandelt.</translation>
 <translation id="2713977837384407666">Messwerte immer an Google senden</translation>
 <translation id="2714359695399346815">Wenn diese Richtlinie aktiviert wird oder nicht konfiguriert ist, wird der Einsatz von STUN-Servern aktiviert und Remote-Clients können diesen Computer finden und eine Verbindung herstellen, selbst wenn er sich hinter einer Firewall befindet.
@@ -2898,6 +2903,7 @@ Diese Richtlinie hindert Nutzer nicht daran, Dateien auf andere Weise aus <ph na
 <translation id="3030232909811556512">Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Avatarbild des Nutzers nicht über lokale Dateien, die Gerätekamera oder das Google-Profilbild des Nutzers geändert werden.
 
 Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über eine der genannten Optionen anpassen.</translation>
+<translation id="3031370204150460535">Gemini-App-Integrationen blockieren, damit sie keine Aktionen direkt auf bestimmten Websites ausführen können</translation>
 <translation id="3031796805169553856">Zulassen, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
 <translation id="3032322294267258117">Legt die Einstellungen für Nutzer fest, die über GAIA ohne SAML authentifiziert werden.</translation>
 <translation id="3034855514833090741">Wenn die Richtlinie aktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung angezeigt werden. Wenn die Richtlinie deaktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung nicht angezeigt werden.
@@ -4355,6 +4361,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Wenn die Richtlinie nicht konfiguriert ist, gilt für <ph name="PRODUCT_OS_NAME" />-Geräte der standardmäßige Zeitraum von 259.200.000 Millisekunden (drei Tage).
 
       Bei einem Rollback oder anderen <ph name="PRODUCT_OS_NAME" />-Updates, die einen Powerwash auf dem Gerät ausführen, wird der Nutzer unabhängig vom Wert dieser Richtlinie immer sofort benachrichtigt, wenn das Update verfügbar ist.</translation>
+<translation id="4086132065708736174">Gemini-App-Integrationen erlauben, Aktionen direkt auf bestimmten Websites auszuführen</translation>
 <translation id="4086150283035515220">Wenn die Richtlinie aktiviert ist, werden Nutzer vor jedem Download nach dem gewünschten Speicherort gefragt. Ist die Richtlinie deaktiviert, beginnt der Download sofort und Nutzer werden nicht nach dem gewünschten Speicherort gefragt.
 
       Ist diese Richtlinie nicht konfiguriert, können Nutzer diese Einstellung ändern.</translation>
@@ -8784,6 +8791,9 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
 <translation id="6881447940489194100">Hexadezimalcodierter SHA‑256-Hash der Daten.</translation>
+<translation id="688149562204519323">Wenn die Richtlinie „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs im Inkognitomodus geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Ist die Richtlinie nicht konfiguriert, werden keine URLs im Inkognitomodus blockiert. In der Richtlinie „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden. Wie ein URL-Muster formatiert wird, erfährst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Verwende die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“, um URLs für alle Nutzerprofile zu blockieren.</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
       Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
@@ -9544,6 +9554,13 @@ Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findes
 
           Ist die Richtlinie nicht konfiguriert, ist die Farbkorrektur erst einmal deaktiviert, kann jedoch jederzeit vom Nutzer aktiviert werden.</translation>
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites Gemini-App-Integrationen keine direkten Aktionen auf Webseiten ausführen dürfen.
+
+URLs, die weder mit der Zulassungs- noch mit der Sperrliste übereinstimmen, verwenden <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URLs, die sowohl mit der Zulassungs- als auch mit der Sperrliste übereinstimmen, sind zulässig.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
 <translation id="7331098674887251788">Ermöglicht es Gemini-App-Integrationen, Aktionen direkt auf Webseiten auszuführen</translation>
@@ -10672,6 +10689,13 @@ Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, müssen sie mi
 Wenn er auf „false“ gesetzt ist, können sie ohne Verbindung zu einem verwalteten Netzwerk beitreten.</translation>
 <translation id="8183108371184777472">Öffnen des Browserfensters verhindern</translation>
 <translation id="8185312100223853315">Profillabel</translation>
+<translation id="8186370194423312090">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites Gemini-App-Integrationen direkte Aktionen auf Webseiten ausführen dürfen.
+
+URLs, die weder mit der Zulassungs- noch mit der Sperrliste übereinstimmen, verwenden <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URLs, die sowohl mit der Zulassungs- als auch mit der Sperrliste übereinstimmen, sind zulässig.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Nutzerfeedback zulassen</translation>
 <translation id="8195133650230097559">Anfragen nach Wakelocks für die Energieverwaltung ignorieren</translation>
 <translation id="8196558469954193908">Mit dieser Richtlinie wird das Zusammenführen von HTTP/2-Verbindungen zugelassen, wenn Clientzertifikate verwendet werden. Dazu müssen der Hostname der potenziellen neuen Verbindung und der Hostname einer vorhandenen Verbindung mit einem oder mehreren Mustern übereinstimmen, die durch diese Richtlinie beschrieben werden. Die Richtlinie ist eine Liste von Hosts unter Verwendung des <ph name="URL_BLOCKLIST_POLICY_NAME" />-Filterformats: "example.com" entspricht "example.com" sowie allen Subdomains wie "sub.example.com", während ".example.net" nur "example.net" entspricht.

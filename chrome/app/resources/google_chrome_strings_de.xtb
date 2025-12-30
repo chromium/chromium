@@ -270,6 +270,7 @@
 <translation id="3889417619312448367">Google Chrome deinstallieren</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3906096710440765802">Melde dich in Chrome an, um Daten wie Passwörter und Lesezeichen auf allen deinen Geräten zu nutzen</translation>
+<translation id="3921132130819999051">Chrome für dich suchen lassen</translation>
 <translation id="3941890832296813527">Installationsfehler: Der Dateiname des Installationsprogramms ist ungültig oder wird nicht unterstützt.</translation>
 <translation id="395904275706073188">Geschützte Seiten können nicht gelesen werden. Versuche es mit einer anderen Seite.</translation>
 <translation id="3968962723676998462">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
@@ -399,7 +400,6 @@
 <translation id="5430073640787465221">Deine Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="5465210843490471889">Wähle ein Chrome-Profil aus, das du mit <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> verwenden möchtest</translation>
 <translation id="5468572406162360320">Damit wir diese Funktionen verbessern können, sendet Chrome deine Interaktionen mit ihnen an Google. Diese Daten können von Prüfern gelesen, verarbeitet und mit Anmerkungen versehen werden.</translation>
-<translation id="5510398294750420479">Lade Chrome auf dein Smartphone herunter, damit du unterwegs besser geschützt bist</translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Chrome noch schneller machen</translation>
 <translation id="5550137307985173298">Wenn du Chrome einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chrome anpassen“</translation>
@@ -477,6 +477,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Dieser Tab verbraucht zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome ihn deaktiviert.</translation>
 <translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
+<translation id="6183773856988300112">Gemini in Chrome nutzt die automatische Suche, um Aufgaben auf deinen Tabs zu erledigen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Mein Konto in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
 

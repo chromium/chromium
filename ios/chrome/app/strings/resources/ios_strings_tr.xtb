@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
 <translation id="1150989369772528668">Takvim</translation>
 <translation id="1161663161838091892">Devam etmek için sekmeleri ve geçmişi senkronize edin</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kredi kartı}other{{count} kredi kartı}}</translation>
 <translation id="1164891049599601209">Yanıltıcı bir sitede girildi</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1172898394251786223">Sonraki alan</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
 <translation id="1764070164487214210">Yol tarifi</translation>
+<translation id="1764511703783285459">Diğer şifre yöneticisi herhangi bir şifre veya geçiş anahtarı paylaşmadı</translation>
 <translation id="1767766085187034454">Google Çeviri</translation>
 <translation id="1771016937398045251">Araçlar menüsü</translation>
 <translation id="1772468122139624049">Sekmeler yeniden yüklenemiyor</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Yaptığınız değişiklik kaydedilemedi.</translation>
 <translation id="3254806613790954367">Tüm cihazlarınızda en son açtığınız sekme</translation>
 <translation id="325717987950204592">"Gizlilik ve Güvenlik"e dokunun.</translation>
-<translation id="3266338926702638258">Bu ürünün fiyat geçmişini göster</translation>
 <translation id="3272527697863656322">İptal</translation>
 <translation id="3273510436356991673">Ana ekranınızı özelleştirme</translation>
 <translation id="3277021493514034324">Site adresi kopyalandı</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Son Sekmeler seçeneğini gizle</translation>
 <translation id="4578835633387306383">Aç…</translation>
 <translation id="4580716718466706433">"Şifre Yöneticisi"ne gidin</translation>
+<translation id="4585751637295612750">Sorunuza eklemek için yeni bir sekme açın</translation>
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4592672037257622855">{count,plural, =1{Sayfa, okuma listenize eklendi}other{{count} sayfa, okuma listenize eklendi}}</translation>
 <translation id="459644946100970322">Fiyat uyarıları açılsın mı?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Not 1.000 karakterden fazlasını içeriyor</translation>
 <translation id="5087098519049306025">Fiyat Takibi</translation>
 <translation id="5090832849094901128">Bu şifre silindiğinde <ph name="WEBSITE" /> üzerindeki hesabınız silinmez.</translation>
+<translation id="510580293474170715">İçe aktarılan öğe yok</translation>
 <translation id="5113960131843706315">Öğeleriniz alınıyor…</translation>
 <translation id="5118462200606189584">Hesap ekle…</translation>
 <translation id="5118764316110575523">Kapalı</translation>
@@ -1449,6 +1452,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6410390304316730527">Güvenli Tarama, sizi yanıltarak kötü amaçlı yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanıza neden olabilecek saldırganlara karşı korur. Bu özelliği kapatırsanız tanıdık olmayan veya saygınlığı şüpheli sitelere göz atarken dikkatli olun.</translation>
 <translation id="6410883413783534063">Aynı anda birden fazla sayfayı ziyaret etmek için yeni sekme açın</translation>
 <translation id="6418346271604475326">PDF hazırlanıyor</translation>
+<translation id="6420292512900923139">Verileriniz içe aktarılırken sorun oluştu</translation>
 <translation id="6421038304268477484">Çevrilmiş metin</translation>
 <translation id="6429213933892582367">Şifre Seçenekleri'ni açın</translation>
 <translation id="6435236283694032571">Okuma Listesine Ekle</translation>
@@ -1487,6 +1491,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
 <translation id="6550891580932862748">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Diğer Google ürünlerindeki Güvenli Tarama ayarlarınız etkilenmez.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Yeniden yap</translation>
 <translation id="6559301491397835130">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi ve yalnızca bu cihazda kayıtlı kalacaktır.}other{Yer işaretleri "{title}" konumuna kaydedildi ve yalnızca bu cihazda kayıtlı kalacaktır.}}</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>

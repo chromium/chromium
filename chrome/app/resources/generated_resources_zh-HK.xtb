@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125371304736839151">在瀏覽器頂部顯示 Gemini</translation>
 <translation id="1125550662859510761">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原廠設定)</translation>
+<translation id="1125816658532547876">在 <ph name="DEVICE_TYPE" /> 上使用密碼</translation>
 <translation id="1125921926864945797">桌布和樣式</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129348283834595293">數碼龐克</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">同步至您的帳戶</translation>
 <translation id="1373176046406139583">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">網絡「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
+<translation id="1374948751106271187">隨時隨地多添一重保障</translation>
 <translation id="1375557162880614858">要啟用 ChromeOS Flex 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="1375938286942050085">設定完成！下一步只需裝置即可玩遊戲</translation>
 <translation id="137651782282853227">已儲存的地址會在這裡顯示</translation>
@@ -991,7 +993,6 @@
 <translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。你你可隨時在「設定」&gt;「檔案」中變更此設定。</translation>
 <translation id="1651008383952180276">您必須輸入兩次相同的密碼短語</translation>
 <translation id="1651609627703324721">此分頁正在向眼罩展示 VR 內容</translation>
-<translation id="1651633344379798952">在手機試用「Google 智能鏡頭」</translation>
 <translation id="1652281434788353738">深思</translation>
 <translation id="1652326691684645429">啟用「咫尺共享」功能</translation>
 <translation id="1652862280638399816">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chromium 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
@@ -1220,7 +1221,6 @@
 <translation id="1808805149659872686">新項目</translation>
 <translation id="1809201888580326312">您已選擇不儲存這些網站和應用程式的密碼</translation>
 <translation id="1809734401532861917">將我的書籤、記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">如要在手機上使用已儲存的密碼，請透過 QR 碼下載 iOS 版 Chrome，並登入 Google 帳戶。</translation>
 <translation id="1810366086647840386">圖片伺服器</translation>
 <translation id="1811908311154949291">無痕隔離頁框：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -1267,6 +1267,7 @@
 <translation id="183445248400150852">網站會使用此功能來取代鍵盤輸入，例如遊戲或遠端桌面應用程式</translation>
 <translation id="1834503245783133039"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
+<translation id="1837292628323740716">在 <ph name="DEVICE_TYPE" /> 上使用「強化安全瀏覽」功能</translation>
 <translation id="1837441256780906162">Microsoft OneDrive 已拒絕要求，請稍後再試。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839021455997460752">您的電郵地址</translation>
@@ -3374,7 +3375,6 @@
 <translation id="3269612321104318480">淺藍綠色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="3270965368676314374">讀取、變更及刪除您電腦中的相片、音樂及其他媒體</translation>
-<translation id="3273033807960054795">擴大「強化安全瀏覽」範圍</translation>
 <translation id="3275464924531706548">收合<ph name="HEADER" /></translation>
 <translation id="3275778809241512831">您目前的內部安全密鑰並不安全。請將其從所有您使用此密鑰的服務中移除。如要解決此問題，請重設安全密鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
@@ -5099,7 +5099,6 @@
 <translation id="4421932782753506458">長毛貓</translation>
 <translation id="4423376891418188461">還原設定</translation>
 <translation id="4423525817792153232">露出所有牙齒</translation>
-<translation id="4424107154724312436">在 iOS 上試用「Google 智能鏡頭」</translation>
 <translation id="4424262960694990728">請即行動</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
@@ -5577,7 +5576,6 @@
 <translation id="4767427586072640478">進一步了解已經停用嘅擴充程式。</translation>
 <translation id="4769632191812288342">你將獲得標準保護功能</translation>
 <translation id="4770119228883592393">要求咗權限，㩒 ⌘ + Option + 向下箭咀就可以回覆</translation>
-<translation id="4770755495532014179">在 iPhone 上使用此密碼</translation>
 <translation id="4772914216048388646">整齊</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="4773122030389014189">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
@@ -6394,6 +6392,7 @@
 <translation id="5335370353987155592">使用 Gemini 時必須謹慎<ph name="BEGIN_LINK1" />安全<ph name="LINK_END1" />。Gemini 在處理任務期間所執行的操作 (包括出錯和<ph name="BEGIN_LINK2" />非預期的結果<ph name="LINK_END2" />，例如購物) 由你自行承擔責任。</translation>
 <translation id="5336688142483283574">此頁面也會從您的記錄和 <ph name="SEARCH_ENGINE" /> 活動中移除。</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
+<translation id="5337035808300170502">實際大小</translation>
 <translation id="5337207153202941678">關閉突顯功能</translation>
 <translation id="5337771866151525739">由第三方安裝。</translation>
 <translation id="5337926771328966926">目前嘅裝置名稱係 <ph name="DEVICE_NAME" /></translation>
@@ -6458,6 +6457,7 @@
 <translation id="5388719243178419614">無法上載。無法處理圖像檔案。</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389224261615877010">彩虹</translation>
+<translation id="538945906186309152">開啟 Gemini 鍵盤快速鍵</translation>
 <translation id="5389794555912875905">前往不安全的網站前先顯示警告 (建議)</translation>
 <translation id="5389943529251318913">將滑鼠速度降低</translation>
 <translation id="5390112241331447203">在意見報告中包含 system_logs.txt 檔案進行傳送。</translation>
@@ -6727,7 +6727,6 @@
 <translation id="556321030400250233">本機或共用檔案</translation>
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
 <translation id="5563824734298958390">要離開分頁群組嗎？</translation>
-<translation id="5564450015351086922">在 iOS 上試用「Google 智能鏡頭」</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5568069709869097550">無法登入</translation>
 <translation id="5568525251731145240">要刪除 <ph name="SITE_NAME" />、當中所有網站，以及已安裝應用程式的網站資料和權限嗎？</translation>
@@ -7927,7 +7926,6 @@
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
 <translation id="6410390304316730527">「安全瀏覽」能保護您免受攻擊，攻擊者可能會誘使您採取一些危險的行動，例如安裝惡意軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。如關閉「安全瀏覽」，請在瀏覽不熟悉或信譽不佳的網站時提高警覺。</translation>
 <translation id="6411135999030237579">按住即可自動重複按鍵動作</translation>
-<translation id="6411516120707127482">在手機試用「Google 智能鏡頭」</translation>
 <translation id="6414618057231176439">選取要安裝的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
 <translation id="6415757856498750027">輸入「w」會得到「ư」</translation>
@@ -7974,7 +7972,6 @@
 <translation id="6445450263907939268">如果您不想套用這些變更，可以還原為先前的設定。</translation>
 <translation id="6446213738085045933">建立桌面捷徑</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6449835059180426406">在 iOS 裝置上使用密碼</translation>
 <translation id="6450876761651513209">變更私隱權相關設定</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6451689256222386810">如果您忘記密碼短語，或要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
@@ -8455,6 +8452,7 @@
 <translation id="6783036716881942511">要忘記此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
+<translation id="678520006562636090">在 <ph name="DEVICE_TYPE" /> 上試用「Google 智能鏡頭」</translation>
 <translation id="6785594991951195537">使用 <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">睇緊儲存咗嘅桌面。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="6785915470941880363">反向捲動<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -8886,7 +8884,6 @@
 <translation id="7066572364168923329">選取 <ph name="DEVICE_TYPE" /> 的設定</translation>
 <translation id="7067396782363924830">氛圍顏色</translation>
 <translation id="7067725467529581407">不再顯示此訊息。</translation>
-<translation id="7067779359472606732">提醒已傳送至你的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="7068539819344620805">你現在可以隨時透過「自訂 Chrome」選單為瀏覽器換上新風格</translation>
 <translation id="7068591156533195518">你的 <ph name="DEVICE_TYPE" /> 已封鎖「<ph name="APP_NAME" />」和其他應用程式</translation>
@@ -10039,7 +10036,6 @@
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
-<translation id="7863211248337747225">下載應用程式</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分鐘後</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
 <translation id="7864825798076155402">要儲存在 Google 帳戶中嗎？</translation>
@@ -10366,7 +10362,6 @@
 <translation id="8068904756674285749">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。你亦可提出問題，系統會根據瀏覽記錄提供解答。此設定已關閉。</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" /> 位置權限</translation>
 <translation id="8070662218171013510">觸感反應</translation>
-<translation id="8071033114691184017">在 iPhone 上使用此密碼</translation>
 <translation id="8071432093239591881">以圖片形式列印</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式根據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等資料。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />備份資料將不會佔用您子女的「雲端硬碟」儲存空間配額。<ph name="END_PARAGRAPH2" />

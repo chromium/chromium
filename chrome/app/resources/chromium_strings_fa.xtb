@@ -219,9 +219,11 @@
 <translation id="3352986031709923790">‏گوشه بالا سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="3366305173356742781">‏داده‌های Chromium در حساب شما</translation>
 <translation id="3369405342922656244">جستجوی این صفحه با «جستجوی تصویر»</translation>
+<translation id="3375770072980084583">‏از گذرواژه‌هایتان با Chromium در تلفنتان استفاده کنید</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3412460710772753638">در «مدیر گذرواژه» در این دستگاه</translation>
+<translation id="3455907671758333080">‏«مرور ایمن پیشرفته» را با Chromium در تلفنتان گسترش دهید</translation>
 <translation id="3461644266919055473">‏درحال شخصی‌سازی Chromium…</translation>
 <translation id="347328004046849135">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد می‌شوید، Chromium شما را مطلع می‌کند</translation>
 <translation id="3474745554856756813">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
@@ -248,6 +250,7 @@
 <translation id="3798048725356732506">‏نمایه‌های Chromium به شما کمک می‌کنند بخش‌های مختلف زندگی‌تان را از هم جدا کنید. اکنون نمایه جدیدی اضافه کنید.</translation>
 <translation id="3802055581630249637">‏‫Chromium صفحه‌هایی را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بارگیری شوند</translation>
 <translation id="3810973564298564668">مدیریت</translation>
+<translation id="3823384748599722168">‏برای استفاده کردن از گذرواژه‌های ذخیره‌شده، رمزینه پاسخ‌سریع را دنبال کنید، Chromium ویژه iOS را بارگیری کنید، و به سیستم «حساب Google» وارد شوید</translation>
 <translation id="3846683726093018685">**خلاصه کردن:** در یک جمله کمتر از ۳۰ کلمه، موضوع اصلی و هدف محتوای نماگرفت را شرح بده.
 
           **پیشنهاد سؤال:** فهرستی گلوله‌ای با ۳ تا ۵ سؤال تأمل‌برانگیز تولید کن که کاربر بتواند برای درک بهتر نماگرفت بپرسد. حداقل یک مورد از این سؤالات باید به‌طور خاص درباره یک شیء بصری، طراحی، یا جای آن باشد.</translation>
@@ -323,6 +326,7 @@
 <translation id="4548534452171747496">‏‫Chromium صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو کردن سریع‌تر شود. <ph name="BEGIN_LINK" />درباره پیش‌بارگیری صفحه‌ها بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>
 <translation id="4570813286784708942">‏‫Chromium این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
+<translation id="4583692638088316420">‏«لنز Google» را با Chromium در تلفنتان امتحان کنید</translation>
 <translation id="4594305310729380060">در «مدیر گذرواژه» در این دستگاه</translation>
 <translation id="459535195905078186">‏برنامه‌های Chromium</translation>
 <translation id="4598116752460667024">فرایندی را ازطریق فهرست جستجو کنید.</translation>
@@ -354,6 +358,7 @@
 <translation id="4987820182225656817">‏مهمان‌ها می توانند از Chromium استفاده کنند بدون این‌که اثری از خود به جا بگذارند.</translation>
 <translation id="4992938037305302429">‏حساب شما در Chromium</translation>
 <translation id="4994636714258228724">‏افرودن خودتان به Chromium</translation>
+<translation id="5083712646171654472">‏‫«Gemini در Chromium» از مرور خودکار برای کار کردن در زبانه‌ها و تکمیل کردن تکلیف‌هایی که به آن می‌دهید استفاده می‌کند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">‏‫Chromium برای ردیابی کردن دست‌های شما به اجازه نیاز دارد</translation>
 <translation id="5141988424377517949">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
 <translation id="5167819546851111585">امروز در ذهنتان چه می‌گذرد؟</translation>
@@ -366,6 +371,7 @@
 <translation id="5254739261293693943">پرسش درباره این ویدیو</translation>
 <translation id="5277894862589591112">‏برای اعمال تغییراتتان، Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>
+<translation id="5289287148052354622">‏دریافت برنامه Chromium</translation>
 <translation id="5294316920224716406">‏هنگام مرور «درحالت ناشناس»، Chromium قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="5313228254328109263">‏سرویس داخلی به‌روزرسان Chromium</translation>
 <translation id="5346389065299425353">جستجویتان را با افزودن چند زبانه، فایل، و ابزار عمیق‌تر کنید</translation>
@@ -579,6 +585,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7617377681829253106">‏Chromium اکنون بهتر شده است</translation>
 <translation id="7622753900276619808">‏اکنون ویژگی‌های بیشتری در Chromium دردسترس شما قرار دارد</translation>
 <translation id="7649070708921625228">راهنما</translation>
+<translation id="7656340475565475526">‏اجازه دهید Chromium برایتان مرور کند</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7686590090926151193">‏Chromium مرورگر پیش‌فرض شما نیست</translation>
 <translation id="7689606757190482937">‏Chromium را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
@@ -604,7 +611,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7888981273428720788">‏تنظیم Chromium به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7934340546140346950">‏‫Chromium اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
-<translation id="7953047982688951904">‏با بارگیری Chromium در تلفنتان، یک لایه محافظتی بیشتر برای مرور درحرکت اضافه کنید</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="7997934263947464652">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chromium توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -631,6 +637,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8254601181414348851">‏در نمایه جدید به سیستم Chromium وارد می‌شوید؟</translation>
 <translation id="8286943863733751221">‏‫Chromium درباره سایت‌ها و بارگیری‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION" /> را برداشت.</translation>
+<translation id="8296236834352487533">‏در برنامه Chromium ویژه iOS، با دوربینتان آنچه را می‌بینید بخرید، ترجمه کنید، و شناسایی کنید</translation>
 <translation id="8313851650939857356">خطای راه‌اندازی: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="8321888067342493336">ذخیره کردن به‌عنوان تصویر</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome ipucuları</translation>
 <translation id="1816835383954230954">Aktiv olduqda Chrome daha sürətli işləyir və JavaScript istifadə edən funksiyalar nəzərdə tutulan kimi işləməlidir. Deaktiv olduqda bu, performansı azaldır, lakin V8-i hücumlara qarşı daha davamlı edir.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
+<translation id="1822318649925991542">Baxış təcrübənizi fərdiləşdirmək üçün mövqeni dəyişin</translation>
 <translation id="1848033246551405023">Şrift Sans Serif</translation>
 <translation id="1861262398884155592">Qovluq boşdur</translation>
 <translation id="1881806992065048905">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Bu dəfə icazə verilib • Dəqiq</translation>
 <translation id="2544997614631598250">Tema rəngi tünd</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
+<translation id="2553552004849639664">Onlayn təhlükələrə qarşı Chrome-un ən güclü qorumasını əldə edin</translation>
 <translation id="2570922361219980984">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
@@ -415,6 +417,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="5373874281522292782">Tab qrupları yadda saxlanıldı</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+1)}other{(+ #)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5407203562970638234">Təhlükəsizliyinizi artırın</translation>
 <translation id="5438097262470833822">Bu seçim <ph name="WEBSITE" /> üçün icazələri sıfırlayacaq</translation>
 <translation id="5459413148890178711">Aktiv ediləndə saytlar məkan icazəsi istəyə bilər. Deaktiv ediləndə saytlar məkanı görə bilməz.</translation>
 <translation id="5489227211564503167">Keçən vaxt: <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />.</translation>

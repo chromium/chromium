@@ -273,6 +273,7 @@
 <translation id="3889417619312448367">Google Chrome'i desinstallimine</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3906096710440765802">Logige Chrome'is sisse, et paroole, järjehoidjaid ja muud kõigis oma seadmetes kasutada</translation>
+<translation id="3921132130819999051">Laske Chrome'il teie eest sirvida</translation>
 <translation id="3941890832296813527">Installimisviga: installiprogrammi failinimi on sobimatu või seda ei toetata.</translation>
 <translation id="395904275706073188">Kaitstud lehti ei saa lugeda. Proovige teist lehte.</translation>
 <translation id="3968962723676998462">Sisestage pääsukood, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
@@ -404,7 +405,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5465210843490471889">Valige Chrome'i profiil, mida <ph name="START_GLIC_STYLING" />Geminiga<ph name="END_GLIC_STYLING" /> kasutada</translation>
 <translation id="5468572406162360320">Nende funktsioonide täiustamiseks saadab Chrome teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
-<translation id="5510398294750420479">Laadige telefonis alla Chrome, mis kaitseb teid liikvel olles paremini</translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
 <translation id="5530733413481476019">Muutke Chrome kiiremaks</translation>
 <translation id="5550137307985173298">Chrome'ile uue ilme andmiseks klõpsake uuel vahelehel nupul Chrome'i kohandamine</translation>
@@ -482,6 +482,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
+<translation id="6183773856988300112">Gemini Chrome'is kasutab teie vahelehtedel töötamiseks ja antud ülesannete täitmiseks automaatset sirvimist. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chrome’i tööpõhimõtteid.
 

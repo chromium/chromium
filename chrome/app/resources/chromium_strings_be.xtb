@@ -356,6 +356,7 @@
 <translation id="4987820182225656817">Госці могуць выкарыстоўваць Chromium, не пакідаючы нічога пасля сябе.</translation>
 <translation id="4992938037305302429">Ваш уліковы запіс у Chromium</translation>
 <translation id="4994636714258228724">Дадаць мяне ў Chromium</translation>
+<translation id="5083712646171654472">Gemini ў Chromium выкарыстоўвае функцыю аўтаматычнага прагляду, каб працаваць ва ўкладках і выконваць задачы, атрыманыя ад вас. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium запытвае дазвол на адсочванне рухаў рук</translation>
 <translation id="5141988424377517949">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Пра што вы хочаце спытаць?</translation>
@@ -582,6 +583,7 @@
 <translation id="7617377681829253106">Chromium стаў яшчэ лепшым</translation>
 <translation id="7622753900276619808">Цяпер для вас даступна больш функцый у Chromium</translation>
 <translation id="7649070708921625228">Даведка</translation>
+<translation id="7656340475565475526">Дазвольце Chromium праглядаць старонкі за вас</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7686590090926151193">Chromium не з’яўляецца стандартным браўзерам</translation>
 <translation id="7689606757190482937">Сінхранізуйце і персаналізуйце Chromium на сваіх прыладах</translation>
@@ -607,7 +609,6 @@
 <translation id="7888981273428720788">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="7934340546140346950">Калі магчыма, Chromium аўтаматычна пераходзіць з неабароненага падключэння на HTTPS</translation>
 <translation id="7937630085815544518">Вы ўваходзілі ва ўліковы запіс Chromium як <ph name="USER_EMAIL_ADDRESS" />. Для паўторнага ўваходу выкарыстоўвайце той жа самы ўліковы запіс.</translation>
-<translation id="7953047982688951904">Спампуйце Chromium на тэлефон, каб павысіць узровень яго абароны, калі вы ў дарозе</translation>
 <translation id="7975919845073681630">Гэта другасны ўсталяваны экзэмпляр Chromium – яго нельга зрабіць стандартным браўзерам.</translation>
 <translation id="7997934263947464652">Пашырэнні, праграмы і тэмы з невядомых крыніц могуць прычыніць шкоду вашай прыладзе. Chromium рэкамендуе ўсталёўваць іх толькі з наступнай крыніцы: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Браўзер</translation>

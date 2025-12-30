@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1816835383954230954">‏כשהאפשרות הזו מופעלת, דפדפן Chrome פועל מהר יותר ותכונות שמתבססות על JavaScript אמורות לפעול כמו שצריך. כשהאפשרות הזו מושבתת, יש ירידה ברמת הביצועים בתמורה להגברת העמידות של V8 בפני מתקפות.</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">כדי להתאים אישית את חוויית הגלישה, אפשר לשנות את המיקום של סרגל הכתובות</translation>
 <translation id="1848033246551405023">‏גופן Sans Serif</translation>
 <translation id="1861262398884155592">התיקייה הזו ריקה</translation>
 <translation id="1881806992065048905">הגיליון התחתון של המראה של דף הכרטיסייה החדשה</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">יש אישור לשימוש חד-פעמי • מיקום מדויק</translation>
 <translation id="2544997614631598250">צבע עיצוב כהה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
+<translation id="2553552004849639664">‏רוצה לקבל את ההגנה הכי מתקדמת של Chrome מפני איומים באינטרנט?</translation>
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
@@ -416,6 +418,7 @@
 <translation id="5373874281522292782">קבוצות הכרטיסיות שלך נשמרות</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}one{(ועוד #)}two{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
+<translation id="5407203562970638234">אבטחה שנותנת שקט נפשי</translation>
 <translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאת גישה למיקום. כשהאפשרות מושבתת, אתרים לא יכולים לראות את מיקום המכשיר.</translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
@@ -550,7 +553,7 @@
 <translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6842868554183332230">לרוב, אתרים יכולים לזהות מתי המכשיר הזה משמש אותך באופן פעיל כדי להגדיר את הזמינות שלך באפליקציות צ'אט</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
-<translation id="6870169401250095575">הסתרת הכרטיס 'טיימר לדיווח על מצב מסוכן'</translation>
+<translation id="6870169401250095575">הסתרת הכרטיס "בדיקת אבטחה"</translation>
 <translation id="6882736949427544336">אין הרשאה לאתרים להתחבר למכשירים אחרים ברשת המקומית</translation>
 <translation id="6900883974539674431">אפשר ליצור קבוצות של כרטיסיות שנשמרות באופן אוטומטי ומתעדכנות בכל המכשירים</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>

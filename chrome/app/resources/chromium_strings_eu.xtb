@@ -356,6 +356,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4987820182225656817">Gonbidatuek Chromium erabil dezakete aztarnarik utzi gabe.</translation>
 <translation id="4992938037305302429">Zure kontua Chromium-en</translation>
 <translation id="4994636714258228724">Gaitu zure burua Chromium-en</translation>
+<translation id="5083712646171654472">Chromium-eko Gemini-k arakatze automatikoa erabiltzen du fitxetan lan egiteko eta ematen dizkiozun zereginak osatzeko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-ek zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5141988424377517949">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimena kendu dio.</translation>
 <translation id="5167819546851111585">Zer darabilzu buruan gaur?</translation>
@@ -582,6 +583,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7617377681829253106">Chromium hobetu egin dugu</translation>
 <translation id="7622753900276619808">Orain, eginbide gehiago dituzu Chromium-en</translation>
 <translation id="7649070708921625228">Laguntza</translation>
+<translation id="7656340475565475526">Eman zure izenean arakatzeko baimena Chromium-i</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7686590090926151193">Chromium ez da zure arakatzaile lehenetsia</translation>
 <translation id="7689606757190482937">Sinkronizatu eta pertsonalizatu Chromium gailu guzietan</translation>
@@ -607,7 +609,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7888981273428720788">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="7934340546140346950">Chromium-ek konexio ez-seguruen maila HTTPSra igotzen du automatikoki posible denean</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
-<translation id="7953047982688951904">Deskargatu Chromium telefonoan babes-geruza gehigarri bat izan dezazun edonoiz eta edonon</translation>
 <translation id="7975919845073681630">Chromium-en bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="7997934263947464652">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chromium-ek.</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>

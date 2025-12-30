@@ -354,6 +354,7 @@
 <translation id="4987820182225656817">Viesi var izmantot Chromium, neatstājot nekādas pēdas.</translation>
 <translation id="4992938037305302429">Jūsu konts pārlūkā Chromium</translation>
 <translation id="4994636714258228724">Pievienot savu kontu pārlūkā Chromium</translation>
+<translation id="5083712646171654472">Gemini pārlūkā Chromium izmanto automātisko pārlūkošanu, lai darbotos jūsu cilnēs un veiktu jūsu dotos uzdevumus. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="5123973130450702873">Pārlūkam Chromium ir nepieciešama atļauja izsekot jūsu roku kustības.</translation>
 <translation id="5141988424377517949">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chromium tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Kas jums šodien padomā?</translation>
@@ -578,6 +579,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7617377681829253106">Pārlūkā Chromium ir veikti uzlabojumi</translation>
 <translation id="7622753900276619808">Tagad pārlūkā Chromium ir pieejams vairāk funkciju.</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
+<translation id="7656340475565475526">Ļaujiet pārlūkam Chromium veikt pārlūkošanu jūsu vietā</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7686590090926151193">Chromium nav jūsu noklusējuma pārlūks.</translation>
 <translation id="7689606757190482937">Chromium sinhronizēšana un personalizēšana visās savās ierīcēs</translation>
@@ -603,7 +605,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7888981273428720788">Iestatīt Chromium kā noklusējuma pārlūku</translation>
 <translation id="7934340546140346950">Pārlūkā Chromium nedrošie savienojumi tiek automātiski jaunināti uz HTTPS, ja iespējams.</translation>
 <translation id="7937630085815544518">Operētājsistēmā Chromium iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
-<translation id="7953047982688951904">Lejupielādējiet pārlūku Chromium savā tālrunī, lai nodrošinātu papildu aizsardzību, atrodoties ceļā.</translation>
 <translation id="7975919845073681630">Šī ir Chromium papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="7997934263947464652">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chromium komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>

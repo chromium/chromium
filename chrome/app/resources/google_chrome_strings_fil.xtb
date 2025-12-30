@@ -89,6 +89,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1880677175115548835">Piliin ang text</translation>
+<translation id="1896602904211344018">Kunin ang Chrome app</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
 <translation id="1953553007165777902">Nagda-download... <ph name="MINUTE" /> (na) minuto na lang ang natitira</translation>
 <translation id="1979600810166324878">Manatiling mas ligtas on the go gamit ang Pinahusay na Ligtas na Pag-browse sa Chrome para sa iOS</translation>
@@ -275,6 +276,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3889417619312448367">I-uninstall ang Google Chrome</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3906096710440765802">Mag-sign in sa Chrome para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo</translation>
+<translation id="3921132130819999051">Hayaan ang Chrome na mag-browse para sa iyo</translation>
 <translation id="3941890832296813527">Error sa pag-install: Invalid o hindi sinusuportahan ang filename ng installer.</translation>
 <translation id="395904275706073188">Hindi mababasa ang mga pinoprotektahang page. Sumubok ng ibang page.</translation>
 <translation id="3968962723676998462">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mo, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5163087008893166964">Welcome sa Chrome; binuksan ang bagong window ng browser</translation>
 <translation id="5166439563123238795">Kailangan ng Chrome ng pahintulot para i-track ang iyong mga kamay</translation>
 <translation id="5167819546851111585">Ano ang iniisip mo ngayon?</translation>
+<translation id="5169778651486082413">Gamitin ang iyong mga password sa Chrome sa telepono mo</translation>
 <translation id="5170938038195470297">Hindi magagamit ang iyong profile dahil mula ito sa isang mas bagong bersyon ng Google Chrome.
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chrome.</translation>
@@ -408,7 +411,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5465210843490471889">Pumili ng profile sa Chrome na gagamitin sa <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para makatulong na pahusayin ang mga feature na ito, ipinapadala ng Chrome sa Google ang iyong mga interaction dito. Posibleng basahin, iproseso, at i-annotate ang data na ito ng mga taong tagasuri.</translation>
-<translation id="5510398294750420479">I-download ang Chrome sa iyong telepono para magkaroon ng karagdagang layer ng proteksyon kapag on the go ka</translation>
 <translation id="5524890928877629608">kaliwang sulok sa itaas ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Pabilisin ang Chrome</translation>
 <translation id="5550137307985173298">I-click ang button na I-customize ang Chrome sa Page na Bagong Tab para bigyan ang Chrome ng bagong hitsura</translation>
@@ -464,6 +466,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6008161919456049856">Aalisin sa device na ito ang mga password, paraan ng pagbabayad, at address na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chrome, mag-sign in ulit.</translation>
 <translation id="6009821354356307391">Mag-follow up</translation>
 <translation id="6014316319780893079">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chrome<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
+<translation id="6018578474045062808">Subukan ang Google Lens sa Chrome sa iyong telepono</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
 <translation id="6025087594896450715">Magre-restart ang Google Chrome sa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -486,6 +489,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawin itong hindi aktibo.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
+<translation id="6183773856988300112">Gumagamit ang Gemini sa Chrome ng awtomatikong pag-browse para gumawa sa iyong mga tab at kumumpleto ng mga gawaing ibibigay mo rito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Iyong Account sa Chrome</translation>
 <translation id="6220551899604141979">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chrome.
 
@@ -512,6 +516,8 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6418662306461808273">Lumipat sa kasalukuyang profile sa Chrome?</translation>
 <translation id="6426623519983252346">Makakakita ka ng prompt na subukan ang <ph name="FEATURE_NAME" /> sa susunod na buksan mo ang Chrome iOS.</translation>
 <translation id="6434035853014503219">Salamat sa pagpili sa Chrome bilang iyong default browser!</translation>
+<translation id="6438015621983209660">I-extend ang Pinahusay na Ligtas na Pag-browse gamit ang Chrome sa iyong telepono</translation>
+<translation id="6442774133615368941">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera sa Chrome iOS app</translation>
 <translation id="6473905796280459355">Pumunta sa page na Tungkol sa Chrome</translation>
 <translation id="6481963882741794338">I-link ang Chrome at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
 <translation id="648319183876919572">Mas maraming magagawa ang Pinahusay na Ligtas na Pag-browse para protektahan ka laban sa mga mapanganib na website at download</translation>
@@ -649,6 +655,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7832314606810669113">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang bookmark na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Magpatuloy kung saan ka huminto: Puwedeng i-restore ng Chrome ang iyong mga tab sa tuwing magre-restart ka. Para i-on ito, pumunta sa</translation>
+<translation id="7869620795354551924">Para magamit ang iyong mga naka-save na password, sundan ang QR code, i-download ang Chrome para sa iOS, at mag-sign in sa Google Account mo</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
 <translation id="7886087451482920026">Pumili ng text gamit ang Google Lens</translation>
 <translation id="7887929410013642057">Palaging Ipakita ang Mga Shortcut ng AI Mode</translation>

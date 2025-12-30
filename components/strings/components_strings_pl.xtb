@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zarządzać informacjami z Chrome, które zapisujesz na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="1122714970786750095">Elektronika i elektryka</translation>
 <translation id="1123753900084781868">Napisy na żywo nie są teraz dostępne</translation>
+<translation id="1124643885833329193">Dokładna lokalizacja</translation>
 <translation id="112840717907525620">Pamięć podręczna zasad: OK</translation>
 <translation id="1131264053432022307">Skopiowany obraz</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – aby zamknąć pełny ekran, przeciągnij od góry i kliknij przycisk Wstecz</translation>
@@ -893,6 +894,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2400263725572336749">Dodaj paszport</translation>
 <translation id="2400271059665846158">Zarządzaj kartami lojalnościowymi w Portfelu Google</translation>
 <translation id="2400600116338235695">Może prosić o zgodę na połączenie z portami szeregowymi</translation>
+<translation id="2403474027143565107">Dokładna</translation>
 <translation id="240450251994300576">Logo nagłówka dodatkowego</translation>
 <translation id="2404884497378469141">Spróbuj ponownie skopiować pliki</translation>
 <translation id="2413155254802890957">Stary</translation>
@@ -997,6 +999,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2571488850200220306">Aby zapewnić bezpieczeństwo, administrator może też wyświetlać informacje o systemie operacyjnym urządzenia, wersji przeglądarki i zainstalowanym oprogramowaniu</translation>
 <translation id="2573170131138724450">Telewizory</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2577522251608256362">Dzielnica</translation>
 <translation id="2580031090587209073">Opcje udostępniania</translation>
 <translation id="258027838577899739">Usuń wszystko z historii</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> dodał(a) kartę</translation>
@@ -1283,6 +1286,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3076865167425975822">Systemy operacyjne</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Pozwól Google na sprawdzanie, czy do produktów, które masz w koszykach, można zastosować spersonalizowane rabaty</translation>
+<translation id="3085373848068196154">„<ph name="PROXY_INVALID_PROXY" />” nie jest prawidłowym serwerem proxy.</translation>
 <translation id="3086269988715347183">Strona <ph name="BLOCKED_URL" /> nie została przez Ciebie wcześniej zatwierdzona</translation>
 <translation id="3086579638707268289">Twoja aktywność w internecie jest monitorowana</translation>
 <translation id="3087734570205094154">Na dół</translation>
@@ -1412,6 +1416,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3266793032086590337">Wartość (konflikt)</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3270041629388773465">Realizuj płatności szybciej dzięki zapisanym kodom CVC</translation>
+<translation id="3270343151253360050">Aby dokończyć ten zakup, wybierz inną formę płatności</translation>
 <translation id="3270847123878663523">&amp;Cofnij zmianę kolejności</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> chce się połączyć</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="361438452008624280">Pozycja listy „<ph name="LANGUAGE_ID" />”: nieznany lub nieobsługiwany język.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3615309852743236517">Manicure i pedicure</translation>
+<translation id="3620034424637552643">Często używana w przypadku tras dojazdu, dostaw itp.</translation>
 <translation id="3620239073311576716">Uniformy i odzież robocza</translation>
 <translation id="3621401353678567613">Żeby otrzymywać alerty o obniżkach cen śledzonych produktów, włącz powiadomienia w ustawieniach.</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
@@ -1893,6 +1899,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4036753017940930924">Działki i grunty</translation>
 <translation id="403724377879219932">Może prosić o dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="4039506337798853114">Aby wyświetlić kursor, naciśnij |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Przybliżona</translation>
 <translation id="4045070493270310437">Otwórz ponownie karty</translation>
 <translation id="4045226534284799755">Zaloguj się na konto Microsoft, zanim spróbujesz jeszcze raz</translation>
 <translation id="4045441967987592849">Otwórz ponownie</translation>
@@ -3211,6 +3218,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6164605812717770913">Twój rodzic lub opiekun nie wyraził zgody na odwiedzanie tej witryny. Możesz poprosić o jej odblokowanie.</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6167577165590485365">Ostatnia próba pobrania:</translation>
+<translation id="6171968084616623939">„<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />” nie jest prawidłową wartością.</translation>
 <translation id="617256461084925519">Google Chrome próbuje zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności.</translation>
 <translation id="6173208311907792313">Dokończ zakupy za pomocą Windows Hello</translation>
 <translation id="6176387967264100435">To wysoka cena</translation>
@@ -3537,6 +3545,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6688851075017682769">Testuj adresy według kraju</translation>
 <translation id="6689249931105087298">Względna z kompresją punktu czerni</translation>
 <translation id="6689271823431384964">Chrome proponuje zalogowanym użytkownikom zapisywanie kart na koncie Google. Możesz to zmienić w ustawieniach. Imię i nazwisko posiadacza karty pochodzi z Twojego konta.</translation>
+<translation id="6690688090329768424">„<ph name="PROXY_INVALID_DESTINATION" />” nie jest prawidłowym wzorcem miejsca docelowego.</translation>
 <translation id="6691397311652656001">Zwolnij więcej niż <ph name="REQUIRED_FREE_DISK_SPACE" /> miejsca</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby znaleźć swoje urządzenie na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="6695428916538794739">Filmy akcji i przygodowe</translation>
@@ -3549,6 +3558,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6702851555558236418">Oprogramowanie muzyczne i audio</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
 <translation id="6704458454638854812">Właściwość „custom_size” jest ustawiona. Oczekiwana nazwa to „custom”.</translation>
+<translation id="670477556876354552">Wymagane ponowne uruchomienie</translation>
 <translation id="6706005862292023715">Zasłony i dekoracja okien</translation>
 <translation id="6706210727756204531">Zakres</translation>
 <translation id="6706678697074905703">Nie udało się zapisać tego numeru IBAN na Twoim koncie Google. Zamiast tego został on zapisany w Chrome na tym urządzeniu.</translation>
@@ -4075,7 +4085,6 @@ Dodatkowe informacje:
 <translation id="753556296624075801">Technologia Google</translation>
 <translation id="753713322968419914">Usunąć adres domowy z autouzupełniania w Chrome?</translation>
 <translation id="7537536606612762813">Obowiązkowa</translation>
-<translation id="7541043894191476250">Zadania kontekstowe</translation>
 <translation id="7543525346216957623">Poproś rodzica</translation>
 <translation id="7546409722674205727">Rozpoczyna się <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Naprawianie błędów połączenia</translation>
@@ -4284,6 +4293,7 @@ Dodatkowe informacje:
 <translation id="7870281855125116701">Znaleziono rabat</translation>
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
 <translation id="787226752901403048">Zaloguj się w Chrome, aby udostępniać grupy kart i do nich dołączać oraz wspólnie pracować nad pomysłami</translation>
+<translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />” nie jest znanym typem warunku.</translation>
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
 <translation id="7881044256965445977">Szukanie urządzeń w sieci lokalnej i łączenie się z nimi</translation>
@@ -5008,6 +5018,7 @@ Dodatkowe informacje:
 <translation id="9090243919347147717">Załączniki</translation>
 <translation id="9090548458280093580">Przeszukuj historię z wykorzystaniem AI</translation>
 <translation id="9090993752571911635">Dostawcy usług internetowych</translation>
+<translation id="9092305980625216393">Często używana w przypadku pogody, wiadomości lokalnych itp.</translation>
 <translation id="9093723786115107672">Bielizna nocna</translation>
 <translation id="9094424186948667194">Dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="9094544726794842788">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego te wyniki Ci się nie podobają</translation>

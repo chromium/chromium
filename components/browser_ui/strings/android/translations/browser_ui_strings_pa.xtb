@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1816835383954230954">ਚਾਲੂ ਹੋਣ 'ਤੇ, Chrome ਤੇਜ਼ੀ ਨਾਲ ਕੰਮ ਕਰਦਾ ਹੈ ਅਤੇ JavaScript ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਡਿਜ਼ਾਈਨ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ। ਬੰਦ ਹੋਣ 'ਤੇ, ਇਹ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਘਟਾਉਂਦਾ ਹੈ ਪਰ V8 ਨੂੰ ਅਟੈਕਾਂ ਪ੍ਰਤੀ ਵਧੇਰੇ ਰੋਧਕ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ਨੂੰ AR ਵਰਤਣ ਦੇਣ ਲਈ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕੈਮਰਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="1822318649925991542">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਸਥਿਤੀ ਨੂੰ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1848033246551405023">ਸਾਂਸ-ਸੈਰਿਫ ਫ਼ੌਂਟ</translation>
 <translation id="1861262398884155592">ਇਹ ਫੋਲਡਰ ਖਾਲੀ ਹੈ</translation>
 <translation id="1881806992065048905">'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ 'ਤੇ ਦਿਖਣ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ਇਸ ਸਮੇਂ ਆਗਿਆ ਦਿੱਤੀ ਗਈ • ਸਟੀਕ</translation>
 <translation id="2544997614631598250">ਥੀਮ ਦਾ ਰੰਗ ਗੂੜ੍ਹਾ</translation>
 <translation id="2546283357679194313">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
+<translation id="2553552004849639664">ਆਨਲਾਈਨ ਖਤਰਿਆਂ ਤੋਂ ਬਚਣ ਲਈ Chrome ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="2570922361219980984">ਇਸ ਡੀਵਾਈਸ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਵੀ ਬੰਦ ਹੈ। ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="257931822824936280">ਵਿਸਤ੍ਰਿਤ - ਸਮੇਟਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ਹੋਰ)}one{(+ # ਹੋਰ)}other{(+ # ਹੋਰ)}}</translation>
 <translation id="5403592356182871684">ਨਾਮ</translation>
+<translation id="5407203562970638234">ਆਪਣੀ ਸੁਰੱਖਿਆ ਵਧਾਓ</translation>
 <translation id="5438097262470833822">ਇਹ ਚੋਣ <ph name="WEBSITE" /> ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="5459413148890178711">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਬਾਰੇ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਨਹੀਂ ਦੇਖ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ਵਿੱਚੋਂ ਬੀਤਿਆ ਸਮਾਂ <ph name="ELAPSED_TIME" />।</translation>
@@ -564,7 +567,7 @@
 <translation id="702275896380648118">ਇਹ ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਮਨਪਸੰਦ ਚੀਜ਼ਾਂ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦਿੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7036823721811529709">ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਸੁਣੋ</translation>
 <translation id="7044081119134178347">ਇਸ ਸਮੇਂ ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਹੈ</translation>
-<translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
+<translation id="7053983685419859001">ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7055552182600664515">ਕਾਪੀਰਾਈਟ ਵੱਲੋਂ ਸੁਰੱਖਿਅਤ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਚਲਾਉਣ ਲਈ, ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਸਾਈਟਾਂ ਨੂੰ ਸਮੱਗਰੀ ਦੀ ਸੁਰੱਖਿਆ ਸੇਵਾ ਵਰਤਣ ਦੀ ਲੋੜ ਪਵੇ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ}one{# ਚੁਣੀ ਗਈ}other{# ਚੁਣੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' ਦਾ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>

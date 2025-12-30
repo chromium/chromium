@@ -357,6 +357,7 @@
 <translation id="4987820182225656817">Os invitados poden utilizar Chromium sen perder información.</translation>
 <translation id="4992938037305302429">A túa conta en Chromium</translation>
 <translation id="4994636714258228724">Engádete a Chromium</translation>
+<translation id="5083712646171654472">Gemini en Chromium usa a navegación automática para traballar nas túas pestanas e completar as tarefas que lle encomendes. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium necesita permiso para facer un seguimento das mans</translation>
 <translation id="5141988424377517949">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">En que pensas hoxe?</translation>
@@ -583,6 +584,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7617377681829253106">Chromium introduciu melloras</translation>
 <translation id="7622753900276619808">Xa tes máis funcións dispoñibles en Chromium</translation>
 <translation id="7649070708921625228">Axuda</translation>
+<translation id="7656340475565475526">Permitir que Chromium navegue por ti</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7686590090926151193">Chromium non é o teu navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza e personaliza Chromium nos teus dispositivos</translation>
@@ -608,7 +610,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7888981273428720788">Define Chromium como o navegador predeterminado</translation>
 <translation id="7934340546140346950">Sempre que sexa posible, Chromium cambiará automaticamente as conexións pouco seguras a HTTPS</translation>
 <translation id="7937630085815544518">Iniciaches sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
-<translation id="7953047982688951904">Descarga Chromium no teléfono para engadir unha capa máis de protección esteas onde esteas</translation>
 <translation id="7975919845073681630">Esta é unha instalación secundaria de Chromium e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="7997934263947464652">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Navegador</translation>

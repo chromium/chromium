@@ -356,6 +356,7 @@
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4992938037305302429">Chromium의 내 계정</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>
+<translation id="5083712646171654472">Chromium의 Gemini는 자동 탐색을 사용하여 탭에서 작동하고 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="5141988424377517949">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="5167819546851111585">오늘은 어떤 생각을 하고 계시나요?</translation>
@@ -582,6 +583,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
 <translation id="7622753900276619808">이제 Chromium에서 더 많은 기능을 사용할 수 있습니다.</translation>
 <translation id="7649070708921625228">도움말</translation>
+<translation id="7656340475565475526">Chromium이 대신 탐색하도록 허용</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
@@ -607,7 +609,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>
 <translation id="7934340546140346950">가능한 경우 Chromium이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
-<translation id="7953047982688951904">이동 중에 보안을 한층 더 강화하려면 휴대전화에 Chromium을 다운로드하세요.</translation>
 <translation id="7975919845073681630">Chromium의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="7997934263947464652">알 수 없는 소스의 확장 프로그램, 앱, 테마는 기기를 손상시킬 수 있습니다. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에서 다운로드한 확장 프로그램, 앱, 테마만 설치하는 것이 좋습니다</translation>
 <translation id="8004582292198964060">브라우저</translation>

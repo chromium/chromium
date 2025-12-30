@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">No se ha podido guardar tu cambio.</translation>
 <translation id="3254806613790954367">La última pestaña abierta en todos tus dispositivos</translation>
 <translation id="325717987950204592">Toca Privacidad y seguridad</translation>
-<translation id="3266338926702638258">Mostrar historial de precios de este producto</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla de inicio</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Ocultar Pestañas recientes</translation>
 <translation id="4578835633387306383">Activar…</translation>
 <translation id="4580716718466706433">Ve al Gestor de contraseñas</translation>
+<translation id="4585751637295612750">Abre una pestaña nueva para añadirla a tu pregunta</translation>
 <translation id="4587589328781138893">Sitios web</translation>
 <translation id="4592672037257622855">{count,plural, =1{Página añadida a tu lista de lectura}other{{count} páginas añadidas a tu lista de lectura}}</translation>
 <translation id="459644946100970322">¿Activar las alertas de precios?</translation>
@@ -1167,7 +1167,7 @@
 <translation id="5447973833955560753">Contraseña de recuperación</translation>
 <translation id="5452354193031718372">Usar contraseña segura:</translation>
 <translation id="5454211924362324495">Para impedir que otros usuarios usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
-<translation id="5457082343331641453">Añadir algo a tu búsqueda</translation>
+<translation id="5457082343331641453">Añade algo a tu búsqueda</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5467163657366219870">Desactivar Vistas previas de Maps</translation>
 <translation id="5474397204728336997">Contraseñas familiares, nuevas personalizaciones... Toca para ver más información.</translation>

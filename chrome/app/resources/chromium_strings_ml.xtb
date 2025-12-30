@@ -357,6 +357,7 @@
 <translation id="4987820182225656817">അതിഥികൾക്ക് ഒന്നും ശേഷിപ്പിക്കാതെ തന്നെ Chromium ഉപയോഗിക്കാനാകും.</translation>
 <translation id="4992938037305302429">Chromium-ലെ നിങ്ങളുടെ അക്കൗണ്ട്</translation>
 <translation id="4994636714258228724">Chromium-ലേക്ക് സ്വയം ചേരുക</translation>
+<translation id="5083712646171654472">നിങ്ങളുടെ ടാബുകളിൽ പ്രവർത്തിക്കാനും നിങ്ങൾ നൽകുന്ന ടാസ്ക്കുകൾ പൂർത്തിയാക്കാനും Chromium-ലെ Gemini ഓട്ടോ ബ്രൗസ് ഉപയോഗിക്കുന്നു. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ Chromium-ന് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="5141988424377517949">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നീ അനുമതികൾ Chromium നീക്കം ചെയ്തു.</translation>
 <translation id="5167819546851111585">ഇന്ന് നിങ്ങളുടെ മനസ്സിലുള്ളത് എന്താണ്?</translation>
@@ -583,6 +584,7 @@
 <translation id="7617377681829253106">Chromium കൂടുതൽ മികച്ചതായി</translation>
 <translation id="7622753900276619808">നിങ്ങൾക്ക് ഇപ്പോൾ Chromium-ൽ കൂടുതൽ ഫീച്ചറുകൾ ലഭ്യമാണ്</translation>
 <translation id="7649070708921625228">സഹായം</translation>
+<translation id="7656340475565475526">നിങ്ങൾക്കായി ബ്രൗസ് ചെയ്യാൻ Chromium-നെ അനുവദിക്കുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7686590090926151193">Chromium നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറല്ല</translation>
 <translation id="7689606757190482937">നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം Chromium സമന്വയിപ്പിച്ച് വ്യക്തിഗതമാക്കുക</translation>
@@ -608,7 +610,6 @@
 <translation id="7888981273428720788">Chromium ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="7934340546140346950">സാധ്യമാകുമ്പോൾ, Chromium, HTTPS-യിലേക്ക് സുരക്ഷിതമല്ലാത്ത കണക്ഷനുകൾ സ്വയമേവ അപ്‌ഗ്രേഡ് ചെയ്യുന്നു</translation>
 <translation id="7937630085815544518">Chromium-ൽ നിങ്ങൾ <ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു. വീണ്ടും സൈൻ ഇൻ ചെയ്യുന്നതിന് സമാന അക്കൗണ്ട് ഉപയോഗിക്കുക.</translation>
-<translation id="7953047982688951904">നിങ്ങൾ എവിടെയായിരുന്നാലും, അധിക സുരക്ഷയ്ക്കായി ഫോണിൽ Chromium ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7975919845073681630">ഇത് Chromium-ത്തിന്റെ ദ്വിതീയ ഇൻസ്‌റ്റലേഷനായതിനാൽ, നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാക്കാൻ കഴിയില്ല.</translation>
 <translation id="7997934263947464652">അറിയാത്ത ഉറവിടങ്ങളിൽ നിന്നുള്ള വിപുലീകരണങ്ങൾ, ആപ്പുകൾ, തീമുകൾ എന്നിവ നിങ്ങളുടെ ഉപകരണത്തിന് ദോഷകരമാകാം. അവ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ നിന്ന് മാത്രം ഇൻസ്റ്റാൾ ചെയ്യാൻ Chromium നിർദ്ദേശിക്കുന്നു</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>

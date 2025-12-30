@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3254806613790954367">La darrera pestanya oberta en tots els teus dispositius</translation>
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
-<translation id="3266338926702638258">Mostra l'historial de preus d'aquest producte</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Amaga l'opció Pestanyes recents</translation>
 <translation id="4578835633387306383">Activa…</translation>
 <translation id="4580716718466706433">Ves a Gestor de contrasenyes</translation>
+<translation id="4585751637295612750">Obre una pestanya nova per afegir-ho a la pregunta</translation>
 <translation id="4587589328781138893">Llocs web</translation>
 <translation id="4592672037257622855">{count,plural, =1{S'ha afegit la pàgina a la llista de lectura}other{S'han afegit {count} pàgines a la llista de lectura}}</translation>
 <translation id="459644946100970322">Vols activar les alertes de preus?</translation>

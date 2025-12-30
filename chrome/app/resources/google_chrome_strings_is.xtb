@@ -89,6 +89,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-inn)</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1880677175115548835">Velja texta</translation>
+<translation id="1896602904211344018">Sækja Chrome-forritið</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
 <translation id="1979600810166324878">Vertu öruggari á ferðinni með Enn öruggari vefskoðun í Chrome fyrir iOS</translation>
@@ -275,6 +276,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3889417619312448367">Fjarlægja Google Chrome</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="3906096710440765802">Skráðu þig inn í Chrome og fáðu aðgang að aðgangsorðum, bókamerkjum og fleiru í öllum tækjunum þínum</translation>
+<translation id="3921132130819999051">Láttu Chrome skoða fyrir þig</translation>
 <translation id="3941890832296813527">Uppsetningarvilla: Skráarheiti uppsetningarforrits er ógilt eða ekki stutt.</translation>
 <translation id="395904275706073188">Ekki er hægt að lesa varðar síður. Prófaðu aðra síðu.</translation>
 <translation id="3968962723676998462">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5163087008893166964">Velkomin(n) í Chrome; nýr vafragluggi opnaður</translation>
 <translation id="5166439563123238795">Chrome þarf heimild til að rekja handahreyfingar þínar</translation>
 <translation id="5167819546851111585">Hvað liggur þér á hjarta í dag?</translation>
+<translation id="5169778651486082413">Notaðu aðgangsorðin þín með Chrome í símanum þínum</translation>
 <translation id="5170938038195470297">Ekki er hægt að nota prófílinn þinn því að hann er úr nýrri útgáfu Google Chrome.
 
 Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöppu eða notaðu nýrri útgáfu af Chrome.</translation>
@@ -408,7 +411,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5465210843490471889">Veldu Chrome-prófíl til að nota með <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Til að hjálpa til við að bæta þessa eiginleika sendir Chrome upplýsingar um notkun þína á þeim til Google. Mennskir yfirlesarar kunna að lesa, vinna úr og skrifa skýringar við þessi gögn.</translation>
-<translation id="5510398294750420479">Sæktu Chrome í símanum þínum til að bæta við aukalagi af vernd þegar þú ert á ferðinni</translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Láttu Chrome vinna hraðar</translation>
 <translation id="5550137307985173298">Smelltu á hnappinn „Sérsníða Chrome“ á síðu nýrra flipa til að gefa Chrome nýtt útlit</translation>
@@ -464,6 +466,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6008161919456049856">Aðgangsorðin þín, greiðslumátar og heimilisföng sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chrome skaltu skrá þig aftur inn.</translation>
 <translation id="6009821354356307391">Spyrja framhaldsspurningar</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Verkfæri Chrome<ph name="END_LINK" /> gera þér kleift að vafra á öruggan hátt og vera við stjórnvölinn</translation>
+<translation id="6018578474045062808">Prófaðu Google-linsu með Chrome í símanum þínum</translation>
 <translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
 <translation id="6025087594896450715">Google Chrome endurræsist eftir <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Loka</translation>
@@ -486,6 +489,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
 <translation id="6180522807229584611">Þessi flipi notar aukagögn. Leyfðu Chrome að óvirkja hann til að bæta afköstin.</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
+<translation id="6183773856988300112">Gemini í Chrome notar sjálfvirka skoðun til að vinna í flipunum þínum og ljúka verkefnum sem þú gefur því. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Reikningurinn þinn í Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> bætti við viðbót sem gæti breytt því hvernig Chrome virkar.
 
@@ -512,6 +516,8 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
 <translation id="6426623519983252346">Þú munt sjá ábendingu um að prófa <ph name="FEATURE_NAME" /> næst þegar þú opnar Chrome iOS.</translation>
 <translation id="6434035853014503219">Takk fyrir að velja Chrome sem sjálfgefinn vafra!</translation>
+<translation id="6438015621983209660">Framlengdu Enn öruggari vefskoðun með Chrome í símanum þínum</translation>
+<translation id="6442774133615368941">Notaðu myndavélina þína í Chrome iOS-forritinu til að versla, þýða og bera kennsl á það sem þú sérð</translation>
 <translation id="6473905796280459355">Fara á síðuna Um Chrome</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
@@ -649,6 +655,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7832314606810669113">Skráðu þig inn á Chrome til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum Þetta bókamerki verður vistað á Google-reikningnum þínum eftir að þú skráir þig inn.</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Haltu áfram þaðan sem frá var horfið: Chrome getur endurheimt flipana þína í hvert skipti sem þú hefst handa. Þú getur kveikt á þessu í</translation>
+<translation id="7869620795354551924">Til að nota vistuð aðgangsorð skaltu skanna QR-kóðann, sækja Chrome fyrir iOS og skrá þig inn á Google-reikninginn þinn</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7886087451482920026">Notaðu Google-linsu til að velja texta</translation>
 <translation id="7887929410013642057">Alltaf sýna flýtileiðir gervigreindarstillingar</translation>

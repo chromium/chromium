@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；依序按下 Tab 鍵和 Enter 鍵，即可管理要儲存到 Google 帳戶的 Chrome 資訊</translation>
 <translation id="1122714970786750095">電子與電機產品</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕功能</translation>
+<translation id="1124643885833329193">確切位置</translation>
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
@@ -892,6 +893,7 @@
 <translation id="2400263725572336749">新增護照</translation>
 <translation id="2400271059665846158">前往 Google 錢包管理會員卡</translation>
 <translation id="2400600116338235695">可以要求連線至序列埠</translation>
+<translation id="2403474027143565107">精確</translation>
 <translation id="240450251994300576">次要頁首標誌</translation>
 <translation id="2404884497378469141">再次嘗試複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
@@ -996,6 +998,7 @@
 <translation id="2571488850200220306">為確保安全，貴機構也可查看裝置的 OS、瀏覽器版本和已安裝的軟體</translation>
 <translation id="2573170131138724450">電視</translation>
 <translation id="257674075312929031">群組</translation>
+<translation id="2577522251608256362">鄰</translation>
 <translation id="2580031090587209073">分享選項</translation>
 <translation id="258027838577899739">刪除所有歷史記錄</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />已新增分頁</translation>
@@ -1282,6 +1285,7 @@
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
+<translation id="3085373848068196154">「<ph name="PROXY_INVALID_PROXY" />」不是有效的 Proxy。</translation>
 <translation id="3086269988715347183">你先前並未核准「<ph name="BLOCKED_URL" />」</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
@@ -1625,6 +1629,7 @@
 <translation id="361438452008624280">清單項目「<ph name="LANGUAGE_ID" />」：不明或不支援的語言。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中執行安全檢查</translation>
 <translation id="3615309852743236517">美甲與美足保養</translation>
+<translation id="3620034424637552643">通常用於規劃路線、外送等</translation>
 <translation id="3620239073311576716">制服與工作服</translation>
 <translation id="3621401353678567613">如要接收追蹤商品的降價快訊，請前往設定開啟通知。</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
@@ -1892,6 +1897,7 @@
 <translation id="4036753017940930924">租賃土地</translation>
 <translation id="403724377879219932">可以要求存取區域網路上的其他裝置</translation>
 <translation id="4039506337798853114">如要顯示游標，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
+<translation id="4042597221652780603">概略</translation>
 <translation id="4045070493270310437">重新開啟分頁</translation>
 <translation id="4045226534284799755">請先登入 Microsoft 帳戶，然後再試一次</translation>
 <translation id="4045441967987592849">重新開啟</translation>
@@ -3210,6 +3216,7 @@
 <translation id="6164605812717770913">家長或監護人禁止你造訪這個網站，你可以請對方解除封鎖。</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
+<translation id="6171968084616623939">「<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />」不是有效的值。</translation>
 <translation id="617256461084925519">Google Chrome 正在嘗試驗證你的身分，以便填入付款資訊。</translation>
 <translation id="6173208311907792313">使用 Windows Hello 完成購買交易</translation>
 <translation id="6176387967264100435">這個價格屬於高價位</translation>
@@ -3536,6 +3543,7 @@
 <translation id="6688851075017682769">支援測試地址的國家/地區</translation>
 <translation id="6689249931105087298">與黑點壓縮相對</translation>
 <translation id="6689271823431384964">你已登入帳戶，因此 Chrome 詢問你是否要將卡片儲存至 Google 帳戶。你可以在設定中變更這項行為。持卡人姓名來自你的帳戶。</translation>
+<translation id="6690688090329768424">「<ph name="PROXY_INVALID_DESTINATION" />」不是有效的目的地模式。</translation>
 <translation id="6691397311652656001">請釋出超過 <ph name="REQUIRED_FREE_DISK_SPACE" /> 的空間</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可找出你在 Google 帳戶中的裝置</translation>
 <translation id="6695428916538794739">動作冒險片</translation>
@@ -4075,7 +4083,6 @@
 <translation id="753556296624075801">Google 技術提供</translation>
 <translation id="753713322968419914">要從 Chrome 自動填入內容移除住家地址嗎？</translation>
 <translation id="7537536606612762813">強制</translation>
-<translation id="7541043894191476250">關聯工作</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>
@@ -4284,6 +4291,7 @@
 <translation id="7870281855125116701">已找到折扣</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
 <translation id="787226752901403048">登入 Chrome 即可分享及加入分頁群組，並與他人共同開發構想</translation>
+<translation id="7874796722855317864">「<ph name="PROXY_UNKNOWN_CONDITION" />」不是已知的條件類型。</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">你的密碼可能已經外洩</translation>
 <translation id="7881044256965445977">尋找區域網路上的任何裝置並連線</translation>
@@ -5008,6 +5016,7 @@
 <translation id="9090243919347147717">附件</translation>
 <translation id="9090548458280093580">採用 AI 技術的搜尋記錄功能</translation>
 <translation id="9090993752571911635">網際網路服務供應商 (ISP)</translation>
+<translation id="9092305980625216393">通常用於天氣、當地新聞等</translation>
 <translation id="9093723786115107672">睡衣</translation>
 <translation id="9094424186948667194">存取這部裝置上的其他應用程式和服務</translation>
 <translation id="9094544726794842788">如果按倒讚，系統會顯示意見回饋表單。你可以在表單中詳細說明為何不喜歡這些結果</translation>

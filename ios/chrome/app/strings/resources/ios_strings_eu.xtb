@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
 <translation id="1150989369772528668">Egutegia</translation>
 <translation id="1161663161838091892">Aurrera egiteko, sinkronizatu fitxak eta historia</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kreditu-txartel}other{{count} kreditu-txartel}}</translation>
 <translation id="1164891049599601209">Webgune engainagarri batean idatzi duzu</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1172898394251786223">Hurrengo eremua</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Fitxa irekiak</translation>
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
 <translation id="1764070164487214210">Jarraibideak</translation>
+<translation id="1764511703783285459">Beste pasahitz-kudeatzaileak ez du pasahitzik edo sarbide-gakorik partekatu</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Tresnen menua</translation>
 <translation id="1772468122139624049">Ezin dira kargatu fitxak berriro</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Ezin izan da gorde aldaketa.</translation>
 <translation id="3254806613790954367">Gailu guztien artean azkenekoz ireki duzun fitxa</translation>
 <translation id="325717987950204592">Sakatu "Pribatutasuna eta segurtasuna".</translation>
-<translation id="3266338926702638258">Erakutsi produktu honen prezioen historia</translation>
 <translation id="3272527697863656322">Utzi</translation>
 <translation id="3273510436356991673">Pertsonalizatu orri nagusia</translation>
 <translation id="3277021493514034324">Kopiatu da webgunearen helbidea</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Ezkutatu "Azkenaldiko fitxak"</translation>
 <translation id="4578835633387306383">Aktibatu…</translation>
 <translation id="4580716718466706433">Joan "Pasahitz-kudeatzailea" atalera.</translation>
+<translation id="4585751637295612750">Ireki beste fitxa bat galderan gehitzeko</translation>
 <translation id="4587589328781138893">Webguneak</translation>
 <translation id="4592672037257622855">{count,plural, =1{Gehitu da orria zure irakurketa-zerrendan}other{{count} orri gehitu dira zure irakurketa-zerrendan}}</translation>
 <translation id="459644946100970322">Prezioen alertak aktibatu nahi dituzu?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Oharrak 1.000 karaktere baino gehiago ditu</translation>
 <translation id="5087098519049306025">Prezioen jarraipena</translation>
 <translation id="5090832849094901128">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua.</translation>
+<translation id="510580293474170715">Ez da ezer inportatu</translation>
 <translation id="5113960131843706315">Zure gauzak eskuratzen…</translation>
 <translation id="5118462200606189584">Gehitu kontu bat…</translation>
 <translation id="5118764316110575523">Desaktibatuta</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">Arakatze seguruaren helburua zu balizko erasotzaileen aurrean babestea da, litekeena baita halakoek, azpikeriaz, zu zerbait arriskutsua egitera bultzatzea; esate baterako, software gaiztoa instalatu edo informazio pertsonala ezagutzera eman (adibidez, pasahitzak, telefono-zenbakiak edo kreditu-txartelak). Arakatze segurua desaktibatuz gero, tentuz ibili ezagunak edo izen onekoak ez diren webguneak arakatzean.</translation>
 <translation id="6410883413783534063">Erabili fitxak aldi berean webgune bat baino gehiago ikusteko</translation>
 <translation id="6418346271604475326">Prestatzen</translation>
+<translation id="6420292512900923139">Arazoak ditugu datuak inportatzeko</translation>
 <translation id="6421038304268477484">Itzulpena</translation>
 <translation id="6429213933892582367">Ireki Password Options (pasahitzen aukerak).</translation>
 <translation id="6435236283694032571">Gehitu irakurketa-zerrendan</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6550891580932862748">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Honek ez du eraginik izango Google-ren beste produktuetako Arakatze segurua eginbidearen ezarpenetan.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6559301491397835130">{count,plural, =1{Gorde da laster-marka "{title}" karpetan. Gailu honetan soilik dago gordeta.}other{Gorde dira laster-markak "{title}" karpetan. Gailu honetan soilik daude gordeta.}}</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>

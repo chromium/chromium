@@ -354,6 +354,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4992938037305302429">Mein Konto in Chromium</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
+<translation id="5083712646171654472">Gemini in Chromium nutzt die automatische Suche, um Aufgaben auf deinen Tabs zu erledigen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium benötigt eine Berechtigung für das Handtracking</translation>
 <translation id="5141988424377517949">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="5167819546851111585">Was kann ich heute für dich tun?</translation>
@@ -580,6 +581,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7617377681829253106">Chromium ist jetzt noch besser</translation>
 <translation id="7622753900276619808">Du hast jetzt Zugriff auf weitere Funktionen in Chromium</translation>
 <translation id="7649070708921625228">Hilfe</translation>
+<translation id="7656340475565475526">Chromium für dich suchen lassen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7686590090926151193">Chromium ist nicht als dein Standardbrowser festgelegt</translation>
 <translation id="7689606757190482937">Chromium wird auf allen deinen Geräten synchronisiert und personalisiert</translation>
@@ -605,7 +607,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7888981273428720788">Chromium als Standardbrowser festlegen</translation>
 <translation id="7934340546140346950">Chromium stellt unsichere Verbindungen nach Möglichkeit automatisch auf HTTPS um</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
-<translation id="7953047982688951904">Lade Chromium auf dein Smartphone herunter, damit du unterwegs besser geschützt bist</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="7997934263947464652">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chromium empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="8004582292198964060">Browser</translation>

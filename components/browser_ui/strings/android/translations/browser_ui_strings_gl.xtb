@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1816835383954230954">Cando esta opción está activada, Chrome execútase máis rápido e as funcións que usen JavaScript deberían funcionar tal como se deseñaron. Se está desactivada, redúcese o rendemento, pero o motor V8 é máis resistente os ataques.</translation>
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Cambia a posición para personalizar a túa experiencia de navegación</translation>
 <translation id="1848033246551405023">Tipo de letra sen serifas</translation>
 <translation id="1861262398884155592">Este cartafol está baleiro</translation>
 <translation id="1881806992065048905">Panel inferior do aspecto da páxina Nova pestana</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Permitida esta vez • Precisa</translation>
 <translation id="2544997614631598250">Cor de tema escuro</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
+<translation id="2553552004849639664">Obtén a máxima protección de Chrome contra as ameazas en liña</translation>
 <translation id="2570922361219980984">O acceso á localización tamén está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
@@ -415,6 +417,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5373874281522292782">Os teus grupos de pestanas están gardados</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5407203562970638234">Mellora a túa seguranza</translation>
 <translation id="5438097262470833822">Con esta opción restableceranse os permisos de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Cando esta opción está activada, os sitios poden pedirche permiso para acceder á túa localización. Cando esta opción está desactivada, os sitios non poden acceder á túa localización.</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

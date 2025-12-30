@@ -220,9 +220,11 @@
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3369405342922656244">Pesquise esta página com a pesquisa de imagens</translation>
+<translation id="3375770072980084583">Use as suas palavras-passe com o Chromium no telemóvel</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para o perfil do Chromium existente?</translation>
 <translation id="3412460710772753638">No Gestor de Palavras-passe neste dispositivo</translation>
+<translation id="3455907671758333080">Expanda a Navegação segura melhorada com o Chromium no seu telemóvel</translation>
 <translation id="3461644266919055473">A personalizar o Chromium…</translation>
 <translation id="347328004046849135">O Chromium envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -249,6 +251,7 @@
 <translation id="3798048725356732506">Os perfis do Chromium ajudam a separar diferentes partes da sua vida. Adicione um novo perfil agora.</translation>
 <translation id="3802055581630249637">O Chromium pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="3810973564298564668">Administrar</translation>
+<translation id="3823384748599722168">Para usar as palavras-passe guardadas, siga o código QR, transfira o Chromium para iOS e inicie sessão na sua Conta Google</translation>
 <translation id="3846683726093018685">**Resume:** numa única frase com menos de 30 palavras, descreve o assunto e o objetivo principal do conteúdo na captura de ecrã.
 
           **Sugere perguntas:** gera uma lista com marcas de 3 a 5 perguntas que estimulem o pensamento e que um utilizador possa fazer para compreender melhor a captura de ecrã. Estas perguntas devem incluir, pelo menos, uma que seja especificamente sobre um objeto visual, o respetivo design ou o respetivo posicionamento.</translation>
@@ -324,6 +327,7 @@
 <translation id="4548534452171747496">O Chromium pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Tem sessão iniciada como <ph name="USER_EMAIL_ADDRESS" />. Agora, pode aceder aos seus marcadores, ao histórico e a outras definições em todos os dispositivos com sessão iniciada.</translation>
 <translation id="4570813286784708942">O Chromium bloqueou esta transferência porque desativou a Navegação Segura e não é possível validar o ficheiro</translation>
+<translation id="4583692638088316420">Experimente o Google Lens com o Chromium no telemóvel</translation>
 <translation id="4594305310729380060">No Gestor de Palavras-passe neste dispositivo</translation>
 <translation id="459535195905078186">Apps do Chromium</translation>
 <translation id="4598116752460667024">Pesquise qualquer processo na lista.</translation>
@@ -355,6 +359,7 @@
 <translation id="4987820182225656817">Os convidados podem utilizar o Chromium sem perder qualquer funcionalidade.</translation>
 <translation id="4992938037305302429">A sua conta no Chromium</translation>
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
+<translation id="5083712646171654472">O Gemini no Chromium usa a procura automática para trabalhar nos seus separadores e concluir as tarefas que lhe atribuir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>
 <translation id="5141988424377517949">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Em que está a pensar hoje?</translation>
@@ -367,6 +372,7 @@
 <translation id="5254739261293693943">Pergunte acerca deste vídeo</translation>
 <translation id="5277894862589591112">Para aplicar as alterações, reinicie o Chromium.</translation>
 <translation id="5286907366254680517">Detetado</translation>
+<translation id="5289287148052354622">Transfira a app Chromium</translation>
 <translation id="5294316920224716406">Ao navegar no Modo de navegação anónima, o Chromium envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
 <translation id="5313228254328109263">Serviço interno do atualizador do Chromium</translation>
 <translation id="5346389065299425353">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas</translation>
@@ -581,6 +587,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7617377681829253106">O Chromium está ainda melhor</translation>
 <translation id="7622753900276619808">Agora, tem mais funcionalidades disponíveis no Chromium</translation>
 <translation id="7649070708921625228">Ajuda</translation>
+<translation id="7656340475565475526">Permita que o Chromium procure por si</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7686590090926151193">O Chromium não é o seu navegador predefinido.</translation>
 <translation id="7689606757190482937">Sincronizar e personalizar o Chromium em todos os dispositivos</translation>
@@ -606,7 +613,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7888981273428720788">Defina o Chromium como o navegador predefinido</translation>
 <translation id="7934340546140346950">Sempre que possível, o Chromium atualiza automaticamente as ligações inseguras para HTTPS</translation>
 <translation id="7937630085815544518">Iniciou sessão no Chromium com a conta <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para iniciar sessão novamente.</translation>
-<translation id="7953047982688951904">Transfira o Chromium para o telemóvel de forma a adicionar uma camada de proteção extra quando estiver em viagem</translation>
 <translation id="7975919845073681630">Esta é uma instalação secundária do Chromium, pelo que não pode tornar-se o navegador predefinido.</translation>
 <translation id="7997934263947464652">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chromium recomenda instalá-los apenas a partir da <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -633,6 +639,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8254601181414348851">Iniciar sessão no Chromium num novo perfil?</translation>
 <translation id="8286943863733751221">O <ph name="BEGIN_LINK" />Chromium avisa<ph name="END_LINK" /> sobre transferências e sites inseguros</translation>
 <translation id="8295827201165805317">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Compre, traduza e identifique o que vê com a câmara na app Chromium para iOS</translation>
 <translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A sua organização fecha o Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Guardar como imagem</translation>

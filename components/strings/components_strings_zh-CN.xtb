@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键，即可管理要将哪些 Chrome 信息保存到 Google 账号中</translation>
 <translation id="1122714970786750095">电子与电气</translation>
 <translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
+<translation id="1124643885833329193">精确位置</translation>
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1131264053432022307">您复制的图片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如需退出全屏模式，请从顶部拖动，然后轻触返回按钮</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">添加护照</translation>
 <translation id="2400271059665846158">在 Google 钱包中管理您的会员卡</translation>
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
+<translation id="2403474027143565107">精确位置</translation>
 <translation id="240450251994300576">次要标题徽标</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
 <translation id="2413155254802890957">旧</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">为了确保安全，它还能查看设备的操作系统、浏览器版本和已安装软件</translation>
 <translation id="2573170131138724450">电视</translation>
 <translation id="257674075312929031">群组</translation>
+<translation id="2577522251608256362">街区</translation>
 <translation id="2580031090587209073">共享选项</translation>
 <translation id="258027838577899739">删除历史记录中的所有内容</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />添加了标签页</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">操作系统</translation>
 <translation id="3080254622891793721">图形</translation>
 <translation id="3082007635241601060">允许 Google 根据您购物车中的商品查找合乎您个人需求的折扣信息（如有）</translation>
+<translation id="3085373848068196154">“<ph name="PROXY_INVALID_PROXY" />”不是有效的代理。</translation>
 <translation id="3086269988715347183">您之前未批准过 <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">您在网络上的活动正被监控</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -1624,6 +1628,7 @@
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3615309852743236517">美甲与足部护理</translation>
+<translation id="3620034424637552643">通常用于查询路线、完成配送等</translation>
 <translation id="3620239073311576716">制服与工作服</translation>
 <translation id="3621401353678567613">如需接收所跟踪商品的降价提醒，请在设置中开启通知。</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
@@ -1890,6 +1895,7 @@
 <translation id="4036753017940930924">地块与土地</translation>
 <translation id="403724377879219932">可以请求访问本地网络中的其他设备</translation>
 <translation id="4039506337798853114">若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">大致位置</translation>
 <translation id="4045070493270310437">重新打开标签页</translation>
 <translation id="4045226534284799755">请登录您的 Microsoft 账号，然后重试</translation>
 <translation id="4045441967987592849">重新打开</translation>
@@ -3207,6 +3213,7 @@
 <translation id="6164605812717770913">家长或监护人认为此网站不适合你访问。你可以请求家长或监护人取消屏蔽。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
+<translation id="6171968084616623939">“<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />”不是有效的值。</translation>
 <translation id="617256461084925519">Google Chrome 正在尝试验证您的身份，以便填写您的付款信息。</translation>
 <translation id="6173208311907792313">请使用 Windows Hello 完成购买交易</translation>
 <translation id="6176387967264100435">此价格较高</translation>
@@ -3533,6 +3540,7 @@
 <translation id="6688851075017682769">按国家/地区测试地址</translation>
 <translation id="6689249931105087298">相对（使用黑点压缩）</translation>
 <translation id="6689271823431384964">Chrome 正在询问是否要将卡保存到您的 Google 账号中，因为您已登录。您可在“设置”中更改此行为。持卡人姓名来自您的账号。</translation>
+<translation id="6690688090329768424">“<ph name="PROXY_INVALID_DESTINATION" />”不是有效的目标模式。</translation>
 <translation id="6691397311652656001">释放 <ph name="REQUIRED_FREE_DISK_SPACE" /> 以上的空间</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 账号中查找您的设备</translation>
 <translation id="6695428916538794739">动作片与冒险片</translation>
@@ -4072,7 +4080,6 @@
 <translation id="753556296624075801">由 Google 提供支持</translation>
 <translation id="753713322968419914">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="7537536606612762813">强制</translation>
-<translation id="7541043894191476250">情境任务</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>
@@ -4121,7 +4128,7 @@
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="7615932826417658001">添加身份证件</translation>
-<translation id="7616390733770379387">这些搜索引擎按随机顺序显示。</translation>
+<translation id="7616390733770379387">以下搜索引擎按随机顺序显示。</translation>
 <translation id="7616645509853975347">您的管理员已在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
 <translation id="7617825962482469577">C7/C6 信封</translation>
 <translation id="7618270539713451657">武术</translation>
@@ -4281,6 +4288,7 @@
 <translation id="7870281855125116701">发现了折扣</translation>
 <translation id="7871445724586827387">更改您的 Google 账号密码</translation>
 <translation id="787226752901403048">登录 Chrome 即可分享和加入标签页分组，并与他人共同构思创意</translation>
+<translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />”不是已知的条件类型。</translation>
 <translation id="7877007680666472091">受保护内容 ID</translation>
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
 <translation id="7881044256965445977">查找并连接到本地网络上的任何设备</translation>
@@ -4975,7 +4983,7 @@
 <translation id="9046578823518542618"><ph name="URL" /> 想要查找并连接到本地网络中的任何设备</translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="9046865906192819796">“先买后付”服务条款界面已以一半高度显示。</translation>
-<translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可以在设置中更改选项。</translation>
+<translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可在设置中更改默认搜索引擎。</translation>
 <translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 英寸</translation>
 <translation id="9049981332609050619">您试图访问 <ph name="DOMAIN" />，但服务器提供的证书无效。</translation>
@@ -5006,6 +5014,7 @@
 <translation id="9090243919347147717">附件</translation>
 <translation id="9090548458280093580">利用 AI 技术搜索您的历史记录</translation>
 <translation id="9090993752571911635">互联网服务提供商 (ISP)</translation>
+<translation id="9092305980625216393">通常用于获取天气、本地新闻等</translation>
 <translation id="9093723786115107672">睡衣</translation>
 <translation id="9094424186948667194">访问此设备上的其他应用和服务</translation>
 <translation id="9094544726794842788">选择“不喜欢”会打开一个反馈表单，您可以在表单中详细说明不喜欢这些结果的原因</translation>

@@ -221,9 +221,11 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="3352986031709923790">Coin supérieur droit de la zone de recherche : droite <ph name="RIGHT" /> %, haut <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Données Chromium dans votre compte</translation>
 <translation id="3369405342922656244">Rechercher cette page avec la recherche d'images</translation>
+<translation id="3375770072980084583">Utilisez vos mots de passe avec Chromium sur votre téléphone</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant?</translation>
 <translation id="3412460710772753638">Dans le gestionnaire de mots de passe sur cet appareil</translation>
+<translation id="3455907671758333080">Étendez la navigation sécurisée améliorée avec Chromium sur votre téléphone</translation>
 <translation id="3461644266919055473">Personnaliser Chromium</translation>
 <translation id="347328004046849135">Chromium vous avisera lorsque vous utilisez un mot de passe compromis pour vous connecter</translation>
 <translation id="3474745554856756813">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
@@ -250,6 +252,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="3798048725356732506">Les profils Chromium vous aident à séparer les différentes parties de votre vie. Ajoutez un nouveau profil maintenant.</translation>
 <translation id="3802055581630249637">Chromium précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous le faites.</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3823384748599722168">Pour utiliser vos mots de passe enregistrés, balayez le code QR, téléchargez Chromium pour iOS et connectez-vous à votre compte Google</translation>
 <translation id="3846683726093018685">**Résumer :** en une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
 
           **Suggérer des questions :** génère une liste à puces de trois à cinq questions stimulantes qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant précisément sur un objet visuel, sa conception ou son emplacement.</translation>
@@ -325,6 +328,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4548534452171747496">Chromium précharge les pages, ce qui accélère la navigation et la recherche. <ph name="BEGIN_LINK" />En savoir plus sur les pages de préchargement<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4570813286784708942">Chromium a bloqué ce téléchargement, car vous avez désactivé la Navigation sécurisée et le fichier ne peut pas être vérifié</translation>
+<translation id="4583692638088316420">Essayez Lentille Google avec Chromium sur votre téléphone</translation>
 <translation id="4594305310729380060">Dans le gestionnaire de mots de passe sur cet appareil</translation>
 <translation id="459535195905078186">Applications de Chromium</translation>
 <translation id="4598116752460667024">Chercher n'importe quel processus dans la liste.</translation>
@@ -356,6 +360,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4987820182225656817">Les invités peuvent utiliser Chromium sans rien laisser derrière eux.</translation>
 <translation id="4992938037305302429">Votre compte dans Chromium</translation>
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
+<translation id="5083712646171654472">Gemini dans Chromium utilise la navigation automatique pour travailler dans vos onglets et accomplir les tâches que vous lui confiez. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5141988424377517949">Vous n'avez pas effectué de visite récemment. Chromium a retiré <ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">À quoi pensez-vous aujourd'hui?</translation>
@@ -368,6 +373,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5254739261293693943">Poser des questions à propos de cette vidéo</translation>
 <translation id="5277894862589591112">Pour appliquer vos modifications, relancez Chromium</translation>
 <translation id="5286907366254680517">Détectée</translation>
+<translation id="5289287148052354622">Obtenir l'appli Chromium</translation>
 <translation id="5294316920224716406">Lors de la navigation en mode Navigation privée, Chromium vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="5313228254328109263">Service interne de mise à jour de Chromium</translation>
 <translation id="5346389065299425353">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils</translation>
@@ -582,6 +588,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7617377681829253106">Chrome vient de s'améliorer</translation>
 <translation id="7622753900276619808">Vous avez maintenant accès à davantage de fonctionnalités dans Chromium</translation>
 <translation id="7649070708921625228">Aide</translation>
+<translation id="7656340475565475526">Laisser Chromium naviguer pour vous</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
@@ -607,7 +614,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7888981273428720788">Définir Chromium comme navigateur par défaut</translation>
 <translation id="7934340546140346950">Chromium met automatiquement à niveau les connexions non sécurisées vers HTTPS lorsque cela est possible</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
-<translation id="7953047982688951904">Téléchargez Chromium sur votre téléphone pour ajouter une couche de protection supplémentaire lorsque vous êtes en déplacement</translation>
 <translation id="7975919845073681630">Cette installation de Chromium est secondaire. Celui-ci ne peut donc pas servir de navigateur par défaut.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chromium recommande de les installer uniquement à partir de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Navigateur</translation>
@@ -634,6 +640,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8254601181414348851">Vous connecter à Chromium avec un nouveau profil?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vous avertit<ph name="END_LINK" /> au sujet des sites et des téléchargements dangereux</translation>
 <translation id="8295827201165805317">Vous n'avez pas effectué de visite récemment. Chromium a retiré <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo dans l'appli Chromium iOS</translation>
 <translation id="8313851650939857356">Erreur de démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>

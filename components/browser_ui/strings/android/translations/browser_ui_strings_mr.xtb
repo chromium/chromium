@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
+<translation id="1822318649925991542">तुमचा ब्राउझिंगचा अनुभव कस्टमाइझ करण्यासाठी जागा स्विच करा</translation>
 <translation id="1848033246551405023">फाँट साँ सेरिफ</translation>
 <translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1881806992065048905">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">या वेळी अनुमती दिली आहे • अचूक</translation>
 <translation id="2544997614631598250">थीम रंग गडद</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
+<translation id="2553552004849639664">ऑनलाइन धोक्यांपासून बचाव करण्यासाठी Chrome चे सर्वात मजबूत संरक्षण मिळवा</translation>
 <translation id="2570922361219980984">या डिव्हाइसाठी स्थान अ‍ॅक्सेस देखील बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">तुमचे टॅब गट सेव्ह केले आहेत</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ आणखी एक)}other{(+ आणखी #)}}</translation>
 <translation id="5403592356182871684">नावे</translation>
+<translation id="5407203562970638234">तुमची सुरक्षा वर्धित करा</translation>
 <translation id="5438097262470833822">या निवडीमुळे <ph name="WEBSITE" /> च्या परवानग्या रीसेट होतील</translation>
 <translation id="5459413148890178711">सुरू असताना, साइट तुमच्या स्थानाची विनंती करू शकतात. बंद असताना, साइट तुमचे स्थान पाहू शकत नाहीत.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> पैकी <ph name="ELAPSED_TIME" /> गेलेला वेळ.</translation>

@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຕາມດ້ວຍ Enter ເພື່ອຈັດການຂໍ້ມູນ Chrome ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1122714970786750095">ອີເລັກໂທຣນິກ ແລະ ການໄຟຟ້າ</translation>
 <translation id="1123753900084781868">ຄຳບັນຍາຍສົດບໍ່ສາມາດໃຊ້ໄດ້ໃນຕອນນີ້</translation>
+<translation id="1124643885833329193">ທີ່ຢູ່ທີ່ແນ່ນອນ</translation>
 <translation id="112840717907525620">ແຄຊ໌ນະໂຍບາຍໃຊ້ໄດ້</translation>
 <translation id="1131264053432022307">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">ເພີ່ມໜັງສືຜ່ານແດນ</translation>
 <translation id="2400271059665846158">ຈັດການບັດສະມາຊິກຂອງທ່ານໃນ Google Wallet</translation>
 <translation id="2400600116338235695">ສາມາດຂໍເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
+<translation id="2403474027143565107">ແບບລະອຽດ</translation>
 <translation id="240450251994300576">ໂລໂກ້ສ່ວນຫົວສຳຮອງ</translation>
 <translation id="2404884497378469141">ລອງສຳເນົາໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="2413155254802890957">ເກົ່າ</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">ເພື່ອຊ່ວຍຮັບປະກັນຄວາມປອດໄພ, ມັນສາມາດເບິ່ງລະບົບປະຕິບັດການຂອງອຸປະກອນ, ເວີຊັນຂອງໂປຣແກຣມທ່ອງເວັບ ແລະ ເບິ່ງວ່າມີການຕິດຕັ້ງຊອບແວຫຍັງໄດ້ນຳ.</translation>
 <translation id="2573170131138724450">ໂທລະທັດ</translation>
 <translation id="257674075312929031">ກຸ່ມ</translation>
+<translation id="2577522251608256362">ຄຸ້ມບ້ານ</translation>
 <translation id="2580031090587209073">ຕົວເລືອກການແບ່ງປັນ</translation>
 <translation id="258027838577899739">ລຶບທັງໝົດຈາກປະຫວັດ</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ເພີ່ມແຖບແລ້ວ</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ລະບົບປະຕິບັດການ</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
 <translation id="3082007635241601060">ໃຫ້ Google ໃຊ້ກະຕ່າຂອງທ່ານເພື່ອຊອກຫາສ່ວນຫຼຸດທີ່ປັບແຕ່ງສ່ວນຕົວໃນເວລາທີ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" ບໍ່ແມ່ນພຣັອກຊີທີ່ຖືກຕ້ອງ.</translation>
 <translation id="3086269988715347183">ທ່ານບໍ່ເຄີຍອະນຸມັດ <ph name="BLOCKED_URL" /> ມາກ່ອນ</translation>
 <translation id="3086579638707268289">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນເວັບ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
@@ -1412,6 +1416,7 @@
 <translation id="3266793032086590337">ຄ່າ (ຂັດແຍ່ງ)</translation>
 <translation id="3268451620468152448">ເປີດ​ແຖບ</translation>
 <translation id="3270041629388773465">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນເມື່ອບັນທຶກ CVC ຂອງທ່ານໄວ້</translation>
+<translation id="3270343151253360050">ເລືອກວິທີການຈ່າຍເງິນແບບອື່ນເພື່ອດຳເນີນການຊື້ນີ້ໃຫ້ສຳເລັດ</translation>
 <translation id="3270847123878663523">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ຕ້ອງການເຊື່ອມຕໍ່</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@
 <translation id="361438452008624280">ລະບຸລາຍການ "<ph name="LANGUAGE_ID" />": ພາສາທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພືີ່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3615309852743236517">ເຮັດເລັບມື ແລະ ເລັບຕີນ</translation>
+<translation id="3620034424637552643">ມັກໃຊ້ສຳລັບເສັ້ນທາງ, ການຈັດສົ່ງ ແລະ ອື່ນໆ</translation>
 <translation id="3620239073311576716">ຊຸດເຄື່ອງແບບ ແລະ ຊຸດເຮັດວຽກ</translation>
 <translation id="3621401353678567613">ເພື່ອຮັບການແຈ້ງເຕືອນລາຄາຫຼຸດລົງສຳລັບຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມ, ໃຫ້ເປີດການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="362276910939193118">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>
@@ -1893,6 +1899,7 @@
 <translation id="4036753017940930924">ຕອນດິນ ແລະ ທີ່ດິນ</translation>
 <translation id="403724377879219932">ສາມາດຂໍເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້</translation>
 <translation id="4039506337798853114">ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">ໂດຍປະມານ</translation>
 <translation id="4045070493270310437">ເປີດແຖບຄືນໃໝ່</translation>
 <translation id="4045226534284799755">ເຂົ້າສູ່ລະບົບບັນຊີ Microsoft ຂອງທ່ານກ່ອນລອງໃໝ່</translation>
 <translation id="4045441967987592849">ເປີດຄືນໃໝ່</translation>
@@ -3211,6 +3218,7 @@
 <translation id="6164605812717770913">ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງລະບຸວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊນີ້ບໍ່ໄດ້. ແຕ່ທ່ານສາມາດຂໍໃຫ້ຍົກເລີກການບລັອກໄດ້.</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6167577165590485365">ພະຍາຍາມດຶງຫຼ້າສຸດ:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ບໍ່ແມ່ນຄ່າທີ່ຖືກຕ້ອງ.</translation>
 <translation id="617256461084925519">Google Chrome ກຳລັງພະຍາຍາມຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອໃຫ້ສາມາດຕື່ມຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານໄດ້.</translation>
 <translation id="6173208311907792313">ດຳເນີນການຊື້ຂອງທ່ານໃຫ້ສຳເລັດໂດຍໃຊ້ Windows Hello</translation>
 <translation id="6176387967264100435">ລາຄານີ້ແມ່ນສູງ</translation>
@@ -3537,6 +3545,7 @@
 <translation id="6688851075017682769">ທີ່ຢູ່ທົດສອບຕາມປະເທດ</translation>
 <translation id="6689249931105087298">ສຳພັນກັບການບີບຈຸດສີດຳ</translation>
 <translation id="6689271823431384964">Chrome ກຳລັງສະເໜີບັນທຶກບັດຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພາະວ່າທ່ານເຂົ້າສູ່ລະບົບຢູ່. ທ່ານສາມາດປ່ຽນພຶດຕິກຳນີ້ໄດ້ໃນການຕັ້ງຄ່າ. ຊື່ຜູ້ຖືບັດມາຈາກບັນຊີຂອງທ່ານ.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" ບໍ່ແມ່ນຮູບແບບປາຍທາງທີ່ຖືກຕ້ອງ.</translation>
 <translation id="6691397311652656001">ເພີ່ມພື້ນທີ່ຫວ່າງຫຼາຍກວ່າ <ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຊອກຫາອຸປະກອນຂອງທ່ານໃນບັນຊີ Google</translation>
 <translation id="6695428916538794739">ໜັງແອັກຊັນ ແລະ ຜະຈົນໄພ</translation>
@@ -3549,6 +3558,7 @@
 <translation id="6702851555558236418">ຊອບແວດົນຕີ ແລະ ສຽງ</translation>
 <translation id="6702919718839027939">ປັດຈຸບັນ</translation>
 <translation id="6704458454638854812">ຕັ້ງຄ່າຄຸນສົມບັດ "custom_size" ແລ້ວ, ຊື່ທີ່ຄາດຄະເນໄວ້ຈະເປັນ "ກໍານົດເອງ".</translation>
+<translation id="670477556876354552">ຕ້ອງຣີສະຕາດ</translation>
 <translation id="6706005862292023715">ການຮັກສາຜ້າກັ້ງ ແລະ ປ່ອງຢ້ຽມ</translation>
 <translation id="6706210727756204531">ຂອບເຂດ</translation>
 <translation id="6706678697074905703">ບໍ່ສາມາດບັນທຶກ IBAN ນີ້ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້. ແຕ່ບັນທຶກໃສ່ໃນ Chrome ຢູ່ອຸປະກອນນີ້ແທນ.</translation>
@@ -4074,7 +4084,6 @@
 <translation id="753556296624075801">ຂັບເຄື່ອນໂດຍ Google</translation>
 <translation id="753713322968419914">ລຶບທີ່ຢູ່ເຮືອນອອກຈາກຄຸນສົມບັດຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ບໍ?</translation>
 <translation id="7537536606612762813">ບັງ​ຄັບ</translation>
-<translation id="7541043894191476250">ໜ້າວຽກຕາມບໍລິບົດ</translation>
 <translation id="7543525346216957623">ຖາມພໍ່ແມ່ຂອງທ່ານ</translation>
 <translation id="7546409722674205727">ເລີ່ມຕົ້ນການນຳໃຊ້ <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">ແກ້ໄຂຂໍ້ຜິດພາດຂອງການເຊື່ອມຕໍ່</translation>
@@ -4283,6 +4292,7 @@
 <translation id="7870281855125116701">ພົບສ່ວນຫຼຸດ</translation>
 <translation id="7871445724586827387">ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="787226752901403048">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອແບ່ງປັນ ແລະ ເຂົ້າຮ່ວມກຸ່ມແຖບ, ຮວມທັງເຮັດວຽກຮ່ວມກັນກ່ຽວກັບແນວຄິດຕ່າງໆ</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ບໍ່ແມ່ນປະເພດເງື່ອນໄຂທີ່ຮູ້ຈັກ.</translation>
 <translation id="7877007680666472091">Content ID ທີ່ມີການປົກປ້ອງ</translation>
 <translation id="7878562273885520351">ອາດຈະມີການລັກໃຊ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="7881044256965445977">ຊອກຫາ ແລະ ເຊື່ອມຕໍ່ກັບອຸປະກອນໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
@@ -5007,6 +5017,7 @@
 <translation id="9090243919347147717">ໄຟລ໌ແນບ</translation>
 <translation id="9090548458280093580">ຊອກຫາປະຫວັດຂອງທ່ານທີ່ຂັບເຄື່ອນໂດຍ AI</translation>
 <translation id="9090993752571911635">ຜູ້ໃຫ້ບໍລິການອິນເຕີເນັດ (ISP)</translation>
+<translation id="9092305980625216393">ມັກໃຊ້ສຳລັບສະພາບອາກາດ, ຂ່າວທ້ອງຖິ່ນ ແລະ ອື່ນໆ</translation>
 <translation id="9093723786115107672">ຊຸດນອນ</translation>
 <translation id="9094424186948667194">ເຂົ້າເຖິງແອັບ ແລະ ບໍລິການອື່ນໆຢູ່ອຸປະກອນນີ້</translation>
 <translation id="9094544726794842788">ປຸ່ມບໍ່ມັກຈະເປີດແບບຟອມສຳລັບສົ່ງຄຳຕິຊົມໂດຍລະອຽດກ່ຽວກັບສາເຫດທີ່ທ່ານບໍ່ຖືກໃຈຜົນການຊອກຫາເຫຼົ່ານີ້</translation>

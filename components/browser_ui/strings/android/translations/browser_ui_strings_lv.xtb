@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome padomi</translation>
 <translation id="1816835383954230954">Kad tas ir ieslēgts, pārlūks Chrome darbojas ātrāk, un funkcijām, kas izmanto JavaScript, ir jādarbojas paredzētajā veidā. Ja izslēgts, tiek samazināta veiktspēja, bet uzlabojas V8 noturība pret uzbrukumiem.</translation>
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Mainiet pozīciju, lai pielāgotu pārlūkošanas iespējas.</translation>
 <translation id="1848033246551405023">Bezserifa fonts</translation>
 <translation id="1861262398884155592">Šī mape ir tukša</translation>
 <translation id="1881806992065048905">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Šoreiz atļauta • Precīza</translation>
 <translation id="2544997614631598250">Motīva krāsa: tumša</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
+<translation id="2553552004849639664">Iegūstiet Chrome visaugstāko aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
@@ -415,6 +417,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5373874281522292782">Jūsu ciļņu grupas ir saglabātas</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(un vēl 1)}zero{(un vēl #)}one{(un vēl #)}other{(un vēl #)}}</translation>
 <translation id="5403592356182871684">Nosaukumi</translation>
+<translation id="5407203562970638234">Uzlabojiet drošību</translation>
 <translation id="5438097262470833822">Veicot šo darbību, tiks atiestatītas vietnes <ph name="WEBSITE" /> atļaujas.</translation>
 <translation id="5459413148890178711">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt informāciju par jūsu atrašanās vietu. Kad šis slēdzis ir izslēgts, vietnes nevar skatīt jūsu atrašanās vietu.</translation>
 <translation id="5489227211564503167">Pagājušais laiks: <ph name="ELAPSED_TIME" /> (no <ph name="TOTAL_TIME" />)</translation>

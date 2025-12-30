@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Astuces Chrome</translation>
 <translation id="1816835383954230954">Lorsque cette option est activée, Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu. Lorsque cette option est désactivée, les performances sont réduites, mais V8 est plus résistant aux attaques.</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Déplacez la barre d'adresse pour personnaliser votre expérience de navigation</translation>
 <translation id="1848033246551405023">Police Sans Serif</translation>
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1881806992065048905">Bottom sheet de l'apparence de la page "Nouvel onglet"</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Autorisée cette fois-ci • Exacte</translation>
 <translation id="2544997614631598250">Couleur du thème sombre</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
+<translation id="2553552004849639664">Profitez du plus haut niveau de protection de Chrome contre les menaces en ligne</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
@@ -415,6 +417,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5373874281522292782">Vos groupes d'onglets sont enregistrés</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
+<translation id="5407203562970638234">Renforcez votre sécurité</translation>
 <translation id="5438097262470833822">Cette action réinitialisera les autorisations de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Lorsque cette option est activée, les sites peuvent demander votre position. Lorsqu'elle est désactivée, les sites ne peuvent pas voir votre position.</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" />.</translation>
@@ -549,7 +552,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6842868554183332230">Les sites détectent généralement les moments où vous êtes en train d'utiliser votre appareil, afin d'indiquer si vous êtes disponible dans les applications de chat</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
-<translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
+<translation id="6870169401250095575">Masquer la carte "Contrôle de sécurité"</translation>
 <translation id="6882736949427544336">Ne pas autoriser les sites à accéder à d'autres appareils sur votre réseau local</translation>
 <translation id="6900883974539674431">Créez des groupes d'onglets qui sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="6912998170423641340">Interdire aux sites d'accéder en lecture au texte et aux images du presse-papiers</translation>

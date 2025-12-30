@@ -219,9 +219,11 @@
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3369405342922656244">使用图片搜索功能搜索此页面</translation>
+<translation id="3375770072980084583">借助 Chromium 在手机上使用您的密码</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3412460710772753638">在此设备上的密码管理工具中更新</translation>
+<translation id="3455907671758333080">借助 Chromium 在手机上使用增强型安全浏览功能</translation>
 <translation id="3461644266919055473">正在打造您的专属 Chromium…</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
@@ -248,6 +250,7 @@
 <translation id="3798048725356732506">您可以根据不同的用途设置不同的 Chromium 资料。立即添加新的资料。</translation>
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3823384748599722168">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chromium 应用，并登录您的 Google 账号</translation>
 <translation id="3846683726093018685">**总结：**用一句话（不到 30 个字）概括屏幕截图所示内容的核心主题和主要目的。
 
           **建议问题：**生成 3-5 个发人深省的问题，以项目符号列表的形式呈现，帮助用户更深入地理解屏幕截图。这些问题中，至少应有一个是关于某个视觉对象、其设计或其放置位置的问题。</translation>
@@ -323,6 +326,7 @@
 <translation id="4548534452171747496">Chromium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4570813286784708942">Chromium 阻止了此项下载操作，因为您关闭了安全浏览功能，系统无法验证该文件</translation>
+<translation id="4583692638088316420">借助 Chromium 在手机上试用 Google 智能镜头</translation>
 <translation id="4594305310729380060">保存到此设备上的密码管理工具中</translation>
 <translation id="459535195905078186">Chromium 应用</translation>
 <translation id="4598116752460667024">从列表中搜索任何进程。</translation>
@@ -354,6 +358,7 @@
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4992938037305302429">设置 Chromium 账号</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
+<translation id="5083712646171654472">Chromium 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5141988424377517949">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="5167819546851111585">今天想聊点什么？</translation>
@@ -366,6 +371,7 @@
 <translation id="5254739261293693943">询问此视频</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
 <translation id="5286907366254680517">检测到</translation>
+<translation id="5289287148052354622">获取 Chromium 应用</translation>
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
@@ -580,6 +586,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
 <translation id="7622753900276619808">您现在可以在 Chromium 中使用更多功能了</translation>
 <translation id="7649070708921625228">帮助</translation>
+<translation id="7656340475565475526">让 Chromium 代您浏览</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
@@ -605,7 +612,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
-<translation id="7953047982688951904">在手机上下载 Chromium，随时随地享受额外安全保障</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="7997934263947464652">来源不明的扩展程序、应用和主题可能会危害您的设备。Chromium 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="8004582292198964060">浏览器</translation>
@@ -632,6 +638,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8254601181414348851">要使用新的个人资料登录 Chromium 吗？</translation>
 <translation id="8286943863733751221">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chromium 会向您发出警告<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION" />权限。</translation>
+<translation id="8296236834352487533">在 iOS 版 Chromium 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="8321888067342493336">另存为图片</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
 <translation id="1816835383954230954">Če je vklopljeno, Chrome deluje hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno. Če je izklopljeno, se zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom.</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Spremenite položaj, če želite prilagoditi izkušnjo brskanja</translation>
 <translation id="1848033246551405023">Pisava Sans Serif</translation>
 <translation id="1861262398884155592">Ta mapa je prazna</translation>
 <translation id="1881806992065048905">Razdelek na dnu zaslona za videz strani »Nov zavihek«</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Tokrat dovoljeno • Natančna</translation>
 <translation id="2544997614631598250">Barva teme – temna</translation>
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
+<translation id="2553552004849639664">Zagotovite si Chromovo najmočnejšo zaščito pred spletnimi grožnjami</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
 <translation id="2586657967955657006">Odložišče</translation>
@@ -415,6 +417,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5373874281522292782">Skupine zavihkov so shranjene</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
+<translation id="5407203562970638234">Izboljševanje varnosti</translation>
 <translation id="5438097262470833822">S to izbiro bodo ponastavljena dovoljenja za spletno mesto <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo vašo lokacijo. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati vaše lokacije.</translation>
 <translation id="5489227211564503167">Pretečeni čas: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>

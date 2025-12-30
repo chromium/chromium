@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Pakeitimo nepavyko išsaugoti.</translation>
 <translation id="3254806613790954367">Pastarasis atidarytas skirtukas visuose įrenginiuose</translation>
 <translation id="325717987950204592">Palieskite „Privatumas ir sauga“</translation>
-<translation id="3266338926702638258">Rodyti šio produkto kainų istoriją</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
 <translation id="3273510436356991673">Pagrindinio ekrano tinkinimas</translation>
 <translation id="3277021493514034324">Svetainės adresas nukopijuotas</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Slėpti naujausius skirtukus</translation>
 <translation id="4578835633387306383">Įjungti…</translation>
 <translation id="4580716718466706433">Eikite į Slaptažodžių tvarkyklę</translation>
+<translation id="4585751637295612750">Atidarykite naują skirtuką, kad pridėtumėte prie klausimo</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4592672037257622855">{count,plural, =1{Puslapis pridėtas prie skaitymo sąrašo}one{{count} puslapis pridėtas prie skaitymo sąrašo}few{{count} puslapiai pridėti prie skaitymo sąrašo}many{{count} puslapio pridėta prie skaitymo sąrašo}other{{count} puslapių pridėta prie skaitymo sąrašo}}</translation>
 <translation id="459644946100970322">Įjungti įspėjimus apie kainą?</translation>

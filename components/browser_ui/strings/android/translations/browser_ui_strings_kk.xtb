@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome-ды пайдалану кеңестері</translation>
 <translation id="1816835383954230954">Қосулы болса, Chrome жылдам жұмыс істейді және JavaScript қолданатын функциялар тиісті түрде жұмыс істеуі керек. Өшірілсе, өнімділік азаяды, бірақ V8 оңтайлаушысы шабуылдарға төзімді болады.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> браузеріне AR режимін пайдалануға рұқсат ету үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> камераны да қосыңыз.</translation>
+<translation id="1822318649925991542">Браузерді пайдалану ыңғайлы болуы үшін, орнын ауыстырыңыз.</translation>
 <translation id="1848033246551405023">Sans Serif қарпі</translation>
 <translation id="1861262398884155592">Бұл қалта бос</translation>
 <translation id="1881806992065048905">Жаңа қойынды беті көрінісінің төменгі парақшасы</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Бұл жолы рұқсат берілді • Нақты</translation>
 <translation id="2544997614631598250">Қараңғы тақырып түсі</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
+<translation id="2553552004849639664">Chrome-ның онлайн қауіптерден қорғайтын ең күшті қорғанысын алыңыз.</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
 <translation id="2586657967955657006">Буфер</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Қойындылар тобы сақталды</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(Тағы 1)}other{(Тағы #)}}</translation>
 <translation id="5403592356182871684">Атаулары</translation>
+<translation id="5407203562970638234">Қауіпсіздігіңізді жақсартыңыз</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> веб-сайтына арналған рұқсаттар бастапқы күйіне қайтарылады.</translation>
 <translation id="5459413148890178711">Қосылса, сайттар локацияңызды сұрай алады. Өшірілсе, сайттар локацияңызды көрмейді.</translation>
 <translation id="5489227211564503167">Өткен уақыт: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

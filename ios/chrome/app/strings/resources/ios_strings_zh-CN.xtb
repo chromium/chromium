@@ -14,7 +14,7 @@
 <translation id="1041322626941363065">密码遭遇数据泄露时向您发出警告</translation>
 <translation id="104491362976654916">离线网页</translation>
 <translation id="1046742265332833834">蓝色主题</translation>
-<translation id="1049743911850919806">无痕</translation>
+<translation id="1049743911850919806">无痕模式</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
 <translation id="10614374240317010">一律不保存</translation>
@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">无法保存您的更改。</translation>
 <translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
-<translation id="3266338926702638258">显示此商品的历史价格</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">打造您的专属主屏幕</translation>
 <translation id="3277021493514034324">已复制网站地址</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">隐藏“最近打开的标签页”</translation>
 <translation id="4578835633387306383">开启…</translation>
 <translation id="4580716718466706433">前往“密码管理工具”</translation>
+<translation id="4585751637295612750">打开新标签页，并将其添加到问题中</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4592672037257622855">{count,plural, =1{此页面已添加到您的阅读清单中}other{{count} 个页面已添加到您的阅读清单中}}</translation>
 <translation id="459644946100970322">开启票价变更提醒？</translation>
@@ -1406,7 +1406,7 @@
 <translation id="6259928806013786178">未能开启阅读模式</translation>
 <translation id="6268773951964630964">搜索复制的图片</translation>
 <translation id="6271462272606946663">隐藏“请求切换到移动版网站”</translation>
-<translation id="6271556257184622612">询问 Google 关于标签页等的问题</translation>
+<translation id="6271556257184622612">询问 Google 关于标签页等内容的问题</translation>
 <translation id="6271824294945464304">正在分享密码</translation>
 <translation id="628251768213143684">您随时可管理您 Google 账号中保存的内容</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
@@ -2199,7 +2199,7 @@
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9124978074365039456">使用相机和图库购买、翻译和识别所见内容</translation>
 <translation id="9130317582644834675">隐藏“缩放文字”</translation>
-<translation id="913036870884277353">轻松地打开其他应用中的链接。</translation>
+<translation id="913036870884277353">轻松打开其他应用中的链接。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9140888637198815199">A</translation>
 <translation id="9144152097013965297">开启阅读模式</translation>

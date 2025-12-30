@@ -196,6 +196,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1125371304736839151">Mostrar o Gemini na parte superior do navegador</translation>
 <translation id="1125550662859510761">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativo)</translation>
+<translation id="1125816658532547876">Use as suas palavras-passe no <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Imagem de fundo e estilo</translation>
 <translation id="1128591060186966949">Editar motor de pesquisa</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -565,6 +566,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1372841398847029212">Sincronizar com a sua conta</translation>
 <translation id="1373176046406139583">A visibilidade do dispositivo controla quem pode partilhar consigo enquanto o ecrã está desbloqueado <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">O certificado requerido pela rede "<ph name="NETWORK_NAME" />" não está instalado ou já não é válido. Obtenha um novo certificado e tente ligar novamente.</translation>
+<translation id="1374948751106271187">Adicione uma camada de proteção extra em qualquer lugar</translation>
 <translation id="1375557162880614858">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex?</translation>
 <translation id="1375938286942050085">A configuração está concluída! Em seguida, prepare o seu dispositivo para jogar</translation>
 <translation id="137651782282853227">Os endereços guardados aparecem aqui</translation>
@@ -990,7 +992,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1650801028905250434">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet. Pode alterar esta opção em qualquer altura em Definições &gt; Ficheiros.</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
 <translation id="1651609627703324721">Este separador está a apresentar conteúdos de RV (realidade virtual) num capacete de realidade virtual</translation>
-<translation id="1651633344379798952">Experimente o Google Lens no telemóvel</translation>
 <translation id="1652281434788353738">Pensativo</translation>
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="1652862280638399816">Para usar o Gestor de Palavras-passe com o Porta-chaves macOS, reinicie o Chromium e permita o acesso ao Porta-chaves. Os separadores reabrem depois de serem reiniciados.</translation>
@@ -1212,7 +1213,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1808805149659872686">Nova entrada</translation>
 <translation id="1809201888580326312">Optou por não guardar palavras-passe para estes sites e apps.</translation>
 <translation id="1809734401532861917">Adicionar os marcadores, o histórico, as palavras-passe e outras definições a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para usar as palavras-passe guardadas no seu telemóvel, siga o código QR, transfira o Chrome para iOS e inicie sessão na sua Conta Google.</translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
 <translation id="1811908311154949291">Frame bloqueado de Navegação anónima: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar a usar <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1259,6 +1259,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="183445248400150852">Os sites usam esta funcionalidade para substituir a entrada do teclado, como em jogos ou apps de ambiente de trabalho remoto</translation>
 <translation id="1834503245783133039">Transferência sem êxito: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">A atualizar o Linux…</translation>
+<translation id="1837292628323740716">Melhore a Navegação segura no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">O Microsoft OneDrive rejeitou o pedido. Tente mais tarde.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839021455997460752">O seu endereço de email</translation>
@@ -3365,7 +3366,6 @@ Quer pará-lo?</translation>
 <translation id="3269612321104318480">Azul esverdeado claro e branco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="3270965368676314374">Ler, alterar e eliminar fotos, música e outros elementos multimédia do computador</translation>
-<translation id="3273033807960054795">Expanda a Navegação segura melhorada</translation>
 <translation id="3275464924531706548">Reduzir <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">A sua chave de segurança interna é atualmente insegura. Remova-a de todos os serviços nos quais a utilizou. Para resolver o problema, reponha a chave de segurança.</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
@@ -5093,7 +5093,6 @@ Quer pará-lo?</translation>
 <translation id="4421932782753506458">Fofo</translation>
 <translation id="4423376891418188461">Restaurar definições</translation>
 <translation id="4423525817792153232">Mostre todos os dentes</translation>
-<translation id="4424107154724312436">Experimente o Google Lens no iOS</translation>
 <translation id="4424262960694990728">Ação necessária</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos com ChromeOS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no ChromeOS. Estes relatórios podem incluir informações como a altura em que o ChromeOS falha, que funcionalidades foram usadas e a quantidade de memória habitualmente usada.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios a qualquer altura nas definições do dispositivo Chrome. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" /></translation>
@@ -5571,7 +5570,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4767427586072640478">Saiba mais sobre as extensões desativadas.</translation>
 <translation id="4769632191812288342">Tem a Proteção padrão</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
-<translation id="4770755495532014179">Use esta palavra-passe no seu iPhone</translation>
 <translation id="4772914216048388646">Ordenado</translation>
 <translation id="4773112038801431077">Atualize o Linux</translation>
 <translation id="4773122030389014189">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
@@ -6390,6 +6388,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5335370353987155592">Use o Gemini com cuidado e <ph name="BEGIN_LINK1" />segurança<ph name="LINK_END1" />. É responsável pelas ações do Gemini durante uma tarefa, incluindo erros e <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
 <translation id="5336688142483283574">Esta página também será removida do histórico e da atividade do <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor e touchpad</translation>
+<translation id="5337035808300170502">Tamanho real</translation>
 <translation id="5337207153202941678">Desativar realce</translation>
 <translation id="5337771866151525739">Instalada por terceiros.</translation>
 <translation id="5337926771328966926">O nome do dispositivo atual é <ph name="DEVICE_NAME" />.</translation>
@@ -6724,7 +6723,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="556321030400250233">ficheiro local ou partilhado</translation>
 <translation id="5563234215388768762">Pesquise no Google ou escreva um URL</translation>
 <translation id="5563824734298958390">Sair do grupo de separadores?</translation>
-<translation id="5564450015351086922">Experimente o Google Lens no iOS</translation>
 <translation id="5565735124758917034">Ativo</translation>
 <translation id="5568069709869097550">Não é possível iniciar sessão</translation>
 <translation id="5568525251731145240">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e das apps instaladas?</translation>
@@ -7928,7 +7926,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
 <translation id="6410390304316730527">A Navegação segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
 <translation id="6411135999030237579">Premir sem soltar para repetir automaticamente a tecla</translation>
-<translation id="6411516120707127482">Experimente o Google Lens no telemóvel</translation>
 <translation id="6414618057231176439">Selecione a versão de <ph name="VM_NAME" /> a instalar.</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
 <translation id="6415757856498750027">Escrever "w" para obter "ư"</translation>
@@ -7975,7 +7972,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6445450263907939268">Se não pretendia efetuar estas alterações, pode restaurar as definições anteriores.</translation>
 <translation id="6446213738085045933">Criar atalho no ambiente de trabalho</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449835059180426406">Use as suas palavras-passe nos dispositivos iOS</translation>
 <translation id="6450876761651513209">Alterar as suas definições relacionadas com privacidade</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e mais 1 separador}other{<ph name="PAGE_TITLE" /> e mais # separadores}}</translation>
 <translation id="6451689256222386810">Se se esqueceu da frase de acesso ou pretender alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
@@ -8456,6 +8452,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6783667414610055871">Definições do Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é suportado</translation>
+<translation id="678520006562636090">Experimente o Google Lens no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Use <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">A ver os espaços de trabalho guardados. Prima Tab para navegar.</translation>
 <translation id="6785915470941880363">Deslocamento invertido <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
@@ -8887,7 +8884,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7066572364168923329">Escolha a configuração do seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Cores ambiente</translation>
 <translation id="7067725467529581407">Não voltar a mostrar.</translation>
-<translation id="7067779359472606732">Lembrete enviado para o seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Inicie sessão para ver os separadores de outros dispositivos</translation>
 <translation id="7068539819344620805">Agora, pode dar ao seu navegador um novo aspeto em qualquer altura a partir do menu Personalizar o Chrome</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> e mais algumas apps estão bloqueadas no seu <ph name="DEVICE_TYPE" /></translation>
@@ -10043,7 +10039,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Transferências</translation>
 <translation id="7861846108263890455">Idioma da Conta Google</translation>
-<translation id="7863211248337747225">Obter a app</translation>
 <translation id="7864114920800968141">Dentro de <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Desativar Bluetooth</translation>
 <translation id="7864825798076155402">Guardar na sua Conta Google?</translation>
@@ -10370,7 +10365,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8068904756674285749">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou. Também pode fazer perguntas e receber respostas com base no seu histórico de navegação. A definição está desativada.</translation>
 <translation id="8070572887926783747">Autorização de acesso à localização da app <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Resposta tátil</translation>
-<translation id="8071033114691184017">Use esta palavra-passe no seu iPhone</translation>
 <translation id="8071432093239591881">Imprimir como imagem</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que uma aplicação tenha guardado (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os dados da cópia de segurança não são contabilizados para a quota do armazenamento do Drive da criança.<ph name="END_PARAGRAPH2" />

@@ -271,6 +271,7 @@
 <translation id="3889417619312448367">A Google Chrome eltávolítása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3906096710440765802">Jelentkezzen be a Chrome-ba, hogy az összes eszközén hozzáférhessen jelszavaihoz, könyvjelzőihez és más beállításaihoz.</translation>
+<translation id="3921132130819999051">A Chrome böngészhet Ön helyett</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="395904275706073188">A védett oldalakat nem lehet olvasni. Próbálkozzon másik oldallal.</translation>
 <translation id="3968962723676998462">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -400,7 +401,6 @@
 <translation id="5430073640787465221">A beállításait tartalmazó fájl hibás vagy érvénytelen. A Google Chrome nem tudja helyreállítani a beállításait.</translation>
 <translation id="5465210843490471889">Válasszon ki egy Chrome-profilt a <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> használatához</translation>
 <translation id="5468572406162360320">A funkciók továbbfejlesztése érdekében a Chrome elküldi a velük végzett műveleteket a Google-nak. Ezeket az adatokat ellenőreink elolvashatják, feldolgozhatják és megjegyzésekkel láthatják el.</translation>
-<translation id="5510398294750420479">Töltse le a Chrome-ot a telefonjára, hogy egy további védelmi réteget kapjon útközben.</translation>
 <translation id="5524890928877629608">keresési terület bal felső sarka: bal <ph name="LEFT" />%, fent <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">A Chrome felgyorsítása</translation>
 <translation id="5550137307985173298">Az Új lap oldalon található A Chrome személyre szabása gombra kattintva új megjelenést adhat a Chrome-nak</translation>
@@ -478,6 +478,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
 <translation id="6180522807229584611">Ez a lap plusz erőforrásokat használ. A teljesítmény javítása érdekében engedélyezze, hogy a Chrome inaktiválhassa.</translation>
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
+<translation id="6183773856988300112">A Gemini a Chrome-ban az automatikus böngészés funkciót használja az Ön lapjain való munkavégzéshez és az Ön által adott feladatok elvégzéséhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6192058120268468905">Az Ön fiókja a Chrome-ban</translation>
 <translation id="6220551899604141979">A(z) <ph name="PARTNER_NAME" /> olyan bővítményt adott hozzá, amely módosíthatja a Chrome működését.
 

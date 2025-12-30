@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントに保存する Chrome の情報を管理できます</translation>
 <translation id="1122714970786750095">電子機器、電気機器</translation>
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
+<translation id="1124643885833329193">正確な場所</translation>
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – 全画面表示を終了するには、上部からドラッグして [戻る] ボタンをタップします</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">パスポートの追加</translation>
 <translation id="2400271059665846158">Google ウォレットでポイントカードを管理する</translation>
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
+<translation id="2403474027143565107">正確</translation>
 <translation id="240450251994300576">サブヘッダーのロゴ</translation>
 <translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
 <translation id="2413155254802890957">旧</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">セキュリティ確保の目的で、デバイスの OS、ブラウザのバージョン、インストールされているソフトウェアも確認される可能性があります</translation>
 <translation id="2573170131138724450">テレビ</translation>
 <translation id="257674075312929031">グループ化</translation>
+<translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2580031090587209073">共有オプション</translation>
 <translation id="258027838577899739">履歴からすべて削除</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> さんがタブを追加しました</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">オペレーティング システム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3082007635241601060">カートに入れたアイテムの割引情報の検索を Google に許可する</translation>
+<translation id="3085373848068196154">「<ph name="PROXY_INVALID_PROXY" />」は有効なプロキシではありません。</translation>
 <translation id="3086269988715347183"><ph name="BLOCKED_URL" /> はこれまで承認していません</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下部</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">リスト項目「<ph name="LANGUAGE_ID" />」: 不明またはサポートされていない言語です。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全チェックを実行できます</translation>
 <translation id="3615309852743236517">マニキュア、ペディキュア</translation>
+<translation id="3620034424637552643">ルート案内や配達などによく使用されます</translation>
 <translation id="3620239073311576716">ユニフォーム、制服</translation>
 <translation id="3621401353678567613">追跡している商品の値下げアラートを受け取るには、設定で通知をオンにしてください。</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">用地、土地</translation>
 <translation id="403724377879219932">ローカル ネットワーク上の他のデバイスへのアクセスを要求できる</translation>
 <translation id="4039506337798853114">カーソルを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
+<translation id="4042597221652780603">おおよそ</translation>
 <translation id="4045070493270310437">タブを再度開く</translation>
 <translation id="4045226534284799755">Microsoft アカウントにログインしてからもう一度お試しください</translation>
 <translation id="4045441967987592849">再度開く</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">このサイトへのアクセスは保護者が許可していませんが、許可を求めることはできます。</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
+<translation id="6171968084616623939">「<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />」は有効な値ではありません。</translation>
 <translation id="617256461084925519">Google Chrome でお支払い情報を入力するため、本人確認を行います。</translation>
 <translation id="6173208311907792313">Windows Hello を使用して購入手続きを完了してください</translation>
 <translation id="6176387967264100435">この価格は高額です</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">国別のテスト住所</translation>
 <translation id="6689249931105087298">相対的（黒点の補正あり）</translation>
 <translation id="6689271823431384964">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。カード名義人はアカウントから取得されます。</translation>
+<translation id="6690688090329768424">「<ph name="PROXY_INVALID_DESTINATION" />」は有効な接続先パターンではありません。</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 以上の空き容量を確保してください</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Google アカウントでデバイスを探します</translation>
 <translation id="6695428916538794739">アクション映画、アドベンチャー映画</translation>
@@ -4078,7 +4086,6 @@
 <translation id="753556296624075801">Powered by Google</translation>
 <translation id="753713322968419914">Chrome の自動入力から自宅の住所を削除しますか？</translation>
 <translation id="7537536606612762813">必須</translation>
-<translation id="7541043894191476250">コンテキスト タスク</translation>
 <translation id="7543525346216957623">保護者に頼んでください</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> を開始しています</translation>
 <translation id="7548892272833184391">接続エラーを解決する</translation>
@@ -4287,6 +4294,7 @@
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
 <translation id="787226752901403048">Chrome にログインして、タブグループの共有や参加、アイデアの出し合いなどを行うことができます</translation>
+<translation id="7874796722855317864">「<ph name="PROXY_UNKNOWN_CONDITION" />」は既知の条件タイプではありません。</translation>
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7881044256965445977">ローカル ネットワーク上のデバイスを検索して接続する</translation>
@@ -5012,6 +5020,7 @@
 <translation id="9090243919347147717">添付ファイル</translation>
 <translation id="9090548458280093580">AI を活用して履歴を検索する</translation>
 <translation id="9090993752571911635">インターネット サービス プロバイダ（ISP）</translation>
+<translation id="9092305980625216393">天気情報やローカル ニュースなどによく使用されます</translation>
 <translation id="9093723786115107672">ナイトウェア</translation>
 <translation id="9094424186948667194">このデバイス上の他のアプリやサービスにアクセスする</translation>
 <translation id="9094544726794842788">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます</translation>

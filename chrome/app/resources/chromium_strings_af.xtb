@@ -357,6 +357,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4987820182225656817">Gaste kan Chromium gebruik sonder om iets agter te laat.</translation>
 <translation id="4992938037305302429">Jou rekening in Chromium</translation>
 <translation id="4994636714258228724">Voeg jouself by Chromium</translation>
+<translation id="5083712646171654472">Gemini in Chromium gebruik outoblaai om in jou oortjies te werk en take te voltooi wat jy vir dit gee. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium benodig toestemming om jou hande na te spoor</translation>
 <translation id="5141988424377517949">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder.</translation>
 <translation id="5167819546851111585">Waaraan dink jy vandag?</translation>
@@ -583,6 +584,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7617377681829253106">Chromium het pas beter geword</translation>
 <translation id="7622753900276619808">Jy het nou meer kenmerke beskikbaar in Chromium</translation>
 <translation id="7649070708921625228">Hulp</translation>
+<translation id="7656340475565475526">Laat Chromium vir jou blaai</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7686590090926151193">Chromium is nie jou verstekblaaier nie</translation>
 <translation id="7689606757190482937">Sinkroniseer en personaliseer Chromium op al jou toestelle</translation>
@@ -608,7 +610,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7888981273428720788">Stel Chromium as jou verstek.</translation>
 <translation id="7934340546140346950">Chromium gradeer onveilige verbindings aan HTTPS outomaties op, wanneer moontlik</translation>
 <translation id="7937630085815544518">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chromium aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
-<translation id="7953047982688951904">Laai Chromium op jou foon af om ’n ekstra laag beskerming by te voeg wanneer jy aan die beweeg is</translation>
 <translation id="7975919845073681630">Dit is 'n sekondêre installering van Chromium en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="7997934263947464652">Uitbreidings, programme en temas van onbekende bronne af kan jou toestel beskadig. Chromium beveel aan dat hulle net uit die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> geïnstalleer word</translation>
 <translation id="8004582292198964060">Blaaier</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1816835383954230954">Gdy ta opcja jest włączona, Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami. Po jej wyłączeniu wydajność spada, ale mechanizm V8 jest bardziej odporny na ataki.</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Zmień położenie, aby dostosować przeglądanie do własnych potrzeb</translation>
 <translation id="1848033246551405023">Czcionka Sans Serif</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1881806992065048905">Plansza dolna wyglądu strony nowej karty</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Dozwolona jednorazowo • Dokładna</translation>
 <translation id="2544997614631598250">Kolor motywu: ciemny</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
+<translation id="2553552004849639664">Uzyskaj w Chrome najlepszą ochronę przed zagrożeniami online</translation>
 <translation id="2570922361219980984">Dostęp do lokalizacji jest wyłączony też na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
 <translation id="2586657967955657006">Schowek</translation>
@@ -415,6 +417,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5373874281522292782">Twoje grupy kart zostały zapisane</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
+<translation id="5407203562970638234">Zwiększ bezpieczeństwo</translation>
 <translation id="5438097262470833822">Spowoduje to zresetowanie uprawnień witryny <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do Twojej lokalizacji. Gdy jest wyłączona, strony nie widzą Twojej lokalizacji.</translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>

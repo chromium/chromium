@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">ບໍ່ສາມາດບັນທຶກການປ່ຽນແປງຂອງທ່ານໄດ້.</translation>
 <translation id="3254806613790954367">ແຖບທີ່ທ່ານສຸດທ້າຍໃນທົ່ວອຸປະກອນຂອງທ່ານທັງໝົດ</translation>
 <translation id="325717987950204592">ແຕະ "ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ"</translation>
-<translation id="3266338926702638258">ສະແດງປະຫວັດລາຄາສຳລັບຜະລິດຕະພັນນີ້</translation>
 <translation id="3272527697863656322">ຍົກເລີກ</translation>
 <translation id="3273510436356991673">ປັບແຕ່ງໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="3277021493514034324">ສຳເນົາທີ່ຢູ່ເວັບໄຊແລ້ວ</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">ເຊື່ອງ ແຖບຫຼ້າສຸດ</translation>
 <translation id="4578835633387306383">ເປີດ…</translation>
 <translation id="4580716718466706433">ເຂົ້າໄປ "ຕົວຈັດການລະຫັດຜ່ານ"</translation>
+<translation id="4585751637295612750">ເປີດແຖບໃໝ່ເພື່ອເພີ່ມໃສ່ໃນຄຳຖາມຂອງທ່ານ</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
 <translation id="4592672037257622855">{count,plural, =1{ເພີ່ມໜ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານແລ້ວ}other{ເພີ່ມ {count} ໜ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານແລ້ວ}}</translation>
 <translation id="459644946100970322">ເປີດການແຈ້ງເຕືອນລາຄາບໍ?</translation>

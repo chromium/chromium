@@ -89,6 +89,7 @@
 <translation id="1874309113135274312">Google Chrome бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome је застарео</translation>
 <translation id="1880677175115548835">Изаберите текст</translation>
+<translation id="1896602904211344018">Преузмите апликацију Chrome</translation>
 <translation id="1919130412786645364">Дозволи пријављивање у Chrome</translation>
 <translation id="1953553007165777902">Преузима се... Још <ph name="MINUTE" /> мин</translation>
 <translation id="1979600810166324878">Будите безбеднији у покрету уз побољшано безбедно прегледање у Chrome-у за iOS</translation>
@@ -275,6 +276,7 @@
 <translation id="3889417619312448367">Деинсталирај Google Chrome</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3906096710440765802">Пријавите се у Chrome да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима</translation>
+<translation id="3921132130819999051">Дозволите Chrome-у да прегледа за вас</translation>
 <translation id="3941890832296813527">Грешка при инсталацији: Назив фајла програма за инсталацију је неважећи или није подржан.</translation>
 <translation id="395904275706073188">Заштићене странице не могу да се читају. Пробајте са другом страницом.</translation>
 <translation id="3968962723676998462">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@
 <translation id="5163087008893166964">Добро дошли у Chrome; отворен је нови прозор прегледача</translation>
 <translation id="5166439563123238795">Chrome-у треба дозвола за праћење руку</translation>
 <translation id="5167819546851111585">О чему размишљате данас?</translation>
+<translation id="5169778651486082413">Користите лозинке уз Chrome на телефону</translation>
 <translation id="5170938038195470297">Профил не може да се користи јер је из новије верзије Google Chrome-а.
 
 Неке функције су можда недоступне. Наведите други директоријум профила или користите новију верзију Chrome-а.</translation>
@@ -408,7 +411,6 @@
 Google Chrome не може да врати подешавања.</translation>
 <translation id="5465210843490471889">Одаберите Chrome профил који ћете користити са <ph name="START_GLIC_STYLING" />Gemini-јем<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Да би побољшао ове функције, Chrome Google-у шаље ваше интеракције са њима. Особе које прегледају могу да читају, обрађују и коментаришу ове податке.</translation>
-<translation id="5510398294750420479">Преузмите Chrome на телефон да бисте додали још један ниво заштите када сте у покрету</translation>
 <translation id="5524890928877629608">горњи леви угао области претраге: улево <ph name="LEFT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Убрзајте Chrome</translation>
 <translation id="5550137307985173298">Кликните на дугме Прилагоди Chrome на страници нове картице да бисте Chrome-у дали нов изглед</translation>
@@ -464,6 +466,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6008161919456049856">Лозинке, начини плаћања и адресе које сте сачували на Google налогу биће уклоњени са овог уређаја. Да бисте их поново користили у Chrome-у, поново се пријавите.</translation>
 <translation id="6009821354356307391">Поставите додатни упит</translation>
 <translation id="6014316319780893079">Помоћу <ph name="BEGIN_LINK" />Chrome алатки<ph name="END_LINK" /> можете безбедно да прегледате и задржите контролу</translation>
+<translation id="6018578474045062808">Испробајте Google објектив уз Chrome на телефону</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
 <translation id="6025087594896450715">Google Chrome ће се рестартовати за <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -486,6 +489,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
+<translation id="6183773856988300112">Gemini у Chrome-у користи аутоматско прегледање за рад на картицама и обављање задатака које му доделите. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chrome функционише.
 
@@ -512,6 +516,8 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6418662306461808273">Желите да пређете на постојећи Chrome профил?</translation>
 <translation id="6426623519983252346">Следећи пут када отворите Chrome iOS, видећете упит да испробате <ph name="FEATURE_NAME" />.</translation>
 <translation id="6434035853014503219">Хвала вам што сте одабрали Chrome као подразумевани прегледач.</translation>
+<translation id="6438015621983209660">Продужите побољшано безбедно прегледање уз Chrome на телефону</translation>
+<translation id="6442774133615368941">Купујте, преводите и идентификујте оно што видите помоћу камере у iOS апликацији Chrome</translation>
 <translation id="6473905796280459355">Идите на страницу О Chrome-у</translation>
 <translation id="6481963882741794338">Повежите Chrome и друге Google услуге ради персонализације и других сврха</translation>
 <translation id="648319183876919572">Побољшано безбедно прегледање доприноси заштити од опасних веб-сајтова и преузимања</translation>
@@ -649,6 +655,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7832314606810669113">Да би вам обележивачи и други садржај били доступни на свим уређајима, пријавите се у Chrome. Овај обележивач ће бити сачуван на Google налогу када се пријавите.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Наставите тамо где сте стали: Chrome може да врати картице сваки пут када га рестартујете. Да бисте то укључили, идите у</translation>
+<translation id="7869620795354551924">Да бисте користили сачуване лозинке, пратите QR кôд, преузмите Chrome за iOS и пријавите се на Google налог</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>
 <translation id="7886087451482920026">Изаберите текст помоћу Google објектива</translation>
 <translation id="7887929410013642057">Увек приказуј пречице за AI режим</translation>

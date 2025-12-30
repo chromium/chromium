@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ Tab-ს, შემდეგ — Enter-ს, რათა მართოთ, თუ რა ინფორმაციას შეინახავთ Chrome-იდან თქვენს Google ანგარიშში</translation>
 <translation id="1122714970786750095">ელექტრონიკა და ელექტროსაქონელი</translation>
 <translation id="1123753900084781868">ავტოსუბტიტრები ამჟამად მიუწვდომელია</translation>
+<translation id="1124643885833329193">ზუსტი მდებარეობა</translation>
 <translation id="112840717907525620">წესის ქეში OK</translation>
 <translation id="1131264053432022307">თქვენ მიერ კოპირებული სურათი</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> — სრული ეკრანიდან გასასვლელად ჩავლებით გადაიტანეთ ის ზემოდან და შეეხეთ უკან დაბრუნების ღილაკს</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">პასპორტის დამატება</translation>
 <translation id="2400271059665846158">მართეთ თქვენი ერთგული კლიენტის ბარათები Google საფულეში</translation>
 <translation id="2400600116338235695">შეუძლია თანმიმდევრულ პორტებთან დაკავშირების თხოვნა</translation>
+<translation id="2403474027143565107">ზუსტი</translation>
 <translation id="240450251994300576">მეორეული სათაურის ლოგო</translation>
 <translation id="2404884497378469141">ცადეთ თქვენი ფაილების ხელახლა კოპირება</translation>
 <translation id="2413155254802890957">ძველი</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">უსაფრთხოების დაცვის მიზნით მან შეიძლება ნახოს მოწყობილობის ოპერაციული სისტემის, ბრაუზერის ვერსიისა და დაყენებული პროგრამული უზრუნველყოფის ინფორმაციაც.</translation>
 <translation id="2573170131138724450">ტელევიზორები</translation>
 <translation id="257674075312929031">ჯგუფი</translation>
+<translation id="2577522251608256362">ოლქი</translation>
 <translation id="2580031090587209073">გაზიარების პარამეტრები</translation>
 <translation id="258027838577899739">ყველაფრის წაშლა ისტორიიდან</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />-მა დაამატა ჩანართი</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ოპერაციული სისტემები</translation>
 <translation id="3080254622891793721">გრაფიკა</translation>
 <translation id="3082007635241601060">მიეცით საშუალება Google-ს, გამოიყენოს თქვენი კალათები, რომ პერსონალურად გიპოვოთ ხელმისაწვდომი ფასდაკლებები</translation>
+<translation id="3085373848068196154">„<ph name="PROXY_INVALID_PROXY" />“ არ არის სწორი პროქსი-სერვერი.</translation>
 <translation id="3086269988715347183">თქვენ აქამდე არ დაგიმტკიცებიათ <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">თქვენს აქტივობაზე ვებში მიმდინარეობს მონიტორინგი</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">სიის ჩანაწერი „<ph name="LANGUAGE_ID" />“: ენა უცნობი ან მხარდაუჭერელია.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Tab, შემდეგ Enter-ს</translation>
 <translation id="3615309852743236517">მანიკიური და პედიკიური</translation>
+<translation id="3620034424637552643">ხშირად გამოიყენება მიმართულებებისთვის, მიწოდებებისთვის და სხვ.</translation>
 <translation id="3620239073311576716">უნიფორმები და სპეცტანსაცმელი</translation>
 <translation id="3621401353678567613">თქვენ მიერ თვალმიდევნებულ პროდუქტებზე ფასის შემცირების შესახებ გაფრთხილების მისაღებად ჩართეთ შეტყობინებები პარამეტრებიდან.</translation>
 <translation id="362276910939193118">სრული ისტორიის ნახვა</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">მიწა და მიწის ნაკვეთები</translation>
 <translation id="403724377879219932">შეიძლება მოითხოვოს წვდომა თქვენს ლოკალურ ქსელში ჩართულ სხვა მოწყობილობებზე</translation>
 <translation id="4039506337798853114">კურსორის გამოსაჩენად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
+<translation id="4042597221652780603">მიახლოებითი</translation>
 <translation id="4045070493270310437">ჩანართების ხელახლა გახსნა</translation>
 <translation id="4045226534284799755">ხელახლა ცდამდე შედით თქვენს Microsoft ანგარიშში</translation>
 <translation id="4045441967987592849">ხელახლა გახსნა</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">მშობლის ან მეურვის განცხადებით, ამ საიტის ნახვა თქვენთვის არ არის სასურველი. შეგიძლიათ მათ სთხოვოთ ამ საიტის განბლოკვა.</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6167577165590485365">მონაცემთა მიღების ბოლო მცდელობა:</translation>
+<translation id="6171968084616623939">„<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />“ არ არის სწორი მნიშვნელობა.</translation>
 <translation id="617256461084925519">Google Chrome ცდილობს, დაადასტუროს თქვენი ვინაობა, თქვენი საგადახდო ინფორმაცია რომ შეავსოს.</translation>
 <translation id="6173208311907792313">დაასრულეთ შეძენა Windows Hello-ს მეშვეობით</translation>
 <translation id="6176387967264100435">ეს ფასი მაღალია</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">სატესტო მისამართი ქვეყნების მიხედვით</translation>
 <translation id="6689249931105087298">ფარდობითი, შავი წერტილის შეკუმშვით</translation>
 <translation id="6689271823431384964">თქვენს Google ანგარიშში ბარათების შენახვას Chrome გთავაზობთ, ვინაიდან შესული ხართ სისტემაში. ამ ქცევის შეცვლა შეგიძლიათ პარამეტრებიდან. ბარათის მფლობელის სახელი მიღებულია თქვენი ანგარიშიდან.</translation>
+<translation id="6690688090329768424">„<ph name="PROXY_INVALID_DESTINATION" />“ არ არის დანიშნულების სწორი ნიმუში.</translation>
 <translation id="6691397311652656001">გაათავისუფლეთ მეხსიერების <ph name="REQUIRED_FREE_DISK_SPACE" /> ან მეტი</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ანგარიშში თქვენი მოწყობილობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6695428916538794739">მძაფრსიუჟეტიანი და სათავგადასავლო ფილმები</translation>
@@ -4076,7 +4084,6 @@
 <translation id="753556296624075801">უზრუნველყოფს Google</translation>
 <translation id="753713322968419914">ამოიშალოს თქვენი სახლის მისამართი Chrome-ის ავტომატური შევსებიდან?</translation>
 <translation id="7537536606612762813">სავალდებულო</translation>
-<translation id="7541043894191476250">კონტექსტური ამოცანები</translation>
 <translation id="7543525346216957623">სთხოვეთ მშობელს</translation>
 <translation id="7546409722674205727">მიმდინარეობს <ph name="APP_NAME" />-ის გაშვება</translation>
 <translation id="7548892272833184391">კავშირის შეცდომების აღმოფხვრა</translation>
@@ -4285,6 +4292,7 @@
 <translation id="7870281855125116701">მოიძებნა ფასდაკლება</translation>
 <translation id="7871445724586827387">თქვენი Google ანგარიშის პაროლის შეცვლა</translation>
 <translation id="787226752901403048">შედით Chrome-ში, რომ გააზიაროთ ჩანართების ჯგუფები, შეუერთდეთ მათ და ერთად იმუშაოთ იდეებზე</translation>
+<translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ არ არის პირობის ცნობილი ტიპი.</translation>
 <translation id="7877007680666472091">დაცული კონტენტის ID-ები</translation>
 <translation id="7878562273885520351">შესაძლოა თქვენს პაროლს საფრთხე ემუქრებოდეს</translation>
 <translation id="7881044256965445977">მოძებნეთ ნებისმიერი მოწყობილობა და შეუერთდით მას თქვენს ქსელში</translation>
@@ -5009,6 +5017,7 @@
 <translation id="9090243919347147717">დანართები</translation>
 <translation id="9090548458280093580">ისტორიაში ძიება, შექმნილია AI-ს დახმარებით</translation>
 <translation id="9090993752571911635">ინტერნეტპროვაიდერები</translation>
+<translation id="9092305980625216393">ხშირად გამოიყენება ამინდის, ადგილობრივი ახალი ამბებისა და სხვა ინფორმაციისთვის</translation>
 <translation id="9093723786115107672">ღამის საცვლები</translation>
 <translation id="9094424186948667194">ამ მოწყობილობაში სხვა აპებსა და სერვისებზე წვდომა</translation>
 <translation id="9094544726794842788">ქვემოთ დაწეული ცერის არჩევის შემთხვევაში გაიხსნება ფორმა, რომელშიც დეტალურად უნდა მიუთითოთ, რატომ არ მოგწონთ ეს შედეგები</translation>

@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">Gosti mogu upotrebljavati Chromium bez ostavljanja tragova o upotrebi.</translation>
 <translation id="4992938037305302429">Vaš račun u Chromiumu</translation>
 <translation id="4994636714258228724">Dodajte sebe kao korisnika Chromiuma</translation>
+<translation id="5083712646171654472">Gemini u Chromiumu upotrebljava automatsko pregledavanje za rad na vašim karticama i dovršavanje zadataka koje mu dodijelite. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium treba dopuštenje za praćenje pokreta vaših ruku</translation>
 <translation id="5141988424377517949">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Što vam je danas na umu?</translation>
@@ -581,6 +582,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7617377681829253106">Chromium je upravo postao bolji</translation>
 <translation id="7622753900276619808">Sada imate više dostupnih značajki u Chromiumu</translation>
 <translation id="7649070708921625228">Pomoć</translation>
+<translation id="7656340475565475526">Dopustite Chromiumu da pregledava umjesto vas</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>
 <translation id="7689606757190482937">Sinkronizirajte Chromium kako bi bio prilagođen vama na svim vašim uređajima</translation>
@@ -606,7 +608,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>
 <translation id="7934340546140346950">Chromium automatski nadograđuje nesigurne veze na HTTPS kad je to moguće</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Prijavite se ponovo istim računom.</translation>
-<translation id="7953047982688951904">Preuzmite Chromium na telefon da biste dodali dodatni sloj zaštite kad ste u pokretu</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromiuma, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Proširenja, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo s usluge <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Preglednik</translation>

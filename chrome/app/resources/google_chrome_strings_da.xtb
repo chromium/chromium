@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1880677175115548835">Vælg tekst</translation>
+<translation id="1896602904211344018">Hent Chrome-appen</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
 <translation id="1979600810166324878">Øg sikkerheden på farten med Udvidet beskyttet browsing i Chrome til iOS</translation>
@@ -271,6 +272,7 @@
 <translation id="3889417619312448367">Afinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3906096710440765802">Log ind i Chrome for at se dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
+<translation id="3921132130819999051">Lad Chrome browse for dig</translation>
 <translation id="3941890832296813527">Installationsfejl: Installationens filnavn er ugyldigt eller understøttes ikke.</translation>
 <translation id="395904275706073188">Beskyttede sider kan ikke læses. Prøv en anden side.</translation>
 <translation id="3968962723676998462">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -375,6 +377,7 @@
 <translation id="5163087008893166964">Velkommen til Chrome – Et nyt browservindue er åbnet</translation>
 <translation id="5166439563123238795">Chrome skal have tilladelse til at registrere dine håndbevægelser</translation>
 <translation id="5167819546851111585">Hvad har du på hjerte i dag?</translation>
+<translation id="5169778651486082413">Brug dine adgangskoder med Chrome på din telefon</translation>
 <translation id="5170938038195470297">Din profil kan ikke bruges, fordi den stammer fra en nyere version af Google Chrome. Nogle funktioner er muligvis ikke tilgængelige. Angiv en anden profilmappe, eller brug en nyere version af Chrome.</translation>
 <translation id="5174969993834422967">Du blokerer som regel notifikationer. Klik på notifikationsikonet i højre hjørne af din adresselinje for at give websitet tilladelse til at sende notifikationer.</translation>
 <translation id="5174983315706567306">Der er ikke nok diskplads.</translation>
@@ -400,7 +403,6 @@
 <translation id="5430073640787465221">Din præferencefil er beskadiget eller ugyldig. Google Chrome kan ikke gendanne dine præferencer.</translation>
 <translation id="5465210843490471889">Vælg en Chrome-profil, hvor du vil bruge <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome sender dine interaktioner med disse funktioner til Google for at hjælpe med at forbedre dem. Disse data læses, behandles og annoteres muligvis af menneskelige kontrollanter.</translation>
-<translation id="5510398294750420479">Download Chrome på din telefon for at tilføje et ekstra lag beskyttelse, når du er på farten</translation>
 <translation id="5524890928877629608">øverste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Gør Chrome hurtigere</translation>
 <translation id="5550137307985173298">Klik på knappen Tilpas Chrome på siden Ny fane for at give Chrome et nyt udseende</translation>
@@ -456,6 +458,7 @@
 <translation id="6008161919456049856">De adgangskoder, betalingsmetoder og adresser, du har gemt på din Google-konto, fjernes fra denne enhed. Hvis du vil bruge dem igen i Chrome, skal du logge ind igen.</translation>
 <translation id="6009821354356307391">Stil et opfølgende spørgsmål</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />værktøjer fra Chrome<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
+<translation id="6018578474045062808">Prøv Google Lens med Chrome på din telefon</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6025087594896450715">Google Chrome genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -478,6 +481,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
+<translation id="6183773856988300112">Gemini i Chrome bruger automatisk browsing til at arbejde på dine faner og udføre de opgaver, du giver den. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har tilføjet en udvidelse, der kan ændre den måde, Chrome fungerer på.
 
@@ -504,6 +508,8 @@
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
 <translation id="6426623519983252346">Du får en meddelelse om at prøve <ph name="FEATURE_NAME" />, næste gang du åbner Chrome til iOS.</translation>
 <translation id="6434035853014503219">Tak, fordi du har valgt Chrome som din standardbrowser.</translation>
+<translation id="6438015621983209660">Udvid anvendelsen af Udvidet beskyttet browsing med Chrome på din telefon</translation>
+<translation id="6442774133615368941">Køb, oversæt og identificer det, du ser gennem dit kamera, i Chrome-appen til iOS</translation>
 <translation id="6473905796280459355">Gå til siden Om Chrome</translation>
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="648319183876919572">Udvidet beskyttet browsing gør mere for at beskytte dig mod skadelige websites og downloads</translation>
@@ -641,6 +647,7 @@
 <translation id="7832314606810669113">Hvis du vil have dine bogmærker m.m. på alle dine enheder, skal du logge ind i Chrome. Denne adgangskode gemmes på din Google-konto, når du er logget ind.</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Fortsæt, hvor du slap: Chrome kan gendanne dine faner, hver gang du genstarter. For at aktivere dette skal du gå til</translation>
+<translation id="7869620795354551924">Hvis du vil bruge dine gemte adgangskoder, skal du følge QR-koden, downloade Chrome til iOS og logge ind på din Google-konto</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7886087451482920026">Vælg tekst med Google Lens</translation>
 <translation id="7887929410013642057">Vis altid genveje til AI-tilstand</translation>

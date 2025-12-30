@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">変更を保存できませんでした。</translation>
 <translation id="3254806613790954367">すべてのデバイスで最後に開いたタブ</translation>
 <translation id="325717987950204592">[プライバシーとセキュリティ] をタップします</translation>
-<translation id="3266338926702638258">この商品の価格の推移を表示する</translation>
 <translation id="3272527697863656322">キャンセル</translation>
 <translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">最近使ったタブを非表示</translation>
 <translation id="4578835633387306383">オンにする…</translation>
 <translation id="4580716718466706433">[パスワード マネージャー] に移動します</translation>
+<translation id="4585751637295612750">質問に追加するには新しいタブを開いてください</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4592672037257622855">{count,plural, =1{リーディング リストにページを追加しました}other{リーディング リストに {count} 件のページを追加しました}}</translation>
 <translation id="459644946100970322">値下げの通知をオンにしますか？</translation>

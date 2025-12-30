@@ -429,7 +429,7 @@
 <translation id="2573117291489209663">Дууссан</translation>
 <translation id="2577522251608256362">Хөрш</translation>
 <translation id="2579713773888829241">Дундын драйвууд</translation>
-<translation id="2580306219079937316">Орчуулах тохиргоог нээх</translation>
+<translation id="2580306219079937316">Орчуулгын тохиргоог нээх</translation>
 <translation id="2583688836549072561">Табын бүлэг, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> таб, шинэ үйл ажиллагаа.</translation>
 <translation id="2593272815202181319">Моноспэйс</translation>
 <translation id="2601778637777010194">Бүтээгдэхүүний үнийн бууралтыг мөшгөх</translation>
@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Таны өөрчлөлтийг хадгалж чадсангүй.</translation>
 <translation id="3254806613790954367">Таны бүх төхөөрөмж дээрх сүүлийн нээлттэй таб</translation>
 <translation id="325717987950204592">"Нууцлал, аюулгүй байдал" дээр товшино уу</translation>
-<translation id="3266338926702638258">Энэ бүтээгдэхүүний үнийн түүхийг харуулах</translation>
 <translation id="3272527697863656322">Цуцлах</translation>
 <translation id="3273510436356991673">Үндсэн нүүрээ өөрчлөх</translation>
 <translation id="3277021493514034324">Сайтын хаягийг хуулсан</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Саяхны табуудыг нуух</translation>
 <translation id="4578835633387306383">Асаах…</translation>
 <translation id="4580716718466706433">"Нууц үгний менежер" лүү очно уу</translation>
+<translation id="4585751637295612750">Үүнийг асуултдаа нэмэхийн тулд шинэ таб нээнэ үү</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4592672037257622855">{count,plural, =1{Таны унших жагсаалтад нэг хуудас нэмсэн}other{Таны унших жагсаалтад {count} хуудас нэмсэн}}</translation>
 <translation id="459644946100970322">Үнийн дохиог асаах уу?</translation>

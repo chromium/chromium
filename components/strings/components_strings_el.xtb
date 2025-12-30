@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1122714970786750095">Ηλεκτρονικά &amp; ηλεκτρικά</translation>
 <translation id="1123753900084781868">Οι Ζωντανοί υπότιτλοι δεν είναι διαθέσιμοι αυτήν τη στιγμή.</translation>
+<translation id="1124643885833329193">Ακριβής τοποθεσία</translation>
 <translation id="112840717907525620">Η προσωρινή μνήμη της πολιτικής είναι εντάξει</translation>
 <translation id="1131264053432022307">Εικόνα που αντιγράψατε</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Για έξοδο από την πλήρη οθόνη, σύρετε από το επάνω μέρος και αγγίξτε το κουμπί πίσω</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">Προσθήκη διαβατηρίου</translation>
 <translation id="2400271059665846158">Διαχείριση των καρτών επιβράβευσης αφοσιωμένων πελατών στο Πορτοφόλι Google</translation>
 <translation id="2400600116338235695">Μπορεί να ζητά να συνδεθεί σε σειριακές θύρες.</translation>
+<translation id="2403474027143565107">Ακριβής</translation>
 <translation id="240450251994300576">Λογότυπο δευτερεύουσας κεφαλίδας</translation>
 <translation id="2404884497378469141">Δοκιμάστε να αντιγράψετε ξανά τα αρχεία σας</translation>
 <translation id="2413155254802890957">Παλαιά</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">Για λόγους ασφάλειας, μπορεί επίσης να δει το λειτουργικό σύστημα της συσκευής, την έκδοση του προγράμματος περιήγησης και το λογισμικό που έχει εγκατασταθεί</translation>
 <translation id="2573170131138724450">Τηλεοράσεις</translation>
 <translation id="257674075312929031">Ομάδα</translation>
+<translation id="2577522251608256362">Γειτονιά</translation>
 <translation id="2580031090587209073">Επιλογές κοινοποίησης</translation>
 <translation id="258027838577899739">Διαγραφή όλων από το ιστορικό</translation>
 <translation id="258135245577667916">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> πρόσθεσε μια καρτέλα</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">Λειτουργικά συστήματα</translation>
 <translation id="3080254622891793721">Γραφικά</translation>
 <translation id="3082007635241601060">Να επιτρέπεται στην Google να χρησιμοποιεί τα καλάθια σας για να βρίσκει εξατομικευμένες εκπτώσεις όταν είναι διαθέσιμες</translation>
+<translation id="3085373848068196154">Η τιμή <ph name="PROXY_INVALID_PROXY" /> δεν αποτελεί έγκυρο διακομιστή μεσολάβησης.</translation>
 <translation id="3086269988715347183">Δεν έχετε εγκρίνει τον ιστότοπο <ph name="BLOCKED_URL" /> στο παρελθόν</translation>
 <translation id="3086579638707268289">Η δραστηριότητά σας στον ιστό παρακολουθείται</translation>
 <translation id="3087734570205094154">Κάτω</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615309852743236517">Μανικιούρ και πεντικιούρ</translation>
+<translation id="3620034424637552643">Χρησιμοποιείται συχνά για οδηγίες, παραδόσεις και άλλα</translation>
 <translation id="3620239073311576716">Φόρμες και στολές εργασίας</translation>
 <translation id="3621401353678567613">Για να λαμβάνετε ειδοποιήσεις για πτώσεις τιμών για προϊόντα που παρακολουθείτε, ενεργοποιήστε τις ειδοποιήσεις στις ρυθμίσεις.</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">Οικόπεδα και γη</translation>
 <translation id="403724377879219932">Μπορεί να ζητάει πρόσβαση σε άλλες συσκευές στο τοπικό δίκτυο</translation>
 <translation id="4039506337798853114">Για να εμφανιστεί ο δείκτης, πατήστε |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Κατά προσέγγιση</translation>
 <translation id="4045070493270310437">Εκ νέου άνοιγμα καρτελών</translation>
 <translation id="4045226534284799755">Συνδεθείτε στον λογαριασμό σας Microsoft, προτού δοκιμάσετε ξανά</translation>
 <translation id="4045441967987592849">Εκ νέου άνοιγμα</translation>
@@ -3214,6 +3220,7 @@
 <translation id="6164605812717770913">Ένας γονέας ή κηδεμόνας δεν σου επιτρέπει να επισκεφτείς αυτόν τον ιστότοπο. Μπορείς να ζητήσεις από τον γονέα ή τον κηδεμόνα να καταργήσει τον αποκλεισμό.</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6167577165590485365">Τελευταία προσπάθεια λήψης:</translation>
+<translation id="6171968084616623939">Η τιμή <ph name="PROXY_INVALID_SCHEME_HOST_PORT" /> δεν είναι έγκυρη.</translation>
 <translation id="617256461084925519">Το Google Chrome προσπαθεί να επαληθεύσει την ταυτότητά σας για να μπορέσει να συμπληρώσει τα στοιχεία πληρωμής.</translation>
 <translation id="6173208311907792313">Ολοκληρώστε την αγορά σας χρησιμοποιώντας το Windows Hello</translation>
 <translation id="6176387967264100435">Αυτή η τιμή είναι υψηλή</translation>
@@ -3541,6 +3548,7 @@
 <translation id="6688851075017682769">Δοκιμαστική διεύθυνση ανά χώρα</translation>
 <translation id="6689249931105087298">Σχετική με τη συμπίεση μαύρου σημείου</translation>
 <translation id="6689271823431384964">Το Chrome προσφέρεται να αποθηκεύσει τις κάρτες σας στον Λογαριασμό σας Google, επειδή έχετε συνδεθεί. Μπορείτε να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις. Το όνομα του κατόχου κάρτας προέρχεται από τον λογαριασμό σας.</translation>
+<translation id="6690688090329768424">Η τιμή <ph name="PROXY_INVALID_DESTINATION" /> δεν αποτελεί έγκυρο τύπο προορισμού.</translation>
 <translation id="6691397311652656001">Αποδεσμεύστε περισσότερο από <ph name="REQUIRED_FREE_DISK_SPACE" /> χώρου</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να βρείτε τη συσκευή σας στον Λογαριασμό Google.</translation>
 <translation id="6695428916538794739">Ταινίες δράσης και περιπέτειας</translation>
@@ -4080,7 +4088,6 @@
 <translation id="753556296624075801">Με την υποστήριξη της Google</translation>
 <translation id="753713322968419914">Να καταργηθεί η διεύθυνση σπιτιού από την αυτόματη συμπλήρωση του Chrome;</translation>
 <translation id="7537536606612762813">Υποχρεωτική</translation>
-<translation id="7541043894191476250">Εργασίες με βάση τα συμφραζόμενα</translation>
 <translation id="7543525346216957623">Ζήτησε την άδεια του γονέα σου</translation>
 <translation id="7546409722674205727">Έναρξη <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Διόρθωση σφαλμάτων σύνδεσης</translation>
@@ -4289,6 +4296,7 @@
 <translation id="7870281855125116701">Βρέθηκε έκπτωση</translation>
 <translation id="7871445724586827387">Αλλαγή του κωδικού πρόσβασης του Λογαριασμού σας Google</translation>
 <translation id="787226752901403048">Συνδεθείτε στο Chrome για να μοιραστείτε και να συμμετάσχετε σε ομάδες καρτελών, καθώς και να συνεργαστείτε σε ιδέες</translation>
+<translation id="7874796722855317864">Η τιμή <ph name="PROXY_UNKNOWN_CONDITION" /> δεν αποτελεί γνωστό τύπο συνθήκης.</translation>
 <translation id="7877007680666472091">προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="7878562273885520351">Ο κωδικός πρόσβασής σας μπορεί να έχει παραβιαστεί</translation>
 <translation id="7881044256965445977">Αναζητήστε και συνδεθείτε σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
@@ -5014,6 +5022,7 @@
 <translation id="9090243919347147717">Συνημμένα</translation>
 <translation id="9090548458280093580">Αναζήτηση ιστορικού με υποστήριξη AI</translation>
 <translation id="9090993752571911635">Πάροχοι υπηρεσιών διαδικτύου (ISP)</translation>
+<translation id="9092305980625216393">Χρησιμοποιείται συχνά για τον καιρό, τις τοπικές ειδήσεις και άλλα</translation>
 <translation id="9093723786115107672">Νυχτικά και πιτζάμες</translation>
 <translation id="9094424186948667194">Πρόσβαση σε άλλες εφαρμογές και υπηρεσίες σε αυτή τη συσκευή</translation>
 <translation id="9094544726794842788">Με την επιλογή "Δεν εγκρίνω" ανοίγει μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας άρεσαν αυτά τα αποτελέσματα</translation>

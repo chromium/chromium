@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome Beta 版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1880677175115548835">選取文字</translation>
+<translation id="1896602904211344018">下載 Chrome 應用程式</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="1979600810166324878">在 iOS 版 Chrome 上啟用安全瀏覽強化防護功能，隨時隨地享有更安全的體驗</translation>
@@ -270,6 +271,7 @@
 <translation id="3889417619312448367">解除安裝 Google Chrome</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上使用你的密碼、書籤和其他資料</translation>
+<translation id="3921132130819999051">讓 Chrome 幫你瀏覽網頁</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不受支援。</translation>
 <translation id="395904275706073188">受保護的頁面無法讀取，請試試其他頁面。</translation>
 <translation id="3968962723676998462">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
@@ -374,6 +376,7 @@
 <translation id="5163087008893166964">歡迎使用 Chrome；新的瀏覽器視窗已開啟</translation>
 <translation id="5166439563123238795">Chrome 需要相關權限才能追蹤手勢</translation>
 <translation id="5167819546851111585">在想什麼嗎？</translation>
+<translation id="5169778651486082413">在手機上使用 Chrome 儲存的密碼</translation>
 <translation id="5170938038195470297">由於你的設定檔是來自較新版本的 Google Chrome，所以系統無法使用該檔案。這表示你可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Google Chrome。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許這個網站傳送通知，請點選網址列右上角的通知圖示。</translation>
 <translation id="5174983315706567306">磁碟空間不足。</translation>
@@ -401,7 +404,6 @@
 Google Chrome 無法復原你的設定。</translation>
 <translation id="5465210843490471889">選擇要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="5468572406162360320">為協助改善這些功能，Chrome 會將你和功能的互動資料傳送給 Google。人工審查員可能會讀取、處理這些資料，並加上註解。</translation>
-<translation id="5510398294750420479">在手機上下載 Chrome，隨時隨地多添一層保障</translation>
 <translation id="5524890928877629608">搜尋區域的左上角：左側 <ph name="LEFT" />%，頂端 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">提升 Chrome 的運作速度</translation>
 <translation id="5550137307985173298">點選新分頁的「自訂 Chrome」按鈕，即可變更 Chrome 外觀</translation>
@@ -457,6 +459,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6008161919456049856">你儲存在 Google 帳戶中的密碼、付款方式和地址將從這部裝置中移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
 <translation id="6009821354356307391">繼續提問</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，讓你放心瀏覽網路，掌控一切設定</translation>
+<translation id="6018578474045062808">在手機上透過 Chrome 試用 Google 智慧鏡頭</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 將於 <ph name="REMAINING_TIME" /> 後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -479,6 +482,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6180522807229584611">這個分頁使用的資源過多。為提升效能，請讓 Chrome 將其設為閒置分頁。</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
+<translation id="6183773856988300112">Chrome 內建 Gemini 使用自動瀏覽功能，能在分頁中完成你交辦的工作。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">你在 Chrome 中的帳戶</translation>
 <translation id="6220551899604141979">「<ph name="PARTNER_NAME" />」新增了一個擴充功能，可能會改變 Chrome 的運作方式。
 
@@ -505,6 +509,8 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
 <translation id="6426623519983252346">下次開啟 iOS 版 Chrome 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
 <translation id="6434035853014503219">感謝你選擇 Chrome 為預設瀏覽器！</translation>
+<translation id="6438015621983209660">在手機上使用 Chrome，享有更全面的安全瀏覽強化防護功能</translation>
+<translation id="6442774133615368941">在 Chrome iOS 應用程式使用相機購物、翻譯及辨識所見事物</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
@@ -642,6 +648,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7832314606810669113">如要在所有裝置上存取書籤和其他資料，請登入 Chrome。登入後，這個書籤就會儲存到 Google 帳戶。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7849037457735762883">接續上次的瀏覽內容：Chrome 每次重新啟動時都能還原分頁。如要開啟這項功能，請前往</translation>
+<translation id="7869620795354551924">如要使用儲存的密碼，請掃描 QR code 下載 Chrome iOS 版，並登入 Google 帳戶</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7887929410013642057">一律顯示 AI 模式捷徑</translation>

@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om te beheren welke Chrome-informatie je opslaat in je Google-account</translation>
 <translation id="1122714970786750095">Elektronica en elektriciteit</translation>
 <translation id="1123753900084781868">Live ondertiteling is momenteel niet beschikbaar</translation>
+<translation id="1124643885833329193">Exacte locatie</translation>
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1131264053432022307">Afbeelding die je hebt gekopieerd</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: als je het volledige scherm wilt sluiten, sleep je vanaf de bovenkant en tik je op de terugknop</translation>
@@ -893,6 +894,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2400263725572336749">Paspoort toevoegen</translation>
 <translation id="2400271059665846158">Beheer je klantenkaarten in Google Wallet</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
+<translation id="2403474027143565107">Exact</translation>
 <translation id="240450251994300576">Secundair koptekstlogo</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
 <translation id="2413155254802890957">Oud</translation>
@@ -997,6 +999,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2571488850200220306">Uit beveiligingsoverwegingen kan de beheerder ook het OS, de browserversie en de geïnstalleerde software van het apparaat zien</translation>
 <translation id="2573170131138724450">Televisies</translation>
 <translation id="257674075312929031">Groep</translation>
+<translation id="2577522251608256362">Buurt</translation>
 <translation id="2580031090587209073">Opties voor delen</translation>
 <translation id="258027838577899739">Alles uit geschiedenis verwijderen</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad toegevoegd</translation>
@@ -1624,6 +1627,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="361438452008624280">Lijstitem '<ph name="LANGUAGE_ID" />': Onbekende of niet-ondersteunde taal.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
 <translation id="3615309852743236517">Manicure en pedicure</translation>
+<translation id="3620034424637552643">Vaak gebruikt voor onder andere routes en bezorgingen</translation>
 <translation id="3620239073311576716">Uniformen en werkkleding</translation>
 <translation id="3621401353678567613">Als je meldingen wilt krijgen over prijsdalingen voor producten die je volgt, zet je meldingen aan via de instellingen.</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
@@ -1889,6 +1893,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4036753017940930924">Percelen en land</translation>
 <translation id="403724377879219932">Kan vragen om toegang tot andere apparaten in je lokale netwerk</translation>
 <translation id="4039506337798853114">Druk op |<ph name="ACCELERATOR" />| om de cursor te tonen</translation>
+<translation id="4042597221652780603">Geschat</translation>
 <translation id="4045070493270310437">Tabbladen opnieuw openen</translation>
 <translation id="4045226534284799755">Log in op je Microsoft-account voordat je het opnieuw probeert</translation>
 <translation id="4045441967987592849">Opnieuw openen</translation>
@@ -3630,7 +3635,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="685163597635765693">Je organisatie heeft links van <ph name="HOST_NAME" /> geblokkeerd in de incognitomodus.</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
-<translation id="6854243285874308023">Google gebruikt informatie van de betaalpagina en andere relevante gegevens om deze opties aan te bieden. Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor achteraf betalen te verbergen.</translation>
 <translation id="6854691830678097752">Sla deze CVC op in je account, <ph name="ACCOUNT_EMAIL" />, om sneller te betalen</translation>
 <translation id="6857776781123259569">Wachtwoorden beheren…</translation>
 <translation id="6858034839887287663">A2x4</translation>
@@ -4074,7 +4078,6 @@ Aanvullende informatie:
 <translation id="753556296624075801">Mogelijk gemaakt door Google</translation>
 <translation id="753713322968419914">Woonadres verwijderen uit automatisch invullen in Chrome?</translation>
 <translation id="7537536606612762813">Verplicht</translation>
-<translation id="7541043894191476250">Contextuele taken</translation>
 <translation id="7543525346216957623">Vraag het aan je ouder of voogd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> starten</translation>
 <translation id="7548892272833184391">Verbindingsfouten oplossen</translation>
@@ -5008,6 +5011,7 @@ Aanvullende informatie:
 <translation id="9090243919347147717">Bijlagen</translation>
 <translation id="9090548458280093580">Zoeken in je geschiedenis, mogelijk gemaakt door AI</translation>
 <translation id="9090993752571911635">Internetproviders (ISP's)</translation>
+<translation id="9092305980625216393">Vaak gebruikt voor onder andere het weer en lokaal nieuws</translation>
 <translation id="9093723786115107672">Nachtkleding</translation>
 <translation id="9094424186948667194">Toegang tot andere apps en services op dit apparaat</translation>
 <translation id="9094544726794842788">Met Niet leuk open je een formulier waarmee je gedetailleerde feedback kunt sturen over waarom je deze resultaten niet leuk vindt</translation>

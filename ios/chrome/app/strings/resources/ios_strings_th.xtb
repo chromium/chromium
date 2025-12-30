@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1150989369772528668">ปฏิทิน</translation>
 <translation id="1161663161838091892">ซิงค์แท็บและประวัติการเข้าชมเพื่อดำเนินการต่อ</translation>
+<translation id="1162834932051545794">{count,plural, =1{บัตรเครดิต {count} ใบ}other{บัตรเครดิต {count} ใบ}}</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1172898394251786223">ช่องถัดไป</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
 <translation id="1752547299766512813">บันทึกรหัสผ่าน</translation>
 <translation id="1764070164487214210">เส้นทาง</translation>
+<translation id="1764511703783285459">เครื่องมือจัดการรหัสผ่านอื่นไม่ได้แชร์รหัสผ่านหรือพาสคีย์</translation>
 <translation id="1767766085187034454">Google แปลภาษา</translation>
 <translation id="1771016937398045251">เมนูเครื่องมือ</translation>
 <translation id="1772468122139624049">โหลดแท็บซ้ำไม่ได้</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3254806613790954367">แท็บที่เปิดล่าสุดในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="325717987950204592">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
-<translation id="3266338926702638258">แสดงประวัติราคาของผลิตภัณฑ์นี้</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">ซ่อน "แท็บล่าสุด"</translation>
 <translation id="4578835633387306383">เปิด…</translation>
 <translation id="4580716718466706433">ไปที่ "เครื่องมือจัดการรหัสผ่าน"</translation>
+<translation id="4585751637295612750">เปิดแท็บใหม่เพื่อเพิ่มลงในคำถาม</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
 <translation id="4592672037257622855">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านแล้ว}other{เพิ่ม {count} หน้าลงในเรื่องรออ่านแล้ว}}</translation>
 <translation id="459644946100970322">เปิดการแจ้งเตือนราคาไหม</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">หมายเหตุมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="5087098519049306025">การติดตามราคา</translation>
 <translation id="5090832849094901128">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="WEBSITE" /></translation>
+<translation id="510580293474170715">ไม่มีข้อมูลให้นำเข้า</translation>
 <translation id="5113960131843706315">กำลังดึงข้อมูลของคุณ…</translation>
 <translation id="5118462200606189584">เพิ่มบัญชี…</translation>
 <translation id="5118764316110575523">ปิด</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
 <translation id="6410883413783534063">เปิดหลายแท็บเพื่อไปยังหน้าต่างๆ พร้อมกัน</translation>
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
+<translation id="6420292512900923139">พบปัญหาในการนำเข้าข้อมูล</translation>
 <translation id="6421038304268477484">ข้อความที่แปล</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6435236283694032571">เพิ่มไปยังเรื่องรออ่าน</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6550891580932862748">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย การตั้งค่า Google Safe Browsing ในผลิตภัณฑ์อื่นๆ ของ Google จะไม่ได้รับผลกระทบ</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6559301491397835130">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>

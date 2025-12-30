@@ -355,6 +355,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4992938037305302429">Ваш обліковий запис у Chromium</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
+<translation id="5083712646171654472">Gemini у Chromium використовує функцію автоматичного перегляду, щоб шукати інформацію на ваших вкладках і виконувати для вас завдання. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>
 <translation id="5141988424377517949">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
 <translation id="5167819546851111585">Про що ви думаєте?</translation>
@@ -581,6 +582,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7617377681829253106">Chromium став ще кращим</translation>
 <translation id="7622753900276619808">Тепер у Chromium доступно більше функцій</translation>
 <translation id="7649070708921625228">Довідка</translation>
+<translation id="7656340475565475526">Дозвольте Chromium шукати інформацію для вас</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7686590090926151193">Chromium не є вашим веб-переглядачем за умовчанням</translation>
 <translation id="7689606757190482937">Синхронізуйте та персоналізуйте роботу Chromium на всіх своїх пристроях</translation>
@@ -606,7 +608,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7888981273428720788">Зробіть Chromium вебпереглядачем за умовчанням</translation>
 <translation id="7934340546140346950">Chromium автоматично переходить на протокол HTTPS, коли це можливо</translation>
 <translation id="7937630085815544518">Ви ввійшли в Chromium як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
-<translation id="7953047982688951904">Завантажте Chromium на телефон, щоб додатково захистити себе в дорозі</translation>
 <translation id="7975919845073681630">Це додаткове встановлення Chromium. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
 <translation id="7997934263947464652">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chromium – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Переглядач</translation>

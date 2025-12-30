@@ -275,6 +275,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3889417619312448367">Deïnstalleer Google Chrome</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="3906096710440765802">Meld by Chrome aan om jou wagwoorde, boekmerke en meer op al jou toestelle te kry</translation>
+<translation id="3921132130819999051">Laat Chrome vir jou blaai</translation>
 <translation id="3941890832296813527">Installeerfout: Die installeerderlêernaam is ongeldig of word nie ondersteun nie.</translation>
 <translation id="395904275706073188">Beskermde bladsye kan nie gelees word nie. Probeer ’n ander bladsy.</translation>
 <translation id="3968962723676998462">Voer jou wagfrase in om Chrome-data in jou rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik en te stoor</translation>
@@ -408,7 +409,6 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5465210843490471889">Kies ’n Chrome-profiel om met <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> te gebruik</translation>
 <translation id="5468572406162360320">Om hierdie kenmerke te help verbeter, stuur Chrome jou interaksies daarmee na Google. Hierdie data kan deur menslike kontroleerders gelees, verwerk en geannoteer word.</translation>
-<translation id="5510398294750420479">Laai Chrome op jou foon af om ’n ekstra laag beskerming by te voeg wanneer jy aan die beweeg is</translation>
 <translation id="5524890928877629608">boonste linkerhoek van soekgebied: links <ph name="LEFT" />%, bo <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Maak Chrome vinniger</translation>
 <translation id="5550137307985173298">Klik die Pasmaak Chrome-knoppie op die Nuwe Oortjie-bladsy om vir Chrome ’n nuwe voorkoms te gee</translation>
@@ -486,6 +486,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Hierdie oortjie gebruik ekstra hulpbronne. Laat Chrome dit onaktief maak om jou werkverrigting te verbeter.</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
+<translation id="6183773856988300112">Gemini in Chrome gebruik outoblaai om in jou oortjies te werk en take te voltooi wat jy vir dit gee. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Jou rekening in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> het ’n uitbreiding bygevoeg wat dalk kan verander hoe Chrome werk.
 

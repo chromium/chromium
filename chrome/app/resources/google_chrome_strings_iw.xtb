@@ -271,6 +271,7 @@
 <translation id="3889417619312448367">‏הסרת Google Chrome</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3906096710440765802">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון ב-Chrome</translation>
+<translation id="3921132130819999051">‏רוצה ש-Chrome יחפש בשבילך?</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
 <translation id="395904275706073188">לא ניתן לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
@@ -400,7 +401,6 @@
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="5465210843490471889">‏בחירת פרופיל ב-Chrome לשימוש עם <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏כדי לשפר את התכונות האלו, Chrome שולח את האינטראקציות שלך איתן ל-Google. בודקים אנושיים יכולים לקרוא את הנתונים האלה, לעבד אותם ולהוסיף להם הערות.</translation>
-<translation id="5510398294750420479">‏רוצה עוד שכבת הגנה בכל מקום? כדאי להוריד את Chrome לטלפון</translation>
 <translation id="5524890928877629608">‏הפינה השמאלית העליונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="TOP" />%‎ מלמעלה</translation>
 <translation id="5530733413481476019">‏שיפור המהירות ב-Chrome</translation>
 <translation id="5550137307985173298">‏אפשר ללחוץ על הכפתור "התאמה אישית של Chrome" בדף הכרטיסייה החדשה כדי לשנות את המראה של Chrome</translation>
@@ -478,6 +478,7 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת ביטא</translation>
 <translation id="6180522807229584611">‏בכרטיסייה הזו נעשה שימוש במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותה.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
+<translation id="6183773856988300112">‏‫Gemini ב-Chrome משתמש בגלישה אוטומטית כדי לפעול בכרטיסיות שלך ולהשלים משימות שהוא מקבל ממך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">‏החשבון שלך ב-Chrome</translation>
 <translation id="6220551899604141979">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chrome.
 

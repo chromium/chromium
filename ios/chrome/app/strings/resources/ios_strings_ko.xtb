@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">변경사항을 저장할 수 없습니다.</translation>
 <translation id="3254806613790954367">모든 기기를 통틀어 마지막으로 열린 탭입니다</translation>
 <translation id="325717987950204592">'개인 정보 보호 및 보안'을 탭합니다.</translation>
-<translation id="3266338926702638258">이 제품의 가격 변동 내역 표시</translation>
 <translation id="3272527697863656322">취소</translation>
 <translation id="3273510436356991673">홈 화면 맞춤설정하기</translation>
 <translation id="3277021493514034324">사이트 주소가 복사되었습니다.</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">최근 탭 숨기기</translation>
 <translation id="4578835633387306383">사용 설정…</translation>
 <translation id="4580716718466706433">'비밀번호 관리자'로 이동합니다.</translation>
+<translation id="4585751637295612750">새 탭을 열어 질문에 추가하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4592672037257622855">{count,plural, =1{페이지가 읽기 목록에 추가됨}other{페이지 {count}장이 읽기 목록에 추가됨}}</translation>
 <translation id="459644946100970322">가격 알림을 사용하시겠습니까?</translation>

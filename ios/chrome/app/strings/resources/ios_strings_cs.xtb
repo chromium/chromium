@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1161663161838091892">Pokud chcete pokračovat, synchronizujte karty a historii</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} platební karta}few{{count} platební karty}many{{count} platební karty}other{{count} platebních karet}}</translation>
 <translation id="1164891049599601209">Zadáno na klamavém webu</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1172898394251786223">Další pole</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Otevřené karty</translation>
 <translation id="1752547299766512813">Ukládání hesel</translation>
 <translation id="1764070164487214210">Trasa</translation>
+<translation id="1764511703783285459">Druhý správce hesel nesdílel žádná hesla ani přístupové klíče</translation>
 <translation id="1767766085187034454">Překladač Google</translation>
 <translation id="1771016937398045251">Nabídka Nástroje</translation>
 <translation id="1772468122139624049">Karty nelze znovu načíst</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Změnu nebylo možné uložit.</translation>
 <translation id="3254806613790954367">Naposledy otevřená karta ze všech vašich zařízení</translation>
 <translation id="325717987950204592">Klepněte na Ochrana soukromí a zabezpečení</translation>
-<translation id="3266338926702638258">Zobrazit historii cen tohoto produktu</translation>
 <translation id="3272527697863656322">Zrušit</translation>
 <translation id="3273510436356991673">Přizpůsobení plochy</translation>
 <translation id="3277021493514034324">Adresa webu byla zkopírována</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Skrýt možnost Nedávno použité karty</translation>
 <translation id="4578835633387306383">Zapnout…</translation>
 <translation id="4580716718466706433">Přejděte do Správce hesel</translation>
+<translation id="4585751637295612750">Otevřete novou kartu a přidejte ji do otázky</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stránka byla přidána do vašeho seznamu četby}few{Do vašeho seznamu četby byly přidány {count} stránky}many{Do vašeho seznamu četby bylo přidáno {count} stránky}other{Do vašeho seznamu četby bylo přidáno {count} stránek}}</translation>
 <translation id="459644946100970322">Zapnout upozornění na ceny?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Poznámka má víc než 1000 znaků</translation>
 <translation id="5087098519049306025">Sledování cen</translation>
 <translation id="5090832849094901128">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Nic se neimportovalo</translation>
 <translation id="5113960131843706315">Načítání vašich věcí…</translation>
 <translation id="5118462200606189584">Přidat účet…</translation>
 <translation id="5118764316110575523">Vypnuto</translation>
@@ -1449,6 +1452,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6410390304316730527">Bezpečné prohlížení vás chrání před útočníky, kteří se vás snaží přimět k nebezpečné akci, jako je instalace škodlivého softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). Pokud ji vypnete, budete si muset dávat pozor na neznámé a podezřelé weby.</translation>
 <translation id="6410883413783534063">Pomocí karet můžete mít otevřených několik různých stránek najednou</translation>
 <translation id="6418346271604475326">Příprava souboru PDF</translation>
+<translation id="6420292512900923139">Při importu dat došlo k potížím</translation>
 <translation id="6421038304268477484">Přeložený text</translation>
 <translation id="6429213933892582367">Otevřete sekci Volby hesel.</translation>
 <translation id="6435236283694032571">Přidat do seznamu četby</translation>
@@ -1487,6 +1491,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6550891580932862748">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. Vaše nastavení Bezpečného prohlížení v jiných službách Google nebude dotčeno.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6559301491397835130">{count,plural, =1{Záložka byla uložena do složky „{title}“. Je uložena pouze na tomto zařízení.}few{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}many{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}other{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}}</translation>
 <translation id="656065428026159829">Zobrazit další</translation>

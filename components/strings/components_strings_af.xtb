@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter Chrome-inligting jy in jou Google-rekening stoor</translation>
 <translation id="1122714970786750095">Elektronika en elektriese toestelle</translation>
 <translation id="1123753900084781868">Intydse Onderskrifte is nie nou onmiddellik beskikbaar nie</translation>
+<translation id="1124643885833329193">Presiese ligging</translation>
 <translation id="112840717907525620">Beleidkas OK</translation>
 <translation id="1131264053432022307">Prent wat jy gekopieer het</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Sleep van bo af en raak die terugknoppie om uit volskerm te gaan</translation>
@@ -893,6 +894,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2400263725572336749">Voeg paspoort by</translation>
 <translation id="2400271059665846158">Bestuur jou lojaliteitskaarte in Google Wallet</translation>
 <translation id="2400600116338235695">Kan vra om aan reekspoorte te koppel</translation>
+<translation id="2403474027143565107">Presies</translation>
 <translation id="240450251994300576">Logo vir sekondêre opskrif</translation>
 <translation id="2404884497378469141">Probeer jou lêers weer kopieer</translation>
 <translation id="2413155254802890957">Oud</translation>
@@ -997,6 +999,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2571488850200220306">Dit kan ook die toestel se bedryfstelsel en blaaierweergawe sien, en watter sagteware geïnstalleer is, om te help om sekuriteit te verseker</translation>
 <translation id="2573170131138724450">Televisies</translation>
 <translation id="257674075312929031">Groep</translation>
+<translation id="2577522251608256362">Buurt</translation>
 <translation id="2580031090587209073">Deelopsies</translation>
 <translation id="258027838577899739">Vee alles uit geskiedenis uit</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> het ’n oortjie bygevoeg</translation>
@@ -1283,6 +1286,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3076865167425975822">Bedryfstelsels</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Laat Google jou mandjies gebruik om gepersonaliseerde afslag te vind wanneer dit beskikbaar is</translation>
+<translation id="3085373848068196154">“<ph name="PROXY_INVALID_PROXY" />” is nie ’n geldige instaanbediener nie.</translation>
 <translation id="3086269988715347183">Jy het nie voorheen <ph name="BLOCKED_URL" /> goedgekeur nie</translation>
 <translation id="3086579638707268289">Jou aktiwiteit op die web word gemonitor</translation>
 <translation id="3087734570205094154">Onderkant</translation>
@@ -1412,6 +1416,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3266793032086590337">Waarde (konflik)</translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
 <translation id="3270041629388773465">Betaal vinniger wanneer jou CVC’s gestoor word</translation>
+<translation id="3270343151253360050">Kies ’n ander betaalmetode om hierdie aankoop te voltooi</translation>
 <translation id="3270847123878663523">Ontdoen herrangskikking</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> wil koppel</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="361438452008624280">Lysinskrywing "<ph name="LANGUAGE_ID" />": onbekende of ongesteunde taal.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om veiligheidskontrole in Chrome-instellings te doen</translation>
 <translation id="3615309852743236517">Manikure en pedikure</translation>
+<translation id="3620034424637552643">Word dikwels vir aanwysings, aflewerings en meer gebruik</translation>
 <translation id="3620239073311576716">Uniforms en werkdrag</translation>
 <translation id="3621401353678567613">Skakel kennisgewings in instellings aan vir opletberigte oor prysverlagings van produkte wat jy naspoor.</translation>
 <translation id="362276910939193118">Wys hele geskiedenis</translation>
@@ -1893,6 +1899,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4036753017940930924">Erwe en grondbesit</translation>
 <translation id="403724377879219932">Kan vra om toegang tot ander toestelle op jou plaaslike netwerk te kry</translation>
 <translation id="4039506337798853114">Druk |<ph name="ACCELERATOR" />| om jou skermpyltjie te wys</translation>
+<translation id="4042597221652780603">Benaderd</translation>
 <translation id="4045070493270310437">Maak oortjies weer oop</translation>
 <translation id="4045226534284799755">Meld by jou Microsoft-rekening aan voordat jy weer probeer</translation>
 <translation id="4045441967987592849">Heropen</translation>
@@ -3211,6 +3218,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6164605812717770913">’n Ouer of voog het gesê dat hierdie webwerf nie OK is vir jou om te besoek nie. Jy kan hulle vra om dit te deblokkeer.</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6167577165590485365">Laaste haalpoging:</translation>
+<translation id="6171968084616623939">“<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />” is nie ’n geldige waarde nie.</translation>
 <translation id="617256461084925519">Google Chrome probeer verifieer dat dit jy is sodat dit jou betaalinligting kan invul.</translation>
 <translation id="6173208311907792313">Voltooi jou aankoop met Windows Hello</translation>
 <translation id="6176387967264100435">Hierdie prys is hoog</translation>
@@ -3537,6 +3545,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6688851075017682769">Toetsadres volgens land</translation>
 <translation id="6689249931105087298">Relatief met swartpuntsaampersing</translation>
 <translation id="6689271823431384964">Chrome bied aan om jou kaarte in jou Google-rekening te stoor omdat jy aangemeld is. Jy kan hierdie gedrag in instellings verander. Die kaarthouernaam kom van jou rekening af.</translation>
+<translation id="6690688090329768424">“<ph name="PROXY_INVALID_DESTINATION" />” is nie ’n geldige bestemmingpatroon nie.</translation>
 <translation id="6691397311652656001">Maak meer as <ph name="REQUIRED_FREE_DISK_SPACE" /> se spasie beskikbaar</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou toestel in die Google-rekening te kry</translation>
 <translation id="6695428916538794739">Aksie- en avontuurflieks</translation>
@@ -3549,6 +3558,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6702851555558236418">Oudio- en musieksagteware</translation>
 <translation id="6702919718839027939">Bied aan</translation>
 <translation id="6704458454638854812">Die eienskap "custom_size" is gestel; daar word verwag dat die naam "custom" (gepasmaak) sal wees.</translation>
+<translation id="670477556876354552">Herbegin word vereis</translation>
 <translation id="6706005862292023715">Gordyn- en vensterbehandeling</translation>
 <translation id="6706210727756204531">Omvang</translation>
 <translation id="6706678697074905703">Hierdie IBAN kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor.</translation>
@@ -4074,7 +4084,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="753556296624075801">Aangedryf deur Google</translation>
 <translation id="753713322968419914">Wil jy jou huisadres uit Chrome-outovul verwyder?</translation>
 <translation id="7537536606612762813">Verplig</translation>
-<translation id="7541043894191476250">Kontekstuele take</translation>
 <translation id="7543525346216957623">Vra jou ouer</translation>
 <translation id="7546409722674205727">Begin <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Stel verbindingfoute reg</translation>
@@ -4283,6 +4292,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7870281855125116701">Afslag gevind</translation>
 <translation id="7871445724586827387">Verander jou Google-rekeningwagwoord</translation>
 <translation id="787226752901403048">Meld by Chrome aan om oortjiegroepe te deel en daarby aan te sluit, en saam te werk aan idees</translation>
+<translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” is nie ’n bekende toestandtipe nie.</translation>
 <translation id="7877007680666472091">ID's van beskermde inhoud</translation>
 <translation id="7878562273885520351">Jou wagwoord is dalk in gevaar</translation>
 <translation id="7881044256965445977">Soek en koppel aan enige toestel op jou plaaslike netwerk</translation>
@@ -5007,6 +5017,7 @@ Bykomende besonderhede:
 <translation id="9090243919347147717">Aanhegsels</translation>
 <translation id="9090548458280093580">Soek jou geskiedenis, aangedryf deur AI</translation>
 <translation id="9090993752571911635">Internetdiensverskaffers</translation>
+<translation id="9092305980625216393">Word dikwels vir die weer, plaaslike nuus en meer gebruik</translation>
 <translation id="9093723786115107672">Slaapdrag</translation>
 <translation id="9094424186948667194">Kry toegang tot ander apps en dienste op hierdie toestel</translation>
 <translation id="9094544726794842788">Afduim maak ’n vorm oop vir die indien van gedetailleerde terugvoer oor hoekom jy nie van hierdie resultate hou nie</translation>

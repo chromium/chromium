@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Ni fu modd cadw'ch newid.</translation>
 <translation id="3254806613790954367">Eich tab agored diwethaf ar draws eich holl ddyfeisiau</translation>
 <translation id="325717987950204592">Tapiwch "Preifatrwydd a Diogelwch"</translation>
-<translation id="3266338926702638258">Dangos hanes prisiau ar gyfer y cynnyrch hwn</translation>
 <translation id="3272527697863656322">Canslo</translation>
 <translation id="3273510436356991673">Addasu eich sgrîn hafan</translation>
 <translation id="3277021493514034324">Copïwyd cyfeiriad y wefan</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Cuddio tabiau diweddar</translation>
 <translation id="4578835633387306383">Troi ymlaen…</translation>
 <translation id="4580716718466706433">Ewch i'r "Rheolwr Cyfrineiriau"</translation>
+<translation id="4585751637295612750">Agorwch dab newydd i'w ychwanegu at eich cwestiwn</translation>
 <translation id="4587589328781138893">Gwefannau</translation>
 <translation id="4592672037257622855">{count,plural, =1{Mae tudalen wedi'i hychwanegu at eich rhestr ddarllen}zero{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}two{Mae {count} dudalen wedi'u hychwanegu at eich rhestr ddarllen}few{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}many{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}other{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}}</translation>
 <translation id="459644946100970322">Troi hysbysiadau prisiau ymlaen?</translation>

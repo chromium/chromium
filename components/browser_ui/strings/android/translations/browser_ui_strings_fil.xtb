@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Mga Tip sa Chrome</translation>
 <translation id="1816835383954230954">Kapag naka-on, mas mabilis na tatakbo ang Chrome at gagana ang mga feature na gumagamit ng JavaScript ayon sa pagkakadisenyo sa mga ito. Kapag naka-off, pinapahina nito ang performance pero ginagawang mas matatag ang V8 laban sa mga attack.</translation>
 <translation id="1818308510395330587">Para payagan ang <ph name="APP_NAME" /> na gumamit ng AR, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Ilipat ang posisyon para i-customize ang iyong experience sa pag-browse</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Walang laman ang folder na ito</translation>
 <translation id="1881806992065048905">Bottom sheet ng hitsura ng page ng bagong tab</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Pinapayagan sa pagkakataong ito • Eksakto</translation>
 <translation id="2544997614631598250">Madilim na kulay ng tema</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
+<translation id="2553552004849639664">Kunin ang pinakamalakas na proteksyon ng Chrome laban sa mga banta online</translation>
 <translation id="2570922361219980984">Naka-off din ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Pinalawak - i-click upang i-collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -415,6 +417,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="5373874281522292782">Naka-save ang mga grupo ng tab mo</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 pa)}one{(+ # pa)}other{(+ # pa)}}</translation>
 <translation id="5403592356182871684">Mga Pangalan</translation>
+<translation id="5407203562970638234">Paigtingin ang iyong seguridad</translation>
 <translation id="5438097262470833822">Ire-reset ng opsyong ito ang mga pahintulot para sa <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kapag naka-on, puwedeng hilingin ng mga site ang iyong lokasyon. Kapag naka-off, hindi makikita ng mga site ang iyong lokasyon.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> ang lumipas mula sa <ph name="TOTAL_TIME" />.</translation>

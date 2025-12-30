@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">‏يمكن للضيف استخدام Chromium بدون أن يترك أي أثر وراءه.</translation>
 <translation id="4992938037305302429">‏حسابك في Chromium</translation>
 <translation id="4994636714258228724">‏إضافة نفسك إلى Chromium</translation>
+<translation id="5083712646171654472">‏يستخدم "Gemini في Chromium" ميزة التصفّح التلقائي للعمل في علامات التبويب وإكمال المهام المطلوبة منه. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">‏يحتاج Chromium إلى إذن لتتبُّع حركات يديك</translation>
 <translation id="5141988424377517949">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">ما الذي يجول في خاطرك اليوم؟</translation>
@@ -581,6 +582,7 @@
 <translation id="7617377681829253106">‏Chromium أصبح أفضل</translation>
 <translation id="7622753900276619808">‏تتوفّر الآن ميزات إضافية في Chromium</translation>
 <translation id="7649070708921625228">مساعدة</translation>
+<translation id="7656340475565475526">‏ما رأيك بالاستفادة من قدرات Chromium في التصفّح؟</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7686590090926151193">‏Chromium ليس متصفحك التلقائي.</translation>
 <translation id="7689606757190482937">‏يمكنك مزامنة Chromium وتخصيصه على جميع أجهزتك.</translation>
@@ -606,7 +608,6 @@
 <translation id="7888981273428720788">‏ضبط Chromium كمتصفّح تلقائي</translation>
 <translation id="7934340546140346950">‏يرقِّي متصفِّح Chromium الاتصالات غير الآمنة إلى اتصالات عبر بروتوكول HTTPS تلقائيًا إن أمكن ذلك</translation>
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
-<translation id="7953047982688951904">‏يمكنك تنزيل متصفِّح Chromium على هاتفك للحصول على طبقة حماية إضافية أثناء التنقّل</translation>
 <translation id="7975919845073681630">‏هذا تثبيت ثانوي من Chromium، ولا يمكن جعله متصفحك التلقائي.</translation>
 <translation id="7997934263947464652">‏إنّ الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة يمكن أن تتسبّب في إلحاق الضرر بجهازك. ينصح Chromium بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط.</translation>
 <translation id="8004582292198964060">المتصفّح</translation>

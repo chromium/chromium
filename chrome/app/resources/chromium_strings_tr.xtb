@@ -352,6 +352,7 @@
 <translation id="4987820182225656817">Misafirler Chromium'u geride hiçbir şey bırakmadan kullanabilir.</translation>
 <translation id="4992938037305302429">Chromium'daki Hesabınız</translation>
 <translation id="4994636714258228724">Kendinizi Chromium'a ekleyin</translation>
+<translation id="5083712646171654472">Chromium'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="5123973130450702873">Chromium'un ellerinizi takip etmek için izne ihtiyacı var</translation>
 <translation id="5141988424377517949">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="5167819546851111585">Aklınızda ne var?</translation>
@@ -578,6 +579,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>
 <translation id="7622753900276619808">Artık Chromium'da daha fazla özellik kullanabilirsiniz</translation>
 <translation id="7649070708921625228">Yardım</translation>
+<translation id="7656340475565475526">Chromium'un sizin için göz atmasına izin verin</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7686590090926151193">Chromium varsayılan tarayıcınız değil</translation>
 <translation id="7689606757190482937">Chromium'u cihazlarınız arasında senkronize edin ve kişiselleştirin</translation>
@@ -603,7 +605,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7888981273428720788">Chromium'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="7934340546140346950">Chromium, güvensiz bağlantıları mümkün olduğunda otomatik olarak HTTPS'ye yükseltir</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
-<translation id="7953047982688951904">Hareket halindeyken ek koruma katmanı için telefonunuza Chromium'u indirin</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>

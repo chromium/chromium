@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">आपके बदलाव को सेव नहीं किया जा सका.</translation>
 <translation id="3254806613790954367">आपके सभी डिवाइसों पर खोला गया आखिरी टैब</translation>
 <translation id="325717987950204592">"निजता और सुरक्षा" पर टैप करें</translation>
-<translation id="3266338926702638258">इस प्रॉडक्ट की कीमत का इतिहास दिखाएं</translation>
 <translation id="3272527697863656322">अभी नहीं</translation>
 <translation id="3273510436356991673">होम स्क्रीन को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="3277021493514034324">साइट का पता कॉपी किया गया</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">हाल ही के टैब छिपाएं</translation>
 <translation id="4578835633387306383">चालू करें…</translation>
 <translation id="4580716718466706433">"Password Manager" पर जाएं</translation>
+<translation id="4585751637295612750">सवाल में जोड़ने के लिए, नया टैब खोलें</translation>
 <translation id="4587589328781138893">साइटें</translation>
 <translation id="4592672037257622855">{count,plural, =1{आपकी रीडिंग लिस्ट में पेज जोड़ा गया}one{आपकी रीडिंग लिस्ट में {count} पेज जोड़ा गया}other{आपकी रीडिंग लिस्ट में {count} पेज जोड़े गए}}</translation>
 <translation id="459644946100970322">क्या कीमत में बदलाव के अलर्ट पाने की सुविधा चालू करनी है?</translation>

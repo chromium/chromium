@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Vidokezo vya Chrome</translation>
 <translation id="1816835383954230954">Ikiwa imewashwa, Chrome hufanya kazi haraka zaidi na vipengele vinavyotumia JavaScript vinapaswa kufanya kazi kama vilivyokusudiwa. Ikiwa imezimwa, hatua hii hupunguza utendaji lakini hufanya V8 kustahimili zaidi mashambulizi.</translation>
 <translation id="1818308510395330587">Ili uruhusu <ph name="APP_NAME" /> itumie Uhalisia Ulioboreshwa, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Badilisha nafasi ili uweke mapendeleo ya hali yako ya kuvinjari</translation>
 <translation id="1848033246551405023">Fonti ya Sans Serif</translation>
 <translation id="1861262398884155592">Folda hii haina chochote</translation>
 <translation id="1881806992065048905">Safu ya chini ya mwonekano wa ukurasa wa kichupo kipya</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Inaruhusiwa wakati huu • Mahususi</translation>
 <translation id="2544997614631598250">Mandhari meusi</translation>
 <translation id="2546283357679194313">Data ya vidakuzi na tovuti</translation>
+<translation id="2553552004849639664">Pata ulinzi thabiti zaidi wa Chrome dhidi ya vitisho vya mtandaoni</translation>
 <translation id="2570922361219980984">Kipengele cha mahali pia kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Imepanuliwa - bofya ili ukunje.</translation>
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
@@ -415,6 +417,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="5373874281522292782">Vikundi vyako vya vichupo vimehifadhiwa</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 zaidi)}other{(+ # zaidi)}}</translation>
 <translation id="5403592356182871684">Majina</translation>
+<translation id="5407203562970638234">Boresha ulinzi wako</translation>
 <translation id="5438097262470833822">Chaguo hili litabadilisha ruhusa za <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kufikia data ya mahali ulipo. Kikizimwa, tovuti haziwezi kuona data ya mahali ulipo.</translation>
 <translation id="5489227211564503167">Muda uliopita ni <ph name="ELAPSED_TIME" /> kati ya <ph name="TOTAL_TIME" />.</translation>

@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выбраць, якія даныя Chrome будуць захоўвацца ва Уліковым запісе Google, націсніце Tab, затым Увод.</translation>
 <translation id="1122714970786750095">Электроніка і электрычныя прылады і кампаненты</translation>
 <translation id="1123753900084781868">Імгненныя субцітры зараз недаступныя</translation>
+<translation id="1124643885833329193">Дакладнае месцазнаходжанне</translation>
 <translation id="112840717907525620">У кэшы правіла няма памылак</translation>
 <translation id="1131264053432022307">Скапіраваны вамі відарыс</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: каб выйсці з поўнаэкраннага рэжыму, правядзіце пальцам па экране зверху ўніз і націсніце кнопку "Назад"</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">Дадаць пашпарт</translation>
 <translation id="2400271059665846158">Кіруйце вашымі карткамі лаяльнасці ў Google Кашальку</translation>
 <translation id="2400600116338235695">Сайт можа запытваць дазвол на падключэнне да паслядоўных партоў</translation>
+<translation id="2403474027143565107">Дакладнае</translation>
 <translation id="240450251994300576">Лагатып дадатковага загалоўка</translation>
 <translation id="2404884497378469141">Паспрабуйце скапіраваць файлы яшчэ раз</translation>
 <translation id="2413155254802890957">Старая форма</translation>
@@ -998,6 +1000,7 @@
 <translation id="2571488850200220306">Каб гарантаваць бяспеку, яна таксама можа бачыць інфармацыю пра аперацыйную сістэму прылады, версію браўзера і ўсталяванае праграмнае забеспячэнне</translation>
 <translation id="2573170131138724450">Тэлевізары</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2577522251608256362">Раён</translation>
 <translation id="2580031090587209073">Параметры абагульвання</translation>
 <translation id="258027838577899739">Выдаліць усе элементы з гісторыі</translation>
 <translation id="258135245577667916">Карыстальнік <ph name="USER_DISPLAY_NAME" /> дадаў укладку</translation>
@@ -1284,6 +1287,7 @@
 <translation id="3076865167425975822">Аперацыйныя сістэмы</translation>
 <translation id="3080254622891793721">Графіка</translation>
 <translation id="3082007635241601060">Дайце Google доступ да вашых кошыкаў, каб вам паказваліся персаналізаваныя скідкі пры іх з’яўленні</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" не з’яўляецца сапраўдным проксі-серверам.</translation>
 <translation id="3086269988715347183">Вы не ўхвалялі вэб-сайт <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Вашы дзеянні ў інтэрнэце адсочваюцца</translation>
 <translation id="3087734570205094154">Знізу</translation>
@@ -1413,6 +1417,7 @@
 <translation id="3266793032086590337">Значэнне (канфліктуючае)</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3270041629388773465">Калі захаваць коды CVC, афармленне заказаў стане хутчэйшым</translation>
+<translation id="3270343151253360050">Каб завяршыць куплю, выберыце іншы спосаб аплаты</translation>
 <translation id="3270847123878663523">&amp;Адрабіць змяненне парадку</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> запытвае падключэнне</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@
 <translation id="361438452008624280">Элемент спіса "<ph name="LANGUAGE_ID" />": мова невядомая або не падтрымліваецца.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3615309852743236517">Манікюр і педыкюр</translation>
+<translation id="3620034424637552643">Часта выкарыстоўваецца для пракладання маршрутаў, даставак і іншых мэт</translation>
 <translation id="3620239073311576716">Уніформа і рабочае адзенне</translation>
 <translation id="3621401353678567613">Каб атрымліваць абвесткі пра зніжэнне цаны на тавары, якія вы адсочваеце, уключыце апавяшчэнні ў наладах.</translation>
 <translation id="362276910939193118">Паказаць усю гісторыю</translation>
@@ -1893,6 +1899,7 @@
 <translation id="4036753017940930924">Зямля і зямельныя ўчасткі</translation>
 <translation id="403724377879219932">Можа запытваць доступ да іншых прылад у лакальнай сетцы</translation>
 <translation id="4039506337798853114">Каб паказаць курсор, націсніце |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Прыблізнае</translation>
 <translation id="4045070493270310437">Адкрыць укладкі зноў</translation>
 <translation id="4045226534284799755">Увайдзіце ва ўліковы запіс Microsoft і паўтарыце спробу</translation>
 <translation id="4045441967987592849">Зноў адкрыць</translation>
@@ -3210,6 +3217,7 @@
 <translation id="6164605812717770913">Адзін з бацькоў ці законны прадстаўнік не дазваляе табе наведваць гэты сайт. Можаш папрасіць разблакіраваць яго.</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6167577165590485365">Апошняя спроба атрымання:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" не з’яўляецца дапушчальным значэннем.</translation>
 <translation id="617256461084925519">Google Chrome спрабуе спраўдзіць, ці сапраўды гэта вы, каб увесці плацежную інфармацыю.</translation>
 <translation id="6173208311907792313">Завяршыце куплю з дапамогай Windows Hello</translation>
 <translation id="6176387967264100435">Гэта высокая цана</translation>
@@ -3536,6 +3544,7 @@
 <translation id="6688851075017682769">Тэставыя адрасы па краінах</translation>
 <translation id="6689249931105087298">Адносны са сцісканнем чорных пунктаў</translation>
 <translation id="6689271823431384964">Chrome прапаноўвае захоўваць карткі ва Уліковым запісе Google, бо вы ўвайшлі ў сістэму. Гэту функцыю можна выключыць у наладах. Імя ўладальніка карткі ўзята з вашага ўліковага запісу.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" не з’яўляецца сапраўдным шаблонам прызначэння.</translation>
 <translation id="6691397311652656001">Неабходна вызваліць больш за <ph name="REQUIRED_FREE_DISK_SPACE" /> месца</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб знайсці сваю прыладу ва Уліковым запісе Google, націсніце Tab, затым Enter</translation>
 <translation id="6695428916538794739">Вострасюжэтныя і прыгодніцкія фільмы</translation>
@@ -3548,6 +3557,7 @@
 <translation id="6702851555558236418">Праграмнае забеспячэнне для работы з аўдыя і музыкай</translation>
 <translation id="6702919718839027939">Прэзентацыя</translation>
 <translation id="6704458454638854812">Зададзена ўласцівасць custom_size. Назва павінна быць "custom".</translation>
+<translation id="670477556876354552">Патрабуецца перазапуск</translation>
 <translation id="6706005862292023715">Шторы і дэкор для акон</translation>
 <translation id="6706210727756204531">Ахоп</translation>
 <translation id="6706678697074905703">Не ўдалося захаваць гэты нумар IBAN ва Уліковым запісе Google. Ён захаваны ў Chrome на гэтай прыладзе.</translation>
@@ -4074,7 +4084,6 @@
 <translation id="753556296624075801">Тэхналогіі Google</translation>
 <translation id="753713322968419914">Выдаліць хатні адрас з прапаноў аўтазапаўнення Chrome?</translation>
 <translation id="7537536606612762813">Абавязкова</translation>
-<translation id="7541043894191476250">Кантэкстныя задачы</translation>
 <translation id="7543525346216957623">Папрасі дазволу ў бацькоў</translation>
 <translation id="7546409722674205727">Ідзе запуск праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7548892272833184391">Выпраўленне памылак падключэння</translation>
@@ -4283,6 +4292,7 @@
 <translation id="7870281855125116701">Знойдзена скідка</translation>
 <translation id="7871445724586827387">Змяніць пароль Уліковага запісу Google</translation>
 <translation id="787226752901403048">Увайдзіце ў Chrome, каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з іншымі карыстальнікамі</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" не з’яўляецца вядомым тыпам умовы.</translation>
 <translation id="7877007680666472091">ідэнтыфікатары абароненага змесціва</translation>
 <translation id="7878562273885520351">Ваш пароль можа быць раскрыты</translation>
 <translation id="7881044256965445977">Можа шукаць прылады ў вашай лакальнай сетцы і падключацца да іх</translation>
@@ -5007,6 +5017,7 @@
 <translation id="9090243919347147717">Далучэнні</translation>
 <translation id="9090548458280093580">Пошук у гісторыі з дапамогай штучнага інтэлекту</translation>
 <translation id="9090993752571911635">Інтэрнэт-правайдары</translation>
+<translation id="9092305980625216393">Часта выкарыстоўваецца для прагнозу надвор’я, мясцовых навін і іншага</translation>
 <translation id="9093723786115107672">Адзенне для сну</translation>
 <translation id="9094424186948667194">Доступ да іншых праграм і сэрвісаў на гэтай прыладзе</translation>
 <translation id="9094544726794842788">Калі націснуць кнопку "Не падабаецца", будзе адкрыта форма для адпраўкі падрабязнага водгуку аб тым, чаму вам не спадабаліся гэтыя вынікі</translation>

@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Парады адносна Chrome</translation>
 <translation id="1816835383954230954">Калі функцыя ўключана, павышаецца хуткасць Chrome і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript. Калі функцыя выключана, прадукцыйнасць зніжаецца, але ўстойлівасць V8 супраць атак павышаецца.</translation>
 <translation id="1818308510395330587">Каб праграма "<ph name="APP_NAME" />" магла выкарыстоўваць дапоўненую рэальнасць, уключыце таксама камеру ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Змяніце пазіцыю, каб зрабіць прагляд больш зручным</translation>
 <translation id="1848033246551405023">Шрыфт: Sans Serif</translation>
 <translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1881806992065048905">Ніжні аркуш "Выгляд старонкі новай укладкі"</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Дазволена гэтым разам • Дакладнае</translation>
 <translation id="2544997614631598250">Колер тэмы: цёмны</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
+<translation id="2553552004849639664">Задайце для браўзера Chrome максімальны ўзровень абароны ад пагроз у інтэрнэце</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Групы ўкладак захаваны</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
 <translation id="5403592356182871684">Імёны</translation>
+<translation id="5407203562970638234">Павысьце ўзровень бяспекі</translation>
 <translation id="5438097262470833822">Будуць скінуты дазволы для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Калі гэты параметр уключаны, сайты могуць запытваць ваша месцазнаходжанне. Калі параметр выключаны, сайты не могуць выяўляць ваша месцазнаходжанне.</translation>
 <translation id="5489227211564503167">Прайшло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" />.</translation>

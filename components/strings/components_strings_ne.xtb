@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा भएको कुन जानकारी आफ्नो Google खातामा सेभ गर्ने भन्ने कुरा व्यवस्थापन गर्न ट्याब अनि त्यसपछि इन्टर थिच्नुहोस्</translation>
 <translation id="1122714970786750095">इलेक्ट्रोनिक तथा इलेक्ट्रिकल</translation>
 <translation id="1123753900084781868">यस बखत लाइभ क्याप्सन उपलब्ध छैन</translation>
+<translation id="1124643885833329193">सटीक लोकेसन</translation>
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको फोटो</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
@@ -114,6 +115,7 @@
 <translation id="1178821169867863726">१२ x १६ इन्च</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1181381397492575884">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन। <ph name="LINK" /> गर्न सेटिङमा जानुहोस्।</translation>
+<translation id="1185331130467528132"><ph name="URL" /> तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्न चाहन्छ</translation>
 <translation id="1185343831726846924">भर्चुअल कार्ड अन गर्न नसकिने कुरा पुष्टि गर्ने बटन</translation>
 <translation id="1186201132766001848">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="1187430513518041110">सवारी साधनहरू</translation>
@@ -166,6 +168,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तपाईंले आफ्नो संगठनले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न, अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="1257553931232494454">जुमका स्तरहरू</translation>
+<translation id="1257714792349895570">लोकल नेटवर्क</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफूले तय गरेका सेटिङ मिलाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1264309058268477500">वैकल्पिक</translation>
 <translation id="1264974993859112054">खेलकुद</translation>
@@ -891,6 +894,7 @@
 <translation id="2400263725572336749">राहदानीसम्बन्धी जानकारी हाल्नुहोस्</translation>
 <translation id="2400271059665846158">आफ्ना लोयल्टी कार्डहरू Google Wallet मा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2400600116338235695">सिरियल पोर्टहरूमा कनेक्ट हुने अनुमति माग्न सक्छ</translation>
+<translation id="2403474027143565107">सटीक</translation>
 <translation id="240450251994300576">सहायक हेडरको लोगो</translation>
 <translation id="2404884497378469141">आफ्ना फाइलहरू फेरि कपी गरी हेर्नुहोस्</translation>
 <translation id="2413155254802890957">पुरानो</translation>
@@ -995,6 +999,7 @@
 <translation id="2571488850200220306">सुरक्षाको सुनिश्चितताका लागि उक्त सङ्गठनले डिभाइसको OS, ब्राउजरको संस्करण र त्यसमा कुन कुन सफ्टवेयर इन्स्टल गरिएका छन् भन्ने कुरा पनि हेर्न सक्छ</translation>
 <translation id="2573170131138724450">टेलिभिजनहरू</translation>
 <translation id="257674075312929031">समूह</translation>
+<translation id="2577522251608256362">छिमेक</translation>
 <translation id="2580031090587209073">सेयरिङसम्बन्धी विकल्पहरू</translation>
 <translation id="258027838577899739">हिस्ट्रीबाट सबै कुरा मेटाउनुहोस्</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ले एउटा ट्याब थप्नुभयो</translation>
@@ -1060,6 +1065,7 @@
 <translation id="2690699652723742414">विगत ३० दिनदेखिका</translation>
 <translation id="2691385045260836588">मोडेल</translation>
 <translation id="2691924980723297736">सुरक्षासम्बन्धी चेतावनी</translation>
+<translation id="2694088736180584846">लुपब्याक नेटवर्क</translation>
 <translation id="2696385693639654606">तपाईं Chrome Enterprise Core मार्फत क्लाउडबाट ब्राउजरसम्बन्धी नीति, एप र एक्स्टेन्सनहरू व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> लाई सोध्नुहोस्</translation>
 <translation id="2699273987028089219">सब मेनु उपलब्ध छ। अतिरिक्त विकल्पहरूमा जान <ph name="SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
@@ -1280,6 +1286,7 @@
 <translation id="3076865167425975822">आपरेटिङ सिस्टमहरू</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">तपाईंका निम्ति उपलब्ध छुटहरू भेट्टाउने प्रयोजनका लागि Google लाई तपाईंका कार्ट प्रयोग गर्ने अनुमति दिनुहोस्</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" वैध प्रोक्सी होइन।</translation>
 <translation id="3086269988715347183">तपाईंले यसअघि <ph name="BLOCKED_URL" /> अनुमोदन गर्नुभएको छैन</translation>
 <translation id="3086579638707268289">वेबको तपाईंको क्रियाकलापको निगरानी गरिँदै छ</translation>
 <translation id="3087734570205094154">तल</translation>
@@ -1318,6 +1325,7 @@
 <translation id="3122696783148405307">विगत ३० दिनदेखिका परिणामहरू देखाउनुहोस्</translation>
 <translation id="3126023634486644099">लेबल (पर्मानेन्ट)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> तपाईंको डिफल्ट सर्च इन्जिन भएको छ</translation>
+<translation id="3134859781443140237">लोकल नेटवर्क</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> खोज्नुहोस्</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
@@ -1388,6 +1396,7 @@
 <translation id="3238395604961564389">यो लिंक इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
+<translation id="3241320538788585298">लुपब्याक नेटवर्क</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” का लिंकहरू ब्लक गरिएका छन्</translation>
 <translation id="3243650379537999343">चित्र बनाउनुहोस्</translation>
 <translation id="3248329428895535435">यो साइटका हकमा फेरि नदेखाउनुहोस्</translation>
@@ -1404,6 +1413,7 @@
 <translation id="3266793032086590337">मान (बेमेल)</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
 <translation id="3270041629388773465">CVC सेभ भएपछि द्रुत रूपमा चेक आउट गर्नुहोस्</translation>
+<translation id="3270343151253360050">यो खरिद पूरा गर्न अर्कै भुक्तानी विधि छनौट गर्नुहोस्</translation>
 <translation id="3270847123878663523">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> जडान गर्न चाहन्छ</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1556,6 +1566,7 @@
 <translation id="3530944546672790857">{COUNT,plural, =0{सिंक गरिएका यन्त्रहरूमा रहेको कम्तीमा १ वस्तु}=1{१ वस्तु (र सिंक गरिएका यन्त्रहरूमा रहेका थप वस्तुहरू)}other{# वस्तुहरू (र सिंक गरिएका यन्त्रहरूमा रहेका थप वस्तुहरू)}}</translation>
 <translation id="3531366304259615706">स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="3531780078352352885">कार्य पानाहरू</translation>
+<translation id="3532624859962632484">तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्ने</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> तपाईंको माइक्रोफोन प्रयोग गर्न चाहन्छ</translation>
 <translation id="3533328374079021623">मेलबक्स ५</translation>
 <translation id="3536227077203206203">अहिले अनुमति दिइएको छ</translation>
@@ -1617,6 +1628,7 @@
 <translation id="361438452008624280">प्रविष्टिको सूची "<ph name="LANGUAGE_ID" />": अज्ञात वा असमर्थित भाषा।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3615309852743236517">म्यानिक्योर तथा पेडिक्योर</translation>
+<translation id="3620034424637552643">प्रायः कतै जाने बाटोसम्बन्धी जानकारी, डेलिभरी र अन्य कुराका लागि प्रयोग गरिन्छ</translation>
 <translation id="3620239073311576716">युनिफर्म र काम गर्दा लगाउने पोशाक</translation>
 <translation id="3621401353678567613">आफूले ट्र्याक गरेका उत्पादनहरूको मूल्य घट्दा अलर्ट प्राप्त गर्न सेटिङमा गई नोटिफिकेसन अन गर्नुहोस्।</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
@@ -1882,7 +1894,9 @@
 <translation id="4030545038933060179">यो सेटिङ अन भएका बेला तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा यहाँ विषयहरूको सूची देखिन्छ</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4036753017940930924">प्लट तथा जग्गा</translation>
+<translation id="403724377879219932">तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="4039506337798853114">आफ्नो कर्सर देखाउन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
+<translation id="4042597221652780603">अनुमानित</translation>
 <translation id="4045070493270310437">ट्याबहरू फेरि खोल्नुहोस्</translation>
 <translation id="4045226534284799755">फेरि प्रयास गर्नुअघि आफ्नो Microsoft खातामा साइन इन गर्नुहोस्</translation>
 <translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
@@ -3166,6 +3180,7 @@
 <translation id="6108702513636120202">Chromium मा प्रयोग गरिने डिफल्ट सर्च इन्जिन</translation>
 <translation id="6108849843016142864">सरीसृप तथा उभयचरहरू</translation>
 <translation id="611018310643025551">तपाईंले खोज्ने कुरा, ती कुरासँग सबैभन्दा बढी मिल्दाजुल्दा परिणाम र तिनको पेजमा भएका सामग्री Google मा पठाइन्छन्। साथै, यो सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि समीक्षकहरू तिनको समीक्षा गर्न सक्छन्।</translation>
+<translation id="6111759749003439722">यो डिभाइसमा भएका अन्य एप तथा सेवाहरू एक्सेस गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6116500665626559298">आफ्नो खातामा भएको डेटा व्यवस्थापन गर्ने बटन, आफ्नो Google खातामा Chrome मा भएको कुन जानकारी सेभ गर्ने भन्ने कुरा व्यवस्थापन गर्न यो बटन एक्टिभेट गर्नुहोस्</translation>
 <translation id="6117833587752089929">फोटो (स्याटिन)</translation>
@@ -3201,6 +3216,7 @@
 <translation id="6164605812717770913">एक जना अभिभावकले तपाईंलाई यो साइट हेर्ने अनुमति दिनुभएको छैन। तपाईं उहाँलाई यो साइट अनब्लक गरिदिन आग्रह गर्न सक्नुहुन्छ।</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6167577165590485365">पछिल्लो पटक नीति प्राप्त गर्ने प्रयास गरिएको मिति:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" वैध मान होइन।</translation>
 <translation id="617256461084925519">Google Chrome ले तपाईंको भुक्तानीसम्बन्धी जानकारी भर्न सकोस् भन्नाका लागि यसले तपाईंको पहिचान पुष्टि गर्न खोज्दै छ।</translation>
 <translation id="6173208311907792313">Windows Hello प्रयोग गरी खरिद गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="6176387967264100435">यो प्रचलित मूल्यभन्दा बढी हो</translation>
@@ -3527,6 +3543,7 @@
 <translation id="6688851075017682769">देशअनुसारको नमुना ठेगाना</translation>
 <translation id="6689249931105087298">कालो बिन्दुको कम्प्रेसनसँग सापेक्ष</translation>
 <translation id="6689271823431384964">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ। कार्डवाहकको नामका रूपमा तपाईंको खातामा भएको नाम प्रयोग गरिन्छ।</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" गन्तव्यको वैध प्याटर्न होइन।</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> भन्दा बढी ठाउँ खाली गर्नुहोस्</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Google खातामा आफ्नो डिभाइस खोज्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="6695428916538794739">द्वन्द्वप्रधान तथा साहसिक चलचित्रहरू</translation>
@@ -3539,6 +3556,7 @@
 <translation id="6702851555558236418">अडियो तथा सङ्गीतसम्बन्धी सफ्टवेयर</translation>
 <translation id="6702919718839027939">प्रेजेन्ट गर्नुहोस्</translation>
 <translation id="6704458454638854812">प्रोपर्टी "custom_size" सेट गरिएको छ र यसको नाम "कस्टम" राखिएको हुनु पर्छ।</translation>
+<translation id="670477556876354552">रिस्टार्ट गर्नु पर्ने हुन्छ</translation>
 <translation id="6706005862292023715">पर्दा तथा झ्याल मर्मत गर्ने सेवा</translation>
 <translation id="6706210727756204531">स्कोप</translation>
 <translation id="6706678697074905703">यो IBAN तपाईंको Google खातामा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ।</translation>
@@ -4064,7 +4082,6 @@
 <translation id="753556296624075801">Google ले सञ्चालन गरेको</translation>
 <translation id="753713322968419914">Chrome को अटोफिलमा सेभ गरिएको तपाईंको घरको ठेगाना हटाउने हो?</translation>
 <translation id="7537536606612762813">अनिवार्य</translation>
-<translation id="7541043894191476250">सान्दर्भिक कार्यहरू</translation>
 <translation id="7543525346216957623">आफ्नो अभिभावकलाई सोध्नुहोस्</translation>
 <translation id="7546409722674205727">‍<ph name="APP_NAME" /> सुरु गरिँदै छ</translation>
 <translation id="7548892272833184391">जडानसम्बन्धी त्रुटिहरू ठिक गर्नुहोस्</translation>
@@ -4273,6 +4290,7 @@
 <translation id="7870281855125116701">छुट पाइयो</translation>
 <translation id="7871445724586827387">आफ्नो Google खाताको पासवर्ड बदल्नुहोस्</translation>
 <translation id="787226752901403048">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र आइडियाहरूमा मिलेर काम गर्न Chrome मा साइन इन गर्नुहोस्</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" परिचित प्रकारको मापदण्ड होइन।</translation>
 <translation id="7877007680666472091">संरक्षित सामग्रीका ID</translation>
 <translation id="7878562273885520351">तपाईंको पासवर्ड जोखिममा पर्न सक्छ</translation>
 <translation id="7881044256965445977">तपाईंको स्थानीय नेटवर्कमा भएको जुनसुकै डिभाइस खोज्ने र त्यसमा कनेक्ट गर्ने</translation>
@@ -4617,6 +4635,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8433057134996913067">यसले तपाईँलाई अधिकांश साइटहरूबाट साइन आउट गराउनेछ।</translation>
 <translation id="8434840396568290395">पाल्तु जनावरहरू</translation>
+<translation id="8435542599425298931"><ph name="URL" /> यो डिभाइसमा भएका अन्य एप तथा सेवाहरू एक्सेस गर्न चाहन्छ</translation>
 <translation id="8436623588884785770">नीति हाल्नुहोस्</translation>
 <translation id="8437238597147034694">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="8438786541497918448">क्यामेरा र माइक्रोफोन प्रयोग गर्ने हो?</translation>
@@ -4996,7 +5015,9 @@
 <translation id="9090243919347147717">एट्याचमेन्टहरू</translation>
 <translation id="9090548458280093580">AI मा आधारित हिस्ट्री सर्च प्रयोग गरी हिस्ट्री खोज्नुहोस्</translation>
 <translation id="9090993752571911635">इन्टरनेट सेवा प्रदायकहरू (ISP)</translation>
+<translation id="9092305980625216393">प्रायः मौसम, स्थानीय समाचार र अन्य कुराका लागि प्रयोग गरिन्छ</translation>
 <translation id="9093723786115107672">सुत्दा लगाउने लुगा</translation>
+<translation id="9094424186948667194">यो डिभाइसमा भएका अन्य एप तथा सेवाहरू एक्सेस गर्ने</translation>
 <translation id="9094544726794842788">थम्ब्स डाउनले तपाईंलाई यी परिणामहरू मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ</translation>
 <translation id="9094809883254050729">अर्को पटक स्वतः भर्नुहोस्। सेभ गरेपछि कार्ड इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न ट्याब थिचेर इन्टर थिच्नुहोस्</translation>

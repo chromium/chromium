@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium i mban të dhënat e tua delikate të sigurta me Face ID.</translation>
 <translation id="1591119736686995611">Hap rrjetën e skedave të Chromium.</translation>
 <translation id="16001233025397167">"Kontrolli i sigurisë" të mban të sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj. Merr sinjalizime për çdo problem të privatësisë ose sigurisë që Chromium zbulon për ty.</translation>
+<translation id="1614362805233822594">Ke tashmë fjalëkalime ose çelësa kalimi te "Menaxheri i fjalëkalimeve" për sajtet e shfaqura. Zgjidh një llogari për të mbajtur informacionet e shfaqura të identifikimit, duke mbishkruar ato që janë te "Menaxheri i fjalëkalimeve".</translation>
 <translation id="1617663976202781617">Të dhënat nga "Sinkronizimi i Chromium"</translation>
 <translation id="164952285225495380">Kjo pako është gjurmuar tashmë në Chromium.</translation>
+<translation id="1703338211136118534">Fjalëkalimet e mëposhtme nuk u importuan te "Menaxheri i fjalëkalimeve" sepse nuk përputhen me kërkesat.</translation>
 <translation id="1707458603865303524">Përdor Chromium sa herë që troket te lidhjet në mesazhe ose aplikacione të tjera.</translation>
 <translation id="1722370509450468186">Fjalëkalimi yt do të ruhet në "Llogarinë" tënde (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Një furnizim i personalizuar i krijuar për ty</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Maps në Chromium</translation>
 <translation id="1867772173333403444">4. Zgjidh Chromium</translation>
 <translation id="1965068424387304464">Këshillë për Chromium: Ruaj fjalëkalimet</translation>
+<translation id="1992653360331625459">Ke tashmë fjalëkalime për këto llogari te "Menaxheri i fjalëkalimeve". Nëse zgjedh që të importosh një nga fjalëkalimet më poshtë, ai do të zëvendësojë fjalëkalimin ekzistues.</translation>
 <translation id="2006345422933397527">Chromium nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2042889939382983733">Shiko historikun tënd të Chromium</translation>
 <translation id="2052320862053429062">Chromium i kontrollon në mënyrë periodike fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në "Llogarinë tënde të Google".
 
 Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna do të fshihen.</translation>
+<translation id="2334943301233020675">Çelësat e mëposhtëm të kalimit nuk u importuan te "Menaxheri i fjalëkalimeve" sepse nuk përputhen me kërkesat.</translation>
 <translation id="2337722506862731008">Ndaj Chromium</translation>
 <translation id="2340423701577464731">Shto artikullin e listës së leximit në Chromium</translation>
 <translation id="2374627437126809292">Chromium përdor Google Maps për të të dhënë udhëzime dhe informacione lokale në adresat e zbuluara.</translation>

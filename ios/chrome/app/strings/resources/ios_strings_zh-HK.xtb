@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">無法儲存您的變更。</translation>
 <translation id="3254806613790954367">在你的所有裝置上顯示最後開啟的分頁</translation>
 <translation id="325717987950204592">輕按 [私隱權和安全性]</translation>
-<translation id="3266338926702638258">顯示呢件產品嘅價格記錄</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">隱藏「最近開啟的分頁」</translation>
 <translation id="4578835633387306383">開啟…</translation>
 <translation id="4580716718466706433">前往「密碼管理工具」</translation>
+<translation id="4585751637295612750">開啟新分頁以加入查詢</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4592672037257622855">{count,plural, =1{已將頁面新增至閱讀清單}other{已將 {count} 個頁面新增至閱讀清單}}</translation>
 <translation id="459644946100970322">要開啟價格變更提示嗎？</translation>

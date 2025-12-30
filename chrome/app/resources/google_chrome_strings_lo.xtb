@@ -89,6 +89,7 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ລ້າສະໄໝແລ້ວ</translation>
 <translation id="1880677175115548835">ເລືອກຂໍ້ຄວາມ</translation>
+<translation id="1896602904211344018">ດາວໂຫຼດແອັບ Chrome</translation>
 <translation id="1919130412786645364">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1953553007165777902">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="MINUTE" /> ນາທີ</translation>
 <translation id="1979600810166324878">ປອດໄພຍິ່ງຂຶ້ນໃນໂໝດເວລາເດີນທາງດ້ວຍ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຢູ່ Chrome ສໍາລັບ iOS</translation>
@@ -275,6 +276,7 @@
 <translation id="3889417619312448367">ຖອນຕິດຕັ້ງ Google Chrome</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="3906096710440765802">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ.</translation>
+<translation id="3921132130819999051">ໃຫ້ Chrome ທ່ອງເວັບແທນທ່ານ</translation>
 <translation id="3941890832296813527">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຊື່ໄຟລ໌ຂອງຕົວຕິດຕັ້ງບໍ່ຖືກຕ້ອງ ຫຼື ລະບົບບໍ່ຮອງຮັບ.</translation>
 <translation id="395904275706073188">ບໍ່ສາມາດອ່ານໜ້າທີ່ມີການປ້ອງກັນໄດ້. ລອງໃຊ້ໜ້າອື່ນ.</translation>
 <translation id="3968962723676998462">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -379,6 +381,7 @@
 <translation id="5163087008893166964">ຍິນດີຕ້ອນຮັບສູ່ Chrome; ເປີດໜ້າຈໍໂປຣແກຣມທ່ອງເວັບໃໝ່ແລ້ວ</translation>
 <translation id="5166439563123238795">Chrome ຕ້ອງໄດ້ຮັບການອະນຸຍາດເພື່ອຕິດຕາມການເຄື່ອນໄຫວຂອງມືທ່ານ</translation>
 <translation id="5167819546851111585">ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
+<translation id="5169778651486082413">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານກັບ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="5170938038195470297">ບໍ່ສາມາດໃຊ້ໂປຣໄຟລ໌ຂອງທ່ານໄດ້ ເພາະວ່າມັນມາຈາກ Google Chrome ລຸ້ນໃໝ່.
 
 ອາດຈະບໍ່ມີບາງຄຸນສົມບັດຢູ່. ກະລຸນາລະບຸໄດເຣັກຕໍຣີໂປຣໄຟລ໌ອື່ນ ຫຼືໃຊ້ Chrome ລຸ້ນໃໝ່ກ່ວາ.</translation>
@@ -408,7 +411,6 @@
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
 <translation id="5465210843490471889">ເລືອກໂປຣໄຟລ໌ Chrome ທີ່ຈະໃຊ້ກັບ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">ເພື່ອຊ່ວຍປັບປຸງຄຸນສົມບັດເຫຼົ່ານີ້, Chrome ສົ່ງການໂຕ້ຕອບຂອງທ່ານກັບເຂົາເຈົ້າໄປຫາ Google. ຂໍ້ມູນນີ້ອາດຈະຖືກອ່ານ, ປະມວນຜົນ ແລະ ໃສ່ການອະທິບາຍຄວາມເຫັນໂດຍທີມງານກວດສອບ.</translation>
-<translation id="5510398294750420479">ດາວໂຫຼດ Chrome ຢູ່ໂທລະສັບຂອງທ່ານເພື່ອເພີ່ມຊັ້ນການປົກປ້ອງພິເສດເມື່ອທ່ານຢູ່ໃນໂໝດເວລາເດີນທາງ</translation>
 <translation id="5524890928877629608">ມຸມຊ້າຍເທິງຂອງພື້ນທີ່ຊອກຫາ: ຊ້າຍ <ph name="LEFT" />%, ເທິງ <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">ເຮັດໃຫ້ Chrome ໄວຂຶ້ນ</translation>
 <translation id="5550137307985173298">ຄລິກປຸ່ມປັບແຕ່ງ Chrome ຢູ່ໜ້າແຖບໃໝ່ເພື່ອໃຫ້ Chrome ມີຮູບລັກໃໝ່</translation>
@@ -464,6 +466,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6008161919456049856">ລະບົບຈະລຶບລະຫັດຜ່ານ, ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານອອກຈາກອຸປະກອນນີ້. ເພື່ອໃຊ້ຂໍ້ມູນເຫຼົ່ານີ້ໃນ Chrome, ໃຫ້ເຂົ້າສູ່ລະບົບອີກຄັ້ງ.</translation>
 <translation id="6009821354356307391">ຂໍການຕິດຕາມຜົນ</translation>
 <translation id="6014316319780893079">ດ້ວຍ <ph name="BEGIN_LINK" />ເຄື່ອງມືຈາກ Chrome<ph name="END_LINK" />, ທ່ານຈະສາມາດທ່ອງເວັບໄດ້ຢ່າງປອດໄພ ແລະ ຄວບຄຸມສິ່ງຕ່າງໆໄດ້</translation>
+<translation id="6018578474045062808">ລອງໃຊ້ Google Lens ກັບ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6025087594896450715">Google Chrome ຈະຣີສະຕາດໃນ <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -486,6 +489,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">ແຖບນີ້ກຳລັງໃຊ້ຊັບພະຍາກອນເພີ່ມເຕີມ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ໃຫ້ Chrome ຊ່ວຍເຮັດໃຫ້ມັນບໍ່ເຮັດວຽກ.</translation>
 <translation id="6182736845697986886">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດເກີດຂໍ້ຜິດພາດພາຍໃນ.</translation>
+<translation id="6183773856988300112">Gemini ໃນ Chrome ໃຊ້ການທ່ອງເວັບອັດຕະໂນມັດເພື່ອເຮັດວຽກໃນແຖບຂອງທ່ານ ແລະ ເຮັດໜ້າວຽກທີ່ທ່ານກຳນົດໃຫ້ສຳເລັດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chrome.
 
@@ -512,6 +516,8 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="6426623519983252346">ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ລອງໃຊ້ <ph name="FEATURE_NAME" /> ໃນເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chrome ຢູ່ iOS.</translation>
 <translation id="6434035853014503219">ຂໍຂອບໃຈທີ່ເລືອກ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ!</translation>
+<translation id="6438015621983209660">ຂະຫຍາຍ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນດ້ວຍ Chrome ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
+<translation id="6442774133615368941">ເລືອກຊື້, ແປພາສາ ແລະ ລະບຸສິ່ງທີ່ທ່ານເຫັນດ້ວຍກ້ອງຂອງທ່ານຢູ່ແອັບ Chrome iOS</translation>
 <translation id="6473905796280459355">ເຂົ້າໄປໜ້າກ່ຽວກັບ Chrome</translation>
 <translation id="6481963882741794338">ລິ້ງ Chrome ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
@@ -649,6 +655,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7832314606810669113">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome. ລະບົບຈະບັນທຶກບຸກມາກນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານຫຼັງຈາກທີ່ທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="7845233973568007926">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດຄອມພິວເຕີຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">ສືບຕໍ່ຈາກບ່ອນທີ່ທ່ານຄ້າງໄວ້: Chrome ສາມາດກູ້ຄືນແຖບຂອງທ່ານໄດ້ທຸກຄັ້ງທີ່ທ່ານປິດເປີດໃໝ່. ເພື່ອເປີດໃຊ້ສິ່ງນີ້, ໃຫ້ໄປຫາ</translation>
+<translation id="7869620795354551924">ເພື່ອໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປຕາມລະຫັດ QR, ດາວໂຫຼດ Chrome ສຳລັບ iOS ແລ້ວເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7872446069773932638">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="SECONDS" /> ວິນາທີ</translation>
 <translation id="7886087451482920026">ເລືອກຂໍ້ຄວາມດ້ວຍ Google Lens</translation>
 <translation id="7887929410013642057">ສະແດງທາງລັດຂອງໂໝດ AI ຕະຫຼອດເວລາ</translation>

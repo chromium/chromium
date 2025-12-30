@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
+<translation id="1896602904211344018">Baixar o Chrome</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
 <translation id="1979600810166324878">Tenha mais segurança em qualquer lugar com a Navegação Segura com Maior Proteção no Chrome para iOS</translation>
@@ -271,6 +272,7 @@
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3906096710440765802">Faça login no Chrome para ver seus favoritos, senhas e muito mais em todos os dispositivos</translation>
+<translation id="3921132130819999051">Deixe o Chrome navegar por você</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Tente usar outra.</translation>
 <translation id="3968962723676998462">Digite a senha longa para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
@@ -375,6 +377,7 @@
 <translation id="5163087008893166964">Conheça o Chrome. Nova janela do navegador aberta</translation>
 <translation id="5166439563123238795">O Chrome precisa de permissão para rastrear suas mãos</translation>
 <translation id="5167819546851111585">No que você está pensando hoje?</translation>
+<translation id="5169778651486082413">Use suas senhas com o Chrome no seu celular</translation>
 <translation id="5170938038195470297">Seu perfil não pode ser utilizado pois foi criado em uma versão mais recente do Google Chrome. Alguns recursos podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Google Chrome.</translation>
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
 <translation id="5174983315706567306">Não há espaço em disco suficiente.</translation>
@@ -400,7 +403,6 @@
 <translation id="5430073640787465221">Seu arquivo de preferências está corrompido ou é inválido. O Google Chrome não foi capaz de recuperar suas configurações.</translation>
 <translation id="5465210843490471889">Escolha um perfil do Chrome para usar com o <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para melhorar esses recursos, o Chrome envia ao Google suas interações com eles. Esses dados podem ser lidos, processados e anotados por revisores humanos.</translation>
-<translation id="5510398294750420479">Baixe o Chrome no seu smartphone para adicionar uma camada extra de proteção quando estiver em trânsito</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5530733413481476019">Deixe o Chrome mais rápido</translation>
 <translation id="5550137307985173298">Clique no botão "Personalizar o Chrome" na página "Nova guia" para mudar o visual do navegador</translation>
@@ -456,6 +458,7 @@
 <translation id="6008161919456049856">As senhas, as formas de pagamento e os endereços salvos na sua Conta do Google serão removidos deste dispositivo. Para usá-los de novo no Chrome, faça login novamente.</translation>
 <translation id="6009821354356307391">Faça uma pergunta complementar</translation>
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, você pode navegar com segurança e ficar no controle</translation>
+<translation id="6018578474045062808">Teste o Google Lens com o Chrome no seu celular</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
 <translation id="6025087594896450715">O Google Chrome será reiniciado em <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -478,6 +481,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
 <translation id="6180522807229584611">Esta guia está usando recursos extras. Para melhorar o desempenho, permita que o Chrome a deixe inativa.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
+<translation id="6183773856988300112">O Gemini no Chrome usa a navegação automática para acessar suas guias e realizar as tarefas que você pedir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Sua conta no Chrome</translation>
 <translation id="6220551899604141979">O parceiro <ph name="PARTNER_NAME" /> adicionou uma extensão que pode mudar a forma como o Chrome funciona.
 
@@ -504,6 +508,8 @@
 <translation id="6418662306461808273">Mudar para outro perfil do Chrome?</translation>
 <translation id="6426623519983252346">Você verá uma mensagem para testar o recurso <ph name="FEATURE_NAME" /> na próxima vez que abrir o Chrome para iOS.</translation>
 <translation id="6434035853014503219">Agradecemos por escolher o Chrome como seu navegador padrão.</translation>
+<translation id="6438015621983209660">Amplie a Navegação Segura com Maior Proteção com o Chrome no seu celular</translation>
+<translation id="6442774133615368941">Compre, traduza e identifique qualquer coisa com a câmera no Chrome para iOS</translation>
 <translation id="6473905796280459355">Acesse a página "Sobre o Chrome"</translation>
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com proteção reforçada" protege você ainda mais contra sites e downloads perigosos</translation>
@@ -641,6 +647,7 @@
 <translation id="7832314606810669113">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome. Este favorito será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continue de onde você parou: o Chrome pode restaurar suas guias sempre que você reinicia. Para ativar essa opção, acesse as</translation>
+<translation id="7869620795354551924">Para usar as senhas salvas, leia o QR code, baixe o Chrome para iOS e faça login na sua Conta do Google.</translation>
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7886087451482920026">Selecionar texto com o Google Lens</translation>
 <translation id="7887929410013642057">Sempre mostrar atalhos do Modo IA</translation>

@@ -270,6 +270,7 @@
 <translation id="3889417619312448367">Google Chrome'u Kaldır</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3906096710440765802">Tüm cihazlarınızda şifrelerinizi almak ve daha pek çok şey yapmak için Chrome'da oturum açın</translation>
+<translation id="3921132130819999051">Chrome'un sizin için göz atmasına izin verin</translation>
 <translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="395904275706073188">Korumalı sayfalar okunamaz. Farklı bir sayfa deneyin.</translation>
 <translation id="3968962723676998462">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
@@ -401,7 +402,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ile kullanılacak bir Chrome profili seçin</translation>
 <translation id="5468572406162360320">Chrome, özelliklerle olan etkileşimlerinizi Google'a göndererek bu özelliklerin iyileştirilmesini sağlar. İnceleme uzmanları bu verileri okuyabilir, işleyebilir ve bunlara ek açıklama ekleyebilir.</translation>
-<translation id="5510398294750420479">Hareket halindeyken ek koruma katmanı için telefonunuza Chrome'u indirin</translation>
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5530733413481476019">Chrome'u Daha Hızlı Hale Getirin</translation>
 <translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u Özelleştir düğmesini tıklayın</translation>
@@ -479,6 +479,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Bu sekme ekstra kaynak kullanıyor. Performansınızı artırmak için Chrome'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
+<translation id="6183773856988300112">Chrome'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="6192058120268468905">Chrome'daki Hesabınız</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />, Chrome'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
 

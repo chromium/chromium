@@ -275,6 +275,7 @@
 <translation id="3889417619312448367">Google Chromeን አራግፍ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="3906096710440765802">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የይለፍ ቃላት፣ እልባቶች እና ሌሎችንም ለማግኘት ወደ Chrome በመለያ ይግቡ</translation>
+<translation id="3921132130819999051">Chrome ለእርስዎ እንዲያስስ ይፍቀዱ</translation>
 <translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
 <translation id="395904275706073188">የተጠብቁ ገፆች ሊነበቡ አይችሉም። የተለተ ገፅ ይሞክሩ።</translation>
 <translation id="3968962723676998462">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ የይለፍ ሐረግዎን ያስገቡ</translation>
@@ -408,7 +409,6 @@
 Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />ከGemini<ph name="END_GLIC_STYLING" /> ጋር ለመጠቀም የChrome መገለጫ ይምረጡ</translation>
 <translation id="5468572406162360320">እነዚህ ባህሪያት እንዲሻሻሉ ለማገዝ Chrome ከእነሱ ጋር ያሉዎትን መስተጋብሮች ወደ Google ይልካል። ይህ ውሂብ በሰው ገምጋሚዎች ሊነበብ፣ ሊሰናዳ እና ሊብራራ ይችላል።</translation>
-<translation id="5510398294750420479">በመሄድ ላይ ተጨማሪ የጥበቃ ሽፋን ለማከል Chromeን በስልክዎ ላይ ያውርዱ</translation>
 <translation id="5524890928877629608">የፍለጋው አካባቢ ከላይ በስተግራ ጥግ፦ ግራ <ph name="LEFT" />%፣ ከላይ <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chromeን የበለጠ ፈጣን ያድርጉት</translation>
 <translation id="5550137307985173298">ለChrome አዲስ መልክ ለመስጠት በአዲስ ትር ገጽ ላይ አብጅ የሚል የChrome አዝራርን ጠቅ ያድርጉ</translation>
@@ -486,6 +486,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ቅድመ-ይሁንታ</translation>
 <translation id="6180522807229584611">ይህ ትር ተጨማሪ ንብረቶችን እየተጠቀመ ነው። አፈጻጸዎን ለማሻሻል Chrome እንዲያቦዝነው ይፍቀዱ።</translation>
 <translation id="6182736845697986886">በዝማኔ አገልጋይ የውስጥ ስህተት ምክንያት መጫኑ አልተሳካም።</translation>
+<translation id="6183773856988300112">Gemini በChrome ውስጥ በትሮችዎ ውስጥ ለመሥራት እና እርስዎ የሚሰጡትን ተግባራት ለማጠናቀቅ ራስ-ሰር አሰሳን ይጠቀማል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Chrome ውስጥ ያለ መለያዎ</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome የሚሠራበትን መንገድ ሊለውጥ የሚችል ቅጥያ አክሏል።
 

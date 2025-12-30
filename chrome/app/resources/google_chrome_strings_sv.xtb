@@ -275,6 +275,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3889417619312448367">Avinstallera Google Chrome</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3906096710440765802">Logga in i Chrome om du vill få dina lösenord, bokmärken med mera på alla dina enheter</translation>
+<translation id="3921132130819999051">Låt Chrome surfa åt dig</translation>
 <translation id="3941890832296813527">Installationsfel: Installationens filnamn är ogiltigt eller stöds inte.</translation>
 <translation id="395904275706073188">Det går inte att läsa skyddade sidor. Testa med en annan sida.</translation>
 <translation id="3968962723676998462">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -408,7 +409,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5465210843490471889">Välj en Chrome-profil som du vill använda med <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Din interaktion med dessa funktioner skickas till Google i syfte att förbättra dem. Denna data kan läsas, bearbetas och kommenteras av mänskliga granskare.</translation>
-<translation id="5510398294750420479">Ladda ned Chrome på telefonen för att få ett extra skyddslager var du än är</translation>
 <translation id="5524890928877629608">övre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="TOP" /> % uppåt</translation>
 <translation id="5530733413481476019">Gör Chrome snabbare</translation>
 <translation id="5550137307985173298">Klicka på knappen Anpassa Chrome på sidan Ny flik för att ge Chrome ett nytt utseende</translation>
@@ -486,6 +486,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Den här fliken använder extra resurser. Du kan förbättra prestandan genom att låta Chrome inaktivera den.</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
+<translation id="6183773856988300112">Gemini i Chrome använder automatisk surfning för att arbeta i dina flikar och utföra uppgifter du ger den. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Ditt konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har lagt till ett tillägg som kan ändra hur Chrome fungerar.
 

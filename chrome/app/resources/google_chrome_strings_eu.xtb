@@ -274,6 +274,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3889417619312448367">Desinstalatu Google Chrome</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3906096710440765802">Pasahitzak, laster-markak eta abar gailu guztietan eskura izateko, hasi saioa Chrome-n</translation>
+<translation id="3921132130819999051">Eman zure izenean arakatzeko baimena Chrome-ri</translation>
 <translation id="3941890832296813527">Instalazio-errorea: instalatzailearen fitxategi-izenak ez du balio edo ez da onartzen.</translation>
 <translation id="395904275706073188">Babestutako orriak ezin dira irakurri. Probatu beste orri batekin.</translation>
 <translation id="3968962723676998462">Chrome-ko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
@@ -407,7 +408,6 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5465210843490471889">Aukeratu <ph name="START_GLIC_STYLING" />Gemini-rekin<ph name="END_GLIC_STYLING" /> erabili nahi duzun Chrome-ko profila</translation>
 <translation id="5468572406162360320">Eginbide hauek hobetzen laguntzeko, Chrome-k haiekin dituzun interakzioak bidaltzen dizkio Google-ri. Baliteke informazio hori gizakia den berrikusle batek irakurtzea, prozesatzea eta hari buruzko oharpenak egitea.</translation>
-<translation id="5510398294750420479">Deskargatu Chrome telefonoan babes-geruza gehigarri bat izan dezazun edonoiz eta edonon</translation>
 <translation id="5524890928877629608">bilaketa-eremuaren goiko ezkerreko ertza: % <ph name="LEFT" /> ezkerrean, % <ph name="TOP" /> goian</translation>
 <translation id="5530733413481476019">Bizkortu Chrome</translation>
 <translation id="5550137307985173298">Chrome-ri itxura berri bat emateko, sakatu fitxa berriaren orriko "Pertsonalizatu Chrome" botoia</translation>
@@ -485,6 +485,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Fitxa honek baliabide gehiago erabiltzen ditu. Errendimendua hobetzeko, eman fitxa inaktibo ezartzeko baimena Chrome-ri.</translation>
 <translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
+<translation id="6183773856988300112">Chrome-ko Gemini-k arakatze automatikoa erabiltzen du fitxetan lan egiteko eta ematen dizkiozun zereginak osatzeko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Zure kontua Chrome-n</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> bazkideak Chrome-ren funtzionamenduari agian eragingo dion luzapen bat gehitu du.
 

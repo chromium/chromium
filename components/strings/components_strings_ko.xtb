@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1122714970786750095">전기 및 전자</translation>
 <translation id="1123753900084781868">현재 실시간 자막을 사용할 수 없습니다.</translation>
+<translation id="1124643885833329193">정확한 위치</translation>
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">여권 추가</translation>
 <translation id="2400271059665846158">Google 월렛에서 포인트 카드 관리</translation>
 <translation id="2400600116338235695">직렬 포트에 연결하도록 요청할 수 있음</translation>
+<translation id="2403474027143565107">정확한 위치</translation>
 <translation id="240450251994300576">보조 헤더 로고</translation>
 <translation id="2404884497378469141">파일을 다시 복사해 보세요.</translation>
 <translation id="2413155254802890957">이전 주소</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">보안을 위해 기기의 OS, 브라우저 버전, 설치된 소프트웨어도 확인할 수 있습니다.</translation>
 <translation id="2573170131138724450">TV</translation>
 <translation id="257674075312929031">그룹화</translation>
+<translation id="2577522251608256362">동/읍/면</translation>
 <translation id="2580031090587209073">공유 옵션</translation>
 <translation id="258027838577899739">방문 기록에서 모두 삭제</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />님이 탭을 추가했습니다.</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">운영체제</translation>
 <translation id="3080254622891793721">그래픽</translation>
 <translation id="3082007635241601060">Google이 내 장바구니를 사용하여 나에게 맞는 할인을 찾을 수 있도록 허용합니다.</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" 프록시는 유효한 프록시가 아닙니다.</translation>
 <translation id="3086269988715347183">이전에 <ph name="BLOCKED_URL" /> 사이트를 승인하지 않았습니다</translation>
 <translation id="3086579638707268289">웹상의 활동이 모니터링되고 있음</translation>
 <translation id="3087734570205094154">맨 아래</translation>
@@ -1412,6 +1416,7 @@
 <translation id="3266793032086590337">값(충돌)</translation>
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3270041629388773465">CVC를 저장하면 더 빠르게 결제할 수 있습니다.</translation>
+<translation id="3270343151253360050">구매를 완료하려면 다른 결제 수단을 선택하세요.</translation>
 <translation id="3270847123878663523">재정렬 실행 취소(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />에서 연결하려고 함</translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615309852743236517">매니큐어 및 페디큐어</translation>
+<translation id="3620034424637552643">경로 안내 및 배송 등에 자주 사용됨</translation>
 <translation id="3620239073311576716">유니폼 및 작업복</translation>
 <translation id="3621401353678567613">추적하는 제품의 가격 인하 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
@@ -1893,6 +1899,7 @@
 <translation id="4036753017940930924">부지 및 토지</translation>
 <translation id="403724377879219932">로컬 네트워크의 다른 기기에 대한 액세스 권한을 요청할 수 있음</translation>
 <translation id="4039506337798853114">커서를 표시하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
+<translation id="4042597221652780603">대략적인 위치</translation>
 <translation id="4045070493270310437">탭 다시 열기</translation>
 <translation id="4045226534284799755">Microsoft 계정에 로그인한 후 다시 시도해 주세요.</translation>
 <translation id="4045441967987592849">다시 열기</translation>
@@ -3211,6 +3218,7 @@
 <translation id="6164605812717770913">부모님 또는 보호자가 이 사이트 방문을 허용하지 않았습니다. 차단 해제를 요청할 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6167577165590485365">마지막 가져오기 시도:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" 값은 유효한 값이 아닙니다.</translation>
 <translation id="617256461084925519">Chrome에서 결제 정보를 입력할 수 있도록 본인 인증을 시도하고 있습니다.</translation>
 <translation id="6173208311907792313">Windows Hello를 사용하여 구매를 완료하세요.</translation>
 <translation id="6176387967264100435">높은 가격</translation>
@@ -3537,6 +3545,7 @@
 <translation id="6688851075017682769">국가별 테스트 주소</translation>
 <translation id="6689249931105087298">상대적이며 흑점 보정 포함</translation>
 <translation id="6689271823431384964">Google 계정에 로그인되어 있기 때문에 Chrome에서 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다. 카드 소지자 이름은 계정에서 가져온 것입니다.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />"은(는) 잘못된 대상 패턴입니다.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 이상의 여유 공간을 확보하세요.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정에서 기기를 찾으려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="6695428916538794739">액션 및 어드벤처 영화</translation>
@@ -3549,6 +3558,7 @@
 <translation id="6702851555558236418">오디오 및 음악 소프트웨어</translation>
 <translation id="6702919718839027939">발표</translation>
 <translation id="6704458454638854812">'custom_size' 속성이 설정되어 있으므로 속성 이름이 'custom'이어야 합니다.</translation>
+<translation id="670477556876354552">다시 시작해야 함</translation>
 <translation id="6706005862292023715">커튼 및 창문 장식</translation>
 <translation id="6706210727756204531">범위</translation>
 <translation id="6706678697074905703">이 IBAN은 Google 계정에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다.</translation>
@@ -4074,7 +4084,6 @@
 <translation id="753556296624075801">Google 제공</translation>
 <translation id="753713322968419914">Chrome 자동 완성에서 집 주소를 삭제하시겠습니까?</translation>
 <translation id="7537536606612762813">필수</translation>
-<translation id="7541043894191476250">맥락에 맞는 작업</translation>
 <translation id="7543525346216957623">부모님께 물어보세요</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>
 <translation id="7548892272833184391">연결 문제해결</translation>
@@ -4283,6 +4292,7 @@
 <translation id="7870281855125116701">할인 제품 찾음</translation>
 <translation id="7871445724586827387">Google 계정 비밀번호 변경</translation>
 <translation id="787226752901403048">Chrome에 로그인하여 탭 그룹을 공유하고, 탭 그룹에 참여하며, 아이디어를 함께 작업하세요.</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" 조건은 알려진 조건 유형이 아닙니다.</translation>
 <translation id="7877007680666472091">보호된 콘텐츠 ID</translation>
 <translation id="7878562273885520351">비밀번호가 도용될 수도 있음</translation>
 <translation id="7881044256965445977">로컬 네트워크에서 원하는 기기를 찾아 연결</translation>
@@ -5007,6 +5017,7 @@
 <translation id="9090243919347147717">첨부파일</translation>
 <translation id="9090548458280093580">AI 기반 방문 기록 검색</translation>
 <translation id="9090993752571911635">인터넷 서비스 제공업체(ISP)</translation>
+<translation id="9092305980625216393">날씨 및 지역 뉴스 등에 자주 사용됨</translation>
 <translation id="9093723786115107672">수면용품</translation>
 <translation id="9094424186948667194">이 기기의 다른 앱 및 서비스에 액세스</translation>
 <translation id="9094544726794842788">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다</translation>

@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Impossible d'enregistrer votre modification.</translation>
 <translation id="3254806613790954367">Le dernier onglet ouvert sur tous vos appareils</translation>
 <translation id="325717987950204592">Appuyez sur "Confidentialité et sécurité"</translation>
-<translation id="3266338926702638258">Afficher l'historique des prix pour ce produit</translation>
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3273510436356991673">Personnaliser votre écran d'accueil</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Masquer "Onglets récents"</translation>
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580716718466706433">Accédez au Gestionnaire de mots de passe</translation>
+<translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page ajoutée à votre liste de lecture}one{{count} page ajoutée à votre liste de lecture}other{{count} pages ajoutées à votre liste de lecture}}</translation>
 <translation id="459644946100970322">Activer les alertes de prix ?</translation>

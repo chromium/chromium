@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1150989369772528668">Kalendari</translation>
 <translation id="1161663161838091892">Sinkronizo skedat dhe historikun për të vazhduar</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kartë krediti}other{{count} karta krediti}}</translation>
 <translation id="1164891049599601209">Ka hyrë në një sajt mashtrues</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1172898394251786223">Fusha tjetër</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1764070164487214210">Udhëzimet</translation>
+<translation id="1764511703783285459">Menaxheri tjetër i fjalëkalimeve nuk ndau asnjë fjalëkalim apo çelës kalimi</translation>
 <translation id="1767766085187034454">Përkthe me Google</translation>
 <translation id="1771016937398045251">Menyja e veglave</translation>
 <translation id="1772468122139624049">Skedat nuk mund të ringarkohen</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
 <translation id="3254806613790954367">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua</translation>
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
-<translation id="3266338926702638258">Shfaq historikun e çmimeve për këtë produkt</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
 <translation id="3277021493514034324">Adresa e sajtit u kopjua</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Fshih "Skedat e fundit"</translation>
 <translation id="4578835633387306383">Aktivizo…</translation>
 <translation id="4580716718466706433">Shko te "Menaxheri i fjalëkalimeve"</translation>
+<translation id="4585751637295612750">Hap një skedë të re për ta shtuar te pyetja jote</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4592672037257622855">{count,plural, =1{Faqja u shtua në listën tënde të leximit}other{{count} faqe u shtuan në listën tënde të leximit}}</translation>
 <translation id="459644946100970322">Të aktivizohen njoftimet për çmimet?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Shënimi është më shumë se 1000 karaktere</translation>
 <translation id="5087098519049306025">Monitorimi i çmimeve</translation>
 <translation id="5090832849094901128">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Nuk u importua asgjë</translation>
 <translation id="5113960131843706315">Po merren gjërat e tua…</translation>
 <translation id="5118462200606189584">Shto një llogari…</translation>
 <translation id="5118764316110575523">Joaktiv</translation>
@@ -1449,6 +1452,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
+<translation id="6420292512900923139">Problem me importimin e të dhënave të tua</translation>
 <translation id="6421038304268477484">Teksti i përkthyer</translation>
 <translation id="6429213933892582367">Hap "Opsionet e fjalëkalimeve"</translation>
 <translation id="6435236283694032571">Shto te lista e leximit</translation>
@@ -1487,6 +1491,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opsionet</translation>
 <translation id="6550891580932862748">Nuk të mbron nga uebsajtet, shkarkimet dhe shtesat e rrezikshme. Cilësimet e tua të "Shfletimit të sigurt" në produktet e tjera të Google nuk do të preken.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6559301491397835130">{count,plural, =1{Faqeshënuesi u ruajt te "{title}". Ai është ruajtur vetëm në këtë pajisje.}other{Faqeshënuesit u ruajtën te "{title}". Ata janë ruajtur vetëm në këtë pajisje.}}</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>

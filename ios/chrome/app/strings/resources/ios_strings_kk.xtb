@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Өзгерісіңіз сақталмады.</translation>
 <translation id="3254806613790954367">Барлық құрылғыңыздағы соңғы ашқан қойындыңыз</translation>
 <translation id="325717987950204592">"Құпиялық және қауіпсіздік" түймесін түртіңіз.</translation>
-<translation id="3266338926702638258">Осы тауардың баға тарихын көрсету</translation>
 <translation id="3272527697863656322">Жабу</translation>
 <translation id="3273510436356991673">Негізгі экранды бейімдеңіз.</translation>
 <translation id="3277021493514034324">Сайт мекенжайы көшірілді</translation>
@@ -622,7 +621,7 @@
 <translation id="3392923070107623576">Қойындылар топтарын жасау арқылы браузерді ретке келтіріңіз.</translation>
 <translation id="3404232721752787413">Google Photos-ға сақтау</translation>
 <translation id="3406506285180498376">Бетті бөлісу…</translation>
-<translation id="340669334496430859">Соңғы өзгертілген уақыты</translation>
+<translation id="340669334496430859">Соңғы өзгертілген</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 қазан, 2023</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Соңғы қойындыларды жасыру</translation>
 <translation id="4578835633387306383">Қосу…</translation>
 <translation id="4580716718466706433">"Password Manager" бөліміне өтіңіз.</translation>
+<translation id="4585751637295612750">Оны сұрағыңызға қосу үшін жаңа қойынды ашыңыз</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4592672037257622855">{count,plural, =1{Бет оқу тізіміне қосылды.}other{{count} бет оқу тізіміне қосылды.}}</translation>
 <translation id="459644946100970322">Баға туралы хабарландыруларды қосу керек пе?</translation>
@@ -1017,7 +1017,7 @@
 <translation id="4889521386764567563">Қазіргі профиль</translation>
 <translation id="4893713555726946316">"Беттен табу" опциясын жасыру</translation>
 <translation id="4894963374040315706">Дауыс арқылы іздеуге мүмкіндік береді.</translation>
-<translation id="4895540042460820904">Соңғы ашылған уақыты</translation>
+<translation id="4895540042460820904">Соңғы ашылған</translation>
 <translation id="4896467949657706481">Қойындылар жабылды; аккаунттан шығарылдыңыз</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, қайта оралғаныңызға қуаныштымыз!</translation>
 <translation id="4913626501929406101">Құпия сөзіңіздің көшірмесін отбасылық топтағы адамдармен қауіпсіз түрде бөлісе аласыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>

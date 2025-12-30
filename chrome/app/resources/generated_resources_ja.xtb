@@ -989,7 +989,6 @@
 <translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
-<translation id="1651633344379798952">スマートフォンで Google レンズを活用</translation>
 <translation id="1652281434788353738">思慮深い</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
@@ -1211,7 +1210,6 @@
 <translation id="1808805149659872686">新しいエントリ</translation>
 <translation id="1809201888580326312">このサイトやアプリのパスワードは保存しないよう設定しています</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
-<translation id="1810070166657251157">スマートフォンに保存されているパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
 <translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
@@ -3357,7 +3355,6 @@
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
-<translation id="3273033807960054795">セーフ ブラウジング保護強化機能で外出先でも安全</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> を折りたたむ</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
@@ -5083,7 +5080,6 @@
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="4423525817792153232">すべての歯を見せる</translation>
-<translation id="4424107154724312436">iOS で Google レンズを活用</translation>
 <translation id="4424262960694990728">対応が必要</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="442528696198546304">パスワード、パスキー、およびその他のデータが <ph name="BRAND" />から完全に削除されます</translation>
@@ -5560,7 +5556,6 @@
 <translation id="4767427586072640478">無効になっている拡張機能の詳細。</translation>
 <translation id="4769632191812288342">標準保護機能が適用されています</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
-<translation id="4770755495532014179">このパスワードを iPhone で使用する</translation>
 <translation id="4772914216048388646">整然</translation>
 <translation id="4773112038801431077">Linux のアップグレード</translation>
 <translation id="4773122030389014189">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
@@ -6375,6 +6370,7 @@
 <translation id="5335370353987155592">Gemini は慎重かつ<ph name="BEGIN_LINK1" />安全に<ph name="LINK_END1" />使用してください。タスクの実行中に Gemini が行った操作（間違いや購入などの<ph name="BEGIN_LINK2" />予期しない結果<ph name="LINK_END2" />を含む）については、ユーザーが責任を負うものとします。</translation>
 <translation id="5336688142483283574">このページは履歴と <ph name="SEARCH_ENGINE" /> アクティビティからも削除されます。</translation>
 <translation id="5336689872433667741">カーソルとタッチパッド</translation>
+<translation id="5337035808300170502">実際のサイズ</translation>
 <translation id="5337207153202941678">ハイライト表示をオフにする</translation>
 <translation id="5337771866151525739">第三者によってインストールされました。</translation>
 <translation id="5337926771328966926">現在のデバイス名は <ph name="DEVICE_NAME" /> です</translation>
@@ -6439,6 +6435,7 @@
 <translation id="5388719243178419614">アップロードできません。画像ファイルを処理できませんでした。</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5389224261615877010">虹</translation>
+<translation id="538945906186309152">Gemini のキーボード ショートカットをオンにする</translation>
 <translation id="5389794555912875905">安全でないサイトにアクセスする前に警告を表示する（推奨）</translation>
 <translation id="5389943529251318913">マウスの速度を遅くする</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
@@ -6707,7 +6704,6 @@
 <translation id="556321030400250233">ローカルまたは共有ファイル</translation>
 <translation id="5563234215388768762">Google で検索または URL を入力</translation>
 <translation id="5563824734298958390">タブグループから退出しますか？</translation>
-<translation id="5564450015351086922">iOS で Google レンズを活用</translation>
 <translation id="5565735124758917034">有効</translation>
 <translation id="5568069709869097550">ログインできない</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびインストール済みのアプリを削除しますか？</translation>
@@ -7910,7 +7906,6 @@
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
 <translation id="6411135999030237579">長押ししてキーを自動で繰り返す</translation>
-<translation id="6411516120707127482">スマートフォンで Google レンズを活用</translation>
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6415757856498750027">「ư」を入力するには「w」と入力します。</translation>
@@ -7957,7 +7952,6 @@
 <translation id="6445450263907939268">この変更を受け入れない場合は、以前の設定を復元できます。</translation>
 <translation id="6446213738085045933">デスクトップにショートカットを作成する</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6449835059180426406">iOS デバイスでパスワードを使用</translation>
 <translation id="6450876761651513209">プライバシー関連の設定の変更</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6451689256222386810">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します。</translation>
@@ -8867,7 +8861,6 @@
 <translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> の設定の選択</translation>
 <translation id="7067396782363924830">環境色</translation>
 <translation id="7067725467529581407">今後このメッセージを表示しない。</translation>
-<translation id="7067779359472606732"><ph name="DEVICE_TYPE" /> にリマインダーを送信しました</translation>
 <translation id="7068279399556423026">ログインして他のデバイスのタブを表示</translation>
 <translation id="7068539819344620805">[Chrome をカスタマイズ] メニューから、ブラウザのデザインをいつでも変更できるようになりました</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> とその他数個のアプリが <ph name="DEVICE_TYPE" /> でブロックされています</translation>
@@ -10022,7 +10015,6 @@
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
-<translation id="7863211248337747225">アプリをダウンロード</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分後</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
 <translation id="7864825798076155402">Google アカウントに保存しますか？</translation>
@@ -10349,7 +10341,6 @@
 <translation id="8068904756674285749">普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。設定はオフになっています。</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" /> の位置情報へのアクセス権</translation>
 <translation id="8070662218171013510">触覚フィードバック</translation>
-<translation id="8071033114691184017">このパスワードを iPhone で使用する</translation>
 <translation id="8071432093239591881">画像として印刷する</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づき）アプリで保存されたあらゆるデータを指します。これには連絡先、メッセージ、写真などのデータも含まれます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />バックアップ データは、お子様の Google ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH2" />

@@ -989,7 +989,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1650801028905250434">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet. Podes cambiar esta opción en calquera momento en Configuración &gt; Ficheiros.</translation>
 <translation id="1651008383952180276">Debes introducir a mesma frase de acceso dúas veces</translation>
 <translation id="1651609627703324721">Esta pestana está mostrando contido de RV nun visor</translation>
-<translation id="1651633344379798952">Proba Google Lens no teléfono</translation>
 <translation id="1652281434788353738">Melancólico</translation>
 <translation id="1652326691684645429">Activar Compartir por Nearby</translation>
 <translation id="1652862280638399816">Para poder usar o xestor de contrasinais con MacOS Keychain, reinicia Chromium e dálle acceso a Keychain. Despois do reinicio volverán abrirse as pestanas.</translation>
@@ -1211,7 +1210,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1808805149659872686">Entrada nova</translation>
 <translation id="1809201888580326312">Decidiches non gardar os contrasinais destes sitios e aplicacións</translation>
 <translation id="1809734401532861917">Engade os meus marcadores, o historial, os contrasinais e outras opcións de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para poder usar no teléfono os contrasinais gardados, escanea o código QR, descarga Chrome para iOS e inicia sesión na túa Conta de Google.</translation>
 <translation id="1810366086647840386">Servidor da imaxe</translation>
 <translation id="1811908311154949291">Marco delimitado do modo de incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non pode continuar usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1771,6 +1769,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2184272387334793084">Inicia sesión para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="2184515124301515068">Permite que Chrome decida cando poden reproducir son os sitios (opción recomendada)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">Iniciar novo chat con Gemini</translation>
 <translation id="2186711480981247270">Páxina compartida desde outro dispositivo</translation>
 <translation id="2187675480456493911">A rede está sincronizada con outros dispositivos da túa conta. Non se sincronizarán as opcións de configuración modificadas por outros usuarios. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Actualizáronse as extensións</translation>
@@ -2429,6 +2428,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2627424346328942291">Non se puido compartir o ficheiro</translation>
 <translation id="2628258844236035475">Queres quitar o teu enderezo particular da función de autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">É necesario restablecer a configuración de fábrica deste Chromebook para poder activar a depuración de ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">Iniciar novo chat con Gemini</translation>
 <translation id="2629227353894235473">Programar aplicacións para Android</translation>
 <translation id="2629437048544561682">Borrar lenzo</translation>
 <translation id="2631498379019108537">Mostrar opcións de entrada no estante</translation>
@@ -3361,7 +3361,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3269612321104318480">Verde azulado claro e branco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="3270965368676314374">Ler, cambiar e eliminar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
-<translation id="3273033807960054795">Amplía Navegación segura mellorada</translation>
 <translation id="3275464924531706548">Contraer <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Actualmente a túa chave de seguranza non é segura. Quítaa dos servizos cos que a utilizaches. Para resolver o problema, restablece a chave de seguranza.</translation>
 <translation id="3275778913554317645">Abrir como ventá</translation>
@@ -4255,6 +4254,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Abrir nunha ventá do modo de &amp;incógnito</translation>
 <translation id="3848688783623004960">Abrir en vista dividida</translation>
+<translation id="3849517590329855428">Contraer todo</translation>
 <translation id="3850172593216628215">Deixaron de recibirse as actualizacións de seguranza. Aforra 50 $ ou máis ao comprar un Chromebook novo.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3850989673553106152">Cambiouse o contrasinal</translation>
@@ -5091,7 +5091,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4421932782753506458">Gatiño</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
 <translation id="4423525817792153232">Mostrar todos os dentes</translation>
-<translation id="4424107154724312436">Proba Google Lens en iOS</translation>
 <translation id="4424262960694990728">Acción necesaria</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos ChromeOS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre cando falla ChromeOS, as funcións que se utilizaron e o espazo de memoria que adoita empregarse, entre outros.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do teu dispositivo Chrome. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" /></translation>
@@ -5569,7 +5568,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4767427586072640478">Obtén máis información sobre as extensións desactivadas.</translation>
 <translation id="4769632191812288342">Estás usando a protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado; preme ⌘ + Option (Opción) + Down arrow (Frecha abaixo) para responder</translation>
-<translation id="4770755495532014179">Usa este contrasinal no teu iPhone</translation>
 <translation id="4772914216048388646">Pulcro</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="4773122030389014189">Compartir o grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
@@ -6388,6 +6386,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5335370353987155592">Usa Gemini con coidado e de maneira <ph name="BEGIN_LINK1" />segura<ph name="LINK_END1" />. Es responsable das accións de Gemini durante unha tarefa, ata dos erros e <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como as compras.</translation>
 <translation id="5336688142483283574">Esta páxina tamén se quitará do teu historial e da actividade de <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor e panel táctil</translation>
+<translation id="5337035808300170502">Tamaño real</translation>
 <translation id="5337207153202941678">Desactivar o enfoque</translation>
 <translation id="5337771866151525739">Instalada por un terceiro.</translation>
 <translation id="5337926771328966926">Actualmente, o nome do dispositivo é "<ph name="DEVICE_NAME" />"</translation>
@@ -6452,6 +6451,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5388719243178419614">Non se puido cargar o ficheiro. Produciuse un erro ao procesar o ficheiro de imaxe.</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
 <translation id="5389224261615877010">Arco da vella</translation>
+<translation id="538945906186309152">Activar o atallo de teclado de Gemini</translation>
 <translation id="5389794555912875905">Mostrar advertencias antes de acceder a sitios pouco seguros (opción recomendada)</translation>
 <translation id="5389943529251318913">Reducir velocidade do rato un</translation>
 <translation id="5390112241331447203">Incluír o ficheiro system_logs.txt enviado en informes de comentarios.</translation>
@@ -6721,7 +6721,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="556321030400250233">ficheiro local ou compartido</translation>
 <translation id="5563234215388768762">Realiza unha busca en Google ou escribe un URL</translation>
 <translation id="5563824734298958390">Queres saír do grupo de pestanas?</translation>
-<translation id="5564450015351086922">Proba Google Lens en iOS</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5568069709869097550">Non se pode iniciar sesión</translation>
 <translation id="5568525251731145240">Queres eliminar os datos do sitio e os permisos de <ph name="SITE_NAME" />, así como os de todos os sitios que inclúa e das aplicacións instaladas?</translation>
@@ -7263,6 +7262,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5945363896952315544">Non se poden almacenar máis impresións dixitais na chave de seguranza. Se queres engadir unha impresión dixital nova, primeiro elimina unha das que tes gardadas.</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Facer dobre clic co rato</translation>
+<translation id="594783581676390841">{NUM_EVENTS,plural, =1{Non se puido analizar 1 evento, polo que non se mostra}other{Non se puideron analizar # eventos, polo que non se mostran}}</translation>
 <translation id="5948476936444935795">Cancelar importación</translation>
 <translation id="5948536763493709626">Conecta un teclado ou un rato, ou continúa coa configuración a través da pantalla táctil. Se utilizas dispositivos Bluetooth, asegúrate de que estean preparados para a vinculación.</translation>
 <translation id="5949795028157144515">O modo de programador está desactivado. Desactiváronse algunhas extensións.</translation>
@@ -7920,7 +7920,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6410328738210026208">Cambiar canle e Powerwash</translation>
 <translation id="6410390304316730527">A función Navegación segura protéxete contra os piratas informáticos que poden enganarte para que realices accións perigosas, como instalar un software malicioso ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). Se a desactivas, ten coidado ao consultar sitios descoñecidos ou con mala reputación.</translation>
 <translation id="6411135999030237579">Manter premida unha tecla para que se repita automaticamente</translation>
-<translation id="6411516120707127482">Proba Google Lens no teléfono</translation>
 <translation id="6414618057231176439">Selecciona que versión de <ph name="VM_NAME" /> queres instalar.</translation>
 <translation id="641469293210305670">Instalar actualizacións e aplicacións</translation>
 <translation id="6415757856498750027">Escribir "w" para obter "ư"</translation>
@@ -7967,7 +7966,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6445450263907939268">Se non querías realizar estes cambios, podes restaurar a túa configuración anterior.</translation>
 <translation id="6446213738085045933">Crear acceso directo do escritorio</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449835059180426406">Usa os teus contrasinais nos teus dispositivos iOS</translation>
 <translation id="6450876761651513209">Cambia a túa configuración relacionada coa privacidade</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 pestana máis}other{<ph name="PAGE_TITLE" /> e # pestanas máis}}</translation>
 <translation id="6451689256222386810">Se esqueciches o teu contrasinal ou queres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" />.</translation>
@@ -8659,6 +8657,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6914812290245989348">Non mostrar ningunha advertencia antes de acceder a un sitio pouco seguro</translation>
 <translation id="6916590542764765824">Xestionar extensións</translation>
 <translation id="6916676294509106572">Calendario de Outlook oculto</translation>
+<translation id="6916818963747321523">Despregar todo</translation>
 <translation id="6917873303492266709">Para compartir grupos de pestanas, unirte a eles e colaborar, abre a configuración e activa Permitir inicio de sesión en Chrome</translation>
 <translation id="6918677045355889289">É necesario actualizar Chrome OS</translation>
 <translation id="6918733588290914545">Configuración rápida cun teléfono Android</translation>
@@ -8877,7 +8876,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7066572364168923329">Seleccionar a configuración de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Cores de ambiente</translation>
 <translation id="7067725467529581407">Non volver mostrar nunca.</translation>
-<translation id="7067779359472606732">Enviouse un recordatorio ao teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7068279399556423026">Inicia sesión para ver as pestanas doutros dispositivos</translation>
 <translation id="7068539819344620805">Xa podes cambiar o deseño do teu navegador cando queiras desde o menú Personalizar Chrome</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> e unhas poucas aplicacións máis están bloqueadas no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -9209,6 +9207,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7312040805247765153">Non se puido instalar a aplicación</translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
 <translation id="7313539585802573958">Cores da retroiluminación do teclado</translation>
+<translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Non se puido datar 1 evento, polo que non se mostra}other{Non se puideron datar # eventos, polo que non se mostran}}</translation>
 <translation id="7314865262803554456">Non te avisaremos cando se inicie a gravación.</translation>
 <translation id="7314989823816739632">Romántico</translation>
 <translation id="7317342082064136423">Verifica a túa conta</translation>
@@ -10032,7 +10031,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="786073089922909430">Servizo: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7861846108263890455">Idioma da Conta de Google</translation>
-<translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7864114920800968141">Dentro de <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Desactivar o Bluetooth</translation>
 <translation id="7864825798076155402">Queres gardalo na túa Conta de Google?</translation>
@@ -10358,7 +10356,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8068904756674285749">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación. Esta opción de configuración está desactivada.</translation>
 <translation id="8070572887926783747">Permiso acceso á localización para <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Resposta háptica</translation>
-<translation id="8071033114691184017">Usa este contrasinal no teu iPhone</translation>
 <translation id="8071432093239591881">Imprimir como imaxe</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os datos das aplicacións poden ser calquera tipo de datos que gardase unha aplicación, baseándose na configuración do programador, incluídos datos como os contactos, as mensaxes e as fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os datos da copia de seguranza non contarán na cota de almacenamento de Drive do teu fillo.<ph name="END_PARAGRAPH2" />

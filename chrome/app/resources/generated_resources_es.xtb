@@ -196,6 +196,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125371304736839151">Mostrar Gemini en la parte superior del navegador</translation>
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
+<translation id="1125816658532547876">Usa tus contraseñas en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Fondo y estilo</translation>
 <translation id="1128591060186966949">Editar motor de búsqueda</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -565,6 +566,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1372841398847029212">Sincronizar con tu cuenta</translation>
 <translation id="1373176046406139583">La visibilidad de tu dispositivo determina quién puede compartir archivos contigo mientras tu pantalla está desbloqueada. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">El certificado requerido por la red "<ph name="NETWORK_NAME" />" no está instalado o ya no es válido. Consigue un nuevo certificado y prueba a conectarte de nuevo.</translation>
+<translation id="1374948751106271187">Añade una capa adicional de protección estés donde estés</translation>
 <translation id="1375557162880614858">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex?</translation>
 <translation id="1375938286942050085">¡Configuración completada! Prepara tu dispositivo para empezar a jugar</translation>
 <translation id="137651782282853227">Las direcciones guardadas aparecerán aquí</translation>
@@ -990,7 +992,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1650801028905250434">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Puedes cambiar esta opción en cualquier momento en Ajustes &gt; Archivos.</translation>
 <translation id="1651008383952180276">Debes introducir la misma frase de contraseña dos veces</translation>
 <translation id="1651609627703324721">Esta pestaña está proyectando contenido de realidad virtual a un visor</translation>
-<translation id="1651633344379798952">Prueba Google Lens en tu teléfono</translation>
 <translation id="1652281434788353738">Considerado</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
 <translation id="1652862280638399816">Para usar el Gestor de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
@@ -1212,7 +1213,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1808805149659872686">Nueva entrada</translation>
 <translation id="1809201888580326312">Has elegido no guardar las contraseñas de estos sitios y aplicaciones.</translation>
 <translation id="1809734401532861917">Añadir mis marcadores, mi historial, mis contraseñas y otras opciones de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Si quieres usar las contraseñas que tienes guardadas en tu teléfono, escanea el código QR, descarga Chrome para iOS e inicia sesión en tu cuenta de Google.</translation>
 <translation id="1810366086647840386">Servidor de imágenes</translation>
 <translation id="1811908311154949291">Marco delimitado de incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1259,6 +1259,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="183445248400150852">Los sitios usan esta función para anular la entrada de tu teclado, por ejemplo, en juegos o aplicaciones de escritorio remoto</translation>
 <translation id="1834503245783133039">No se ha podido completar la descarga: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux se ha actualizado</translation>
+<translation id="1837292628323740716">Navegación segura mejorada en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive ha rechazado la solicitud. Inténtalo de nuevo más tarde.</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839021455997460752">Tu dirección de correo</translation>
@@ -3365,7 +3366,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3269612321104318480">Turquesa claro y blanco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
 <translation id="3270965368676314374">Leer, modificar y eliminar fotos, música y otros archivos multimedia de tu ordenador</translation>
-<translation id="3273033807960054795">Amplía la Navegación segura mejorada</translation>
 <translation id="3275464924531706548">Ocultar <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Tu llave de seguridad interna es insegura actualmente. Elimínala de todos los servicios en los que la utilizabas. Para solucionar el problema, restablece la llave de seguridad.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
@@ -4870,7 +4870,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4276856098224910511">No se puede realizar la instalación porque hay una actualización del SO pendiente. Instala las actualizaciones pendientes del SO, reinicia y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Permisos quitados de 1 sitio}other{Permisos quitados de {NUM_SITES} sitios}}</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4278498748067682896">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo Kiosco o en modo Señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve atrás y regístrate usando una Licencia de Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Descargando archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para añadir otro perfil, quita primero uno que ya esté creado.</translation>
@@ -5092,7 +5092,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4421932782753506458">Gatito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
 <translation id="4423525817792153232">Mostrar todos los dientes</translation>
-<translation id="4424107154724312436">Prueba Google Lens en iOS</translation>
 <translation id="4424262960694990728">Acción necesaria</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
@@ -5570,7 +5569,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4767427586072640478">Más información sobre las extensiones inhabilitadas</translation>
 <translation id="4769632191812288342">Estás usando la protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado, pulsa ⌘ + Opción + flecha hacia abajo para responder</translation>
-<translation id="4770755495532014179">Usa esta contraseña en tu iPhone</translation>
 <translation id="4772914216048388646">Organizado</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas <ph name="GROUP_NAME" /></translation>
@@ -6387,6 +6385,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5335370353987155592">Usa Gemini con cuidado y de forma <ph name="BEGIN_LINK1" />segura<ph name="LINK_END1" />. Eres responsable de las acciones de Gemini durante una tarea, incluidos los errores y los <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como las compras.</translation>
 <translation id="5336688142483283574">Esta página también se eliminará del historial y de la actividad de <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor y panel táctil</translation>
+<translation id="5337035808300170502">Tamaño real</translation>
 <translation id="5337207153202941678">Desactivar resaltado</translation>
 <translation id="5337771866151525739">Instalada por una aplicación externa</translation>
 <translation id="5337926771328966926">El nombre actual del dispositivo es <ph name="DEVICE_NAME" /></translation>
@@ -6556,7 +6555,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sin conexión)</translation>
 <translation id="5453829744223920473">Tu hijo/a puede usar todas sus aplicaciones, marcadores y recursos de su centro educativo del mismo modo que cuando está en clase. El centro educativo establece las normas básicas.</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">Añadir algo a tu búsqueda</translation>
+<translation id="5457082343331641453">Añade algo a tu búsqueda</translation>
 <translation id="5457113250005438886">No válido</translation>
 <translation id="5457459357461771897">Leer y eliminar fotos, música y otros archivos multimedia de tu ordenador</translation>
 <translation id="5457795687441958389">Mantener sesión cerrada</translation>
@@ -6721,7 +6720,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
 <translation id="5563234215388768762">Buscar en Google o escribir una URL</translation>
 <translation id="5563824734298958390">¿Salir del grupo de pestañas?</translation>
-<translation id="5564450015351086922">Prueba Google Lens en iOS</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5568069709869097550">No puedo iniciar sesión</translation>
 <translation id="5568525251731145240">¿Eliminar datos del sitio y permisos de <ph name="SITE_NAME" />, todos los sitios que incluya y sus aplicaciones instaladas?</translation>
@@ -7924,7 +7922,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6410328738210026208">Cambiar canal y Powerwash</translation>
 <translation id="6410390304316730527">La función Navegación segura te protege frente a atacantes que pueden intentar engañarte para que realices alguna acción peligrosa, como instalar malware o revelar información personal, incluidas contraseñas, números de teléfono o tarjetas de crédito. Si desactivas esta función, debes tener cuidado al navegar por sitios desconocidos o que no sean de confianza.</translation>
 <translation id="6411135999030237579">Mantener pulsada una tecla para repetirla automáticamente</translation>
-<translation id="6411516120707127482">Prueba Google Lens en tu teléfono</translation>
 <translation id="6414618057231176439">Selecciona la versión de <ph name="VM_NAME" /> que quieres instalar.</translation>
 <translation id="641469293210305670">Instalar actualizaciones y aplicaciones</translation>
 <translation id="6415757856498750027">Escribe "w" para obtener "ư"</translation>
@@ -7971,7 +7968,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6445450263907939268">Si no querías realizar estos cambios, puedes restaurar la configuración anterior.</translation>
 <translation id="6446213738085045933">Crear acceso directo de escritorio</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449835059180426406">Usa tus contraseñas en tus dispositivos iOS</translation>
 <translation id="6450876761651513209">Cambia la configuración relacionada con la privacidad</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6451689256222386810">Si has olvidado tu frase de contraseña o quieres cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
@@ -8452,6 +8448,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6783036716881942511">¿Olvidar este dispositivo?</translation>
 <translation id="6783667414610055871">Ajustes de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Perfil admitido</translation>
+<translation id="678520006562636090">Prueba Google Lens en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Usa tu <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Visualizando escritorios guardados. Pulsa el tabulador para desplazarte.</translation>
 <translation id="6785915470941880363">Desplazamiento inverso <ph name="LINK_BEGIN" />más información<ph name="LINK_END" /></translation>
@@ -8883,7 +8880,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7066572364168923329">Elige la configuración de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Colores de ambiente</translation>
 <translation id="7067725467529581407">No volver a mostrar.</translation>
-<translation id="7067779359472606732">Recordatorio enviado a tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Inicia sesión para ver pestañas de otros dispositivos</translation>
 <translation id="7068539819344620805">Ahora puedes renovar el aspecto de tu navegador en cualquier momento desde el menú Personalizar Chrome</translation>
 <translation id="7068591156533195518">Se han bloqueado <ph name="APP_NAME" /> y algunas aplicaciones más en tu <ph name="DEVICE_TYPE" /></translation>
@@ -10039,7 +10035,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="786073089922909430">Servicio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7861846108263890455">Idioma de la cuenta de Google</translation>
-<translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7864114920800968141">Dentro de <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Inhabilitar Bluetooth</translation>
 <translation id="7864825798076155402">¿Guardar en tu cuenta de Google?</translation>
@@ -10366,7 +10361,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8068904756674285749">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación. Esta opción está desactivada.</translation>
 <translation id="8070572887926783747">Permiso de ubicación de <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Vibración al pulsar</translation>
-<translation id="8071033114691184017">Usa esta contraseña en tu iPhone</translation>
 <translation id="8071432093239591881">Imprimir como imagen</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Los datos de aplicaciones pueden ser cualquier tipo de información que guarden las aplicaciones (según la configuración de los desarrolladores), como contactos, mensajes y fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Los datos de la copia de seguridad no se tienen en cuenta para calcular el espacio de almacenamiento de la cuenta de Google Drive de tu hijo.<ph name="END_PARAGRAPH2" />

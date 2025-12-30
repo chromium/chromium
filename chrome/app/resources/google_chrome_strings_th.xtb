@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chrome เบต้า (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="1880677175115548835">เลือกข้อความ</translation>
+<translation id="1896602904211344018">ดาวน์โหลดแอป Chrome</translation>
 <translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1953553007165777902">กำลังดาวน์โหลด... เหลืออีก <ph name="MINUTE" /> นาที</translation>
 <translation id="1979600810166324878">ใช้งานได้อย่างปลอดภัยมากขึ้นทุกที่ทุกเวลาด้วย Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นใน Chrome สำหรับ iOS</translation>
@@ -270,6 +271,7 @@
 <translation id="3889417619312448367">ยกเลิกการติดตั้ง Google Chrome</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="3906096710440765802">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องของคุณ</translation>
+<translation id="3921132130819999051">ให้ Chrome ท่องเว็บแทนคุณ</translation>
 <translation id="3941890832296813527">ข้อผิดพลาดในการติดตั้ง: ชื่อไฟล์ของโปรแกรมติดตั้งไม่ถูกต้องหรือระบบไม่รองรับ</translation>
 <translation id="395904275706073188">อ่านหน้าเว็บที่มีการป้องกันไม่ได้ โปรดลองใช้หน้าอื่น</translation>
 <translation id="3968962723676998462">ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
@@ -374,6 +376,7 @@
 <translation id="5163087008893166964">ยินดีต้อนรับสู่ Chrome เปิดหน้าต่างเบราวเซอร์ใหม่แล้ว</translation>
 <translation id="5166439563123238795">Chrome ต้องการสิทธิ์ในการติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5167819546851111585">วันนี้คุณกำลังคิดอะไรอยู่</translation>
+<translation id="5169778651486082413">ใช้รหัสผ่านกับ Chrome ในโทรศัพท์</translation>
 <translation id="5170938038195470297">โปรไฟล์ของคุณไม่สามารถใช้ได้เพราะมาจากรุ่นที่ใหม่กว่าของ Google Chrome ฟีเจอร์บางอย่างอาจจะไม่พร้อมใช้งาน โปรดระบุไดเรกทอรีของโปรไฟล์อื่นหรือใช้ Chrome รุ่นที่ใหม่กว่า</translation>
 <translation id="5174969993834422967">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกไอคอนการแจ้งเตือนที่มุมขวาของแถบตําแหน่ง</translation>
 <translation id="5174983315706567306">มีพื้นที่ในดิสก์ไม่เพียงพอ</translation>
@@ -399,7 +402,6 @@
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
 <translation id="5465210843490471889">เลือกโปรไฟล์ Chrome ที่จะใช้กับ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome จะส่งข้อมูลการโต้ตอบของคุณให้กับ Google เพื่อช่วยปรับปรุงฟีเจอร์เหล่านี้ เจ้าหน้าที่ตรวจสอบอาจอ่าน ประมวลผล และใส่คำอธิบายประกอบข้อมูลดังกล่าว</translation>
-<translation id="5510398294750420479">ดาวน์โหลด Chrome บนโทรศัพท์เพื่อเพิ่มการปกป้องอีกชั้นในทุกที่ทุกเวลา</translation>
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">ทำให้ Chrome เร็วขึ้น</translation>
 <translation id="5550137307985173298">คลิกปุ่มปรับแต่ง Chrome ในหน้าแท็บใหม่เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้ Chrome</translation>
@@ -455,6 +457,7 @@
 <translation id="6008161919456049856">ระบบจะนำรหัสผ่าน วิธีการชำระเงิน และที่อยู่ที่คุณบันทึกไว้ในบัญชี Google ออกจากอุปกรณ์นี้ หากต้องการใช้ข้อมูลเหล่านี้ใน Chrome ให้ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6009821354356307391">ขอการติดตามผล</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />เครื่องมือจาก Chrome<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
+<translation id="6018578474045062808">ลองใช้ Google Lens กับ Chrome ในโทรศัพท์</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6025087594896450715">Google Chrome จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -477,6 +480,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="6180522807229584611">แท็บนี้ใช้ทรัพยากรมากเป็นพิเศษ ให้ Chrome ช่วยปิดใช้งานแท็บเหล่านี้เพื่อปรับปรุงประสิทธิภาพ</translation>
 <translation id="6182736845697986886">การติดตั้งไม่สำเร็จเนื่องจากเกิดข้อผิดพลาดภายในเซิร์ฟเวอร์การอัปเดต</translation>
+<translation id="6183773856988300112">Gemini ใน Chrome ใช้การท่องเว็บอัตโนมัติเพื่อทำงานในแท็บและดำเนินงานที่คุณมอบหมายให้เสร็จสมบูรณ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">บัญชีของคุณใน Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ได้เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome
 
@@ -503,6 +507,8 @@
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
 <translation id="6426623519983252346">คุณจะเห็นข้อความแจ้งให้ลองใช้ <ph name="FEATURE_NAME" /> ในครั้งถัดไปที่เปิด Chrome บน iOS</translation>
 <translation id="6434035853014503219">ขอขอบคุณที่เลือก Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
+<translation id="6438015621983209660">ขยายการใช้งาน Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นด้วย Chrome ในโทรศัพท์</translation>
+<translation id="6442774133615368941">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องในแอป Chrome สำหรับ iOS</translation>
 <translation id="6473905796280459355">ไปที่หน้าเกี่ยวกับ Chrome</translation>
 <translation id="6481963882741794338">ลิงก์ Chrome กับบริการอื่นๆ ของ Google เพื่อการปรับเปลี่ยนในแบบของคุณและวัตถุประสงค์อื่นๆ</translation>
 <translation id="648319183876919572">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์และการดาวน์โหลดที่เป็นอันตราย</translation>
@@ -640,6 +646,7 @@
 <translation id="7832314606810669113">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชี Google หลังจากที่คุณลงชื่อเข้าใช้</translation>
 <translation id="7845233973568007926">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทคอมพิวเตอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="7849037457735762883">ดำเนินการต่อจากที่ค้างไว้: Chrome สามารถคืนค่าแท็บทุกครั้งที่คุณรีสตาร์ท หากต้องการเปิดตัวเลือกนี้ ให้ไปที่</translation>
+<translation id="7869620795354551924">หากต้องการใช้รหัสผ่านที่บันทึกไว้ ให้สแกนคิวอาร์โค้ด, ดาวน์โหลด Chrome สำหรับ iOS และลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="7872446069773932638">กำลังดาวน์โหลด... เหลืออีก <ph name="SECONDS" /> วินาที</translation>
 <translation id="7886087451482920026">เลือกข้อความด้วย Google Lens</translation>
 <translation id="7887929410013642057">แสดงทางลัดของโหมด AI เสมอ</translation>

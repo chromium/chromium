@@ -357,6 +357,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4992938037305302429">Ditt konto i Chromium</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
+<translation id="5083712646171654472">Gemini i Chromium använder automatisk surfning för att arbeta i dina flikar och utföra uppgifter du ger den. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium behöver behörighet för handspårning</translation>
 <translation id="5141988424377517949">Du har inte besökt webbplatsen på sistone. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Vad vill du ha hjälp med i dag?</translation>
@@ -583,6 +584,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7617377681829253106">Vi har förbättrat Chromium</translation>
 <translation id="7622753900276619808">Nu finns fler funktioner tillgängliga i Chromium</translation>
 <translation id="7649070708921625228">Hjälp</translation>
+<translation id="7656340475565475526">Låt Chromium surfa åt dig</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>
 <translation id="7689606757190482937">Synkronisera och anpassa Chromium på alla enheter du använder</translation>
@@ -608,7 +610,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7888981273428720788">Ställ in Chromium som standardwebbläsare</translation>
 <translation id="7934340546140346950">Chromium uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
-<translation id="7953047982688951904">Ladda ned Chromium på telefonen för att få ett extra skyddslager var du än är</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="7997934263947464652">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Webbläsare</translation>

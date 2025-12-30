@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, यह मैनेज करें कि आपके Google खाते में, Chrome के इस्तेमाल से जुड़ी कौनसी जानकारी सेव की जाएगी. इसके लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1122714970786750095">इलेक्ट्रॉनिक्स और इलेक्ट्रिकल</translation>
 <translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
+<translation id="1124643885833329193">जगह की सटीक जानकारी</translation>
 <translation id="112840717907525620">नीति कैश मेमोरी ठीक है</translation>
 <translation id="1131264053432022307">आपकी कॉपी की हुई इमेज</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए, विंडो को स्क्रीन के सबसे ऊपरी हिस्से से खींचकर नीचे की ओर छोड़ें और 'वापस जाएं' बटन पर टैप करें</translation>
@@ -894,6 +895,7 @@
 <translation id="2400263725572336749">पासपोर्ट की जानकारी जोड़ें</translation>
 <translation id="2400271059665846158">Google Wallet में अपने लॉयल्टी कार्ड मैनेज करें</translation>
 <translation id="2400600116338235695">साइट, सीरियल पोर्ट से कनेक्ट करने की अनुमति मांग सकती है</translation>
+<translation id="2403474027143565107">जगह की सटीक जानकारी</translation>
 <translation id="240450251994300576">सेकंडरी हेडर लोगो</translation>
 <translation id="2404884497378469141">अपनी फ़ाइलें फिर से कॉपी करने की कोशिश करें</translation>
 <translation id="2413155254802890957">पुराना</translation>
@@ -998,6 +1000,7 @@
 <translation id="2571488850200220306">डिवाइस की सुरक्षा के लिए एडमिन, डिवाइस का ओएस, ब्राउज़र वर्शन, और इंस्टॉल किया गया सॉफ़्टवेयर भी देख सकता है</translation>
 <translation id="2573170131138724450">टेलीविज़न</translation>
 <translation id="257674075312929031">ग्रुप</translation>
+<translation id="2577522251608256362">आस-पड़ोस</translation>
 <translation id="2580031090587209073">शेयर करने के विकल्प</translation>
 <translation id="258027838577899739">इतिहास से सभी आइटम मिटाएं</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ने एक टैब जोड़ा</translation>
@@ -1284,6 +1287,7 @@
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टम</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
 <translation id="3082007635241601060">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से उपलब्ध छूट का पता लगा सके</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" कोई मान्य प्रॉक्सी नहीं है.</translation>
 <translation id="3086269988715347183">आपने <ph name="BLOCKED_URL" /> को पहले अनुमति नहीं दी है</translation>
 <translation id="3086579638707268289">वेब पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3087734570205094154">नीचे</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अनजान या काम नहीं करने वाली भाषा.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3615309852743236517">मैनिक्योर और पेडिक्योर</translation>
+<translation id="3620034424637552643">आम तौर पर, इसका इस्तेमाल रास्ते की जानकारी, चीज़ों की डिलीवरी वगैरह के लिए किया जाता है</translation>
 <translation id="3620239073311576716">काम पर जाने के लिए पहने जाने वाले कपड़े और यूनिफ़ॉर्म</translation>
 <translation id="3621401353678567613">ट्रैक किए जा रहे प्रॉडक्ट की कीमत में गिरावट आने की सूचनाएं पाने के लिए, सेटिंग में जाकर सूचनाएं पाने की सुविधा चालू करें.</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">प्लॉट और ज़मीन</translation>
 <translation id="403724377879219932">साइट, आपके लोकल नेटवर्क पर मौजूद अन्य डिवाइस ऐक्सेस करने की अनुमति मांग सकती है</translation>
 <translation id="4039506337798853114">अपना कर्सर देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
+<translation id="4042597221652780603">जगह की अनुमानित जानकारी</translation>
 <translation id="4045070493270310437">टैब फिर से खोलें</translation>
 <translation id="4045226534284799755">फिर से कोशिश करने से पहले, अपने Microsoft खाते में साइन इन करें</translation>
 <translation id="4045441967987592849">फिर से खोलें</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">आपके माता-पिता या अभिभावक ने कहा है कि आपको इस साइट पर जाने की अनुमति नहीं है. आप चाहें, तो उन्हें पाबंदी हटाने के लिए कहें.</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6167577165590485365">पिछली बार फ़ेच करने का समय:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" कोई मान्य वैल्यू नहीं है.</translation>
 <translation id="617256461084925519">Google Chrome, आपकी पहचान की पुष्टि करने की कोशिश कर रहा है, ताकि यह आपके क्रेडिट/डेबिट कार्ड की जानकारी भर सके.</translation>
 <translation id="6173208311907792313">Windows Hello का इस्तेमाल करके खरीदारी पूरी करें</translation>
 <translation id="6176387967264100435">यह कीमत ज़्यादा है</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">देश के हिसाब से, टेस्टिंग के लिए तय किया गया पता</translation>
 <translation id="6689249931105087298">ब्लैक पॉइंट कंप्रेशन से मिलता-जुलता</translation>
 <translation id="6689271823431384964">आपके साइन इन किए होने की वजह से, Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप 'सेटिंग' में जाकर इसे बदल सकते हैं. कार्डधारक का नाम आपके खाते से लिया जाता है.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />", डेस्टिनेशन का मान्य पैटर्न नहीं है.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> से ज़्यादा स्टोरेज खाली करें</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपना डिवाइस ढूंढने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6695428916538794739">ऐक्शन और एडवेंचर वाली फ़िल्में</translation>
@@ -4077,7 +4085,6 @@
 <translation id="753556296624075801">Google की ओर से</translation>
 <translation id="753713322968419914">क्या Chrome में जानकारी ऑटोमैटिक तरीके से भरने की सुविधा से, घर का पता हटाना है?</translation>
 <translation id="7537536606612762813">ज़रूरी है</translation>
-<translation id="7541043894191476250">कॉन्टेक्स्ट के हिसाब से टास्क</translation>
 <translation id="7543525346216957623">अपने अभिभावक से पूछें</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> शुरू हो रहा है</translation>
 <translation id="7548892272833184391">कनेक्शन गड़बड़ियां ठीक करना</translation>
@@ -4286,6 +4293,7 @@
 <translation id="7870281855125116701">छूट मिली</translation>
 <translation id="7871445724586827387">अपने Google खाते का पासवर्ड बदलें</translation>
 <translation id="787226752901403048">टैब ग्रुप शेयर करने और उनमें शामिल होने के लिए, Chrome में साइन इन करें और आइडिया पर मिलकर काम करें</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" कोई जाना-पहचाना कंडिशन टाइप नहीं है.</translation>
 <translation id="7877007680666472091">सुरक्षित Content ID</translation>
 <translation id="7878562273885520351">आपके पासवर्ड से छेड़छाड़ की जा सकती है</translation>
 <translation id="7881044256965445977">अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति</translation>
@@ -5011,6 +5019,7 @@
 <translation id="9090243919347147717">अटैचमेंट</translation>
 <translation id="9090548458280093580">एआई की मदद से, अपना ब्राउज़िंग इतिहास खोजें</translation>
 <translation id="9090993752571911635">इंटरनेट सेवा देने वाली कंपनियां (आईएसपी)</translation>
+<translation id="9092305980625216393">आम तौर पर, मौसम की जानकारी, स्थानीय खबरें वगैरह देखने के लिए इस्तेमाल किया जाता है</translation>
 <translation id="9093723786115107672">नाइटवियर</translation>
 <translation id="9094424186948667194">इस डिवाइस पर अन्य ऐप्लिकेशन और सेवाएं ऐक्सेस करें</translation>
 <translation id="9094544726794842788">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं</translation>

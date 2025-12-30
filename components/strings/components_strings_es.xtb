@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador e Intro para gestionar qué información de Chrome guardas en tu cuenta de Google</translation>
 <translation id="1122714970786750095">Electrónica y electricidad</translation>
 <translation id="1123753900084781868">Subtítulos automáticos no está disponible en estos momentos</translation>
+<translation id="1124643885833329193">Ubicación exacta</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen copiada</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
@@ -893,6 +894,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2400263725572336749">Añadir pasaporte</translation>
 <translation id="2400271059665846158">Gestiona tus tarjetas de fidelización en Google Wallet</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos serie</translation>
+<translation id="2403474027143565107">Precisa</translation>
 <translation id="240450251994300576">Logotipo del encabezado secundario</translation>
 <translation id="2404884497378469141">Prueba a copiar tus archivos de nuevo</translation>
 <translation id="2413155254802890957">Antigua</translation>
@@ -997,6 +999,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2571488850200220306">Para ayudar a garantizar la seguridad, también puede ver el SO del dispositivo, la versión del navegador y el software instalado</translation>
 <translation id="2573170131138724450">Televisiones</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2577522251608256362">Barrio</translation>
 <translation id="2580031090587209073">Opciones para compartir</translation>
 <translation id="258027838577899739">Eliminar todo del historial</translation>
 <translation id="258135245577667916">Pestaña añadida (<ph name="USER_DISPLAY_NAME" />)</translation>
@@ -1628,6 +1631,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="361438452008624280">Entrada de lista "<ph name="LANGUAGE_ID" />": idioma no disponible o desconocido.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para realizar una comprobación de seguridad en la configuración de Chrome</translation>
 <translation id="3615309852743236517">Manicura y pedicura</translation>
+<translation id="3620034424637552643">Suele usarse para indicaciones, entregas y otros datos</translation>
 <translation id="3620239073311576716">Uniformes y ropa de trabajo</translation>
 <translation id="3621401353678567613">Para recibir alertas si los productos que sigues bajan de precio, activa las notificaciones en los ajustes.</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
@@ -1895,6 +1899,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4036753017940930924">Parcelas y terrenos</translation>
 <translation id="403724377879219932">Puede solicitar permiso para acceder a otros dispositivos de tu red local</translation>
 <translation id="4039506337798853114">Para mostrar el cursor, pulsa |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Aproximada</translation>
 <translation id="4045070493270310437">Volver a abrir pestañas</translation>
 <translation id="4045226534284799755">Inicia sesión en tu cuenta de Microsoft antes de volver a intentarlo</translation>
 <translation id="4045441967987592849">Reabrir</translation>
@@ -2066,7 +2071,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Las tarjetas que no acepta este comercio están inhabilitadas</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Abrir archivo confidencial?}other{¿Abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
@@ -3637,7 +3642,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6850286078059909152">Color del texto</translation>
 <translation id="685163597635765693">Tu organización ha bloqueado los enlaces de <ph name="HOST_NAME" /> en el modo Incógnito.</translation>
 <translation id="6852204201400771460">¿Quieres volver a cargar la aplicación?</translation>
-<translation id="6854243285874308023">Google usa información de la página de tramitación de la compra y otros datos relevantes para ofrecer estas opciones. Para ocultar las opciones de pago aplazado, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="6854691830678097752">Para tramitar las compras más rápido, guarda este CVC en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6857776781123259569">Gestionar contraseñas...</translation>
 <translation id="6858034839887287663">A2x4</translation>
@@ -4081,7 +4085,6 @@ Más información:
 <translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="753713322968419914">¿Quitar dirección de casa de Autocompletar de Chrome?</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
-<translation id="7541043894191476250">Tareas contextuales</translation>
 <translation id="7543525346216957623">Pide permiso a tu padre o madre</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errores de conexión</translation>
@@ -5015,6 +5018,7 @@ Más información:
 <translation id="9090243919347147717">Archivos adjuntos</translation>
 <translation id="9090548458280093580">Busca en tu historial con la tecnología de IA</translation>
 <translation id="9090993752571911635">Proveedores de Internet</translation>
+<translation id="9092305980625216393">Suele usarse para información meteorológica, noticias locales y otros datos</translation>
 <translation id="9093723786115107672">Ropa para dormir</translation>
 <translation id="9094424186948667194">Acceder a otras aplicaciones y servicios de este dispositivo</translation>
 <translation id="9094544726794842788">No me gusta abre un formulario para enviar comentarios detallados sobre por qué no te han gustado estos resultados</translation>

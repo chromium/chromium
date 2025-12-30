@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3254806613790954367">Din senast öppna flik på alla dina enheter</translation>
 <translation id="325717987950204592">Tryck på Integritet och säkerhet</translation>
-<translation id="3266338926702638258">Visa prishistorik för den här produkten</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Anpassa startskärmen</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
 <translation id="4578835633387306383">Aktivera …</translation>
 <translation id="4580716718466706433">Öppna Lösenordshantering</translation>
+<translation id="4585751637295612750">Öppna en ny flik för att lägga till den i din fråga</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4592672037257622855">{count,plural, =1{En sida har lagts till i läslistan}other{{count} sidor har lagts till i läslistan}}</translation>
 <translation id="459644946100970322">Vill du aktivera prisaviseringar?</translation>

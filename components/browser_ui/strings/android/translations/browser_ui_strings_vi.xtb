@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Mẹo dùng Chrome</translation>
 <translation id="1816835383954230954">Khi bạn bật công cụ này, Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến. Khi bạn tắt công cụ này, hiệu suất sẽ giảm nhưng V8 có thể chống lại các cuộc tấn công tốt hơn.</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Di chuyển để tuỳ chỉnh trải nghiệm duyệt web của bạn</translation>
 <translation id="1848033246551405023">Phông chữ Sans Serif</translation>
 <translation id="1861262398884155592">Thư mục này trống</translation>
 <translation id="1881806992065048905">Bảng giao diện trang thẻ mới ở dưới cùng</translation>
@@ -87,6 +88,7 @@
 <translation id="1985716030964443178">Thao tác này sẽ đặt lại tất cả các trang web trong danh sách của bạn về mức thu phóng mặc định</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="1994173015038366702">URL của trang web</translation>
+<translation id="1994558116414798016">Phông chữ Lexend</translation>
 <translation id="2004697686368036666">Các tính năng trên một số trang web có thể không hoạt động</translation>
 <translation id="2025115093177348061">Thực tế tăng cường</translation>
 <translation id="2028449514182362831">Các tính năng cần dùng cảm biến chuyển động sẽ không hoạt động</translation>
@@ -97,6 +99,7 @@
 <translation id="2094208275686143364">Giao diện màu sáng</translation>
 <translation id="2096716221239095980">Xoá mọi dữ liệu</translation>
 <translation id="2102396546234652240">Không cho phép các trang web sử dụng micrô</translation>
+<translation id="2115808389282428160">Không cho phép trang web truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này</translation>
 <translation id="2117655453726830283">Trang trình bày tiếp theo</translation>
 <translation id="2146263598007866206">Các trang web có thể tự động tải những tệp liên quan xuống cùng nhau để tiết kiệm thời gian cho bạn</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
@@ -145,6 +148,7 @@
 <translation id="2536779053640817375">Được cho phép lần này • Vị trí chính xác</translation>
 <translation id="2544997614631598250">Giao diện màu tối</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
+<translation id="2553552004849639664">Được bảo vệ trước các mối đe doạ trên mạng bằng công nghệ mạnh mẽ nhất của Chrome</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
@@ -158,6 +162,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
 <translation id="2626708220538466178">Bảng dưới cùng của trình duyệt mặc định đã đóng</translation>
 <translation id="2653659639078652383">Gửi</translation>
+<translation id="2665056444046933274">Trang web có thể sử dụng tính năng này để truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này</translation>
 <translation id="2670403088701171361">Không cho phép các trang web xem văn bản hoặc hình ảnh trên bảng nhớ tạm</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2682367912565197520">Xoá mức thu phóng đã lưu</translation>
@@ -201,8 +206,10 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="311394601889664316">Không cho phép các trang web chỉnh sửa tệp hoặc thư mục trên thiết bị</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
+<translation id="3120204271988747891">Trang web có thể yêu cầu quyền truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
 <translation id="3132996321662585180">Làm mới hằng ngày</translation>
+<translation id="3134859781443140237">Mạng cục bộ</translation>
 <translation id="3143754809889689516">Phát từ đầu</translation>
 <translation id="3164169438034704658">Bạn có thể bật chế độ vị trí chính xác trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Cho phép một trang web dùng cookie của bên thứ ba</translation>
@@ -213,6 +220,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3232293466644486101">Xoá dữ liệu duyệt web…</translation>
+<translation id="3241320538788585298">Mạng vòng lặp</translation>
 <translation id="3242646949159196181">Khi bạn bật tuỳ chọn này, các trang web có thể phát âm thanh. Khi bạn tắt tuỳ chọn này, các trang web không thể phát âm thanh.</translation>
 <translation id="3273479183583863618">Thông báo giảm giá trên thẻ</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
@@ -408,6 +416,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5373874281522292782">Các nhóm thẻ của bạn sẽ được lưu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
+<translation id="5407203562970638234">Tăng cường bảo mật</translation>
 <translation id="5438097262470833822">Lựa chọn này sẽ đặt lại các quyền của <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu thông tin vị trí của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể xem thông tin vị trí của bạn.</translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
@@ -422,6 +431,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bị chặn</translation>
 <translation id="560980142378233747">Điều này có nghĩa là các tính năng của trang web sẽ hoạt động như mong đợi, nhưng khả năng bảo vệ khi duyệt web có thể bị giảm. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Bảng thẻ trên trang Thẻ mới ở dưới cùng</translation>
+<translation id="5621413808884657932">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này.</translation>
 <translation id="5632485077360054581">Chỉ cho tôi cách làm</translation>
 <translation id="5649053991847567735">Tự động tải xuống</translation>
 <translation id="5668404140385795438">Ghi đè yêu cầu chặn phóng to của trang web</translation>
@@ -542,6 +552,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6842868554183332230">Các trang web thường phát hiện khi bạn đang dùng thiết bị để đặt tình trạng rảnh/bận của bạn trên ứng dụng trò chuyện</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ giao tiếp phạm vi gần (NFC)</translation>
 <translation id="6870169401250095575">Ẩn thẻ Kiểm tra an toàn</translation>
+<translation id="6882736949427544336">Không cho phép trang web truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="6900883974539674431">Tạo các nhóm thẻ tự động lưu và cập nhật trên mọi thiết bị của bạn</translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ bảng nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -603,6 +614,8 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7586676035079382730">Không cho phép thông báo</translation>
 <translation id="7594634374516752650">Đã kết nối với một thiết bị Bluetooth</translation>
 <translation id="7617547684249261169">Bạn có thể xoá một số hoặc toàn bộ nhật ký, cookie, dữ liệu trang web và các dữ liệu khác</translation>
+<translation id="762200934554267613">Trang web có thể yêu cầu quyền truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này</translation>
+<translation id="7627749368210392160">Trang web có thể sử dụng tính năng này để truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7655411746932645568">Các trang web có thể yêu cầu kết nối với cổng nối tiếp</translation>
 <translation id="7658239707568436148">Huỷ</translation>
@@ -658,6 +671,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8211406090763984747">Kết nối này an toàn</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các thiết bị khác trên mạng cục bộ của bạn. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các thiết bị khác trên mạng cục bộ của bạn.</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8284326494547611709">Phụ đề</translation>
@@ -711,6 +725,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8737426583868847403">Các trang web mà bạn lưu mức thu phóng tuỳ chỉnh sẽ xuất hiện tại đây</translation>
+<translation id="8748714929822124637">Không cho phép trang web truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="8751914237388039244">Chọn hình ảnh</translation>
 <translation id="8775741625735357092">Bạn có thể bật thanh dấu trang trong phần Cài đặt &gt; Giao diện</translation>
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>

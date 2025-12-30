@@ -2903,6 +2903,7 @@ Dit beleid voorkomt niet dat gebruikers bestanden uit <ph name="GOOGLE_DRIVE_NAM
 <translation id="3030232909811556512">Als dit beleid niet is toegepast, kan de <ph name="PRODUCT_OS_NAME" />-avatarafbeelding van de gebruiker niet worden ingesteld via lokale bestanden, de camera van het apparaat of de Google-profielafbeelding van de gebruiker.
 
 De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit beleid is toegepast of niet is ingesteld.</translation>
+<translation id="3031370204150460535">Niet toestaan dat Gemini-app-integraties rechtstreeks acties uitvoeren op aangegeven sites</translation>
 <translation id="3031796805169553856">Toestaan dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3032322294267258117">Bepaalt instellingen voor gebruikers die zijn geverifieerd via GAIA zonder SAML.</translation>
 <translation id="3034855514833090741">Als je dit beleid aanzet, wordt het Voice Match-proces van de Google Assistent getoond tijdens de eerste installatie. Als je het beleid uitzet, laat de Google Assistent het Voice Match-proces niet zien tijdens de eerste installatie.
@@ -4356,6 +4357,7 @@ Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleer
       Als dit beleid niet is ingesteld, wordt de standaardperiode van 259.200.000 milliseconden (3 dagen) gebruikt voor <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Voor rollbacks en andere <ph name="PRODUCT_OS_NAME" />-updates waarmee een powerwash wordt uitgevoerd op het apparaat, krijgt de gebruiker altijd meteen een melding als de update beschikbaar is, onafhankelijk van de waarde van dit beleid.</translation>
+<translation id="4086132065708736174">Toestaan dat Gemini-app-integraties rechtstreeks acties uitvoeren op aangegeven sites</translation>
 <translation id="4086150283035515220">Als je het beleid toepast, wordt gebruikers gevraagd waar ze elk bestand willen opslaan voordat het bestand wordt gedownload. Als je het beleid niet toepast, worden downloads onmiddellijk gestart en wordt gebruikers niet gevraagd waar ze het bestand willen opslaan.
 
       Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.</translation>
@@ -9519,6 +9521,13 @@ Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in d
 
           Als je dit beleid niet instelt, staat de functie voor kleurcorrectie in eerste instantie uit. Gebruikers kunnen deze functie op elk moment aanzetten.</translation>
 <translation id="7323896582714668701">Extra opdrachtregelparameters voor <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Hiermee kun je een lijst met URL-patronen instellen om aan te geven op welke sites Gemini-app-integraties niet rechtstreeks acties kunnen uitvoeren op webpagina's.
+
+URL's die niet overeenkomen met de toelatingslijst of de blokkeerlijst, gebruiken <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URL's die overeenkomen met zowel de toelatingslijst als de blokkeerlijst, zijn toegestaan.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige URL-patronen.</translation>
 <translation id="7325801934761922681">Voorkomen dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="7326394567531622570">Vergelijkbaar met Wipe (waarde 2), maar probeert inlogtokens te behouden, zodat de gebruiker niet opnieuw hoeft in te loggen.</translation>
 <translation id="7331098674887251788">Hiermee kunnen Gemini-app-integraties rechtstreeks acties uitvoeren op webpagina's</translation>
@@ -10655,6 +10664,13 @@ Als de waarde is ingesteld op Waar of niet is ingesteld, moeten ze zich op een b
 Als je het beleid instelt op Onwaar, kunnen ze deelnemen zonder dat ze zich binnen een beheerd netwerk bevinden.</translation>
 <translation id="8183108371184777472">Lancering van browservenster onderdrukken</translation>
 <translation id="8185312100223853315">Profiellabel</translation>
+<translation id="8186370194423312090">Hiermee kun je een lijst met URL-patronen instellen om aan te geven op welke sites Gemini-app-integraties rechtstreeks acties kunnen uitvoeren op webpagina's.
+
+URL's die niet overeenkomen met de toelatingslijst of de blokkeerlijst, gebruiken <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+URL's die overeenkomen met zowel de toelatingslijst als de blokkeerlijst, zijn toegestaan.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige URL-patronen.</translation>
 <translation id="8186911565834244165">Gebruikersfeedback toestaan</translation>
 <translation id="8195133650230097559">Wake lock-verzoeken voor stroombeheer negeren</translation>
 <translation id="8196558469954193908">Dit beleid staat toe dat HTTP/2-verbindingen kunnen worden samengevoegd als clientcertificaten worden gebruikt. De verbindingen kunnen alleen worden samengevoegd als zowel de hostnaam van de potentiële nieuwe verbinding als de hostnaam van een bestaande verbinding overeenkomt met een of meer patronen die in dit beleid worden beschreven. Dit beleid bestaat uit een lijst van hosts die de filterindeling '<ph name="URL_BLOCKLIST_POLICY_NAME" />' gebruiken: 'example.com' komt overeen met 'example.com' en alle subdomeinen (zoals 'sub.example.com'), terwijl '.example.net' exact overeenkomt met 'example.net'.

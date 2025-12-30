@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan kung anong impormasyon sa Chrome ang ise-save mo sa iyong Google Account</translation>
 <translation id="1122714970786750095">Electronics at Electrical</translation>
 <translation id="1123753900084781868">Hindi available sa ngayon ang Instant Caption</translation>
+<translation id="1124643885833329193">Eksaktong lokasyon</translation>
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
@@ -893,6 +894,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2400263725572336749">Magdagdag ng passport</translation>
 <translation id="2400271059665846158">Pamahalaan ang iyong mga loyalty card sa Google Wallet</translation>
 <translation id="2400600116338235695">Puwedeng hilinging kumonekta sa mga serial port</translation>
+<translation id="2403474027143565107">Eksakto</translation>
 <translation id="240450251994300576">Pangalawang Logo ng Header</translation>
 <translation id="2404884497378469141">Subukang kopyahin ulit ang iyong mga file</translation>
 <translation id="2413155254802890957">Luma</translation>
@@ -997,6 +999,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2571488850200220306">Para matiyak ang seguridad, nakikita rin nito ang OS ng device, bersyon ng browser, at kung anong software ang naka-install</translation>
 <translation id="2573170131138724450">Mga Telebisyon</translation>
 <translation id="257674075312929031">Pangkat</translation>
+<translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2580031090587209073">Mga opsyon sa pag-share</translation>
 <translation id="258027838577899739">I-delete ang lahat sa history</translation>
 <translation id="258135245577667916">Nagdagdag ng tab si <ph name="USER_DISPLAY_NAME" /></translation>
@@ -1283,6 +1286,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3076865167425975822">Mga Operating System</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3082007635241601060">Hayaan ang Google na gamitin ang iyong mga cart para maghanap ng mga naka-personalize na diskwento kapag available ang mga ito</translation>
+<translation id="3085373848068196154">Hindi valid na proxy ang "<ph name="PROXY_INVALID_PROXY" />."</translation>
 <translation id="3086269988715347183">Hindi mo pa naaprubahan ang <ph name="BLOCKED_URL" /> dati</translation>
 <translation id="3086579638707268289">Sinusubaybayan ang iyong aktibidad sa web</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
@@ -1412,6 +1416,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3266793032086590337">Value (hindi tumutugma)</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3270041629388773465">Mas mabilis na mag-check out kapag naka-save ang iyong mga CVC</translation>
+<translation id="3270343151253360050">Pumili ng ibang paraan ng pagbabayad para makumpleto ang pagbiling ito</translation>
 <translation id="3270847123878663523">&amp;I-undo ang Pagbabago sa Ayos</translation>
 <translation id="3271648667212143903">Gustong kumonekta ng <ph name="ORIGIN" /></translation>
 <translation id="3272091146646336650">Super B</translation>
@@ -1626,6 +1631,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="361438452008624280">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Hindi kilala o hindi sinusuportahang wika.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para magpatakbo ng pag-check sa kaligtasan sa mga setting ng Chrome</translation>
 <translation id="3615309852743236517">Mga Manicure at Pedicure</translation>
+<translation id="3620034424637552643">Madalas na ginagamit para sa mga direksyon, delivery, at higit pa</translation>
 <translation id="3620239073311576716">Mga Uniporme at Kasuotang Pantrabaho</translation>
 <translation id="3621401353678567613">Para makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo, i-on ang mga notification sa mga setting.</translation>
 <translation id="362276910939193118">Ipakita ang Buong History</translation>
@@ -1893,6 +1899,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4036753017940930924">Mga Lote at Lupain</translation>
 <translation id="403724377879219932">Puwedeng humiling na i-access ang iba pang device sa iyong lokal na network</translation>
 <translation id="4039506337798853114">Para ipakita ang iyong cursor, pindutin ang |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Tinatantya</translation>
 <translation id="4045070493270310437">Buksan ulit ang mga tab</translation>
 <translation id="4045226534284799755">Mag-sign in sa iyong Microsoft account bago subukan ulit</translation>
 <translation id="4045441967987592849">Buksan ulit</translation>
@@ -3211,6 +3218,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6164605812717770913">Sinabi ng magulang o tagapag-alaga na hindi OK na bisitahin mo ang site na ito. Puwede mong hilingin sa kanyang i-unblock ito.</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6167577165590485365">Huling sinubukan ang pag-fetch:</translation>
+<translation id="6171968084616623939">Hindi valid na value ang "<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />."</translation>
 <translation id="617256461084925519">Sinusubukan ng Google Chrome na i-verify na ikaw ito para mapunan nito ang impormasyon mo sa pagbabayad.</translation>
 <translation id="6173208311907792313">Kumpletuhin ang iyong pagbili gamit ang Windows Hello</translation>
 <translation id="6176387967264100435">Mataas ang presyong ito</translation>
@@ -3537,6 +3545,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6688851075017682769">Mag-test ng address ayon sa bansa</translation>
 <translation id="6689249931105087298">Kaugnay sa black point compression</translation>
 <translation id="6689271823431384964">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Puwede mong baguhin ang gawing ito sa mga setting. Mula sa iyong account ang pangalan ng cardholder.</translation>
+<translation id="6690688090329768424">Hindi valid na pattern ng destinasyon ang "<ph name="PROXY_INVALID_DESTINATION" />."</translation>
 <translation id="6691397311652656001">Magbakante ng mahigit sa <ph name="REQUIRED_FREE_DISK_SPACE" /> na space</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang Tab at pagkatapos ay ang Enter para Hanapin ang iyong device sa Google Account</translation>
 <translation id="6695428916538794739">Mga Pelikulang Aksyon at Adventure</translation>
@@ -3549,6 +3558,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6702851555558236418">Software para sa Audio at Musika</translation>
 <translation id="6702919718839027939">I-present</translation>
 <translation id="6704458454638854812">Nakatakda ang property na "custom_size," "custom" ang inaasahang pangalan.</translation>
+<translation id="670477556876354552">Nire-require ang pag-restart</translation>
 <translation id="6706005862292023715">Mga Kurtina at Palamuti sa Bintana</translation>
 <translation id="6706210727756204531">Saklaw</translation>
 <translation id="6706678697074905703">Hindi ma-save ang IBAN na ito sa iyong Google Account. Na-save lang ito sa Chrome sa device na ito.</translation>
@@ -4075,7 +4085,6 @@ Mga karagdagang detalye:
 <translation id="753556296624075801">Pinapagana ng Google</translation>
 <translation id="753713322968419914">Alisin ang address ng tahanan sa autofill sa Chrome?</translation>
 <translation id="7537536606612762813">Kinakailangan</translation>
-<translation id="7541043894191476250">Mga gawaing batay sa konteksto</translation>
 <translation id="7543525346216957623">I-request sa magulang mo</translation>
 <translation id="7546409722674205727">Magsisimula <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ayusin ang mga error sa koneksyon</translation>
@@ -4284,6 +4293,7 @@ Mga karagdagang detalye:
 <translation id="7870281855125116701">May Nakitang Diskwento</translation>
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
 <translation id="787226752901403048">Mag-sign in sa Chrome para mag-share ng at sumali sa mga grupo ng tab, at makipagtulungan sa mga ideya</translation>
+<translation id="7874796722855317864">Hindi kilalang uri ng kundisyon ang "<ph name="PROXY_UNKNOWN_CONDITION" />."</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
 <translation id="7881044256965445977">Maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
@@ -5008,6 +5018,7 @@ Mga karagdagang detalye:
 <translation id="9090243919347147717">Mga attachment</translation>
 <translation id="9090548458280093580">Maghanap sa iyong history, na pinapagana ng AI</translation>
 <translation id="9090993752571911635">Mga Internet Service Provider (mga ISP)</translation>
+<translation id="9092305980625216393">Madalas na ginagamit para sa lagay ng panahon, lokal na balita, at higit pa</translation>
 <translation id="9093723786115107672">Damit na Pantulog</translation>
 <translation id="9094424186948667194">I-access ang iba pang app at serbisyo sa device na ito</translation>
 <translation id="9094544726794842788">Nagbubukas ang thumbs down ng isang form para sa pagsusumite ng detalyadong feedback tungkol sa kung bakit hindi mo gusto ang mga resultang ito</translation>

@@ -272,6 +272,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3889417619312448367">Odinštalovanie prehliadača Google Chrome</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
 <translation id="3906096710440765802">Prihláste sa do Chromu a získajte svoje heslá, záložky a ďalší obsah vo všetkých zariadeniach</translation>
+<translation id="3921132130819999051">Nechajte Chrome prehliadať za vás</translation>
 <translation id="3941890832296813527">Chyba inštalácie: názov súboru inštalátora je neplatný alebo nie je podporovaný.</translation>
 <translation id="395904275706073188">Chránené stránky sa nedajú čítať. Skúste inú stránku.</translation>
 <translation id="3968962723676998462">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, zadajte prístupovú frázu</translation>
@@ -405,7 +406,6 @@ Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo p
 Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5465210843490471889">Vyberte profil Chromu, ktorý chcete používať s <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome odosiela vaše interakcie s danými funkciami Googlu, aby ich pomohol zlepšovať. Tieto údaje môžu čítať, spracúvať a označovať poznámkami kontrolóri.</translation>
-<translation id="5510398294750420479">Stiahnite si Chrome do telefónu a získajte tak ďalšiu úroveň ochrany na cestách</translation>
 <translation id="5524890928877629608">ľavý horný roh oblasti vyhľadávania: vľavo <ph name="LEFT" /> %, hore <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Zrýchlite Chrome</translation>
 <translation id="5550137307985173298">Kliknite na tlačidlo Prispôsobiť Chrome na stránke na novej karte a dajte Chromu nový vzhľad</translation>
@@ -483,6 +483,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Táto karta používa dodatočné zdroje. Chrome ju môže deaktivovať, aby zlepšil výkon.</translation>
 <translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
+<translation id="6183773856988300112">Gemini v Chrome používa automatické prehliadanie, aby mohol pracovať vo vašich kartách a dokončovať úlohy, ktoré mu zadáte. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Váš účet v Chrome</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> pridal rozšírenie, ktoré môže zmeniť spôsob fungovania Chromu.
 

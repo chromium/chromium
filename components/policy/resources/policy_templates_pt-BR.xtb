@@ -1713,7 +1713,7 @@ A oferta de um contrato de chave pós-quântico é compatível com versões ante
 No entanto, os dispositivos que não implementam corretamente a TLS talvez não funcionem direito quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção caso encontrem esse problema.
 
 Esta política é uma medida temporária e será removida após a versão 145 do <ph name="PRODUCT_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.</translation>
-<translation id="2172201084331314152">Definir os recursos de câmera, configurações do navegador, configurações do SO, digitalização, Web Store, tela, Explorar, Crosh, galeria, terminal, gravador, impressão, atalhos de teclado, Gmail, Google Docs, Google Slides, Google Sheets, Google Drive, Google Keep, Google Agenda, Google Chat, YouTube, Google Maps, calculadora e editor de texto que serão desativados</translation>
+<translation id="2172201084331314152">Definir os recursos de câmera, configurações do navegador, configurações do SO, digitalização, Web Store, tela, Explorar, Crosh, galeria, terminal, gravador, impressão, atalhos de teclado, Gmail, Google Docs, Google Slides, Google Planilhas, Google Drive, Google Keep, Google Agenda, Google Chat, YouTube, Google Maps, calculadora e editor de texto que serão desativados</translation>
 <translation id="2174946221763588594">Define se os sites acessados pelos usuários podem criar sessões de realidade aumentada imersivas usando a <ph name="WEBXR_API_NAME" />.
 
       Quando a política estiver ativada ou indefinida, a <ph name="WEBXR_API_NAME" /> aceitará <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante a criação da sessão, permitindo que os usuários participem de experiências de realidade aumentada.
@@ -3034,6 +3034,7 @@ Esta política não impede que os usuários escolham arquivos do <ph name="GOOGL
 <translation id="3030232909811556512">Se esta política for desativada, não vai ser possível definir a imagem do avatar do usuário <ph name="PRODUCT_OS_NAME" /> usando arquivos locais, a câmera do dispositivo ou a imagem de perfil do Google.
 
 Se a política for ativada ou não for definida, o usuário poderá definir a imagem de avatar com qualquer uma dessas opções.</translation>
+<translation id="3031370204150460535">Bloquear a ação direta de integrações do app do Gemini em sites especificados</translation>
 <translation id="3031796805169553856">Permitir que módulos WebAssembly sejam enviados em origem cruzada</translation>
 <translation id="3032322294267258117">Controla as configurações para usuários autenticados por GAIA sem SAML.</translation>
 <translation id="3034855514833090741">Se a política for ativada, o fluxo do Voice Match do Google Assistente será mostrado durante a configuração inicial. Se a política for desativada, o Google Assistente não mostrará o fluxo do Voice Match durante a configuração inicial.
@@ -4531,6 +4532,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
       Se a política não for definida, o período padrão de 259.200.000 milissegundos (três dias) vai ser usado para dispositivos <ph name="PRODUCT_OS_NAME" />.
 
       Para a reversão e outras atualizações do <ph name="PRODUCT_OS_NAME" /> que vão acionar o Powerwash do dispositivo, o usuário sempre será notificado imediatamente quando a atualização ficar disponível, independentemente do valor da política.</translation>
+<translation id="4086132065708736174">Permitir que integrações do app do Gemini ajam diretamente em sites especificados</translation>
 <translation id="4086150283035515220">Se a política for definida como ativada, será solicitado, ao usuário, um local para salvar cada arquivo antes do download. Se a política for definida como desativada, os downloads serão iniciados imediatamente, sem solicitar um local para salvar o arquivo ao usuário.
 
       Se a política não for definida, o usuário poderá alterar essa configuração.</translation>
@@ -9980,6 +9982,13 @@ Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.g
 
           Se esta política não for definida, o recurso de correção de cor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="7323896582714668701">Parâmetros de linha de comando adicionais para o <ph name="PRODUCT_NAME" /></translation>
+<translation id="7324627441366994249">Permite definir uma lista de padrões do URL que especificam sites em que integrações do app Gemini não podem agir diretamente em páginas da web.
+
+Os URLs que não correspondem à lista de permissões nem à lista de bloqueio usam <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Os URLs que correspondem à lista de permissões e à lista de bloqueio são permitidos.
+
+Encontre informações detalhadas sobre padrões do URL válidos em https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Impedir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="7326394567531622570">Semelhante a Wipe (valor 2), mas tenta preservar os tokens de login para que o usuário não precise fazer login novamente.</translation>
 <translation id="7331098674887251788">Permitir que as integrações do app do Gemini atuem diretamente nas páginas da Web</translation>
@@ -11156,6 +11165,13 @@ Se o valor for "true" ou não for definido, eles precisarão estar em uma rede g
 Se o valor for "false", será possível participar sem estar em uma rede gerenciada.</translation>
 <translation id="8183108371184777472">Suprimir a inicialização da janela do navegador</translation>
 <translation id="8185312100223853315">Rótulo do perfil</translation>
+<translation id="8186370194423312090">Permite definir uma lista de padrões de URL que especificam sites em que integrações do app Gemini podem agir diretamente em páginas da web.
+
+Os URLs que não correspondem à lista de permissões nem à lista de bloqueio usam <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
+
+Os URLs que correspondem à lista de permissões e à lista de bloqueio são permitidos.
+
+Encontre informações detalhadas sobre padrões do URL válidos em https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Permitir feedback do usuário</translation>
 <translation id="8195133650230097559">Ignorar solicitações de wake locks para gerenciamento de energia</translation>
 <translation id="8196558469954193908">Esta política permite a união da conexão HTTP/2 quando os certificados do cliente estão em uso. Para fazer a união, o nome do host da possível nova conexão e o nome do host de uma conexão já existente precisam corresponder a um ou mais padrões descritos nesta política. A política é uma lista de hosts que utilizam o formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" corresponde a "example.com" e a todos os subdomínios (por exemplo, "sub.example.com"), enquanto ".example.net" corresponde exatamente a "example.net".

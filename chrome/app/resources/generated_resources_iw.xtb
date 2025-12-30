@@ -990,7 +990,6 @@
 <translation id="1650801028905250434">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט. תמיד אפשר לשנות זאת דרך 'הגדרות' &gt; 'קבצים'.</translation>
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1651609627703324721">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR</translation>
-<translation id="1651633344379798952">‏רוצה לנסות את Google Lens בטלפון?</translation>
 <translation id="1652281434788353738">מהורהר</translation>
 <translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
 <translation id="1652862280638399816">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chromium ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
@@ -1220,7 +1219,6 @@
 <translation id="1808805149659872686">רשומה חדשה</translation>
 <translation id="1809201888580326312">בחרת שלא לשמור סיסמאות לאתרים ולאפליקציות האלה</translation>
 <translation id="1809734401532861917">הוספת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות שלי אל <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">‏כדי להשתמש בטלפון בסיסמאות השמורות, סורקים את קוד ה-QR, מורידים את Chrome ל-iOS ונכנסים לחשבון Google.</translation>
 <translation id="1810366086647840386">השרת של קובץ האימג'</translation>
 <translation id="1811908311154949291">‏Fenced Frame במצב פרטי: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1781,6 +1779,7 @@
 <translation id="2184272387334793084">כדאי להיכנס לחשבון כדי שהסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="2184515124301515068">‏Chrome יקבע מתי אתרים יכולים להפעיל צלילים (מומלץ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">‏התחלת שיחה חדשה עם Gemini</translation>
 <translation id="2186711480981247270">הדף שותף ממכשיר אחר</translation>
 <translation id="2187675480456493911">בוצע סנכרון עם מכשירים אחרים בחשבון שלך. הגדרות ששונו על-ידי משתמשים אחרים לא יסונכרנו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">התוספים עודכנו</translation>
@@ -2442,6 +2441,7 @@
 <translation id="2627424346328942291">השיתוף נכשל</translation>
 <translation id="2628258844236035475">‏להסיר את כתובת המגורים מהמילוי האוטומטי של Chrome?</translation>
 <translation id="2628770867680720336">‏כדי לאפשר ניפוי באגים באמצעות ADB צריך לאפס את ה-Chromebook הזה להגדרות היצרן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">‏התחלת שיחה חדשה עם Gemini</translation>
 <translation id="2629227353894235473">‏פיתוח אפליקציות ל-Android</translation>
 <translation id="2629437048544561682">ניקוי לוח הציור</translation>
 <translation id="2631498379019108537">הצגת אפשרויות קלט במדף</translation>
@@ -3374,7 +3374,6 @@
 <translation id="3269612321104318480">כחול-ירקרק בהיר ולבן</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{קובץ}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="3270965368676314374">קריאה, שינוי ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
-<translation id="3273033807960054795">רוצה להרחיב את הגרסה המשופרת של הגלישה הבטוחה?</translation>
 <translation id="3275464924531706548">כיווץ של <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">מפתח האבטחה הפנימי לא מאובטח כרגע. יש להסיר אותו מכל השירותים שבהם השתמשת בו. כדי לפתור את הבעיה, יש לאפס את מפתח האבטחה.</translation>
 <translation id="3275778913554317645">פתיחה כחלון</translation>
@@ -5103,7 +5102,6 @@
 <translation id="4421932782753506458">לקיק</translation>
 <translation id="4423376891418188461">שחזור הגדרות</translation>
 <translation id="4423525817792153232">מראים את כל השיניים</translation>
-<translation id="4424107154724312436">‏רוצה לנסות את Google Lens ב-iOS?</translation>
 <translation id="4424262960694990728">נדרשת פעולה</translation>
 <translation id="4424867131226116718">‏<ph name="BEGIN_PARAGRAPH1" />שליחה אוטומטית של דוחות ממכשירי ChromeOS עוזרת לנו לקבוע את סדר העדיפויות של התיקונים והשיפורים ב-ChromeOS. הדוחות האלה יכולים לכלול מידע כמו נסיבות הקריסה של ChromeOS, התכונות שהשתמשת בהן והצריכה האופיינית של הזיכרון.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות של מכשיר Chrome. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" /></translation>
@@ -5581,7 +5579,6 @@
 <translation id="4767427586072640478">מידע נוסף על תוספים מושבתים.</translation>
 <translation id="4769632191812288342">יש לך רמת הגנה רגילה</translation>
 <translation id="4770119228883592393">נשלחה בקשה להרשאה, יש ללחוץ על ⌘ + אפשרות + חץ למטה כדי להשיב</translation>
-<translation id="4770755495532014179">אפשר להשתמש בסיסמה הזו באייפון</translation>
 <translation id="4772914216048388646">מסודר</translation>
 <translation id="4773112038801431077">‏שדרוג Linux</translation>
 <translation id="4773122030389014189">שיתוף קבוצת הכרטיסיות '<ph name="GROUP_NAME" />'</translation>
@@ -6400,6 +6397,7 @@
 <translation id="5335370353987155592">‏חשוב להשתמש ב-Gemini בזהירות וב<ph name="BEGIN_LINK1" />אופן בטוח<ph name="LINK_END1" />. הפעולות ש-Gemini מבצע במהלך המשימה הן באחריותך, כולל טעויות ו<ph name="BEGIN_LINK2" />תוצאות לא צפויות<ph name="LINK_END2" /> כמו רכישות.</translation>
 <translation id="5336688142483283574">הדף הזה יוסר גם מההיסטוריה שלך ומהפעילות של <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">סמן ולוח מגע</translation>
+<translation id="5337035808300170502">גודל מקורי</translation>
 <translation id="5337207153202941678">השבתת ההדגשה</translation>
 <translation id="5337771866151525739">הותקן על ידי צד שלישי.</translation>
 <translation id="5337926771328966926">השם הנוכחי של המכשיר הוא <ph name="DEVICE_NAME" /></translation>
@@ -6464,6 +6462,7 @@
 <translation id="5388719243178419614">לא ניתן להעלות את הקובץ. עיבוד קובץ התמונה נכשל.</translation>
 <translation id="5388885445722491159">מתואם</translation>
 <translation id="5389224261615877010">קשת</translation>
+<translation id="538945906186309152">‏הפעלת מקשי הקיצור של Gemini</translation>
 <translation id="5389794555912875905">הצגת אזהרות לפני מעבר לאתרים לא מאובטחים (מומלץ)</translation>
 <translation id="5389943529251318913">הפחתת מהירות העכבר ב-</translation>
 <translation id="5390112241331447203">‏הכללה של הקובץ system_logs.txt שנשלח בדוחות המשוב.</translation>
@@ -6733,7 +6732,6 @@
 <translation id="556321030400250233">קובץ מקומי או משותף</translation>
 <translation id="5563234215388768762">‏אפשר לחפש ב-Google או להקליד כתובת אתר</translation>
 <translation id="5563824734298958390">לצאת מקבוצת הכרטיסיות?</translation>
-<translation id="5564450015351086922">‏רוצה לנסות את Google Lens ב-iOS?</translation>
 <translation id="5565735124758917034">פעילה</translation>
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="5568525251731145240">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות?</translation>
@@ -7936,7 +7934,6 @@
 <translation id="6410328738210026208">‏מעבר לערוץ אחר וביצוע Powerwash</translation>
 <translation id="6410390304316730527">גלישה בטוחה מגינה עליך מפני תוקפים שעשויים להטעות אותך כדי לגרום לך לבצע פעולה מסוכנת. למשל, התקנה של תוכנה זדונית או חשיפת מידע אישי, כמו סיסמאות, מספרי טלפון או כרטיסי אשראי. אם תשביתו את הגלישה הבטוחה, יש לנקוט זהירות בעת הגלישה באתרים לא מוכרים או בעלי מוניטין בעייתי.</translation>
 <translation id="6411135999030237579">צריך ללחוץ לחיצה ארוכה כדי לחזור על המקש באופן אוטומטי</translation>
-<translation id="6411516120707127482">‏רוצה לנסות את Google Lens בטלפון?</translation>
 <translation id="6414618057231176439">עליך לבחור את הגרסה של <ph name="VM_NAME" /> שברצונך להתקין.</translation>
 <translation id="641469293210305670">התקנת עדכונים ואפליקציות</translation>
 <translation id="6415757856498750027">‏אפשר להקליד w כדי לקבל ư</translation>
@@ -7983,7 +7980,6 @@
 <translation id="6445450263907939268">אם לא רצית את השינויים האלו, יהיה באפשרותך לשחזר את ההגדרות הקודמות שלך.</translation>
 <translation id="6446213738085045933">צור קיצור דרך בשולחן העבודה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
-<translation id="6449835059180426406">‏שימוש בסיסמאות שלך במכשירי iOS</translation>
 <translation id="6450876761651513209">שינוי הגדרות הפרטיות שלך</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> וכרטיסייה נוספת אחת}one{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}two{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}other{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}}</translation>
 <translation id="6451689256222386810">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" />.</translation>
@@ -8899,7 +8895,6 @@
 <translation id="7066572364168923329">בחירת ההגדרה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">צבעי הסביבה</translation>
 <translation id="7067725467529581407">אין להציג זאת שוב.</translation>
-<translation id="7067779359472606732">נשלחה תזכורת ל<ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="7068279399556423026">כדי לראות כרטיסיות ממכשירים אחרים, צריך להיכנס לחשבון</translation>
 <translation id="7068539819344620805">‏עכשיו אפשר לשנות את המראה של הדפדפן בכל שלב דרך התפריט "התאמה אישית של Chrome"</translation>
 <translation id="7068591156533195518">‫<ph name="APP_NAME" /> ועוד כמה אפליקציות חסומות במכשיר <ph name="DEVICE_TYPE" /> שלך</translation>
@@ -10055,7 +10050,6 @@
 <translation id="786073089922909430">שירות: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;הורדות</translation>
 <translation id="7861846108263890455">‏השפה בחשבון Google</translation>
-<translation id="7863211248337747225">להורדת האפליקציה</translation>
 <translation id="7864114920800968141">בעוד <ph name="NUM_MIN" /> דקות</translation>
 <translation id="7864539943188674973">‏השבתת Bluetooth</translation>
 <translation id="7864825798076155402">‏לשמור בחשבון Google?</translation>
@@ -10382,7 +10376,6 @@
 <translation id="8068904756674285749">אפשר להשתמש בשפה יומיומית כדי לחפש בהיסטוריית הגלישה ולמצוא אתרים שביקרת בהם. אפשר גם לשאול שאלות ולקבל תשובות על סמך היסטוריית הגלישה. ההגדרה הזו מושבתת.</translation>
 <translation id="8070572887926783747">הרשאת גישה למיקום לאפליקציה <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">משוב פיזי</translation>
-<translation id="8071033114691184017">אפשר להשתמש בסיסמה הזו באייפון</translation>
 <translation id="8071432093239591881">הדפסה כתמונה</translation>
 <translation id="8073499153683482226">‏<ph name="BEGIN_PARAGRAPH1" />נתוני אפליקציות הם כל הנתונים הנשמרים באפליקציות (בהתאם להגדרות המפתחים), כולל נתונים כמו אנשי קשר, הודעות ותמונות.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />נתוני הגיבוי אינם תופסים חלק מהמכסה של חשבון הילד/ה שלך ב-Drive.<ph name="END_PARAGRAPH2" />

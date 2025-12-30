@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome’i nõuanded</translation>
 <translation id="1816835383954230954">Kui seade on sees, töötab Chrome kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil. Kui seade on väljas, vähendab see jõudlust, kuid muudab V8 rünnakutele vastupidavamaks.</translation>
 <translation id="1818308510395330587">Selleks et rakendus <ph name="APP_NAME" /> saaks AR-i kasutada, lülitage sisse kaamera ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Sirvimiskogemuse kohandamiseks vahetage asukohta.</translation>
 <translation id="1848033246551405023">Sans Serifi font</translation>
 <translation id="1861262398884155592">See kaust on tühi</translation>
 <translation id="1881806992065048905">Uue vahelehe välimuse alumine leht</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Lubatud sel korral • Täpne</translation>
 <translation id="2544997614631598250">Tume teemavärv</translation>
 <translation id="2546283357679194313">Küpsised ja saidi andmed</translation>
+<translation id="2553552004849639664">Hankige Chrome'i tugevaim kaitse veebiohtude vastu.</translation>
 <translation id="2570922361219980984">Ka juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
@@ -415,6 +417,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="5373874281522292782">Teie vahelehegrupid salvestatakse</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ja veel 1)}other{(ja veel #)}}</translation>
 <translation id="5403592356182871684">Nimed</translation>
+<translation id="5407203562970638234">Täiustage oma turvalisust</translation>
 <translation id="5438097262470833822">Jätkates lähtestatakse veebisaidi <ph name="WEBSITE" /> load</translation>
 <translation id="5459413148890178711">Kui see on sisse lülitatud, võivad saidid teie asukohateavet küsida. Kui see on välja lülitatud, ei näe saidid teie asukohta.</translation>
 <translation id="5489227211564503167">Kulunud aeg: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

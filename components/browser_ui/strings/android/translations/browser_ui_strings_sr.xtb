@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Савети за Chrome</translation>
 <translation id="1816835383954230954">Када је оптимизатор укључен, Chrome ради брже и функције које користе JavaScript би требало да раде како је предвиђено. Када је оптимизатор искључен, то смањује перформансе, али чини V8 отпорнијим на нападе.</translation>
 <translation id="1818308510395330587">Да бисте дозволили да <ph name="APP_NAME" /> користи ПР, укључите и камеру у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Промените положај да бисте прилагодили доживљај прегледања</translation>
 <translation id="1848033246551405023">Фонт Sans Serif</translation>
 <translation id="1861262398884155592">Овај фолдер је празан</translation>
 <translation id="1881806992065048905">Доња табела за изглед странице нове картице</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Дозвољено овај пут • Прецизно</translation>
 <translation id="2544997614631598250">Тамна боја теме</translation>
 <translation id="2546283357679194313">Колачићи и подаци о сајтовима</translation>
+<translation id="2553552004849639664">Добијте најјачу Chrome заштиту од онлајн претњи</translation>
 <translation id="2570922361219980984">Приступ локацији је искључен и за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено је – Кликните да бисте скупили.</translation>
 <translation id="2586657967955657006">Меморија</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">Групе картица су сачуване</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и још 1)}one{(и још #)}few{(и још #)}other{(и још #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
+<translation id="5407203562970638234">Побољшајте безбедност</translation>
 <translation id="5438097262470833822">Овај избор ће ресетовати дозволе за <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Када је укључено, сајтови могу да траже вашу локацију. Када је искључено, сајтови не могу да виде вашу локацију.</translation>
 <translation id="5489227211564503167">Протекло време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>

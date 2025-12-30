@@ -271,6 +271,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3889417619312448367">Видалити Google Chrome</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3906096710440765802">Увійдіть в обліковий запис у Chrome, щоб отримати доступ до своїх паролів, закладок і інших даних на всіх пристроях</translation>
+<translation id="3921132130819999051">Дозвольте Chrome шукати інформацію для вас</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="395904275706073188">Захищені сторінки не можна зчитувати. Спробуйте на іншій сторінці.</translation>
 <translation id="3968962723676998462">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, введіть парольну фразу</translation>
@@ -400,7 +401,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
 <translation id="5465210843490471889">Виберіть профіль Chrome, у якому хочете використовувати <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Щоб покращити ці функції, Chrome надсилає дані про вашу взаємодію з ними в Google. Наші спеціалісти можуть читати, обробляти й коментувати ці дані.</translation>
-<translation id="5510398294750420479">Завантажте Chrome на телефон, щоб додатково захистити себе в дорозі</translation>
 <translation id="5524890928877629608">лівий верхній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="TOP" />% згори</translation>
 <translation id="5530733413481476019">Пришвидшіть роботу Chrome</translation>
 <translation id="5550137307985173298">Натисніть кнопку "Налаштувати Chrome" на сторінці нової вкладки, щоб змінити вигляд вебпереглядача</translation>
@@ -478,6 +478,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
 <translation id="6180522807229584611">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити її неактивною.</translation>
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
+<translation id="6183773856988300112">Gemini у Chrome використовує функцію автоматичного перегляду, щоб шукати інформацію на ваших вкладках і виконувати для вас завдання. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Ваш обліковий запис у Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> додає розширення, яке може вплинути на роботу Chrome.
 

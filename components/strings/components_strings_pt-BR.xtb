@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pressione "Tab" e "Enter" para gerenciar quais informações do Chrome você salva na sua Conta do Google</translation>
 <translation id="1122714970786750095">Eletroeletrônicos</translation>
 <translation id="1123753900084781868">A "Legenda instantânea" não está disponível no momento</translation>
+<translation id="1124643885833329193">Local exato</translation>
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
@@ -893,6 +894,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
+<translation id="2403474027143565107">Exato</translation>
 <translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
@@ -997,6 +999,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2571488850200220306">Para garantir a segurança, o administrador também pode ver o SO do dispositivo, a versão do navegador e os softwares instalados</translation>
 <translation id="2573170131138724450">Televisões</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2577522251608256362">Bairro</translation>
 <translation id="2580031090587209073">Opções de compartilhamento</translation>
 <translation id="258027838577899739">Excluir tudo do histórico</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> adicionou uma guia</translation>
@@ -1283,6 +1286,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3076865167425975822">Sistemas operacionais</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3082007635241601060">Autorize que o Google use seus carrinhos para encontrar descontos personalizados, quando disponíveis</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" não é um proxy válido.</translation>
 <translation id="3086269988715347183">Você nunca aprovou <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Sua atividade na Web está sendo monitorada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -1627,6 +1631,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615309852743236517">Manicure e pedicure</translation>
+<translation id="3620034424637552643">Geralmente usado para rotas, entregas e outros</translation>
 <translation id="3620239073311576716">Uniformes e roupas de trabalho</translation>
 <translation id="3621401353678567613">Para receber alertas de redução no preço dos produtos que você monitora, ative as notificações nas configurações.</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
@@ -1894,6 +1899,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4036753017940930924">Lotes e terrenos</translation>
 <translation id="403724377879219932">Pode pedir para acessar outros dispositivos na sua rede local</translation>
 <translation id="4039506337798853114">Para mostrar o cursor, pressione |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Aproximado</translation>
 <translation id="4045070493270310437">Reabrir guias</translation>
 <translation id="4045226534284799755">Faça login na sua conta da Microsoft antes de tentar novamente</translation>
 <translation id="4045441967987592849">Reabrir</translation>
@@ -3212,6 +3218,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6164605812717770913">Um familiar ou responsável não permitiu seu acesso a este site. É necessário pedir autorização.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de busca:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" não é um valor válido.</translation>
 <translation id="617256461084925519">O Google Chrome está tentando confirmar sua identidade para preencher suas informações de pagamento.</translation>
 <translation id="6173208311907792313">Conclua a compra usando o Windows Hello</translation>
 <translation id="6176387967264100435">Esse preço está alto</translation>
@@ -3538,6 +3545,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6688851075017682769">Testar endereço por país</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" não é um padrão de destino válido.</translation>
 <translation id="6691397311652656001">Libere mais de <ph name="REQUIRED_FREE_DISK_SPACE" /> de espaço</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter" para encontrar seu dispositivo com a Conta do Google</translation>
 <translation id="6695428916538794739">Filmes de ação e aventura</translation>
@@ -3683,7 +3691,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de usar recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de servir de base para recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6935077351544118151">Agora é possível preencher automaticamente cartões de fidelidade da Carteira do Google</translation>
 <translation id="6935082727755903526">Vagas de emprego nas áreas contábil e financeira</translation>
@@ -4077,7 +4085,6 @@ Mais detalhes:
 <translation id="753556296624075801">Tecnologia do Google</translation>
 <translation id="753713322968419914">Remover o endereço de casa do preenchimento automático do Chrome?</translation>
 <translation id="7537536606612762813">Obrigatória</translation>
-<translation id="7541043894191476250">Tarefas contextuais</translation>
 <translation id="7543525346216957623">Peça ajuda à sua família</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Corrigir erros de conexão</translation>
@@ -4286,6 +4293,7 @@ Mais detalhes:
 <translation id="7870281855125116701">Desconto encontrado</translation>
 <translation id="7871445724586827387">Mudar a senha da sua Conta do Google</translation>
 <translation id="787226752901403048">Faça login no Chrome para compartilhar e participar de grupos de guias e trabalhar em conjunto</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" não é um tipo de condição conhecido.</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">Sua senha pode estar comprometida</translation>
 <translation id="7881044256965445977">Buscar e se conectar a qualquer dispositivo na sua rede local</translation>
@@ -5011,6 +5019,7 @@ Mais detalhes:
 <translation id="9090243919347147717">Anexos</translation>
 <translation id="9090548458280093580">Pesquise seu histórico com tecnologia de IA</translation>
 <translation id="9090993752571911635">Provedores de acesso à Internet (ISPs)</translation>
+<translation id="9092305980625216393">Geralmente usado para clima, notícias locais e outros</translation>
 <translation id="9093723786115107672">Pijamas</translation>
 <translation id="9094424186948667194">Acessar outros apps e serviços neste dispositivo</translation>
 <translation id="9094544726794842788">O botão "Não gostei" abre um formulário para enviar feedback detalhado sobre o motivo de você não ter gostado desses resultados</translation>

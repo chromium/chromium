@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">A vendégek úgy használhatják a Chromiumot, hogy nem hagynak hátra semmit.</translation>
 <translation id="4992938037305302429">Az Ön fiókja a Chromiumban</translation>
 <translation id="4994636714258228724">Adja hozzá magát a Chromiumban</translation>
+<translation id="5083712646171654472">A Gemini a Chromiumban az automatikus böngészés funkciót használja az Ön lapjain való munkavégzéshez és az Ön által adott feladatok elvégzéséhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5123973130450702873">A Chromiumnak engedélyre van szüksége ahhoz, hogy követhesse az Ön kézmozgását</translation>
 <translation id="5141988424377517949">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Mi jár a fejében?</translation>
@@ -579,6 +580,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7617377681829253106">A Chromium még jobb lett</translation>
 <translation id="7622753900276619808">Mostantól több funkció áll rendelkezésre a Chromiumban</translation>
 <translation id="7649070708921625228">Súgó</translation>
+<translation id="7656340475565475526">A Chromium böngészhet Ön helyett</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7686590090926151193">A Chromium nem az alapértelmezett böngésző</translation>
 <translation id="7689606757190482937">Szinkronizálhatja és személyre szabhatja a Chromiumot minden eszközén</translation>
@@ -604,7 +606,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7888981273428720788">A Chromium beállítása alapértelmezettként</translation>
 <translation id="7934340546140346950">A Chromium automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
-<translation id="7953047982688951904">Töltse le a Chromiumot a telefonjára, hogy egy további védelmi réteget kapjon útközben.</translation>
 <translation id="7975919845073681630">Ez a Chromium második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="7997934263947464652">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chromium azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Böngésző</translation>

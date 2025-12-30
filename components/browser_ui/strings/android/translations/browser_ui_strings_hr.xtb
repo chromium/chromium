@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
 <translation id="1816835383954230954">Kad je ta opcija uključena, Chrome se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno. Kad je ta opcija isključena, to slabi izvedbu, ali V8 čini otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti proširenu stvarnost, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Promijenite položaj da biste prilagodili doživljaj pregledavanja</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Mapa je prazna</translation>
 <translation id="1881806992065048905">Donja tablica izgleda stranice Nova kartica</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Dopušteno ovaj put • Precizno</translation>
 <translation id="2544997614631598250">Boja teme: tamna</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
+<translation id="2553552004849639664">Uključite najnapredniju Chromeovu zaštitu od online prijetnji</translation>
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
@@ -384,7 +386,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5048841907079026162">Upravljanje podacima o pregledavanju</translation>
 <translation id="5050380848339752099">Ova će web-lokacija dijeliti podatke s aplikacijom izvan anonimnog načina.</translation>
 <translation id="5063480226653192405">Upotreba</translation>
-<translation id="5068293087784369013">Prilagodba stranice nove kartice</translation>
+<translation id="5068293087784369013">Prilagodite novu karticu</translation>
 <translation id="5091013926750941408">Web-lokacija za mobilne uređaje</translation>
 <translation id="509133520954049755">Zahtijevaj prikaz na računalu</translation>
 <translation id="5091663350197390230">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati JavaScript. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati JavaScript.</translation>
@@ -415,6 +417,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5373874281522292782">Vaše su grupe kartica spremljene</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
 <translation id="5403592356182871684">Nazivi</translation>
+<translation id="5407203562970638234">Poboljšajte sigurnost</translation>
 <translation id="5438097262470833822">Poništit će se dopuštenja za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kad je ta postavka uključena, web-lokacije mogu tražiti vašu lokaciju. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti vašu lokaciju.</translation>
 <translation id="5489227211564503167">Proteklo vrijeme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" /></translation>

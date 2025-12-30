@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1125371304736839151">Добавить Gemini в верхнюю панель браузера</translation>
 <translation id="1125550662859510761">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (аппаратное разрешение)</translation>
+<translation id="1125816658532547876">Используйте свои пароли на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Обои и стиль</translation>
 <translation id="1128591060186966949">Изменить поисковую систему</translation>
 <translation id="1129348283834595293">Киберпанк</translation>
@@ -568,6 +569,7 @@
 <translation id="1372841398847029212">Синхронизировать с моим аккаунтом</translation>
 <translation id="1373176046406139583">В настройках доступа можно указать, кому вы разрешаете отправлять вам файлы и ссылки, когда ваше устройство разблокировано. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертификат, запрашиваемый сетью <ph name="NETWORK_NAME" />, не установлен или уже не действителен. Получите новый и попробуйте подключиться еще раз.</translation>
+<translation id="1374948751106271187">Добавьте дополнительный уровень защиты мобильного устройства.</translation>
 <translation id="1375557162880614858">Включить встроенную в Chrome OS Flex программу чтения с экрана ChromeVox?</translation>
 <translation id="1375938286942050085">Настройка завершена. Можно начинать играть!</translation>
 <translation id="137651782282853227">Здесь появятся адреса, которые вы сохраните.</translation>
@@ -992,7 +994,6 @@
 <translation id="1650801028905250434">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним без подключения к интернету. Этот параметр можно изменить в любой момент: для этого выберите "Настройки &gt; Файлы".</translation>
 <translation id="1651008383952180276">Необходимо дважды ввести одну кодовую фразу</translation>
 <translation id="1651609627703324721">VR-контент с этой вкладки сейчас транслируется на очки</translation>
-<translation id="1651633344379798952">Попробуйте Google Объектив на телефоне</translation>
 <translation id="1652281434788353738">Задумчивое</translation>
 <translation id="1652326691684645429">Включить Обмен с окружением</translation>
 <translation id="1652862280638399816">Чтобы использовать Менеджер паролей со Связкой ключей macOS, перезапустите Chromium и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
@@ -1214,7 +1215,6 @@
 <translation id="1808805149659872686">Добавить слово</translation>
 <translation id="1809201888580326312">Вы решили не сохранять пароли для этих сайтов и приложений.</translation>
 <translation id="1809734401532861917">Добавить мои закладки, историю, пароли и другие настройки в <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Чтобы использовать сохраненные пароли на телефоне, перейдите по ссылке в QR-коде, установите Chrome для iOS и войдите в свой аккаунт Google.</translation>
 <translation id="1810366086647840386">Сервер с образом</translation>
 <translation id="1811908311154949291">Элемент Fenced Frame в режиме инкогнито: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">Нельзя выполнить вход в аккаунт на сайте <ph name="SITE_ETLD_PLUS_ONE" /> с помощью сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
@@ -1261,6 +1261,7 @@
 <translation id="183445248400150852">Вы можете разрешить или запретить сайтам переопределять клавиши, например в играх и приложениях на удаленном рабочем столе.</translation>
 <translation id="1834503245783133039">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Обновление Linux</translation>
+<translation id="1837292628323740716">Используйте улучшенный Безопасный просмотр на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Сервис Microsoft OneDrive отклонил запрос. Повторите попытку позже.</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1839021455997460752">Ваш адрес электронной почты</translation>
@@ -3366,7 +3367,6 @@
 <translation id="3269612321104318480">Светло-бирюзовый с белым</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="3270965368676314374">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение и удаление</translation>
-<translation id="3273033807960054795">Расширьте возможности улучшенного Безопасного просмотра</translation>
 <translation id="3275464924531706548">Свернуть <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Внутренний электронный ключ ненадежен. Удалите его из всех сервисов. Чтобы устранить проблему, сбросьте настройки электронного ключа.</translation>
 <translation id="3275778913554317645">Открыть в отдельном окне</translation>
@@ -5094,7 +5094,6 @@
 <translation id="4421932782753506458">Пушистик</translation>
 <translation id="4423376891418188461">Восстановить настройки</translation>
 <translation id="4423525817792153232">Показать зубы</translation>
-<translation id="4424107154724312436">Попробуйте Google Объектив на устройствах iOS</translation>
 <translation id="4424262960694990728">Требуется действие</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Если вы разрешите устройствам с ChromeOS отправлять автоматические отчеты в Google, это поможет нам определить, что нужно исправить и улучшить в первую очередь. Такие отчеты могут содержать данные о сбоях ChromeOS, используемых функциях и объеме памяти, который обычно задействован.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Разрешить или запретить отправку отчетов можно в любое время в настройках устройства Chrome. Администратор домена может менять этот параметр в консоли администратора.<ph name="END_PARAGRAPH2" /></translation>
@@ -5572,7 +5571,6 @@
 <translation id="4767427586072640478">Подробнее об отключенных расширениях.</translation>
 <translation id="4769632191812288342">Выбрана стандартная защита</translation>
 <translation id="4770119228883592393">Требуется разрешение. Нажмите ⌘ + Option + Стрелка вниз, чтобы ответить.</translation>
-<translation id="4770755495532014179">Используйте этот пароль на iPhone</translation>
 <translation id="4772914216048388646">Спокойное</translation>
 <translation id="4773112038801431077">Обновление Linux</translation>
 <translation id="4773122030389014189">Общий доступ к группе вкладок "<ph name="GROUP_NAME" />"</translation>
@@ -6390,6 +6388,7 @@
 <translation id="5335370353987155592">Используйте Gemini с осторожностью и помните о <ph name="BEGIN_LINK1" />безопасности<ph name="LINK_END1" />. Вы несете ответственность за действия Gemini во время выполнения задач, в том числе за ошибки и <ph name="BEGIN_LINK2" />неожиданные результаты<ph name="LINK_END2" />, такие как случайные покупки.</translation>
 <translation id="5336688142483283574">Эта страница будет также удалена из истории и действий в <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Указатель и сенсорная панель</translation>
+<translation id="5337035808300170502">Фактический размер</translation>
 <translation id="5337207153202941678">Отключить выделение текста</translation>
 <translation id="5337771866151525739">Установлено независимым поставщиком.</translation>
 <translation id="5337926771328966926">Текущее название устройства: <ph name="DEVICE_NAME" /></translation>
@@ -6454,6 +6453,7 @@
 <translation id="5388719243178419614">Ошибка загрузки. Не удалось обработать графический файл.</translation>
 <translation id="5388885445722491159">Пара создана</translation>
 <translation id="5389224261615877010">Радуга</translation>
+<translation id="538945906186309152">Включить сочетание клавиш для Gemini</translation>
 <translation id="5389794555912875905">Показывать предупреждения о переходе на незащищенные сайты (рекомендуется)</translation>
 <translation id="5389943529251318913">Снизить скорость указателя мыши на</translation>
 <translation id="5390112241331447203">Включать файл system_logs.txt, который отправляется в отчетах об отзывах</translation>
@@ -6723,7 +6723,6 @@
 <translation id="556321030400250233">локальный или общий файл</translation>
 <translation id="5563234215388768762">Введите поисковый запрос или URL</translation>
 <translation id="5563824734298958390">Выйти из группы вкладок?</translation>
-<translation id="5564450015351086922">Попробуйте Google Объектив на устройствах iOS</translation>
 <translation id="5565735124758917034">Активен</translation>
 <translation id="5568069709869097550">Не удается войти</translation>
 <translation id="5568525251731145240">Удалить данные и разрешения сайта <ph name="SITE_NAME" />, всех связанных с ним сайтов и установленных приложений?</translation>
@@ -7926,7 +7925,6 @@
 <translation id="6410328738210026208">Выбрать другой канал и выполнить Powerwash</translation>
 <translation id="6410390304316730527">Безопасный просмотр помогает предотвратить установку вредоносного ПО и защищает от злоумышленников, которые могут попытаться обманным путем завладеть вашей персональной информацией, например паролями, номерами телефонов и данными банковских карт. Если вы решите отключить эту функцию, будьте особенно осторожны при просмотре незнакомых сайтов.</translation>
 <translation id="6411135999030237579">Удерживание клавиши для автоматического повтора символа или действия</translation>
-<translation id="6411516120707127482">Попробуйте Google Объектив на телефоне</translation>
 <translation id="6414618057231176439">Укажите, какую версию <ph name="VM_NAME" /> вы хотите установить.</translation>
 <translation id="641469293210305670">Установка обновлений и приложений</translation>
 <translation id="6415757856498750027">Ввод "ư" с помощью "w"</translation>
@@ -7973,7 +7971,6 @@
 <translation id="6445450263907939268">Вы можете восстановить прежние настройки.</translation>
 <translation id="6446213738085045933">Создать ярлык на рабочем столе</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
-<translation id="6449835059180426406">Доступ к паролям на устройствах iOS</translation>
 <translation id="6450876761651513209">Изменение настроек конфиденциальности</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{"<ph name="PAGE_TITLE" />" и ещё 1 вкладка}one{"<ph name="PAGE_TITLE" />" и ещё # вкладка}few{"<ph name="PAGE_TITLE" />" и ещё # вкладки}many{"<ph name="PAGE_TITLE" />" и ещё # вкладок}other{"<ph name="PAGE_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="6451689256222386810">Если вы забыли кодовую фразу или хотите изменить эту настройку, <ph name="BEGIN_LINK" />сбросьте параметры синхронизации<ph name="END_LINK" />.</translation>
@@ -8460,6 +8457,7 @@
 <translation id="6783036716881942511">Удалить устройство?</translation>
 <translation id="6783667414610055871">Настройки Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
+<translation id="678520006562636090">Попробуйте Google Объектив на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Использовать пароль с <ph name="PASSWORD_DOMAIN" />?</translation>
 <translation id="6785739405821760313">Просмотр сохраненных рабочих столов. Для навигации по ним нажимайте Tab.</translation>
 <translation id="6785915470941880363">Прокрутка в обратную сторону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -8891,7 +8889,6 @@
 <translation id="7066572364168923329">Выбор конфигурации для устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Адаптивные цвета</translation>
 <translation id="7067725467529581407">Больше не показывать</translation>
-<translation id="7067779359472606732">Напоминание отправлено на устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Войдите в аккаунт, чтобы получить доступ к вкладкам, открытым на других устройствах</translation>
 <translation id="7068539819344620805">Теперь вы можете менять внешний вид браузера в любое время в меню "Настроить Chrome".</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и ещё несколько приложений недоступны на устройстве <ph name="DEVICE_TYPE" /></translation>
@@ -10046,7 +10043,6 @@
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Загрузки</translation>
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
-<translation id="7863211248337747225">Установить</translation>
 <translation id="7864114920800968141">Через <ph name="NUM_MIN" /> мин.</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
 <translation id="7864825798076155402">Сохранить в аккаунте Google?</translation>
@@ -10373,7 +10369,6 @@
 <translation id="8068904756674285749">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами. Вы также можете задавать вопросы и получать ответы, основанные на этой истории. Параметр отключен.</translation>
 <translation id="8070572887926783747">Доступ к данным о местоположении для приложения "<ph name="APP_NAME" />"</translation>
 <translation id="8070662218171013510">Виброотклик</translation>
-<translation id="8071033114691184017">Используйте этот пароль на iPhone</translation>
 <translation id="8071432093239591881">Печатать как изображение</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данные приложений – это любая информация, которую приложения сохраняют в соответствии с настройками разработчика. Она может включать контакты, сообщения, фотографии и многое другое.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Данные резервных копий не занимают место в хранилище Google Диска.<ph name="END_PARAGRAPH2" />
@@ -12071,7 +12066,7 @@
 <translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="920045321358709304">Искать в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Просмотрено ранее</translation>
-<translation id="9201220332032049474">Параметры блокировки экрана</translation>
+<translation id="9201220332032049474">Способы разблокировки экрана</translation>
 <translation id="9201842707396338580">Произошла ошибка. Обратитесь к владельцу или администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Красно-зеленый, пониженное восприятие зеленого (дейтераномалия)</translation>
 <translation id="9203398526606335860">&amp;Сбор данных включен</translation>

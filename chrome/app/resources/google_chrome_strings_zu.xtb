@@ -274,6 +274,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3889417619312448367">Khipha i-Google Chrome</translation>
 <translation id="3892148308691398805">Kopisha umbhalo</translation>
 <translation id="3906096710440765802">Ngena ngemvume kuChrome ukuze uthole amaphasiwedi, amabhukhimakhi, nokuningi kuwo wonke amadivayisi akho.</translation>
+<translation id="3921132130819999051">Vumela iChrome ikubhrawuzele</translation>
 <translation id="3941890832296813527">Iphutha lokufaka: Igama lefayela lesifaki alivumelekile noma alisekelwe.</translation>
 <translation id="395904275706073188">Amakhasi avikelwe awakwazi ukufundwa. Zama ikhasi elehlukile.</translation>
 <translation id="3968962723676998462">Bhala umushwana wokungena ozowusebenzisa futhi ulondoloze idatha yeChrome ku-akhawunti yakho, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -407,7 +408,6 @@ Ezinye izici kungenzeka zingatholakali. Sicela ucacise umkhombandlela wephrofaye
 I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5465210843490471889">Khetha iphrofayela yeChrome ongayisebenzisa <ph name="START_GLIC_STYLING" />neGemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Ukusiza ukuthuthukisa lezi zakhi, i-Chrome ithumela ukusebenzisana kwakho nazo ku-Google. Le datha ingase ifundwe, icutshungulwe, futhi ichazwe ababuyekezi abangabantu.</translation>
-<translation id="5510398294750420479">Dawuniloda iChrome efonini yakho ukuze ungeze isendlalelo esengeziwe sokuvikela lapho usendleleni</translation>
 <translation id="5524890928877629608">ikhona elingaphezulu ngakwesokunxele lendawo yokusesha: ngakwesokunxele okungu-<ph name="LEFT" />%, phezulu okungu<ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Yenza I-Chrome Isheshe</translation>
 <translation id="5550137307985173298">Chofoza inkinobho ethi Vumelanisa IChrome Nomuntu Ngamunye Ekhasini Lethebhu Entsha ukuze unikeze iChrome ukubukeka okusha</translation>
@@ -485,6 +485,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Le thebhu isebenzisa izinsiza ezengeziwe. Ukuze uthuthukise ukusebenza kwakho, vumela iChrome ikwenze kungasebenzi.</translation>
 <translation id="6182736845697986886">Ukufaka kuhlulekile ngenxa yephutha langaphakathi leseva yokubuyekeza.</translation>
+<translation id="6183773856988300112">IGemini kuChrome isebenzisa ukubhrawuza okuzenzekelayo ukuze isebenze kumathebhu akho futhi iqedele imisebenzi oyinikezayo. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">I-akhawunti Yakho kuChrome</translation>
 <translation id="6220551899604141979">U-<ph name="PARTNER_NAME" /> wengeze isandiso esingaguqula indlela iChrome esebenza ngayo.
 

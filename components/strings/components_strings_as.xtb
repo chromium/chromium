@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি আপোনাৰ Google একাউণ্টত Chromeৰ কি তথ্য ছেভ কৰে সেয়া পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="1122714970786750095">ইলেক্ট্ৰ’নিক আৰু ইলেক্ট্ৰিকেল</translation>
 <translation id="1123753900084781868">এই মুহূৰ্তত লাইভ কেপশ্বন উপলব্ধ নহয়</translation>
+<translation id="1124643885833329193">সঠিক অৱস্থান</translation>
 <translation id="112840717907525620">নীতিটোৰ কেশ্ব ঠিকে আছে</translation>
 <translation id="1131264053432022307">আপুনি প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ, একেবাৰে ওপৰৰ পৰা টানি আনক আৰু উভতি যোৱাৰ বুটামটো স্পৰ্শ কৰক</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">পাছপ’ৰ্ট যোগ দিয়া</translation>
 <translation id="2400271059665846158">আপোনাৰ লয়েল্টী কাৰ্ডসমূহ Google Walletত পৰিচালনা কৰক</translation>
 <translation id="2400600116338235695">ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="2403474027143565107">সঠিক</translation>
 <translation id="240450251994300576">গৌণ হেডাৰৰ ল’গ’</translation>
 <translation id="2404884497378469141">আপোনাৰ ফাইলসমূহ পুনৰ প্ৰতিলিপি কৰি চাওক</translation>
 <translation id="2413155254802890957">পুৰণি</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">সুৰক্ষা নিশ্চিত কৰাত সহায় হ’বলৈ, ই ডিভাইচৰ OS, ব্ৰাউজাৰৰ সংস্কৰণ আৰু কি ছফ্টৱেৰ ইনষ্টল কৰা আছে সেয়া চাব পাৰে</translation>
 <translation id="2573170131138724450">টেলিভিশ্বন</translation>
 <translation id="257674075312929031">গোট</translation>
+<translation id="2577522251608256362">চুবুৰীয়া অঞ্চল</translation>
 <translation id="2580031090587209073">শ্বেয়াৰ কৰাৰ বিকল্প</translation>
 <translation id="258027838577899739">ইতিহাসৰ পৰা আটাইবোৰ আঁতৰাওক</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />এ এটা টেব যোগ দিছে</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
 <translation id="3082007635241601060">ব্যক্তিগতকৃত ৰেহাইসমূহ উপলব্ধ হ’লে সেইবোৰ বিচাৰিবলৈ Googleক আপোনাৰ কাৰ্টখন ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
+<translation id="3085373848068196154">“<ph name="PROXY_INVALID_PROXY" />” এটা মান্য প্ৰক্সি নহয়।</translation>
 <translation id="3086269988715347183">আপুনি আগতে <ph name="BLOCKED_URL" />ত অনুমোদন জনোৱা নাই</translation>
 <translation id="3086579638707268289">ৱেবত আপোনাৰ কাৰ্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
@@ -1410,6 +1414,7 @@
 <translation id="3266793032086590337">মান (সংঘাত)</translation>
 <translation id="3268451620468152448">খুলি ৰখা টেব</translation>
 <translation id="3270041629388773465">আপোনাৰ CVC ছেভ কৰা থাকিলে অধিক দ্ৰুতভাৱে চেক আউট কৰক</translation>
+<translation id="3270343151253360050">এই ক্ৰয়টো সম্পূৰ্ণ কৰিবলৈ অন্য এটা পৰিশোধ পদ্ধতি বাছনি কৰক</translation>
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />এ সংযোগ কৰিবলৈ বিচাৰিছে</translation>
 <translation id="3272091146646336650">ছুপাৰ B</translation>
@@ -1623,6 +1628,7 @@
 <translation id="361438452008624280">তালিকাত থকা "<ph name="LANGUAGE_ID" />": অজ্ঞাত বা অসমৰ্থিত ভাষা।</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাবলৈ টেবত আৰু তাৰ পাছত এণ্টাৰত টিপক</translation>
 <translation id="3615309852743236517">মেনিকিউৰ আৰু পেডিকিউৰ</translation>
+<translation id="3620034424637552643">প্ৰায়েই দিক্-নিৰ্দেশনা, ডেলিভাৰী আৰু অধিকৰ বাবে ব্যৱহাৰ কৰা হয়</translation>
 <translation id="3620239073311576716">ইউনিফৰ্ম আৰু কৰ্মস্থানৰ পোছাক</translation>
 <translation id="3621401353678567613">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টৰ বাবে মূল্য হ্ৰাস হোৱাৰ সতৰ্কবাৰ্তা পাবলৈ ছেটিঙত জাননী অন কৰক।</translation>
 <translation id="362276910939193118">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>
@@ -1890,6 +1896,7 @@
 <translation id="4036753017940930924">ভূমিৰ টুকুৰা আৰু ভূমি</translation>
 <translation id="403724377879219932">আপোনাৰ স্থানীয় নেটৱৰ্কৰ অন্য ডিভাইচ এক্সেছ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="4039506337798853114">আপোনাৰ কাৰ্ছৰডাল দেখুৱাবলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
+<translation id="4042597221652780603">আনুমানিক</translation>
 <translation id="4045070493270310437">টেব পুনৰ খোলক</translation>
 <translation id="4045226534284799755">পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ Microsoft একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="4045441967987592849">পুনৰ খোলক</translation>
@@ -3206,6 +3213,7 @@
 <translation id="6164605812717770913">এগৰাকী অভিভাৱক বা বৈধ অভিভাৱকে আপুনি এই ছাইটটো চোৱাটো ঠিক নহয় বুলি কৈছে। আপুনি তেওঁক এইটো অৱৰোধৰ পৰা আঁতৰাবলৈ ক’ব পাৰে।</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6167577165590485365">শেষবাৰ আহৰণ কৰাৰ প্ৰয়াস:</translation>
+<translation id="6171968084616623939">“<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />” এটা মান্য মান নহয়।</translation>
 <translation id="617256461084925519">Google Chromeএ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিবলৈ চেষ্টা কৰি আছে যাতে এইটোৱে আপোনাৰ পৰিশোধৰ তথ্য পূৰ কৰিব পাৰে।</translation>
 <translation id="6173208311907792313">Windows Hello ব্যৱহাৰ কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰক</translation>
 <translation id="6176387967264100435">এয়া বেছি মূল্যৰ</translation>
@@ -3532,6 +3540,7 @@
 <translation id="6688851075017682769">দেশ অনুসৰি ঠিকনা পৰীক্ষা কৰক</translation>
 <translation id="6689249931105087298">ক’লা পইণ্টৰ কমপ্ৰেশ্বনৰ সৈতে আপেক্ষিক</translation>
 <translation id="6689271823431384964">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহত এই আচৰণ সলনি কৰিব পাৰে। কাৰ্ডৰ ধাৰকৰ নামটো আপোনাৰ একাউণ্টৰ পৰা আহে।</translation>
+<translation id="6690688090329768424">“<ph name="PROXY_INVALID_DESTINATION" />” এটা মান্য গন্তব্যস্থানৰ আৰ্হি নহয়।</translation>
 <translation id="6691397311652656001">ডিভাইচটোৰ ষ্ট’ৰেজৰ <ph name="REQUIRED_FREE_DISK_SPACE" />তকৈ বেছি ঠাই খালী কৰক</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google একাউণ্টত আপোনাৰ ডিভাইচ বিচাৰিবলৈ প্ৰথমে টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="6695428916538794739">একশ্বন আৰু দুঃসাহসিক কাৰ্য দেখুওৱা চলচ্চিত্ৰ</translation>
@@ -3544,6 +3553,7 @@
 <translation id="6702851555558236418">অডিঅ’ আৰু সংগীতৰ ছফ্টৱেৰ</translation>
 <translation id="6702919718839027939">উপস্থাপন ম’ড</translation>
 <translation id="6704458454638854812">"custom_size" সম্পদটো ছেট কৰা হ’ল, নামটো "কাষ্টম" দিয়া হ’ব বুলি আশা কৰা হৈছে।</translation>
+<translation id="670477556876354552">ৰিষ্টাৰ্ট কৰাৰ প্ৰয়োজন</translation>
 <translation id="6706005862292023715">পৰ্দা আৰু খিৰিকীৰ আচবাব</translation>
 <translation id="6706210727756204531">স্ক'প</translation>
 <translation id="6706678697074905703">এই IBAN আপোনাৰ Google একাউণ্টত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে।</translation>
@@ -4069,7 +4079,6 @@
 <translation id="753556296624075801">Googleএ আগবঢ়োৱা</translation>
 <translation id="753713322968419914">Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ পৰা আপোনাৰ ঘৰৰ ঠিকনা আঁতৰাবনে?</translation>
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
-<translation id="7541043894191476250">প্ৰাসংগিক কাৰ্যসমূহ</translation>
 <translation id="7543525346216957623">আপোনাৰ অভিভাৱকক সোধক</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ষ্টাৰ্ট কৰি থকা হৈছে</translation>
 <translation id="7548892272833184391">সংযোগ সম্পর্কীয় সমস্যাৰ সমাধান কৰক</translation>
@@ -4278,6 +4287,7 @@
 <translation id="7870281855125116701">ডিছকাউণ্ট বিচাৰি পোৱা গৈছে</translation>
 <translation id="7871445724586827387">আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ডটো সলনি কৰক</translation>
 <translation id="787226752901403048">টেবৰ গোটসমূহত শ্বেয়াৰ কৰিবলৈ আৰু যোগদান কৰিবলৈ Chromeত ছাইন ইন কৰক আৰু ধাৰণাসমূহত একেলগে কাম কৰক</translation>
+<translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” এটা জ্ঞাত চৰ্তৰ প্ৰকাৰ নহয়।</translation>
 <translation id="7877007680666472091">সুৰক্ষিত সমলৰ আইডি</translation>
 <translation id="7878562273885520351">আপোনাৰ পাছৱৰ্ডটো হয়তো হেক হৈছে</translation>
 <translation id="7881044256965445977">আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচ বিচাৰক আৰু তাৰ সৈতে সংযোগ কৰক</translation>
@@ -5002,6 +5012,7 @@
 <translation id="9090243919347147717">সংলগ্নক</translation>
 <translation id="9090548458280093580">আপোনাৰ ইতিহাস সন্ধান কৰক, AIৰ দ্বাৰা সঞ্চালিত</translation>
 <translation id="9090993752571911635">ইণ্টাৰনেট সেৱা প্ৰদানকাৰী (ISP)</translation>
+<translation id="9092305980625216393">প্ৰায়েই বতৰ, স্থানীয় বাতৰি আৰু অধিকৰ বাবে ব্যৱহাৰ কৰা হয়</translation>
 <translation id="9093723786115107672">শোৱাৰ সময়ত পৰিধান কৰা পোছাক</translation>
 <translation id="9094424186948667194">এই ডিভাইচটোত অন্য এপ্‌ আৰু সেৱা এক্সেছ কৰক</translation>
 <translation id="9094544726794842788">থাম্বছ ডাউনে আপুনি এই ফলাফলসমূহ কিয় ডিছলাইক কৰে তাৰ সবিশেষ মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খোলে</translation>

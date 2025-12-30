@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Jūsu veiktās izmaiņas nevarēja saglabāt.</translation>
 <translation id="3254806613790954367">Pēdējā atvērtā cilne visās jūsu ierīcēs</translation>
 <translation id="325717987950204592">Pieskarieties vienumam “Konfidencialitāte un drošība”.</translation>
-<translation id="3266338926702638258">Rādīt šī produkta cenu vēsturi</translation>
 <translation id="3272527697863656322">Atcelt</translation>
 <translation id="3273510436356991673">Pielāgojiet sākuma ekrānu</translation>
 <translation id="3277021493514034324">Vietnes adrese ir nokopēta</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Paslēpt vienumu “Nesen atvērtās cilnes”</translation>
 <translation id="4578835633387306383">Ieslēgt…</translation>
 <translation id="4580716718466706433">Pārejiet uz sadaļu “Paroļu pārvaldnieks”.</translation>
+<translation id="4585751637295612750">Atveriet jaunu cilni, lai to pievienotu savam jautājumam</translation>
 <translation id="4587589328781138893">Vietnes</translation>
 <translation id="4592672037257622855">{count,plural, =1{Lapa tika pievienota jūsu lasīšanas sarakstam.}zero{{count} lapas tika pievienotas jūsu lasīšanas sarakstam.}one{{count} lapa tika pievienota jūsu lasīšanas sarakstam.}other{{count} lapas tika pievienotas jūsu lasīšanas sarakstam.}}</translation>
 <translation id="459644946100970322">Vai ieslēgt brīdinājumus par cenu?</translation>

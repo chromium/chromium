@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમે તમારા Google એકાઉન્ટમાં Chromeની કઈ માહિતી સાચવો છો તે મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1122714970786750095">ઇલેક્ટ્રોનિક અને ઇલેક્ટ્રિકલ</translation>
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
+<translation id="1124643885833329193">સચોટ લોકેશન</translation>
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">પાસપોર્ટની માહિતી ઉમેરો</translation>
 <translation id="2400271059665846158">Google Walletમાં તમારા લૉયલ્ટિ કાર્ડ મેનેજ કરો</translation>
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
+<translation id="2403474027143565107">સચોટ</translation>
 <translation id="240450251994300576">ગૌણ હેડરનો લોગો</translation>
 <translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
 <translation id="2413155254802890957">જૂનું</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">સુરક્ષાની ખાતરી કરવામાં સહાય મળે તે માટે, ડિવાઇસનું OS, બ્રાઉઝરનું વર્ઝન અને કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે એ પણ તે જોઈ શકે છે</translation>
 <translation id="2573170131138724450">ટેલિવિઝન</translation>
 <translation id="257674075312929031">જૂથ</translation>
+<translation id="2577522251608256362">પડોશ</translation>
 <translation id="2580031090587209073">શેર કરવાના વિકલ્પો</translation>
 <translation id="258027838577899739">ઇતિહાસમાંથી બધું ડિલીટ કરો</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ ઉમેર્યું</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ઑપરેટિંગ સિસ્ટમ</translation>
 <translation id="3080254622891793721">ગ્રાફિક</translation>
 <translation id="3082007635241601060">જ્યારે ઉપલબ્ધ હોય ત્યારે તમારા માટે મનપસંદ બનાવેલા ડિસ્કાઉન્ટ શોધવા માટે Googleને તમારા કાર્ટનો ઉપયોગ કરવા દો</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" માન્ય પ્રૉક્સી નથી.</translation>
 <translation id="3086269988715347183">તમે અગાઉ <ph name="BLOCKED_URL" />ને મંજૂરી આપી નથી</translation>
 <translation id="3086579638707268289">વેબ પરની તમારી પ્રવૃત્તિને મોનિટર કરવામાં આવે છે</translation>
 <translation id="3087734570205094154">તળિયું</translation>
@@ -1627,6 +1631,7 @@
 <translation id="361438452008624280">સૂચિની એન્ટ્રી "<ph name="LANGUAGE_ID" />": અજાણી અથવા અસમર્થિત ભાષા.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3615309852743236517">મૅનિક્યોર અને પેડિક્યોર</translation>
+<translation id="3620034424637552643">ઘણીવાર દિશાનિર્દેશો, ડિલિવરી વગેરે માટે ઉપયોગમાં લેવાય છે</translation>
 <translation id="3620239073311576716">ગણવેશ અને કામ પર પહેરવાના કપડા</translation>
 <translation id="3621401353678567613">તમે ટ્રૅક કરતા હો તેવી પ્રોડક્ટ માટે કિંમતમાં ઘટાડા સંબંધિત અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="362276910939193118">પૂર્ણ ઇતિહાસ બતાવો</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4036753017940930924">પ્લૉટ અને જમીન</translation>
 <translation id="403724377879219932">તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવા માટે પૂછી શકે છે</translation>
 <translation id="4039506337798853114">તમારું કર્સર બતાવવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
+<translation id="4042597221652780603">અંદાજિત</translation>
 <translation id="4045070493270310437">ટૅબ ફરીથી ખોલો</translation>
 <translation id="4045226534284799755">ફરી વાર પ્રયાસ કરતા પહેલાં તમારા Microsoft એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="4045441967987592849">ફરી ખોલો</translation>
@@ -3212,6 +3218,7 @@
 <translation id="6164605812717770913">માતાપિતા અથવા વાલીએ જણાવ્યું છે કે આ સાઇટની મુલાકાત લેવી તમારા માટે યોગ્ય નથી. તમે તેને અનબ્લૉક કરવા માટે તેમને કહી શકો છો.</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6167577165590485365">છેલ્લે પ્રાપ્ત કરવા માટે થયેલા પ્રયાસનો સમય:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" એ માન્ય મૂલ્ય નથી.</translation>
 <translation id="617256461084925519">આ તમે જ છો તેની ચકાસણી કરવાનો પ્રયાસ Google Chrome કરી રહ્યું છે, જેથી તે ચુકવણી માટેની તમારી માહિતી ભરી શકે.</translation>
 <translation id="6173208311907792313">Windows Helloનો ઉપયોગ કરીને તમારી ખરીદી પૂર્ણ કરો</translation>
 <translation id="6176387967264100435">આ કિંમત વધુ છે</translation>
@@ -3538,6 +3545,7 @@
 <translation id="6688851075017682769">દેશ પ્રમાણે પરીક્ષણ માટેનું સરનામું</translation>
 <translation id="6689249931105087298">કાળા પૉઇન્ટને નાનો કરવા સંબંધિત</translation>
 <translation id="6689271823431384964">તમે સાઇન ઇન કરેલું છે તેથી Chrome તમને તમારા કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવાની ઑફર કરે છે. તમે સેટિંગમાં આ વર્તણૂકને બદલી શકો છો. કાર્ડધારકનું નામ તમારા એકાઉન્ટમાંથી આવે છે.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" એ માન્ય નિર્ધારિત પૅટર્ન નથી.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" />થી વધુ સ્પેસ ખાલી કરો</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google એકાઉન્ટ વડે 'તમારું ડિવાઇસ શોધો' સુવિધાનો ઉપયોગ કરવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="6695428916538794739">ઍક્શન અને સાહસવાળી મૂવી</translation>
@@ -4077,7 +4085,6 @@
 <translation id="753556296624075801">Google દ્વારા સંચાલિત</translation>
 <translation id="753713322968419914">Chromeની ઑટોમૅટિક રીતે ભરવાની સુવિધામાંથી તમારા ઘરનું સરનામું કાઢી નાખીએ?</translation>
 <translation id="7537536606612762813">ફરજિયાત</translation>
-<translation id="7541043894191476250">સંદર્ભિત કાર્યો</translation>
 <translation id="7543525346216957623">તમારા માતા-પિતાને કહો</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> શરૂ થઈ રહી છે</translation>
 <translation id="7548892272833184391">કનેક્શન ભૂલો સુધારો</translation>
@@ -4286,6 +4293,7 @@
 <translation id="7870281855125116701">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="7871445724586827387">Google એકાઉન્ટનો તમારો પાસવર્ડ બદલો</translation>
 <translation id="787226752901403048">ટૅબના ગ્રૂપ શેર કરવા અને તેમાં જોડાવા માટે Chrome માં સાઇન ઇન કરો અને સાથે મળીને આઇડિયા પર કાર્ય કરો</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" એ શરતના પ્રકાર તરીકે ઓળખાતી નથી.</translation>
 <translation id="7877007680666472091">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="7878562273885520351">તમારા પાસવર્ડ સાથે ચેડાં થઈ શકે છે</translation>
 <translation id="7881044256965445977">તમારા સ્થાનિક નેટવર્ક પર કોઈપણ ડિવાઇસ શોધો અને તેની સાથે કનેક્ટ કરો</translation>
@@ -5010,6 +5018,7 @@
 <translation id="9090243919347147717">જોડાણો</translation>
 <translation id="9090548458280093580">AI દ્વારા સંચાલિત, તમારા ઇતિહાસમાંથી શોધો સુવિધા</translation>
 <translation id="9090993752571911635">ઇન્ટરનેટ સેવા આપનાર કંપનીઓ (ISPs)</translation>
+<translation id="9092305980625216393">ઘણીવાર હવામાન, સ્થાનિક ન્યૂઝ વગેરે માટે ઉપયોગમાં લેવાય છે</translation>
 <translation id="9093723786115107672">સૂતી વખતે પહેરવાના કપડા</translation>
 <translation id="9094424186948667194">આ ડિવાઇસ પરની અન્ય ઍપ અને સેવાઓ ઍક્સેસ કરો</translation>
 <translation id="9094544726794842788">થમ્બ્સ ડાઉન, આ પરિણામો તમને શા માટે નાપસંદ છે તેના વિશે વિગતવાર પ્રતિસાદ સબમિટ કરવા માટેનું ફોર્મ ખોલે છે</translation>

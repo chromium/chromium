@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Luna expirării</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1161663161838091892">Sincronizează filele și istoricul pentru a continua</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} card de credit}few{{count} carduri de credit}other{{count} de carduri de credit}}</translation>
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1172898394251786223">Următorul câmp</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">File deschise</translation>
 <translation id="1752547299766512813">Salvează parole</translation>
 <translation id="1764070164487214210">Indicații de orientare</translation>
+<translation id="1764511703783285459">Celălalt manager de parole nu a permis accesul la nicio parolă sau cheie de acces.</translation>
 <translation id="1767766085187034454">Google Traducere</translation>
 <translation id="1771016937398045251">Meniul Instrumente</translation>
 <translation id="1772468122139624049">Filele nu pot fi încărcate</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Modificarea nu a putut fi salvată.</translation>
 <translation id="3254806613790954367">Ultima filă deschisă pe toate dispozitivele</translation>
 <translation id="325717987950204592">Atinge Confidențialitate și securitate</translation>
-<translation id="3266338926702638258">Afișează istoricul prețurilor pentru acest produs</translation>
 <translation id="3272527697863656322">Anulează</translation>
 <translation id="3273510436356991673">Personalizează ecranul de pornire</translation>
 <translation id="3277021493514034324">Adresa site-ului a fost copiată</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Ascunde filele recente</translation>
 <translation id="4578835633387306383">Activează…</translation>
 <translation id="4580716718466706433">Accesează Managerul de parole</translation>
+<translation id="4585751637295612750">Deschide o filă nouă pentru a o adăuga la întrebare</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4592672037257622855">{count,plural, =1{Pagina a fost adăugată în lista ta de lecturi}few{{count} pagini au fost adăugate în lista ta de lecturi}other{{count} de pagini au fost adăugate în lista ta de lecturi}}</translation>
 <translation id="459644946100970322">Activezi alertele de prețuri?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Nota are peste 1.000 de caractere.</translation>
 <translation id="5087098519049306025">Urmărirea prețurilor</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Nu s-a importat nimic</translation>
 <translation id="5113960131843706315">Se preiau elementele…</translation>
 <translation id="5118462200606189584">Adaugă un cont…</translation>
 <translation id="5118764316110575523">Dezactivat</translation>
@@ -1449,6 +1452,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
 <translation id="6410883413783534063">Deschide file pentru a accesa pagini diferite în același timp</translation>
 <translation id="6418346271604475326">Se pregătește fișierul PDF</translation>
+<translation id="6420292512900923139">Probleme la importarea datelor</translation>
 <translation id="6421038304268477484">Text tradus</translation>
 <translation id="6429213933892582367">Deschide Opțiuni pentru parolă</translation>
 <translation id="6435236283694032571">Adaugă în Lista de lecturi</translation>
@@ -1487,6 +1491,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
 <translation id="6550891580932862748">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Setările tale pentru Navigarea sigură din alte produse Google nu vor fi afectate.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6559301491397835130">{count,plural, =1{Marcajul s-a salvat în {title}. Se salvează numai pe acest dispozitiv.}few{Marcajele s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}other{Marcajele s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>

@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Fyrningarmánuður</translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1161663161838091892">Samstilltu flipa og feril til að halda áfram</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}one{{count} kreditkort}other{{count} kreditkort}}</translation>
 <translation id="1164891049599601209">Fært inn á villandi vefsvæði</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1172898394251786223">Næsti reitur</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
 <translation id="1764070164487214210">Leiðarlýsing</translation>
+<translation id="1764511703783285459">Hin Aðgangsorðastjórnunin deildi engum aðgangsorðum eða aðgangslyklum</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Verkfæravalmynd</translation>
 <translation id="1772468122139624049">Ekki tókst að endurhlaða flipa</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Ekki tókst að vista breytinguna.</translation>
 <translation id="3254806613790954367">Flipinn sem var síðast opinn í öllum tækjunum þínum</translation>
 <translation id="325717987950204592">Ýttu á „Persónuvernd og öryggi“</translation>
-<translation id="3266338926702638258">Sýna verðferil þessarar vöru</translation>
 <translation id="3272527697863656322">Hætta við</translation>
 <translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
 <translation id="3277021493514034324">Veffang afritað</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Fela „Nýlegir flipar“</translation>
 <translation id="4578835633387306383">Kveikja…</translation>
 <translation id="4580716718466706433">Farðu í Aðgangsorðastjórnun</translation>
+<translation id="4585751637295612750">Opnaðu nýjan flipa til að bæta honum við spurninguna þína</translation>
 <translation id="4587589328781138893">Svæði</translation>
 <translation id="4592672037257622855">{count,plural, =1{Síðu bætt við leslistann þinn}one{{count} síðu bætt við leslistann þinn}other{{count} síðum bætt við leslistann þinn}}</translation>
 <translation id="459644946100970322">Kveikja á verðtilkynningum?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Glósa er lengri en 1000 stafir</translation>
 <translation id="5087098519049306025">Verðrakning</translation>
 <translation id="5090832849094901128">Reikningnum þínum á <ph name="WEBSITE" /> verður ekki eytt þótt þessu aðgangsorði verði eytt.</translation>
+<translation id="510580293474170715">Ekkert var flutt inn</translation>
 <translation id="5113960131843706315">Sækir gögnin þín…</translation>
 <translation id="5118462200606189584">Bæta reikningi við…</translation>
 <translation id="5118764316110575523">Slökkt</translation>
@@ -1449,6 +1452,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6410390304316730527">Örugg vefnotkun verndar þig fyrir tölvuþrjótum sem gætu platað þig til að gera eitthvað hættulegt eins og að setja upp skaðlegan hugbúnað eða gefa upp persónuupplýsingar á borð við aðgangsorð, símanúmer eða kreditkortaupplýsingar. Ef þú slekkur á henni skaltu fara varlega þegar þú skoðar ókunnug eða óáreiðanleg vefsvæði.</translation>
 <translation id="6410883413783534063">Opnaðu flipa til að skoða mismunandi síður samtímis</translation>
 <translation id="6418346271604475326">Undirbýr PDF</translation>
+<translation id="6420292512900923139">Vandamál kom upp við innflutning gagna</translation>
 <translation id="6421038304268477484">Þýddur texti</translation>
 <translation id="6429213933892582367">Opnaðu „Valkostir fyrir aðgangsorð“</translation>
 <translation id="6435236283694032571">Bæta við leslista</translation>
@@ -1487,6 +1491,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Valkostir</translation>
 <translation id="6550891580932862748">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þetta hefur ekki áhrif á stillingar fyrir örugga vefskoðun í öðrum Google-vörum.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Endurgera</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bókamerki vistað í „{title}“. Það er aðeins vistað í þessu tæki.}one{Bókamerki vistað í „{title}“. Þau eru aðeins vistuð í þessu tæki.}other{Bókamerki vistuð í „{title}“. Þau eru aðeins vistuð í þessu tæki.}}</translation>
 <translation id="656065428026159829">Sjá meira</translation>

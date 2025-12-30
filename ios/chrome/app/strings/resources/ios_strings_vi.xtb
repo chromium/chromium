@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1150989369772528668">Lịch</translation>
 <translation id="1161663161838091892">Đồng bộ hoá các thẻ và nhật ký để tiếp tục</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} thẻ tín dụng}other{{count} thẻ tín dụng}}</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1172898394251786223">Trường tiếp theo</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1752547299766512813">Lưu mật khẩu</translation>
 <translation id="1764070164487214210">Đường đi</translation>
+<translation id="1764511703783285459">Trình quản lý mật khẩu khác không chia sẻ mật khẩu hoặc khoá truy cập nào</translation>
 <translation id="1767766085187034454">Google Dịch</translation>
 <translation id="1771016937398045251">Trình đơn công cụ</translation>
 <translation id="1772468122139624049">Không tải lại được các thẻ</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">Không thể lưu thay đổi của bạn.</translation>
 <translation id="3254806613790954367">Thẻ bạn mở gần đây nhất trên tất cả thiết bị</translation>
 <translation id="325717987950204592">Nhấn vào "Quyền riêng tư và bảo mật"</translation>
-<translation id="3266338926702638258">Hiện nhật ký giá của sản phẩm này</translation>
 <translation id="3272527697863656322">Huỷ</translation>
 <translation id="3273510436356991673">Tuỳ chỉnh màn hình chính của bạn</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">Ẩn tuỳ chọn Các thẻ gần đây</translation>
 <translation id="4578835633387306383">Bật…</translation>
 <translation id="4580716718466706433">Chuyển đến "Trình quản lý mật khẩu"</translation>
+<translation id="4585751637295612750">Mở một thẻ mới để thêm vào câu hỏi của bạn</translation>
 <translation id="4587589328781138893">Trang web</translation>
 <translation id="4592672037257622855">{count,plural, =1{Đã thêm trang vào danh sách đọc của bạn}other{Đã thêm {count} trang vào danh sách đọc của bạn}}</translation>
 <translation id="459644946100970322">Bạn muốn bật thông báo giá?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
 <translation id="5087098519049306025">Theo dõi giá</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
+<translation id="510580293474170715">Không có dữ liệu nào được nhập</translation>
 <translation id="5113960131843706315">Đang tải dữ liệu của bạn…</translation>
 <translation id="5118462200606189584">Thêm tài khoản…</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
 <translation id="6410883413783534063">Mở các thẻ để truy cập vào nhiều trang cùng một lúc</translation>
 <translation id="6418346271604475326">Đang chuẩn bị PDF</translation>
+<translation id="6420292512900923139">Đã xảy ra sự cố khi nhập dữ liệu của bạn</translation>
 <translation id="6421038304268477484">Bản dịch</translation>
 <translation id="6429213933892582367">Mở Tuỳ chọn mật khẩu</translation>
 <translation id="6435236283694032571">Thêm vào Danh sách đọc</translation>
@@ -1487,6 +1491,7 @@
 <translation id="6537746030088321027">vidu.com</translation>
 <translation id="6550675742724504774">Tùy chọn</translation>
 <translation id="6550891580932862748">Không bảo vệ bạn trước các trang web, nội dung tải xuống và tiện ích nguy hiểm. Chế độ cài đặt Duyệt web an toàn của bạn trong các sản phẩm khác của Google sẽ không bị ảnh hưởng.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Làm lại</translation>
 <translation id="6559301491397835130">{count,plural, =1{Đã lưu dấu trang vào "{title}". Dấu trang đó chỉ được lưu trên thiết bị này.}other{Đã lưu dấu trang vào "{title}". Các dấu trang đó chỉ được lưu trên thiết bị này.}}</translation>
 <translation id="656065428026159829">Xem thêm</translation>

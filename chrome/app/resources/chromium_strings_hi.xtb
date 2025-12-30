@@ -354,6 +354,7 @@
 <translation id="4987820182225656817">अतिथि कुछ भी छोड़े बिना क्रोमियम का उपयोग कर सकते हैं.</translation>
 <translation id="4992938037305302429">Chromium में आपका खाता</translation>
 <translation id="4994636714258228724">स्वयं को क्रोमियम में जोड़ें</translation>
+<translation id="5083712646171654472">Chromium में Gemini आपके टैब में काम करने और आपके बताए काम पूरे करने के लिए, अपने-आप ब्राउज़ करने की सुविधा का इस्तेमाल करता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium को आपके हाथों को ट्रैक करने की अनुमति चाहिए</translation>
 <translation id="5141988424377517949">आपने हाल ही में इस वेबसाइट का इस्तेमाल नहीं किया है. Chromium ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="PERMISSION_3" /> की अनुमति हटा दी है.</translation>
 <translation id="5167819546851111585">आज आपको किस बारे में जानकारी चाहिए?</translation>
@@ -580,6 +581,7 @@
 <translation id="7617377681829253106">क्रोमियम पहले से बेहतर हो गया है</translation>
 <translation id="7622753900276619808">अब आपके लिए Chromium में ज़्यादा सुविधाएं उपलब्ध हैं</translation>
 <translation id="7649070708921625228">सहायता</translation>
+<translation id="7656340475565475526">Chromium को आपके लिए ब्राउज़ करने की अनुमति दें</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7686590090926151193">क्रोमियम आपका डिफ़ॉल्ट ब्राउज़र नहीं है</translation>
 <translation id="7689606757190482937">क्रोमियम को अपने सभी डिवाइस पर सिंक करें और मनमुताबिक बनाएं</translation>
@@ -605,7 +607,6 @@
 <translation id="7888981273428720788">Chromium को अपने डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करें</translation>
 <translation id="7934340546140346950">जब भी मुमकिन होता है, तब Chromium, असुरक्षित कनेक्शन को एचटीटीपीएस पर अपने-आप अपग्रेड कर देता है</translation>
 <translation id="7937630085815544518">आपने क्रोमियम में <ph name="USER_EMAIL_ADDRESS" /> के रूप में साइन इन किया था. फिर से साइन इन करने के लिए कृपया उसी खाते का इस्तेमाल करें.</translation>
-<translation id="7953047982688951904">फ़ोन पर Chromium डाउनलोड करें, ताकि आप कभी भी, कहीं भी अपना डेटा सुरक्षित रख सकें</translation>
 <translation id="7975919845073681630">यह क्रोमियम का द्वितीयक इंस्टॉलेशन है और इसे आपका डिफ़ॉल्ट ब्राउज़र नहीं बनाया जा सकता.</translation>
 <translation id="7997934263947464652">नामालूम स्रोत से डाउनलोड किए गए एक्सटेंशन, ऐप्लिकेशन, और थीम से आपके डिवाइस को नुकसान पहुंच सकता है. हमारा सुझाव है कि आप इन्हें सिर्फ़ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> से इंस्टॉल करें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>

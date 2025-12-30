@@ -275,6 +275,7 @@
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3906096710440765802">Inicia sesión en Chrome para ter os contrasinais, marcadores e outros datos en todos os teus dispositivos</translation>
+<translation id="3921132130819999051">Permitir que Chrome navegue por ti</translation>
 <translation id="3941890832296813527">Erro de instalación: O nome de ficheiro do instalador non é válido ou non se admite.</translation>
 <translation id="395904275706073188">Non se poden ler as páxinas protexidas. Proba con outra.</translation>
 <translation id="3968962723676998462">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -408,7 +409,6 @@
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5465210843490471889">Escolle un perfil de Chrome para usar con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para axudar a mellorar estas funcións, Chrome envíalle a Google as interaccións que mantiveches con elas. Os membros do equipo de revisión poden ler, procesar e anotar estes datos.</translation>
-<translation id="5510398294750420479">Descarga Chrome no teléfono para engadir unha capa máis de protección esteas onde esteas</translation>
 <translation id="5524890928877629608">esquina superior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="TOP" /> % arriba</translation>
 <translation id="5530733413481476019">Fai que Chrome sexa máis rápido</translation>
 <translation id="5550137307985173298">Fai clic no botón Personalizar Chrome, na páxina Nova pestana, para darlle outro aire a Chrome</translation>
@@ -486,6 +486,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
 <translation id="6180522807229584611">Esta pestana está usando recursos adicionais. Para mellorar o rendemento, permite que Chrome a desactive.</translation>
 <translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
+<translation id="6183773856988300112">Gemini en Chrome usa a navegación automática para traballar nas túas pestanas e completar as tarefas que lle encomendes. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">A túa conta en Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> engadiu unha extensión que pode cambiar o funcionamento de Chrome.
 

@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3254806613790954367">L'ultima scheda aperta su tutti i tuoi dispositivi</translation>
 <translation id="325717987950204592">Tocca "Privacy e sicurezza"</translation>
-<translation id="3266338926702638258">Mostra la cronologia dei prezzi per questo prodotto</translation>
 <translation id="3272527697863656322">Annulla</translation>
 <translation id="3273510436356991673">Personalizza la schermata Home</translation>
 <translation id="3277021493514034324">Indirizzo del sito copiato</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Nascondi schede recenti</translation>
 <translation id="4578835633387306383">Attiva…</translation>
 <translation id="4580716718466706433">Vai a "Gestore delle password"</translation>
+<translation id="4585751637295612750">Apri una nuova scheda per aggiungerla alla tua domanda</translation>
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4592672037257622855">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura}other{{count} pagine aggiunte al tuo elenco di lettura}}</translation>
 <translation id="459644946100970322">Attivare gli avvisi sui prezzi?</translation>

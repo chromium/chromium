@@ -357,6 +357,7 @@
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4992938037305302429">Вашата сметка во Chromium</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
+<translation id="5083712646171654472">Gemini во Chromium ја користи „Автоматско прелистување“ за да функционира во вашите картички и да ги завршува задачите што му ги задавате. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium бара дозвола да ги следи вашите раце</translation>
 <translation id="5141988424377517949">Не сте дошле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">За што размислувате денес?</translation>
@@ -583,6 +584,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7617377681829253106">Chromium е подобрен</translation>
 <translation id="7622753900276619808">Отсега имате повеќе достапни функции во Chromium</translation>
 <translation id="7649070708921625228">Помош</translation>
+<translation id="7656340475565475526">Дозволете му на Chromium да прелистува наместо вас</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7686590090926151193">Chromium не е вашиот стандарден прелистувач</translation>
 <translation id="7689606757190482937">Синхронизирајте го и персонализирајте го Chromium на сите ваши уреди</translation>
@@ -608,7 +610,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7888981273428720788">Поставете го Chromium како стандарден прелистувач</translation>
 <translation id="7934340546140346950">Кога е можно, Chromium ги надградува небезбедните врски на HTTPS автоматски</translation>
 <translation id="7937630085815544518">Бевте најавени на Chromium како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
-<translation id="7953047982688951904">Преземете го Chromium на телефонот за да додадете дополнителен слој заштита кога сте во движење</translation>
 <translation id="7975919845073681630">Ова е второстепена инсталација на Chromium и затоа не може да биде стандарден прелистувач.</translation>
 <translation id="7997934263947464652">Екстензии, апликации и теми од непознати извори може да му наштетат на вашиот уред. Chromium препорачува да ги инсталирате само од <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Прелистувач</translation>

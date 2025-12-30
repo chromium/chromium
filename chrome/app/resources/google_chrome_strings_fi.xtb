@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Google Chromen betaversio (saapuva mDNS)</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
 <translation id="1880677175115548835">Valitse tekstiä</translation>
+<translation id="1896602904211344018">Lataa Chrome-sovellus</translation>
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
 <translation id="1979600810166324878">Pysy turvassa liikkeellä ollessasi iOS:n Chromen Parannetun selaussuojan avulla</translation>
@@ -271,6 +272,7 @@
 <translation id="3889417619312448367">Poista Google Chromen asennus</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="3906096710440765802">Kirjaudu Chromeen, jotta voit käyttää esimerkiksi salasanoja ja kirjanmerkkejä kaikilla laitteilla</translation>
+<translation id="3921132130819999051">Anna Chromen selata puolestasi</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
 <translation id="395904275706073188">Suojattuja sivuja ei voi lukea. Kokeile toista sivua.</translation>
 <translation id="3968962723676998462">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
@@ -375,6 +377,7 @@
 <translation id="5163087008893166964">Tervetuloa Chromeen, uusi selainikkuna avattu</translation>
 <translation id="5166439563123238795">Chrome tarvitsee luvan käsiesi liikkeen seuraamiseen</translation>
 <translation id="5167819546851111585">Mitä mielessä tänään?</translation>
+<translation id="5169778651486082413">Käytä salasanoja Chromen avulla puhelimella</translation>
 <translation id="5170938038195470297">Profiiliasi ei voi käyttää, koska se on peräisin uudemmasta Google Chromen versiosta. Kaikkia toimintoja ei välttämättä voi käyttää. Määritä toinen profiilihakemisto tai käytä uudempaa Chromen versiota.</translation>
 <translation id="5174969993834422967">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla ilmoituskuvaketta osoitepalkin oikeassa reunassa.</translation>
 <translation id="5174983315706567306">Levytila ei riitä.</translation>
@@ -400,7 +403,6 @@
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5465210843490471889">Valitse Chrome-profiili, jota haluat käyttää <ph name="START_GLIC_STYLING" />Geminin<ph name="END_GLIC_STYLING" /> kanssa</translation>
 <translation id="5468572406162360320">Chrome lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
-<translation id="5510398294750420479">Lataa Chrome puhelimelle, niin saat lisäsuojaa ollessasi liikkeellä</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Chromen nopeuttaminen</translation>
 <translation id="5550137307985173298">Muokkaa Chromen ulkoasua klikkaamalla Uusi välilehti ‐sivun Yksilöi Chromea ‐painiketta</translation>
@@ -456,6 +458,7 @@
 <translation id="6008161919456049856">Google-tilille tallennetut salasanat, maksutavat ja osoitteet poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromessa, kirjaudu takaisin sisään.</translation>
 <translation id="6009821354356307391">Esitä lisäkysymys</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
+<translation id="6018578474045062808">Kokeile Google Lensia Chromen avulla puhelimella</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6025087594896450715">Google Chrome käynnistyy uudelleen, kun <ph name="REMAINING_TIME" /> on kulunut</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -478,6 +481,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tämä välilehti käyttää ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä siitä ei-aktiivisen.</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
+<translation id="6183773856988300112">Gemini in Chrome käyttää automaattista selausta, jotta se voi toimia välilehdilläsi ja hoitaa sille antamiasi tehtäviä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Tilisi Chromessa</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> on lisännyt laajennuksen, joka voi muuttaa Chromen toimintaa.
 
@@ -504,6 +508,8 @@
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
 <translation id="6426623519983252346">Näet kehotteen kokeilla <ph name="FEATURE_NAME" /> seuraavan kerran, kun avaat Chrome iOS:llä.</translation>
 <translation id="6434035853014503219">Kiitos, että valitsit Chromen oletusselaimeksi!</translation>
+<translation id="6438015621983209660">Laajenna Parannettua selaussuojaa Chromen avulla puhelimella</translation>
+<translation id="6442774133615368941">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran avulla Chromen iOS-sovelluksen avulla</translation>
 <translation id="6473905796280459355">Siirry Tietoja Chromesta ‐sivulle</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
@@ -641,6 +647,7 @@
 <translation id="7832314606810669113">Kirjaudu sisään Chromeen, niin voit käyttää kirjanmerkkejä ja muita tietoja kaikilla laitteillasi. Tämä kirjanmerkki tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="7849037457735762883">Jatka siitä, mihin jäit: Chrome voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
+<translation id="7869620795354551924">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chrome iOS:lle ja kirjaudu sisään Google-tilille</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7886087451482920026">Valitse tekstiä Google Lensilla</translation>
 <translation id="7887929410013642057">Näytä aina tekoälytilan pikakuvakkeet</translation>

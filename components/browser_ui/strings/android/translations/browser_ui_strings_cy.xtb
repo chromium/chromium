@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Awgrymiadau Chrome</translation>
 <translation id="1816835383954230954">Pan fydd ymlaen, mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd. Pan fydd wedi'i ddiffodd, mae hyn yn lleihau perfformiad ond yn gwneud V8 yn fwy ymwrthol i ymosodiadau.</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Newidiwch y safle i addasu eich profiad pori</translation>
 <translation id="1848033246551405023">Ffont Sans Serif</translation>
 <translation id="1861262398884155592">Mae'r ffolder hon yn wag</translation>
 <translation id="1881806992065048905">Ymddangosiad tudalen tab newydd y ddalen waelod</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Caniateir y tro hwn • Union</translation>
 <translation id="2544997614631598250">Thema lliw tywyll</translation>
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
+<translation id="2553552004849639664">Cael amddiffyniad cryfaf Chrome rhag bygythiadau ar-lein</translation>
 <translation id="2570922361219980984">Mae mynediad lleoliad hefyd wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
@@ -415,6 +417,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5373874281522292782">Mae eich grwpiau tab wedi'u cadw</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 arall)}zero{(+ # arall)}two{(+ # arall)}few{(+ # arall)}many{(+ # arall)}other{(+ # arall)}}</translation>
 <translation id="5403592356182871684">Enwau</translation>
+<translation id="5407203562970638234">Gwella eich diogelwch</translation>
 <translation id="5438097262470833822">Bydd y dewis hwn yn ailosod caniatadau ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am eich lleoliad. Pan fydd wedi'i ddiffodd, ni all gwefannau weld eich lleoliad.</translation>
 <translation id="5489227211564503167">Mae <ph name="ELAPSED_TIME" /> o <ph name="TOTAL_TIME" /> wedi mynd heibio.</translation>

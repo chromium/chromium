@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Izmjena nije spremljena.</translation>
 <translation id="3254806613790954367">Vaša posljednja otvorena kartica na svim vašim uređajima</translation>
 <translation id="325717987950204592">Dodirnite Privatnost i sigurnost</translation>
-<translation id="3266338926702638258">Prikaži povijest cijena za ovaj proizvod</translation>
 <translation id="3272527697863656322">Odustani</translation>
 <translation id="3273510436356991673">Prilagodite početni zaslon</translation>
 <translation id="3277021493514034324">Adresa web-lokacije kopirana</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Sakrij stavku Nedavne kartice</translation>
 <translation id="4578835633387306383">Uključi…</translation>
 <translation id="4580716718466706433">Otvorite Upravitelj zaporki</translation>
+<translation id="4585751637295612750">Otvorite novu karticu da biste je dodali u pitanje</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodana na vaš popis za čitanje}one{{count} stranica dodana je na vaš popis za čitanje}few{{count} stranice dodane su na vaš popis za čitanje}other{{count} stranica dodano je na vaš popis za čitanje}}</translation>
 <translation id="459644946100970322">Želite li uključiti upozorenja o cijeni?</translation>
@@ -1066,7 +1066,7 @@
 <translation id="5075939510584558547">Spremite bez šifriranja</translation>
 <translation id="5076534614343816664">Praćenje cijene</translation>
 <translation id="5078303485429639424">Uključi obavijesti za značajku <ph name="FEATURE_NAME" /></translation>
-<translation id="5079950360618752063">Upotrijebite predloženu zaporku</translation>
+<translation id="5079950360618752063">Upotrijebi predloženu zaporku</translation>
 <translation id="5083464117946352670">Veličina datoteke nije utvrđena.</translation>
 <translation id="5085558938118581974">Pretražujte kartice na sinkroniziranim uređajima</translation>
 <translation id="508645147179720015">Napomena ima više od 1000 znakova</translation>

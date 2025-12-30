@@ -355,6 +355,7 @@
 <translation id="4987820182225656817">Khách có thể sử dụng Chromium mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="4992938037305302429">Tài khoản của bạn trong Chromium</translation>
 <translation id="4994636714258228724">Thêm chính bạn vào Chromium</translation>
+<translation id="5083712646171654472">Gemini trong Chromium sử dụng tính năng tự động duyệt web để hoạt động trong các thẻ của bạn và hoàn thành những nhiệm vụ bạn giao. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium cần có quyền theo dõi cử chỉ tay của bạn</translation>
 <translation id="5141988424377517949">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Hôm nay, bạn đang nghĩ gì?</translation>
@@ -581,6 +582,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7617377681829253106">Chromium được cải tiến hơn</translation>
 <translation id="7622753900276619808">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
+<translation id="7656340475565475526">Để Chromium duyệt web giúp bạn</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7686590090926151193">Chromium không phải là trình duyệt mặc định của bạn</translation>
 <translation id="7689606757190482937">Đồng bộ hóa và cá nhân hóa Chromium trên các thiết bị của bạn</translation>
@@ -606,7 +608,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7888981273428720788">Đặt Chromium làm trình duyệt mặc định</translation>
 <translation id="7934340546140346950">Chromium tự động nâng cấp các kết nối không an toàn lên HTTPS mỗi khi có thể</translation>
 <translation id="7937630085815544518">Bạn đã đăng nhập vào Chromium là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
-<translation id="7953047982688951904">Tải Chromium xuống điện thoại để tăng cường bảo vệ khi bạn di chuyển</translation>
 <translation id="7975919845073681630">Đây là cài đặt thứ cấp của Chromium và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="7997934263947464652">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chromium đề xuất bạn chỉ nền cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Trình duyệt</translation>

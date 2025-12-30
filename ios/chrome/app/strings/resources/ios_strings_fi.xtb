@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Muutosta ei voitu tallentaa.</translation>
 <translation id="3254806613790954367">Viimeinen avoin välilehti kaikilla laitteillasi</translation>
 <translation id="325717987950204592">Valitse "Yksityisyys ja turvallisuus"</translation>
-<translation id="3266338926702638258">Näytä tämän tuotteen hintahistoria</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3273510436356991673">Muokkaa aloitusnäyttöä</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Piilota "Viimeaikaiset välilehdet"</translation>
 <translation id="4578835633387306383">Laita päälle…</translation>
 <translation id="4580716718466706433">Siirry Salasanoihin</translation>
+<translation id="4585751637295612750">Avaa uusi välilehti, niin voit lisätä sen kysymykseen</translation>
 <translation id="4587589328781138893">Sivustot</translation>
 <translation id="4592672037257622855">{count,plural, =1{Sivu lisätty lukulistalle}other{{count} sivua lisätty lukulistalle}}</translation>
 <translation id="459644946100970322">Laitetaanko hintahälytykset päälle?</translation>

@@ -220,9 +220,11 @@
 <translation id="3352986031709923790">øverst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-data i kontoen din</translation>
 <translation id="3369405342922656244">Søk på denne siden med Bildesøk</translation>
+<translation id="3375770072980084583">Bruk passordene dine med Chromium på telefonen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
+<translation id="3455907671758333080">Utvid Safe Browsing med økt beskyttelse med Chromium på telefonen</translation>
 <translation id="3461644266919055473">Gjør Chromium til din …</translation>
 <translation id="347328004046849135">Chromium varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="3474745554856756813">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
@@ -249,6 +251,7 @@
 <translation id="3798048725356732506">Med Chromium-profiler kan du holde ulike deler av livet ditt atskilt. Legg til en ny profil nå.</translation>
 <translation id="3802055581630249637">Chromium forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3823384748599722168">For å bruke de lagrede passordene dine, følg QR-koden, last ned Chromium for iOS, og logg på Google-kontoen din</translation>
 <translation id="3846683726093018685">**Sammendrag:** Beskriv hovedemnet og formålet med innholdet i skjermbildet i én setning på under 30 ord.
 
           **Foreslå spørsmål:** Generer en punktliste med tre til fem tankevekkende spørsmål en bruker kan stille for å forstå skjermbildet bedre. Disse spørsmålene må inneholde minst ett som handler spesifikt om et visuelt objekt, utformingen av det eller plasseringen av det.</translation>
@@ -324,6 +327,7 @@
 <translation id="4548534452171747496">Chromium forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4570813286784708942">Chromium har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
+<translation id="4583692638088316420">Prøv Google Lens med Chromium på telefonen</translation>
 <translation id="4594305310729380060">I Passordlagring på denne enheten</translation>
 <translation id="459535195905078186">Chromium-apper</translation>
 <translation id="4598116752460667024">Søk etter en prosess på listen.</translation>
@@ -355,6 +359,7 @@
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4992938037305302429">Kontoen din i Chromium</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
+<translation id="5083712646171654472">Gemini i Chromium bruker automatisk surfing for å jobbe i fanene dine og fullføre oppgaver du gir den. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium trenger tillatelse til å spore hendene dine</translation>
 <translation id="5141988424377517949">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">Hva tenker du på i dag?</translation>
@@ -367,6 +372,7 @@
 <translation id="5254739261293693943">Spør om denne videoen</translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
 <translation id="5286907366254680517">Registrert</translation>
+<translation id="5289287148052354622">Skaff deg Chromium-appen</translation>
 <translation id="5294316920224716406">Når du surfer i inkognitomodus, advarer Chromium deg før nettsteder lastes inn via usikre tilkoblinger</translation>
 <translation id="5313228254328109263">Intern Chromium-oppdateringstjeneste</translation>
 <translation id="5346389065299425353">Gjør søket mer omfattende ved å legge til flere faner, filer og verktøy</translation>
@@ -581,6 +587,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7617377681829253106">Nå er Chromium blitt enda bedre</translation>
 <translation id="7622753900276619808">Nå har du flere funksjoner tilgjengelig i Chromium</translation>
 <translation id="7649070708921625228">Hjelp</translation>
+<translation id="7656340475565475526">La Chromium surfe for deg</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7686590090926151193">Chromium er ikke standardnettleseren din</translation>
 <translation id="7689606757190482937">Synkroniser og gi Chromium et personlig preg på alle enhetene dine</translation>
@@ -606,7 +613,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7888981273428720788">Angi Chromium som standard</translation>
 <translation id="7934340546140346950">Chromium oppgraderer usikre tilkoblinger til HTTPS automatisk når det er mulig</translation>
 <translation id="7937630085815544518">Du ble logget på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Du må logge deg på igjen med samme konto.</translation>
-<translation id="7953047982688951904">Last ned Chromium på telefonen for å legge til et ekstra beskyttelseslag når du er på farten</translation>
 <translation id="7975919845073681630">Dette er en sekundær installering av Chromium. Den kan ikke brukes som standardnettleser.</translation>
 <translation id="7997934263947464652">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chromium anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Nettleser</translation>
@@ -633,6 +639,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8254601181414348851">Vil du logge på Chromium i en ny profil?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer deg<ph name="END_LINK" /> om utrygge nettsteder og nedlastinger</translation>
 <translation id="8295827201165805317">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION" /></translation>
+<translation id="8296236834352487533">Handle, oversett og identifiser det du ser, med kameraet i Chromium-iOS-appen</translation>
 <translation id="8313851650939857356">Oppstartsfeil: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Lagre som bilde</translation>

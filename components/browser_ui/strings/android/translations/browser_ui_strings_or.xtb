@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chrome ଟିପ୍ସ</translation>
 <translation id="1816835383954230954">ଚାଲୁ ଥିଲେ, Chrome ଆହୁରି ଦ୍ରୁତ ଭାବରେ ଚାଲେ ଏବଂ JavaScript ବ୍ୟବହାର କରୁଥିବା ଫିଚରଗୁଡ଼ିକ ଡିଜାଇନ କରାଯାଇଥିବା ଅନୁଯାୟୀ କାମ କରିବା ଉଚିତ। ବନ୍ଦ ଥିଲେ, ଏହା ପରଫରମାନ୍ସକୁ ହ୍ରାସ କରେ, କିନ୍ତୁ V8କୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />କୁ AR ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
+<translation id="1822318649925991542">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଅନୁଭୂତିକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ପୋଜିସନକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="1848033246551405023">ଫଣ୍ଟ Sans Serif</translation>
 <translation id="1861262398884155592">ଏହି ଫୋଲ୍ଡର୍‌ ଖାଲି ଅଟେ</translation>
 <translation id="1881806992065048905">ନୂଆ ଟାବ ପୃଷ୍ଠା ଏପିଏରେନ୍ସ ବଟମ ସିଟ</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">ଏହି ଥର ଅନୁମତି ଦିଆଯାଇଛି • ସଠିକ</translation>
 <translation id="2544997614631598250">ଥିମ ରଙ୍ଗ ଗାଢ଼ା</translation>
 <translation id="2546283357679194313">କୁକିସ୍ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
+<translation id="2553552004849639664">ଅନଲାଇନ ବିପଦଗୁଡ଼ିକ ବିରୁଦ୍ଧରେ Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="2570922361219980984">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଲୋକେସନ୍‌ ଆକ୍ସେସ୍‌ ମଧ୍ୟ ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="257931822824936280">ସଂପ୍ରସାରିତ - ସଙ୍କୁଚିତ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ସେଭ ହୋଇଛି</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1ଟି ଅଧିକ)}other{(+ #ଟି ଅଧିକ)}}</translation>
 <translation id="5403592356182871684">ନାମଗୁଡ଼ିକ</translation>
+<translation id="5407203562970638234">ଆପଣଙ୍କ ସିକ୍ୟୁରିଟିକୁ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="5438097262470833822">ଏହି ବିକଳ୍ପକୁ ପସନ୍ଦ କଲେ ଏହା <ph name="WEBSITE" /> ପାଇଁ ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ୍ କରିଦେବ</translation>
 <translation id="5459413148890178711">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ଲୋକେସନ ପାଇଁ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ଲୋକେସନ ଦେଖିପାରିବ ନାହିଁ।</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ର <ph name="ELAPSED_TIME" /> ବିତିଯାଇଥିବା ସମୟ।</translation>

@@ -47,6 +47,7 @@
 <translation id="1149401351239820326">মেয়াদ শেষের মাস</translation>
 <translation id="1150989369772528668">ক্যালেন্ডার</translation>
 <translation id="1161663161838091892">চালিয়ে যেতে ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} ক্রেডিট কার্ড}one{{count} ক্রেডিট কার্ড}other{{count} ক্রেডিট কার্ড}}</translation>
 <translation id="1164891049599601209">প্রতারণামূলক সাইটে পাসওয়ার্ডটি লিখেছেন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1172898394251786223">পরবর্তী ফিল্ড</translation>
@@ -208,6 +209,7 @@
 <translation id="17513872634828108">খোলা ট্যাব</translation>
 <translation id="1752547299766512813">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1764070164487214210">দিকনির্দেশ</translation>
+<translation id="1764511703783285459">অন্যান্য Password Manager কোনও পাসওয়ার্ড বা পাসকী শেয়ার করেনি</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">টুল মেনু</translation>
 <translation id="1772468122139624049">ট্যাব আবার লোড করা যাচ্ছে না</translation>
@@ -593,7 +595,6 @@
 <translation id="3245744387817103524">আপনার পরিবর্তন সেভ করা যায়নি।</translation>
 <translation id="3254806613790954367">আপনার সব ডিভাইস জুড়ে শেষ যে ট্যাবটি খুলেছেন</translation>
 <translation id="325717987950204592">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন</translation>
-<translation id="3266338926702638258">এই প্রোডাক্টের দামের ইতিহাস দেখুন</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
@@ -917,6 +918,7 @@
 <translation id="4568230126482344545">সাম্প্রতিক ট্যাব লুকান</translation>
 <translation id="4578835633387306383">চালু করুন…</translation>
 <translation id="4580716718466706433">"পাসওয়ার্ড ম্যানেজার" বিকল্পে যান</translation>
+<translation id="4585751637295612750">আপনার প্রশ্নে এটি যোগ করতে নতুন ট্যাব খুলুন</translation>
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4592672037257622855">{count,plural, =1{আপনার পড়ার তালিকায় পৃষ্ঠা যোগ করা হয়েছে}one{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা যোগ করা হয়েছে}other{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা যোগ করা হয়েছে}}</translation>
 <translation id="459644946100970322">ভাড়া বিষয়ক সতর্কতা চালু করবেন?</translation>
@@ -1070,6 +1072,7 @@
 <translation id="508645147179720015">নোটে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="5087098519049306025">প্রাইস ট্র্যাকিং</translation>
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
+<translation id="510580293474170715">কিছুই ইমপোর্ট করা হয়নি</translation>
 <translation id="5113960131843706315">আপনার ডেটা লোড করা হচ্ছে…</translation>
 <translation id="5118462200606189584">অ্যাকাউন্ট যোগ করুন…</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
@@ -1450,6 +1453,7 @@
 <translation id="6410390304316730527">আক্রমণকারীরা হয়ত ক্ষতিকারক সফ্টওয়্যার ইনস্টল করা অথবা পাসওয়ার্ড, ফোন নম্বর বা ক্রেডিট কার্ডের মতো ব্যক্তিগত তথ্য প্রকাশ করার জন্য কৌশলে প্রতারণা করতে পারে। তার হাত থেকে Safe Browsing আপনাকে সুরক্ষিত রাখে। এটি বন্ধ করে রাখলে, অজানা বা পরিচিত নয় এমন সাইট ব্রাউজ করার সময়ে সতর্ক থাকুন।</translation>
 <translation id="6410883413783534063">ট্যাবগুলি খুলে রাখুন যাতে একই সাথে বিভিন্ন পৃষ্ঠাতে যেতে পারেন</translation>
 <translation id="6418346271604475326">পিডিএফ প্রস্তুত হচ্ছে</translation>
+<translation id="6420292512900923139">আপনার ডেটা ইমপোর্ট করতে সমস্যা হচ্ছে</translation>
 <translation id="6421038304268477484">অনুবাদ হওয়া টেক্সট</translation>
 <translation id="6429213933892582367">পাসওয়ার্ড বিকল্প খুলুন</translation>
 <translation id="6435236283694032571">পড়ার তালিকায় যোগ করুন</translation>
@@ -1488,6 +1492,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6550891580932862748">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। Google-এর অন্য প্রোডাক্টে আপনার নিরাপদ ব্রাউজিংয়ের সেটিংস প্রভাবিত হবে না।</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">আবার করুন</translation>
 <translation id="6559301491397835130">{count,plural, =1{বুকমার্ক "{title}"-এ সেভ করা হয়েছে। এটি শুধুমাত্র এই ডিভাইসে সেভ করা হয়।}one{বুকমার্ক "{title}"-এ সেভ করা হয়েছে। এগুলি শুধুমাত্র এই ডিভাইসে সেভ করা হয়।}other{বুকমার্ক "{title}"-এ সেভ করা হয়েছে। এগুলি শুধুমাত্র এই ডিভাইসে সেভ করা হয়।}}</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>

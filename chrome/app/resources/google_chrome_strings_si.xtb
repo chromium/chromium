@@ -274,6 +274,7 @@
 <translation id="3889417619312448367">Google Chrome අස්ථාපනය</translation>
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
 <translation id="3906096710440765802">ඔබේ සියලු උපාංගවල ඔබේ මුරපද පිටුසන් සහ තවත් දේ ලබා ගැනීමට Chrome වෙත පුරන්න</translation>
+<translation id="3921132130819999051">Chrome හට ඔබ වෙනුවෙන් බ්‍රවුස් කිරීමට ඉඩ දෙන්න</translation>
 <translation id="3941890832296813527">ස්ථාපන දෝෂය: ස්ථාපක ගොනු නාමය වලංගු නැත හෝ සහාය නොදක්වයි.</translation>
 <translation id="395904275706073188">ආරක්ෂිත පිටු කියවිය නොහැක. වෙනත් පිටුවක් උත්සාහ කරන්න.</translation>
 <translation id="3968962723676998462">ඔබේ ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> Chrome දත්ත භාවිතා කිරීමට සහ සුරැකීමට ඔබේ මුර-වැකිකඩඇතුළු කරන්න</translation>
@@ -407,7 +408,6 @@
 Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසාධනය කිරීමට නොහැක.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> සමග භාවිත කිරීමට Chrome පැතිකඩක් තෝරා ගන්න</translation>
 <translation id="5468572406162360320">මෙම විශේෂාංග වැඩිදියුණු කිරීමට උදවු කිරීම සඳහා, Chrome ඒවා සමග ඔබේ අන්තර්ක්‍රියා Google වෙත යවයි. මෙම දත්ත මානව සමාලෝචකයින් විසින් කියවනු ලැබීමට, සකසනු ලැබීමට සහ විවරණ කරනු ලැබීමට හැකිය.</translation>
-<translation id="5510398294750420479">ඔබ ගමනේ යෙදී සිටින විට අමතර ආරක්ෂාවක් එක් කිරීමට ඔබේ දුරකථනයට Chrome බාගන්න</translation>
 <translation id="5524890928877629608">සෙවීම් ප්‍රදේශයේ ඉහළම වම් කෙළවර: වම <ph name="LEFT" />%, ඉහළ <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome වේගවත් කරන්න</translation>
 <translation id="5550137307985173298">Chrome හට නව පෙනුමක් ලබා දීමට නව පටිති පිටුවේ Chrome අභිරුචි කරන්න බොත්තම ක්ලික් කරන්න</translation>
@@ -485,6 +485,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome බීටා</translation>
 <translation id="6180522807229584611">මෙම පටිත්ත අමතර සම්පත් භාවිත කරයි. ඔබේ කාර්ය සාධනය වැඩි දියුණු කිරීමට, Chrome හට එය අක්‍රිය කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="6182736845697986886">යාවත්කාලීන සේවාදායක අභ්‍යන්තර දෝෂයක් නිසා ස්ථාපනය අසමත් විය.</translation>
+<translation id="6183773856988300112">Chrome හි Gemini ඔබේ පටිතිවල වැඩ කිරීමට සහ ඔබ එයට දෙන කාර්යයන් සම්පූර්ණ කිරීමට ස්වයං බ්‍රවුස් භාවිත කරයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Chrome හි ඔබේ ගිණුම</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> විසින් Chrome ක්‍රියා කරන ආකාරය වෙනස් කළ හැකි දිගුවක් එක් කර ඇත.
 

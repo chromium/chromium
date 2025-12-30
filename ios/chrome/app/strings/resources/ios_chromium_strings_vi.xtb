@@ -34,8 +34,10 @@
 <translation id="159029779861043703">Chromium bảo vệ dữ liệu nhạy cảm của bạn bằng Face ID.</translation>
 <translation id="1591119736686995611">Mở lưới thẻ trong Chromium.</translation>
 <translation id="16001233025397167">Tính năng Kiểm tra an toàn sẽ bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web nguy hiểm và những vấn đề khác. Nhận cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chromium phát hiện ra.</translation>
+<translation id="1614362805233822594">Bạn đã có mật khẩu hoặc khoá truy cập trong Trình quản lý mật khẩu cho các trang web được hiển thị. Chọn một tài khoản để giữ lại thông tin đăng nhập đã hiển thị, ghi đè thông tin trong Trình quản lý mật khẩu.</translation>
 <translation id="1617663976202781617">Dữ liệu từ tính năng đồng bộ hóa của Chromium</translation>
 <translation id="164952285225495380">Gói hàng này đã được theo dõi trên Chromium.</translation>
+<translation id="1703338211136118534">Những mật khẩu sau đây không được nhập vào Trình quản lý mật khẩu vì không đáp ứng được các yêu cầu.</translation>
 <translation id="1707458603865303524">Dùng Chromium mỗi khi bạn nhấn vào đường liên kết trong thư/tin nhắn hoặc các ứng dụng khác.</translation>
 <translation id="1722370509450468186">Mật khẩu của bạn sẽ được lưu trong Tài khoản (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Nguồn cấp dữ liệu thiết kế riêng cho bạn</translation>
@@ -47,6 +49,7 @@
 <translation id="1847960401032164406">Google Maps trên Chromium</translation>
 <translation id="1867772173333403444">4. Chọn Chromium</translation>
 <translation id="1965068424387304464">Mẹo khi dùng Chromium: Lưu mật khẩu</translation>
+<translation id="1992653360331625459">Bạn đã có mật khẩu cho các tài khoản này trong Trình quản lý mật khẩu. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="2006345422933397527">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2042889939382983733">Xem nhật ký duyệt web trên Chromium</translation>
 <translation id="2052320862053429062">Chromium định kỳ kiểm tra mật khẩu của bạn so với các danh sách đăng trên Internet. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
@@ -65,6 +68,7 @@
 <translation id="2326738825692478496">Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google.
 
 Trước khi đăng xuất, hãy đợi một vài phút. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
+<translation id="2334943301233020675">Các khoá truy cập sau đây không được nhập vào Trình quản lý mật khẩu vì không đáp ứng được các yêu cầu.</translation>
 <translation id="2337722506862731008">Chia sẻ Chromium</translation>
 <translation id="2340423701577464731">Thêm mục trong danh sách đọc vào Chromium</translation>
 <translation id="2374627437126809292">Chromium sử dụng Google Maps để chỉ đường và cung cấp cho bạn thông tin địa phương về các địa chỉ phát hiện được.</translation>

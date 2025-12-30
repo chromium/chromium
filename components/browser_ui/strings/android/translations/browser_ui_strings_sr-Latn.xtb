@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Saveti za Chrome</translation>
 <translation id="1816835383954230954">Kada je optimizator uključen, Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno. Kada je optimizator isključen, to smanjuje performanse, ali čini V8 otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Promenite položaj da biste prilagodili doživljaj pregledanja</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Ovaj folder je prazan</translation>
 <translation id="1881806992065048905">Donja tabela za izgled stranice nove kartice</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">Dozvoljeno ovaj put • Precizno</translation>
 <translation id="2544997614631598250">Tamna boja teme</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
+<translation id="2553552004849639664">Dobijte najjaču Chrome zaštitu od onlajn pretnji</translation>
 <translation id="2570922361219980984">Pristup lokaciji je isključen i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno je – Kliknite da biste skupili.</translation>
 <translation id="2586657967955657006">Memorija</translation>
@@ -415,6 +417,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5373874281522292782">Grupe kartica su sačuvane</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
+<translation id="5407203562970638234">Poboljšajte bezbednost</translation>
 <translation id="5438097262470833822">Ovaj izbor će resetovati dozvole za <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kada je uključeno, sajtovi mogu da traže vašu lokaciju. Kada je isključeno, sajtovi ne mogu da vide vašu lokaciju.</translation>
 <translation id="5489227211564503167">Proteklo vreme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>

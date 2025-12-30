@@ -81,7 +81,7 @@
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
 <translation id="1048986595386481879">动态分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
-<translation id="1049743911850919806">无痕</translation>
+<translation id="1049743911850919806">无痕模式</translation>
 <translation id="1049795001945932310">语言设置(&amp;L)</translation>
 <translation id="1050693411695664090">较差</translation>
 <translation id="1053226848101751430">条目已删除</translation>
@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125371304736839151">在浏览器顶部显示 Gemini</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
+<translation id="1125816658532547876">在 <ph name="DEVICE_TYPE" /> 上使用您的密码</translation>
 <translation id="1125921926864945797">壁纸与风格</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129348283834595293">赛博朋克</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">同步到您的账号中</translation>
 <translation id="1373176046406139583">您可指定设备的公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">网络“<ph name="NETWORK_NAME" />”所需的证书尚未安装或已无效。请获取新的证书并尝试重新连接。</translation>
+<translation id="1374948751106271187">随时随地享受额外安全保障</translation>
 <translation id="1375557162880614858">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="1375938286942050085">设置完毕！准备好您的设备，畅享接下来的精彩游戏</translation>
 <translation id="137651782282853227">已保存的地址将显示在这里</translation>
@@ -895,7 +897,7 @@
 <translation id="1603116295689434284">Chrome 系统信息</translation>
 <translation id="1603411913360944381">清除“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1603879843804174953">长按</translation>
-<translation id="1603914832182249871">（无痕）</translation>
+<translation id="1603914832182249871">（无痕模式）</translation>
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
 <translation id="1604567162047669454">识别视觉布局语义</translation>
 <translation id="1604774728851271529">您需要连接到网络才能升级 Linux。请连接到互联网，然后重试。</translation>
@@ -985,7 +987,6 @@
 <translation id="1650801028905250434">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。您随时可在“设置”&gt;“文件”中更改此设置。</translation>
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1651609627703324721">此标签页正在向头戴设备显示 VR 内容</translation>
-<translation id="1651633344379798952">在手机上试用 Google 智能镜头</translation>
 <translation id="1652281434788353738">沉思</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
 <translation id="1652862280638399816">若要将密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chromium 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
@@ -1207,7 +1208,6 @@
 <translation id="1808805149659872686">新建条目</translation>
 <translation id="1809201888580326312">您已选择不保存用于登录这些网站和应用的密码</translation>
 <translation id="1809734401532861917">将我的书签、历史记录、密码和其他设置添加至 <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">如需在手机上使用您已保存的密码，请扫描二维码，下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
 <translation id="1810366086647840386">映像服务器</translation>
 <translation id="1811908311154949291">无痕式围栏框架：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> 无法继续使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1254,6 +1254,7 @@
 <translation id="183445248400150852">网站会使用此功能来替换键盘输入，例如在游戏或远程桌面应用中替换键盘输入</translation>
 <translation id="1834503245783133039">未能成功下载“<ph name="FILE_NAME" />”</translation>
 <translation id="1835261175655098052">正在升级 Linux</translation>
+<translation id="1837292628323740716">在 <ph name="DEVICE_TYPE" /> 上使用增强型安全浏览功能</translation>
 <translation id="1837441256780906162">Microsoft OneDrive 拒绝了请求。请稍后再试。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839021455997460752">您的电子邮件地址</translation>
@@ -3354,7 +3355,6 @@
 <translation id="3269612321104318480">浅蓝绿色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
-<translation id="3273033807960054795">扩大增强型安全浏览功能的保护范围</translation>
 <translation id="3275464924531706548">收起“<ph name="HEADER" />”</translation>
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
@@ -5081,7 +5081,6 @@
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
 <translation id="4423525817792153232">露出所有牙齿</translation>
-<translation id="4424107154724312436">在 iOS 设备上试用 Google 智能镜头</translation>
 <translation id="4424262960694990728">请采取行动</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
@@ -5559,7 +5558,6 @@
 <translation id="4767427586072640478">详细了解已停用的扩展程序。</translation>
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
-<translation id="4770755495532014179">在 iPhone 上使用此密码</translation>
 <translation id="4772914216048388646">有序</translation>
 <translation id="4773112038801431077">升级 Linux</translation>
 <translation id="4773122030389014189">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
@@ -6376,6 +6374,7 @@
 <translation id="5335370353987155592">请谨慎<ph name="BEGIN_LINK1" />安全地<ph name="LINK_END1" />使用 Gemini。Gemini 在执行任务期间的一切行为，包括失误和<ph name="BEGIN_LINK2" />意外情况<ph name="LINK_END2" />（例如购买交易），均由您负责。</translation>
 <translation id="5336688142483283574">此网页也将从您的历史记录和 <ph name="SEARCH_ENGINE" /> 活动记录中移除。</translation>
 <translation id="5336689872433667741">光标和触控板</translation>
+<translation id="5337035808300170502">实际尺寸</translation>
 <translation id="5337207153202941678">关闭突出显示功能</translation>
 <translation id="5337771866151525739">由第三方安装。</translation>
 <translation id="5337926771328966926">当前设备名称是“<ph name="DEVICE_NAME" />”</translation>
@@ -6440,6 +6439,7 @@
 <translation id="5388719243178419614">无法上传。未能处理图片文件。</translation>
 <translation id="5388885445722491159">已配对</translation>
 <translation id="5389224261615877010">彩虹</translation>
+<translation id="538945906186309152">开启 Gemini 键盘快捷键</translation>
 <translation id="5389794555912875905">在您访问不安全的网站前发出警告（推荐）</translation>
 <translation id="5389943529251318913">鼠标速度降低幅度</translation>
 <translation id="5390112241331447203">将所发送的 system_logs.txt 文件添加到反馈报告中。</translation>
@@ -6709,7 +6709,6 @@
 <translation id="556321030400250233">本地文件或分享的文件</translation>
 <translation id="5563234215388768762">在 Google 中搜索或输入网址</translation>
 <translation id="5563824734298958390">退出标签页分组？</translation>
-<translation id="5564450015351086922">在 iOS 设备上试用 Google 智能镜头</translation>
 <translation id="5565735124758917034">主动</translation>
 <translation id="5568069709869097550">无法登录</translation>
 <translation id="5568525251731145240">为 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用删除网站数据和权限？</translation>
@@ -7909,7 +7908,6 @@
 <translation id="6410328738210026208">变更版本并执行 Powerwash</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
 <translation id="6411135999030237579">按住即可自动重复输入该键对应的字符</translation>
-<translation id="6411516120707127482">在手机上试用 Google 智能镜头</translation>
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
 <translation id="6415757856498750027">输入“w”即可显示“ư”</translation>
@@ -7956,7 +7954,6 @@
 <translation id="6445450263907939268">如果您不想保留这些更改，可以还原之前的设置。</translation>
 <translation id="6446213738085045933">创建桌面快捷方式</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6449835059180426406">在 iOS 设备上使用您的密码</translation>
 <translation id="6450876761651513209">更改您的隐私相关设置</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6451689256222386810">如果您忘记了密码或要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />。</translation>
@@ -8437,6 +8434,7 @@
 <translation id="6783036716881942511">取消保存此设备？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 设置</translation>
 <translation id="6784523122863989144">个人资料必须受支持</translation>
+<translation id="678520006562636090">在 <ph name="DEVICE_TYPE" /> 上试用 Google 智能镜头</translation>
 <translation id="6785594991951195537">使用您的 <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">正在查看已保存的桌面。按 Tab 键即可导航。</translation>
 <translation id="6785915470941880363">反向滚动 <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -8868,7 +8866,6 @@
 <translation id="7066572364168923329">选择 <ph name="DEVICE_TYPE" /> 的设置</translation>
 <translation id="7067396782363924830">环境颜色</translation>
 <translation id="7067725467529581407">不再显示此气泡。</translation>
-<translation id="7067779359472606732">已向<ph name="DEVICE_TYPE" />发送提醒</translation>
 <translation id="7068279399556423026">登录即可查看从其他设备打开的标签页</translation>
 <translation id="7068539819344620805">您现在可以随时通过“自定义 Chrome”菜单为浏览器换上全新外观</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" />和另外几款应用在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
@@ -10024,7 +10021,6 @@
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 账号语言</translation>
-<translation id="7863211248337747225">下载应用</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分钟后</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
 <translation id="7864825798076155402">保存到您的 Google 账号中？</translation>
@@ -10351,7 +10347,6 @@
 <translation id="8068904756674285749">使用日常用语搜索您的浏览记录，并查找您访问过的网站。您还可以提出问题，系统会根据您的浏览记录提供答案。此设置已关闭。</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" /> 位置信息权限</translation>
 <translation id="8070662218171013510">触感反馈</translation>
-<translation id="8071033114691184017">在 iPhone 上使用此密码</translation>
 <translation id="8071432093239591881">以图片形式打印</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />备份数据不会计入您孩子的云端硬盘存储空间配额。<ph name="END_PARAGRAPH2" />

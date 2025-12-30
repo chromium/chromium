@@ -272,6 +272,7 @@
 <translation id="3889417619312448367">Atinstalēt Google Chrome</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="3906096710440765802">Pierakstieties pārlūkā Chrome, lai iegūtu savas paroles, grāmatzīmes un citu saturu visās savās ierīcēs.</translation>
+<translation id="3921132130819999051">Ļaujiet pārlūkam Chrome veikt pārlūkošanu jūsu vietā</translation>
 <translation id="3941890832296813527">Instalēšanas kļūda: instalēšanas programmas faila nosaukums nav derīgs vai netiek atbalstīts.</translation>
 <translation id="395904275706073188">Aizsargātas lapas nevar lasīt. Izmēģiniet citu lapu.</translation>
 <translation id="3968962723676998462">Lai savā kontā (<ph name="ACCOUNT_EMAIL" />) izmantotu un saglabātu Chrome datus, ievadiet ieejas frāzi.</translation>
@@ -403,7 +404,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5465210843490471889">Izvēlieties Chrome profilu, ko izmantot ar <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Lai palīdzētu uzlabot šīs funkcijas, pārlūks Chrome nosūta Google serveriem datus par jūsu mijiedarbību ar tām. Šos datus var lasīt, apstrādāt un anotēt pārskatītāji.</translation>
-<translation id="5510398294750420479">Lejupielādējiet pārlūku Chrome savā tālrunī, lai nodrošinātu papildu aizsardzību, atrodoties ceļā.</translation>
 <translation id="5524890928877629608">meklēšanas apgabala augšējais kreisais stūris: <ph name="LEFT" />% pa kreisi, <ph name="TOP" />% augšdaļā</translation>
 <translation id="5530733413481476019">Pārlūka Chrome darbības paātrināšana</translation>
 <translation id="5550137307985173298">Jaunas cilnes lapā noklikšķiniet uz pogas Pielāgot pārlūku Chrome, lai piešķirtu pārlūkam Chrome jaunu izskatu.</translation>
@@ -481,6 +481,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="6180522807229584611">Šī cilne izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkā Chrome padarīt to neaktīvu.</translation>
 <translation id="6182736845697986886">Instalēšana neizdevās, jo radās atjauninājumu servera iekšēja kļūda.</translation>
+<translation id="6183773856988300112">Gemini pārlūkā Chrome izmanto automātisko pārlūkošanu, lai darbotos jūsu cilnēs un veiktu jūsu dotos uzdevumus. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6192058120268468905">Jūsu konts pārlūkā Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chrome darbību.
 

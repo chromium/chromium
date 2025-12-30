@@ -88,6 +88,7 @@
 <translation id="1985716030964443178">Þetta mun endurstilla öll vefsvæði á listanum í sjálfgefna stærð</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="1994173015038366702">Slóð vefsvæðis</translation>
+<translation id="1994558116414798016">Leturgerðin Lexend</translation>
 <translation id="2004697686368036666">Óvíst er að eiginleikar á sumum vefsvæðum virki</translation>
 <translation id="2025115093177348061">Aukinn veruleiki</translation>
 <translation id="2028449514182362831">Eiginleikar sem þurfa hreyfiskynjara virka ekki</translation>
@@ -98,6 +99,7 @@
 <translation id="2094208275686143364">Þemalitur ljós</translation>
 <translation id="2096716221239095980">Eyða öllum gögnum</translation>
 <translation id="2102396546234652240">Ekki leyfa vefsvæðum að nota hljóðnemann</translation>
+<translation id="2115808389282428160">Ekki veita vefsvæðum aðgang að öðrum forritum og þjónustum í þessu tæki</translation>
 <translation id="2117655453726830283">Næsta skyggna</translation>
 <translation id="2146263598007866206">Vefsvæði gætu sjálfkrafa sótt tengdar skrár saman til að spara þér tíma</translation>
 <translation id="2148716181193084225">Í dag</translation>
@@ -161,6 +163,7 @@
 <translation id="2621115761605608342">Leyfa JavaScript fyrir ákveðna síðu.</translation>
 <translation id="2626708220538466178">Blað neðst í sjálfgefnum vafra, lokað</translation>
 <translation id="2653659639078652383">Senda</translation>
+<translation id="2665056444046933274">Vefsvæði geta notað þennan eiginleika til að fá aðgang að öðrum forritum og þjónustum í þessu tæki</translation>
 <translation id="2670403088701171361">Ekki leyfa vefsvæðum að sjá texta eða myndir á klippiborðinu</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2682367912565197520">Eyða vistaðri stærð</translation>
@@ -204,8 +207,10 @@
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
 <translation id="3114012059975132928">Myndspilari</translation>
 <translation id="3115898365077584848">Sýna upplýsingar</translation>
+<translation id="3120204271988747891">Vefsvæði geta beðið um aðgang að öðrum tækjum á staðarnetinu þínu</translation>
 <translation id="3123473560110926937">Útilokaðar á sumum vefsvæðum</translation>
 <translation id="3132996321662585180">Uppfæra daglega</translation>
+<translation id="3134859781443140237">Staðarnet</translation>
 <translation id="3143754809889689516">Spila frá byrjun</translation>
 <translation id="3164169438034704658">Þú getur kveikt á nákvæmri staðsetningu í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Leyfa vefsvæði að nota fótspor þriðju aðila</translation>
@@ -216,6 +221,7 @@
 <translation id="3223425961342298674">Staðsetning ekki leyfð</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3232293466644486101">Eyða vefskoðunargögnum…</translation>
+<translation id="3241320538788585298">Svarprófunarnet</translation>
 <translation id="3242646949159196181">Þegar kveikt er á þessu geta vefsvæði spilað hljóð. Þegar slökkt er á þessu geta vefsvæði ekki spilað hljóð.</translation>
 <translation id="3273479183583863618">Verðlækkun á flipum</translation>
 <translation id="3277252321222022663">Leyfa vefsvæðum að fá aðgang að skynjurum (ráðlagt)</translation>
@@ -426,6 +432,7 @@
 <translation id="5591840828808741583">Lokað er á <ph name="SITE_NAME" /></translation>
 <translation id="560980142378233747">Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka sem skyldi, en hugsanlega er minni vernd þegar vafrað er. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Blað neðst á spjöldum síðu nýrra flipa</translation>
+<translation id="5621413808884657932">Þegar kveikt er á þessu geta vefsvæði beðið um aðgang að öðrum forritum og þjónustum í þessu tæki. Þegar slökkt er á þessu geta vefsvæði ekki fengið aðgang að öðrum forritum og þjónustum í þessu tæki.</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
 <translation id="5668404140385795438">Hunsa beiðni vefsvæðis um að koma í veg fyrir aðdrátt</translation>
@@ -546,6 +553,7 @@
 <translation id="6842868554183332230">Yfirleitt greina vefsvæði það þegar þú notar tækið til að stilla tiltækileika þinn í spjallforritum</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
 <translation id="6870169401250095575">Fela spjaldið „Öryggisathugun“</translation>
+<translation id="6882736949427544336">Ekki veita vefsvæðum aðgang að öðrum tækjum á staðarnetinu þínu</translation>
 <translation id="6900883974539674431">Búa til flipahópa sem vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
@@ -607,6 +615,8 @@
 <translation id="7586676035079382730">Tilkynningar ekki leyfðar</translation>
 <translation id="7594634374516752650">Tengt við Bluetooth-tæki</translation>
 <translation id="7617547684249261169">Þú getur eytt ferlinum þínum, fótsporum, vefsvæðagögnum og fleiru að hluta til eða í heild sinni.</translation>
+<translation id="762200934554267613">Vefsvæði geta beðið um aðgang að öðrum forritum og þjónustum í þessu tæki</translation>
+<translation id="7627749368210392160">Vefsvæði geta notað þennan eiginleika til að fá aðgang að öðrum tækjum á staðarnetinu þínu</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7655411746932645568">Vefsvæði geta beðið um að tengjast raðtengjum</translation>
 <translation id="7658239707568436148">Hætta við</translation>
@@ -662,6 +672,7 @@
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Þegar kveikt er á þessu geta vefsvæði beðið um aðgang að öðrum tækjum á staðarnetinu þínu. Þegar slökkt er á þessu geta vefsvæði ekki fengið aðgang að öðrum tækjum á staðarnetinu þínu.</translation>
 <translation id="8249310407154411074">Færa efst</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8284326494547611709">Skjátextar</translation>
@@ -715,6 +726,7 @@
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8737426583868847403">Vefsvæði sem vistar sérsniðna stærð fyrir birtast hér</translation>
+<translation id="8748714929822124637">Ekki veita vefsvæðum aðgang að öðrum tækjum á staðarnetinu þínu</translation>
 <translation id="8751914237388039244">Veldu mynd</translation>
 <translation id="8775741625735357092">Þú getur kveikt á bókamerkjastikunni með því að fara í „Stillingar &gt; Útlit“</translation>
 <translation id="8800034312320686233">Virkar vefsvæðið ekki?</translation>

@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1125371304736839151">Показване на Gemini в горната част на браузъра</translation>
 <translation id="1125550662859510761">Разделителната способност е <ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандартна)</translation>
+<translation id="1125816658532547876">Използвайте паролите си на устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Тапет и стил</translation>
 <translation id="1128591060186966949">Редактиране на търсещата машина</translation>
 <translation id="1129348283834595293">Киберпънк</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">Синхронизиране с профила ви</translation>
 <translation id="1373176046406139583">Видимостта на устройството ви управлява това, кой може да споделя с вас, докато екранът ви е отключен. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертификатът, който се изисква от мрежата „<ph name="NETWORK_NAME" />“, не е инсталиран или вече не е валиден.  Моля, получете нов сертификат и опитайте пак да се свържете.</translation>
+<translation id="1374948751106271187">Добавете допълнителен защитен слой, когато сте в движение</translation>
 <translation id="1375557162880614858">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Настройването завърши! Сега подгответе устройството си за игри</translation>
 <translation id="137651782282853227">Тук ще се покажат запазените адреси</translation>
@@ -988,7 +990,6 @@
 <translation id="1650801028905250434">Файловете ви в „Моят диск“ ще се синхронизират автоматично с вашия Chromebook, така че да можете да осъществявате достъп до тях без връзка с интернет. Можете да промените това по всяко време от „Настройки &gt; Файлове“.</translation>
 <translation id="1651008383952180276">Трябва да въведете един и същ пропуск два пъти</translation>
 <translation id="1651609627703324721">Този раздел предава съдържание във VR към очила</translation>
-<translation id="1651633344379798952">Изпробвайте Google Обектив на телефона си</translation>
 <translation id="1652281434788353738">Замислено</translation>
 <translation id="1652326691684645429">Активиране на „Споделяне наблизо“</translation>
 <translation id="1652862280638399816">За да използвате Мениджър на пароли с Keychain на macOS, стартирайте Chromium отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
@@ -1217,7 +1218,6 @@
 <translation id="1808805149659872686">Нов запис</translation>
 <translation id="1809201888580326312">Избрахте да не запазвате паролите за тези сайтове и приложения</translation>
 <translation id="1809734401532861917">Добавяне на моите отметки, история, пароли и други настройки към <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">За да използвате запазените си пароли на телефона си, сканирайте QR кода, изтеглете Chrome за iOS и влезте в профила си в Google.</translation>
 <translation id="1810366086647840386">Сървър за образа</translation>
 <translation id="1811908311154949291">Изолирана рамка в режим „инкогнито“: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1264,6 +1264,7 @@
 <translation id="183445248400150852">Сайтовете използват тази функция, за да заменят въведеното с клавиатурата ви, например за игри или приложения за отдалечен работен плот</translation>
 <translation id="1834503245783133039">Неуспешно изтегляне: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux се надстройва</translation>
+<translation id="1837292628323740716">Подобрете Безопасно сърфиране на устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive отхвърли заявката. Опитайте отново по-късно.</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1839021455997460752">Вашият имейл адрес</translation>
@@ -3373,7 +3374,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3269612321104318480">Светло синьо-зелено и бяло</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файла}}</translation>
 <translation id="3270965368676314374">Четене, промяна и изтриване на снимки, музика и друга мултимедия от компютъра ви</translation>
-<translation id="3273033807960054795">Разширете обхвата на подобрената защита от Безопасно сърфиране</translation>
 <translation id="3275464924531706548">Свиване на „<ph name="HEADER" />“</translation>
 <translation id="3275778809241512831">Понастоящем вътрешният ви ключ за сигурност не е защитен. Моля, премахнете го от услугите, с които сте го използвали. За да отстраните проблема, нулирайте ключа за сигурност.</translation>
 <translation id="3275778913554317645">Отваряне като прозорец</translation>
@@ -5102,7 +5102,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4421932782753506458">Пухчо</translation>
 <translation id="4423376891418188461">Възстановяване на настройките</translation>
 <translation id="4423525817792153232">Покажете всичките си зъби</translation>
-<translation id="4424107154724312436">Изпробвайте Google Обектив под iOS</translation>
 <translation id="4424262960694990728">Изисква се действие</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Разрешаването на устройства с ChromeOS да изпращат автоматични сигнали ни помага да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в Chrome OS, използваните функции и количеството памет, което обикновено ползвате.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
@@ -5580,7 +5579,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4767427586072640478">Научете повече за деактивираните разширения.</translation>
 <translation id="4769632191812288342">Получавате стандартната защита</translation>
 <translation id="4770119228883592393">Изисква се разрешение. Натиснете ⌘ + Option + стрелката за надолу, за да отговорите</translation>
-<translation id="4770755495532014179">Използвайте тази парола на своя iPhone</translation>
 <translation id="4772914216048388646">Приятно</translation>
 <translation id="4773112038801431077">Надстройване на Linux</translation>
 <translation id="4773122030389014189">Споделяне на групата раздели „<ph name="GROUP_NAME" />“</translation>
@@ -6399,6 +6397,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5335370353987155592">Използвайте Gemini внимателно и <ph name="BEGIN_LINK1" />безопасно<ph name="LINK_END1" />. Вие носите отговорност за действията на Gemini по време на дадена задача, включително за грешки и <ph name="BEGIN_LINK2" />неочаквани резултати<ph name="LINK_END2" />, като например покупки.</translation>
 <translation id="5336688142483283574">Тази страница също така ще бъде премахната от историята ви и от записите за активността ви в <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Курсор и сензорен панел</translation>
+<translation id="5337035808300170502">Действителен размер</translation>
 <translation id="5337207153202941678">Изключване на открояването</translation>
 <translation id="5337771866151525739">Инсталирано от трета страна.</translation>
 <translation id="5337926771328966926">Настоящото име на устройството е <ph name="DEVICE_NAME" /></translation>
@@ -6733,7 +6732,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="556321030400250233">локален или споделен файл</translation>
 <translation id="5563234215388768762">Търсете с Google или въведете URL адрес</translation>
 <translation id="5563824734298958390">Искате ли да напуснете групата раздели?</translation>
-<translation id="5564450015351086922">Изпробвайте Google Обектив под iOS</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
 <translation id="5568525251731145240">Да се изтрият ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />, всички сайтове от този домейн и инсталираните приложения?</translation>
@@ -7937,7 +7935,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6410328738210026208">Промяна на канала и Powerwash</translation>
 <translation id="6410390304316730527">Функцията „Безопасно сърфиране“ ви защитава от хакери, които могат да ви подведат да направите нещо опасно, като например да инсталирате софтуер или да разкриете лична информация (напр. пароли, телефонни номера или кредитни карти). Ако я изключите, внимавайте, когато посещавате непознати или ненадеждни сайтове.</translation>
 <translation id="6411135999030237579">Натиснете и задръжте за автоматично повтаряне на клавиша</translation>
-<translation id="6411516120707127482">Изпробвайте Google Обектив на телефона си</translation>
 <translation id="6414618057231176439">Изберете коя версия на <ph name="VM_NAME" /> да инсталирате.</translation>
 <translation id="641469293210305670">Инсталиране на актуализации и приложения</translation>
 <translation id="6415757856498750027">Въведете w, за да изпишете ư</translation>
@@ -7984,7 +7981,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6445450263907939268">Ако не сте искали тези промени, можете да възстановите предишните си настройки.</translation>
 <translation id="6446213738085045933">Създаване на пряк път на работния плот</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
-<translation id="6449835059180426406">Използвайте паролите си на устройствата си с iOS</translation>
 <translation id="6450876761651513209">Промяна на свързаните с поверителността ви настройки</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> и още 1 раздел}other{<ph name="PAGE_TITLE" /> и още # раздела}}</translation>
 <translation id="6451689256222386810">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" />.</translation>
@@ -8465,6 +8461,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6783036716881942511">Да се забрави ли това устройство?</translation>
 <translation id="6783667414610055871">Настройки на Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Потребителският профил се поддържа</translation>
+<translation id="678520006562636090">Изпробвайте Google Обектив на устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Използване на <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Преглеждате запазените работни кътове. Натиснете Tab за придвижване.</translation>
 <translation id="6785915470941880363">Обратно превъртане <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -8896,7 +8893,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7066572364168923329">Изберете настройките за <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Цветове от заобикалящата среда</translation>
 <translation id="7067725467529581407">Без повторно показване.</translation>
-<translation id="7067779359472606732">До устройството ви <ph name="DEVICE_TYPE" /> е изпратено напомняне</translation>
 <translation id="7068279399556423026">Влезте в профила си, за да видите разделите от други устройства</translation>
 <translation id="7068539819344620805">Вече можете да придадете нов облик на браузъра си по всяко време от менюто „Персонализиране на Chrome“</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и още няколко приложения са блокирани на вашия <ph name="DEVICE_TYPE" /></translation>
@@ -10052,7 +10048,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Изтегляния</translation>
 <translation id="7861846108263890455">Език на профила в Google</translation>
-<translation id="7863211248337747225">Инсталиране на приложението</translation>
 <translation id="7864114920800968141">След <ph name="NUM_MIN" /> мин</translation>
 <translation id="7864539943188674973">Деактивиране на Bluetooth</translation>
 <translation id="7864825798076155402">Да се запази ли в профила ви в Google?</translation>
@@ -10379,7 +10374,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8068904756674285749">Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили. Можете също да задавате въпроси и да получавате отговори въз основа на тази история. Настройката е изключена.</translation>
 <translation id="8070572887926783747">Разрешение на <ph name="APP_NAME" /> за достъп до местоположението</translation>
 <translation id="8070662218171013510">Осезателна обратна връзка</translation>
-<translation id="8071033114691184017">Използвайте тази парола на своя iPhone</translation>
 <translation id="8071432093239591881">Отпечатване като изображение</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данните на приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Данните в резервното копие не заемат от квотата на използваното от детето ви хранилище на Диск.<ph name="END_PARAGRAPH2" />

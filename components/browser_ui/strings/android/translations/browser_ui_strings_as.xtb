@@ -71,6 +71,7 @@
 <translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1816835383954230954">অন থাকিলে, Chrome অধিক দ্ৰুততাৰে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে। অফ থাকিলে, ই কাৰ্যদক্ষতা কম কৰে কিন্তু V8ক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
+<translation id="1822318649925991542">আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা কাষ্টমাইজ কৰিবলৈ স্থান সলনি কৰক</translation>
 <translation id="1848033246551405023">ফণ্ট চেনচ চেৰিফ</translation>
 <translation id="1861262398884155592">এই ফল্ডাৰটো খালী</translation>
 <translation id="1881806992065048905">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীট</translation>
@@ -147,6 +148,7 @@
 <translation id="2536779053640817375">এইবাৰ অনুমতি দিয়ক • সঠিক</translation>
 <translation id="2544997614631598250">থীমৰ ৰং গাঢ়</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
+<translation id="2553552004849639664">অনলাইন ভাবুকিৰ বিৰুদ্ধে Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা লাভ কৰক</translation>
 <translation id="2570922361219980984">এই ডিভাইচটোৰ বাবে অৱস্থান এক্সেছো অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ অন কৰক।</translation>
 <translation id="257931822824936280">বিস্তাৰ কৰা আছে - সংকোচন কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
@@ -415,6 +417,7 @@
 <translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
+<translation id="5407203562970638234">আপোনাৰ সুৰক্ষা উন্নত কৰক</translation>
 <translation id="5438097262470833822">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ বাবে অনুমতি ৰিছেট কৰিব</translation>
 <translation id="5459413148890178711">অন কৰা থাকিলে, ছাইটে আপোনাৰ অৱস্থান চাবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ অৱস্থান চাব নোৱাৰে।</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ৰ ভিতৰত <ph name="ELAPSED_TIME" /> সময় পাৰ হৈছে।</translation>

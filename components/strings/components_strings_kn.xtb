@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಯಾವ Chrome ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು ಟ್ಯಾಬ್ ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1122714970786750095">ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್ ಮತ್ತು ಎಲೆಕ್ಟ್ರಿಕಲ್</translation>
 <translation id="1123753900084781868">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="1124643885833329193">ನಿಖರವಾದ ಸ್ಥಳ</translation>
 <translation id="112840717907525620">ನೀತಿಯ ಕ್ಯಾಷ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="1131264053432022307">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಕ್ಕೆ ಹೋಗುವ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
@@ -892,6 +893,7 @@
 <translation id="2400263725572336749">ಪಾಸ್‌ಪೋರ್ಟ್ ಸೇರಿಸಿ</translation>
 <translation id="2400271059665846158">Google Wallet ನಲ್ಲಿ ನಿಮ್ಮ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2400600116338235695">ಸರಣಿ ಪೋರ್ಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
+<translation id="2403474027143565107">ನಿಖರ</translation>
 <translation id="240450251994300576">ದ್ವಿತೀಯ ಹೆಡರ್ ಲೋಗೋ</translation>
 <translation id="2404884497378469141">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಪುನಃ ನಕಲಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2413155254802890957">ಹಳೆಯ</translation>
@@ -962,7 +964,7 @@
 <translation id="2521736961081452453">ಫಾರ್ಮ್ ಆನ್ನು ರಚಿಸಿ</translation>
 <translation id="2524461107774643265">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2526062290525841862">ಈ ಆ್ಯಪ್‌ ಅನ್ನು ರನ್‌ ಮಾಡಲು, ಪ್ರತ್ಯೇಕಗೊಳಿಸಲಾದ ವೆಬ್‌ ಆ್ಯಪ್‌ ಡೆವಲಪರ್‌ ಮೋಡ್‌ ಅನ್ನು ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
-<translation id="2526280916094749336">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="ACCOUNT" />.</translation>
+<translation id="2526280916094749336">ಸೇವ್ ಮಾಡಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">ನಿಮ್ಮ CVC ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗದಲ್ಲಿದೆ. ಇದು ನಿಮ್ಮ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯ ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿರುವ 4-ಅಂಕಿಯ ಕೋಡ್ ಆಗಿದೆ.</translation>
 <translation id="2529899080962247600">ಈ ಕ್ಷೇತ್ರವು <ph name="MAX_ITEMS_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ. ಮುಂದಿನ ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2530042584066815841">ಮೌಸ್ ಲಾಕ್ ಮತ್ತು ಬಳಕೆ</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">ಭದ್ರತೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ಸಹಾಯ ಮಾಡಲು, ಇದು ಸಾಧನದ OS, ಬ್ರೌಸರ್ ಆವೃತ್ತಿ ಮತ್ತು ಯಾವ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ ಎಂಬುದನ್ನು ಸಹ ನೋಡಬಹುದು</translation>
 <translation id="2573170131138724450">ದೂರದರ್ಶನಗಳು</translation>
 <translation id="257674075312929031">ಗುಂಪು</translation>
+<translation id="2577522251608256362">ನೆರೆಹೊರೆ</translation>
 <translation id="2580031090587209073">ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಆಯ್ಕೆಗಳು</translation>
 <translation id="258027838577899739">ಇತಿಹಾಸದಿಂದ ಎಲ್ಲವನ್ನೂ ಅಳಿಸಿ</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿದ್ದಾರೆ</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="3080254622891793721">ಗ್ರಾಫಿಕ್</translation>
 <translation id="3082007635241601060">ಲಭ್ಯವಿರುವ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" ಮಾನ್ಯವಾದ ಪ್ರಾಕ್ಸಿ ಅಲ್ಲ.</translation>
 <translation id="3086269988715347183">ನೀವು <ph name="BLOCKED_URL" /> ಅನ್ನು ಮೊದಲು ಅನುಮೋದಿಸಿಲ್ಲ</translation>
 <translation id="3086579638707268289">ವೆಬ್‌ನಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
@@ -1625,6 +1629,7 @@
 <translation id="361438452008624280">ಪಟ್ಟಿ ನಮೂದು "<ph name="LANGUAGE_ID" />": ಅಪರಿಚಿತ ಭಾಷೆ ಅಥವಾ ಬೆಂಬಲವಿಲ್ಲದ ಭಾಷೆ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3615309852743236517">ಮೆನಿಕ್ಯೂರ್‌ಗಳು ಮತ್ತು ಪೆಡಿಕ್ಯೂರ್‌ಗಳು</translation>
+<translation id="3620034424637552643">ಸಾಮಾನ್ಯವಾಗಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು, ಡೆಲಿವರಿಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಗಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3620239073311576716">ಸಮವಸ್ತ್ರ ಮತ್ತು ಕೆಲಸದ ಉಡುಪು</translation>
 <translation id="3621401353678567613">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳಿಗೆ ಬೆಲೆ ಇಳಿಕೆಯ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="362276910939193118">ಪೂರ್ಣ ಇತಿಹಾಸ ತೋರಿಸಿ</translation>
@@ -1891,6 +1896,7 @@
 <translation id="4036753017940930924">ಲಾಟ್‌ಗಳು ಮತ್ತು ಭೂಮಿ</translation>
 <translation id="403724377879219932">ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಇತರ ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="4039506337798853114">ನಿಮ್ಮ ಕರ್ಸರ್ ಅನ್ನು ತೋರಿಸಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="4042597221652780603">ಅಂದಾಜು</translation>
 <translation id="4045070493270310437">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
 <translation id="4045226534284799755">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ನಿಮ್ಮ Microsoft ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4045441967987592849">ಪುನಃ ತೆರೆಯಿರಿ</translation>
@@ -3134,7 +3140,7 @@
 <translation id="6051898664905071243">ಪುಟ ಎಣಿಕೆ:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">IBAN ಅನ್ನು ಭರ್ತಿಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="6053584886670442526">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
+<translation id="6053584886670442526">ಸೇವ್ ಮಾಡಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="6053735090575989697">ನಮ್ಮ ಗೌಪ್ಯತೆ ನೀತಿಯಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google ಹೇಗೆ ರಕ್ಷಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="6055888660316801977">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಹೊಂದಾಣಿಕೆಯಾಗಿಲ್ಲ</translation>
 <translation id="6055982527635883756">ಎನ್ವಲಪ್ (ಆರ್ಕೈವಲ್)</translation>
@@ -3208,6 +3214,7 @@
 <translation id="6164605812717770913">ಈ ಸೈಟ್ ನಿಮಗೆ ಭೇಟಿ ನೀಡಲು ಸೂಕ್ತವಲ್ಲ ಎಂದು ಪೋಷಕರು ಅಥವಾ ಪಾಲಕರು ಹೇಳಿದ್ದಾರೆ. ನೀವು ಅವರನ್ನು ನಿರ್ಬಂಧ ತೆಗೆಯಲು ಕೇಳಬಹುದು.</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6167577165590485365">ಕೊನೆಯ ಬಾರಿಗೆ ಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ಮಾನ್ಯವಾದ ಮೌಲ್ಯವಲ್ಲ.</translation>
 <translation id="617256461084925519">Google Chrome ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸುವ ಸಲುವಾಗಿ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="6173208311907792313">Windows Hello ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="6176387967264100435">ಇದು ಅಧಿಕ ದರವಾಗಿದೆ</translation>
@@ -3534,6 +3541,7 @@
 <translation id="6688851075017682769">ದೇಶದ ಪ್ರಕಾರ ವಿಳಾಸವನ್ನು ಪರೀಕ್ಷಿಸಿ</translation>
 <translation id="6689249931105087298">ಕಪ್ಪು ಬಿಂದು ಕಂಪ್ರೆಶ್ಶನ್‌ಗೆ ಸಂಬಂಧಿಸಿದ</translation>
 <translation id="6689271823431384964">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಕಾರಣದಿಂದಾಗಿ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು Chrome ಅವಕಾಶ ನೀಡುತ್ತಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಈ ವರ್ತನೆಯನ್ನು ಬದಲಿಸಬಹುದು. ಕಾರ್ಡ್ ಹೋಲ್ಡರ್ ಹೆಸರು ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಬರುತ್ತದೆ.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" ಮಾನ್ಯವಾದ ಗಮ್ಯಸ್ಥಾನದ ಪ್ಯಾಟರ್ನ್ ಅಲ್ಲ.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 
 ಗಿಂತ ಹೆಚ್ಚು ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹುಡುಕಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
@@ -4073,7 +4081,6 @@
 <translation id="753556296624075801">Google ನಿಂದ ಪ್ರಾಯೋಜಿತವಾಗಿದೆ</translation>
 <translation id="753713322968419914">Chrome ಆಟೋಫಿಲ್‌ನಿಂದ ಮನೆ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="7537536606612762813">ಕಡ್ಡಾಯ</translation>
-<translation id="7541043894191476250">ಸಾಂದರ್ಭಿಕ ಕಾರ್ಯಗಳು</translation>
 <translation id="7543525346216957623">ನಿಮ್ಮ ಪೋಷಕರಿಗೆ ಕೇಳಿ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ</translation>
 <translation id="7548892272833184391">ಸಂಪರ್ಕ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸಿ</translation>
@@ -4282,6 +4289,7 @@
 <translation id="7870281855125116701">ರಿಯಾಯಿತಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="7871445724586827387">ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="787226752901403048">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಮತ್ತು ಸೇರಿಕೊಳ್ಳಲು ಹಾಗೂ ಐಡಿಯಾಗಳ ಮೇಲೆ ಜೊತೆಯಾಗಿ ಕೆಲಸ ಮಾಡಲು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ಎಂಬುದು ತಿಳಿದಿರುವ ಸ್ಥಿತಿಯ ಪ್ರಕಾರವಲ್ಲ.</translation>
 <translation id="7877007680666472091">ಸಂರಕ್ಷಿತ ವಿಷಯದ ಐಡಿಗಳು</translation>
 <translation id="7878562273885520351">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಸುಲಭವಾಗಿ ಪತ್ತೆ ಮಾಡಬಹುದು</translation>
 <translation id="7881044256965445977">ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಸಾಧನವನ್ನು ಹುಡುಕಿ ಮತ್ತು ಅದಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
@@ -5007,6 +5015,7 @@
 <translation id="9090243919347147717">ಲಗತ್ತುಗಳು</translation>
 <translation id="9090548458280093580">ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಿ, AI ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
 <translation id="9090993752571911635">ಇಂಟರ್ನೆಟ್ ಸೇವಾ ಪೂರೈಕೆದಾರರು (ISPs)</translation>
+<translation id="9092305980625216393">ಸಾಮಾನ್ಯವಾಗಿ ಹವಾಮಾನ, ಸ್ಥಳೀಯ ಸುದ್ದಿ ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಗಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="9093723786115107672">ಮಲಗುವಾಗ ಧರಿಸುವ ಉಡುಪು</translation>
 <translation id="9094424186948667194">ಈ ಸಾಧನದಲ್ಲಿನ ಇತರ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="9094544726794842788">ನೀವು ಈ ಫಲಿತಾಂಶಗಳನ್ನು ಏಕೆ ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬುದರ ಕುರಿತು ವಿವರವಾದ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸಲು ಥಂಬ್ಸ್ ಡೌನ್ ಫಾರ್ಮ್ ಅನ್ನು ತೆರೆಯುತ್ತದೆ</translation>

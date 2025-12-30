@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் எந்தெந்த Chrome தகவல்களைச் சேமிக்க வேண்டும் என்பதை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="1122714970786750095">எலக்ட்ரானிக்ஸ் &amp; எலக்ட்ரிக்கல்</translation>
 <translation id="1123753900084781868">'உடனடி வசனம்' அம்சம் இப்போது இல்லை</translation>
+<translation id="1124643885833329193">சரியான இருப்பிடம்</translation>
 <translation id="112840717907525620">கொள்கை தற்காலிக சேமிப்பு சரியாக உள்ளது</translation>
 <translation id="1131264053432022307">நீங்கள் நகலெடுத்த படம்</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – முழுத்திரையில் இருந்து வெளியேற மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்</translation>
@@ -893,6 +894,7 @@
 <translation id="2400263725572336749">பாஸ்போர்ட் தகவலைச் சேர்த்தல்</translation>
 <translation id="2400271059665846158">Google Walletடில் உங்கள் லாயல்டி கார்டுகளை நிர்வகிக்கலாம்</translation>
 <translation id="2400600116338235695">சீரியல் போர்ட்டுகளுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
+<translation id="2403474027143565107">துல்லியமானது</translation>
 <translation id="240450251994300576">இரண்டாவது தலைப்பு லோகோ</translation>
 <translation id="2404884497378469141">ஃபைல்களை மீண்டும் நகலெடுக்க முயலவும்</translation>
 <translation id="2413155254802890957">பழைய முகவரி</translation>
@@ -997,6 +999,7 @@
 <translation id="2571488850200220306">பாதுகாப்பை உறுதிப்படுத்துவதில் உதவ சாதனத்தின் OS, உலாவியின் பதிப்பு, நிறுவப்பட்டுள்ள மென்பொருள் ஆகியவற்றையும் இதனால் பார்க்க முடியும்.</translation>
 <translation id="2573170131138724450">தொலைக்காட்சிகள்</translation>
 <translation id="257674075312929031">குழு</translation>
+<translation id="2577522251608256362">அருகிலுள்ள இடம்</translation>
 <translation id="2580031090587209073">பகிர்தல் விருப்பங்கள்</translation>
 <translation id="258027838577899739">பதிவில் இருந்து எல்லாவற்றையும் நீக்கு</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> பக்கத்தைச் சேர்த்துள்ளார்</translation>
@@ -1283,6 +1286,7 @@
 <translation id="3076865167425975822">ஆப்ரேட்டிங் சிஸ்டங்கள்</translation>
 <translation id="3080254622891793721">கிராஃபிக்</translation>
 <translation id="3082007635241601060">பிரத்தியேகத் தள்ளுபடிகள் கிடைக்கும்போது அவற்றைத் தெரியப்படுத்த, உங்கள் கார்ட்டை Google பயன்படுத்த அனுமதியுங்கள்</translation>
+<translation id="3085373848068196154">"<ph name="PROXY_INVALID_PROXY" />" என்பது சரியான ப்ராக்ஸி இல்லை.</translation>
 <translation id="3086269988715347183">இதற்கு முன் <ph name="BLOCKED_URL" /> தளத்தை அனுமதிக்கவில்லை</translation>
 <translation id="3086579638707268289">உங்களின் இணையச் செயல்பாடு கண்காணிக்கப்படுகிறது</translation>
 <translation id="3087734570205094154">கீழே</translation>
@@ -1623,6 +1627,7 @@
 <translation id="361438452008624280">பட்டியல் உள்ளீடு '<ph name="LANGUAGE_ID" />': தெரியாத அல்லது ஆதரிக்கப்படாத மொழி.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3615309852743236517">மெனிக்கியூர் &amp; பெடிக்கியூர்</translation>
+<translation id="3620034424637552643">வழிகள், டெலிவரிகள் மற்றும் பலவற்றுக்குப் பெரும்பாலும் பயன்படுத்தப்படுகிறது</translation>
 <translation id="3620239073311576716">சீருடை &amp; பணிக்கான ஆடைகள்</translation>
 <translation id="3621401353678567613">நீங்கள் கண்காணிக்கும் தயாரிப்புகளின் விலை குறைவது தொடர்பான விழிப்பூட்டல்களைப் பெற அமைப்புகளில் அறிவிப்புகளை இயக்கவும்.</translation>
 <translation id="362276910939193118">முழு வரலாற்றையும் காண்பி</translation>
@@ -1890,6 +1895,7 @@
 <translation id="4036753017940930924">பகுதியளவு நிலங்கள் மற்றும் நிலம்</translation>
 <translation id="403724377879219932">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள பிற சாதனங்களை அணுக அனுமதி கேட்கலாம்</translation>
 <translation id="4039506337798853114">கர்சரைக் காட்ட |<ph name="ACCELERATOR" />| பட்டனை அழுத்தவும்</translation>
+<translation id="4042597221652780603">தோராயமானது</translation>
 <translation id="4045070493270310437">பக்கங்களை மீண்டும் திற</translation>
 <translation id="4045226534284799755">மீண்டும் முயலும் முன்பு உங்கள் Microsoft கணக்கில் உள்நுழையவும்</translation>
 <translation id="4045441967987592849">மீண்டும் திற</translation>
@@ -3207,6 +3213,7 @@
 <translation id="6164605812717770913">இந்தத் தளத்தை நீங்கள் பார்ப்பதை உங்கள் பெற்றோர் அல்லது காப்பாளர் விரும்பவில்லை. இதை அனுமதிக்கும்படி அவரிடம் கேளுங்கள்.</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6167577165590485365">பாலிசி நிலையைப் பெற கடைசியாக முயற்சித்தது:</translation>
+<translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" என்பது சரியான மதிப்பு இல்லை.</translation>
 <translation id="617256461084925519">உங்கள் பேமெண்ட் தகவலை நிரப்புவதற்காக இது நீங்கள்தான் என்பதை Google Chrome சரிபார்க்க முயல்கிறது.</translation>
 <translation id="6173208311907792313">Windows Hello மூலம் பர்ச்சேஸை நிறைவுசெய்யுங்கள்</translation>
 <translation id="6176387967264100435">இது அதிக விலை</translation>
@@ -3533,6 +3540,7 @@
 <translation id="6688851075017682769">நாடு வாரியான பரிசோதனை முகவரிகள்</translation>
 <translation id="6689249931105087298">கறுப்புப் புள்ளிச் சுருக்கத்துடன் சார்புடையது</translation>
 <translation id="6689271823431384964">நீங்கள் உள்நுழைந்துள்ளதால் Google கணக்கில் உங்கள் கார்டு விவரங்களைச் சேமிக்கும் விருப்பத்தை Chrome வழங்குகிறது. இதை நீங்கள் அமைப்புகளில் மாற்றலாம். கார்டு உரிமையாளரின் பெயர் உங்கள் கணக்கிலிருந்து பெறப்படுகிறது.</translation>
+<translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" என்பது சரியான இலக்கு பேட்டர்ன் இல்லை.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> அளவைவிடக் கூடுதலான சேமிப்பிடத்தைக் காலியாக்குங்கள்</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google கணக்கில் உங்கள் சாதனத்தைக் கண்டறிய, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="6695428916538794739">ஆக்‌ஷன் மற்றும் சாகசத் திரைப்படங்கள்</translation>
@@ -4072,7 +4080,6 @@
 <translation id="753556296624075801">Google வழங்குவது</translation>
 <translation id="753713322968419914">Chrome தன்னிரப்பியில் இருந்து உங்கள் வீட்டு முகவரியை அகற்றவா?</translation>
 <translation id="7537536606612762813">கட்டாயம்</translation>
-<translation id="7541043894191476250">சூழல் சார்ந்த பணிகள்</translation>
 <translation id="7543525346216957623">உங்கள் பெற்றோரிடம் கேட்கவும்</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> தொடங்குகிறது</translation>
 <translation id="7548892272833184391">இணைப்புப் பிழைகளைச் சரிசெய்யவும்</translation>
@@ -4281,6 +4288,7 @@
 <translation id="7870281855125116701">தள்ளுபடியில் கிடைக்கிறது</translation>
 <translation id="7871445724586827387">உங்கள் Google கணக்கின் கடவுச்சொல்லை மாற்றலாம்</translation>
 <translation id="787226752901403048">பக்கக் குழுக்களைப் பகிர, அவற்றில் சேர மற்றும் யோசனைகளில் இணைந்து பணியாற்ற Chromeமில் உள்நுழையுங்கள்</translation>
+<translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" என்பது தெரிந்த நிபந்தனை வகை இல்லை.</translation>
 <translation id="7877007680666472091">பாதுகாக்கப்பட்ட உள்ளடக்க ஐடிக்கள்</translation>
 <translation id="7878562273885520351">உங்கள் கடவுச்சொல் திருடப்பட்டிருக்கலாம்</translation>
 <translation id="7881044256965445977">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள எந்தவொரு சாதனத்தையும் தேடி இணைக்க விரும்புகிறது</translation>
@@ -5005,6 +5013,7 @@
 <translation id="9090243919347147717">இணைப்புகள்</translation>
 <translation id="9090548458280093580">AI மூலம் உங்கள் பதிவுகளைத் தேடுங்கள்</translation>
 <translation id="9090993752571911635">இணைய சேவை வழங்குநர்கள் (ISPகள்)</translation>
+<translation id="9092305980625216393">வானிலை, உள்ளூர் செய்திகள் மற்றும் பலவற்றுக்குப் பெரும்பாலும் பயன்படுத்தப்படுகிறது</translation>
 <translation id="9093723786115107672">இரவில் அணியும் ஆடை</translation>
 <translation id="9094424186948667194">இந்தச் சாதனத்தில் உள்ள பிற ஆப்ஸையும் சேவைகளையும் அணுகுதல்</translation>
 <translation id="9094544726794842788">தம்ஸ்-டவுன் வழங்கினால், இந்த முடிவுகளை ஏன் நீங்கள் விரும்பவில்லை என்பதை விரிவாகத் தெரிவிப்பதற்கான படிவம் திறக்கப்படும்</translation>

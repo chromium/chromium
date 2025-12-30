@@ -222,9 +222,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium data in your account</translation>
 <translation id="3369405342922656244">Search this page with image search</translation>
+<translation id="3375770072980084583">Use your passwords with Chromium on your phone</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3412460710772753638">In Password Manager on this device</translation>
+<translation id="3455907671758333080">Extend Enhanced Safe Browsing with Chromium on your phone</translation>
 <translation id="3461644266919055473">Making Chromium yours…</translation>
 <translation id="347328004046849135">Chromium will notify you when you sign in with a compromised password</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -251,6 +253,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3798048725356732506">Chromium profiles help you separate different parts of your life. Add a new profile now.</translation>
 <translation id="3802055581630249637">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="3823384748599722168">To use your saved passwords, follow the QR code, download Chromium for iOS and sign in to your Google Account</translation>
 <translation id="3846683726093018685">**Summarise:** In a single sentence under 30 words, describe the primary subject and purpose of the content in the screenshot.
 
           **Suggest questions:** Generate a bulleted list of 3–5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design or its placement.</translation>
@@ -326,6 +329,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4548534452171747496">Chromium preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4570813286784708942">Chromium blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
+<translation id="4583692638088316420">Try Google Lens with Chromium on your phone</translation>
 <translation id="4594305310729380060">To Password Manager on this device</translation>
 <translation id="459535195905078186">Chromium Apps</translation>
 <translation id="4598116752460667024">Search for any process from the list.</translation>
@@ -357,6 +361,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4992938037305302429">Your account in Chromium</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
+<translation id="5083712646171654472">Gemini in Chromium uses auto-browse to work in your tabs and complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium needs permission to track your hands</translation>
 <translation id="5141988424377517949">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5167819546851111585">What's on your mind today?</translation>
@@ -369,6 +374,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5254739261293693943">Ask about this video</translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
 <translation id="5286907366254680517">Detected</translation>
+<translation id="5289287148052354622">Get the Chromium app</translation>
 <translation id="5294316920224716406">When browsing in Incognito mode, Chromium will warn you before loading a site using an insecure connection</translation>
 <translation id="5313228254328109263">Chromium updater internal service</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
@@ -583,6 +589,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7617377681829253106">Chromium just got better</translation>
 <translation id="7622753900276619808">You now have more features available in Chromium</translation>
 <translation id="7649070708921625228">Help</translation>
+<translation id="7656340475565475526">Let Chromium browse for you</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
 <translation id="7689606757190482937">Sync and personalise Chromium across your devices</translation>
@@ -608,7 +615,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7888981273428720788">Set Chromium as your default</translation>
 <translation id="7934340546140346950">Chromium upgrades insecure connections to HTTPS automatically when possible</translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
-<translation id="7953047982688951904">Download Chromium on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="7997934263947464652">Extensions, apps and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -635,6 +641,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8254601181414348851">Sign in to Chromium in a new profile?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium warns you<ph name="END_LINK" /> about unsafe sites and downloads</translation>
 <translation id="8295827201165805317">You haven't visited recently. Chromium removed <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Shop, translate and identify what you see with your camera on the Chromium iOS app</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Save as image</translation>

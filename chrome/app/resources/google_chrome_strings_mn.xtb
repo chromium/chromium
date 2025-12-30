@@ -88,6 +88,7 @@
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1880677175115548835">Текст сонгох</translation>
+<translation id="1896602904211344018">Chrome аппыг авах</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1953553007165777902">Татаж байна... <ph name="MINUTE" /> минут үлдсэн</translation>
 <translation id="1979600810166324878">iOS-т зориулсан Chrome дээрх Сайжруулсан аюулгүй хөтчийг ашиглан явж байх зуураа илүү аюулгүй байгаарай</translation>
@@ -274,6 +275,7 @@
 <translation id="3889417619312448367">Google Chrome-ыг устгах</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="3906096710440765802">Нууц үг, хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
+<translation id="3921132130819999051">Chrome-д танд зориулж үзэхийг зөвшөөрөх</translation>
 <translation id="3941890832296813527">Суулгах үед алдаа гарлаа: Суулгагчийн файлын нэр буруу эсвэл дэмжигдээгүй.</translation>
 <translation id="395904275706073188">Хамгаалагдсан хуудсыг унших боломжгүй. Өөр хуудас туршиж үзнэ үү.</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
@@ -378,6 +380,7 @@
 <translation id="5163087008893166964">Chrome-д тавтай морилно уу; хөтчийн шинэ цонхыг нээсэн</translation>
 <translation id="5166439563123238795">Chrome-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
 <translation id="5167819546851111585">Өнөөдөр та юу бодож байна вэ?</translation>
+<translation id="5169778651486082413">Утсан дээрээ Chrome-р нууц үгнүүдээ ашиглах</translation>
 <translation id="5170938038195470297">Таны профайл Google Chrome-ийн шинэ хувилбарынх тул ашиглаж болохгүй.
 
 Зарим функц ажиллахгүй байж болох юм. Өөр профайл тодорхойл эсвэл Chrome-ийн шинэ хувилбарыг хэрэглэнэ үү.</translation>
@@ -407,7 +410,6 @@
 Google Chrome таны тохируулгыг дахин сэргээх боломжгүй байна.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-тай ашиглах Chrome профайл сонгоно уу</translation>
 <translation id="5468572406162360320">Эдгээр онцлогийг сайжруулахад туслахын тулд Chrome таны түүнтэй хийсэн харилцан үйлдлүүдийг Google-д илгээнэ. Энэ өгөгдлийг хянагч хүмүүс уншиж, боловсруулж мөн тэмдэглэж магадгүй.</translation>
-<translation id="5510398294750420479">Та явж байх зуураа хамгаалалтын нэмэлт давхарга нэмэхийн тулд утсан дээрээ Chrome-г татаарай</translation>
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome-г илүү хурдан болгоорой</translation>
 <translation id="5550137307985173298">Chrome-д шинэ дүр төрх өгөхийн тулд Шинэ таб хуудсан дээрх Chrome-г тусгайлан өөрчлөх товчин дээр товшино уу</translation>
@@ -463,6 +465,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6008161919456049856">Таны Google Бүртгэлдээ хадгалсан нууц үг, төлбөрийн хэрэгсэл, хаягуудыг энэ төхөөрөмжөөс хасна. Тэдгээрийг Chrome-д дахин ашиглахын тулд буцаж нэвтэрнэ үү.</translation>
 <translation id="6009821354356307391">Араас нь лавлаж асуух</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-н хэрэгслийн<ph name="END_LINK" /> тусламжтайгаар та аюулгүй үзэх болон хяналтыг гартаа байлгах боломжтой</translation>
+<translation id="6018578474045062808">Утсан дээрээ Chrome-р Google Lens-г туршиж үзэх</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6025087594896450715">Google Chrome-г <ph name="REMAINING_TIME" />-н дараа эхлүүлнэ</translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -485,6 +488,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
 <translation id="6180522807229584611">Энэ таб нэмэлт нөөц ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chrome-д энэ табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="6182736845697986886">Шинэчлэлтийн серверийн дотоод алдааны улмаас суулгалт амжилтгүй болсон.</translation>
+<translation id="6183773856988300112">Chrome дахь Gemini таны табд ажиллаж, таны өгсөн даалгаврыг гүйцэтгэхийн тулд автоматаар үзэх онцлогийг ашигладаг. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6192058120268468905">Таны Chrome дахь бүртгэл</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
 
@@ -511,6 +515,8 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6418662306461808273">Chrome-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="6426623519983252346">Та дараагийн удаа Chrome iOS-г нээхдээ <ph name="FEATURE_NAME" />-г туршиж үзэхийг сануулсан сануулга харна.</translation>
 <translation id="6434035853014503219">Chrome-г өгөгдмөл хөтчөөрөө сонгосонд баярлалаа!</translation>
+<translation id="6438015621983209660">Утсан дээрээ Chrome-р Сайжруулсан аюулгүй хөтчийг өргөтгөх</translation>
+<translation id="6442774133615368941">Chrome iOS апп дээр харж буй зүйлээ камераараа худалдан авч, орчуулж, тодорхойлоорой</translation>
 <translation id="6473905796280459355">Chrome-н тухай хуудас руу очих</translation>
 <translation id="6481963882741794338">Хувийн болгох болон бусад зорилгоор Chrome болон Google-н бусад үйлчилгээг холбоно уу</translation>
 <translation id="648319183876919572">Сайжруулсан аюулгүй хөтөч нь таныг аюултай вебсайт болон таталтаас хамгаалахын тулд илүү ихийг хийдэг</translation>
@@ -648,6 +654,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7832314606810669113">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү. Таныг нэвтэрсний дараа энэ хавчуургыг Google Бүртгэлд тань хадгална.</translation>
 <translation id="7845233973568007926">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө компьютероо дахин эхлүүлэх ёстой.</translation>
 <translation id="7849037457735762883">Орхисон газраасаа үргэлжлүүлнэ үү: Chrome таныг дахин эхлүүлэх бүрд табуудыг тань сэргээж болно. Үүнийг асаахын тулд дараах руу очно уу</translation>
+<translation id="7869620795354551924">Хадгалсан нууц үгнүүдээ ашиглахын тулд QR кодыг уншуулаад, iOS-т зориулсан Chrome-г татаж, Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="7872446069773932638">Татаж байна... <ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="7886087451482920026">Google Lens-р текст сонгох</translation>
 <translation id="7887929410013642057">ХОУ-ы горимын товчлолуудыг үргэлж харуулах</translation>

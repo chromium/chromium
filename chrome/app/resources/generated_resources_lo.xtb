@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1125371304736839151">ສະແດງ Gemini ຢູ່ເທິງສຸດຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1125550662859510761">ຄວາມລະອຽດ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
+<translation id="1125816658532547876">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1125921926864945797">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="1128591060186966949">ແກ້ໄຂໂປຣແກຣມຊອກຫາ</translation>
 <translation id="1129348283834595293">ໄຊເບີພັງຄ໌</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ</translation>
 <translation id="1373176046406139583">ການເບິ່ງເຫັນຂອງອຸປະກອນທ່ານຈະຄວບຄຸມວ່າໃຜສາມາດແບ່ງປັນໃຫ້ກັບທ່ານໃນຕອນທີ່ໜ້າຈໍຂອງທ່ານຖືກປົດລັອກໄດ້ແດ່. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">ໃບຢັ້ງຢືນທີ່ເຄືອຂ່າຍຕ້ອງການ "<ph name="NETWORK_NAME" />" ບໍ່ໄດ້ຖືກຕິດຕັ້ງ ຫຼືໃຊ້ບໍ່ໄດ້ອີກ. ກະລຸນາເອົາໃບຢັ້ງຢືນໃໝ່ ແລະລອງເຊື່ອມຕໍ່ອີກ.</translation>
+<translation id="1374948751106271187">ເພີ່ມການປົກປ້ອງອີກຊັ້ນເມື່ອທ່ານເດີນທາງ</translation>
 <translation id="1375557162880614858">ທ່ານຕ້ອງການເປີດນຳໃຊ້ ChromeVox, ໂປຣແກຣມອ່ານໜ້າຈໍທີ່ມີມາໃນຕົວສຳລັບ ChromeOS Flex ບໍ່?</translation>
 <translation id="1375938286942050085">ການຕັ້ງຄ່າສຳເລັດແລ້ວ! ກຽມອຸປະກອນຂອງທ່ານໃຫ້ພ້ອມສຳລັບການຫຼິ້ນເກມຕໍ່ໄປ</translation>
 <translation id="137651782282853227">ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -989,7 +991,6 @@
 <translation id="1650801028905250434">ໄຟລ໌ຂອງທ່ານໃນໄດຣຟ໌ຂອງຂ້ອຍຈະຊິ້ງກັບ Chromebook ຂອງທ່ານໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າເຖິງໄດ້ໂດຍບໍ່ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ &gt; ໄຟລ໌.</translation>
 <translation id="1651008383952180276">ທ່ານຕ້ອງປ້ອນວະລີຜ່ານອັນດຽວກັນສອງເທື່ອ</translation>
 <translation id="1651609627703324721">ແຖບນີ້ກຳລັງນໍາສະເໜີເນື້ອຫາ VR ໄປຫາຊຸດຫູຟັງ</translation>
-<translation id="1651633344379798952">ລອງໃຊ້ Google Lens ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1652281434788353738">ຊ່າງຄິດ</translation>
 <translation id="1652326691684645429">ເປີດການນຳໃຊ້ການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="1652862280638399816">ເພື່ອໃຊ້ຕົວຈັດການລະຫັດຜ່ານດ້ວຍ Keychain ຂອງ macOS, ໃຫ້ເລີ່ມເປີດໃຊ້ Chromium ຄືນໃໝ່ ແລະ ອະນຸຍາດໃຫ້ມີການເຂົ້າເຖິງ Keychain. ແຖບຂອງທ່ານຈະເປີດຄືນໃໝ່ຫຼັງຈາກທີ່ເລີ່ມເປີດໃຊ້ໃໝ່.</translation>
@@ -1219,7 +1220,6 @@
 <translation id="1808805149659872686">ລາຍການໃໝ່</translation>
 <translation id="1809201888580326312">ທ່ານເລືອກທີ່ຈະບໍ່ບັນທຶກລະຫັດຜ່ານສຳລັບເວັບໄຊ ແລະ ແອັບເຫຼົ່ານີ້ແລ້ວ</translation>
 <translation id="1809734401532861917">ເພີ່ມບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງຂ້ອຍໃສ່ <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">ເພື່ອໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ໂທລະສັບຂອງທ່ານ, ໃຫ້ເຂົ້າໄປຕາມລະຫັດ QR, ດາວໂຫຼດ Chrome ສຳລັບ iOS ແລ້ວເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1810366086647840386">ເຊີບເວີຮູບພາບ</translation>
 <translation id="1811908311154949291">ເຟຣມທີ່ມີຮົ້ວກັ້ນຂອງໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">ບໍ່ສາມາດດຳເນີນການຕໍ່ໂດຍໃຊ້ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ໄດ້</translation>
@@ -1266,6 +1266,7 @@
 <translation id="183445248400150852">ເວັບໄຊຕ່າງໆໃຊ້ຄຸນສົມບັດນີ້ເພື່ອຍົກເລີກອິນພຸດແປ້ນພິມຂອງທ່ານ, ເຊັ່ນ: ສຳລັບເກມ ຫຼື ແອັບເດັສທັອບທາງໄກ</translation>
 <translation id="1834503245783133039">ການດາວໂຫຼດບໍ່ສຳເລັດ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">ກຳລັງອັບເກຣດ Linux</translation>
+<translation id="1837292628323740716">ປັບປຸງ Safe Browsing ໃຫ້ດີຂຶ້ນຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ປະຕິເສດຄຳຮ້ອງຂໍແລ້ວ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
 <translation id="1839021455997460752">ທີ່ຢູ່ອີເມວຂອງທ່ານ</translation>
@@ -1780,6 +1781,7 @@
 <translation id="2184272387334793084">ເຂົ້າສູ່ລະບົບເພື່ອຮັບລະຫັດຜ່ານ ແລະ ອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="2184515124301515068">ໃຫ້ Chrome ເລືອກວ່າເວັບໄຊສາມາດຫຼິ້ນສຽງໄດ້ເວລາໃດ (ແນະນຳ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2186539124645132614">ເລີ່ມການສົນທະນາໃໝ່ກັບ Gemini</translation>
 <translation id="2186711480981247270">ໜ້າທີ່ແບ່ງປັນມາຈາກອຸປະກອນອື່ນ</translation>
 <translation id="2187675480456493911">ຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນໃນບັນຊີຂອງທ່ານແລ້ວ. ລະບົບຈະບໍ່ຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າທີ່ຜູ້ໃຊ້ອື່ນແກ້ໄຂ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">ອັບເດດສ່ວນຂະຫຍາຍແລ້ວ</translation>
@@ -2442,6 +2444,7 @@
 <translation id="2627424346328942291">ບໍ່ສາມາດແບ່ງປັນໄດ້</translation>
 <translation id="2628258844236035475">ລຶບທີ່ຢູ່ເຮືອນຂອງທ່ານອອກຈາກຄຸນສົມບັດຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ບໍ?</translation>
 <translation id="2628770867680720336">ຈຳເປັນຕ້ອງຣີເຊັດ Chromebook ເປັນຄ່າໂຮງງານເພື່ອເປີດນຳໃຊ້ການດີບັກ ADB. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628874386573004005">ເລີ່ມການສົນທະນາໃໝ່ກັບ Gemini</translation>
 <translation id="2629227353894235473">ພັດທະນາແອັບ Android</translation>
 <translation id="2629437048544561682">ລຶບລ້າງແຄນວາສ</translation>
 <translation id="2631498379019108537">ສະແດງຕົວເລືອກການປ້ອນຂໍ້ມູນໃນຖ້ານ</translation>
@@ -3374,7 +3377,6 @@
 <translation id="3269612321104318480">ສີຂຽວອົມຟ້າ ແລະ ສີຂາວ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="3270965368676314374">ອ່ານ​, ​ປ່ຽນ​ແປງ​ ແລະ​ ລຶບ​ຮູບ​, ເພງ​, ​ແລະ ມີເດຍ​ອື່ນໆ​ຈາກ​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ</translation>
-<translation id="3273033807960054795">ຂະຫຍາຍ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="3275464924531706548">ຫຍໍ້ <ph name="HEADER" /> ລົງ</translation>
 <translation id="3275778809241512831">ກະແຈຄວາມປອດໄພພາຍໃນຂອງທ່ານບໍ່ປອດໄພໃນຂະນະນີ້. ກະລຸນາລຶບມັນອອກຈາກການບໍລິການຕ່າງໆທີ່ທ່ານໃຊ້ມັນກັບ. ເພື່ອແກ້ໄຂບັນຫານີ້, ກະລຸນາຣີເຊັດກະແຈຄວາມປອດໄພ.</translation>
 <translation id="3275778913554317645">ເປີດເປັນໜ້າຕ່າງ</translation>
@@ -5102,7 +5104,6 @@
 <translation id="4421932782753506458">ຟູ</translation>
 <translation id="4423376891418188461">ກູ້ຄືນການຕັ້ງຄ່າ</translation>
 <translation id="4423525817792153232">ຍິ່ງແຂ້ວຂອງທ່ານ</translation>
-<translation id="4424107154724312436">ລອງໃຊ້ Google Lens ຢູ່ iOS</translation>
 <translation id="4424262960694990728">ຕ້ອງດຳເນີນການ</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ການອະນຸຍາດໃຫ້ອຸປະກອນ ChromeOS ສົ່ງລາຍງານອັດຕະໂນມັດຈະຊ່ວຍໃຫ້ພວກເຮົາຈັດລຳດັບຄວາມສຳຄັນໄດ້ວ່າຈະແກ້ໄຂ ແລະ ປັບປຸງຫຍັງໃນ ChromeOS. ລາຍງານເຫຼົ່ານີ້ສາມາດຮວມເອົາຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ChromeOS ຫຼົ້ມຕອນໃດ, ມີການໃຊ້ຄຸນສົມບັດໃດ ແລະ ໂດຍປົກກະຕິແລ້ວໃຊ້ໜ່ວຍຄວາມຈຳເທົ່າໃດ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເລີ່ມ ຫຼື ຢຸດການອະນຸຍາດລາຍງານເຫຼົ່ານີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າອຸປະກອນ Chrome ຂອງທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບໂດເມນ, ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ໃນຄອນໂຊຜູ້ເບິ່ງແຍງ.<ph name="END_PARAGRAPH2" /></translation>
@@ -5580,7 +5581,6 @@
 <translation id="4767427586072640478">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສ່ວນຂະຫຍາຍທີ່ປິດການນຳໃຊ້ແລ້ວ.</translation>
 <translation id="4769632191812288342">ທ່ານກຳລັງໄດ້ຮັບການປົກປ້ອງແບບມາດຕະຖານ</translation>
 <translation id="4770119228883592393">ຂໍການອະນຸຍາດແລ້ວ, ກະລຸນາກົດ ⌘ + ຕົວເລືອກ + ລູກສອນລົງເພື່ອຕອບກັບ</translation>
-<translation id="4770755495532014179">ໃຊ້ລະຫັດຜ່ານນີ້ຢູ່ iPhone ຂອງທ່ານ</translation>
 <translation id="4772914216048388646">ເປັນລະບຽບ</translation>
 <translation id="4773112038801431077">ອັບເກຣດ Linux</translation>
 <translation id="4773122030389014189">ແບ່ງປັນກຸ່ມແຖບ “<ph name="GROUP_NAME" />”</translation>
@@ -6399,6 +6399,7 @@
 <translation id="5335370353987155592">ໃຊ້ Gemini ຢ່າງລະມັດລະວັງ ແລະ <ph name="BEGIN_LINK1" />ປອດໄພ<ph name="LINK_END1" />. ທ່ານຕ້ອງເປັນຜູ້ຮັບຜິດຊອບຕໍ່ການດຳເນີນການຂອງ Gemini ໃນລະຫວ່າງທີ່ເຮັດໜ້າວຽກ, ເຊິ່ງຮວມທັງຂໍ້ຜິດພາດ ແລະ <ph name="BEGIN_LINK2" />ຜົນໄດ້ຮັບທີ່ບໍ່ຄາດຄິດ<ph name="LINK_END2" /> ເຊັ່ນ: ການຊື້ຕ່າງໆ.</translation>
 <translation id="5336688142483283574">ໜ້ານີ້ຈະຖືກລຶບອອກຈາກປະຫວັດ ແລະ ການເຄື່ອນໄຫວໃນ <ph name="SEARCH_ENGINE" /> ຂອງທ່ານເຊັ່ນກັນ.</translation>
 <translation id="5336689872433667741">ເຄີເຊີ ແລະ ແຜ່ນສໍາຜັດ</translation>
+<translation id="5337035808300170502">ຂະໜາດຕົວຈິງ</translation>
 <translation id="5337207153202941678">ປິດໄຮໄລ້</translation>
 <translation id="5337771866151525739">ຕິດຕັ້ງໂດຍບຸກຄົນທີສາມແລ້ວ.</translation>
 <translation id="5337926771328966926">ຊື່ອຸປະກອນປັດຈຸບັນແມ່ນ <ph name="DEVICE_NAME" /></translation>
@@ -6463,6 +6464,7 @@
 <translation id="5388719243178419614">ບໍ່ສາມາດອັບໂຫຼດໄດ້. ປະມວນຜົນໄຟລ໌ຮູບບໍ່ສຳເລັດ.</translation>
 <translation id="5388885445722491159">ຈັບຄູ່ແລ້ວ</translation>
 <translation id="5389224261615877010">ຮຸ້ງ</translation>
+<translation id="538945906186309152">ເປີດໃຊ້ຄີລັດຂອງ Gemini</translation>
 <translation id="5389794555912875905">ເບິ່ງຄຳເຕືອນກ່ອນການເຂົ້າໄປຫາເວັບໄຊທີ່ບໍ່ປອດໄພ (ແນະນຳ)</translation>
 <translation id="5389943529251318913">ຫຼຸດຄວາມໄວເມົ້າລົງເຫຼືອ</translation>
 <translation id="5390112241331447203">ຮວມເອົາໄຟລ໌ system_logs.txt ທີ່ສົ່ງຢູ່ໃນລາຍງານຄຳຕິຊົມ.</translation>
@@ -6731,7 +6733,6 @@
 <translation id="556321030400250233">ໄຟລ໌ໃນເຄື່ອງ ຫຼື ທີ່ແບ່ງປັນ</translation>
 <translation id="5563234215388768762">ຊອກຫາໃນ Google ຫຼື ພິມ URL</translation>
 <translation id="5563824734298958390">ອອກຈາກກຸ່ມແຖບບໍ?</translation>
-<translation id="5564450015351086922">ລອງໃຊ້ Google Lens ຢູ່ iOS</translation>
 <translation id="5565735124758917034">ເປີດຢູ່</translation>
 <translation id="5568069709869097550">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="5568525251731145240">ລຶບຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດສຳລັບ <ph name="SITE_NAME" />, ເວັບໄຊທັງໝົດພາຍໃຕ້ມັນ ແລະ ແອັບທີ່ຕິດຕັ້ງໄວ້ແລ້ວບໍ?</translation>
@@ -7934,7 +7935,6 @@
 <translation id="6410328738210026208">ປ່ຽນ​​ຊ່ອງ ​ແລະ Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing ປົກປ້ອງທ່ານຈາກຜູ້ໂຈມຕີທີ່ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ: ຕິດຕັ້ງຊອບແວອັນຕະລາຍ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວ ເຊັ່ນ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ. ຖ້າທ່ານປິດມັນ, ກະລຸນາລະມັດລະວັງໃນເວລາເຂົ້າເບິ່ງເວັບໄຊທີ່ບໍ່ຄຸ້ນເຄີຍ ຫຼື ບໍ່ເປັນທີ່ຮູ້ຈັກ.</translation>
 <translation id="6411135999030237579">ກົດຄ້າງໄວ້ເພື່ອກົດປຸ່ມຊ້ຳໂດຍອັດຕະໂນມັດ</translation>
-<translation id="6411516120707127482">ລອງໃຊ້ Google Lens ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="6414618057231176439">ເລືອກເວີຊັນຂອງ <ph name="VM_NAME" /> ທີ່ຈະຕິດຕັ້ງ.</translation>
 <translation id="641469293210305670">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ</translation>
 <translation id="6415757856498750027">ພິມ "w" ເພື່ອໃຊ້ "ư"</translation>
@@ -7981,7 +7981,6 @@
 <translation id="6445450263907939268">ຖ້າທ່ານບໍ່ຢາກໄດ້ການປ່ຽນແປງເຫຼົ່ານີ້, ທ່ານສາມາດເອົາການຕັ້ງຄ່າຜ່ານມາຂອງທ່ານຄືນໄດ້.</translation>
 <translation id="6446213738085045933">ສ້າງທາງລັດເດັສທັອບ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
-<translation id="6449835059180426406">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານຢູ່ອຸປະກອນ iOS ທ່ານ</translation>
 <translation id="6450876761651513209">ປ່ຽນແປງການຕັ້ງຄ່າທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວຂອງທ່ານ</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ແລະ ອີກ 1 ແຖບ}other{<ph name="PAGE_TITLE" /> ແລະ ອີກ # ແຖບ}}</translation>
 <translation id="6451689256222386810">ຖ້າທ່ານລືມວະລີຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, <ph name="BEGIN_LINK" />ຣີເຊັດການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" />.</translation>
@@ -8462,6 +8461,7 @@
 <translation id="6783036716881942511">ເຊົາຈື່ອຸປະກອນນີ້ບໍ?</translation>
 <translation id="6783667414610055871">ການຕັ້ງຄ່າ Microsoft OneDrive</translation>
 <translation id="6784523122863989144">ຮອງຮັບໂປຣໄຟລ໌</translation>
+<translation id="678520006562636090">ລອງໃຊ້ Google Lens ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6785594991951195537">ໃຊ້ <ph name="PASSWORD_DOMAIN" /> ຂອງທ່ານ</translation>
 <translation id="6785739405821760313">ກຳລັງເບິ່ງໂຕະທີ່ບັນທຶກໄວ້. ກົດ tab ເພື່ອນຳທາງ.</translation>
 <translation id="6785915470941880363">ການເລື່ອນແບບກັບດ້ານ <ph name="LINK_BEGIN" />ເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -8892,7 +8892,6 @@
 <translation id="7066572364168923329">ເລືອກການຕັ້ງຄ່າຂອງ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="7067396782363924830">ສີແວດລ້ອມ</translation>
 <translation id="7067725467529581407">ຢ່າສະແດງສິ່ງນີ້ອີກ.</translation>
-<translation id="7067779359472606732">ສົ່ງການແຈ້ງເຕືອນໄປຫາ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="7068279399556423026">ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງແຖບຈາກອຸປະກອນອື່ນໆ</translation>
 <translation id="7068539819344620805">ຕອນນີ້ທ່ານສາມາດປັບແຕ່ງຮູບລັກໃໝ່ໃຫ້ກັບໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ທຸກເວລາຈາກເມນູປັບແຕ່ງ Chrome</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> ແລະ ແອັບອື່ນໆອີກສອງສາມແອັບຖືກບລັອກໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -10047,7 +10046,6 @@
 <translation id="786073089922909430">ການບໍລິການ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ດາວ​ໂຫຼດ</translation>
 <translation id="7861846108263890455">ພາສາບັນຊີ Google</translation>
-<translation id="7863211248337747225">ດາວໂຫຼດແອັບ</translation>
 <translation id="7864114920800968141">ໃນ <ph name="NUM_MIN" /> ນທ</translation>
 <translation id="7864539943188674973">ປິດການນຳໃຊ້ Bluetooth</translation>
 <translation id="7864825798076155402">ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານບໍ?</translation>
@@ -10373,7 +10371,6 @@
 <translation id="8068904756674285749">ໃຊ້ພາສາທີ່ໃຊ້ໃນຊີວິດປະຈຳວັນເພື່ອຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ ແລະ ຫາເວັບໄຊທີ່ທ່ານເຄີຍເຂົ້າເບິ່ງ. ທ່ານຍັງສາມາດຖາມຄຳຖາມ ແລະ ຮັບຄຳຕອບຕາມປະຫວັດການທ່ອງເວັບຂອງທ່ານໄດ້ນຳ. ການຕັ້ງຄ່າປິດຢູ່.</translation>
 <translation id="8070572887926783747">ການອະນຸຍາດສະຖານທີ່ຂອງ <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">ການຕອບສະໜອງສຳຜັດ</translation>
-<translation id="8071033114691184017">ໃຊ້ລະຫັດຜ່ານນີ້ຢູ່ iPhone ຂອງທ່ານ</translation>
 <translation id="8071432093239591881">ພິມເປັນຮູບພາບ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ຂໍ້ມູນແອັບສາມາດເປັນຂໍ້ມູນໃດໆກໍໄດ້ທີ່ແອັບໄດ້ບັນທຶກໄວ້ (ອີງຕາມການຕັ້ງຄ່າຂອງຜູ້ພັດທະນາ), ເຊິ່ງຮວມທັງລາຍຊື່ຜູ້ຕິດຕໍ່, ຂໍ້ຄວາມ ແລະ ຮູບພາບ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຈະບໍ່ນັບໃສ່ໂຄຕ້າການຈັດເກັບຂໍ້ມູນໃນ Drive ຂອງລູກທ່ານ.<ph name="END_PARAGRAPH2" />

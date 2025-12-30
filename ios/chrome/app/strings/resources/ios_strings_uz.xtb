@@ -595,7 +595,6 @@
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
 <translation id="3254806613790954367">Barcha qurilmalarda ochilgan oxirgi sahifa</translation>
 <translation id="325717987950204592">“Maxfiylik va xavfsizlik” bandini tanlang</translation>
-<translation id="3266338926702638258">Bu mahsulot uchun narxlar tarixini chiqarish</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
 <translation id="3273510436356991673">Bosh ekranni moslashtiring</translation>
 <translation id="3277021493514034324">Sayt manzilidan nusxa olindi</translation>
@@ -919,6 +918,7 @@
 <translation id="4568230126482344545">Oxirgi varaqlarni berkitish</translation>
 <translation id="4578835633387306383">Yoqish…</translation>
 <translation id="4580716718466706433">Parollar menejerini oching</translation>
+<translation id="4585751637295612750">Savolga kiritish uchun yangi varaq oching</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Saqlangan sahifalarga sahifa kiritildi}other{Saqlangan sahifalarga {count} ta sahifa kiritildi}}</translation>
 <translation id="459644946100970322">Narxga oid bildirishnomalar yoqilsinmi?</translation>

@@ -77,6 +77,7 @@
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken Chrome-informasjon du lagrer i Google-kontoen din</translation>
 <translation id="1122714970786750095">Elektronikk og elektrisk utstyr</translation>
 <translation id="1123753900084781868">Direkteteksting er ikke tilgjengelig akkurat nå</translation>
+<translation id="1124643885833329193">Nøyaktig plassering</translation>
 <translation id="112840717907525620">Bufferen for enhetsinnstillinger er OK</translation>
 <translation id="1131264053432022307">Bildet du kopierte</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – For å gå ut av fullskjerm, dra fra toppen og trykk på tilbakeknappen</translation>
@@ -893,6 +894,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2400263725572336749">Legg til et pass</translation>
 <translation id="2400271059665846158">Administrer stamkundekortene dine i Google Wallet</translation>
 <translation id="2400600116338235695">Kan be om å få koble til serielle porter</translation>
+<translation id="2403474027143565107">Nøyaktig</translation>
 <translation id="240450251994300576">Sekundær topptekstlogo</translation>
 <translation id="2404884497378469141">Prøv å kopiere filene på nytt</translation>
 <translation id="2413155254802890957">Gamle</translation>
@@ -997,6 +999,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2571488850200220306">For å ivareta sikkerheten kan den også se enhetens OS, nettleserversjon og hvilken programvare som er installert</translation>
 <translation id="2573170131138724450">TV-er</translation>
 <translation id="257674075312929031">Gruppér</translation>
+<translation id="2577522251608256362">Nabolag</translation>
 <translation id="2580031090587209073">Delingsalternativer</translation>
 <translation id="258027838577899739">Slett alt fra loggen</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> la til en fane</translation>
@@ -1283,6 +1286,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3082007635241601060">La Google bruke handlevognene dine for å finne personlig tilpassede rabatter hvis tilgjengelig</translation>
+<translation id="3085373848068196154">«<ph name="PROXY_INVALID_PROXY" />» er ikke en gyldig tjener.</translation>
 <translation id="3086269988715347183">Du har ikke godkjent <ph name="BLOCKED_URL" /> tidligere</translation>
 <translation id="3086579638707268289">Aktiviteten din på nettet overvåkes</translation>
 <translation id="3087734570205094154">Bunn</translation>
@@ -1627,6 +1631,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="361438452008624280">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Språket er ukjent eller støttes ikke.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="3615309852743236517">Manikyr og pedikyr</translation>
+<translation id="3620034424637552643">Brukes ofte for veibeskrivelser, leveringer med mer</translation>
 <translation id="3620239073311576716">Uniformer og arbeidstøy</translation>
 <translation id="3621401353678567613">For å få varsler om avslag på produkter du sporer, slå på varsler i innstillingene.</translation>
 <translation id="362276910939193118">Vis fullstendig logg</translation>
@@ -1894,6 +1899,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4036753017940930924">Tomter og landeiendommer</translation>
 <translation id="403724377879219932">Kan be om å få bruke andre enheter på det lokale nettverket</translation>
 <translation id="4039506337798853114">For å vise markøren, trykk på |<ph name="ACCELERATOR" />|</translation>
+<translation id="4042597221652780603">Omtrentlig</translation>
 <translation id="4045070493270310437">Åpne faner på nytt</translation>
 <translation id="4045226534284799755">Logg på Microsoft-kontoen din før du prøver på nytt</translation>
 <translation id="4045441967987592849">Gjenåpne</translation>
@@ -3212,6 +3218,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6164605812717770913">En forelder eller foresatt har sagt at du ikke kan besøke dette nettstedet. Du kan be hen om å oppheve blokkeringen.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6167577165590485365">Forrige forsøk på henting:</translation>
+<translation id="6171968084616623939">«<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />» er ikke en gyldig verdi.</translation>
 <translation id="617256461084925519">Google Chrome prøver å bekrefte at det er deg, så den kan fylle ut betalingsopplysningene dine.</translation>
 <translation id="6173208311907792313">Fullfør kjøpet med Windows Hello</translation>
 <translation id="6176387967264100435">Denne prisen er høy</translation>
@@ -3538,6 +3545,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6688851075017682769">Testadresse etter land</translation>
 <translation id="6689249931105087298">Relativ med svartpunktkomprimering</translation>
 <translation id="6689271823431384964">Chrome tilbyr å lagre kort i Google-kontoen din fordi du er logget på. Du kan endre dette i innstillingene. Kortinnehaverens navn kommer fra kontoen din.</translation>
+<translation id="6690688090329768424">«<ph name="PROXY_INVALID_DESTINATION" />» er ikke et gyldig destinasjonsmønster.</translation>
 <translation id="6691397311652656001">Frigjør mer enn <ph name="REQUIRED_FREE_DISK_SPACE" /> lagringsplass</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å finne enheten din i Google-kontoen</translation>
 <translation id="6695428916538794739">Action- og eventyrfilmer</translation>
@@ -4076,7 +4084,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="753556296624075801">Drevet av Google</translation>
 <translation id="753713322968419914">Vil du fjerne hjemmeadressen fra autofyll i Chrome?</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
-<translation id="7541043894191476250">Kontekstuelle oppgaver</translation>
 <translation id="7543525346216957623">Spør forelderen din</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Fiks tilkoblingsfeil</translation>
@@ -4285,6 +4292,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7870281855125116701">Fant en rabatt</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
 <translation id="787226752901403048">Logg på Chrome for å dele og bli med i fanegrupper og samarbeide om ideer</translation>
+<translation id="7874796722855317864">«<ph name="PROXY_UNKNOWN_CONDITION" />» er ikke en kjent betingelsestype.</translation>
 <translation id="7877007680666472091">ID-er for beskyttet innhold</translation>
 <translation id="7878562273885520351">Passordet ditt kan være kompromittert</translation>
 <translation id="7881044256965445977">Se etter og koble til enheter på det lokale nettverket</translation>
@@ -5009,6 +5017,7 @@ Mer informasjon:
 <translation id="9090243919347147717">Vedlegg</translation>
 <translation id="9090548458280093580">Søk i loggen ved hjelp av AI</translation>
 <translation id="9090993752571911635">Internettleverandører (ISP-er)</translation>
+<translation id="9092305980625216393">Brukes ofte for vær, lokale nyheter med mer</translation>
 <translation id="9093723786115107672">Nattøy</translation>
 <translation id="9094424186948667194">bruke andre apper og tjenester på denne enheten</translation>
 <translation id="9094544726794842788">Tommel ned åpner et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker disse resultatene</translation>

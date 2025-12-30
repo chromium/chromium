@@ -196,6 +196,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1125371304736839151">Mostra Gemini nella parte superiore del browser</translation>
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
+<translation id="1125816658532547876">Usa le tue password sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Sfondo e stile</translation>
 <translation id="1128591060186966949">Modifica motore di ricerca</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -565,6 +566,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1372841398847029212">Sincronizza con il tuo account</translation>
 <translation id="1373176046406139583">L'impostazione Visibilità del dispositivo ti consente di stabilire chi può condividere file con te mentre il tuo schermo è sbloccato. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Il certificato richiesto dalla rete "<ph name="NETWORK_NAME" />" non è installato o non è più valido. Richiedi un nuovo certificato e riprova a connetterti.</translation>
+<translation id="1374948751106271187">Aggiungi un ulteriore livello di protezione ovunque ti trovi</translation>
 <translation id="1375557162880614858">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Configurazione completata. Dopodiché prepara il tuo dispositivo per giocare</translation>
 <translation id="137651782282853227">Gli indirizzi salvati verranno visualizzati qui</translation>
@@ -990,7 +992,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1650801028905250434">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook in modo da aprirli senza connessione a internet. Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; File.</translation>
 <translation id="1651008383952180276">Devi inserire la stessa passphrase due volte</translation>
 <translation id="1651609627703324721">Questa scheda mostra contenuti VR su un visore</translation>
-<translation id="1651633344379798952">Prova Google Lens sul tuo smartphone</translation>
 <translation id="1652281434788353738">Pensieroso</translation>
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
 <translation id="1652862280638399816">Per usare Gestore delle password con il Portachiavi di macOS, riavvia Chromium e consenti l'accesso al Portachiavi. Le schede verranno riaperte dopo il riavvio.</translation>
@@ -1212,7 +1213,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1808805149659872686">Nuova voce</translation>
 <translation id="1809201888580326312">Hai scelto di non salvare le password per questi siti e app</translation>
 <translation id="1809734401532861917">Aggiungi preferiti, cronologia, password e altre impostazioni a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Per usare le password salvate sullo smartphone, segui il codice QR, scarica Chrome per iOS e accedi al tuo Account Google.</translation>
 <translation id="1810366086647840386">Server immagine</translation>
 <translation id="1811908311154949291">Frame isolato in incognito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non può continuare a utilizzare <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1259,6 +1259,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="183445248400150852">I siti usano questa funzionalità per eseguire l'override dell'input della tastiera, ad esempio per giochi o app desktop da remoto</translation>
 <translation id="1834503245783133039">Download non riuscito: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgrade di Linux</translation>
+<translation id="1837292628323740716">Migliora la Navigazione sicura su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive ha rifiutato la richiesta. Riprova più tardi.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1839021455997460752">Il tuo indirizzo email</translation>
@@ -3364,7 +3365,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3269612321104318480">Verde acqua e bianco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="3270965368676314374">Leggere, modificare ed eliminare foto, musica e altri contenuti multimediali del computer</translation>
-<translation id="3273033807960054795">Estendi la Navigazione sicura avanzata</translation>
 <translation id="3275464924531706548">Comprimi <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Il tuo token di sicurezza interno al momento non è sicuro. Rimuovilo dai servizi con cui l'hai utilizzato. Per risolvere il problema, reimposta il token di sicurezza.</translation>
 <translation id="3275778913554317645">Apri come finestra</translation>
@@ -5092,7 +5092,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4421932782753506458">Micio</translation>
 <translation id="4423376891418188461">Ripristina impostazioni</translation>
 <translation id="4423525817792153232">Mostra tutti i denti</translation>
-<translation id="4424107154724312436">Prova Google Lens su iOS</translation>
 <translation id="4424262960694990728">Azione richiesta</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che sono state utilizzate o sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" /></translation>
@@ -5570,7 +5569,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4767427586072640478">Scopri di più sulle estensioni disattivate.</translation>
 <translation id="4769632191812288342">Stai utilizzando la Protezione standard</translation>
 <translation id="4770119228883592393">Autorizzazione richiesta, premi ⌘ + Opzione + Freccia giù per rispondere</translation>
-<translation id="4770755495532014179">Usa questa password sul tuo iPhone</translation>
 <translation id="4772914216048388646">Ordinato</translation>
 <translation id="4773112038801431077">Esegui l'upgrade di Linux</translation>
 <translation id="4773122030389014189">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
@@ -6388,6 +6386,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5335370353987155592">Usa Gemini con attenzione e <ph name="BEGIN_LINK1" />in modo sicuro<ph name="LINK_END1" />. Sei responsabile delle azioni che Gemini esegue durante un'attività, inclusi errori e <ph name="BEGIN_LINK2" />risultati imprevisti<ph name="LINK_END2" />, ad esempio acquisti.</translation>
 <translation id="5336688142483283574">Anche questa pagina verrà rimossa dalla tua cronologia e dall'attività di <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursore e touchpad</translation>
+<translation id="5337035808300170502">Dimensioni effettive</translation>
 <translation id="5337207153202941678">Disattiva evidenziazione</translation>
 <translation id="5337771866151525739">Installata da una terza parte.</translation>
 <translation id="5337926771328966926">Il nome attuale del dispositivo è <ph name="DEVICE_NAME" /></translation>
@@ -6722,7 +6721,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="556321030400250233">file locale o condiviso</translation>
 <translation id="5563234215388768762">Cerca con Google o digita un URL</translation>
 <translation id="5563824734298958390">Uscire dal gruppo di schede?</translation>
-<translation id="5564450015351086922">Prova Google Lens su iOS</translation>
 <translation id="5565735124758917034">Attivo</translation>
 <translation id="5568069709869097550">Non riesco a effettuare l'accesso</translation>
 <translation id="5568525251731145240">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />, di tutti i relativi siti secondari e le app installate?</translation>
@@ -7922,7 +7920,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6410328738210026208">Cambia canale ed esegui Powerwash</translation>
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da utenti malintenzionati che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
 <translation id="6411135999030237579">Tieni premuto per ripetere automaticamente il tasto</translation>
-<translation id="6411516120707127482">Prova Google Lens sul tuo smartphone</translation>
 <translation id="6414618057231176439">Seleziona la versione di <ph name="VM_NAME" /> da installare.</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6415757856498750027">Digita "w" per ottenere "ư"</translation>
@@ -7969,7 +7966,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6445450263907939268">Se non volevi apportare queste modifiche, puoi ripristinare le impostazioni precedenti.</translation>
 <translation id="6446213738085045933">Crea collegamento sul desktop</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6449835059180426406">Usa le tue password sui tuoi dispositivi iOS</translation>
 <translation id="6450876761651513209">Modificare le impostazioni relative alla privacy</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 altra scheda}other{<ph name="PAGE_TITLE" /> e altre # schede}}</translation>
 <translation id="6451689256222386810">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
@@ -8450,6 +8446,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6783036716881942511">Rimuovere questo dispositivo?</translation>
 <translation id="6783667414610055871">Impostazioni di Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Il profilo è supportato</translation>
+<translation id="678520006562636090">Prova Google Lens sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Usa la tua <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Sono visualizzate le scrivanie salvate. Premi Tab per navigare.</translation>
 <translation id="6785915470941880363">Scorrimento invertito <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
@@ -8881,7 +8878,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7066572364168923329">Scegli la configurazione di <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Colori ambient</translation>
 <translation id="7067725467529581407">Non visualizzare più questo messaggio.</translation>
-<translation id="7067779359472606732">Promemoria inviato al tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Accedi per visualizzare le schede di altri dispositivi</translation>
 <translation id="7068539819344620805">Ora puoi dare un nuovo look al tuo browser in qualsiasi momento dal menu Personalizza Chrome</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> e altre app sono bloccate sul tuo <ph name="DEVICE_TYPE" /></translation>
@@ -10037,7 +10033,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="786073089922909430">Servizio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Download</translation>
 <translation id="7861846108263890455">Lingua dell'Account Google</translation>
-<translation id="7863211248337747225">Scarica l'app</translation>
 <translation id="7864114920800968141">Tra <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Disattiva Bluetooth</translation>
 <translation id="7864825798076155402">Salvare nel tuo Account Google?</translation>
@@ -10364,7 +10359,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8068904756674285749">Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione e trovare i siti che hai visitato. Puoi anche fare domande e ricevere risposte in base alla tua cronologia di navigazione. L'impostazione non è attiva.</translation>
 <translation id="8070572887926783747">Autorizzazione di accesso alla posizione di <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Feedback aptico</translation>
-<translation id="8071033114691184017">Usa questa password sul tuo iPhone</translation>
 <translation id="8071432093239591881">Stampa come immagine</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Per dati delle app si intende qualsiasi dato salvato nell'app (in base alle impostazioni sviluppatore), inclusi dati come contatti, messaggi e foto.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />I dati di backup non vengono considerati per la quota di spazio di archiviazione di Drive.<ph name="END_PARAGRAPH2" />
