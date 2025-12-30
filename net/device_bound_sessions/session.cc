@@ -20,6 +20,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/cookie_craving.h"
 #include "net/device_bound_sessions/host_patterns.h"
+#include "net/device_bound_sessions/inclusion_result.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -440,8 +441,7 @@ void Session::RecordAccess() {
 }
 
 bool Session::IncludesUrl(const GURL& url) const {
-  return inclusion_rules_.EvaluateRequestUrl(url) ==
-         SessionInclusionRules::kInclude;
+  return inclusion_rules_.EvaluateRequestUrl(url) == InclusionResult::kInclude;
 }
 
 bool Session::AllowedToInitiateRefresh(

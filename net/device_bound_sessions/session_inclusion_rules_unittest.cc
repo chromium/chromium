@@ -21,7 +21,6 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-using Result = SessionInclusionRules::InclusionResult;
 using RuleType = SessionParams::Scope::Specification::Type;
 
 // These tests depend on the registry_controlled_domains code, so assert ahead
@@ -42,7 +41,7 @@ class SessionInclusionRulesTest : public ::testing::Test {
  public:
   struct EvaluateUrlTestCase {
     const char* url;
-    Result expected_result;
+    InclusionResult expected_result;
   };
 
   struct AddUrlRuleTestCase {
@@ -123,21 +122,21 @@ TEST_F(SessionInclusionRulesTest, DefaultIncludeOriginMayNotIncludeSite) {
 
   CheckEvaluateUrlTestCases(
       {// URL not valid.
-       {"", Result::kExclude},
+       {"", InclusionResult::kExclude},
        // Origins match.
-       {"https://some.site.test", Result::kInclude},
+       {"https://some.site.test", InclusionResult::kInclude},
        // Path is allowed.
-       {"https://some.site.test/path", Result::kInclude},
+       {"https://some.site.test/path", InclusionResult::kInclude},
        // Not same scheme.
-       {"http://some.site.test", Result::kExclude},
+       {"http://some.site.test", InclusionResult::kExclude},
        // Not same host (same-site subdomain).
-       {"https://some.other.site.test", Result::kExclude},
+       {"https://some.other.site.test", InclusionResult::kExclude},
        // Not same host (superdomain).
-       {"https://site.test", Result::kExclude},
+       {"https://site.test", InclusionResult::kExclude},
        // Unrelated site.
-       {"https://unrelated.test", Result::kExclude},
+       {"https://unrelated.test", InclusionResult::kExclude},
        // Not same port.
-       {"https://some.site.test:8888", Result::kExclude}});
+       {"https://some.site.test:8888", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, DefaultIncludeOriginThoughMayIncludeSite) {
@@ -151,22 +150,23 @@ TEST_F(SessionInclusionRulesTest, DefaultIncludeOriginThoughMayIncludeSite) {
   // All expectations are as above. Even though including the site is allowed,
   // because the origin's host is its root eTLD+1, it is still limited to a
   // default origin inclusion_rules because it did not set include_site.
-  CheckEvaluateUrlTestCases({// URL not valid.
-                             {"", Result::kExclude},
-                             // Origins match.
-                             {"https://site.test", Result::kInclude},
-                             // Path is allowed.
-                             {"https://site.test/path", Result::kInclude},
-                             // Not same scheme.
-                             {"http://site.test", Result::kExclude},
-                             // Not same host (same-site subdomain).
-                             {"https://other.site.test", Result::kExclude},
-                             // Not same host (superdomain).
-                             {"https://test", Result::kExclude},
-                             // Unrelated site.
-                             {"https://unrelated.test", Result::kExclude},
-                             // Not same port.
-                             {"https://site.test:8888", Result::kExclude}});
+  CheckEvaluateUrlTestCases(
+      {// URL not valid.
+       {"", InclusionResult::kExclude},
+       // Origins match.
+       {"https://site.test", InclusionResult::kInclude},
+       // Path is allowed.
+       {"https://site.test/path", InclusionResult::kInclude},
+       // Not same scheme.
+       {"http://site.test", InclusionResult::kExclude},
+       // Not same host (same-site subdomain).
+       {"https://other.site.test", InclusionResult::kExclude},
+       // Not same host (superdomain).
+       {"https://test", InclusionResult::kExclude},
+       // Unrelated site.
+       {"https://unrelated.test", InclusionResult::kExclude},
+       // Not same port.
+       {"https://site.test:8888", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
@@ -195,22 +195,22 @@ TEST_F(SessionInclusionRulesTest, IncludeSite) {
 
   CheckEvaluateUrlTestCases(
       {// URL not valid.
-       {"", Result::kExclude},
+       {"", InclusionResult::kExclude},
        // Origins match.
-       {"https://site.test", Result::kInclude},
+       {"https://site.test", InclusionResult::kInclude},
        // Path is allowed.
-       {"https://site.test/path", Result::kInclude},
+       {"https://site.test/path", InclusionResult::kInclude},
        // Not same scheme (site is schemeful).
-       {"http://site.test", Result::kExclude},
+       {"http://site.test", InclusionResult::kExclude},
        // Same-site subdomain is allowed.
-       {"https://some.site.test", Result::kInclude},
-       {"https://some.other.site.test", Result::kInclude},
+       {"https://some.site.test", InclusionResult::kInclude},
+       {"https://some.other.site.test", InclusionResult::kInclude},
        // Not same host (superdomain).
-       {"https://test", Result::kExclude},
+       {"https://test", InclusionResult::kExclude},
        // Unrelated site.
-       {"https://unrelated.test", Result::kExclude},
+       {"https://unrelated.test", InclusionResult::kExclude},
        // Other port is allowed because whole site is included.
-       {"https://site.test:8888", Result::kInclude}});
+       {"https://site.test:8888", InclusionResult::kInclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, AddUrlRuleToOriginOnly) {
@@ -252,32 +252,34 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToOriginOnly) {
 
   CheckEvaluateUrlTestCases(
       {// Matches the rule.
-       {"https://some.site.test/static", Result::kExclude},
+       {"https://some.site.test/static", InclusionResult::kExclude},
        // A path under the rule's path prefix is subject to the rule.
-       {"https://some.site.test/static/some/thing", Result::kExclude},
+       {"https://some.site.test/static/some/thing", InclusionResult::kExclude},
        // These do not match the rule, so are subject to the basic rules (the
        // origin).
-       {"https://some.site.test/staticcccccccc", Result::kInclude},
-       {"https://other.site.test/static", Result::kExclude},
+       {"https://some.site.test/staticcccccccc", InclusionResult::kInclude},
+       {"https://other.site.test/static", InclusionResult::kExclude},
        // The more recently added rule wins out.
-       {"https://some.site.test/static/included", Result::kInclude},
-       {"https://some.site.test/valid_path", Result::kInclude},
+       {"https://some.site.test/static/included", InclusionResult::kInclude},
+       {"https://some.site.test/valid_path", InclusionResult::kInclude},
        // The wildcard matching is valid, but only matches the origin.
-       {"https://some.site.test/static/wildcard_match/", Result::kInclude},
+       {"https://some.site.test/static/wildcard_match/",
+        InclusionResult::kInclude},
        // The origin scoping takes precedence over the rule.
-       {"https://subdomain.site.test/static/wildcard_match/", Result::kExclude},
-       {"https://unrelated.test/", Result::kExclude},
-       {"https://site.test/", Result::kExclude},
-       {"https://other.test/", Result::kExclude},
-       {"https://some.site.test/static/https_rule/", Result::kExclude},
-       {"https://some.site.test:8000/", Result::kExclude}});
+       {"https://subdomain.site.test/static/wildcard_match/",
+        InclusionResult::kExclude},
+       {"https://unrelated.test/", InclusionResult::kExclude},
+       {"https://site.test/", InclusionResult::kExclude},
+       {"https://other.test/", InclusionResult::kExclude},
+       {"https://some.site.test/static/https_rule/", InclusionResult::kExclude},
+       {"https://some.site.test:8000/", InclusionResult::kExclude}});
 
   // Note that what matters is when the rule was added, not how specific the URL
   // path prefix is. Let's add another rule now to show that.
   CheckAddUrlRuleTestCases(
       {{RuleType::kExclude, "some.site.test", "/", SessionError::kSuccess}});
   CheckEvaluateUrlTestCases(
-      {{"https://some.site.test/static/included", Result::kExclude}});
+      {{"https://some.site.test/static/included", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
@@ -290,8 +292,9 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
 
   // Without any rules yet, the basic rules is just the origin, because
   // include_site was not set.
-  CheckEvaluateUrlTestCases({{"https://site.test/static", Result::kInclude},
-                             {"https://other.site.test", Result::kExclude}});
+  CheckEvaluateUrlTestCases(
+      {{"https://site.test/static", InclusionResult::kInclude},
+       {"https://other.site.test", InclusionResult::kExclude}});
 
   CheckAddUrlRuleTestCases(
       {{RuleType::kExclude, "excluded.site.test", "/",
@@ -306,19 +309,19 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
 
   CheckEvaluateUrlTestCases(
       {// Path is excluded by rule.
-       {"https://site.test/static", Result::kExclude},
+       {"https://site.test/static", InclusionResult::kExclude},
        // Session is origin-scoped, so this rule is ignored.
-       {"https://excluded.site.test", Result::kExclude},
+       {"https://excluded.site.test", InclusionResult::kExclude},
        // Session is origin-scoped, so this rule is ignored.
-       {"https://included.site.test", Result::kExclude},
+       {"https://included.site.test", InclusionResult::kExclude},
        // Rule does not apply to wrong scheme.
-       {"http://included.site.test", Result::kExclude},
+       {"http://included.site.test", InclusionResult::kExclude},
        // No rules applies to these URLs, so the basic
        // rules (origin) applies.
-       {"https://other.site.test", Result::kExclude},
-       {"https://site.test/stuff", Result::kInclude},
+       {"https://other.site.test", InclusionResult::kExclude},
+       {"https://site.test/stuff", InclusionResult::kInclude},
        // Origin scoping takes precedence over rule.
-       {"https://unrelated.test/", Result::kExclude}});
+       {"https://unrelated.test/", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
@@ -331,8 +334,9 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
   SetIncludeSite(true);
 
   // Without any rules yet, the basic rules is the site.
-  CheckEvaluateUrlTestCases({{"https://site.test/static", Result::kInclude},
-                             {"https://other.site.test", Result::kInclude}});
+  CheckEvaluateUrlTestCases(
+      {{"https://site.test/static", InclusionResult::kInclude},
+       {"https://other.site.test", InclusionResult::kInclude}});
 
   // Since the origin's host is the root eTLD+1, it is allowed to set rules that
   // affect URLs other than the setting origin (but still within the site).
@@ -347,18 +351,18 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
 
   CheckEvaluateUrlTestCases(
       {// Path is excluded by rule.
-       {"https://site.test/static", Result::kExclude},
+       {"https://site.test/static", InclusionResult::kExclude},
        // Rule excludes URL explicitly.
-       {"https://excluded.site.test", Result::kExclude},
+       {"https://excluded.site.test", InclusionResult::kExclude},
        // Rule includes URL explicitly.
-       {"https://included.site.test", Result::kInclude},
+       {"https://included.site.test", InclusionResult::kInclude},
        // Rule does not apply to wrong scheme.
-       {"http://included.site.test", Result::kExclude},
+       {"http://included.site.test", InclusionResult::kExclude},
        // No rule applies to these URLs, so the basic rules (site) applies.
-       {"https://other.site.test", Result::kInclude},
-       {"https://site.test/stuff", Result::kInclude},
+       {"https://other.site.test", InclusionResult::kInclude},
+       {"https://site.test/stuff", InclusionResult::kInclude},
        // Site scoping takes precedence over rule.
-       {"https://unrelated.test/", Result::kExclude}});
+       {"https://unrelated.test/", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingOrigin) {
@@ -381,17 +385,18 @@ TEST_F(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingOrigin) {
 
   EXPECT_EQ(params().specifications.size(), 1u);
 
-  CheckEvaluateUrlTestCases({// Path is excluded by rule.
-                             {"https://site.test/static", Result::kExclude},
-                             // Rejected rules
-                             {"https://excluded.site.test", Result::kExclude},
-                             {"https://included.site.test", Result::kExclude},
-                             // No rules applies to these URLs, so the basic
-                             // rules (which is only the origin) applies.
-                             {"https://other.site.test", Result::kExclude},
-                             {"https://site.test/stuff", Result::kInclude},
-                             // Site scoping takes precedence over rule.
-                             {"https://unrelated.test/", Result::kExclude}});
+  CheckEvaluateUrlTestCases(
+      {// Path is excluded by rule.
+       {"https://site.test/static", InclusionResult::kExclude},
+       // Rejected rules
+       {"https://excluded.site.test", InclusionResult::kExclude},
+       {"https://included.site.test", InclusionResult::kExclude},
+       // No rules applies to these URLs, so the basic
+       // rules (which is only the origin) applies.
+       {"https://other.site.test", InclusionResult::kExclude},
+       {"https://site.test/stuff", InclusionResult::kInclude},
+       // Site scoping takes precedence over rule.
+       {"https://unrelated.test/", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, UrlRuleParsing) {
@@ -548,17 +553,19 @@ TEST_F(SessionInclusionRulesTest, NonstandardPort) {
   CheckMayIncludeSite(true);
 
   // Without any URL rules, the default origin rule allows only the same origin.
-  CheckEvaluateUrlTestCases({{"https://site.test", Result::kExclude},
-                             {"https://site.test:8888", Result::kInclude},
-                             {"https://other.site.test", Result::kExclude}});
+  CheckEvaluateUrlTestCases(
+      {{"https://site.test", InclusionResult::kExclude},
+       {"https://site.test:8888", InclusionResult::kInclude},
+       {"https://other.site.test", InclusionResult::kExclude}});
 
   // If we include_site, then same-site URLs regardless of port number are
   // included.
   SetIncludeSite(true);
-  CheckEvaluateUrlTestCases({{"https://site.test", Result::kInclude},
-                             {"https://site.test:8888", Result::kInclude},
-                             {"https://site.test:1234", Result::kInclude},
-                             {"https://other.site.test", Result::kInclude}});
+  CheckEvaluateUrlTestCases(
+      {{"https://site.test", InclusionResult::kInclude},
+       {"https://site.test:8888", InclusionResult::kInclude},
+       {"https://site.test:1234", InclusionResult::kInclude},
+       {"https://other.site.test", InclusionResult::kInclude}});
 
   // However, adding URL rules to an inclusion_rules based on such an origin may
   // lead to unintuitive outcomes. It is not possible to specify a rule that
@@ -580,15 +587,15 @@ TEST_F(SessionInclusionRulesTest, NonstandardPort) {
   CheckEvaluateUrlTestCases(
       {// This is same-origin but gets caught in the "site.test" rule because
        // the rule didn't specify a port.
-       {"https://site.test:8888", Result::kExclude},
+       {"https://site.test:8888", InclusionResult::kExclude},
        // This is same-site but gets caught in the "site.test" rule because
        // the rule didn't specify a port.
-       {"https://site.test:1234", Result::kExclude},
+       {"https://site.test:1234", InclusionResult::kExclude},
        // Same-site is included by basic rules.
-       {"https://other.site.test", Result::kInclude},
+       {"https://other.site.test", InclusionResult::kInclude},
        // Also excluded explicitly by rule.
-       {"https://site.test", Result::kExclude},
-       {"https://site.test:443", Result::kExclude}});
+       {"https://site.test", InclusionResult::kExclude},
+       {"https://site.test:443", InclusionResult::kExclude}});
 }
 
 TEST_F(SessionInclusionRulesTest, ToFromProto) {

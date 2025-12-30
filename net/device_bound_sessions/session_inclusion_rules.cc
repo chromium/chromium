@@ -30,11 +30,9 @@ bool IsIncludeSiteAllowed(const url::Origin& origin) {
   return !domain_and_registry.empty() && origin.host() == domain_and_registry;
 }
 
-proto::RuleType GetRuleTypeProto(
-    SessionInclusionRules::InclusionResult result) {
-  return result == SessionInclusionRules::InclusionResult::kInclude
-             ? proto::RuleType::INCLUDE
-             : proto::RuleType::EXCLUDE;
+proto::RuleType GetRuleTypeProto(InclusionResult result) {
+  return result == InclusionResult::kInclude ? proto::RuleType::INCLUDE
+                                             : proto::RuleType::EXCLUDE;
 }
 
 std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
@@ -49,11 +47,11 @@ std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
   return std::nullopt;
 }
 
-std::string RuleTypeToString(SessionInclusionRules::InclusionResult rule_type) {
+std::string RuleTypeToString(InclusionResult rule_type) {
   switch (rule_type) {
-    case SessionInclusionRules::InclusionResult::kExclude:
+    case InclusionResult::kExclude:
       return "exclude";
-    case SessionInclusionRules::InclusionResult::kInclude:
+    case InclusionResult::kInclude:
       return "include";
   }
 }
@@ -107,8 +105,8 @@ SessionInclusionRules::Create(const url::Origin& origin,
   for (const auto& spec : scope_params.specifications) {
     const auto inclusion_result =
         spec.type == SessionParams::Scope::Specification::Type::kExclude
-            ? SessionInclusionRules::InclusionResult::kExclude
-            : SessionInclusionRules::InclusionResult::kInclude;
+            ? InclusionResult::kExclude
+            : InclusionResult::kInclude;
     SessionError::ErrorType add_url_rule_result =
         rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path);
     if (add_url_rule_result != SessionError::kSuccess) {
@@ -121,7 +119,7 @@ SessionInclusionRules::Create(const url::Origin& origin,
     // prevent them from ever refreshing when a cookie expires. We intentionally
     // don't return an error if the rule is not valid or add a CHECK, because a
     // refresh URL is allowed to be outside an origin-scoped session.
-    rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
+    rules.AddUrlRuleIfValid(InclusionResult::kExclude,
                             refresh_endpoint.GetHost(),
                             refresh_endpoint.GetPath());
   }
@@ -197,15 +195,15 @@ SessionError::ErrorType SessionInclusionRules::AddUrlRuleIfValid(
   return SessionError::kSuccess;
 }
 
-SessionInclusionRules::InclusionResult
-SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
+InclusionResult SessionInclusionRules::EvaluateRequestUrl(
+    const GURL& url) const {
   bool same_origin = origin_.IsSameOriginWith(url);
   if (include_site_ && !include_site_->IsSameSiteWith(url)) {
-    return SessionInclusionRules::kExclude;
+    return InclusionResult::kExclude;
   }
 
   if (!include_site_ && !same_origin) {
-    return SessionInclusionRules::kExclude;
+    return InclusionResult::kExclude;
   }
 
   // Evaluate against specific rules, most-recently-added first.
@@ -219,7 +217,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     }
   }
 
-  return SessionInclusionRules::kInclude;
+  return InclusionResult::kInclude;
 }
 
 bool SessionInclusionRules::AllowsRefreshForInitiator(

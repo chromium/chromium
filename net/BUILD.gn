@@ -474,6 +474,7 @@ component("net") {
     "cookies/unique_cookie_key.cc",
     "cookies/unique_cookie_key.h",
     "device_bound_sessions/deletion_reason.h",
+    "device_bound_sessions/inclusion_result.h",
     "device_bound_sessions/session_access.cc",
     "device_bound_sessions/session_access.h",
     "device_bound_sessions/session_key.cc",
