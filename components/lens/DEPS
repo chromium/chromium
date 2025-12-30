@@ -1,4 +1,6 @@
 include_rules = [
+  "+chrome/browser/page_content_annotations",
+  "+chrome/browser/profiles",
   "+components/base32",
   "+components/optimization_guide/content/browser",
   "+components/pdf/browser",

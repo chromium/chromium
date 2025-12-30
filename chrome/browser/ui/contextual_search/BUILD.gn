@@ -23,6 +23,8 @@ source_set("contextual_search") {
 
   deps = [
     "//base",
+    "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/profiles",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
     "//components/optimization_guide/content/browser",

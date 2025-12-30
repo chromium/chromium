@@ -64,9 +64,8 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
-  // empty frame_metadata. Only needed for the Chromnient use case, lower
-  // priority to implement.
-  void GetInitialPageContextEligibility(GetApcResultCallback callback);
+  // empty frame_metadata.
+  bool GetInitialPageContextEligibility();
 
   // Returns whether the page is context eligible based on the latest cached
   // state. If the page context eligibility API has not been loaded, this will
