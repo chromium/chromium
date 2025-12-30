@@ -70,7 +70,6 @@ android_library("java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/favicon/android:java",
     "//components/prefs/android:java",
-    "//components/privacy_sandbox/android:java",
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
     "//components/user_prefs/android:java",

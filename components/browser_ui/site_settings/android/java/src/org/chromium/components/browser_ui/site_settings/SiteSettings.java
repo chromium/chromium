@@ -88,13 +88,6 @@ public class SiteSettings extends BaseSiteSettingsFragment
             }
         }
 
-        if (shouldShowTrackingProtectionUi(getSiteSettingsDelegate())) {
-            Preference thirdPartyCookiesPref = findPreference(Type.THIRD_PARTY_COOKIES);
-            thirdPartyCookiesPref.setVisible(false);
-            Preference trackingProtectionPref = findPreference(Type.TRACKING_PROTECTION);
-            trackingProtectionPref.setVisible(true);
-        }
-
         // Remove unsupported settings categories.
         for (@SiteSettingsCategory.Type int type = 0;
                 type < SiteSettingsCategory.Type.NUM_ENTRIES;
@@ -104,10 +97,6 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 getPreferenceScreen().removePreference(pref);
             }
         }
-    }
-
-    private static boolean shouldShowTrackingProtectionUi(SiteSettingsDelegate delegate) {
-        return delegate.shouldShowTrackingProtectionUi();
     }
 
     private void updatePreferenceStates() {
@@ -223,23 +212,13 @@ public class SiteSettings extends BaseSiteSettingsFragment
         if (p != null) p.setOnPreferenceClickListener(this);
         p = findPreference(Type.ZOOM);
         if (p != null) p.setOnPreferenceClickListener(this);
-        // Handle Tracking Protection separately.
-        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
-            p = findPreference(Type.TRACKING_PROTECTION);
-            if (p != null) {
-                p.setSummary(
-                        ContentSettingsResources.getTrackingProtectionListSummary(
-                                getSiteSettingsDelegate()
-                                        .isBlockAll3pcEnabledInTrackingProtection()));
-            }
-        }
 
         // For the permission autorevocation switch.
-        ChromeSwitchPreference switch_pref =
+        ChromeSwitchPreference switchPref =
                 (ChromeSwitchPreference) findPreference(PERMISSION_AUTOREVOCATION_PREF);
-        if (switch_pref != null) {
-            switch_pref.setChecked(getSiteSettingsDelegate().isPermissionAutorevocationEnabled());
-            switch_pref.setOnPreferenceChangeListener(
+        if (switchPref != null) {
+            switchPref.setChecked(getSiteSettingsDelegate().isPermissionAutorevocationEnabled());
+            switchPref.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
                         boolean boolValue = (boolean) newValue;
                         getSiteSettingsDelegate().setPermissionAutorevocationEnabled(boolValue);
@@ -299,14 +278,11 @@ public class SiteSettings extends BaseSiteSettingsFragment
         // Always remove the divider as the search is based on containment style.
         indexData.removeEntry(PreferenceParser.createUniqueId(prefFragment, "divider"));
 
-        boolean showTrackingProtection = shouldShowTrackingProtectionUi(delegate);
         for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {
             if (SiteSettingsCategory.contentSettingsType(prefCategory) < 0) continue;
 
             String key = SiteSettingsCategory.preferenceKey(prefCategory);
-            if (!delegate.isCategoryVisible(prefCategory)
-                    || (showTrackingProtection && prefCategory == Type.THIRD_PARTY_COOKIES)
-                    || (!showTrackingProtection && prefCategory == Type.TRACKING_PROTECTION)) {
+            if (!delegate.isCategoryVisible(prefCategory)) {
                 indexData.removeEntry(PreferenceParser.createUniqueId(prefFragment, key));
                 continue;
             }

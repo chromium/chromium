@@ -2216,53 +2216,5 @@
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629" desc="Taxonomy Member. Meaning: [holiday &amp; vacation packages, these typically include transportation &amp; accommodation and sometimes meals; also theme or activity-based travel packages] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3495940381581141578">
     Vacation Offers
   </message>
-
-  <!-- Tracking Protection -->
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="Describes how Tracking Protection in Chrome works. Part of the Tracking Protection settings page." formatter_data="android_java">
-    Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
-  </message>
-
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="Title of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
-    Chrome automatically limits third-party cookies
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_DESCRIPTION" desc="Description of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
-    Most sites can’t use third-party cookies to track you as you browse, and sites can’t use third-party cookies in Incognito mode.
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_TWO_TITLE" desc="Title of the second explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
-    Most sites should work as expected
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION" desc="Description of the second explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
-    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ADVANCED_CATEGORY" desc="Category title for advanced settings on the Tracking Protection settings page." formatter_data="android_java">
-    Advanced
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_BLOCK_COOKIES_TOGGLE_TITLE" desc="Title of the toggle to block all third-party cookies on the Tracking Protection page." formatter_data="android_java">
-    Block all third-party cookies
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_BLOCK_COOKIES_TOGGLE_SUMMARY" desc="Description of the toggle to block all third-party cookies on the Tracking Protection page." formatter_data="android_java">
-    Features on some sites may not work
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="Title of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page." formatter_data="android_java">
-    Sites allowed to use third-party cookies
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_DESCRIPTION" desc="Description of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page. Explains how to use a wildcard to create an exception for an entire domain." formatter_data="android_java">
-    Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_NEVER_EXPIRES_LABEL" desc="Label on an exception for allowing third-party cookies that indicates that it never expires." formatter_data="android_java">
-    Does not expire
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_EXPIRES_TODAY_LABEL" desc="Label on an exception for allowing third-party cookies that indicates that it expires today." formatter_data="android_java">
-    Expires today
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_EXPIRES_LABEL" desc="Label on an exception for allowing third-party cookies that indicates that it expires in a specific number of days." formatter_data="android_java">
-    {COUNT, plural,
-      =1 {Expires tomorrow}
-      other {Expires in # days}
-    }
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_DELETE_SITE_LABEL" desc="Accessibility label on an exception for allowing third-party cookies to delete it." formatter_data="android_java">
-    Delete site <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
-  </message>
 </grit-part>
 <!-- LINT.ThenChange(/components/privacy_sandbox_strings.grd) -->

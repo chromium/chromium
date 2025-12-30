@@ -146,7 +146,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &commerce::kShoppingList,
     &commerce::kShoppingPDPMetrics,
     &content_capture::features::kContentCaptureSendMetadataForDataShare,
-    &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &credential_management::features::kCredentialManagementThirdPartyWebApiRequestForwarding,

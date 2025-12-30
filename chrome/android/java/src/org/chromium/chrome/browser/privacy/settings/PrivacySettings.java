@@ -101,7 +101,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
-    @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
     private static final String PREF_ADVANCED_PROTECTION_INFO = "advanced_protection_info";
 
     private IncognitoLockSettings mIncognitoLockSettings;
@@ -253,11 +252,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         syncAndServicesLink.setSummary(buildFooterString());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
-        if (showTrackingProtectionUi()) {
-            if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
-            Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
-            trackingProtection.setVisible(true);
-        } else if (thirdPartyCookies != null) {
+        if (thirdPartyCookies != null) {
             thirdPartyCookies
                     .getExtras()
                     .putString(SingleCategorySettings.EXTRA_CATEGORY, thirdPartyCookies.getKey());
@@ -463,14 +458,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());
 
-        Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
-        if (trackingProtection != null) {
-            trackingProtection.setSummary(
-                    ContentSettingsResources.getTrackingProtectionListSummary(
-                            UserPrefs.get(getProfile())
-                                    .getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)));
-        }
-
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
         if (thirdPartyCookies != null) {
             thirdPartyCookies.setSummary(
@@ -484,10 +471,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                 getProfile(), ContentSettingsType.JAVASCRIPT_OPTIMIZER)
                         ? R.string.website_settings_category_javascript_optimizer_allowed_list
                         : R.string.website_settings_category_javascript_optimizer_blocked_list);
-    }
-
-    private static boolean showTrackingProtectionUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     /** Shows the advanced-protection-section if needed. */
@@ -627,12 +610,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                         var textId = httpsFirstLegacySummaryId(isAdvancedProtectionEnabled());
                         updateEntrySummaryForKey(
                                 PREF_HTTPS_FIRST_MODE_LEGACY, context.getString(textId), indexData);
-                    }
-
-                    if (showTrackingProtectionUi()) {
-                        indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_COOKIES));
-                    } else {
-                        indexData.removeEntry(getUniqueId(PREF_TRACKING_PROTECTION));
                     }
 
                     if (shouldHideAdvancedProtectionInfoPref()) {

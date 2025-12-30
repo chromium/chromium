@@ -367,16 +367,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
-    }
-
-    @Override
-    public boolean isBlockAll3pcEnabledInTrackingProtection() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
-    }
-
-    @Override
     public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
         mPrivacySandboxBridge.setRelatedWebsiteSetsDataAccessEnabled(enabled);
     }

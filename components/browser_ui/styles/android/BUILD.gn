@@ -164,7 +164,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_desktop_windows.xml",
     "java/res/drawable/ic_dino.xml",
     "java/res/drawable/ic_dns_24dp.xml",
-    "java/res/drawable/ic_domain_verification_24dp.xml",
     "java/res/drawable/ic_done_blue.xml",
     "java/res/drawable/ic_download.xml",
     "java/res/drawable/ic_drive_document_24dp.xml",

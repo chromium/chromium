@@ -28,7 +28,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -53,7 +52,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -319,27 +317,6 @@ public class PrivacySettingsFragmentTest {
                     recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
                 });
         onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
-    public void testTrackingProtection() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        // Verify that the 3PC and DNT rows are shown instead of Tracking Protection.
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference trackingProtectionPreference =
-                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
-        assertTrue(trackingProtectionPreference.isVisible());
-        onView(withText(R.string.third_party_cookies_link_row_label)).check(matches(isDisplayed()));
-
-        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
-        assertTrue(dntPreference.isVisible());
-
-        Preference thirdPartyCookiesPreference =
-                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
-        assertFalse(thirdPartyCookiesPreference.isVisible());
     }
 
     @Test

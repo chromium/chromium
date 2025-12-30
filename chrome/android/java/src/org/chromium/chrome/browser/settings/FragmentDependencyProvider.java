@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
-import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,7 +52,6 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -174,11 +172,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     (AutofillOptionsFragment) fragment,
                     (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
                     () -> ApplicationLifetime.terminate(true));
-        }
-        if (fragment instanceof TrackingProtectionSettings) {
-            TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
-            tpFragment.setTrackingProtectionDelegate(
-                    new ChromeTrackingProtectionDelegate(mProfile));
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)

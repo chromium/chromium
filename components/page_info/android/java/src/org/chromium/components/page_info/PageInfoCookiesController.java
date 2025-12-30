@@ -45,9 +45,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
     private @Nullable Website mWebsite;
-    private final boolean mBlockAll3pc;
-    private boolean mIsIncognito;
-    private boolean mIsModeBUi;
     private final boolean mIsSiteSettingsAvailable;
     private @Nullable Integer mDaysUntilExpirationForTesting;
     private @Nullable Collection<Website> mRwsInfoForTesting;
@@ -57,11 +54,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
             PageInfoRowView rowView,
             PageInfoControllerDelegate delegate) {
         super(delegate);
-
-        mBlockAll3pc = delegate.allThirdPartyCookiesBlockedTrackingProtection();
-        mIsIncognito = delegate.isIncognito();
-
-        mIsModeBUi = delegate.showTrackingProtectionUi();
 
         mMainController = mainController;
         mRowView = rowView;
@@ -106,9 +98,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                         /* onFeedbackLinkClicked= */ delegate::showCookieFeedback,
                         /* disableCookieDeletion= */ isDeletionDisabled(),
                         /* hostName= */ mMainController.getURL().getHost(),
-                        /* blockAll3pc= */ mBlockAll3pc,
-                        /* isIncognito= */ mIsIncognito,
-                        /* isModeBUi= */ mIsModeBUi,
                         /* daysUntilExpirationForTesting= */ mDaysUntilExpirationForTesting);
         mSubPage.setParams(params, delegate);
         mSubPage.updateState(mControlsState, mEnforcement, mExpiration);
@@ -200,9 +189,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     @Override
     public void onHighlightCookieControl(boolean shouldHighlight) {
-        if (!mIsModeBUi) {
-            mShouldDisplaySiteBreakageString = shouldHighlight;
-        }
+        mShouldDisplaySiteBreakageString = shouldHighlight;
         mRowView.updateSubtitle(getRowViewSubtitle());
     }
 
@@ -226,20 +213,16 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     private @Nullable CharSequence getRowViewSubtitle() {
         var context = mRowView.getContext();
-        if (mEnforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT
-                || mControlsState == CookieControlsState.ALLOWED3PC) {
+        if (mControlsState == CookieControlsState.ALLOWED3PC) {
             return context.getString(R.string.page_info_cookies_subtitle_allowed);
         } else if (mControlsState == CookieControlsState.BLOCKED3PC) {
-            if (mIsModeBUi && !mBlockAll3pc) {
-                return context.getString(
-                        R.string.page_info_tracking_protection_subtitle_cookies_limited);
-            } else if (!mIsModeBUi && mShouldDisplaySiteBreakageString) {
+            if (mShouldDisplaySiteBreakageString) {
                 return context.getString(
                         R.string.page_info_cookies_subtitle_blocked_high_confidence);
             }
             return context.getString(R.string.page_info_cookies_subtitle_blocked);
         }
-        // Tracking protections UI and 3PC controls hidden UI have no subtitle.
+        // 3PC controls hidden UI have no subtitle.
         return null;
     }
 
@@ -249,14 +232,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     public void setEnforcementForTesting(@CookieControlsEnforcement int enforcement) {
         mEnforcement = enforcement;
-    }
-
-    public void setIsIncognitoForTesting(boolean isIncognito) {
-        mIsIncognito = isIncognito;
-    }
-
-    public void setIsModeBUiForTesting(boolean isModeBUi) {
-        mIsModeBUi = isModeBUi;
     }
 
     public void setControlsStateForTesting(@CookieControlsState int controlsState) {

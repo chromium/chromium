@@ -1350,25 +1350,6 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /** Test that showing the Site Settings menu contains the "Tracking protection" row. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
-    public void testSiteSettingsMenuWithTrackingProtectionEnabled() {
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
-        final Preference trackingProtectionPreference =
-                websitePreferences.findPreference("tracking_protection");
-        assertNotNull(trackingProtectionPreference);
-        Assert.assertEquals(
-                trackingProtectionPreference.getTitle(),
-                websitePreferences
-                        .getContext()
-                        .getString(R.string.third_party_cookies_link_row_label));
-        settingsActivity.finish();
-    }
-
     /** Test that showing the Site Settings menu contains the "Anti-abuse" row. */
     @Test
     @SmallTest
@@ -1390,7 +1371,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(40, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(39, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -4840,21 +4821,21 @@ public class SiteSettingsTest {
         /** Verify {@link ContentSettingsResources} is set correctly. */
         private void assertRadioButtonTitleAndSummary(
                 SingleCategorySettings singleCategorySettings) {
-            BinaryStatePermissionPreference radio_button =
+            BinaryStatePermissionPreference radioButton =
                     singleCategorySettings.findPreference(
                             SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
-            assertThat(radio_button).isNotNull();
+            assertThat(radioButton).isNotNull();
 
             Assert.assertEquals(
                     "Preference text is not set correctly.",
                     ContentSettingsResources.getBinaryStateSettingResourceIDs(mContentSettingsType)[
                             0],
-                    radio_button.getDescriptionIds()[0]);
+                    radioButton.getDescriptionIds()[0]);
             Assert.assertEquals(
                     "Preference text is not set correctly.",
                     ContentSettingsResources.getBinaryStateSettingResourceIDs(mContentSettingsType)[
                             1],
-                    radio_button.getDescriptionIds()[1]);
+                    radioButton.getDescriptionIds()[1]);
         }
     }
 

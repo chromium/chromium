@@ -60,9 +60,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private @Nullable CharSequence mHostName;
-    private boolean mIsModeBUi;
-    private boolean mBlockAll3pc;
-    private boolean mIsIncognito;
     // Sets a constant # of days until expiration to prevent test flakiness.
     private @Nullable Integer mDaysUntilExpirationForTesting;
 
@@ -74,9 +71,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public final Callback<Activity> onFeedbackLinkClicked;
         public final boolean disableCookieDeletion;
         public final CharSequence hostName;
-        public final boolean blockAll3pc;
-        public final boolean isIncognito;
-        public final boolean isModeBUi;
         public final @Nullable Integer daysUntilExpirationForTesting;
 
         public PageInfoCookiesViewParams(
@@ -86,9 +80,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 Callback<Activity> onFeedbackLinkClicked,
                 boolean disableCookieDeletion,
                 CharSequence hostName,
-                boolean blockAll3pc,
-                boolean isIncognito,
-                boolean isModeBUi,
                 @Nullable Integer daysUntilExpirationForTesting) {
             this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
             this.onClearCallback = onClearCallback;
@@ -96,9 +87,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             this.onFeedbackLinkClicked = onFeedbackLinkClicked;
             this.disableCookieDeletion = disableCookieDeletion;
             this.hostName = hostName;
-            this.blockAll3pc = blockAll3pc;
-            this.isIncognito = isIncognito;
-            this.isModeBUi = isModeBUi;
             this.daysUntilExpirationForTesting = daysUntilExpirationForTesting;
         }
     }
@@ -143,9 +131,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     @Initializer
     public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        mBlockAll3pc = params.blockAll3pc;
-        mIsIncognito = params.isIncognito;
-        mIsModeBUi = params.isModeBUi;
         mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         mDeleteDisabled = params.disableCookieDeletion;
         mOnClearCallback = params.onClearCallback;
@@ -170,24 +155,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     private void setCookieSummary() {
         mCookieSummary.setVisible(true);
-        int id;
-        if (!mIsModeBUi) {
-            // Pre Mode B description: "Cookies and other site data are used to remember you..."
-            id = R.string.page_info_cookies_description;
-        } else if (mIsIncognito) {
-            // Description of chrome blocking sites: "Chrome blocks sites..."
-            id = R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
-        } else if (mBlockAll3pc) {
-            // Description of user blocking sites: "You blocked sites..."
-            id = R.string.page_info_tracking_protection_blocked_cookies_description;
-        } else {
-            // Description of Chrome limiting cookies: "Chrome limits most sites...""
-            id = R.string.page_info_tracking_protection_description;
-        }
-
         mCookieSummary.setSummary(
                 SpanApplier.applySpans(
-                        getString(id),
+                        getString(R.string.page_info_cookies_description),
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
@@ -291,33 +261,20 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             title = getString(R.string.page_info_cookies_permanent_allowed_title);
         } else {
             int days = daysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
-            boolean limit3pcs = mIsModeBUi && !mBlockAll3pc;
             if (days == 0) {
-                title =
-                        getString(
-                                limit3pcs
-                                        ? R.string.page_info_cookies_limiting_restart_today_title
-                                        : R.string.page_info_cookies_blocking_restart_today_title);
+                title = getString(R.string.page_info_cookies_blocking_restart_today_title);
             } else {
-                int resId;
-                if (limit3pcs) {
-                    resId = R.plurals.page_info_cookies_limiting_restart_title;
-                } else {
-                    resId = R.plurals.page_info_cookies_blocking_restart_tracking_protection_title;
-                }
+                int resId = R.plurals.page_info_cookies_blocking_restart_tracking_protection_title;
                 title = getContext().getResources().getQuantityString(resId, days, days);
             }
         }
         mThirdPartyCookiesTitle.setTitle(title);
 
-        int resId;
-        if (expiration == 0) {
-            resId = R.string.page_info_cookies_tracking_protection_permanent_allowed_description;
-        } else if (mIsModeBUi) {
-            resId = R.string.page_info_cookies_tracking_protection_description;
-        } else {
-            resId = R.string.page_info_cookies_send_feedback_description;
-        }
+        int resId =
+                expiration == 0
+                        ? R.string
+                                .page_info_cookies_tracking_protection_permanent_allowed_description
+                        : R.string.page_info_cookies_send_feedback_description;
         mThirdPartyCookiesSummary.setSummary(
                 SpanApplier.applySpans(
                         getString(resId),
@@ -364,14 +321,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         return enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY;
                     }
                 });
-        int resId;
-        if (cookiesAllowed) {
-            resId = R.string.page_info_tracking_protection_toggle_allowed;
-        } else if (mIsModeBUi && !mBlockAll3pc) {
-            resId = R.string.page_info_tracking_protection_toggle_limited;
-        } else {
-            resId = R.string.page_info_tracking_protection_toggle_blocked;
-        }
+        int resId =
+                cookiesAllowed
+                        ? R.string.page_info_tracking_protection_toggle_allowed
+                        : R.string.page_info_tracking_protection_toggle_blocked;
         mCookieSwitch.setSummary(getString(resId));
     }
 
