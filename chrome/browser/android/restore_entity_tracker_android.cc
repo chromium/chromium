@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/storage_id.h"
@@ -50,7 +51,7 @@ void RestoreEntityTrackerAndroid::RegisterTab(
 
 bool RestoreEntityTrackerAndroid::AssociateTabAndAncestors(
     const TabInterface* tab) {
-  const TabAndroid* tab_android = static_cast<const TabAndroid*>(tab);
+  const TabAndroid* tab_android = ToTabAndroidChecked(tab);
   auto it = tab_android_id_to_storage_id_.find(tab_android->GetAndroidId());
   if (it == tab_android_id_to_storage_id_.end()) {
     return false;
