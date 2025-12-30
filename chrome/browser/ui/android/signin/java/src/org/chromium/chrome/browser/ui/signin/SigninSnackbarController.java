@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ui.signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.activity.ComponentActivity;
+import android.app.Activity;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -48,7 +48,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
         void onUndoSignin();
     }
 
-    private final ComponentActivity mActivity;
+    private final Activity mActivity;
     private final Profile mProfile;
     private final @SignoutReason int mSignoutReason;
     private final HistorySyncHelper mHistorySyncHelper;
@@ -56,7 +56,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
     private @Nullable Listener mListener;
 
     private SigninSnackbarController(
-            ComponentActivity activity,
+            Activity activity,
             Profile profile,
             @SignoutReason int signoutReason,
             HistorySyncHelper historySyncHelper,
@@ -102,7 +102,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
 
     /** Shows a snackbar if the sign-in was successful, allowing the user to undo the action. */
     public static void showUndoSnackbarIfNeeded(
-            ComponentActivity activity,
+            Activity activity,
             Profile profile,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable SnackbarManager snackbarManager,

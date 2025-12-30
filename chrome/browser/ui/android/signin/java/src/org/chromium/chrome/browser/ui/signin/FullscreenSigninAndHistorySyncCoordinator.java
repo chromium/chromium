@@ -159,6 +159,10 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         }
     }
 
+    public View getView() {
+        return mViewHolder;
+    }
+
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
     public void destroy() {
@@ -183,12 +187,6 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     public void onAccountAdded(String accountName) {
         assertNonNull(mSigninCoordinator);
         mSigninCoordinator.onAccountAdded(accountName);
-    }
-
-    /** Implements {@link SigninAndHistorySyncCoordinator}. */
-    @Override
-    public View getView() {
-        return mViewHolder;
     }
 
     /**

@@ -8,11 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
 
@@ -33,6 +30,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchM
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -62,12 +60,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 SigninSnackbarController.Listener {
     private static final String TAG = "BottomSheetSignin";
     private final WindowAndroid mWindowAndroid;
-    private final ComponentActivity mActivity;
-    private final ViewGroup mContainerView;
+    private final Activity mActivity;
 
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final OneshotSupplier<Profile> mProfileSupplier;
+    private final BottomSheetController mBottomSheetController;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final BottomSheetSigninAndHistorySyncConfig mConfig;
@@ -107,6 +105,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param profileSupplier The supplier of the current profile.
+     * @param bottomSheetController The controller of the sign-in bottomsheet.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
      * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
      * @param config The configuration for the bottom sheet.
@@ -114,10 +113,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      */
     public BottomSheetSigninAndHistorySyncCoordinator(
             WindowAndroid windowAndroid,
-            ComponentActivity activity,
+            Activity activity,
             Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<Profile> profileSupplier,
+            BottomSheetController bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SnackbarManager snackbarManager,
             BottomSheetSigninAndHistorySyncConfig config,
@@ -128,14 +128,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
+        mBottomSheetController = bottomSheetController;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSnackbarManager = snackbarManager;
         mConfig = config;
         mSigninAccessPoint = signinAccessPoint;
-        mContainerView =
-                (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.bottom_sheet_signin_history_sync_container, null);
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }
 
@@ -196,13 +193,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (mSigninBottomSheetCoordinator != null) {
             mSigninBottomSheetCoordinator.onAccountAdded(accountEmail);
         }
-    }
-
-    /** Implements {@link SigninAndHistorySyncCoordinator}. */
-    @Override
-    public View getView() {
-        assert mContainerView != null;
-        return mContainerView;
     }
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
@@ -377,8 +367,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 new SigninBottomSheetCoordinator(
                         mWindowAndroid,
                         mActivity,
-                        mContainerView,
                         this,
+                        mBottomSheetController,
                         mDeviceLockActivityLauncher,
                         signinManager,
                         mConfig.bottomSheetStrings,

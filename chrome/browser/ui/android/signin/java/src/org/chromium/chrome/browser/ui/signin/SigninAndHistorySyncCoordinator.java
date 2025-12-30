@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.view.View;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -64,9 +63,6 @@ public abstract class SigninAndHistorySyncCoordinator {
 
     /** Cleans up the coordinator after it is finished being used. */
     public abstract void destroy();
-
-    /** Provides the root view of the sign-in and history opt-in flow. */
-    public abstract View getView();
 
     /** Called when the configuration of the embedder activity changes. */
     public abstract void onConfigurationChange();
