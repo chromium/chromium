@@ -633,7 +633,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.downloads_menu_id,
                         R.string.menu_downloads,
-                        shouldShowIconBeforeItem() ? R.drawable.infobar_download_complete : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_download_done_24dp : 0));
     }
 
     private MVCListAdapter.ListItem buildBookmarksItem() {

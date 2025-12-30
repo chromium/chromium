@@ -8,18 +8,19 @@ found in the LICENSE file.
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24.0"
-    android:viewportHeight="24.0">
+    android:viewportWidth="960"
+    android:viewportHeight="960">
 
+    <!-- This circle is only used for the animation. The icon, by default, doesn't have a fill. -->
     <path
         android:name="circle"
         android:fillColor="@color/icon_animated_faded_color_list"
         android:fillAlpha="0"
-        android:pathData="M 0,12 C 0,6 6,0 12,0 C 18,0 24,6 24,12 C 24,18 18,24 12,24 C 6,24 0,18 0,12"/>
+        android:pathData="M 0,480 C 0,240 240,0 480,0 C 720,0 960,240 960,480 C 960,720 720,960 480,960 C 240,960 0,720 0,480"/>
 
     <path
         android:name="check_mark"
-        android:pathData="M5 18h14v2H5v-2zm4.6-2.7L5 10.7l2-1.9 2.6 2.6L17 4l2 2-9.4 9.3z"
+        android:pathData="M382,640L155,413L212,356L382,526L748,160L805,217L382,640ZM200,800L200,720L760,720L760,800L200,800Z"
         android:fillColor="@macro/default_icon_color_accent1"/>
 
 </vector>
