@@ -703,6 +703,55 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       UploadFileRemainsActiveAfterClusterInfoExpiration) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/false,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Fast forward time to expire the cluster info.
+  // The default cluster info lifetime is 1 hour.
+  task_environment().FastForwardBy(base::Hours(1) + base::Seconds(1));
+
+  // Assert: Validate cluster info request and state changes.
+  // The cluster info should be re-fetched.
+  // First, the state becomes kClusterInfoInvalid.
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller_state_future_.Take());
+  // Then, it starts fetching and becomes kAwaitingClusterInfoResponse.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller_state_future_.Take());
+  // Finally, it receives the response and becomes kClusterInfoReceived.
+  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
+            controller_state_future_.Take());
+
+  EXPECT_GE(controller().num_cluster_info_fetch_requests_sent(), 2);
+
+  // Assert: The file should still be in the active files map.
+  ASSERT_TRUE(controller().GetFileInfoForTesting(file_token));
+  // The file status should be kUploadExpired.
+  EXPECT_EQ(controller().GetFileInfoForTesting(file_token)->upload_status,
+            FileUploadStatus::kUploadExpired);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        UploadPdfFileRequestWithContextIdMigrationEnabled_SetsContextId) {
   CreateController(
       /*send_lns_surface=*/false,
