@@ -431,28 +431,32 @@ void AimEligibilityService::OnNetworkChanged(
 
 void AimEligibilityService::OnEligibilityResponseChanged() {
   CHECK(initialized_);
-
-  LogEligibilityResponseChange();
-
-  if (base::FeatureList::IsEnabled(
-          omnibox::kAimServerEligibilityChangedNotification)) {
-    eligibility_changed_callbacks_.Notify();
-  }
+  eligibility_changed_callbacks_.Notify();
 }
 
 void AimEligibilityService::UpdateMostRecentResponse(
     const omnibox::AimEligibilityResponse& response_proto,
-    bool was_fetched_via_cache) {
+    EligibilityResponseSource response_source) {
   CHECK(initialized_);
 
+  // Read the old response from prefs before updating it to log changes below.
+  omnibox::AimEligibilityResponse old_response;
+  GetResponseFromPrefs(&pref_service_.get(), &old_response);
+
+  // Update the in-memory state before updating the prefs. Writing to prefs may
+  // notify subscribers synchronously. This ensures the in-memory state is
+  // correct.
+  most_recent_response_ = response_proto;
+  most_recent_response_source_ = response_source;
+
+  // Update the prefs.
   std::string response_string;
   response_proto.SerializeToString(&response_string);
   std::string encoded_response = base::Base64Encode(response_string);
   pref_service_->SetString(kResponsePrefName, encoded_response);
-  most_recent_response_ = response_proto;
-  most_recent_response_source_ = was_fetched_via_cache
-                                     ? EligibilityResponseSource::kBrowserCache
-                                     : EligibilityResponseSource::kServer;
+
+  // Log changes.
+  LogEligibilityResponseChanges(old_response, response_proto);
 }
 
 void AimEligibilityService::LoadMostRecentResponse() {
@@ -577,16 +581,19 @@ void AimEligibilityService::OnServerEligibilityResponse(
   const bool was_fetched_via_cache =
       loader->ResponseInfo() ? loader->ResponseInfo()->was_fetched_via_cache
                              : false;
+  const EligibilityRequestStatus request_status =
+      was_fetched_via_cache ? EligibilityRequestStatus::kSuccessBrowserCache
+                            : EligibilityRequestStatus::kSuccess;
 
-  ProcessServerEligibilityResponse(
-      request_source, response_code, was_fetched_via_cache,
-      loader->GetNumRetries(), std::move(response_string));
+  ProcessServerEligibilityResponse(request_source, response_code,
+                                   request_status, loader->GetNumRetries(),
+                                   std::move(response_string));
 }
 
 void AimEligibilityService::ProcessServerEligibilityResponse(
     RequestSource request_source,
     int response_code,
-    bool was_fetched_via_cache,
+    EligibilityRequestStatus request_status,
     int num_retries,
     std::optional<std::string> response_string) {
   LogEligibilityRequestResponseCode(response_code, request_source);
@@ -618,11 +625,12 @@ void AimEligibilityService::ProcessServerEligibilityResponse(
     return;
   }
 
-  LogEligibilityRequestStatus(
-      was_fetched_via_cache ? EligibilityRequestStatus::kSuccessBrowserCache
-                            : EligibilityRequestStatus::kSuccess,
-      request_source);
-  UpdateMostRecentResponse(response_proto, was_fetched_via_cache);
+  LogEligibilityRequestStatus(request_status, request_source);
+  const EligibilityResponseSource response_source =
+      request_status == EligibilityRequestStatus::kSuccessBrowserCache
+          ? EligibilityResponseSource::kBrowserCache
+          : EligibilityResponseSource::kServer;
+  UpdateMostRecentResponse(response_proto, response_source);
   LogEligibilityResponse(request_source);
 }
 
@@ -731,29 +739,24 @@ void AimEligibilityService::LogEligibilityResponse(
       most_recent_response_.is_image_generation_eligible());
 }
 
-void AimEligibilityService::LogEligibilityResponseChange() const {
-  // Prefs are updated before `most_recent_response_` is. Compare the prefs with
-  // the previous state of the server response and log changes to each field.
-  omnibox::AimEligibilityResponse prefs_response;
-  if (!GetResponseFromPrefs(&pref_service_.get(), &prefs_response)) {
-    return;
-  }
-
+void AimEligibilityService::LogEligibilityResponseChanges(
+    const omnibox::AimEligibilityResponse& old_response,
+    const omnibox::AimEligibilityResponse& new_response) const {
   const auto& prefix = kEligibilityResponseChangeHistogramPrefix;
   base::UmaHistogramBoolean(
       base::StrCat({prefix, ".is_eligible"}),
-      most_recent_response_.is_eligible() != prefs_response.is_eligible());
+      old_response.is_eligible() != new_response.is_eligible());
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_pdf_upload_eligible"}),
-                            most_recent_response_.is_pdf_upload_eligible() !=
-                                prefs_response.is_pdf_upload_eligible());
+                            old_response.is_pdf_upload_eligible() !=
+                                new_response.is_pdf_upload_eligible());
   base::UmaHistogramBoolean(
       base::StrCat({prefix, ".session_index"}),
-      most_recent_response_.session_index() != prefs_response.session_index());
+      old_response.session_index() != new_response.session_index());
   base::UmaHistogramBoolean(base::StrCat({prefix, ".is_deep_search_eligible"}),
-                            most_recent_response_.is_deep_search_eligible() !=
-                                prefs_response.is_deep_search_eligible());
+                            old_response.is_deep_search_eligible() !=
+                                new_response.is_deep_search_eligible());
   base::UmaHistogramBoolean(
       base::StrCat({prefix, ".is_image_generation_eligible"}),
-      most_recent_response_.is_image_generation_eligible() !=
-          prefs_response.is_image_generation_eligible());
+      old_response.is_image_generation_eligible() !=
+          new_response.is_image_generation_eligible());
 }

@@ -179,7 +179,7 @@ class AimEligibilityService
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
       const omnibox::AimEligibilityResponse& response_proto,
-      bool was_fetched_via_cache = false);
+      EligibilityResponseSource response_source);
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
@@ -198,7 +198,7 @@ class AimEligibilityService
   void ProcessServerEligibilityResponse(
       RequestSource request_source,
       int response_code,
-      bool was_fetched_via_cache,
+      EligibilityRequestStatus request_status,
       int num_retries,
       std::optional<std::string> response_string);
 
@@ -231,8 +231,10 @@ class AimEligibilityService
                                          RequestSource request_source) const;
   // Record total and sliced histograms for eligibility response.
   void LogEligibilityResponse(RequestSource request_source) const;
-  // Record histograms for eligibility response change.
-  void LogEligibilityResponseChange() const;
+  // Record histograms for eligibility response changes.
+  void LogEligibilityResponseChanges(
+      const omnibox::AimEligibilityResponse& old_response,
+      const omnibox::AimEligibilityResponse& new_response) const;
 
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
