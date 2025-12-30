@@ -1828,3 +1828,58 @@ TEST_F(OmniboxEditModelPopupTest,
 
   model()->RemoveObserver(&observer);
 }
+
+// Verifies that `OnCurrentMatchChanged()` handles shrinking result sets
+// correctly by resetting the popup selection *before* accessing the new
+// matches. This prevents out-of-bounds access when the previous selection index
+// is invalid for the new (smaller) result set. See https://crbug.com/468047546
+// for more details.
+TEST_F(OmniboxEditModelPopupTest,
+       OnCurrentMatchChangedResetsSelectionBeforeAccessingMatches) {
+  // 1. Start with 2 matches.
+  ACMatches matches;
+  AutocompleteMatch match1(nullptr, 1000, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match1.allowed_to_be_default_match = true;
+  matches.push_back(match1);
+  AutocompleteMatch match2(nullptr, 500, false,
+                           AutocompleteMatchType::SEARCH_SUGGEST);
+  matches.push_back(match2);
+
+  auto* result = &AutocompleteControllerPublishedResult();
+  AutocompleteInput input(u"test", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
+  result->AppendMatches(matches);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service(), /*is_lens_active=*/false,
+                      /*can_show_contextual_suggestions=*/false,
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
+
+  // Ensure user input is in progress so OnChanged calls CurrentMatch() ->
+  // GetInfoForCurrentText().
+  model()->SetUserText(u"test");
+  ASSERT_TRUE(model()->user_input_in_progress());
+
+  // 2. Select the second match (index 1).
+  model()->SetPopupSelection(
+      OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
+  ASSERT_EQ(1u, model()->GetPopupSelection().line);
+
+  // 3. Update the result set to have only 1 match.
+  ACMatches new_matches;
+  new_matches.push_back(match1);
+  result->Reset();
+  result->AppendMatches(new_matches);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service(), /*is_lens_active=*/false,
+                      /*can_show_contextual_suggestions=*/false,
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
+
+  // 4. Call OnCurrentMatchChanged.
+  // If the selection isn't reset first, this will try to access index 1 on a
+  // size 1 result, causing a crash.
+  model()->OnCurrentMatchChanged();
+
+  // 5. Verify selection was reset to 0.
+  EXPECT_EQ(0u, model()->GetPopupSelection().line);
+}

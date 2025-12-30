@@ -597,6 +597,10 @@ class OmniboxEditModel {
   // Returns true if started; false otherwise.
   bool MaybeStartQueryForPopup();
 
+  // Updates the popup selection and internal state (e.g. bitmaps) when the
+  // result has changed.
+  void UpdatePopupSelectionOnResultChanged();
+
   // Changes the popup selection to the next available selection. Stepping the
   // popup selection gives special consideration for keyword mode state.
   void StepPopupSelection(OmniboxPopupSelection::Direction direction,
