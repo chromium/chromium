@@ -353,38 +353,36 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   SetViewHiddenIfNecessary(self.contextualPanelEntrypointView,
                            !contextualPanelEntrypointShouldBeVisibleFinal);
 
-  if (!_placeholderView ||
-      !!placeholderViewShouldBeVisibleFinal == !_placeholderView.hidden) {
-    return;
-  }
+  if (_placeholderView &&
+      !!placeholderViewShouldBeVisibleFinal != !_placeholderView.hidden) {
+    _placeholderView.hidden = !placeholderViewShouldBeVisibleFinal;
 
-  SetViewHiddenIfNecessary(_placeholderView,
-                           !placeholderViewShouldBeVisibleFinal);
-
-  // Records why the placeholder view is hidden. These are not mutually
-  // exclusive, price tracking will take precedence over messages.
-  if (!placeholderViewShouldBeVisibleFinal) {
-    if (contextualPanelEntrypointShouldBeVisibleFinal) {
-      if (_contextualPanelItemType) {
-        switch (_contextualPanelItemType.value()) {
-          case ContextualPanelItemType::PriceInsightsItem:
-            RecordLensEntrypointHidden(
-                IOSLocationBarLeadingIconType::kPriceTracking);
-            break;
-          case ContextualPanelItemType::ReaderModeItem:
-            RecordLensEntrypointHidden(
-                IOSLocationBarLeadingIconType::kReaderMode);
-            break;
-          default:
-            break;
+    // Records why the placeholder view is hidden. These are not mutually
+    // exclusive, price tracking will take precedence over messages.
+    if (!placeholderViewShouldBeVisibleFinal) {
+      if (contextualPanelEntrypointShouldBeVisibleFinal) {
+        if (_contextualPanelItemType) {
+          switch (_contextualPanelItemType.value()) {
+            case ContextualPanelItemType::PriceInsightsItem:
+              RecordLensEntrypointHidden(
+                  IOSLocationBarLeadingIconType::kPriceTracking);
+              break;
+            case ContextualPanelItemType::ReaderModeItem:
+              RecordLensEntrypointHidden(
+                  IOSLocationBarLeadingIconType::kReaderMode);
+              break;
+            default:
+              break;
+          }
         }
+      } else if (badgeViewShouldBeVisibleFinal) {
+        RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
+      } else if (readerModeChipShouldBeVisibleFinal) {
+        RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
       }
-    } else if (badgeViewShouldBeVisibleFinal) {
-      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
-    } else if (readerModeChipShouldBeVisibleFinal) {
-      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
+
   if (IsProactiveSuggestionsFrameworkEnabled()) {
     [self updateBackgroundVisibility];
     [self updateTapOverlayButtonVisibility];
