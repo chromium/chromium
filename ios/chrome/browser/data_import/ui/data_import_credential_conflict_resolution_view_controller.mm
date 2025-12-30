@@ -118,16 +118,12 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self selectedItemsCount] == [self allItemsCount]) {
-    [self updateSelectionButton];
-  }
+  [self updateUIForSelection];
 }
 
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self selectedItemsCount] == [self allItemsCount] - 1) {
-    [self updateSelectionButton];
-  }
+  [self updateUIForSelection];
 }
 
 #pragma mark - Button selectors
@@ -180,7 +176,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   RecordDataImportDismissCredentialConflictScreen(
       deselect ? DataImportCredentialConflictScreenAction::kDeselectAll
                : DataImportCredentialConflictScreenAction::kSelectAll);
-  [self updateSelectionButton];
+  [self updateUIForSelection];
 }
 
 #pragma mark - Private
@@ -294,7 +290,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
                                     action:@selector(didTapSelectionButton)];
   _deselectButton = [self newButtonWithTitle:deselectButtonTitle
                                       action:@selector(didTapSelectionButton)];
-  [self updateSelectionButton];
+  [self updateUIForSelection];
 }
 
 /// Sets `_dataSource` and fills the table with data from `_passwordConflicts`
@@ -337,12 +333,22 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
-/// Shows or updates the bottom button's text and behavior. Should show
-/// "Deselect all" when all items are selected, and "Select all" otherwise.
-- (void)updateSelectionButton {
-  UIBarButtonItem* selectionButton =
-      [self selectedItemsCount] == _passwordConflicts.count ? _deselectButton
-                                                            : _selectButton;
+/// Updates the title to reflect the count of items selected or a generic title
+/// if no items are selected. Updates the bottom button to display "Deselect
+/// all" when all items are selected, and "Select all" otherwise.
+- (void)updateUIForSelection {
+  NSUInteger selectedItemsCount = [self selectedItemsCount];
+  if (selectedItemsCount == 0) {
+    self.title = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_IMPORT_CONFLICT_RESOLUTION_TITLE);
+  } else {
+    self.title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT, selectedItemsCount);
+  }
+
+  UIBarButtonItem* selectionButton = selectedItemsCount == [self allItemsCount]
+                                         ? _deselectButton
+                                         : _selectButton;
   self.toolbarItems = @[ selectionButton ];
 }
 
