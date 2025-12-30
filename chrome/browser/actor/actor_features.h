@@ -70,6 +70,8 @@ BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
 BASE_DECLARE_FEATURE(kGlicNavigateUsingLoadURL);
 
+BASE_DECLARE_FEATURE(kGlicNavigateToolUseOpaqueInitiator);
+
 BASE_DECLARE_FEATURE(kGlicNavigateWithoutUserGesture);
 
 BASE_DECLARE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange);
