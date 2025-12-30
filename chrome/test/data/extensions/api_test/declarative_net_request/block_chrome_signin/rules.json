@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "priority": 999,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "accounts.google.com",
+      "resourceTypes" : ["main_frame"]
+    }
+  }
+]
