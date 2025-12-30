@@ -375,8 +375,10 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"removeToolChipAriaLabel", IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL},
       {"composeFileTypesAllowedError",
        IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR},
-      {"listening", IDS_NEW_TAB_VOICE_LISTENING},
-      {"details", IDS_NEW_TAB_VOICE_DETAILS},
+      {"voiceClose", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
+      {"voiceDetails", IDS_NEW_TAB_VOICE_DETAILS},
+      {"voiceListening", IDS_NEW_TAB_VOICE_LISTENING},
+      {"voicePermissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",

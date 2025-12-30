@@ -49,7 +49,7 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void SetCreateImageMode(bool enabled, bool image_present) override;
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
-
+  void NavigateUrl(const GURL& url) override;
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,

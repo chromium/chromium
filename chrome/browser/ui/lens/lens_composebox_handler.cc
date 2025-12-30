@@ -172,6 +172,12 @@ void LensComposeboxHandler::HandleFileUpload(bool is_image) {
   NOTREACHED();
 }
 
+void LensComposeboxHandler::NavigateUrl(const GURL& url) {
+  // Intentionally unimplemented for Lens, URL navigation is not yet
+  // implemented in Lens.
+  mojo::ReportBadMessage("URL navigation is not implemented in Lens");
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   NOTREACHED();
