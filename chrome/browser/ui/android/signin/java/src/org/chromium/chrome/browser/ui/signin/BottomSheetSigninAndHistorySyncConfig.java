@@ -26,21 +26,14 @@ import java.util.Objects;
 public final class BottomSheetSigninAndHistorySyncConfig {
 
     /** The sign-in step that should be shown to the user when there's no account on the device. */
-    @IntDef({
-        NoAccountSigninMode.BOTTOM_SHEET,
-        NoAccountSigninMode.ADD_ACCOUNT,
-        NoAccountSigninMode.NO_SIGNIN
-    })
+    @IntDef({NoAccountSigninMode.BOTTOM_SHEET, NoAccountSigninMode.NO_SIGNIN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface NoAccountSigninMode {
         /** Show the 0-account version of the sign-in bottom sheet. */
         int BOTTOM_SHEET = 0;
 
-        /** Bring the user to GMS Core to add an account, then sign-in with the new account. */
-        int ADD_ACCOUNT = 1;
-
         /** No sign-in should be done, the entry point should not be visible to the user. */
-        int NO_SIGNIN = 2;
+        int NO_SIGNIN = 1;
     }
 
     /** The sign-in step that should be shown to the user when there's 1+ accounts on the device. */

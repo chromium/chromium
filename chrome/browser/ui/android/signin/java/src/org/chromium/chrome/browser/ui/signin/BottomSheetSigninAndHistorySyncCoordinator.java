@@ -161,16 +161,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     public void onAddAccountCanceled() {
         // If the activity was killed during the add account flow (reason why the flow is not yet
         // initialized), proceed as if the user started the sign-in flow for the first time.
-        if (!mFlowInitialized) {
-            // TODO(crbug.com/41493767): Dismiss the flow if in NoAccountSigninMode.ADD_ACCOUNT
-            // mode and there's no account on the device, or avoid starting the add account flow
-            // when there's a saved instance state when finishLoadingAndSelectSigninFlow is called.
-            return;
-        }
-        final boolean isBottomSheetShown = mSigninBottomSheetCoordinator != null;
-        if (!isBottomSheetShown && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
-            onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
-        }
     }
 
     /**
@@ -183,11 +173,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         // initialized), proceed as if the user started the sign-in flow for the first time.
         if (!mFlowInitialized) {
             // TODO(crbug.com/41493767): Select added account or sign in once done loading.
-        }
-        if (mSigninBottomSheetCoordinator == null
-                && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
-            // Show the bottom sheet to sign-in & show the sign-in spinner bottom sheet.
-            showSigninBottomSheet();
         }
 
         if (mSigninBottomSheetCoordinator != null) {
@@ -334,11 +319,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         switch (mConfig.noAccountSigninMode) {
             case NoAccountSigninMode.BOTTOM_SHEET:
                 showSigninBottomSheet();
-                SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
-                break;
-            case NoAccountSigninMode.ADD_ACCOUNT:
-                addAccount();
-                mDidShowSigninStep = true;
                 SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
                 break;
             case NoAccountSigninMode.NO_SIGNIN:

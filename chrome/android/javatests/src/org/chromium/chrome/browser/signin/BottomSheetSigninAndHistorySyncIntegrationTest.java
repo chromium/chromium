@@ -931,60 +931,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testWithNoAccount_instantSignin_requiredHistorySync() {
-        HistogramWatcher signinStartedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SignIn.Started", mSigninAccessPoint);
-        HistogramWatcher addAccountStateWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "Signin.AddAccountState",
-                                State.REQUESTED,
-                                State.STARTED,
-                                State.SUCCEEDED,
-                                State.ACTIVITY_SURVIVED)
-                        .build();
-
-        launchActivity(
-                NoAccountSigninMode.ADD_ACCOUNT,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistorySyncConfig.OptInMode.REQUIRED);
-        mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
-
-        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
-        signinStartedWatcher.assertExpected();
-        addAccountStateWatcher.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testWithNoAccount_instantSignin_requiredHistorySync_cancelAddAccount() {
-        HistogramWatcher addAccountStateWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "Signin.AddAccountState",
-                                State.REQUESTED,
-                                State.STARTED,
-                                State.CANCELLED,
-                                State.ACTIVITY_SURVIVED)
-                        .build();
-        launchActivity(
-                NoAccountSigninMode.ADD_ACCOUNT,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistorySyncConfig.OptInMode.REQUIRED);
-        onViewWaiting(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
-
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        addAccountStateWatcher.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testHistorySyncStrings_legacy() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         AccountPickerBottomSheetStrings bottomSheetStrings =
@@ -993,7 +939,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         BottomSheetSigninAndHistorySyncConfig config =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(
                                 bottomSheetStrings,
-                                NoAccountSigninMode.ADD_ACCOUNT,
+                                NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.REQUIRED,
                                 "Title",
