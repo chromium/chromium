@@ -359,6 +359,8 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   actor_ui_state_manager()->OnUiEvent(start_task_event);
   StopActorTask(task_id);
 
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskState(task_id),
+            ActorTask::State::kFinished);
   EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), "Test Task");
   EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), &mock_tab());
 }
@@ -375,6 +377,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   task_environment().FastForwardBy(base::Seconds(
       features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
 
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskState(task_id), std::nullopt);
   EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), std::nullopt);
   EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), std::nullopt);
 }
@@ -397,6 +400,8 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest, GetsActiveTaskInfo) {
   StartTask start_task_event(task_id);
   actor_ui_state_manager()->OnUiEvent(start_task_event);
   PauseActorTask(task_id, /*from_actor=*/true);
+  EXPECT_EQ(actor_ui_state_manager()->GetActorTaskState(task_id),
+            ActorTask::State::kPausedByActor);
   EXPECT_EQ(actor_ui_state_manager()->GetActorTaskTitle(task_id), "Test Task");
   EXPECT_EQ(actor_ui_state_manager()->GetLastActedOnTab(task_id), &mock_tab());
 }

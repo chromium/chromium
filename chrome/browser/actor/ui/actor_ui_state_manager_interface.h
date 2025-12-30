@@ -51,6 +51,12 @@ class ActorUiStateManagerInterface {
   // std::nullopt is returned when we don't have a task for the given id.
   virtual std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) = 0;
+  // Gets the state of a given task, this includes active tasks and tasks that
+  // have stopped within an `kGlicActorUiCompletedTaskExpiryDelaySeconds` period
+  // of time.
+  // std::nullopt is returned when we don't have a task for the given id.
+  virtual std::optional<actor::ActorTask::State> GetActorTaskState(
+      TaskId id) = 0;
 
   // Register for this callback to be notified whenever the actor task state
   // changes. This callback may be debounced by a delay.

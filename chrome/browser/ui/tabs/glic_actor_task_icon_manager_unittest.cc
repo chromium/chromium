@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/common/chrome_features.h"
@@ -34,7 +35,7 @@ class MockTaskNudgeStateChangeSubscriber {
 
 class MockTaskListBubbleChangeSubscriber {
  public:
-  MOCK_METHOD(void, OnStateChanged, (actor::TaskId task_id));
+  MOCK_METHOD(void, OnStateChanged, ());
 };
 
 class GlicActorTaskIconManagerTest : public testing::Test {
@@ -91,8 +92,6 @@ TEST_F(GlicActorTaskIconManagerTest, DefaultState) {
 }
 
 TEST_F(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
-  manager()->UpdateTaskNudge();
-
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
@@ -110,25 +109,20 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
-  manager()->UpdateTaskListBubble(task_id_1);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
 
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_1);
-  manager()->UpdateTaskListBubble(task_id_1);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
   actor_service()->StopTask(task_id_2,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_2);
-  manager()->UpdateTaskListBubble(task_id_2);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_2);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
@@ -139,8 +133,7 @@ TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_1);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
@@ -151,13 +144,12 @@ TEST_F(GlicActorTaskIconManagerTest,
               OnStateChanged(ActorTaskNudgeState{
                   .text = ActorTaskNudgeState::Text::kNeedsAttention,
                   .task_list_size = 1}));
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(actor::TaskId(1)));
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged());
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
 
-  manager()->UpdateTaskListBubble(task_id_1);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 1u);
@@ -169,7 +161,7 @@ TEST_F(GlicActorTaskIconManagerTest,
               OnStateChanged(ActorTaskNudgeState{
                   .text = ActorTaskNudgeState::Text::kNeedsAttention,
                   .task_list_size = 1}));
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(actor::TaskId(1)));
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged());
   EXPECT_CALL(
       mock_nudge_subscriber_,
       OnStateChanged(ActorTaskNudgeState{
@@ -178,8 +170,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
 
-  manager()->UpdateTaskListBubble(task_id_1);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 1u);
@@ -192,18 +183,15 @@ TEST_F(GlicActorTaskIconManagerTest,
 
 TEST_F(GlicActorTaskIconManagerTest,
        MultipleTasksNeedAttentionNudgeShowsMultipleTasksText) {
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(actor::TaskId(1)));
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(actor::TaskId(2)));
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged()).Times(2);
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
   actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
 
-  manager()->UpdateTaskListBubble(task_id_1);
-  manager()->UpdateTaskNudge();
-  manager()->UpdateTaskListBubble(task_id_2);
-  manager()->UpdateTaskNudge();
+  manager()->UpdateTaskIconComponents(task_id_1);
+  manager()->UpdateTaskIconComponents(task_id_2);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
@@ -220,13 +208,11 @@ TEST_F(GlicActorTaskIconManagerTest,
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
   actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
 
-  manager()->UpdateTaskListBubble(task_id_1);
+  manager()->UpdateTaskIconComponents(task_id_1);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], true);
-  manager()->UpdateTaskNudge();
 
-  manager()->UpdateTaskListBubble(task_id_2);
+  manager()->UpdateTaskIconComponents(task_id_2);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], true);
-  manager()->UpdateTaskNudge();
 
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
@@ -249,17 +235,77 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, OnActorTaskRemovedDoesNothingByDefault) {
-  TaskId task_id = actor_service()->CreateTaskForTesting();
-  manager()->OnActorTaskStateUpdate(task_id);
-  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
-  testing::Mock::VerifyAndClearExpectations(&mock_nudge_subscriber_);
+TEST_F(GlicActorTaskIconManagerTest,
+       OnActorTaskRemoved_RemovesTaskAndUpdatesBubbleAndNudge) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kGlicActorUiGlobalTaskIndicator);
 
-  // Expect OnActorTaskRemoved to NOT trigger updates
-  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(testing::_)).Times(0);
-  EXPECT_CALL(mock_nudge_subscriber_, OnStateChanged(testing::_)).Times(0);
+  // Create a task.
+  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
+  actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
+  manager()->OnActorTaskStateUpdate(task_id_1);
 
-  manager()->OnActorTaskRemoved(task_id);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], true);
+
+  // Stop task.
+  actor_service()->StopTask(task_id_1,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
+      task_id_1, actor::ActorTask::State::kFinished, "Test Task",
+      /*last_acted_on_tab_handle=*/TabHandle()));
+  task_environment().FastForwardBy(base::Seconds(
+      features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+
+  manager()->UpdateTaskIconComponents(task_id_1);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 0u);
+}
+
+TEST_F(GlicActorTaskIconManagerTest,
+       OnActorTaskStopped_ProcessStoppedTasksAndUpdatesBubbleAndNudge) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kGlicActorUiGlobalTaskIndicator);
+
+  // Create tasks.
+  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id_1, actor::ActorTask::State::kActing));
+  manager()->OnActorTaskStateUpdate(task_id_1);
+  TaskId task_id_2 = actor_service()->CreateTaskForTesting();
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id_2, actor::ActorTask::State::kActing));
+  manager()->OnActorTaskStateUpdate(task_id_2);
+  TaskId task_id_3 = actor_service()->CreateTaskForTesting();
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id_3, actor::ActorTask::State::kActing));
+  manager()->OnActorTaskStateUpdate(task_id_3);
+
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_3], false);
+
+  actor_service()->StopTask(task_id_1,
+                            actor::ActorTask::StoppedReason::kStoppedByUser);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
+      task_id_1, actor::ActorTask::State::kCancelled, "Test Task",
+      /*last_acted_on_tab_handle=*/TabHandle()));
+  manager()->UpdateTaskIconComponents(task_id_1);
+  actor_service()->StopTask(task_id_2,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
+      task_id_2, actor::ActorTask::State::kFinished, "Test Task",
+      /*last_acted_on_tab_handle=*/TabHandle()));
+  manager()->UpdateTaskIconComponents(task_id_2);
+  actor_service()->StopTask(task_id_3,
+                            actor::ActorTask::StoppedReason::kChromeFailure);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
+      task_id_3, actor::ActorTask::State::kFailed, "Test Task",
+      /*last_acted_on_tab_handle=*/TabHandle()));
+  manager()->UpdateTaskIconComponents(task_id_3);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_3], true);
 }
 
 }  // namespace tabs

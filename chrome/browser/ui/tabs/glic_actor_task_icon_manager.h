@@ -30,17 +30,8 @@ class GlicActorTaskIconManager : public KeyedService {
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
 
-  // Called whenever an actor task is completed.
-  void OnActorTaskStopped(actor::TaskId task_id);
-
-  // Called whenever an actor task is removed.
-  void OnActorTaskRemoved(actor::TaskId task_id);
-
-  // Determines the state the task nudge should be in.
-  void UpdateTaskNudge();
-
-  // Determines the state of a task to show in the task list bubble.
-  void UpdateTaskListBubble(actor::TaskId task_id);
+  // Called whenever updates are needed to the task icon components.
+  void UpdateTaskIconComponents(actor::TaskId task_id);
 
   // Register for this callback to get task nudge state change notifications.
   using TaskNudgeChangeCallback = base::RepeatingCallback<void(
@@ -50,8 +41,7 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // Register for this callback to get task state change notifications for the
   // bubble.
-  using TaskListBubbleChangeCallback =
-      base::RepeatingCallback<void(actor::TaskId task_id)>;
+  using TaskListBubbleChangeCallback = base::RepeatingCallback<void()>;
   base::CallbackListSubscription RegisterTaskListBubbleStateChange(
       TaskListBubbleChangeCallback callback);
 
@@ -72,23 +62,25 @@ class GlicActorTaskIconManager : public KeyedService {
   // Called once on startup.
   void RegisterSubscriptions();
 
+  // Determines the state the task nudge should be in.
+  void UpdateTaskNudge();
+
+  // Determines the state of a task to show in the task list bubble.
+  void UpdateTaskListBubble(actor::TaskId task_id);
+
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
   using TaskNudgeChangeCallbackList = base::RepeatingCallbackList<void(
       actor::ui::ActorTaskNudgeState actor_task_nudge_text)>;
   TaskNudgeChangeCallbackList task_nudge_state_change_callback_list_;
 
-  using TaskListBubbleChangeCallbackList =
-      base::RepeatingCallbackList<void(actor::TaskId task_id)>;
+  using TaskListBubbleChangeCallbackList = base::RepeatingCallbackList<void()>;
   TaskListBubbleChangeCallbackList task_list_bubble_change_callback_list_;
 
   actor::ui::ActorTaskNudgeState current_actor_task_nudge_state_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_service_;
-
-  // TODO(mjenn): Update implementation for multi-tab actuation.
-  actor::TaskId current_task_id_;
 
   // Map of tasks needing notifications. `requires_proccessing` tracks if this
   // row requires processing. A row is only processed when it has been clicked

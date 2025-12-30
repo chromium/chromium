@@ -240,7 +240,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
           [this](const StopTask& e) {
             if (base::FeatureList::IsEnabled(
                     features::kGlicActorUiGlobalTaskIndicator)) {
-              stopped_task_infos_.emplace(
+              stopped_task_info_.emplace(
                   e.task_id,
                   StoppedTaskInfo{
                       .final_state = e.final_state,
@@ -320,7 +320,7 @@ base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskStopped(
 }
 
 void ActorUiStateManager::ActorTaskRemoved(TaskId task_id) {
-  stopped_task_infos_.erase(task_id);
+  stopped_task_info_.erase(task_id);
   actor_task_removed_callback_list_.Notify(task_id);
 }
 
@@ -333,7 +333,7 @@ std::optional<std::string> ActorUiStateManager::GetActorTaskTitle(TaskId id) {
   if (ActorTask* task = actor_service_->GetTask(id)) {
     return task->title();
   }
-  if (auto it = stopped_task_infos_.find(id); it != stopped_task_infos_.end()) {
+  if (auto it = stopped_task_info_.find(id); it != stopped_task_info_.end()) {
     return it->second.title;
   }
   return std::nullopt;
@@ -347,8 +347,19 @@ ActorUiStateManager::GetLastActedOnTab(TaskId id) {
     // actuation.
     return tabs.empty() ? nullptr : tabs.begin()->Get();
   }
-  if (auto it = stopped_task_infos_.find(id); it != stopped_task_infos_.end()) {
+  if (auto it = stopped_task_info_.find(id); it != stopped_task_info_.end()) {
     return it->second.last_acted_on_tab_handle.Get();
+  }
+  return std::nullopt;
+}
+
+std::optional<actor::ActorTask::State> ActorUiStateManager::GetActorTaskState(
+    TaskId id) {
+  if (ActorTask* task = actor_service_->GetTask(id)) {
+    return task->GetState();
+  }
+  if (auto it = stopped_task_info_.find(id); it != stopped_task_info_.end()) {
+    return it->second.final_state;
   }
   return std::nullopt;
 }

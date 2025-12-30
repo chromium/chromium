@@ -28,6 +28,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::optional<std::string> GetActorTaskTitle(TaskId id) override;
   std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) override;
+  std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) override;
@@ -55,7 +56,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   // Elements in this map are cleared after
   // kGlicActorUiCompletedTaskExpiryDelaySeconds period of time.
-  absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_infos_;
+  absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_info_;
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 

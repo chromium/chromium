@@ -12,11 +12,16 @@
 #include "chrome/common/chrome_features.h"
 
 namespace {
-// TODO(crbug.com/469817191): Add failed and finished states here as well to be
-// processed.
 bool RequiresTaskProcessing(actor::ActorTask::State state) {
-  return state == actor::ActorTask::State::kPausedByActor ||
-         state == actor::ActorTask::State::kWaitingOnUser;
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    return state == actor::ActorTask::State::kPausedByActor ||
+           state == actor::ActorTask::State::kWaitingOnUser ||
+           state == actor::ActorTask::State::kFinished ||
+           state == actor::ActorTask::State::kFailed;
+  } else {
+    return state == actor::ActorTask::State::kPausedByActor ||
+           state == actor::ActorTask::State::kWaitingOnUser;
+  }
 }
 }  // namespace
 
@@ -28,7 +33,7 @@ using actor::ActorTask;
 
 GlicActorTaskIconManager::GlicActorTaskIconManager(
     Profile* profile,
-    actor::ActorKeyedService* actor_service)
+    ActorKeyedService* actor_service)
     : profile_(profile), actor_service_(actor_service) {
   CHECK(actor_service);
   RegisterSubscriptions();
@@ -38,49 +43,34 @@ GlicActorTaskIconManager::~GlicActorTaskIconManager() = default;
 
 void GlicActorTaskIconManager::RegisterSubscriptions() {
   callback_subscriptions_.push_back(
-      actor::ActorKeyedService::Get(profile_)
-          ->GetActorUiStateManager()
-          ->RegisterActorTaskStateChange(base::BindRepeating(
-              &GlicActorTaskIconManager::OnActorTaskStateUpdate,
-              base::Unretained(this))));
-  // TODO(crbug.com/469817191): Stopped tasks should also be added to the
-  // popover.
+      actor_service_->GetActorUiStateManager()->RegisterActorTaskStateChange(
+          base::BindRepeating(&GlicActorTaskIconManager::OnActorTaskStateUpdate,
+                              base::Unretained(this))));
   callback_subscriptions_.push_back(
-      actor::ActorKeyedService::Get(profile_)
-          ->GetActorUiStateManager()
-          ->RegisterActorTaskStopped(
-              base::BindRepeating(&GlicActorTaskIconManager::OnActorTaskStopped,
-                                  base::Unretained(this))));
+      actor_service_->GetActorUiStateManager()->RegisterActorTaskStopped(
+          base::BindRepeating(
+              &GlicActorTaskIconManager::UpdateTaskIconComponents,
+              base::Unretained(this))));
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     callback_subscriptions_.push_back(
-        actor::ActorKeyedService::Get(profile_)
-            ->GetActorUiStateManager()
-            ->RegisterActorTaskRemoved(base::BindRepeating(
-                &GlicActorTaskIconManager::OnActorTaskRemoved,
+        actor_service_->GetActorUiStateManager()->RegisterActorTaskRemoved(
+            base::BindRepeating(
+                &GlicActorTaskIconManager::UpdateTaskIconComponents,
                 base::Unretained(this))));
   }
 }
 
-void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
-  current_task_id_ = task_id;
+void GlicActorTaskIconManager::UpdateTaskIconComponents(actor::TaskId task_id) {
   UpdateTaskListBubble(task_id);
   UpdateTaskNudge();
 }
 
-
-void GlicActorTaskIconManager::OnActorTaskRemoved(actor::TaskId task_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicActorUiGlobalTaskIndicator)) {
+void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
+  actor::ActorTask* task = actor_service_->GetTask(task_id);
+  if (!task) {
     return;
   }
-  // TODO(crbug.com/470106502): Implement.
-}
-void GlicActorTaskIconManager::OnActorTaskStopped(actor::TaskId task_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicActorUiGlobalTaskIndicator)) {
-    return;
-  }
-  // TODO(crbug.com/470106502): Implement.
+  UpdateTaskIconComponents(task_id);
 }
 
 void GlicActorTaskIconManager::Shutdown() {}
@@ -98,7 +88,8 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   current_actor_task_nudge_state_.task_list_size =
       actor_task_list_bubble_rows_.size();
 
-  // TODO(crbug.com/469817191): Accommodate completed/failed tasks.
+  // TODO(crbug.com/469817191): Separate tasks that need attention from those
+  // that are stopped.
   bool has_unprocessed_tasks = std::any_of(
       actor_task_list_bubble_rows_.begin(), actor_task_list_bubble_rows_.end(),
       [](const auto& pair) { return pair.second; });
@@ -136,24 +127,25 @@ void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
 }
 
 void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
-  if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
-    if (base::FeatureList::IsEnabled(
-            features::kGlicActorUiGlobalTaskIndicator)) {
-      actor_task_list_bubble_rows_[task_id] =
-          RequiresTaskProcessing(task->GetState());
-    } else if (RequiresTaskProcessing(task->GetState())) {
+  const auto state =
+      actor_service_->GetActorUiStateManager()->GetActorTaskState(task_id);
+  if (!state.has_value()) {
+    // If there is no value for the state, this means the task does not exist so
+    // we should remove it.
+    actor_task_list_bubble_rows_.erase(task_id);
+  } else {
+    const bool icon_v3_enabled =
+        base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator);
+    const bool requires_processing = RequiresTaskProcessing(state.value());
+
+    if (icon_v3_enabled) {
+      actor_task_list_bubble_rows_[task_id] = requires_processing;
+    } else if (requires_processing) {
       // Old implementation does not use this field.
       actor_task_list_bubble_rows_[task_id] = false;
     }
-    task_list_bubble_change_callback_list_.Notify(task_id);
-    return;
   }
-  // TODO(crbug.com/470106502): In the new path, we only remove
-  // stopped tasks on a timer. Otherwise they should remain in the popover.
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicActorUiGlobalTaskIndicator)) {
-    actor_task_list_bubble_rows_.erase(task_id);
-  }
+  task_list_bubble_change_callback_list_.Notify();
 }
 
 base::CallbackListSubscription

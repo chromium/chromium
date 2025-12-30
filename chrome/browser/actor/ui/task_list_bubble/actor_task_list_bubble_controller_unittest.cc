@@ -142,7 +142,7 @@ TEST_F(ActorTaskListBubbleControllerTest, RemoveRowFromBubbleOnClick) {
   actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor_service->GetTask(task_id)->Pause(true);
-  manager->UpdateTaskListBubble(task_id);
+  manager->UpdateTaskIconComponents(task_id);
   actor_task_list_bubble_controller_->ShowBubble(
       anchor_widget_->GetContentsView());
 
@@ -183,7 +183,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor_service->GetTask(task_id)->Pause(true);
-  manager->UpdateTaskListBubble(task_id);
+  manager->UpdateTaskIconComponents(task_id);
 
   base::HistogramTester histogram_tester;
 
@@ -196,12 +196,12 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   // for 1 row stays the same while the bucket for 3 rows is incremented.
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
-  manager->UpdateTaskListBubble(task_id);
+  manager->UpdateTaskIconComponents(task_id);
 
   for (int i = 0; i < 3; i++) {
     actor::TaskId new_task_id = actor_service->CreateTask();
     actor_service->GetTask(new_task_id)->Pause(true);
-    manager->UpdateTaskListBubble(new_task_id);
+    manager->UpdateTaskIconComponents(new_task_id);
   }
 
   actor_task_list_bubble_controller_->ShowBubble(

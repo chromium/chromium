@@ -92,14 +92,14 @@ ActorTaskListBubbleController::CreateRowButtonParamsForTask(
   };
 }
 
-void ActorTaskListBubbleController::OnStateUpdate(actor::TaskId task_id) {
+void ActorTaskListBubbleController::OnStateUpdate() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ActorTaskListBubbleController::OnStateUpdateImpl,
-                     weak_ptr_factory_.GetWeakPtr(), task_id));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ActorTaskListBubbleController::OnStateUpdateImpl(actor::TaskId task_id) {
+void ActorTaskListBubbleController::OnStateUpdateImpl() {
   if (auto* browser_view = BrowserElementsViews::From(browser_)) {
     TabStripActionContainer* tab_strip_action_container =
         browser_view->GetViewAs<TabStripActionContainer>(

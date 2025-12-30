@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task->SetState(actor::ActorTask::State::kActing);
   task->Interrupt();
-  manager->UpdateTaskNudge();
+  manager->UpdateTaskIconComponents(task_id);
 
   EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());

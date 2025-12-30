@@ -44,6 +44,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetLastActedOnTab,
               (TaskId task_id),
               (override));
+  MOCK_METHOD(std::optional<actor::ActorTask::State>,
+              GetActorTaskState,
+              (TaskId task_id),
+              (override));
 };
 
 }  // namespace actor::ui
