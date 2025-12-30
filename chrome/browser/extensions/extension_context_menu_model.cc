@@ -524,14 +524,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case UNINSTALL: {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       UninstallDialogHelper::UninstallExtension(
           profile_, browser_->GetWindow()->GetNativeWindow(), extension);
-#else
-      // TODO(crbug.com/448879321): Make it possible to uninstall extensions
-      // from here on Desktop Android.
-      NOTIMPLEMENTED();
-#endif
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
