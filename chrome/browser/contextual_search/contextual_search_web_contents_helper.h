@@ -51,8 +51,12 @@ class ContextualSearchWebContentsHelper
 
   // Returns contextual search session handle only if it matches `task_id`.
   // Returns nullptr if no session exists or `task_id` doesn't match.
+  // This will update the task ID to be `task_id` if it was previously empty.
   contextual_search::ContextualSearchSessionHandle* GetSessionForTask(
-      const base::Uuid& task_id) const {
+      const base::Uuid& task_id) {
+    if (!task_id_) {
+      task_id_ = std::make_optional(task_id);
+    }
     return (session_handle_ && task_id_ == task_id) ? session_handle_.get()
                                                     : nullptr;
   }
