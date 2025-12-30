@@ -4704,18 +4704,6 @@ inline constexpr char kPromptAPIForGeminiNanoMultimodalInputDescription[] =
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of Generative AI.";
 
-inline constexpr char kSummarizationAPIForGeminiNanoName[] =
-    "Summarization API for Gemini Nano";
-inline constexpr char kSummarizationAPIForGeminiNanoDescription[] =
-    "Enables the Summarization API, allowing you to summarize a piece "
-    "of text with a built-in large language model (Gemini Nano in Chrome)."
-    "The API may be subject to changes including the supported options."
-    "Please refer to the built-in AI article [1] for details. "
-    "This API It is NOT suitable for use cases that require factual accuracy "
-    "(e.g. answering knowledge questions). "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
-
 inline constexpr char kWriterAPIForGeminiNanoName[] =
     "Writer API for Gemini Nano";
 inline constexpr char kWriterAPIForGeminiNanoDescription[] =
