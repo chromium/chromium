@@ -67,7 +67,7 @@ fn mul_shift_32(m: u32, factor: u64, shift: i32) -> u32 {
 
     let sum = (bits0 >> 32) + bits1;
     let shifted_sum = sum >> (shift - 32);
-    debug_assert!(shifted_sum <= u32::max_value() as u64);
+    debug_assert!(shifted_sum <= u32::MAX as u64);
     shifted_sum as u32
 }
 

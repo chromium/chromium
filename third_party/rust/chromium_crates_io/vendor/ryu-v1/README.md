@@ -15,9 +15,6 @@ under the creative commons CC-BY-SA license.
 This Rust implementation is a line-by-line port of Ulf Adams' implementation in
 C, [https://github.com/ulfjack/ryu][upstream].
 
-*Requirements: this crate supports any compiler version back to rustc 1.36; it
-uses nothing from the Rust standard library so is usable from no_std crates.*
-
 [paper]: https://dl.acm.org/citation.cfm?id=3192369
 [upstream]: https://github.com/ulfjack/ryu/tree/77e767f5e056bab96e895072fc21618ecff2f44b
 
@@ -40,9 +37,17 @@ fn main() {
 
 <br>
 
-## Performance (lower is better)
+## Performance
 
-![performance](https://raw.githubusercontent.com/dtolnay/ryu/master/performance.png)
+The [dtoa-benchmark] compares this library and other Rust floating point
+formatting implementations across a range of precisions. The vertical axis in
+this chart shows nanoseconds taken by a single execution of
+`ryu::Buffer::new().format_finite(value)` so a lower result indicates a faster
+library.
+
+[dtoa-benchmark]: https://github.com/dtolnay/dtoa-benchmark
+
+![performance](https://raw.githubusercontent.com/dtolnay/ryu/master/dtoa-benchmark.png)
 
 You can run upstream's benchmarks with:
 

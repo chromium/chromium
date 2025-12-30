@@ -1,16 +1,16 @@
 [package]
 name = "ryu"
-version = "1.0.20"
+version = "1.0.22"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast floating point to string conversion"
 documentation = "https://docs.rs/ryu"
-edition = "2018"
-exclude = ["build.rs", "performance.png", "chart/**"]
+edition = "2021"
+exclude = ["build.rs", "*.png", "chart/**"]
 keywords = ["float"]
 license = "Apache-2.0 OR BSL-1.0"
 repository = "https://github.com/dtolnay/ryu"
-rust-version = "1.36"
+rust-version = "1.68"
 
 [features]
 # Use smaller lookup tables. Instead of storing every required power of
@@ -27,10 +27,18 @@ num_cpus = "1.8"
 rand = "0.9"
 rand_xorshift = "0.4"
 
+[target.'cfg(not(miri))'.dev-dependencies]
+criterion = { version = "0.8", default-features = false }
+
+[[bench]]
+name = "bench"
+harness = false
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",

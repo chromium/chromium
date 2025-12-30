@@ -30,16 +30,17 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/ryu-v1/src/pretty/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-v1/src/s2d.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-v1/src/s2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ryu-v1/src/tests.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
+  edition = "2021"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "ryu"
   cargo_pkg_description = "Fast floating point to string conversion"
   cargo_pkg_repository = "https://github.com/dtolnay/ryu"
-  cargo_pkg_version = "1.0.20"
+  cargo_pkg_version = "1.0.22"
 
   allow_unsafe = true
 

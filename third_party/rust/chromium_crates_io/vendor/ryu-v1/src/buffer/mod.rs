@@ -71,9 +71,9 @@ impl Buffer {
     #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn format_finite<F: Float>(&mut self, f: F) -> &str {
         unsafe {
-            let n = f.write_to_ryu_buffer(self.bytes.as_mut_ptr() as *mut u8);
+            let n = f.write_to_ryu_buffer(self.bytes.as_mut_ptr().cast::<u8>());
             debug_assert!(n <= self.bytes.len());
-            let slice = slice::from_raw_parts(self.bytes.as_ptr() as *const u8, n);
+            let slice = slice::from_raw_parts(self.bytes.as_ptr().cast::<u8>(), n);
             str::from_utf8_unchecked(slice)
         }
     }
@@ -81,9 +81,9 @@ impl Buffer {
 
 impl Copy for Buffer {}
 
+#[allow(clippy::non_canonical_clone_impl)]
 impl Clone for Buffer {
     #[inline]
-    #[allow(clippy::non_canonical_clone_impl)] // false positive https://github.com/rust-lang/rust-clippy/issues/11072
     fn clone(&self) -> Self {
         Buffer::new()
     }

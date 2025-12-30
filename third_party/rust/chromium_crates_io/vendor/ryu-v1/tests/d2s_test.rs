@@ -71,7 +71,7 @@ fn test_random() {
 fn test_non_finite() {
     for i in 0u64..1 << 23 {
         let f = f64::from_bits((((1 << 11) - 1) << 52) + (i << 29));
-        assert!(!f.is_finite(), "f={}", f);
+        assert!(!f.is_finite(), "f={f}");
         ryu::Buffer::new().format_finite(f);
     }
 }

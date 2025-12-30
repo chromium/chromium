@@ -24,6 +24,7 @@
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
     clippy::cast_sign_loss,
+    clippy::uninlined_format_args,
     clippy::unreadable_literal,
     clippy::unseparated_literal_suffix,
     clippy::wildcard_imports
