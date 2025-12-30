@@ -496,23 +496,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram
-    name="Privacy.DIPS.DeletionDomainLength.{DIPSCookiePartitionKeyState}"
-    units="lengths" expires_after="2026-02-03">
-  <owner>liu@chromium.org</owner>
-  <owner>src/content/browser/btm/OWNERS</owner>
-  <summary>
-    The length of a domain that will be cleared by bounce tracking mitigations.
-    This metric is recorded after any invalid domain filtering, so it only
-    includes domains that are registered to have data deleted.
-
-    This metric was created as part of crbug.com/393088777 and should be removed
-    after the bug is fixed.
-  </summary>
-  <token key="DIPSCookiePartitionKeyState"
-      variants="DIPSCookiePartitionKeyState"/>
-</histogram>
-
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
     expires_after="2026-06-28">
   <owner>liu@chromium.org</owner>

@@ -120,15 +120,6 @@ inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
       action);
 }
 
-inline void UmaHistogramSiteToClearDomainLength(
-    std::string const& site_to_clear,
-    bool is_canonical_host) {
-  base::UmaHistogramSparse(
-      is_canonical_host ? "Privacy.DIPS.DeletionDomainLength.Serializable"
-                        : "Privacy.DIPS.DeletionDomainLength.NonCanonical",
-      site_to_clear.length());
-}
-
 void RecordRedirectMetrics(const BtmRedirect& redirect,
                            const BtmRedirectChain& chain) {
   DCHECK(redirect.site_had_user_activation.has_value());
@@ -188,7 +179,6 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
       std::optional<url::Origin> origin =
           url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
               scheme, site, port);
-      UmaHistogramSiteToClearDomainLength(site, origin.has_value());
       // The host may be non-canonical or invalid. In such a case, we ignore it,
       // since it will cause IPC deserialization issues later on.
       if (!origin.has_value()) {
