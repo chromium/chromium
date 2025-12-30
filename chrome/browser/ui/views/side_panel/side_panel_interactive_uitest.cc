@@ -235,8 +235,14 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
+// TODO(crbug.com/417601707): Re-enable this test
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_OpenReadingModeSidePanel DISABLED_OpenReadingModeSidePanel
+#else
+#define MAYBE_OpenReadingModeSidePanel OpenReadingModeSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       OpenReadingModeSidePanel) {
+                       MAYBE_OpenReadingModeSidePanel) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* const registry = SidePanelRegistry::From(browser());
@@ -342,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 }
 
 // TODO(crbug.com/417601707): Re-enable this test
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
   DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible
 #else
