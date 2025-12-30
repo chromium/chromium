@@ -115,7 +115,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
         // Clear the composebox text after submitting.
-        this.clearInputAndFocus();
+        this.clearInputAndFocus(/* querySubmitted= */ true);
       });
       this.eventTracker_.add(
           composebox, 'composebox-resize', (e: CustomEvent) => {
@@ -152,7 +152,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       tooltip.target = this.$.composebox;
     }
 
-    if (this.onboardingTooltipIsVisible_ && !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
+    if (this.onboardingTooltipIsVisible_ &&
+        !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
       tooltip.hide();
       this.onboardingTooltipIsVisible_ = false;
     } else if (this.$.composebox.getHasAutomaticActiveTabChipToken()) {
@@ -195,9 +196,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     this.updateTooltipVisibility_();
   }
 
-  clearInputAndFocus(): void {
+  clearInputAndFocus(querySubmitted: boolean = false): void {
     // Clear text from composebox and focus.
-    this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
+    this.$.composebox.clearAllInputs(querySubmitted);
     this.$.composebox.focusInput();
     this.$.composebox.clearAutocompleteMatches();
   }
