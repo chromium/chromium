@@ -119,6 +119,7 @@ source_set("autofill") {
       "update_address_bubble_controller.h",
     ]
     public_deps += [
+      "//chrome/browser/actor",
       "//components/autofill/core/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",

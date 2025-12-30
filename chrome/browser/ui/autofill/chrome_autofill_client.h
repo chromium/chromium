@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_task.h"  // nogncheck
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -292,6 +293,15 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Called when an actor task is created or an existing one changes state. It
+  // may be called for actors unrelated to the current tab. If an update is
+  // related to the current tab.
+  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
+  void OnActorTaskStateChange(actor::TaskId task_id,
+                              actor::ActorTask::State state);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   const raw_ptr<LogRouter> log_router_ =
       AutofillLogRouterFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
@@ -342,6 +352,13 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
+
+  // Responsible for keeping track if an actor is interacting with the current
+  // tab. When enabled some parts of Autofill may behave differently.
+  // TODO(crbug.com/469428128): Handle actor mode in the relevant flows.
+  bool is_actor_mode_ = false;
+  // Removes the subscription when the `ChromeAutofillClient` is destroyed.
+  base::CallbackListSubscription actor_task_state_changed_subscription_;
 
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };

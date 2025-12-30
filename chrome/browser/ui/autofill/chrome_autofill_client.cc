@@ -56,6 +56,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_otp_phish_guard_delegate.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -406,6 +407,27 @@ void LaunchPlusAddressUserPerceptionSurvey(
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsActorMode(actor::ActorTask::State state) {
+  using enum actor::ActorTask::State;
+  switch (state) {
+    // TODO(crbug.com/469428128): Evaluate whether `kCreated` state should
+    // trigger the actor mode.
+    case kCreated:
+    case kActing:
+    case kReflecting:
+    case kPausedByActor:
+    case kPausedByUser:
+    case kWaitingOnUser:
+      return true;
+    case kCancelled:
+    case kFinished:
+    case kFailed:
+      return false;
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -1256,6 +1278,18 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       std::make_unique<SaveUpdateAddressProfileFlowManager>(
           this, GetAutofillMessageController());
   fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
+#else
+  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
+  if (actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(GetProfile())) {
+    // `base::Unretained(this)` is safe since
+    // `actor_task_state_changed_subscription_` removes the subscription when
+    // `this` is destroyed.
+    actor_task_state_changed_subscription_ =
+        actor_service->AddTaskStateChangedCallback(
+            base::BindRepeating(&ChromeAutofillClient::OnActorTaskStateChange,
+                                base::Unretained(this)));
+  }
 #endif
 }
 
@@ -1425,5 +1459,34 @@ void ChromeAutofillClient::ShowEntityImportBubble(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeAutofillClient::OnActorTaskStateChange(
+    actor::TaskId task_id,
+    actor::ActorTask::State state) {
+  const actor::ActorTask* task =
+      actor::ActorKeyedService::Get(GetProfile())->GetTask(task_id);
+  if (!task) {
+    // TODO(crbug.com/469428128): Store active `task_id` relevant for this tab
+    // in `ChromeAutofillClient`, as during `kFailed`, `kFinished` and
+    // `kCancelled` states the `ActorTask` does no longer exist when this
+    // callback is called.
+    // TODO(crbug.com/472336281): The state changes leading to the task
+    // completion should be issued before the `ActorTask` gets removed.
+    is_actor_mode_ = false;
+    return;
+  }
+
+  const tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (tab_interface && !task->HasTab(tab_interface->GetHandle())) {
+    // The status update is for an actor that isn't interacting with this tab.
+    // The value of `is_actor_mode_` shouldn't be updated.
+    return;
+  }
+
+  is_actor_mode_ = IsActorMode(state);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
