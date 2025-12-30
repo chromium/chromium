@@ -7186,8 +7186,6 @@
                         "version": "2"
                     },
                     "enable_features": [
-                        "AttributionDebugReportingCookieDeprecationTesting",
-                        "CookieDeprecationFacilitatedTesting",
                         "SkipTpcdMitigationsForAds",
                         "TPCDAdHeuristicSubframeRequestTagging"
                     ]
@@ -8961,25 +8959,6 @@
                         "DisableBruschettaInstallChecks"
                     ],
                     "min_os_version": "131.0.6740.0"
-                }
-            ]
-        }
-    ],
-    "DisableCookieDeprecationFacilitatedTestingLabels": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "LabelsOff",
-                    "disable_features": [
-                        "CookieDeprecationFacilitatedTestingLabels"
-                    ]
                 }
             ]
         }

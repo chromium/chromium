@@ -1228,10 +1228,6 @@
       depends_on: ["ControlledFrame"],
     },
     {
-      name: "CookieDeprecationFacilitatedTesting",
-      base_feature: "none",
-    },
-    {
       // Enables setting the `maxAge` option when creating a cookie in the
       // Cookie Store API.
       name: "CookieStoreAPIMaxAge",
