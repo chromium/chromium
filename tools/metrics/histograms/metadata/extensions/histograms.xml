@@ -1014,7 +1014,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateHeadersReceivedTime.SingleExtension2"
-    units="microseconds" expires_after="2025-12-30">
+    units="microseconds" expires_after="2026-06-30">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
