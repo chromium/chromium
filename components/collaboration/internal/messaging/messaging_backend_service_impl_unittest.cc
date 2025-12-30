@@ -209,7 +209,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
 
   void CreateService() {
     account_info_ = identity_test_env_.MakePrimaryAccountAvailable(
-        "test@foo.com", signin::ConsentLevel::kSync);
+        "test@foo.com", signin::ConsentLevel::kSignin);
 
     auto tab_group_change_notifier =
         std::make_unique<MockTabGroupChangeNotifier>();
