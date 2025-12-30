@@ -46,7 +46,6 @@ component("aura") {
     "window.h",
     "window_delegate.h",
     "window_event_dispatcher.h",
-    "window_event_dispatcher_observer.h",
     "window_observer.h",
     "window_occlusion_change_builder.h",
     "window_occlusion_tracker.h",

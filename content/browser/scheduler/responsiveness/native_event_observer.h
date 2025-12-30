@@ -17,7 +17,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "ui/aura/window_event_dispatcher_observer.h"
+#include "ui/events/platform/platform_event_observer.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -42,7 +42,7 @@ class CONTENT_EXPORT NativeEventObserver
 #if BUILDFLAG(IS_MAC)
     : public NativeEventProcessorObserver
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    : public aura::WindowEventDispatcherObserver
+    : public ui::PlatformEventObserver
 #elif BUILDFLAG(IS_WIN)
     : public base::MessagePumpForUI::Observer
 #endif
@@ -75,12 +75,9 @@ class CONTENT_EXPORT NativeEventObserver
   void WillRunNativeEvent(const void* opaque_identifier) override;
   void DidRunNativeEvent(const void* opaque_identifier) override;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // aura::WindowEventDispatcherObserver overrides:
-  void OnWindowEventDispatcherStartedProcessing(
-      aura::WindowEventDispatcher* dispatcher,
-      const ui::Event& event) override;
-  void OnWindowEventDispatcherFinishedProcessingEvent(
-      aura::WindowEventDispatcher* dispatcher) override;
+  // ui::PlatformEventObserver overrides:
+  void WillProcessEvent(const ui::PlatformEvent& event) override;
+  void DidProcessEvent(const ui::PlatformEvent& event) override;
 #elif BUILDFLAG(IS_WIN)
   // base::MessagePumpForUI::Observer overrides:
   void WillDispatchMSG(const MSG& msg) override;
