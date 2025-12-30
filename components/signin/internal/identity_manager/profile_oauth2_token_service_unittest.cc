@@ -878,7 +878,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, SameScopesRequestedForDifferentClients) {
   std::string client_secret_1("secret1");
   std::string client_id_2("client2");
   std::string client_secret_2("secret2");
-  std::set<std::string> scope_set;
+  OAuth2AccessTokenManager::ScopeSet scope_set;
   scope_set.insert("scope1");
   scope_set.insert("scope2");
 

@@ -30,7 +30,7 @@ class OAuth2AccessTokenFetcher;
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
  public:
   // A set of scopes in OAuth2 authentication.
-  typedef std::set<std::string> ScopeSet;
+  typedef std::set<std::string, std::less<>> ScopeSet;
   class RequestImpl;
 
   class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {

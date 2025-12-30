@@ -397,7 +397,7 @@ TEST_F(OAuth2AccessTokenManagerTest, ClearCache) {
   base::RunLoop run_loop1;
   consumer_.SetResponseCompletedClosure(run_loop1.QuitClosure());
 
-  std::set<std::string> scope_list;
+  OAuth2AccessTokenManager::ScopeSet scope_list;
   scope_list.insert("scope");
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_->StartRequest(account_id_, scope_list, &consumer_));

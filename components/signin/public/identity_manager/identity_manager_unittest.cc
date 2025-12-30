@@ -83,7 +83,7 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
 
   void set_on_access_token_invalidated_info(
       CoreAccountId expected_account_id_to_invalidate,
-      std::set<std::string> expected_scopes_to_invalidate,
+      const ScopeSet& expected_scopes_to_invalidate,
       std::string expected_access_token_to_invalidate,
       base::OnceClosure callback) {
     expected_account_id_to_invalidate_ = expected_account_id_to_invalidate;
@@ -115,7 +115,7 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
   }
 
   CoreAccountId expected_account_id_to_invalidate_;
-  std::set<std::string> expected_scopes_to_invalidate_;
+  ScopeSet expected_scopes_to_invalidate_;
   std::string expected_access_token_to_invalidate_;
   base::OnceClosure on_access_token_invalidated_callback_;
 };
@@ -142,7 +142,7 @@ class CustomFakeProfileOAuth2TokenService
 
   void set_on_access_token_invalidated_info(
       CoreAccountId expected_account_id_to_invalidate,
-      std::set<std::string> expected_scopes_to_invalidate,
+      const ScopeSet& expected_scopes_to_invalidate,
       std::string expected_access_token_to_invalidate,
       base::OnceClosure callback) {
     GetCustomAccessTokenManager()->set_on_access_token_invalidated_info(
