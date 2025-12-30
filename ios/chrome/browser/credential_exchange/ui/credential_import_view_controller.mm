@@ -21,18 +21,26 @@ namespace {
 // Number of expected items in the table.
 constexpr int kExpectedItemCount = 2;
 
-// Exporter display name for the Apple Passwords.
+// Exporter display names of some of the password manager apps.
+NSString* const k1PasswordDisplayName = @"1Password";
 NSString* const kApplePasswordsDisplayName = @"Apple Passwords";
+NSString* const kBitwardenDisplayName = @"Bitwarden";
+NSString* const kDashlaneDisplayName = @"Dashlane";
+NSString* const kKeeperDisplayName = @"Keeper";
 
 // Returns the name of the banner based on `exporterDisplayName`. Returns a
 // generic banner if the name does not match any available banners.
 NSString* GetBannerName(NSString* exporterDisplayName) {
-  // TODO(crbug.com/450982128): Add banners for other exporters.
-  if ([exporterDisplayName isEqual:kApplePasswordsDisplayName]) {
-    return @"credential_import_apple";
-  }
+  static NSDictionary* banners = @{
+    k1PasswordDisplayName : @"credential_import_1password",
+    kApplePasswordsDisplayName : @"credential_import_apple",
+    kBitwardenDisplayName : @"credential_import_bitwarden",
+    kDashlaneDisplayName : @"credential_import_dashlane",
+    kKeeperDisplayName : @"credential_import_keeper",
+  };
 
-  return @"credential_import_generic";
+  NSString* banner = banners[exporterDisplayName];
+  return banner ?: @"credential_import_generic";
 }
 
 }  // namespace
