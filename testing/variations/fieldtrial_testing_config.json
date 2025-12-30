@@ -9588,6 +9588,21 @@
             ]
         }
     ],
+    "EnableADPFScrollNoRendererMain": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableADPFScrollNoRendererMain"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFSeparateRendererMainSession": [
         {
             "platforms": [
