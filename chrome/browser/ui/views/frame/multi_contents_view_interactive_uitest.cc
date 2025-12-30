@@ -1116,6 +1116,18 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
           MultiContentsDropTargetView::kMultiContentsDropTargetElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
+                       DoesNotShowDropTargetOnChromePageLinkDragged) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUIChromeURLsURL), 0),
+      WaitForActiveTabChange(0),
+      // Dragging a link from a chrome:// page should have no effect.
+      MoveMouseTo(kNewTab, DeepQuery{"chrome-urls-app", "a:first-child"}),
+      DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
+      WaitForHide(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId));
+}
+
 class MultiContentsViewBookmarkDragEntrypointsUiTest
     : public MultiContentsViewDragEntrypointsUiTest {
  public:

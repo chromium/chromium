@@ -32,8 +32,10 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer.h"
@@ -642,7 +644,23 @@ MultiContentsView::drop_target_controller() const {
 
 bool MultiContentsView::IsDragAndDropEnabled() const {
   // Split view drag and drop is only supported on normal browser types.
-  return browser_view_->GetIsNormalType() && is_drag_drop_pref_enabled_;
+  if (!browser_view_->GetIsNormalType() || !is_drag_drop_pref_enabled_) {
+    return false;
+  }
+
+  const auto* active_contents_view = GetActiveContentsView();
+  if (!active_contents_view) {
+    return true;
+  }
+
+  const auto* web_contents = active_contents_view->web_contents();
+  return !web_contents ||
+         web_contents->GetLastCommittedURL().spec() ==
+             chrome::kChromeUINewTabURL ||
+         web_contents->GetLastCommittedURL().spec() ==
+             chrome::kChromeUINewTabPageURL ||
+         !web_contents->GetLastCommittedURL().SchemeIs(
+             content::kChromeUIScheme);
 }
 
 void MultiContentsView::OnDragAndDropPrefStateChange() {

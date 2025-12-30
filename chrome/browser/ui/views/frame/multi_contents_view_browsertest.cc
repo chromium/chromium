@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -324,6 +325,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
   // Enable drag and drop.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, true);
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       DragAndDropDisabledForChromePages) {
+  // Drag and drop should be enabled for normal pages.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
+
+  // Drag and drop should be disabled for chrome:// pages.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  EXPECT_FALSE(multi_contents_view()->IsDragAndDropEnabled());
+
+  // Drag and drop should be enabled for chrome://newtab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 }
 
