@@ -150,7 +150,8 @@ public class TabOverflowMenuRenderTest {
                                     itemList.add(
                                             new ListItemBuilder()
                                                     .withTitle("TEST_TITLE3")
-                                                    .withStartIconRes(R.drawable.btn_star_filled)
+                                                    .withStartIconRes(
+                                                            R.drawable.ic_star_filled_24dp)
                                                     .build());
                                 }
 

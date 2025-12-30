@@ -85,7 +85,7 @@ public class TabListEditorBookmarkActionUnitTest {
 
     @Test
     public void testInherentActionProperties() {
-        Drawable drawable = AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp);
+        Drawable drawable = AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_24dp);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 
         Assert.assertEquals(

@@ -322,8 +322,8 @@ public class ToolbarTablet extends ToolbarLayout {
     @Override
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {
         if (isBookmarked) {
-            mBookmarkButtonImageRes = R.drawable.btn_star_filled;
-            mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
+            mBookmarkButtonImageRes = R.drawable.ic_star_filled_24dp;
+            mBookmarkButton.setImageResource(R.drawable.ic_star_filled_24dp);
             final @ColorRes int tint =
                     isIncognitoBranded()
                             ? R.color.default_icon_color_blue_light
@@ -332,8 +332,8 @@ public class ToolbarTablet extends ToolbarLayout {
                     mBookmarkButton, AppCompatResources.getColorStateList(getContext(), tint));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
-            mBookmarkButtonImageRes = R.drawable.star_outline_24dp;
-            mBookmarkButton.setImageResource(R.drawable.star_outline_24dp);
+            mBookmarkButtonImageRes = R.drawable.ic_star_24dp;
+            mBookmarkButton.setImageResource(R.drawable.ic_star_24dp);
             ImageViewCompat.setImageTintList(mBookmarkButton, getTint());
             mBookmarkButton.setContentDescription(
                     getContext().getString(R.string.accessibility_menu_bookmark));

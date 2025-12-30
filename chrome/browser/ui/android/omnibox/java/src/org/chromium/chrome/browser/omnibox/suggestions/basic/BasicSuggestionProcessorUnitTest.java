@@ -67,7 +67,7 @@ import java.util.function.Supplier;
         manifest = Config.NONE,
         shadows = {ShadowUrlBarData.class})
 public class BasicSuggestionProcessorUnitTest {
-    private static final @DrawableRes int ICON_BOOKMARK = R.drawable.star_outline_24dp;
+    private static final @DrawableRes int ICON_BOOKMARK = R.drawable.ic_star_24dp;
     private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
     private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_24dp;
     private static final @DrawableRes int ICON_MAGNIFIER = R.drawable.ic_suggestion_magnifier;

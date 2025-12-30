@@ -418,12 +418,12 @@ public class OptionalButtonViewTest {
 
         // First button has an icon that supports tinting (e.g. new tab).
         Drawable firstButtonIcon =
-                AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp);
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_24dp);
         ButtonData firstButtonDataWithTint = getDataForStaticNewTabIconButton(firstButtonIcon);
 
         // Second button has an icon that doesn't support tinting (e.g. user profile pic).
         Drawable secondButtonIcon =
-                AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled);
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_filled_24dp);
         ButtonData secondButtonDataWithoutTint = getDataForButtonWithoutTint(secondButtonIcon);
 
         // This tint color comes from the current dynamic color or set by a website.
@@ -1040,10 +1040,10 @@ public class OptionalButtonViewTest {
         // Create two ButtonData objects for the same variant (NEW_TAB) with different icons.
         ButtonDataImpl newTabButtonData =
                 getDataForStaticNewTabIconButton(
-                        AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp));
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_24dp));
         ButtonDataImpl updatedNewTabButtonData =
                 getDataForStaticNewTabIconButton(
-                        AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled));
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_filled_24dp));
 
         // First show the first icon.
         mOptionalButtonView.updateButtonWithAnimation(newTabButtonData);

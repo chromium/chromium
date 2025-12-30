@@ -44,6 +44,7 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
 
     /**
      * Create an action for bookmarking tabs.
+     *
      * @param activity for loading resources.
      * @param showMode whether to show an action view.
      * @param buttonType the type of the action view.
@@ -54,7 +55,7 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
-        Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.star_outline_24dp);
+        Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.ic_star_24dp);
         TabListEditorBookmarkActionDelegate delegate =
                 new TabListEditorBookmarkActionDelegateImpl();
         return new TabListEditorBookmarkAction(

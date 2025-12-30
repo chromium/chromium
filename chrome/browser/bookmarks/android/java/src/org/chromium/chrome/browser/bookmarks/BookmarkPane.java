@@ -52,9 +52,7 @@ public class BookmarkPane extends PaneBase {
         super(PaneId.BOOKMARKS, activity, onToolbarAlphaChange);
         mReferenceButtonDataSupplier.set(
                 new ResourceButtonData(
-                        R.string.menu_bookmarks,
-                        R.string.menu_bookmarks,
-                        R.drawable.star_outline_24dp));
+                        R.string.menu_bookmarks, R.string.menu_bookmarks, R.drawable.ic_star_24dp));
 
         mSnackbarManager = snackbarManager;
         mProfileProviderSupplier = profileProviderSupplier;

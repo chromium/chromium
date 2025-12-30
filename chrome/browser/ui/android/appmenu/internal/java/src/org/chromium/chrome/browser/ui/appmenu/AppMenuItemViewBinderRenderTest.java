@@ -391,7 +391,7 @@ public class AppMenuItemViewBinderRenderTest {
                             AppCompatResources.getDrawable(
                                     sActivity,
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                            .test_ic_star_border_black_24dp);
+                                            .ic_star_24dp);
                     Drawable icon3 =
                             AppCompatResources.getDrawable(
                                     sActivity,
@@ -435,7 +435,7 @@ public class AppMenuItemViewBinderRenderTest {
                             AppCompatResources.getDrawable(
                                     sActivity,
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                            .test_ic_star_border_black_24dp);
+                                            .ic_star_24dp);
                     Drawable icon3 =
                             AppCompatResources.getDrawable(
                                     sActivity,
@@ -484,7 +484,7 @@ public class AppMenuItemViewBinderRenderTest {
                             AppCompatResources.getDrawable(
                                     sActivity,
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                            .test_ic_star_border_black_24dp);
+                                            .ic_star_24dp);
                     Drawable icon3 =
                             AppCompatResources.getDrawable(
                                     sActivity,

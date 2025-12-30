@@ -642,7 +642,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.all_bookmarks_menu_id,
                         R.string.menu_bookmarks,
-                        shouldShowIconBeforeItem() ? R.drawable.btn_star_filled : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_star_filled_24dp : 0));
     }
 
     private boolean shouldShowRecentTabsItem() {

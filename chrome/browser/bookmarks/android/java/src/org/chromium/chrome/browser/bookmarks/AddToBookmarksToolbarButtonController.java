@@ -93,7 +93,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                AppCompatResources.getDrawable(context, R.drawable.star_outline_24dp),
+                AppCompatResources.getDrawable(context, R.drawable.ic_star_24dp),
                 context.getString(R.string.accessibility_menu_bookmark),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true,
@@ -123,7 +123,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         // Create another ButtonSpec with a filled star icon and a "Edit bookmark" description.
         mFilledButtonSpec =
                 new ButtonSpec(
-                        AppCompatResources.getDrawable(context, R.drawable.btn_star_filled),
+                        AppCompatResources.getDrawable(context, R.drawable.ic_star_filled_24dp),
                         this,
                         null,
                         context.getString(R.string.menu_edit_bookmark),

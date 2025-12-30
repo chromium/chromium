@@ -108,7 +108,8 @@ found in the LICENSE file.
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="10dp"
-        android:src="@drawable/btn_star_filled"
+        android:src="@drawable/ic_star_filled_24dp"
+        android:tint="@color/google_logo_blue"
         android:visibility="gone"
         tools:ignore="ContentDescription"/>
 </merge>
