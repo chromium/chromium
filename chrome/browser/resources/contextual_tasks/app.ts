@@ -52,6 +52,40 @@ function updateTaskDetailsInUrl(
   window.history.replaceState({}, '', url.href);
 }
 
+// Updates param for the title in the WebUI URL. This facilitates the restore
+// flow on refresh or restart.
+function updateTitleInUrl(title: string) {
+  const url = new URL(window.location.href);
+
+  url.searchParams.set('title', title);
+
+  window.history.replaceState({}, '', url.href);
+}
+
+// Returns whether the URL that is used in the embedded thread frame has
+// appropriate params to load an existing thread, as opposed to the default
+// zero-state.
+function embeddedUrlHasThreadParams(url: URL): boolean {
+  return url.searchParams.has('mstk') && url.searchParams.has('mtid') &&
+      url.searchParams.has('q');
+}
+
+// Returns whether the WebUI URL (the outer frame) has params that facilitate
+// loading an existing thread as opposed to the default zero state.
+function webUiUrlHasThreadParams(url: URL): boolean {
+  return url.searchParams.has('thread') && url.searchParams.has('turn') &&
+      url.searchParams.has('title');
+}
+
+function applyWebUiParamsToThreadUrl(threadUrl: URL, webUiUrl: URL) {
+  threadUrl.searchParams.set('mtid', webUiUrl.searchParams.get('thread') || '');
+  threadUrl.searchParams.set('mstk', webUiUrl.searchParams.get('turn') || '');
+  // This value doesn't actually influence the result provided by AI mode
+  // if thread ID and turn ID are provided, but is required to display
+  // anything other than the zero-state.
+  threadUrl.searchParams.set('q', webUiUrl.searchParams.get('title') || '');
+}
+
 export class ContextualTasksAppElement extends CrLitElement {
   static get is() {
     return 'contextual-tasks-app';
@@ -140,6 +174,7 @@ export class ContextualTasksAppElement extends CrLitElement {
           () => this.updateSidePanelState()),
       callbackRouter.setThreadTitle.addListener((title: string) => {
         this.threadTitle_ = title;
+        updateTitleInUrl(title);
         document.title = title || loadTimeData.getString('title');
       }),
       callbackRouter.postMessageToWebview.addListener(
@@ -192,8 +227,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.$.composebox.clearInputAndFocus();
     }
 
-    // Wait until all necessary data is available before loading the URL.
-    this.pendingUrl_ = threadUrl;
+    // The thread URL is considered pending (not loaded immediately in the
+    // webview) until oauth tokens are received from the WebUI controller. This
+    // prevents situations where the user is technically signed out of the
+    // embedded frame and unable to save or access existing data.
+    this.pendingUrl_ = this.maybeUpdateThreadUrlForRestore(threadUrl);
     this.maybeLoadPendingUrl_();
   }
 
@@ -218,6 +256,29 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
     }
+  }
+
+  // Conditionally update the provided thread URL so it restores an existing
+  // thread. If the thread URL already contains the params for loading a
+  // specific thread, this will return the same URL that was provided.
+  private maybeUpdateThreadUrlForRestore(threadUrl: string): string {
+    // Check if the provided URL is default by checking for thread ID, turn ID,
+    // and title. If those params are not present, but are present on the WebUI
+    // URL, apply them to the thread URL.
+    // TODO(470107169): The ContextualTasksService should provide this URL
+    //                  based on task ID alone.
+    const updatedThreadUrl = new URL(threadUrl);
+    const webUiUrl = new URL(window.location.href);
+    const threadUrlHasParams = embeddedUrlHasThreadParams(updatedThreadUrl);
+    const webUiUrlHasParams = webUiUrlHasThreadParams(webUiUrl);
+    if (!threadUrlHasParams && webUiUrlHasParams) {
+      applyWebUiParamsToThreadUrl(updatedThreadUrl, webUiUrl);
+      this.threadTitle_ =
+          webUiUrl.searchParams.get('title') || loadTimeData.getString('title');
+      document.title = this.threadTitle_;
+    }
+
+    return updatedThreadUrl.href;
   }
 
   private postMessageToWebview(message: number[]) {
@@ -333,6 +394,10 @@ export class ContextualTasksAppElement extends CrLitElement {
             });
             return {requestHeaders};
           };
+
+  getPendingUrlForTesting() {
+    return this.pendingUrl_;
+  }
 }
 
 declare global {

@@ -20,6 +20,7 @@ suite('ContextualTasksAppTest', function() {
   });
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     if (initialUrl) {
       window.history.replaceState({}, '', initialUrl);
     }
@@ -82,6 +83,52 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     assertEquals(document.title, 'AI Mode');
+  });
+
+  test('restores thread url with webui url params', async () => {
+    const taskId = '123';
+    const threadId = '111';
+    const turnId = '222';
+    const title = 'title';
+    window.history.replaceState(
+        {}, '',
+        `?task=${taskId}&thread=${threadId}&turn=${turnId}&title=${title}`);
+
+    // Don't set the q query parameter for the AI page.
+    const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+
+    assertEquals(threadId, threadUrl.searchParams.get('mtid'));
+    assertEquals(turnId, threadUrl.searchParams.get('mstk'));
+    assertEquals(title, threadUrl.searchParams.get('q'));
+  });
+
+  test('does not attempt to restore thread if params available', async () => {
+    window.history.replaceState(
+        {}, '', `?task=123&thread=333&turn=444&title=wrong`);
+
+    const threadId = '111';
+    const turnId = '222';
+    const title = 'title';
+    const proxy = new TestContextualTasksBrowserProxy(
+        `http://example.com?mtid=${threadId}&mstk=${turnId}&q=${title}`);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+
+    assertEquals(threadId, threadUrl.searchParams.get('mtid'));
+    assertEquals(turnId, threadUrl.searchParams.get('mstk'));
+    assertEquals(title, threadUrl.searchParams.get('q'));
   });
 
   test('toolbar visibility changes for tab and side panel', async () => {
