@@ -6,12 +6,19 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -25,10 +32,10 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
  * history opt-in flow.
  */
 @NullMarked
-public interface SigninAndHistorySyncCoordinator {
+public abstract class SigninAndHistorySyncCoordinator {
 
     /** Indicates the sign-in flow completion status. */
-    public class Result {
+    public static class Result {
         /**
          * Whether the sign-in operation occurred during this specific execution of the flow. Should
          * be False if the user was already signed in before the flow started. Note, if the user
@@ -56,29 +63,57 @@ public interface SigninAndHistorySyncCoordinator {
     }
 
     /** Cleans up the coordinator after it is finished being used. */
-    void destroy();
-
-    /**
-     * Called when an Google Play Services "add account" flow started at the activity level has
-     * finished without being completed.
-     */
-    void onAddAccountCanceled();
-
-    /**
-     * Called when an account is added via Google Play Services "add account" flow started at the
-     * activity level.
-     */
-    void onAccountAdded(String accountEmail);
+    public abstract void destroy();
 
     /** Provides the root view of the sign-in and history opt-in flow. */
-    View getView();
+    public abstract View getView();
 
     /** Called when the configuration of the embedder activity changes. */
-    void onConfigurationChange();
+    public abstract void onConfigurationChange();
 
     /** Called when a backpress occurs in the embedder activity. */
     @BackPressResult
-    int handleBackPress();
+    public abstract int handleBackPress();
+
+    /**
+     * Called when an Google Play Services "add account" flow started at the activity level has
+     * finished with a result.
+     */
+    public final void onAddAccountResult(int resultCode, @Nullable Intent data) {
+        final String accountEmail =
+                data == null
+                        ? null
+                        : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
+
+        if (resultCode != Activity.RESULT_OK || accountEmail == null) {
+            // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
+            // contains a null account name.
+            if (resultCode == Activity.RESULT_OK && accountEmail == null) {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.NULL_ACCOUNT_NAME);
+            } else {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
+            }
+            onAddAccountCanceled();
+            return;
+        }
+
+        SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
+        onAccountAdded(accountEmail);
+    }
+
+    /**
+     * Called by {@link onAddAccountResult} when an Google Play Services "add account" flow started
+     * at the activity level has finished without being completed.
+     */
+    protected abstract void onAddAccountCanceled();
+
+    /**
+     * Called by {@link onAddAccountResult} when an Google Play Services "add account" flow started
+     * at the activity level has finished after being completed.
+     *
+     * @param accountEmail the email of the added account.
+     */
+    protected abstract void onAccountAdded(String accountEmail);
 
     /**
      * Whether the sign-in ui will show in the sign-in flow if the latter is launched.
@@ -87,7 +122,7 @@ public interface SigninAndHistorySyncCoordinator {
      *
      * @param profile The current profile.
      */
-    static boolean willShowSigninUi(Profile profile) {
+    public static boolean willShowSigninUi(Profile profile) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         return signinManager.isSigninAllowed();
@@ -103,7 +138,7 @@ public interface SigninAndHistorySyncCoordinator {
      * @param historyOptInMode Whether the history opt-in should be always, optionally or never
      *     shown.
      */
-    static boolean willShowHistorySyncUi(
+    public static boolean willShowHistorySyncUi(
             Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
@@ -116,7 +151,7 @@ public interface SigninAndHistorySyncCoordinator {
         return shouldShowHistorySync(profile, historyOptInMode);
     }
 
-    static boolean shouldShowHistorySync(
+    public static boolean shouldShowHistorySync(
             Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
         boolean forceHistoryOptInScreen =

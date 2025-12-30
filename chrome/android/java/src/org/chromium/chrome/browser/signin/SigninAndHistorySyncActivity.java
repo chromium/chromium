@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -285,7 +283,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
 
         mIsWaitingForAddAccountResult = false;
-        onAddAccountResult(resultCode, data);
+        assumeNonNull(mCoordinator);
+        mCoordinator.onAddAccountResult(resultCode, data);
         return true;
     }
 
@@ -389,30 +388,5 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
             // Set the status bar color to the fullsceen sign-in background color.
             setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
         }
-    }
-
-    private void onAddAccountResult(int resultCode, @Nullable Intent data) {
-        final String accountEmail =
-                data == null
-                        ? null
-                        : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
-
-        assumeNonNull(mCoordinator);
-
-        if (resultCode != Activity.RESULT_OK || accountEmail == null) {
-            mCoordinator.onAddAccountCanceled();
-
-            // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
-            // contains a null account name.
-            if (resultCode == Activity.RESULT_OK && accountEmail == null) {
-                SigninMetricsUtils.logAddAccountStateHistogram(State.NULL_ACCOUNT_NAME);
-            } else {
-                SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
-            }
-            return;
-        }
-
-        SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
-        mCoordinator.onAccountAdded(accountEmail);
     }
 }

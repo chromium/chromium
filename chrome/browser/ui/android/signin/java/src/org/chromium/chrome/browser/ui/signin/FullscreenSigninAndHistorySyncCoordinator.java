@@ -52,9 +52,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
 @NullMarked
-public final class FullscreenSigninAndHistorySyncCoordinator
-        implements SigninAndHistorySyncCoordinator,
-                HistorySyncCoordinator.HistorySyncDelegate,
+public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHistorySyncCoordinator
+        implements HistorySyncCoordinator.HistorySyncDelegate,
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */

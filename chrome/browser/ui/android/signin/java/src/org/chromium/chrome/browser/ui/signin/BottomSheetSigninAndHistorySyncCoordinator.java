@@ -56,9 +56,8 @@ import java.util.function.Supplier;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
 @NullMarked
-public class BottomSheetSigninAndHistorySyncCoordinator
-        implements SigninAndHistorySyncCoordinator,
-                SigninBottomSheetCoordinator.Delegate,
+public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistorySyncCoordinator
+        implements SigninBottomSheetCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate,
                 SigninSnackbarController.Listener {
     private static final String TAG = "BottomSheetSignin";
