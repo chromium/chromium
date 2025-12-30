@@ -38,6 +38,9 @@ source_set("passage_embeddings") {
     "//content/public/browser",
     "//services/passage_embeddings/public/mojom",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
 }
 
 source_set("unit_tests") {

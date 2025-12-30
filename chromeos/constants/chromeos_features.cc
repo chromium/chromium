@@ -149,6 +149,11 @@ BASE_FEATURE(kFeatureManagementGeminiAppPreinstall,
 BASE_FEATURE(kFeatureManagementHistoryEmbedding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the passage embedder infrastructure from the
+// feature management module.
+BASE_FEATURE(kFeatureManagementPassageEmbedder,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementOrca, base::FEATURE_DISABLED_BY_DEFAULT);
