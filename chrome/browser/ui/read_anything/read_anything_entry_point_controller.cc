@@ -87,15 +87,20 @@ void ReadAnythingEntryPointController::ShowUI(
     return;
   }
 
-  SidePanelOpenTrigger side_panel_open_trigger =
-      read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
   if (features::IsImmersiveReadAnythingEnabled()) {
+    // TODO(crbug.com/471001915): Once IRM flag is enabled by default, change
+    // IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, one of the triggers of this
+    // method, to reflect that it's opening Immersive mode instead of Side
+    // Panel.
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ShowUI(side_panel_open_trigger);
+      controller->ShowImmersiveUI(open_trigger);
     }
   } else {
+    SidePanelOpenTrigger side_panel_open_trigger =
+        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+
     bwi->GetFeatures().side_panel_ui()->Show(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
         side_panel_open_trigger);
@@ -110,15 +115,16 @@ void ReadAnythingEntryPointController::ToggleUI(
     return;
   }
 
-  SidePanelOpenTrigger side_panel_open_trigger =
-      read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
   if (features::IsImmersiveReadAnythingEnabled()) {
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ToggleReadAnythingSidePanel(side_panel_open_trigger);
+      controller->ToggleImmersiveUI(open_trigger);
     }
   } else {
+    SidePanelOpenTrigger side_panel_open_trigger =
+        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+
     bwi->GetFeatures().side_panel_ui()->Toggle(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
         side_panel_open_trigger);
