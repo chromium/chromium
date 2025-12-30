@@ -14,12 +14,19 @@ TestResponseHolder::~TestResponseHolder() = default;
 
 void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
   responses_.push_back(chunk->text);
+  if (disconnect_on_message_) {
+    Disconnect();
+  }
 }
 
 void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
   complete_ = true;
   output_token_count_ = summary->output_token_count;
   OnCompleted();
+}
+
+void TestResponseHolder::DisconnectOnMessage() {
+  disconnect_on_message_ = true;
 }
 
 TestAsrResponseHolder::TestAsrResponseHolder() = default;

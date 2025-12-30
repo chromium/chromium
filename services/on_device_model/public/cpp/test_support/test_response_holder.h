@@ -35,6 +35,11 @@ class BaseTestResponseHolder : public Responder {
     return remote;
   }
 
+  void Disconnect() {
+    receiver_.reset();
+    OnDisconnect();
+  }
+
   bool disconnected() const { return disconnected_; }
 
   // Spins a RunLoop until this object observes completion of its response.
@@ -74,10 +79,13 @@ class TestResponseHolder
   void OnResponse(mojom::ResponseChunkPtr chunk) override;
   void OnComplete(mojom::ResponseSummaryPtr summary) override;
 
+  void DisconnectOnMessage();
+
  private:
   std::vector<std::string> responses_;
   uint32_t output_token_count_ = 0;
   bool complete_ = false;
+  bool disconnect_on_message_ = false;
 };
 
 // Helper to accumulate a streamed response from model execution. This is only
