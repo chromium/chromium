@@ -33,6 +33,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".PrimaryAccountChange"
       summary="Requests triggered by primary account changes"/>
   <variant name=".Startup" summary="Requests triggered on browser startup"/>
+  <variant name=".User"
+      summary="Requests triggered manually from the debug page"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:RequestSource) -->
