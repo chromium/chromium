@@ -801,7 +801,19 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       WithMinimalUiButtons_ManifsetBrowser) {
+                       FullScreenDisplayModeOpensInWindowedContainer) {
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kExampleURL));
+  web_app_info->display_mode = DisplayMode::kFullscreen;
+  webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_NE(app_browser, nullptr);
+  EXPECT_TRUE(app_browser->app_controller());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithMinimalUiButtons_ManifestBrowser) {
   EXPECT_TRUE(
       HasMinimalUiButtons(/*install_display_mode=*/DisplayMode::kBrowser,
                           /*app_display_mode_override=*/std::nullopt,

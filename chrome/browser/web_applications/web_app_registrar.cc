@@ -996,12 +996,17 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return filter.is_suggested_app_;
   }
 
+  // If the `DisplayMode` of a web app is undefined for whatever reason, it
+  // should be launching in a browser tab.
+  DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
+  bool opens_in_browser_tab = display_mode == DisplayMode::kBrowser ||
+                              display_mode == DisplayMode::kUndefined;
   if (filter.opens_in_browser_tab_) {
-    return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser;
+    return opens_in_browser_tab;
   }
 
   if (filter.opens_in_dedicated_window_) {
-    return GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+    return !opens_in_browser_tab;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)

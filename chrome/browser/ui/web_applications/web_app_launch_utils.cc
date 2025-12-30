@@ -888,23 +888,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
   debug_value.Set("launch_window_setting", static_cast<int>(launch_setting));
 
   if (launch_setting == LaunchWebAppWindowSetting::kOverrideWithWebAppConfig) {
-    DisplayMode display_mode =
-        lock.registrar().GetAppEffectiveDisplayMode(params.app_id);
-    switch (display_mode) {
-      case DisplayMode::kUndefined:
-      case DisplayMode::kFullscreen:
-      case DisplayMode::kBrowser:
-        params.container = apps::LaunchContainer::kLaunchContainerTab;
-        break;
-      case DisplayMode::kMinimalUi:
-      case DisplayMode::kWindowControlsOverlay:
-      case DisplayMode::kTabbed:
-      case DisplayMode::kBorderless:
-      case DisplayMode::kPictureInPicture:
-      case DisplayMode::kStandalone:
-        params.container = apps::LaunchContainer::kLaunchContainerWindow;
-        break;
-    }
+    params.container = ConvertDisplayModeToAppLaunchContainer(
+        lock.registrar().GetAppEffectiveDisplayMode(params.app_id));
   }
 
   DCHECK_NE(params.container, apps::LaunchContainer::kLaunchContainerNone);

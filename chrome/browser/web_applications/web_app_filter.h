@@ -11,11 +11,11 @@ namespace web_app {
 // the WebAppRegistrar that have certain capabilities.
 class WebAppFilter {
  public:
-  // Only consider web apps whose effective display mode is a browser tab.
+  // Only consider web apps whose effective display mode is a browser tab, or it
+  // is undefined.
   static WebAppFilter OpensInBrowserTab();
   // Only consider web apps whose effective display mode is a dedicated window
   // (essentially any display mode other than a browser tab).
-  // Note: This also includes `DisplayMode::kUndefined`.
   static WebAppFilter OpensInDedicatedWindow();
   // Only consider web apps that capture links in scope.
   static WebAppFilter CapturesLinksInScope();
