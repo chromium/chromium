@@ -63,7 +63,7 @@
 //!
 //! To opt into the additional APIs available in the most recent nightly
 //! compiler, the `procmacro2_semver_exempt` config flag must be passed to
-//! rustc. We will polyfill those nightly-only APIs back to Rust 1.60.0. As
+//! rustc. We will polyfill those nightly-only APIs back to Rust 1.68.0. As
 //! these are unstable APIs that track the nightly compiler, minor versions of
 //! proc-macro2 may make breaking changes to them at any time.
 //!
@@ -84,7 +84,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.103")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.104")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -292,8 +292,8 @@ impl From<TokenTree> for TokenStream {
 }
 
 impl Extend<TokenTree> for TokenStream {
-    fn extend<I: IntoIterator<Item = TokenTree>>(&mut self, streams: I) {
-        self.inner.extend(streams);
+    fn extend<I: IntoIterator<Item = TokenTree>>(&mut self, tokens: I) {
+        self.inner.extend(tokens);
     }
 }
 
@@ -304,12 +304,38 @@ impl Extend<TokenStream> for TokenStream {
     }
 }
 
-/// Collects a number of token trees into a single stream.
-impl FromIterator<TokenTree> for TokenStream {
-    fn from_iter<I: IntoIterator<Item = TokenTree>>(streams: I) -> Self {
-        TokenStream::_new(streams.into_iter().collect())
+impl Extend<Group> for TokenStream {
+    fn extend<I: IntoIterator<Item = Group>>(&mut self, tokens: I) {
+        self.inner.extend(tokens.into_iter().map(TokenTree::Group));
     }
 }
+
+impl Extend<Ident> for TokenStream {
+    fn extend<I: IntoIterator<Item = Ident>>(&mut self, tokens: I) {
+        self.inner.extend(tokens.into_iter().map(TokenTree::Ident));
+    }
+}
+
+impl Extend<Punct> for TokenStream {
+    fn extend<I: IntoIterator<Item = Punct>>(&mut self, tokens: I) {
+        self.inner.extend(tokens.into_iter().map(TokenTree::Punct));
+    }
+}
+
+impl Extend<Literal> for TokenStream {
+    fn extend<I: IntoIterator<Item = Literal>>(&mut self, tokens: I) {
+        self.inner
+            .extend(tokens.into_iter().map(TokenTree::Literal));
+    }
+}
+
+/// Collects a number of token trees into a single stream.
+impl FromIterator<TokenTree> for TokenStream {
+    fn from_iter<I: IntoIterator<Item = TokenTree>>(tokens: I) -> Self {
+        TokenStream::_new(tokens.into_iter().collect())
+    }
+}
+
 impl FromIterator<TokenStream> for TokenStream {
     fn from_iter<I: IntoIterator<Item = TokenStream>>(streams: I) -> Self {
         TokenStream::_new(streams.into_iter().map(|i| i.inner).collect())

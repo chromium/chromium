@@ -188,13 +188,13 @@ impl From<TokenTree> for TokenStream {
 }
 
 impl FromIterator<TokenTree> for TokenStream {
-    fn from_iter<I: IntoIterator<Item = TokenTree>>(trees: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = TokenTree>>(tokens: I) -> Self {
         if inside_proc_macro() {
             TokenStream::Compiler(DeferredTokenStream::new(
-                trees.into_iter().map(into_compiler_token).collect(),
+                tokens.into_iter().map(into_compiler_token).collect(),
             ))
         } else {
-            TokenStream::Fallback(trees.into_iter().collect())
+            TokenStream::Fallback(tokens.into_iter().collect())
         }
     }
 }
@@ -224,15 +224,15 @@ impl FromIterator<TokenStream> for TokenStream {
 }
 
 impl Extend<TokenTree> for TokenStream {
-    fn extend<I: IntoIterator<Item = TokenTree>>(&mut self, stream: I) {
+    fn extend<I: IntoIterator<Item = TokenTree>>(&mut self, tokens: I) {
         match self {
             TokenStream::Compiler(tts) => {
                 // Here is the reason for DeferredTokenStream.
-                for token in stream {
+                for token in tokens {
                     tts.extra.push(into_compiler_token(token));
                 }
             }
-            TokenStream::Fallback(tts) => tts.extend(stream),
+            TokenStream::Fallback(tts) => tts.extend(tokens),
         }
     }
 }

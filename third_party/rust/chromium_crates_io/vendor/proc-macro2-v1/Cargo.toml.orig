@@ -1,6 +1,6 @@
 [package]
 name = "proc-macro2"
-version = "1.0.103"
+version = "1.0.104"
 authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
@@ -10,7 +10,7 @@ edition = "2021"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/proc-macro2"
-rust-version = "1.60"
+rust-version = "1.68"
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg=procmacro2_semver_exempt"]
