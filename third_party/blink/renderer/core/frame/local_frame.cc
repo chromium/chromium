@@ -264,6 +264,7 @@ namespace blink {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
 std::vector<gfx::Range> ExtractMisspellingRangesFromDocumentMarkerVector(
     const DocumentMarkerVector& markers) {
   std::vector<gfx::Range> ranges;
@@ -274,6 +275,7 @@ std::vector<gfx::Range> ExtractMisspellingRangesFromDocumentMarkerVector(
   }
   return ranges;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Max size in bytes of the Vector used in ForceSynchronousDocumentInstall to
 // buffer data before sending it to the HTML parser.
@@ -4274,7 +4276,13 @@ void LocalFrame::NotifyFrameVisibilityChanged(
 }
 
 // TODO(crbug.com/447973489) - Add test coverage for this method
+#if BUILDFLAG(IS_ANDROID)
 void LocalFrame::PerformSpellCheck() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAndroidSpellcheckFullApiBlink)) {
+    return;
+  }
+
   ContainerNode* container_node = HighestEditableRoot(
       Selection().ComputeVisibleSelectionInDOMTree().Start());
   if (!container_node) {
@@ -4289,5 +4297,6 @@ void LocalFrame::PerformSpellCheck() {
           GetDocument()->Markers().Markers()),
       /*request_num=*/0, /*should_force_refresh=*/false);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink
