@@ -217,6 +217,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_security_24dp.xml",
     "java/res/drawable/ic_security_grey.xml",
     "java/res/drawable/ic_settings_24dp.xml",
+    "java/res/drawable/ic_settings_applications_24dp.xml",
     "java/res/drawable/ic_skip_next_white_24dp.xml",
     "java/res/drawable/ic_skip_previous_white_24dp.xml",
     "java/res/drawable/ic_speed_24dp.xml",

@@ -369,7 +369,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_translate.xml",
   "java/res/drawable/ic_trending_down_24dp.xml",
   "java/res/drawable/ic_turn_off_sync_48dp.xml",
-  "java/res/drawable/ic_tv_options_input_settings_rotated_grey.xml",
   "java/res/drawable/ic_update_24dp.xml",
   "java/res/drawable/ic_warning_white_24dp.xml",
   "java/res/drawable/ic_webstore_menu.xml",

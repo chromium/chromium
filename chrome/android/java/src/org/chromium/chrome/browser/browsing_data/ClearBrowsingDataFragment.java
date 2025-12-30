@@ -318,7 +318,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
             case DialogOption.CLEAR_PASSWORDS:
                 return R.drawable.ic_password_manager_key;
             case DialogOption.CLEAR_SITE_SETTINGS:
-                return R.drawable.ic_tv_options_input_settings_rotated_grey;
+                return R.drawable.ic_settings_applications_24dp;
             case DialogOption.CLEAR_TABS:
                 return R.drawable.ic_tab_icon_24dp;
             default:
