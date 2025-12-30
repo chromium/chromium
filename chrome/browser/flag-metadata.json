@@ -109,6 +109,14 @@
     "expiry_milestone": 149
   },
   {
+    "name": "aim-entry-point-direct-navigation",
+    "owners": [
+      "pauladedeji@google.com",
+      "mahmadi@chromium.org",
+      "chrome-desktop-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "aim-server-eligibility",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 145

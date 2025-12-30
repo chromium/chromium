@@ -51,6 +51,12 @@ inline constexpr char kAiModeOmniboxEntryPointName[] =
 inline constexpr char kAiModeOmniboxEntryPointDescription[] =
     "Enables icon button for AI Mode entrypoint in the Omnibox.";
 
+inline constexpr char kAiModeEntryPointAlwaysNavigatesName[] =
+    "AI Mode Omnibox Entrypoint always navigates";
+inline constexpr char kAiModeEntryPointAlwaysNavigatesDescription[] =
+    "If enabled, clicking aim button in omnibox always navigates directly to "
+    "google.com/aimode.";
+
 inline constexpr char kOmniboxAimServerEligibilityName[] =
     "AIM Server Eligibility";
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
