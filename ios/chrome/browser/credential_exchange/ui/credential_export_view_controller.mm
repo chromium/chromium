@@ -216,6 +216,11 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
       self.tableView.indexPathsForSelectedRows;
   NSUInteger totalCount = _affiliatedGroups.size();
 
+  for (NSIndexPath* indexPath in self.tableView.indexPathsForVisibleRows) {
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [self updateAccessibilityTraitsForCell:cell indexPath:indexPath];
+  }
+
   self.navigationItem.rightBarButtonItem.enabled = (selectedPaths.count > 0);
 
   BOOL hasExportablePassword =
@@ -357,6 +362,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   const password_manager::AffiliatedGroup& group = identifier.affiliatedGroup;
 
   [self configureCell:cell withGroup:group identifier:identifier];
+  [self updateAccessibilityTraitsForCell:cell indexPath:indexPath];
 
   return cell;
 }
@@ -443,6 +449,16 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
     }
   }
   return NO;
+}
+
+// Helper to update accessibility traits based on selection state.
+- (void)updateAccessibilityTraitsForCell:(UITableViewCell*)cell
+                               indexPath:(NSIndexPath*)indexPath {
+  if ([self.tableView.indexPathsForSelectedRows containsObject:indexPath]) {
+    cell.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    cell.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
 }
 
 @end
