@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
+#include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
 
@@ -22,7 +24,7 @@ class TabInterface;
 // TabStripModel's TabStripCollection.
 class TabStripModelSelectionState final {
  public:
-  TabStripModelSelectionState();
+  explicit TabStripModelSelectionState(TabStripModel* model = nullptr);
   TabStripModelSelectionState(
       std::unordered_set<raw_ptr<TabInterface>> selected_tabs,
       raw_ptr<TabInterface> active_tab,
@@ -74,9 +76,24 @@ class TabStripModelSelectionState final {
 
   // Returns true if the selection model has at least 1 selected tab, an anchor
   // and an active tab. Otherwise returns false.
-  bool Valid();
+  bool Valid() const;
+
+  // Access the current object as a ListSelectionModel. Requires the
+  // |model_| member to be non null.
+  const ui::ListSelectionModel& GetListSelectionModel(
+      base::PassKey<TabStripModel>) const;
+
+  // Helper functions to update the |list_selection_model_| member,
+  // which is a ListSelectionModel representation of the current
+  // selection model. Requires |model_| to be non null.
+  void InvalidateListSelectionModel(base::PassKey<TabStripModel>) const;
+  void UpdateListSelectionModel(base::PassKey<TabStripModel>) const;
 
  private:
+  void UpdateListSelectionModel() const;
+  ui::ListSelectionModel::SelectedIndices ComputeSelectedIndices() const;
+  void InvalidateListSelectionModel() const;
+
   // The selected tabs in the tabstrip.
   std::unordered_set<raw_ptr<TabInterface>> selected_tabs_;
 
@@ -85,6 +102,14 @@ class TabStripModelSelectionState final {
 
   // The anchor tab for selection.
   raw_ptr<TabInterface> anchor_tab_ = nullptr;
+
+  // If |model_| is non-null, this member represents a ListSelectionModel that
+  // represents the current selection model. Otherwise it is a nullopt. The
+  // value of this member is cached and generated only on access, if
+  // necessary.
+  mutable std::optional<ui::ListSelectionModel> list_selection_model_;
+
+  raw_ptr<TabStripModel> model_ = nullptr;
 };
 
 }  // namespace tabs

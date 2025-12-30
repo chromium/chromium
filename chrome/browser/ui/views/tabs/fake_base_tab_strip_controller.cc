@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_selection_adapter.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"

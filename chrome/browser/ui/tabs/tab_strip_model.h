@@ -25,7 +25,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_selection_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/common/buildflags.h"
@@ -902,16 +902,6 @@ class TabStripModel {
   // into webcontents.
   tabs::TabInterface* GetTabForWebContents(
       const content::WebContents* contents) const;
-
-  // Returns a ui::ListSelectionModel::SelectedIndices object whose indices
-  // correspond to the tabs in the given TabStripModelSelectionState object
-  ui::ListSelectionModel::SelectedIndices GetSelectedIndicesFrom(
-      const tabs::TabStripModelSelectionState&) const;
-
-  // Returns a ListSelectionModel with the same active, anchor, and selected
-  // tabs as the given TabStripModelSelectionState object.
-  ui::ListSelectionModel GetListSelectionModelFrom(
-      const tabs::TabStripModelSelectionState&) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);

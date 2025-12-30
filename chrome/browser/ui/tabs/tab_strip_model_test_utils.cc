@@ -39,6 +39,7 @@ void PrepareTabstripForSelectionTest(
     selection_model.AddIndexToSelection(selected_tab);
   }
   selection_model.set_active(*selection_model.selected_indices().begin());
+  selection_model.set_anchor(*selection_model.selected_indices().begin());
   model->SetSelectionFromModel(selection_model);
 }
 
