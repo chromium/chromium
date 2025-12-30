@@ -145,11 +145,18 @@ class GlicFrameViewChromeOS : public ash::FrameViewAsh {
 
   // ash::FrameViewAsh:
   int NonClientHitTest(const gfx::Point& point) override {
-    if (glic_view()->IsPointWithinDraggableArea(point)) {
+    // As part of this hit testing, we check if the point is within the inside
+    // resizable region of the window.
+    int component = ash::FrameViewAsh::NonClientHitTest(point);
+
+    // If point falls into the client area (i.e web-contents), check if it
+    // within the draggable regions of web-contents.
+    if (component == HTCLIENT &&
+        glic_view()->IsPointWithinDraggableArea(point)) {
       return HTCAPTION;
     }
 
-    return ash::FrameViewAsh::NonClientHitTest(point);
+    return component;
   }
 
  private:
