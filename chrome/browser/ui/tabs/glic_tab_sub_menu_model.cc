@@ -35,7 +35,7 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == TabStripModel::CommandGlicCreateNewChat) {
     std::vector<int> indices;
     if (tab_strip_model_->IsTabSelected(context_index_)) {
-      const auto& selected_indices =
+      const ui::ListSelectionModel::SelectedIndices selected_indices =
           tab_strip_model_->selection_model().selected_indices();
       indices.assign(selected_indices.begin(), selected_indices.end());
     } else {

@@ -6619,7 +6619,7 @@ TEST_P(TabStripModelTest,
   EXPECT_EQ(tabstrip()->active_index(), 0);
 }
 
-TEST_P(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
+TEST_P(TabStripModelTest, AddSelectionFromAnchorTo_SplitTab) {
   // Create six tabs with a split containing tabs 0 and 1.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 6, 0, {0}));
@@ -6629,12 +6629,12 @@ TEST_P(TabStripModelTest, AddSelectionFromAnchorTo_NoAnchorAndSplit) {
 
   ui::ListSelectionModel selection_model;
   selection_model.AddIndexToSelection(3);
-  selection_model.set_anchor(std::nullopt);
+  selection_model.set_anchor(3);
   selection_model.set_active(3);
   tabstrip()->SetSelectionFromModel(selection_model);
   ExpectSelectionIsExactly(tabstrip(), {3});
   tabstrip()->AddSelectionFromAnchorTo(1);
-  ExpectSelectionIsExactly(tabstrip(), {0, 1});
+  ExpectSelectionIsExactly(tabstrip(), {0, 1, 2, 3});
 }
 
 TEST_P(TabStripModelTest, SelectTabAt_SplitTabs) {
@@ -6884,6 +6884,34 @@ TEST_P(TabStripModelTest, GetTabsAtIndices) {
   EXPECT_EQ(tabs, tabstrip()->GetTabsAtIndices({1, 3, 4, 6}));
 }
 
+TEST_P(TabStripModelTest, GetListSelectionModelFromSelectionState) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 10,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {2, 4, 6, 8});
+
+  tabs::TabStripModelSelectionState selection_state;
+
+  selection_state.AddTabToSelection(tabstrip()->GetTabAtIndex(2));
+  selection_state.AddTabToSelection(tabstrip()->GetTabAtIndex(4));
+  selection_state.AddTabToSelection(tabstrip()->GetTabAtIndex(6));
+  selection_state.AddTabToSelection(tabstrip()->GetTabAtIndex(8));
+  selection_state.SetActiveTab(tabstrip()->GetTabAtIndex(2));
+  selection_state.SetAnchorTab(tabstrip()->GetTabAtIndex(2));
+
+  EXPECT_EQ(ui::ListSelectionModel::SelectedIndices({2, 4, 6, 8}),
+            tabstrip()->GetSelectedIndicesFrom(selection_state));
+
+  ui::ListSelectionModel expected_model;
+  expected_model.AddIndexToSelection(2);
+  expected_model.AddIndexToSelection(4);
+  expected_model.AddIndexToSelection(6);
+  expected_model.AddIndexToSelection(8);
+  expected_model.set_active(2);
+  expected_model.set_anchor(2);
+
+  EXPECT_EQ(expected_model,
+            tabstrip()->GetListSelectionModelFrom(selection_state));
+}
 INSTANTIATE_TEST_SUITE_P(SelectionWithPointers,
                          TabStripModelTest,
                          testing::Bool(),

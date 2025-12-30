@@ -187,21 +187,8 @@ TabStripModelSelectionStateAdapter::ToListSelectionModel() const {
 
 ui::ListSelectionModel::SelectedIndices
 TabStripModelSelectionStateAdapter::selected_indices() const {
-  ui::ListSelectionModel::SelectedIndices indices;
-  int index = 0;
-  auto tab_iter = tab_strip_model_->begin();
-  const auto tab_iter_end = tab_strip_model_->end();
-  while (tab_iter != tab_iter_end) {
-    if (selection_state_.IsSelected(*tab_iter)) {
-      indices.insert(index);
-    }
-
-    tab_iter++;
-    index++;
-  }
-
-  // the selected indices are already sorted due to iterating through the tabs.
-  return indices;
+  CHECK(tab_strip_model_);
+  return tab_strip_model_->GetSelectedIndicesFrom(selection_state_);
 }
 
 // ListSelectionModelAdapter

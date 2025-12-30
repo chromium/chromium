@@ -281,8 +281,7 @@ mojom::SelectionModelPtr BuildSelectionModel(const TabStripModel* model) {
   auto mojo_sel_model = tab_strip_internals::mojom::SelectionModel::New();
   mojo_sel_model->active_index = model->active_index();
 
-  const ui::ListSelectionModel sel_model =
-      model->selection_model().ToListSelectionModel();
+  const ui::ListSelectionModel sel_model = model->selection_model();
   // Below logic does not exist in TabStripModel, so we build it here.
   mojo_sel_model->anchor_index =
       sel_model.anchor().has_value() ? *sel_model.anchor() : -1;

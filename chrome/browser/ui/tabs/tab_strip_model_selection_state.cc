@@ -20,11 +20,21 @@ TabStripModelSelectionState::TabStripModelSelectionState(
       anchor_tab_(anchor_tab) {}
 
 TabStripModelSelectionState::~TabStripModelSelectionState() = default;
+TabStripModelSelectionState::TabStripModelSelectionState(
+    const TabStripModelSelectionState&) = default;
+TabStripModelSelectionState& TabStripModelSelectionState::operator=(
+    const TabStripModelSelectionState&) = default;
 
 bool TabStripModelSelectionState::operator==(
     const TabStripModelSelectionState& other) const {
   return selected_tabs_ == other.selected_tabs_ &&
          active_tab_ == other.active_tab_ && anchor_tab_ == other.anchor_tab_;
+}
+
+void TabStripModelSelectionState::Clear() {
+  selected_tabs_.clear();
+  active_tab_ = nullptr;
+  anchor_tab_ = nullptr;
 }
 
 bool TabStripModelSelectionState::IsSelected(TabInterface* tab) const {
@@ -50,7 +60,7 @@ void TabStripModelSelectionState::SetAnchorTab(TabInterface* tab) {
 }
 
 bool TabStripModelSelectionState::AppendTabsToSelection(
-    std::unordered_set<TabInterface*> tabs) {
+    const std::unordered_set<TabInterface*>& tabs) {
   bool selection_changed = false;
   for (TabInterface* tab : tabs) {
     if (!IsSelected(tab)) {
