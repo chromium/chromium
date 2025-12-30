@@ -320,7 +320,7 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
         // Increase the hit region inside of the glic window to make it
         // easier to resize the window.
         constexpr int kResizeInsetSize = 6;
-        constexpr int kResizeInsetScaleForTouch = 5;
+        constexpr int kResizeInsetScaleForTouch = 3;
         const gfx::Insets mouse_insets(kResizeInsetSize);
         const gfx::Insets touch_insets =
             gfx::ScaleToFlooredInsets(mouse_insets, kResizeInsetScaleForTouch);
