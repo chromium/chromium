@@ -746,8 +746,30 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
 
-  // The below logic is only relevant for the AI page.
-  if (!is_ai_page) {
+  bool is_url_changed = false;
+  if (url != last_committed_url_) {
+    last_committed_url_ = url;
+    is_url_changed = true;
+  }
+
+  // If this navigation is inside the same document, do nothing.
+  if (navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (!is_url_changed) {
+    return;
+  }
+
+  if (url == ui_service_->GetDefaultAiPageUrl()) {
+    ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
+                               task_info_delegate_->GetWebUIWebContents(),
+                               base::Uuid(),
+                               task_info_delegate_->IsShownInTab());
+    return;
+  }
+
+  if (!ui_service_->IsAiUrl(url)) {
     return;
   }
 

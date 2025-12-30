@@ -90,6 +90,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
     raw_ptr<contextual_tasks::ContextualTasksContextController>
         context_controller_;
     raw_ref<TaskInfoDelegate> task_info_delegate_;
+
+    // Last committed URL used to check if URL changes.
+    GURL last_committed_url_;
   };
 
   explicit ContextualTasksUI(content::WebUI* web_ui);

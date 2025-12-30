@@ -198,7 +198,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   clearInputAndFocus(): void {
     // Clear text from composebox and focus.
-    this.$.composebox.clearInput();
+    this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
     this.$.composebox.focusInput();
     this.$.composebox.clearAutocompleteMatches();
   }
