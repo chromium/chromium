@@ -325,11 +325,6 @@ export class ComposeboxElement extends I18nMixinLit
         (e: CustomEvent<{height: number}>) => {
           this.fire('composebox-resize', {carouselHeight: e.detail.height});
         });
-    this.eventTracker_.add(
-        this.$.context, 'add-file_context',
-        (e: CustomEvent<{file: ComposeboxFile}>) => {
-          this.$.context.onFileContextAdded(e.detail.file);
-        });
     this.focusInput();
     // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
     // autocomplete query is triggered after the state has been initialized.
