@@ -286,18 +286,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DOMStorage.CommitMeasuredDelay" units="ms"
-    expires_after="2025-12-14">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The amount of time that a single `Put()` was deferred. This is different
-    from LevelDBWrapper.CommitDelay because that histogram only measures the
-    delay for the first commit of a batch. Recorded when the batch is pushed to
-    LevelDB.
-  </summary>
-</histogram>
-
 <histogram
     name="IndexedDB.BackendDuration.WriteBlobs.{IndexedDBBackingStoreType}"
     units="ms" expires_after="2026-10-01">
