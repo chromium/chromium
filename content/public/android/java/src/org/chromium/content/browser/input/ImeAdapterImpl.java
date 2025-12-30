@@ -1840,7 +1840,8 @@ public class ImeAdapterImpl
                                 suggestionHighlightColor,
                                 isAutoCorrectionSpan
                                         ? new String[0]
-                                        : suggestionSpan.getSuggestions());
+                                        : suggestionSpan.getSuggestions(),
+                                /* shouldHideSuggestionMenu= */ !isEasyCorrectSpan);
             }
         }
     }
@@ -1894,7 +1895,8 @@ public class ImeAdapterImpl
                 boolean removeOnFinishComposing,
                 int underlineColor,
                 int suggestionHighlightColor,
-                String[] suggestions);
+                String[] suggestions,
+                boolean shouldHideSuggestionMenu);
 
         void setComposingText(
                 long nativeImeAdapterAndroid,

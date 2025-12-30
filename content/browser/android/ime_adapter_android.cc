@@ -133,7 +133,8 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     jboolean remove_on_finish_composing,
     jint underline_color,
     jint suggestion_highlight_color,
-    const JavaRef<jobjectArray>& suggestions) {
+    const JavaRef<jobjectArray>& suggestions,
+    jboolean should_hide_suggestion_menu) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
 
@@ -149,7 +150,8 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
       type, static_cast<unsigned>(start), static_cast<unsigned>(end),
       ui::ImeTextSpan::Thickness::kThick,
       ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT,
-      static_cast<unsigned>(suggestion_highlight_color), suggestions_vec);
+      static_cast<unsigned>(suggestion_highlight_color), suggestions_vec,
+      SK_ColorTRANSPARENT, should_hide_suggestion_menu);
   ime_text_span.remove_on_finish_composing = remove_on_finish_composing;
   ime_text_span.underline_color = static_cast<unsigned>(underline_color);
   ime_text_spans->push_back(ime_text_span);
