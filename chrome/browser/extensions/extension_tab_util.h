@@ -149,10 +149,6 @@ class ExtensionTabUtil {
       WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
-  // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
-  // with information about the mute state of a browser tab.
-  static api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents);
-
   // Gets the level of scrubbing of tab data that needs to happen for a given
   // extension and web contents. This is the preferred way to get
   // ScrubTabBehavior.
@@ -206,9 +202,6 @@ class ExtensionTabUtil {
 
   // Gets the extensions-specific split view ID.
   static int GetSplitId(const split_tabs::SplitTabId& id);
-
-  // Gets the window ID that the group belongs to.
-  static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
   // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
