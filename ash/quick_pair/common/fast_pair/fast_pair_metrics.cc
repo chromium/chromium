@@ -922,8 +922,7 @@ GetEngagementFunnelRetroactiveDeviceTypeNotificationTypeMetric(
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
     const Device& device,
@@ -1666,5 +1665,4 @@ void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
                     .SetFastPairVersion(version)));
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

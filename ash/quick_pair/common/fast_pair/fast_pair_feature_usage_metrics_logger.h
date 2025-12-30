@@ -14,8 +14,7 @@
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Tracks Fast Pair feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
@@ -47,7 +46,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
       this};
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_FEATURE_USAGE_METRICS_LOGGER_H_

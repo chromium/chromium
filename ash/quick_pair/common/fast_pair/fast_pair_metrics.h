@@ -15,8 +15,7 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/bluetooth_socket.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class Device;
 
@@ -529,7 +528,6 @@ void RecordStructuredPairingComplete(const Device& device,
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordStructuredPairFailure(const Device& device, PairFailure failure);
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_

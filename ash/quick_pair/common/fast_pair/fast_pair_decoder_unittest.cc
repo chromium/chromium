@@ -33,9 +33,7 @@ constexpr uint8_t kPaddedLongModelIdHeader = 0b00001000;
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
-namespace fast_pair_decoder {
+namespace ash::quick_pair::fast_pair_decoder {
 
 class FastPairDecoderTest : public testing::Test {
  protected:
@@ -345,6 +343,4 @@ TEST_F(FastPairDecoderTest,
   EXPECT_EQ(GetHexModelIdFromServiceData(&service_data), std::nullopt);
 }
 
-}  // namespace fast_pair_decoder
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair::fast_pair_decoder

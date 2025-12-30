@@ -17,8 +17,7 @@ const char kFastPairUmaFeatureName[] = "FastPair";
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 FastPairFeatureUsageMetricsLogger::FastPairFeatureUsageMetricsLogger()
     : feature_usage_metrics_(kFastPairUmaFeatureName, this) {
@@ -78,5 +77,4 @@ bool FastPairFeatureUsageMetricsLogger::IsEnabled() const {
          pref_service->GetBoolean(ash::prefs::kFastPairEnabled);
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

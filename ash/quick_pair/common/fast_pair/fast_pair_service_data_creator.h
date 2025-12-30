@@ -13,8 +13,7 @@
 #include "base/component_export.h"
 #include "base/strings/string_number_conversions.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Convenience class with Builder to create byte arrays which represent Fast
 // Pair Service Data.
@@ -58,7 +57,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairServiceDataCreator {
   std::vector<std::string> extra_fields_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_SERVICE_DATA_CREATOR_H_
