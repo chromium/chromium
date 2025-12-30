@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.DefaultState" enum="DefaultBrowserState"
-    expires_after="2026-04-25">
+    expires_after="2026-06-28">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.InfoBar.SettingsResult" enum="PdfInfoBarSettingsResult"
-    expires_after="2026-04-25">
+    expires_after="2026-06-28">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>
@@ -111,14 +111,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.InfoBar.Shown" enum="BooleanShown"
-    expires_after="2026-04-25">
+    expires_after="2026-06-28">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>Recorded every time the PDF infobar is shown.</summary>
 </histogram>
 
 <histogram name="PDF.InfoBar.UserInteraction" enum="PDFInfoBarUserInteraction"
-    expires_after="2026-04-25">
+    expires_after="2026-06-28">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

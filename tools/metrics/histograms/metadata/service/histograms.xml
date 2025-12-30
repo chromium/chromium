@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-04-26">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-06-28">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -351,14 +351,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Database.ReadResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-04-26">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-06-28">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>Records result of read operations in ServiceWorkerDatabase.</summary>
 </histogram>
 
 <histogram name="ServiceWorker.Database.WriteResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-04-26">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-06-28">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -887,7 +887,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2{EmbeddedWorkerInitialStatus}{NavigationType}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2243,7 +2243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.ErrorStorageType"
-    enum="CacheStorageErrorStorageType" expires_after="2026-04-26">
+    enum="CacheStorageErrorStorageType" expires_after="2026-06-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

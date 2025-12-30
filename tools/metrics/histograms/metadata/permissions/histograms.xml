@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="BrowserDialogs.ExternalProtocol.BlockState"
-    enum="BlockStateMetric" expires_after="2026-04-27">
+    enum="BlockStateMetric" expires_after="2026-06-28">
   <owner>rsesek@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Action.{PermissionType}.CrossOriginFrame"
-    enum="PermissionAction" expires_after="2026-04-26">
+    enum="PermissionAction" expires_after="2026-06-28">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Action.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
-    enum="PermissionsPolicyConfiguration" expires_after="2026-04-26">
+    enum="PermissionsPolicyConfiguration" expires_after="2026-06-28">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -583,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="2026-04-27">
+    enum="PermissionEmbargoStatus" expires_after="2026-06-28">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -849,7 +849,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.PrimaryMainNavigationFinished.{PermissionType}.TopLevelHeaderPolicy"
-    enum="PermissionsPolicyConfiguration" expires_after="2026-04-26">
+    enum="PermissionsPolicyConfiguration" expires_after="2026-06-28">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -866,7 +866,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.Usage.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
-    enum="PermissionsPolicyConfiguration" expires_after="2026-04-26">
+    enum="PermissionsPolicyConfiguration" expires_after="2026-06-28">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -898,7 +898,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.Usage.{PermissionType}.IsCrossOriginFrame"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1136,7 +1136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.PredictionService.SignatureModel.Mismatch"
-    enum="Boolean" expires_after="2026-04-28">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>ravjit@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -2141,7 +2141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Usage.ElapsedTimeSinceLastUsage.{PermissionType}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.ModelExecutionAlreadyInProgress"
-    enum="BooleanSuccess" expires_after="2026-04-26">
+    enum="BooleanSuccess" expires_after="2026-06-28">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>

@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU9.Total{UsageScenario}"
-    units="1/100 %" expires_after="2026-04-26">
+    units="1/100 %" expires_after="2026-06-28">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2026-04-26">
+    units="minutes" expires_after="2026-06-28">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -798,7 +798,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2026-04-26">
+    units="milliwatts" expires_after="2026-06-28">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="hundredth of percent" expires_after="2026-04-26">
+    units="hundredth of percent" expires_after="2026-06-28">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>

@@ -1246,7 +1246,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ContextualSearchSuggestion.Precision" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1269,7 +1269,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ContextualSearchSuggestion.Recall" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1289,7 +1289,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ContextualSearchSuggestion.Usage" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1309,7 +1309,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1779,7 +1779,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.FocusToOpenTimeAnyPopupState3.{OmniboxZeroPrefixState}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2158,7 +2158,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.LensAction.Recall" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2179,7 +2179,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.LensAction.Usage" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3655,7 +3655,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>

@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency2"
-    units="microseconds" expires_after="2026-04-26">
+    units="microseconds" expires_after="2026-06-28">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

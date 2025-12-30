@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{PrerenderOrNonPrerender}.{TriggerTypeAndEagerness}"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{TriggerTypeAndEagerness}"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>

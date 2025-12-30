@@ -388,7 +388,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
-    units="%" expires_after="2026-04-26">
+    units="%" expires_after="2026-06-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -412,7 +412,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.MemorySaverModeEnabledPercent"
-    units="%" expires_after="2026-04-26">
+    units="%" expires_after="2026-06-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

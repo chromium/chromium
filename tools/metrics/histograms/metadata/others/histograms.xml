@@ -3150,7 +3150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.InstallResult" enum="ComponentManagerError"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <owner>src/components/component_updater/OWNERS</owner>
@@ -4291,7 +4291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.TrustSafetySentiment.TriggerOccurred"
-    enum="TrustSafetySentimentFeatureArea" expires_after="2026-04-26">
+    enum="TrustSafetySentimentFeatureArea" expires_after="2026-06-28">
   <owner>sauski@google.com</owner>
   <owner>chrome-hats-eng@google.com</owner>
   <summary>
@@ -4330,7 +4330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FetchKeepAlive.RequestOutliveDuration" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -4370,7 +4370,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FetchKeepAlive.Requests2.{RequestState}.IsContextDetached.{Process}"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
@@ -4637,7 +4637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -4780,7 +4780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.KnownGamepadConnectedWithId"
-    enum="GamepadVendorProduct" expires_after="2026-04-26">
+    enum="GamepadVendorProduct" expires_after="2026-06-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -4940,7 +4940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceResult{ImportantFileClients}"
-    enum="ImportantFileReplaceResult" expires_after="2026-04-26">
+    enum="ImportantFileReplaceResult" expires_after="2026-06-28">
   <owner>etienneb@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -4965,7 +4965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount2{ImportantFileClients}"
-    units="attempt count" expires_after="2026-04-26">
+    units="attempt count" expires_after="2026-06-28">
   <owner>etienneb@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -5432,7 +5432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchSubsequent" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>pasko@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -5917,7 +5917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.EncryptionPrefixVersion"
-    enum="EncryptionPrefixVersion" expires_after="2026-04-26">
+    enum="EncryptionPrefixVersion" expires_after="2026-06-28">
   <owner>wfh@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -5953,7 +5953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.FreedesktopSecretKeyProvider.{InitStatus}.ErrorDetail"
-    enum="FreedesktopSecretKeyProviderErrorDetail" expires_after="2026-04-26">
+    enum="FreedesktopSecretKeyProviderErrorDetail" expires_after="2026-06-28">
   <owner>thomasanderson@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -6891,7 +6891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -7097,7 +7097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome"
-    enum="CrashRepHandlingOutcome" expires_after="2026-04-26">
+    enum="CrashRepHandlingOutcome" expires_after="2026-06-28">
   <owner>iclelland@chromium.org</owner>
   <owner>issackjohn@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
@@ -8945,7 +8945,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebContentsObserver.{Method}{FrameType}" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

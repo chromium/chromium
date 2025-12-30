@@ -449,7 +449,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -483,7 +483,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseSize" units="KB"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -514,7 +514,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>

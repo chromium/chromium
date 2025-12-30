@@ -1022,7 +1022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2026-06-21">
+    expires_after="2026-06-28">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

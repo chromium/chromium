@@ -1387,13 +1387,15 @@ chromium-metrics-reviews@google.com.
   <summary>Reason an incremental marking was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingStart" units="ms" expires_after="M148">
+<histogram name="V8.GCIncrementalMarkingStart" units="ms"
+    expires_after="2026-06-28">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in starting incremental marking.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingSum" units="ms" expires_after="M148">
+<histogram name="V8.GCIncrementalMarkingSum" units="ms"
+    expires_after="2026-06-28">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1403,7 +1405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
-    expires_after="M148">
+    expires_after="2026-06-28">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>

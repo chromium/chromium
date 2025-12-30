@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.Requests3" enum="SyncDataTypes"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CryptographerReady" enum="SyncCryptographerReadyState"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeConfigurationTime.{StorageType}{SyncDataType}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1572,7 +1572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PassphraseType2" enum="PassphraseTypeForMetrics"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2195,7 +2195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncStoppedURLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-26">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-06-28">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

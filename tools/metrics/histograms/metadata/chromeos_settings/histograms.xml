@@ -426,7 +426,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2026-04-26">
+    enum="DisplaySettingsOrientationOption" expires_after="2026-06-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -621,7 +621,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.Enabled" enum="BooleanToggled"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

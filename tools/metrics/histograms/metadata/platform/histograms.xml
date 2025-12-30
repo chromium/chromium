@@ -1074,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>nicholasbishop@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1841,7 +1841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1895,7 +1895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1920,7 +1920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.UnavailableErrorReason"
-    enum="UnavailableErrorReason" expires_after="2026-04-26">
+    enum="UnavailableErrorReason" expires_after="2026-06-28">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>

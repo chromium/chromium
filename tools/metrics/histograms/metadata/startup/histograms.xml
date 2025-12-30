@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.BrowserProcessCreationReason"
-    enum="ProcessCreationReason" expires_after="2026-04-26">
+    enum="ProcessCreationReason" expires_after="2026-06-28">
   <owner>mthiesse@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{StartupType}.TimeSpentInBinder"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{StartupType}.TotalBinderTransactions"
-    units="counts" expires_after="2026-04-26">
+    units="counts" expires_after="2026-06-28">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -621,7 +621,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>nafisabedin@google.com</owner>
   <owner>mthiesse@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -651,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserMessageLoopFirstIdle{StartupTemperature}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

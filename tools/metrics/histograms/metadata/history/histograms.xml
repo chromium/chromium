@@ -2744,7 +2744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>

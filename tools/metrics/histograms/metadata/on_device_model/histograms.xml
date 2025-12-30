@@ -85,7 +85,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkSuccess" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>

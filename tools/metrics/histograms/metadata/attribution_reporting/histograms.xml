@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.AggregatableReport.AssembleReportStatus"
     enum="ConversionAssembleAggregatableReportStatus"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionResult"
-    enum="ConversionAttributionResult" expires_after="2026-04-26">
+    enum="ConversionAttributionResult" expires_after="2026-06-28">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ExtraReportDelayForSuccessfulSend" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-26">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-06-28">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.IncrementalTaintingFailures"
-    units="failed registrations" expires_after="2026-04-26">
+    units="failed registrations" expires_after="2026-06-28">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -833,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ScopesPer{Type}Registration" units="scopes"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure2"
-    enum="ConversionReportSendRetryCount" expires_after="2026-04-26">
+    enum="ConversionReportSendRetryCount" expires_after="2026-06-28">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

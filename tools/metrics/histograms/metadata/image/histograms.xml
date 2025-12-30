@@ -508,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>wylieb@google.com</owner>
   <owner>skym@chromium.org</owner>
   <summary>

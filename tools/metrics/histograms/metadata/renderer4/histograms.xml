@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
-    units="microseconds" expires_after="2026-04-26">
+    units="microseconds" expires_after="2026-06-28">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>

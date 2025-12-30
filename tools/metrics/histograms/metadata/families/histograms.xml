@@ -496,7 +496,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.FamilyLinkUsersCount" units="Number of Users"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -679,7 +679,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="SupervisedUserWebFilterType" expires_after="2026-04-26">
+    enum="SupervisedUserWebFilterType" expires_after="2026-06-28">
   <owner>fernandex@chromium.org</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>

@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.HomeScreen" enum="LaunchFromHomeScreen"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>dominickn@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -1447,7 +1447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.InstallError"
-    enum="IsolatedWebAppInstallError" expires_after="2026-04-26">
+    enum="IsolatedWebAppInstallError" expires_after="2026-06-28">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
@@ -1750,7 +1750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.SignatureVerificationFileLength" units="MiB"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>

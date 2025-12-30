@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemandV2.ActivationShouldBeDelayed" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
-    enum="GameControlsEditDeleteMenuFunction" expires_after="2026-04-26">
+    enum="GameControlsEditDeleteMenuFunction" expires_after="2026-06-28">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditingListFunctionTriggered"
-    enum="GameControlsEditingListFunction" expires_after="2026-04-26">
+    enum="GameControlsEditingListFunction" expires_after="2026-06-28">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>

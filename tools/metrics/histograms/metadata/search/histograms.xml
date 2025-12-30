@@ -1044,7 +1044,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2026-04-26">
+    enum="OmniboxSearchEngineType" expires_after="2026-06-28">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>

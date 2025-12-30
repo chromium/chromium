@@ -1151,7 +1151,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamRuntime{Cras_Direction}" units="seconds"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" and

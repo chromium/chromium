@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>apotapchuk@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>aghuie@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>

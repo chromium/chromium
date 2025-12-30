@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Borealis.Audio.UsedPath.{Direction}" enum="BorealisAudioPath"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Audio.UsedSubdevices" units="count"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Audio.Xrun.Alsa.Output" units="count"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
