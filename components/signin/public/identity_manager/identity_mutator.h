@@ -49,10 +49,10 @@ class JniIdentityMutator {
       jint access_point,
       const base::android::JavaRef<jobject>& j_prefs_committed_callback);
 
-  // Called by java to clear the primary account, and return whether the
-  // operation succeeded or not. Depending on |action|, the other accounts known
-  // to the IdentityManager may be deleted.
-  bool ClearPrimaryAccount(JNIEnv* env, jint source_metric);
+  // Removes the primary account and revokes the sync consent, but keep the
+  // accounts signed in to the web and the tokens. Returns true if the action
+  // was successful and false if there was no primary account set.
+  bool RemovePrimaryAccountButKeepTokens(JNIEnv* env, jint source_metric);
 
   // Called by java to revoke sync consent for the primary account.
   void RevokeSyncConsent(JNIEnv* env, jint source_metric);

@@ -60,12 +60,12 @@ public class IdentityMutator {
                         prefsSavedCallback);
     }
 
-    /**
-     * Clears the primary account, revokes all consent, removes all accounts and returns whether the
-     * operation succeeded .
-     */
-    public boolean clearPrimaryAccount(@SignoutReason int sourceMetric) {
-        return IdentityMutatorJni.get().clearPrimaryAccount(mNativeIdentityMutator, sourceMetric);
+    // Removes the primary account and revokes the sync consent, but keep the
+    // accounts signed in to the web and the tokens. Returns true if the action
+    // was successful and false if there was no primary account set.
+    public boolean removePrimaryAccountButKeepTokens(@SignoutReason int sourceMetric) {
+        return IdentityMutatorJni.get()
+                .removePrimaryAccountButKeepTokens(mNativeIdentityMutator, sourceMetric);
     }
 
     /** Revokes sync consent for the primary account. */
@@ -96,7 +96,8 @@ public class IdentityMutator {
                 @SigninAccessPoint int accessPoint,
                 Runnable prefsSavedCallback);
 
-        boolean clearPrimaryAccount(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
+        boolean removePrimaryAccountButKeepTokens(
+                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
         void revokeSyncConsent(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 

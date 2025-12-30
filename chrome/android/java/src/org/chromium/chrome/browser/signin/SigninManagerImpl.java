@@ -376,12 +376,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             throw new IllegalStateException(
                     "The account should be on the device before it can be set as primary.");
         }
-        if (!SigninFeatureMap.isEnabled(
-                SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER)) {
-            seedThenReloadAllAccountsFromSystem(
-                    mAccountManagerFacade.getAccounts().getResult(),
-                    mSignInState.mCoreAccountInfo.getId());
-        }
         notifySignInAllowedChanged();
 
         Log.d(TAG, "Checking if account has policy management enabled");
@@ -540,7 +534,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         mSignOutState = new SignOutState(signOutCallback, dataWipeAction);
         Log.i(TAG, "Signing out, dataWipeAction: %d", dataWipeAction);
 
-        mIdentityMutator.clearPrimaryAccount(signoutSource);
+        mIdentityMutator.removePrimaryAccountButKeepTokens(signoutSource);
 
         notifySignOutAllowedChanged();
         disableSyncAndWipeData(this::finishSignOut);
@@ -579,11 +573,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
 
         Log.d(TAG, "Signin flow aborted.");
         notifySignInAllowedChanged();
-        if (!SigninFeatureMap.isEnabled(
-                SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER)) {
-            seedThenReloadAllAccountsFromSystem(
-                    mAccountManagerFacade.getAccounts().getResult(), null);
-        }
     }
 
     @VisibleForTesting
@@ -599,14 +588,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                                 SigninPreferencesManager.SigninPromoAccessPointId.NTP),
                         0);
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
-        if (mAccountManagerFacade.getAccounts().isFulfilled()
-                && !SigninFeatureMap.isEnabled(
-                        SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER)) {
-            // We don't reload the accounts if they are not yet available.
-            // They will be seeded in onCoreAccountInfosChanged() when they become available.
-            seedThenReloadAllAccountsFromSystem(
-                    mAccountManagerFacade.getAccounts().getResult(), null);
-        }
         mSignOutState = null;
 
         if (signOutCallback != null) signOutCallback.signOutComplete();

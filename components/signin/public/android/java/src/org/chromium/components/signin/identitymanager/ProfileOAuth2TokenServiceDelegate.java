@@ -17,7 +17,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
@@ -107,19 +106,6 @@ final class ProfileOAuth2TokenServiceDelegate {
     void invalidateAccessToken(String accessToken) {
         // TODO(https://crbug.com/40637583): Pass a callback from native to wait for completion.
         mAccountManagerFacade.invalidateAccessToken(accessToken, null);
-    }
-
-    /**
-     * Called by the native method ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable to
-     * check whether the account has an OAuth2 refresh token.
-     */
-    @VisibleForTesting
-    @CalledByNative
-    boolean hasOAuth2RefreshToken(@JniType("CoreAccountId") CoreAccountId coreAccountId) {
-        var promise = mAccountManagerFacade.getAccounts();
-        return promise.isFulfilled()
-                && AccountUtils.findAccountByGaiaId(promise.getResult(), coreAccountId.getId())
-                        != null;
     }
 
     @MainThread

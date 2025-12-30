@@ -47,20 +47,13 @@ jint JniIdentityMutator::SetPrimaryAccount(
   return static_cast<jint>(error);
 }
 
-// TODO(crbug.com/373290337): Rename this method after feature launch.
-bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env, jint source_metric) {
+bool JniIdentityMutator::RemovePrimaryAccountButKeepTokens(JNIEnv* env,
+                                                           jint source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-  if (base::FeatureList::IsEnabled(
-          switches::kMakeAccountsAvailableInIdentityManager)) {
-    // If the feature is enabled we will not clear the accounts.
-    return primary_account_mutator->RemovePrimaryAccountButKeepTokens(
-        static_cast<signin_metrics::ProfileSignout>(source_metric));
-  } else {
-    return primary_account_mutator->ClearPrimaryAccount(
-        static_cast<signin_metrics::ProfileSignout>(source_metric));
-  }
+  return primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+      static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
 void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {

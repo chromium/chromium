@@ -187,10 +187,7 @@ android_library("unit_device_javatests") {
     "//third_party/mockito:mockito_java",
   ]
 
-  sources = [
-    "javatests/src/org/chromium/components/signin/AccountManagerFacadeTest.java",
-    "javatests/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/signin/AccountManagerFacadeTest.java" ]
 }
 
 robolectric_library("junit") {

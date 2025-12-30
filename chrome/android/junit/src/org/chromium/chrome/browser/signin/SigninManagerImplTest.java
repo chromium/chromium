@@ -70,7 +70,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures({
     SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN,
-    SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER,
 })
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
@@ -210,7 +209,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
+        inOrder.verify(mIdentityMutator).removePrimaryAccountButKeepTokens(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -227,7 +226,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
+        inOrder.verify(mIdentityMutator).removePrimaryAccountButKeepTokens(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -248,7 +247,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
+        inOrder.verify(mIdentityMutator).removePrimaryAccountButKeepTokens(eq(SignoutReason.TEST));
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
 
@@ -295,7 +294,7 @@ public class SigninManagerImplTest {
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
+        inOrder.verify(mIdentityMutator).removePrimaryAccountButKeepTokens(eq(SignoutReason.TEST));
 
         // Sign-out should only clear the profile when the user is syncing and has decided to
         // wipe data.
@@ -359,7 +358,7 @@ public class SigninManagerImplTest {
                             return null;
                         })
                 .when(mIdentityMutator)
-                .clearPrimaryAccount(anyInt());
+                .removePrimaryAccountButKeepTokens(anyInt());
 
         mSigninManager.signOut(SignoutReason.TEST);
         AtomicInteger callCount = new AtomicInteger(0);
