@@ -2328,6 +2328,40 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithUploadedPdf) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequestWithAdditionalCgiParams) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Create the ClientToAimRequest.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+  client_to_aim_request_info->additional_cgi_params["key1"] = "value1";
+  client_to_aim_request_info->additional_cgi_params["key2"] = "value2";
+
+  std::optional<lens::ClientToAimMessage> client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  // Assert: The ClientToAimRequest is populated correctly.
+  ASSERT_TRUE(client_to_aim_request.has_value());
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text(),
+            "hello");
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text_source(),
+            lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
+  const auto& params =
+      client_to_aim_request->submit_query().payload().additional_cgi_params();
+  EXPECT_EQ(params.size(), 2u);
+  EXPECT_EQ(params.at("key1"), "value1");
+  EXPECT_EQ(params.at("key2"), "value2");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        QuerySubmittedWithUploadedPdfStandardSearch) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
