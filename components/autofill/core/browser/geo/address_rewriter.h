@@ -13,7 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "third_party/re2/src/re2/re2.h"
+#include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace autofill {
 
@@ -38,7 +38,8 @@ class AddressRewriter {
 
  private:
   // Aliases for the types used by the compiled rules cache.
-  using CompiledRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
+  using CompiledRule =
+      std::pair<std::unique_ptr<const icu::RegexPattern>, std::string>;
   using CompiledRuleVector = std::vector<CompiledRule>;
   using CompiledRuleCache = std::unordered_map<std::string, CompiledRuleVector>;
 
@@ -46,7 +47,7 @@ class AddressRewriter {
 
   explicit AddressRewriter(const CompiledRuleVector* compiled_rules);
 
-  static void CompileRulesFromData(const std::string& data_string,
+  static void CompileRulesFromData(std::string_view data_string,
                                    CompiledRuleVector* compiled_rules);
 
   // A handle to the internal rewrite rules this instance is using.

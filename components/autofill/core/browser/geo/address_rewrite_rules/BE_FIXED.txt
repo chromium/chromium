@@ -1,4 +1,4 @@
-\b(.+?)(laan|plein|piein|steenweg|strasse|straat|str|square|(steen)?weg|wandelwegen|kaai)$\b	\1 \2
+\b(.+?)(laan|plein|piein|steenweg|strasse|straat|str|square|(steen)?weg|wandelwegen|kaai)$\b	$1 $2
 \bbrussels\s+hoofdstedelijk\s+gewest\b	brussel
 \bbrussel\s+hoofdstedelijk\s+gewest\b	brussel
 \bregion\s+de\s+bruxelles\s+capitale\b	brussel

@@ -1,6 +1,6 @@
-\b([a-z]+)(vag(en)?|katu|alle|aveny|polku|reitti|maantie|kuja|alue|kaari|kyla|penger|puistikko|puisto|raitti|brink(en)?|bygata(n)?|led(en)?|park(en)?|stig(en)?|strand(en)?|torg(et)?)\b	\1 \2
-\b([a-z]+)(mt|metsatie|gata(n)?|krok(en)?|grandet|grand(et)?)\b	\1 \2
-\b([a-z]+)(kaista|piha|tie(n)?)\b	\1 \2
+\b([a-z]+)(vag(en)?|katu|alle|aveny|polku|reitti|maantie|kuja|alue|kaari|kyla|penger|puistikko|puisto|raitti|brink(en)?|bygata(n)?|led(en)?|park(en)?|stig(en)?|strand(en)?|torg(et)?)\b	$1 $2
+\b([a-z]+)(mt|metsatie|gata(n)?|krok(en)?|grandet|grand(et)?)\b	$1 $2
+\b([a-z]+)(kaista|piha|tie(n)?)\b	$1 $2
 \bkahdeskymmenesensimmäinen\b	21
 \byhdeksäskymmenes\b	90
 \betelainen\b	e

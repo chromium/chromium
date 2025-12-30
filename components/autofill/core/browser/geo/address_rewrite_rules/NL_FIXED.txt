@@ -1,4 +1,4 @@
-\b([a-z]+)(route|str|straat|plaats|laan|weg|dreef|plein)\b	\1 \2
+\b([a-z]+)(route|str|straat|plaats|laan|weg|dreef|plein)\b	$1 $2
 \bwesterhaar\s+vriezenveensewyk\b	westerhaar-vriezenv wyk
 \bpieter\s+corneliszoon\s+hooft\b	p c hooft
 \bjohan\s+fabricius\b	joh fabricius

@@ -105,6 +105,7 @@ TEST(AddressRewriterTest, CH) {
   EXPECT_EQ(ch.Rewrite(u"appenzell rhodes exterieures"),
             ch.Rewrite(u"appenzell ausserrhoden"));
   EXPECT_EQ(ch.Rewrite(u"prettigovia davos"), ch.Rewrite(u"prattigau davos"));
+  EXPECT_EQ(ch.Rewrite(u"sant'"), ch.Rewrite(u"s"));
 }
 
 TEST(AddressRewriterTest, CL) {
@@ -112,6 +113,7 @@ TEST(AddressRewriterTest, CL) {
       AddressRewriter::ForCountryCode(AddressCountryCode("cl"));
   EXPECT_EQ(cl.Rewrite(u"metropolitana de santiago de chile"),
             cl.Rewrite(u"metropolitana de santiago"));
+  EXPECT_EQ(cl.Rewrite(u"bernardo o'higgins"), cl.Rewrite(u"b o'higgins"));
 }
 
 TEST(AddressRewriterTest, CO) {
@@ -262,13 +264,15 @@ TEST(AddressRewriterTest, RO) {
   AddressRewriter ro =
       AddressRewriter::ForCountryCode(AddressCountryCode("ro"));
   EXPECT_EQ(ro.Rewrite(u"romania"), ro.Rewrite(u"ro"));
+  EXPECT_EQ(ro.Rewrite(u"ROmanIa"), ro.Rewrite(u"ro"));
 }
 
 TEST(AddressRewriterTest, RU) {
   AddressRewriter ru =
       AddressRewriter::ForCountryCode(AddressCountryCode("ru"));
-  // TODO(rogerm): UTF8 matching isnt' working as expected. Fix it!
-  EXPECT_NE(ru.Rewrite(u"россия"), ru.Rewrite(u"russia"));
+  EXPECT_EQ(ru.Rewrite(u"россия"), ru.Rewrite(u"russia"));
+  EXPECT_EQ(ru.Rewrite(u"набережная"), ru.Rewrite(u"наб"));
+  EXPECT_EQ(ru.Rewrite(u"булв"), ru.Rewrite(u"б-р"));
 }
 
 TEST(AddressRewriterTest, SE) {
@@ -280,8 +284,8 @@ TEST(AddressRewriterTest, SE) {
 TEST(AddressRewriterTest, TH) {
   AddressRewriter th =
       AddressRewriter::ForCountryCode(AddressCountryCode("th"));
-  // TODO(rogerm): UTF8 matching isnt' working as expected. Fix it!
-  EXPECT_NE(th.Rewrite(u"ประเทศไทย"), th.Rewrite(u"thailand"));
+  EXPECT_EQ(th.Rewrite(u"ประเทศไทย"), th.Rewrite(u"thailand"));
+  EXPECT_EQ(th.Rewrite(u"พระรามที่"), th.Rewrite(u"พระราม"));
 }
 
 TEST(AddressRewriterTest, TR) {

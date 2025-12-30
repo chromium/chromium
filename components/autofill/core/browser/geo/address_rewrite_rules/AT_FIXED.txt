@@ -1,5 +1,5 @@
-\b([a-z]*)\s?(bei)\s?([a-z]*)\b	\1 \2 \3
-\b([a-z]+)(strasse|gasse|weg)\b	\1 \2
+\b([a-z]*)\s?(bei)\s?([a-z]*)\b	$1 $2 $3
+\b([a-z]+)(strasse|gasse|weg)\b	$1 $2
 \bclemens\s+maria\s+hofbauer\b	c m hofbauer
 \bavtomobilska\s+cesta\s+hc\b	a
 \bclement\s+mary\s+hofbauer\b	c m hofbauer

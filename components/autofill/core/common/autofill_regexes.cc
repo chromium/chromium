@@ -25,12 +25,12 @@ constexpr int kMaxStringLength = 5000;
 
 namespace autofill {
 
-std::unique_ptr<const icu::RegexPattern> CompileRegex(
-    std::u16string_view regex) {
+std::unique_ptr<const icu::RegexPattern> CompileRegex(std::u16string_view regex,
+                                                      uint32_t flags) {
   const icu::UnicodeString icu_regex(false, regex.data(), regex.length());
   UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::RegexPattern> regex_pattern = base::WrapUnique(
-      icu::RegexPattern::compile(icu_regex, UREGEX_CASE_INSENSITIVE, status));
+  std::unique_ptr<icu::RegexPattern> regex_pattern =
+      base::WrapUnique(icu::RegexPattern::compile(icu_regex, flags, status));
 
   // TODO(crbug.com/468309430): The following is temporary instrumentation to
   // investigate regex compilation failures. Once fixed, replace this with
@@ -74,6 +74,19 @@ bool MatchesRegex(std::u16string_view input,
     }
   }
   return matched;
+}
+
+std::u16string MatchAndReplace(std::u16string_view input,
+                               const icu::RegexPattern& pattern,
+                               std::string_view replacement) {
+  icu::UnicodeString icu_input(input);
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::RegexMatcher> matcher =
+      base::WrapUnique(pattern.matcher(icu_input, status));
+  DCHECK(U_SUCCESS(status));
+  icu_input =
+      matcher->replaceAll(icu::UnicodeString::fromUTF8(replacement), status);
+  return base::i18n::UnicodeStringToString16(icu_input);
 }
 
 std::optional<std::vector<std::u16string>> SplitByRegex(

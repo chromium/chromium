@@ -1,4 +1,4 @@
-\b([a-z]+)(strasse|str|weg|allee|all|chaussee|gasse|kreis)\b	\1 \2
+\b([a-z]+)(strasse|str|weg|allee|all|chaussee|gasse|kreis)\b	$1 $2
 \bfederal\s+republic\s+of\s+germany\b	de
 \bbundesrepublik\s+deutschland\b	de
 \bfreie\s+hansestadt\s+bremen\b	hb
