@@ -1153,9 +1153,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // ready.
   EXPECT_CALL(*router.mock_session_handle(), GetSuggestInputs())
       .WillOnce(Return(std::nullopt));
-  // The observer is added again to listen for updates.
-  EXPECT_CALL(*mock_context_controller_, AddObserver(&router));
-
   // Act
   router.SetSuggestInputsReadyCallback(base::DoNothing());
 }

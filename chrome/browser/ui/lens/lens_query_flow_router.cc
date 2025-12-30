@@ -54,10 +54,6 @@ LensQueryFlowRouter::LensQueryFlowRouter(
 
 LensQueryFlowRouter::~LensQueryFlowRouter() {
   if (ShouldRouteToContextualTasks()) {
-    auto* session_handle = GetContextualSearchSessionHandle();
-    if (session_handle && session_handle->GetController()) {
-      session_handle->GetController()->RemoveObserver(this);
-    }
     gen204_controller()->OnQueryFlowEnd();
   }
 }
@@ -91,16 +87,14 @@ void LensQueryFlowRouter::StartQueryFlow(
 
     // If a session handle is already being observed (e.g. from the side panel),
     // remove the observer before creating a new session handle.
-    auto* session_handle = GetContextualSearchSessionHandle();
-    if (session_handle && session_handle->GetController()) {
-      session_handle->GetController()->RemoveObserver(this);
-    }
+    file_upload_status_observation_.Reset();
 
     pending_session_handle_ = CreateContextualSearchSessionHandle();
     pending_session_handle_->NotifySessionStarted();
 
     // Add observer to listen for file upload status changes.
-    pending_session_handle_->GetController()->AddObserver(this);
+    file_upload_status_observation_.Observe(
+        pending_session_handle_->GetController());
 
     // If permissions have been granted, start uploading the current viewport
     // and page content. If not, store as a callback to be run later.
@@ -219,8 +213,9 @@ void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     // If the session handle doesn't exist yet, the observer will be added
     // once it is created.
     auto* session_handle = GetContextualSearchSessionHandle();
-    if (session_handle && session_handle->GetController()) {
-      session_handle->GetController()->AddObserver(this);
+    if (session_handle && session_handle->GetController() &&
+        !file_upload_status_observation_.IsObserving()) {
+      file_upload_status_observation_.Observe(session_handle->GetController());
     }
     return;
   }

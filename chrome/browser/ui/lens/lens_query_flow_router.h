@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_QUERY_FLOW_ROUTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -122,6 +123,10 @@ class LensQueryFlowRouter
   void HandleInteractionResponse(
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayInteractionResponse interaction_response);
+
+  void reset_file_upload_status_observation() {
+    file_upload_status_observation_.Reset();
+  }
 
  protected:
   // Creates a contextual search session handle. Virtual for testing.
@@ -254,6 +259,11 @@ class LensQueryFlowRouter
   // Closure of UploadContextualInputData to be called by
   // MaybeResumeQueryFlow().
   base::OnceClosure pending_upload_request_;
+
+  base::ScopedObservation<contextual_search::ContextualSearchContextController,
+                          contextual_search::ContextualSearchContextController::
+                              FileUploadStatusObserver>
+      file_upload_status_observation_{this};
 
   base::WeakPtrFactory<LensQueryFlowRouter> weak_factory_{this};
 };
