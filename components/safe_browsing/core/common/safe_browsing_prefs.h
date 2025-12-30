@@ -298,6 +298,12 @@ inline constexpr char kExternalAppRedirectTimestamps[] =
 // the user is in.
 inline constexpr char kSecuritySettingsBundle[] = "safebrowsing.bundle";
 
+// An enum indicating the state of the security settings bundling migration
+// toast. We show this toast to ESB users when migrated to the Enhanced group.
+// See SecuritySettingsBundleToastState for values.
+inline constexpr char kSecuritySettingsBundleMigrationToastState[] =
+    "safebrowsing.bundled_settings.migration_toast_state";
+
 // A boolean indicating whether the user selected on chrome://settings to
 // disable the JavaScript optimizer on unfamiliar sites for improved security.
 // The site-familiarity computation is done locally based on the user's
@@ -343,6 +349,15 @@ enum TailoredSecurityRetryState {
   // to the user or the flow found a state that a notification is not shown for,
   // for example: if the account is controlled by a policy.
   NO_RETRY_NEEDED = 3
+};
+
+// Enumerates the state of the toast shown to users migrated to the Enhanced
+// Security Bundle.
+enum class SecuritySettingsBundleToastState {
+  kNone = 0,
+  kPending = 1,
+  kShown = 2,
+  kMaxValue = kShown,
 };
 
 // Enumerates all the places where the Safe Browsing Extended Reporting
@@ -406,6 +421,7 @@ enum class SecuritySettingsBundleSetting {
   STANDARD = 0,
   // Enhanced bundle with most secure settings selected.
   ENHANCED = 1,
+  kMaxValue = ENHANCED,
 };
 // LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts:SecuritySettingsBundleSetting)
 

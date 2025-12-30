@@ -75,6 +75,11 @@
 #include "services/network/public/cpp/features.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+#include "chrome/browser/safe_browsing/security_settings_bundle_toast_helper.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_util.h"
 #endif
@@ -170,7 +175,24 @@ void OnGotCookies(
   }
 }
 
-// Migrate enhanced-safe-browsing user to enhanced-secrity bundle if needed.
+void TriggerSecuritySettingsBundleToastIfNeeded(
+    base::WeakPtr<Profile> profile) {
+  if (!profile) {
+    return;
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  if (GetSecurityBundleSetting(*profile->GetPrefs()) ==
+      SecuritySettingsBundleSetting::ENHANCED) {
+    SecuritySettingsBundleToastHelper::GetForProfile(profile.get())
+        ->TriggerIfNeeded();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
+}
+
+// Migrate enhanced-safe-browsing user to enhanced-security bundle if needed.
 void MigrateUserToEnhancedSecurityBundleIfNeeded(
     base::WeakPtr<Profile> profile) {
   if (!profile) {
@@ -206,6 +228,9 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
   // LINT.ThenChange(//chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
 
   SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
+  prefs->SetInteger(
+      prefs::kSecuritySettingsBundleMigrationToastState,
+      static_cast<int>(SecuritySettingsBundleToastState::kPending));
 }
 
 }  // namespace
@@ -574,6 +599,14 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostTask(FROM_HERE,
                  base::BindOnce(&MigrateUserToEnhancedSecurityBundleIfNeeded,
+                                profile->GetWeakPtr()));
+
+  // If the user was migrated to the enhanced security bundle, show the toast.
+  // This is separate from the above task in case the browser was killed after
+  // the migration occurred.
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&TriggerSecuritySettingsBundleToastIfNeeded,
                                 profile->GetWeakPtr()));
 }
 

@@ -284,6 +284,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   friend class extensions::SafeBrowsingPrivateApiUnitTest;
   friend class SafeBrowsingServerTest;
   friend class SafeBrowsingServiceEnhancedSecurityBundleMigrationTest;
+  friend class SafeBrowsingServiceSecuritySettingsBundleToastTest;
   friend class SafeBrowsingUIManagerTest;
   friend class TestSafeBrowsingService;
   friend class TestSafeBrowsingServiceFactory;

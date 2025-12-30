@@ -701,6 +701,7 @@ inline constexpr char kSafetyCheckSubPage[] = "safetyCheck";
 inline constexpr char kSafetyHubSubPage[] = "safetyCheck";
 inline constexpr char kSearchEnginesSubPage[] = "searchEngines";
 inline constexpr char kSearchSubPage[] = "search";
+inline constexpr char kSecuritySubPage[] = "security";
 inline constexpr char kSignOutSubPage[] = "signOut";
 inline constexpr char kSiteDetailsSubpage[] = "content/siteDetails";
 inline constexpr char kSyncSetupSubPage[] = "syncSetup";

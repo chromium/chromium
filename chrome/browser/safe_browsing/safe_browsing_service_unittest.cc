@@ -14,6 +14,9 @@
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -885,6 +888,19 @@ TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
     EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
               GetSecurityBundleSetting(*prefs));
   }
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       SetsMigrationToastStateToPending) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(
+      static_cast<int>(SecuritySettingsBundleToastState::kPending),
+      prefs->GetInteger(prefs::kSecuritySettingsBundleMigrationToastState));
 }
 
 TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,

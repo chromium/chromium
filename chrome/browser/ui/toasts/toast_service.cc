@@ -325,4 +325,25 @@ void ToastService::RegisterToasts(
       ToastId::kCopiedToClipboard,
       ToastSpecification::Builder(kInfoIcon, IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kEnhancedBundledSecuritySettings,
+      ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          vector_icons::kGshieldIcon,
+#else
+          kSecurityIcon,
+#endif
+          IDS_SETTINGS_SECURITY_BUNDLE_TOAST_FOR_USER_OPTED_INTO_ENHANCED_BUNDLE)
+          .AddActionButton(
+              IDS_SETTINGS_SETTINGS,
+              base::BindRepeating(
+                  [](BrowserWindowInterface* window) {
+                    window->OpenGURL(
+                        chrome::GetSettingsUrl(chrome::kSecuritySubPage),
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                  },
+                  base::Unretained(browser_window_interface)))
+          .AddCloseButton()
+          .Build());
 }  // RegisterToasts() end.

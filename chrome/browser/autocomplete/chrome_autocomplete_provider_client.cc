@@ -142,6 +142,7 @@ constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
     chrome::kPaymentsSubPage,
     chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,
+    chrome::kSecuritySubPage,
     chrome::kSyncSetupSubPage,
 #if !BUILDFLAG(IS_CHROMEOS)
     chrome::kImportDataSubPage,

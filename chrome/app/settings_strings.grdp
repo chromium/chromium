@@ -1984,6 +1984,9 @@
   </message>
 
   <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_TOAST_FOR_USER_OPTED_INTO_ENHANCED_BUNDLE" desc="Text on the toast shown when an Enhanced Safe Browsing user is enrolled in the enhanced bundle for bundled security settings.">
+    Your security settings were upgraded
+  </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_RESET_TO_DEFAULTS_BUTTON_LABEL" desc="Label of button which resets security-settings-bundle to default settings">
     Reset to defaults
   </message>

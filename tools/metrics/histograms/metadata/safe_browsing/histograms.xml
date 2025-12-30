@@ -3060,6 +3060,23 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.SecuritySettingsBundle.BundleStateBeforeShowingEnhancedToast"
+    enum="SafeBrowsingSecuritySettingsBundle" expires_after="2026-06-07">
+  <owner>vakh@chromium.org</owner>
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the security settings bundle state right before Chrome attempts to
+    show a toast for users migrated into the enhanced security settings bundle.
+    The toast is only shown if the bundle state is 'enhanced'.
+
+    We expect this to be 'enhanced' in most cases, as otherwise the user
+    would've migrated into the enhanced bundle then quickly switched out of it
+    before the toast could be shown.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Settings.UserAction.{AccessPoint}"
     enum="SafeBrowsingSettingsUserAction" expires_after="2026-05-24">
   <owner>xinghuilu@chromium.org</owner>
