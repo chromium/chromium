@@ -1,10 +1,10 @@
 Name: better_any
 URL: https://crates.io/crates/better_any
-Version: 0.2.0
-Revision: 1604fa291fe6551ff6bd3e737860a6f65f70d579
+Version: 0.2.1
+Revision: 66802eb68397c7dbdaf3be9f5ab51e7506d238ed
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/better_any-v0_2/LICENSE-Apache
+License File: //third_party/rust/chromium_crates_io/vendor/better_any-v0_2/LICENCE-Apache
 Shipped: yes
 Security Critical: yes
 

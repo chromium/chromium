@@ -12,8 +12,14 @@
 [package]
 edition = "2018"
 name = "better_any"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Konstantin Anisimov <rrevenantt@gmail.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Type id and Any for non static types"
 homepage = "https://github.com/rrevenantt/better_typeid"
 readme = "README.md"
@@ -28,10 +34,20 @@ repository = "https://github.com/rrevenantt/better_typeid"
 [package.metadata.docs.rs]
 all-features = true
 
+[features]
+any = []
+default = ["any"]
+derive = ["better_typeid_derive"]
+nightly = []
+
+[lib]
+name = "better_any"
+path = "src/lib.rs"
+
 [[test]]
-name = "main_test"
-path = "tests/test.rs"
-required-features = ["derive"]
+name = "compile_fail"
+path = "tests/compile_fail.rs"
+required-features = ["nightly"]
 
 [[test]]
 name = "expand"
@@ -39,17 +55,17 @@ path = "tests/expand.rs"
 required-features = ["derive"]
 
 [[test]]
+name = "main_test"
+path = "tests/test.rs"
+required-features = ["derive"]
+
+[[test]]
 name = "nightly"
 path = "tests/nightly.rs"
 required-features = ["nightly"]
 
-[[test]]
-name = "compile_fail"
-path = "tests/compile_fail.rs"
-required-features = ["nightly"]
-
 [dependencies.better_typeid_derive]
-version = "=0.1.1"
+version = "=0.1.2"
 optional = true
 
 [dev-dependencies.macrotest]
@@ -57,9 +73,3 @@ version = "=1.0"
 
 [dev-dependencies.trybuild]
 version = "=1.0"
-
-[features]
-any = []
-default = ["any"]
-derive = ["better_typeid_derive"]
-nightly = []

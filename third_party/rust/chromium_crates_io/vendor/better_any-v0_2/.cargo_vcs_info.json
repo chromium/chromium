@@ -1,6 +1,7 @@
 {
   "git": {
-    "sha1": "1604fa291fe6551ff6bd3e737860a6f65f70d579"
+    "sha1": "66802eb68397c7dbdaf3be9f5ab51e7506d238ed",
+    "dirty": true
   },
   "path_in_vcs": "better_any"
 }

@@ -505,10 +505,6 @@ macro_rules! tid {
     };
 }
 
-struct Test<'a, X: ?Sized>(&'a str, Box<X>);
-// tid! { impl < 'a    static X    > TidAble < 'a > for Test < 'a , X > where X : ? Sized  }
-tid! { impl<'a,X:'static> TidAble<'a> for Test<'a,X> where X:?Sized }
-
 #[doc(hidden)]
 #[macro_export]
 macro_rules! before_where {
@@ -559,7 +555,7 @@ macro_rules! impl_block {
         }
     };
 }
-// the logic behind this implementations is to connect Any with Tid somehow
+// the logic behind these implementations is to connect Any with Tid somehow
 // I would say that if T:Any there is no much need to implement Tid<'a> for T.
 // because Any functionality already exists and `dyn Any` can be converted to `dyn Tid`.
 // unfortunately there is no way to implement Tid<'a> for T:Any,
