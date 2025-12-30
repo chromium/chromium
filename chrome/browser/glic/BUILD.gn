@@ -501,6 +501,7 @@ if (!is_android) {
       "//chrome/browser/permissions:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
+      "//chrome/browser/subscription_eligibility",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/profiles",
