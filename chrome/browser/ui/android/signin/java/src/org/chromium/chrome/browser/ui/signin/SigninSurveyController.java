@@ -205,7 +205,7 @@ public class SigninSurveyController implements Destroyable {
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.CHROME_SURVEY)
+                                MessageIdentifier.SIGNIN_SURVEY)
                         .build();
         MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(
                 activity.getResources(), message);
