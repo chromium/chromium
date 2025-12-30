@@ -526,4 +526,5 @@ Refer to README.md for content description and update process.
  <item id="metrics_report_private_metrics" added_in_milestone="144" content_hash_code="0811746a" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="scam_detection_model_execution" added_in_milestone="145" content_hash_code="01f2a65e" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
  <item id="sync_device_statistics_metrics" added_in_milestone="145" content_hash_code="07bccc07" os_list="linux,windows,android,chromeos" file_path="components/sync/service/device_statistics_request_impl.cc" />
+ <item id="isolated_web_app_throttle" added_in_milestone="145" content_hash_code="02d57891" os_list="linux,windows,chromeos" file_path="chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.cc" />
 </annotations>

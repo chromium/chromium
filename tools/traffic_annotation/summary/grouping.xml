@@ -393,6 +393,7 @@ after discussions on the right group.
       <annotation id="metrics_report_private_metrics"/>
       <annotation id="scam_detection_model_execution"/>
       <annotation id="sync_device_statistics_metrics"/>
+      <annotation id="isolated_web_app_throttle"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

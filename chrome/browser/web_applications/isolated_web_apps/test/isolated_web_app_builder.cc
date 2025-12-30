@@ -268,13 +268,16 @@ ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
     const ManifestBuilder::PermissionsPolicy&) = default;
 ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
 
-ManifestBuilder::ManifestBuilder()
+ManifestBuilder::ManifestBuilder(
+    bool include_cross_origin_isolated_permissions_policy)
     : name_("Test App"),
       version_(*IwaVersion::Create("0.0.1")),
       start_url_("/") {
-  AddPermissionsPolicy(
-      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
-      /*self=*/true, /*origins=*/{});
+  if (include_cross_origin_isolated_permissions_policy) {
+    AddPermissionsPolicy(
+        network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+        /*self=*/true, /*origins=*/{});
+  }
 }
 
 ManifestBuilder::ManifestBuilder(const ManifestBuilder&) = default;
@@ -420,6 +423,9 @@ std::string ManifestBuilder::ToJson() const {
     }
     if (policy.second.self) {
       values.Append("self");
+    }
+    if (values.empty() && policy.second.origins.empty()) {
+      values.Append("none");
     }
     for (const auto& origin : policy.second.origins) {
       values.Append(origin.Serialize());

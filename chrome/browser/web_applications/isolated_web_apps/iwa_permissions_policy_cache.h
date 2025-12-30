@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -61,6 +62,11 @@ class IwaPermissionsPolicyCache : public KeyedService,
   // Returns nullptr if not found or not yet cached.
   const CacheEntry* GetPolicy(const IwaOrigin& iwa_origin) const;
 
+  // Retrieves IWA manifest, parses it and stores in cache.
+  // Callback is queued to run immediately if the cache is already populated.
+  void ObtainManifestAndCache(const IwaOrigin& iwa_origin,
+                              base::OnceCallback<void(bool success)> callback);
+
  private:
   // Stores the policy for the given IWA origin and runs pending callbacks.
   void SetPolicy(const IwaOrigin& iwa_origin, CacheEntry policy);
@@ -82,10 +88,18 @@ class IwaPermissionsPolicyCache : public KeyedService,
   void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  void OnManifestLoaded(const IwaOrigin& iwa_origin,
+                        base::OnceCallback<void(bool success)> callback,
+                        std::optional<std::string> manifest_content);
+
   FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheBrowserTest,
                            UninstallClearsCache);
   FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheBrowserTest,
                            UpdateClearsCache);
+  FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheBrowserTest,
+                           ImmediatelyReturnsIfCached);
+  FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheBrowserTest,
+                           SendsRequestIfNotCached);
   FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheTest,
                            ParseManifestAndSetPolicy_Complex);
   FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheTest,
@@ -102,6 +116,8 @@ class IwaPermissionsPolicyCache : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       IwaPermissionsPolicyCacheTest,
       ParseManifestAndSetPolicy_InvalidPolicyFormat_ItemNotString);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppThrottleTest,
+                           WebAppProviderInitialized);
 
   void ClearCacheForApp(const webapps::AppId& app_id);
   // Map from IWA origin to its cache entry.
@@ -111,6 +127,8 @@ class IwaPermissionsPolicyCache : public KeyedService,
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  base::WeakPtrFactory<IwaPermissionsPolicyCache> weak_ptr_factory_{this};
 };
 
 class IwaPermissionsPolicyCacheFactory

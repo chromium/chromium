@@ -98,7 +98,8 @@ class ManifestBuilder {
   //     cross-origin-isolated: ["self"]
   //   },
   // }
-  ManifestBuilder();
+  explicit ManifestBuilder(
+      bool include_cross_origin_isolated_permissions_policy = true);
   ManifestBuilder(const ManifestBuilder&);
 
   ~ManifestBuilder();

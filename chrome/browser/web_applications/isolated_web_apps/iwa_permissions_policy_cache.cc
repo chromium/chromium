@@ -5,15 +5,28 @@
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 
 #include "base/containers/map_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace web_app {
 
@@ -32,6 +45,40 @@ IwaPermissionsPolicyCache::Entry& IwaPermissionsPolicyCache::Entry::operator=(
 IwaPermissionsPolicyCache::Entry::~Entry() = default;
 
 namespace {
+
+// Maximum size of the manifest file. 1MB.
+constexpr int kMaxManifestSizeInBytes = 1024 * 1024;
+
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("isolated_web_app_throttle",
+                                        R"(
+      semantics {
+        sender: "Isolated Web App Throttle"
+        description:
+          "Load manifest from an installed Signed Web Bundle to parse "
+          "permissions policy."
+        trigger:
+          "Requests are sent as part of the navigation to an IWA."
+        internal: {
+          contacts {
+            email: "iwa-team@google.com"
+          }
+        }
+        user_data: {
+          type: NONE
+        }
+        data: "None"
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-12-11"
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "This feature cannot be disabled by settings."
+        policy_exception_justification:
+          "This feature is required to deliver core user experiences and "
+          "cannot be disabled by policy."
+      }
+    )");
 
 std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
     const std::string& manifest_content) {
@@ -114,6 +161,73 @@ IwaPermissionsPolicyCache::GetPolicy(const IwaOrigin& iwa_origin) const {
   return base::FindOrNull(cache_, iwa_origin);
 }
 
+void IwaPermissionsPolicyCache::ObtainManifestAndCache(
+    const IwaOrigin& iwa_origin,
+    base::OnceCallback<void(bool success)> callback) {
+  if (GetPolicy(iwa_origin)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
+
+  // We don't want to do the caching if navigating to a nonexistent IWA.
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          iwa_origin.web_bundle_id())
+          .app_id());
+  if (!web_app) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
+
+  CHECK(web_app->isolation_data().has_value());
+  // If the IWA is not trusted, we skip caching the manifest. The main
+  // navigation will handle the trust failure and show an appropriate error
+  // page. Fetching the manifest here would result in an opaque network
+  // error.
+  if (!IsolatedWebAppTrustChecker::IsTrusted(
+           *provider_->profile(), iwa_origin.web_bundle_id(),
+           web_app->isolation_data()->location().dev_mode())
+           .has_value()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
+
+  // Policy not cached, fetch the manifest.
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = iwa_origin.origin().GetURL().Resolve(
+      R"(/.well-known/manifest.webmanifest)");
+  auto manifest_loader = network::SimpleURLLoader::Create(
+      std::move(resource_request), kTrafficAnnotation);
+
+  auto loader_factory =
+      std::make_unique<mojo::Remote<network::mojom::URLLoaderFactory>>();
+  loader_factory->Bind(web_app::IsolatedWebAppURLLoaderFactory::Create(
+      provider_->profile(), iwa_origin.origin()));
+
+  network::SimpleURLLoader* raw_loader = manifest_loader.get();
+  auto* raw_loader_factory = loader_factory->get();
+  raw_loader->DownloadToString(
+      raw_loader_factory,
+      base::BindOnce(&IwaPermissionsPolicyCache::OnManifestLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), iwa_origin,
+                     std::move(callback))
+          .Then(base::OnceClosure(base::DoNothingWithBoundArgs(
+              std::move(manifest_loader), std::move(loader_factory)))),
+      kMaxManifestSizeInBytes);
+}
+
+void IwaPermissionsPolicyCache::OnManifestLoaded(
+    const IwaOrigin& iwa_origin,
+    base::OnceCallback<void(bool success)> callback,
+    std::optional<std::string> manifest_content) {
+  std::move(callback).Run(
+      !!manifest_content &&
+      ParseManifestAndSetPolicy(iwa_origin, *manifest_content));
+}
+
 void IwaPermissionsPolicyCache::SetPolicy(
     const IwaOrigin& iwa_origin,
     IwaPermissionsPolicyCache::CacheEntry policy) {
@@ -155,6 +269,9 @@ void IwaPermissionsPolicyCache::OnWebAppInstallManagerDestroyed() {
 }
 
 void IwaPermissionsPolicyCache::ClearCacheForApp(const webapps::AppId& app_id) {
+  if (!provider_) {
+    return;
+  }
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app || !web_app->isolation_data()) {
     return;

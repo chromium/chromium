@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/location.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
@@ -27,6 +28,10 @@
 namespace web_app {
 
 namespace {
+using testing::IsEmpty;
+using testing::IsNull;
+using testing::NotNull;
+using testing::Pointee;
 using PrepareAndStoreUpdateResult =
     IsolatedWebAppUpdatePrepareAndStoreCommandResult;
 using ApplyUpdateResult = IsolatedWebAppApplyUpdateCommandResult;
@@ -129,6 +134,68 @@ IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
   ASSERT_TRUE(ApplyUpdate(bundle_id).has_value());
 
   EXPECT_FALSE(cache->GetPolicy(iwa_origin));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
+                       ImmediatelyReturnsIfCached) {
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(web_app::test::GetDefaultEd25519WebBundleId(),
+                              {web_app::test::GetDefaultEd25519KeyPair()});
+  const auto url_info = app->InstallChecked(profile());
+
+  IwaPermissionsPolicyCache* cache = GetCache();
+  ASSERT_TRUE(cache);
+
+  const IwaOrigin iwa_origin =
+      IwaOrigin::Create(url_info.origin().GetURL()).value();
+  // Set fake policy not in line with the manifest (by default, manifest
+  // contains also cross-origin-isolated policy).
+  cache->SetPolicy(iwa_origin, {});
+
+  ASSERT_TRUE(cache->GetPolicy(iwa_origin));
+
+  base::test::TestFuture<bool> future;
+  GetCache()->ObtainManifestAndCache(iwa_origin, future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  // Since cache is populated and nothing invalidated it, manifest should not be
+  // re-fetched and function should immediately query a response.
+  // Hence, fake policy still should be here.
+  EXPECT_THAT(GetCache()->GetPolicy(iwa_origin), Pointee(IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
+                       SendsRequestIfNotCached) {
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(web_app::test::GetDefaultEd25519WebBundleId(),
+                              {web_app::test::GetDefaultEd25519KeyPair()});
+  const auto url_info = app->InstallChecked(profile());
+
+  IwaPermissionsPolicyCache* cache = GetCache();
+  ASSERT_TRUE(cache);
+
+  const IwaOrigin iwa_origin =
+      IwaOrigin::Create(url_info.origin().GetURL()).value();
+  ASSERT_FALSE(cache->GetPolicy(iwa_origin));
+
+  base::test::TestFuture<bool> future;
+  GetCache()->ObtainManifestAndCache(iwa_origin, future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  EXPECT_THAT(GetCache()->GetPolicy(iwa_origin), NotNull());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaPermissionsPolicyCacheBrowserTest,
+                       ObtainManifestForNonexistentApp) {
+  auto web_bundle_id =
+      web_package::SignedWebBundleId::CreateRandomForProxyMode();
+  IwaOrigin iwa_origin(web_bundle_id);
+
+  base::test::TestFuture<bool> future;
+  GetCache()->ObtainManifestAndCache(iwa_origin, future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  EXPECT_THAT(GetCache()->GetPolicy(iwa_origin), IsNull());
 }
 
 }  // namespace web_app
