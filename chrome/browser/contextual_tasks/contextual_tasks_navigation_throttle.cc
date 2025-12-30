@@ -34,6 +34,12 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::WillRedirectRequest() {
 }
 
 ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
+  // Do not intercept about:blank or data: URLs.
+  if (navigation_handle()->GetURL().IsAboutBlank() ||
+      navigation_handle()->GetURL().SchemeIs(url::kDataScheme)) {
+    return PROCEED;
+  }
+
   auto* web_contents = navigation_handle()->GetWebContents();
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
