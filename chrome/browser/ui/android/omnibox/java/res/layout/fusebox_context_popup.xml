@@ -59,7 +59,7 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_pick_picture_button"
-            android:drawableStart="@drawable/ic_collections_grey"
+            android:drawableStart="@drawable/ic_photo_library_fill_24dp"
             android:text="@string/omnibox_navattach_gallery"
             android:contentDescription="@string/accessibility_omnibox_add_images"
             app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"/>

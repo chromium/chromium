@@ -409,7 +409,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         } else if (isGalleryTile()) {
             image =
                     TraceEventVectorDrawableCompat.create(
-                            resources, R.drawable.ic_collections_grey, mContext.getTheme());
+                            resources, R.drawable.ic_photo_library_fill_24dp, mContext.getTheme());
             labelStringId = R.string.photo_picker_browse;
         } else {
             assert false;
