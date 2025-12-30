@@ -23,6 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -214,6 +217,18 @@ public class TabSwitcherSearchTest {
     @MediumTest
     public void testZeroPrefixSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
+        Log.i(
+                "Debug crbug.com/470234934:",
+                " shouldOpenIncognitoAsWindow=" + IncognitoUtils.shouldOpenIncognitoAsWindow());
+        Log.i(
+                "Debug crbug.com/470234934:",
+                " sAndroidOpenIncognitoAsWindow="
+                        + ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled());
+        Log.i(
+                "Debug crbug.com/470234934:",
+                " isNonMultiDisplayContextOnTablet="
+                        + DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                ContextUtils.getApplicationContext()));
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openIncognitoTabSwitcher().openTabSwitcherSearch();
