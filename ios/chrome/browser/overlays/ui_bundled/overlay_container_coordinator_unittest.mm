@@ -40,13 +40,7 @@ class OverlayContainerCoordinatorTest : public PlatformTest {
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
-  ~OverlayContainerCoordinatorTest() override {
-    // The browser needs to be destroyed before `context_` so that observers
-    // can be unhooked due to BrowserDestroyed().  This is not a problem for
-    // non-test OverlayPresentationContextImpls since they're owned by the
-    // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_.reset();
-  }
+  ~OverlayContainerCoordinatorTest() override = default;
 
  protected:
   web::WebTaskEnvironment task_environment_;

@@ -39,11 +39,6 @@ class OverlayPresentationContextCoordinatorTest : public PlatformTest {
   }
   ~OverlayPresentationContextCoordinatorTest() override {
     [coordinator_ stop];
-    // The browser needs to be destroyed before `context_` so that observers
-    // can be unhooked due to BrowserDestroyed().  This is not a problem for
-    // non-test OverlayPresentationContextImpls since they're owned by the
-    // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_.reset();
   }
 
  protected:
