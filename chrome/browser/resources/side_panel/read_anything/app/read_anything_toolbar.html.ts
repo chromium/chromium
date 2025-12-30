@@ -228,7 +228,8 @@ ${renderTextStyleOptions.call(this)}
     @click="${this.onMoreOptionsClick_}">
 </cr-icon-button>
 <settings-menu
-  id="settingsMenu">
+  id="settingsMenu"
+  .presentationState="${this.presentationState}">
 </settings-menu>
 <!--_html_template_end_-->`;
   // clang-format on

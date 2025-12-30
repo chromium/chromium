@@ -331,6 +331,9 @@ declare namespace chrome {
     // Called by the Read Anything app to close the Read Anything UI.
     function close(): void;
 
+    // Called by the Read Anything app to toggle between presentation modes.
+    function togglePresentation(): void;
+
     // Whether the Google Docs load more button is visible.
     let isDocsLoadMoreButtonVisible: boolean;
 

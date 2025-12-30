@@ -143,10 +143,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       speechRate_: {type: Number},
       moreOptionsButtons_: {type: Array},
       pageLanguage: {type: String},
+      presentationState: {type: Number},
     };
   }
 
   // Reactive properties below
+  accessor presentationState: number = 0;
   accessor availableVoices: SpeechSynthesisVoice[] = [];
   accessor enabledLangs: string[] = [];
   // If Read Aloud is playing speech.

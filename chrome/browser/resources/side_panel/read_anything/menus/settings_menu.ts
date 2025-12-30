@@ -12,6 +12,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {SettingsOption} from '../content/read_anything_types.js';
@@ -124,6 +125,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return getCss();
   }
 
+  static override get properties() {
+    return {
+      presentationState: {type: Number},
+    };
+  }
+
+  accessor presentationState: number = 0;
+
   protected options_: SettingsItem[] = [];
   private blockedEvents_: string[] = ['click', 'pointerdown'];
   private pointerEventCallback_: (e: Event) => void = () => {};
@@ -137,6 +146,32 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     super();
     // TODO (crbug.com/470379596): Add keyboard navigation to settings menu
     this.initializeMenuOptions_();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // TODO(crbug.com/471212662): Add a designated toggle menu and delete this
+    if (changedProperties.has('presentationState')) {
+      this.initializeMenuOptions_();
+    }
+  }
+
+  // TODO(crbug.com/471212662): Remove this method when we add the final menu
+  // buttons that don't use these strings.
+  private getTogglePresentationLabel_(): string {
+    // The kInImmersiveOverlay enum value is 3 and the kInSidePanel enum value
+    // is 2 in ReadAnythingPresentationState. See
+    // chrome/common/read_anything/read_anything.mojom.
+
+    // kInSidePanel = 2
+    if (this.presentationState === 2) {
+      return 'View: Show in Immersive';
+    }
+    // kInImmersiveOverlay = 3
+    if (this.presentationState === 3) {
+      return 'View: Show in Side Panel';
+    }
+    return 'View: Toggle';
   }
 
   private initializeMenuOptions_() {
@@ -162,12 +197,29 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     // TODO (crbug.com/470379647): Add the toggle elements to settings menu
     this.options_ = optionIDs.map(id => {
       const original = MENU_ITEM_DATA[id];
+      let ariaLabel = loadTimeData.getString(original.ariaLabel);
+
+      if (id === SettingsOption.VIEW) {
+        ariaLabel = this.getTogglePresentationLabel_();
+      }
+
       return {
         ...original,
         id: id,
-        ariaLabel: loadTimeData.getString(original.ariaLabel),
+        ariaLabel,
       };
     });
+  }
+
+  protected onMenuItemClick_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const item = this.options_[index];
+
+    if (item && item.id === SettingsOption.VIEW) {
+      chrome.readingMode.togglePresentation();
+      this.close();
+    }
   }
 
   open(anchor: HTMLElement) {

@@ -1296,6 +1296,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsDocsLoadMoreButtonVisible)
       .SetMethod("sendGetPresentationStateRequest",
                  &ReadAnythingAppController::SendGetPresentationStateRequest)
+      .SetMethod("togglePresentation",
+                 &ReadAnythingAppController::TogglePresentation)
       .SetMethod("close", &ReadAnythingAppController::CloseUI);
 }
 
@@ -2251,6 +2253,13 @@ void ReadAnythingAppController::CloseUI() {
     return;
   }
   page_handler_->CloseUI();
+}
+
+void ReadAnythingAppController::TogglePresentation() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  page_handler_->TogglePresentation();
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {

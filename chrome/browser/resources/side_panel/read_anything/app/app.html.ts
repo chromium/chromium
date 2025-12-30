@@ -15,6 +15,7 @@ export function getHtml(this: AppElement) {
 <div id="appFlexParent">
   <div id="toolbar-container">
     <read-anything-toolbar
+        .presentationState="${this.presentationState_}"
         .isSpeechActive="${this.isSpeechActive_}"
         .isAudioCurrentlyPlaying="${this.isAudioCurrentlyPlaying_}"
         .isReadAloudPlayable="${this.computeIsReadAloudPlayable()}"

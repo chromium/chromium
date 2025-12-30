@@ -921,6 +921,13 @@ void ReadAnythingUntrustedPageHandler::CloseUI() {
   read_anything_controller_->CloseImmersiveUI();
 }
 
+void ReadAnythingUntrustedPageHandler::TogglePresentation() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    CHECK(read_anything_controller_);
+    read_anything_controller_->TogglePresentation();
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
     const ui::AXActionData& data) {
   ui::AXActionHandlerBase* handler =

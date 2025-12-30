@@ -296,6 +296,15 @@ void ReadAnythingController::ToggleImmersiveUI(
   }
 }
 
+void ReadAnythingController::TogglePresentation() {
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    ShowUI(SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+  } else if (GetPresentationState() == PresentationState::kInSidePanel) {
+    ShowImmersiveUI(
+        ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+  }
+}
+
 void ReadAnythingController::ToggleReadAnythingSidePanel(
     SidePanelOpenTrigger trigger) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {

@@ -264,6 +264,7 @@ class ReadAnythingUntrustedPageHandler :
   void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,
                           ui::AXNodeID target_node_id) override;
   void CloseUI() override;
+  void TogglePresentation() override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
