@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -169,6 +170,31 @@ void UpdateServiceImpl::RunInstaller(
   delegate_->RunInstaller(app_id, installer_path, install_args, install_data,
                           install_settings, language, state_update,
                           std::move(callback));
+}
+
+void UpdateServiceImpl::GetUpdaterState(
+    base::OnceCallback<void(const UpdaterState&)> callback) {
+  // Asking the updater for updater state is always allowed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetUpdaterState(std::move(callback));
+}
+
+void UpdateServiceImpl::GetUpdaterPolicies(
+    base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
+        callback) {
+  // Asking the updater for updater policies is always allowed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetUpdaterPolicies(std::move(callback));
+}
+
+void UpdateServiceImpl::GetAppPolicies(
+    base::OnceCallback<
+        void(const base::flat_map<std::string,
+                                  base::flat_map<std::string, PolicyValue>>&)>
+        callback) {
+  // Asking the updater for app policies is always allowed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetAppPolicies(std::move(callback));
 }
 
 void UpdateServiceImpl::AcceptEula() {
