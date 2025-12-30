@@ -1695,21 +1695,29 @@ AuthenticationCredentialsContainer::create(
   if (options->hasPassword()) {
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kCredentialManagerCreatePasswordCredential);
-    resolver->Resolve(
+    auto* password_credentials =
         options->password()->IsPasswordCredentialData()
             ? PasswordCredential::Create(
                   options->password()->GetAsPasswordCredentialData(),
                   exception_state)
             : PasswordCredential::Create(
-                  options->password()->GetAsHTMLFormElement(),
-                  exception_state));
+                  options->password()->GetAsHTMLFormElement(), exception_state);
+    if (exception_state.HadException()) [[unlikely]] {
+      return {};
+    }
+    resolver->Resolve(password_credentials);
     return promise;
   }
   if (options->hasFederated()) {
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kCredentialManagerCreateFederatedCredential);
-    resolver->Resolve(
-        FederatedCredential::Create(options->federated(), exception_state));
+    auto* federated_credentials =
+        FederatedCredential::Create(options->federated(), exception_state);
+    if (exception_state.HadException()) [[unlikely]] {
+      return {};
+    }
+
+    resolver->Resolve(federated_credentials);
     return promise;
   }
   DCHECK(options->hasPublicKey());
