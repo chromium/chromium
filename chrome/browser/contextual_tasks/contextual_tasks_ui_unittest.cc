@@ -443,8 +443,8 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ZeroState) {
   base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   ContextualTask task(task_id);
   EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
-  // OnTaskChanged should be called with an empty UUID for zero state.
-  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, base::Uuid(), _)).Times(1);
+  // OnTaskChanged should be called with the created UUID.
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
