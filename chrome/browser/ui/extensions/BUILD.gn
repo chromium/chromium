@@ -26,6 +26,8 @@ source_set("extensions") {
       "extension_dialog_utils.h",
       "extension_install_ui.h",
       "extension_installed_watcher.h",
+      "extension_post_install_dialog.h",
+      "extension_post_install_dialog_model.h",
       "extensions_dialogs.h",
       "extensions_menu_view_model.h",
       "extensions_toolbar_view_model.h",
@@ -62,7 +64,6 @@ source_set("extensions") {
       "application_launch.h",
       "extension_action_delegate.h",
       "extension_enable_flow.h",
-      "extension_post_install_dialog_model.h",
       "extension_side_panel_utils.h",
       "extensions_container.h",
       "extensions_overrides/simple_overrides.h",
@@ -101,10 +102,27 @@ source_set("extensions") {
   }
 }
 
+if (enable_extensions_core) {
+  source_set("extension_post_install_dialog_utils") {
+    sources = [
+      "extension_post_install_dialog_utils.cc",
+      "extension_post_install_dialog_utils.h",
+    ]
+    public_deps = [ ":extensions" ]
+    deps = [
+      "//base:i18n",
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//ui/base",
+      "//ui/strings",
+    ]
+  }
+}  # end of if (enable_extensions_core)
+
 source_set("impl") {
   sources = []
   deps = [ ":extensions" ]
-
   if (enable_extensions_core) {
     sources += [
       "controlled_home_dialog.cc",
@@ -116,6 +134,8 @@ source_set("impl") {
       "extension_install_ui.cc",
       "extension_installed_watcher.cc",
       "extension_multiple_uninstall_dialog.cc",
+      "extension_post_install_dialog.cc",
+      "extension_post_install_dialog_model.cc",
       "extension_uninstall_dialog_impl.cc",
       "extensions_menu_view_model.cc",
       "extensions_toolbar_view_model.cc",
@@ -123,6 +143,7 @@ source_set("impl") {
       "settings_overridden_dialog.cc",
     ]
     deps += [
+      ":extension_post_install_dialog_utils",
       "//chrome/browser/extensions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
@@ -132,6 +153,7 @@ source_set("impl") {
       "//components/sessions",
       "//components/tabs:public",
       "//components/vector_icons",
+      "//extensions/common",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
@@ -171,7 +193,6 @@ source_set("impl") {
       "app_launch_params.cc",
       "application_launch.cc",
       "extension_enable_flow.cc",
-      "extension_post_install_dialog_model.cc",
       "extension_settings_overridden_dialog.cc",
       "extensions_overrides/simple_overrides.cc",
       "hosted_app_browser_controller.cc",
