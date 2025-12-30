@@ -53,6 +53,10 @@
     padding: 0;
   }
 
+  .settings-columned-section ul.icon-bulleted-list li {
+    column-gap: 0px;
+  }
+
   settings-radio-group:not([is-horizontal]) {
     padding-inline-start: 40px;
   }
@@ -72,6 +76,7 @@
 
   ul.icon-bulleted-list {
     --cr-icon-size: 20px;
+    --iron-icon-width: 16px;
     flex-basis: 100%;
     list-style-type: none;
     margin-bottom: 0;
@@ -80,7 +85,7 @@
   }
 
   ul.icon-bulleted-list li {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     margin-top: 0;
   }
 
@@ -92,7 +97,8 @@
     align-content: flex-start;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    row-gap: 20px;
+    column-gap: 10px;
   }
 
   #bundlesRadioGroup controlled-radio-button::part(labelWrapper) {
@@ -100,6 +106,7 @@
     display: flex;
     font-size: 112%;
     font-weight: 500;
+    height: 20px;
     justify-content: space-between;
     padding: 0;
   }
