@@ -258,7 +258,7 @@ class ReadAnythingOmniboxTest
     features_.InitWithFeatures(
         {features::kReadAnythingOmniboxChip, features::kPageActionsMigration,
          feature_engagement::kIPHReadingModePageActionLabelFeature},
-        {});
+        {features::kImmersiveReadAnything});
     distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
     non_distillable_url_ = GURL("chrome://blank");
     InteractiveFeaturePromoTest::SetUp();
