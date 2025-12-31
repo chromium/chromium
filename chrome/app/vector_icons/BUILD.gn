@@ -68,6 +68,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "developer_tools.icon",
     "devices.icon",
     "devices_chrome_refresh.icon",
+    "dock_to_left_spark.icon",
     "dock_to_right_spark.icon",
     "download_in_progress_chrome_refresh.icon",
     "download_in_progress_touch.icon",

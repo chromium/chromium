@@ -30,6 +30,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -44,12 +45,17 @@ ContextualTasksButton::ContextualTasksButton(
                     nullptr,
                     nullptr),
       browser_window_interface_(browser_window_interface) {
-  SetVectorIcon(kDockToRightSparkIcon);
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
   const std::u16string button_tooltip =
       l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
+
+  side_panel_alignment_.Init(
+      prefs::kSidePanelHorizontalAlignment,
+      browser_window_interface->GetProfile()->GetPrefs(),
+      base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarPermanent) {
@@ -76,6 +82,7 @@ ContextualTasksButton::ContextualTasksButton(
           ->RegisterOnEntryPointEligibilityChanged(
               base::BindRepeating(&ContextualTasksButton::OnEligibilityChange,
                                   base::Unretained(this)));
+  OnSidePanelAlignmentChanged();
   MaybeUpdateVisibility();
 }
 
@@ -106,6 +113,16 @@ void ContextualTasksButton::OnButtonPress() {
 
 void ContextualTasksButton::OnPinStateChanged() {
   MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::OnSidePanelAlignmentChanged() {
+  PrefService* const pref_service =
+      browser_window_interface_->GetProfile()->GetPrefs();
+  const gfx::VectorIcon& contextual_tasks_icon =
+      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
+          ? kDockToRightSparkIcon
+          : kDockToLeftSparkIcon;
+  SetVectorIcon(contextual_tasks_icon);
 }
 
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
