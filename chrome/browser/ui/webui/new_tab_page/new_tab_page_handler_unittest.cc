@@ -1026,7 +1026,27 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
                                       "google_calendar", "tab_resumption"));
 }
 
-TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalFeatureDisabled) {
+class NewTabPageHandlerModuleRemovalTest : public NewTabPageHandlerTest {
+ public:
+  // Wrapper around GetModulesEligibleForRemoval, for deduping the callback.
+  std::vector<std::string> WrapGetModulesEligibleForRemoval() {
+    std::vector<std::string> result;
+    base::MockCallback<NewTabPageHandler::GetModulesEligibleForRemovalCallback>
+        callback;
+    EXPECT_CALL(callback, Run(_))
+        .Times(1)
+        .WillOnce([&result](std::vector<std::string> arg) {
+          result = std::move(arg);
+        });
+
+    handler_->GetModulesEligibleForRemoval(callback.Get());
+
+    return result;
+  }
+};
+
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalFeatureDisabled) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1035,14 +1055,14 @@ TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalFeatureDisabled) {
           });
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
   // Assert.
-  EXPECT_EQ(0u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  EXPECT_EQ(0u, removed_modules.size());
 }
 
-TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalIsManagedPreference) {
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalIsManagedPreference) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1059,15 +1079,14 @@ TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalIsManagedPreference) {
                                                     base::Value(true));
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
   // Assert.
-  EXPECT_EQ(0u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  EXPECT_EQ(0u, removed_modules.size());
 }
 
-TEST_F(NewTabPageHandlerTest,
-       ModulesEligibleForRemovalAllModulesForceDisabled) {
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalAllModulesForceDisabled) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1085,14 +1104,14 @@ TEST_F(NewTabPageHandlerTest,
   update->Set(ntp_modules::kAllModulesId, true);
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
   // Assert.
-  EXPECT_EQ(0u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  EXPECT_EQ(0u, removed_modules.size());
 }
 
-TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalModuleForceDisabled) {
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalModuleForceDisabled) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1110,15 +1129,14 @@ TEST_F(NewTabPageHandlerTest, ModulesEligibleForRemovalModuleForceDisabled) {
   update->Set(ntp_modules::kDriveModuleId, true);
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
   // Assert.
-  EXPECT_EQ(0u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  EXPECT_EQ(0u, removed_modules.size());
 }
 
-TEST_F(NewTabPageHandlerTest,
-       ModulesEligibleForRemovalModuleBelowStalenessThreshold) {
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalModuleBelowStalenessThreshold) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1137,14 +1155,14 @@ TEST_F(NewTabPageHandlerTest,
   update->Set(ntp_modules::kDriveModuleId, below_staleness_threshold);
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
-  EXPECT_EQ(0u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
+  // Assert.
+  EXPECT_EQ(0u, removed_modules.size());
 }
 
-TEST_F(NewTabPageHandlerTest,
-       ModulesEligibleForRemovalModuleAboveStalenessThreshold) {
+TEST_F(NewTabPageHandlerModuleRemovalTest,
+       GetModulesEligibleForRemovalModuleAboveStalenessThreshold) {
   // Arrange.
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1163,18 +1181,85 @@ TEST_F(NewTabPageHandlerTest,
   update->Set(ntp_modules::kDriveModuleId, above_staleness_threshold);
 
   // Act.
-  handler_->GetModulesIdNames(base::DoNothing());
+  std::vector<std::string> removed_modules = WrapGetModulesEligibleForRemoval();
 
   // Assert.
-  EXPECT_EQ(1u,
-            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules).size());
-  EXPECT_TRUE(
-      base::Contains(profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules),
-                     ntp_modules::kDriveModuleId));
+  EXPECT_EQ(1u, removed_modules.size());
+  EXPECT_TRUE(base::Contains(removed_modules, ntp_modules::kDriveModuleId));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrue) {
+  // Arrange.
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& initial_disabled_modules_list = update.Get();
+  initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+
+  std::vector<std::string> set_disabled_modules_true = {
+      ntp_modules::kDriveModuleId,
+      ntp_modules::kGoogleCalendarModuleId,
+  };
+
+  base::Value::List expected_disabled_modules_list;
+  expected_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+  expected_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  expected_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
+
+  // Act.
+  handler_->SetModulesDisabled(set_disabled_modules_true, /*disabled=*/true);
+
+  // Assert.
+  EXPECT_EQ(expected_disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
                   .FindBool(ntp_modules::kDriveModuleId)
                   .value_or(false));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kGoogleCalendarModuleId)
+                  .value_or(false));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModulesDisabledFalse) {
+  // Arrange.
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& initial_disabled_modules_list = update.Get();
+  initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
+
+  std::vector<std::string> set_disabled_modules_false = {
+      ntp_modules::kDriveModuleId,
+      ntp_modules::kGoogleCalendarModuleId,
+  };
+
+  base::Value::List expected_disabled_modules_list;
+  expected_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+
+  // Act.
+  handler_->SetModulesDisabled(set_disabled_modules_false, /*disabled=*/false);
+
+  // Assert.
+  EXPECT_EQ(expected_disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModulesDisabledEmptyList) {
+  // Arrange.
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& initial_disabled_modules_list = update.Get();
+  initial_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+
+  std::vector<std::string> set_disabled_modules_empty = {};
+
+  // Act.
+  handler_->SetModulesDisabled(set_disabled_modules_empty, /*disabled=*/true);
+
+  // Assert.
+  EXPECT_EQ(initial_disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
