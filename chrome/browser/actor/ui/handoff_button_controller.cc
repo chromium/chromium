@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 
+#include "base/feature_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
