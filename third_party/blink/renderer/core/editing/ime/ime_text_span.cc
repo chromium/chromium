@@ -145,7 +145,8 @@ ImeTextSpan::ImeTextSpan(const ui::ImeTextSpan& ime_text_span)
                   ime_text_span.remove_on_finish_composing,
                   ime_text_span.interim_char_selection,
                   ConvertStdVectorOfStdStringsToVectorOfStrings(
-                      ime_text_span.suggestions)) {}
+                      ime_text_span.suggestions),
+                  ime_text_span.should_hide_suggestion_menu) {}
 
 ui::ImeTextSpan ImeTextSpan::ToUiImeTextSpan() {
   auto span = ui::ImeTextSpan(ConvertImeTextSpanTypeToUiType(GetType()),
