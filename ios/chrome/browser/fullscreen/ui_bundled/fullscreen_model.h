@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer.h"
 #import "ios/web/common/features.h"
 
 class FullscreenModelObserver;

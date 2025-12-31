@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "testing/platform_test.h"
 
 // Test fixture for FullscreenMediator.

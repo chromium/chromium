@@ -61,7 +61,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:test_constants",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
-    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/browser/whats_new/public:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",

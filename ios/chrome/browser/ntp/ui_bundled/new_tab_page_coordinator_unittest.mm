@@ -61,7 +61,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/fakes/fake_discover_feed_eligibility_handler.h"

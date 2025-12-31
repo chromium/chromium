@@ -4,6 +4,6 @@ include_rules = [
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/toolbar/ui_bundled/public",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
 ]

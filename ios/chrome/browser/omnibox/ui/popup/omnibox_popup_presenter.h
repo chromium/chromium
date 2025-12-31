@@ -9,8 +9,8 @@
 
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_omnibox_consumer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_omnibox_consumer.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 
 @class LayoutGuideCenter;
 @class OmniboxPopupPresenter;

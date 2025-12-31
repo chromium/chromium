@@ -56,7 +56,7 @@ source_set("popup") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sharing/ui_bundled",
-    "//ios/chrome/browser/toolbar/ui_bundled/public",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
     "//net",
     "//services/network/public/cpp",
     "//ui/base",

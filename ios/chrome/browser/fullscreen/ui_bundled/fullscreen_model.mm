@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/features.h"
 

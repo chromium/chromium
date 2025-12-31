@@ -2,6 +2,6 @@ include_rules = [
   "+ios/chrome/browser/dom_distiller/model",
   "+ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h",
   "+ios/chrome/browser/reader_mode/model",
-  "+ios/chrome/browser/toolbar/ui_bundled/accessory",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/accessory",
   "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
 ]

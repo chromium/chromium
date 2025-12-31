@@ -88,7 +88,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_test_navigation_manager.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"

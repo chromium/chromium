@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/snapshots/model/snapshot_id.h",
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h",
-  "+ios/chrome/browser/toolbar/ui_bundled/public",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
   "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
 ]

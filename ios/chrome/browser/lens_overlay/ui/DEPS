@@ -1,5 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h",
   "+ios/chrome/browser/omnibox/ui/text_field_view_containing.h",
-  "+ios/chrome/browser/toolbar/ui_bundled",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled",
 ]

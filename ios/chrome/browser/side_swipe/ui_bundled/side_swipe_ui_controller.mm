@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_tab_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_interacting.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/side_swipe_toolbar_interacting.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 

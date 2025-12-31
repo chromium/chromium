@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_model_observer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/web/common/features.h"
 #import "testing/platform_test.h"
 

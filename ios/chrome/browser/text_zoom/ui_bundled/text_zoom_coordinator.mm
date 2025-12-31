@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_mediator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_view_controller.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

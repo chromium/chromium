@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

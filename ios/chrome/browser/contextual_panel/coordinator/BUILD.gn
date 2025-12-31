@@ -27,7 +27,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]

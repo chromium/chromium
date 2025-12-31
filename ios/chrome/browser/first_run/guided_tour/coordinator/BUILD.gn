@@ -20,7 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/toolbar/ui_bundled/buttons",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",
   ]
   frameworks = [ "UIKit.framework" ]
 }

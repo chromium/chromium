@@ -7,7 +7,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/gfx/ios/uikit_util.h"
 

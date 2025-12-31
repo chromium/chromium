@@ -149,7 +149,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/snapshots/model:test_utils",
-    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/lens",

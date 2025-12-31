@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
 
 @interface PanelContentMediator () <ChromeBroadcastObserver,
                                     ToolbarsSizeObserving>

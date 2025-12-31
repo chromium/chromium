@@ -72,7 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/util",
     "//ios/web/public/test",

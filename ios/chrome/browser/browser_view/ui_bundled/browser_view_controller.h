@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;

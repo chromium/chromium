@@ -171,7 +171,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/supervised_user/ui:constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
-    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",

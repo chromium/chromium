@@ -531,7 +531,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/tabs/ui_bundled",
-    "//ios/chrome/browser/toolbar/ui_bundled:ui",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled:ui",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/variations/model:ios_chrome_ui_string_overrider_factory",

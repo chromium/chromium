@@ -170,7 +170,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/supervised_user/model",
-    "//ios/chrome/browser/toolbar/ui_bundled/test",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/test",
     "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/browser/whats_new/public:constants",

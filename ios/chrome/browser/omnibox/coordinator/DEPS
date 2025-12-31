@@ -16,7 +16,7 @@ include_rules = [
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/toolbar/ui_bundled/public",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/url_loading/model",
 ]

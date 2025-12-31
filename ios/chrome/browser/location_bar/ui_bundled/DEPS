@@ -30,7 +30,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
-  "+ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h",
   "+ios/chrome/browser/omnibox/model",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",

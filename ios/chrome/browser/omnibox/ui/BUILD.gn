@@ -88,7 +88,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

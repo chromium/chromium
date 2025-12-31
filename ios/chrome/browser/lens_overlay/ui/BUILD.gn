@@ -110,7 +110,7 @@ source_set("view_controller") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/toolbar/ui_bundled:ui",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled:ui",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
