@@ -13,6 +13,11 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_height_with_shadow_redesign">72dp</dimen>
     <dimen name="keyboard_accessory_dynamic_positioning_padding">10dp</dimen>
+    <dimen name="keyboard_accessory_notch_position">24dp</dimen>
+    <dimen name="keyboard_accessory_notch_height">8dp</dimen>
+    <dimen name="keyboard_accessory_notch_tip_width">2dp</dimen>
+    <dimen name="keyboard_accessory_notch_base_width">18dp</dimen>
+    <dimen name="keyboard_accessory_notch_tip_rounding">1dp</dimen>
     <dimen name="keyboard_accessory_chip_min_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets">8dp</dimen>
     <dimen name="keyboard_accessory_chip_vertical_insets_large_font">2dp</dimen>

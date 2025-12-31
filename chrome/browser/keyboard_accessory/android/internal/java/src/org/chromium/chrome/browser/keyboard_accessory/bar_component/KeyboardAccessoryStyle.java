@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Encapsulates the styling properties for a keyboard accessory view.
@@ -25,6 +29,18 @@ public class KeyboardAccessoryStyle {
     private final int mHorizontalOffset;
     private final int mVerticalOffset;
     private final int mMaxWidth;
+
+    @IntDef({
+        NotchPosition.TOP,
+        NotchPosition.BOTTOM,
+        NotchPosition.HIDDEN,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NotchPosition {
+        int TOP = 0;
+        int BOTTOM = 1;
+        int HIDDEN = 2;
+    }
 
     private KeyboardAccessoryStyle(
             boolean isDocked, @Px int horizontalOffset, @Px int verticalOffset, @Px int maxWidth) {
