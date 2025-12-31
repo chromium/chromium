@@ -56,9 +56,7 @@ class ExtensionFrameHost;
 // we detect that the unexpected URL and unregister the frame.
 // With OOPIF only the first notification is sufficient in most cases, except
 // for sandboxed frames with a unique origin.
-class ExtensionWebContentsObserver
-    : public content::WebContentsObserver,
-      public ExtensionFunctionDispatcher::Delegate {
+class ExtensionWebContentsObserver : public content::WebContentsObserver {
  public:
   ExtensionWebContentsObserver(const ExtensionWebContentsObserver&) = delete;
   ExtensionWebContentsObserver& operator=(const ExtensionWebContentsObserver&) =
