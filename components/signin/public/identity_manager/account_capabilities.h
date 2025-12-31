@@ -97,8 +97,10 @@ class AccountCapabilities {
   // The user account is able to use copyeditor feature.
   signin::Tribool can_use_copyeditor_feature() const;
 
+#if !BUILDFLAG(IS_IOS)
   // The user account is able to use DevTools AI features.
   signin::Tribool can_use_devtools_generative_ai_features() const;
+#endif
 
   // The user account is able to use edu features.
   signin::Tribool can_use_edu_features() const;

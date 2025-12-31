@@ -138,10 +138,12 @@ signin::Tribool AccountCapabilities::can_use_copyeditor_feature() const {
   return GetCapabilityByName(kCanUseCopyEditorFeatureName);
 }
 
+#if !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_devtools_generative_ai_features()
     const {
   return GetCapabilityByName(kCanUseDevToolsGenerativeAiFeaturesCapabilityName);
 }
+#endif
 
 signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
