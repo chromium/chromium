@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
+#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Base coordinator for child coordinators of the Assistant Sheet.
@@ -16,9 +16,9 @@
 // The view controller managed by this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 
-// The navigation bar configuration for the child coordinator.
+// The bar configuration for the child coordinator.
 @property(nonatomic, strong, readonly)
-    AssistantNavbarConfiguration* navbarConfiguration;
+    AssistantBarConfiguration* barConfiguration;
 
 @end
 

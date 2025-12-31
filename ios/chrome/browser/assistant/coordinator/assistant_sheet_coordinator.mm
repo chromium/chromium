@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
 #import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_coordinator.h"
-#import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
+#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller_delegate.h"
@@ -55,9 +55,9 @@
 
   [_childCoordinator start];
   [_viewController setChildViewController:_childCoordinator.viewController];
-  // Configure Navigation Bar using the child's configuration.
+  // Configure the assistant bar using the child's configuration.
   [_viewController
-      setNavigationBarConfiguration:_childCoordinator.navbarConfiguration];
+      setNavigationBarConfiguration:_childCoordinator.barConfiguration];
 
   // Add the view controller as a child view controller.
   [self.baseViewController addChildViewController:_viewController];

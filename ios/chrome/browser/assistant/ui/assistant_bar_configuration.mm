@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
+#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 
-@implementation AssistantNavbarConfiguration
+@implementation AssistantBarConfiguration
 
 @end

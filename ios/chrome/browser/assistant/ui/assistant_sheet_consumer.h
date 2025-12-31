@@ -7,14 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/assistant/ui/assistant_navbar_configuration.h"
+#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
 
 // Consumer for the Assistant Sheet.
 @protocol AssistantSheetConsumer <NSObject>
 
 // Updates the navigation configuration.
-- (void)setNavigationBarConfiguration:
-    (AssistantNavbarConfiguration*)configuration;
+- (void)setNavigationBarConfiguration:(AssistantBarConfiguration*)configuration;
 
 // Sets the child view controller to be displayed in the sheet content area.
 - (void)setChildViewController:(UIViewController*)viewController;

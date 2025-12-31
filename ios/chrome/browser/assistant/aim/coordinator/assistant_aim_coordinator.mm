@@ -19,9 +19,8 @@
   _viewController = nil;
 }
 
-- (AssistantNavbarConfiguration*)navbarConfiguration {
-  AssistantNavbarConfiguration* config =
-      [[AssistantNavbarConfiguration alloc] init];
+- (AssistantBarConfiguration*)barConfiguration {
+  AssistantBarConfiguration* config = [[AssistantBarConfiguration alloc] init];
   // TODO(crbug.com/469050167): Localize.
   config.title = @"AI Assistant";
   return config;

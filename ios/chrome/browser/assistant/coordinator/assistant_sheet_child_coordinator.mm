@@ -13,7 +13,7 @@
 }
 
 // Returns nil to prevent autosynthesis of an unused instance variable.
-- (AssistantNavbarConfiguration*)navbarConfiguration {
+- (AssistantBarConfiguration*)barConfiguration {
   return nil;
 }
 

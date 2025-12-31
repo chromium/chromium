@@ -26,7 +26,7 @@ constexpr CGFloat kSpringDamping = 0.85;
   AssistantSheetView* _assistantSheetView;
 
   // State storage for configuration before view load.
-  AssistantNavbarConfiguration* _navbarConfiguration;
+  AssistantBarConfiguration* _barConfiguration;
   UIViewController* _childViewController;
 
   // Gesture recognizer for resizing the sheet.
@@ -54,8 +54,8 @@ constexpr CGFloat kSpringDamping = 0.85;
   [self setUpGestures];
 
   // Apply pending configuration.
-  if (_navbarConfiguration) {
-    [_assistantSheetView setTitle:_navbarConfiguration.title];
+  if (_barConfiguration) {
+    [_assistantSheetView setTitle:_barConfiguration.title];
   }
   if (_childViewController) {
     [self addChildViewController:_childViewController];
@@ -231,8 +231,8 @@ constexpr CGFloat kSpringDamping = 0.85;
 #pragma mark - AssistantSheetConsumer
 
 - (void)setNavigationBarConfiguration:
-    (AssistantNavbarConfiguration*)configuration {
-  _navbarConfiguration = configuration;
+    (AssistantBarConfiguration*)configuration {
+  _barConfiguration = configuration;
   if (self.isViewLoaded) {
     [_assistantSheetView setTitle:configuration.title];
     // Update height in case title lines changed.
