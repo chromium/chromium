@@ -6,7 +6,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/input_method/japanese_prefs_constants.h"
+#include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 
 namespace ash::input_method {

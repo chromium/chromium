@@ -116,7 +116,6 @@ static_library("input_method") {
     "input_method_syncer.h",
     "input_methods_by_language.cc",
     "input_methods_by_language.h",
-    "japanese_prefs_constants.h",
     "japanese_settings.cc",
     "japanese_settings.h",
     "longpress_control_v_suggester.cc",

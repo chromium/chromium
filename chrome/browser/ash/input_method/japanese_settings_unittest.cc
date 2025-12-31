@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/input_method/japanese_settings.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/input_method/japanese_prefs_constants.h"
+#include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

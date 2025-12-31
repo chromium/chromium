@@ -39,7 +39,7 @@ export enum OptionType {
   JAPANESE_SELECTION_SHORTCUT = 'JapaneseSectionShortcut',
   JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
   JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
-  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese_prefs_constants.h:JpOptionCategories)
+  // LINT.ThenChange(/chrome/browser/ash/input_method/input_method_settings_consts.h:JpOptionCategories)
   // Options for Korean input method.
   KOREAN_ENABLE_SYLLABLE_INPUT = 'koreanEnableSyllableInput',
   KOREAN_KEYBOARD_LAYOUT = 'koreanKeyboardLayout',
@@ -200,4 +200,4 @@ export enum JapaneseShiftKeyModeStyle {
   ALPHANUMERIC = 'Alphanumeric',
   KATAKANA = 'Katakana',
 }
-// LINT.ThenChange(/chrome/browser/ash/input_method/japanese_prefs_constants.h:JpOptionValues)
+// LINT.ThenChange(/chrome/browser/ash/input_method/input_method_settings_consts.h:JpOptionValues)

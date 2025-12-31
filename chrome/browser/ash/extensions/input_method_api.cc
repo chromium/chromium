@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/extensions/language_packs/language_pack_event_router.h"
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
-#include "chrome/browser/ash/input_method/japanese_prefs_constants.h"
+#include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
