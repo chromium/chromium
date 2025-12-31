@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,8 +33,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
@@ -78,7 +75,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySyncActivityBase
-        implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
+        implements BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
@@ -87,7 +85,6 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
-    private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(crbug.com/349787455): Move this to FirstRunActivityBase.
     private final Promise<@Nullable Void> mNativeInitializationPromise = new Promise<>();
 
@@ -170,13 +167,14 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         mCoordinator =
                 new BottomSheetSigninAndHistorySyncCoordinator(
                         windowAndroid,
-                        this,
-                        this,
+                        /* activity= */ this,
+                        /* activityResultTracker= */ getActivityResultTracker(),
+                        /* activityDelegate= */ this,
+                        /* delegate= */ this,
                         DeviceLockActivityLauncherImpl.get(),
-                        mProfileSupplier,
+                        getProfileProviderSupplier(),
                         getBottomSheetController(containerView),
                         (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
-                        /* snackbarManager= */ null,
                         config,
                         signinAccessPoint);
 
@@ -201,22 +199,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
-        ActivityProfileProvider profileProvider =
-                new ActivityProfileProvider(getLifecycleDispatcher()) {
-
-                    @Override
-                    protected @Nullable OtrProfileId createOffTheRecordProfileId() {
-                        throw new IllegalArgumentException(
-                                "Attempting to access incognito in the sign-in & history sync"
-                                        + " opt-in flow");
-                    }
-                };
-
-        profileProvider.onAvailable(
-                (provider) -> {
-                    mProfileSupplier.set(assumeNonNull(profileProvider.get()).getOriginalProfile());
-                });
-        return profileProvider;
+        return new ActivityProfileProvider(getLifecycleDispatcher());
     }
 
     @Override

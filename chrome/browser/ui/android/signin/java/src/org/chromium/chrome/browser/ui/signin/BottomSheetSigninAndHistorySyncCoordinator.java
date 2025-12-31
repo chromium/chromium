@@ -11,17 +11,22 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -36,12 +41,15 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -59,17 +67,23 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                 HistorySyncCoordinator.HistorySyncDelegate,
                 SigninSnackbarController.Listener {
     private static final String TAG = "BottomSheetSignin";
+    private static final String ADD_ACCOUNT_ACTIVITY_KEY = "ADD_ACCOUNT_ACTIVITY_KEY";
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
+    private final ActivityResultTracker mActivityResultTracker;
 
+    // TODO(https://crbug.com/469772349): Remove this interface once the migration is
+    // completed, as this delegate is necessary only when the sign-in activity is used.
+    private final @Nullable ActivityDelegate mActivityDelegate;
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
-    private final OneshotSupplier<Profile> mProfileSupplier;
+    private final OneshotSupplier<ProfileProvider> mProfileSupplier;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
-    private final BottomSheetSigninAndHistorySyncConfig mConfig;
+    private BottomSheetSigninAndHistorySyncConfig mConfig;
     private final @SigninAccessPoint int mSigninAccessPoint;
+    private @Nullable Profile mProfile;
 
     private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
     private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
@@ -78,13 +92,16 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private boolean mFlowInitialized;
     private @ColorInt int mScrimStatusBarColor = ScrimProperties.INVALID_COLOR;
 
-    /** This is a delegate that the embedder needs to implement. */
-    public interface Delegate {
+    /**
+     * This is a delegate that the sign-in activity needs to implement.
+     *
+     * <p>TODO(https://crbug.com/469772349): Remove this interface once the migration is completed,
+     * as this delegate is necessary only when the sign-in activity is used.
+     */
+    @Deprecated
+    public interface ActivityDelegate {
         /** Called when the user starts the Google Play Services "add account" flow. */
         void addAccount();
-
-        /** Called when the whole flow finishes. */
-        void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
 
         /**
          * Returns whether the history sync modal dialog is shown in full screen mode instead of
@@ -96,44 +113,168 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         void setStatusBarColor(int statusBarColor);
     }
 
+    /** This is a delegate that the sign-in flow embedder needs to implement. */
+    public interface Delegate {
+
+        /** Called when the whole flow finishes. */
+        void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
+    }
+
     /**
-     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the
-     * sign-in bottom sheet.
+     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} for the sign-in
+     * bottom sheet based flow, hosted by the access point's activity.
+     *
+     * <p>This method **Does Not** start the sign-in UI flow, {@link #startSigninFlow} must be
+     * called to do so.
+     *
+     * <p>This 2-step start design is due to the need of registering the add account result callback
+     * early, even without the need ot starting a sign-in flow, to catch any in-flight add account
+     * result received after the base activity is recreated (e.g Chrome killed due to memory
+     * pressure).
      *
      * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
      * @param activity The {@link Activity} that hosts the sign-in &opt-in flow.
+     * @param activityResultTracker the {@link ActivityResultTracker} for launching new activities
+     *     and watching for their result.
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param profileSupplier The supplier of the current profile.
      * @param bottomSheetController The controller of the sign-in bottomsheet.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
      * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
-     * @param config The configuration for the bottom sheet.
      * @param signinAccessPoint The entry point for the sign-in.
      */
+    public static BottomSheetSigninAndHistorySyncCoordinator createAndObserveAddAccountResult(
+            WindowAndroid windowAndroid,
+            Activity activity,
+            ActivityResultTracker activityResultTracker,
+            BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            OneshotSupplier<ProfileProvider> profileSupplier,
+            BottomSheetController bottomSheetController,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager,
+            @SigninAccessPoint int signinAccessPoint) {
+        assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+        return new BottomSheetSigninAndHistorySyncCoordinator(
+                windowAndroid,
+                activity,
+                activityResultTracker,
+                delegate,
+                deviceLockActivityLauncher,
+                profileSupplier,
+                bottomSheetController,
+                modalDialogManagerSupplier,
+                snackbarManager,
+                signinAccessPoint);
+    }
+
+    private BottomSheetSigninAndHistorySyncCoordinator(
+            WindowAndroid windowAndroid,
+            Activity activity,
+            ActivityResultTracker activityResultTracker,
+            Delegate delegate,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            OneshotSupplier<ProfileProvider> profileSupplier,
+            BottomSheetController bottomSheetController,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager,
+            @SigninAccessPoint int signinAccessPoint) {
+        mWindowAndroid = windowAndroid;
+        mActivity = activity;
+        mActivityResultTracker = activityResultTracker;
+        mDelegate = delegate;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mProfileSupplier = profileSupplier;
+        mBottomSheetController = bottomSheetController;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
+        mSigninAccessPoint = signinAccessPoint;
+        mActivityDelegate = null;
+
+        activityResultTracker.register(
+                ADD_ACCOUNT_ACTIVITY_KEY,
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        onAddAccountResult(result.getResultCode(), result.getData());
+                    }
+                });
+
+        // TODO(crbug.com/41493768): Implement the loading state UI.
+    }
+
+    /**
+     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the
+     * sign-in bottom sheet based flow, hosted by the (@link SigninAndHistorySyncActivity).
+     *
+     * <p>This method **Does** start the sign-in UI flow.
+     *
+     * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
+     * @param activity The {@link Activity} that hosts the sign-in &opt-in flow.
+     * @param activityResultTracker the {@link ActivityResultTracker} for launching new activities
+     *     and watching for their result.
+     * @param activityDelegate The delegate for this coordinator implemented for the activity-based
+     *     sign-in flow.
+     * @param delegate The delegate for this coordinator.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param profileSupplier The supplier of the current profile.
+     * @param bottomSheetController The controller of the sign-in bottomsheet.
+     * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
+     * @param config The configuration for the bottom sheet.
+     * @param signinAccessPoint The entry point for the sign-in.
+     * @deprecated Use the other constructor instead. This will be removed in
+     *     https://crbug.com/469772349.
+     */
+    @Deprecated
     public BottomSheetSigninAndHistorySyncCoordinator(
             WindowAndroid windowAndroid,
             Activity activity,
+            ActivityResultTracker activityResultTracker,
+            ActivityDelegate activityDelegate,
             Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            OneshotSupplier<Profile> profileSupplier,
+            OneshotSupplier<ProfileProvider> profileSupplier,
             BottomSheetController bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable SnackbarManager snackbarManager,
             BottomSheetSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
+        mActivityResultTracker = activityResultTracker;
+        mActivityDelegate = activityDelegate;
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mProfileSupplier = profileSupplier;
-        mProfileSupplier.onAvailable(this::onProfileAvailable);
         mBottomSheetController = bottomSheetController;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mSnackbarManager = snackbarManager;
-        mConfig = config;
         mSigninAccessPoint = signinAccessPoint;
+        mConfig = config;
+        mSnackbarManager = null;
+        mProfileSupplier.onAvailable(this::onProfileAvailable);
+
         // TODO(crbug.com/41493768): Implement the loading state UI.
+    }
+
+    /**
+     * Starts the sign-in and history sync UI flow.
+     *
+     * <p>This method should be called when the user takes an action to begin the sign-in flow
+     * (e.g., tapping a "sign-in" button). While the coordinator constructor should be called early
+     * (e.g. as soon as the access point's UI is ready) to handle prerequisites like registering the
+     * "add account" activity callback or initialize the coordinator internals, this method is what
+     * launches the flow with the given configuration.
+     *
+     * @param config The configuration for the bottom sheet.
+     */
+    @Initializer
+    public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
+        // TODO(https://crbug.com/437039516): trigger error UI when sign-in can't be
+        // launched from the sign-in coordinator.
+        assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+
+        mConfig = config;
+        mProfileSupplier.onAvailable(this::onProfileAvailable);
     }
 
     /**
@@ -184,8 +325,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     @Override
     public void onConfigurationChange() {
         if (mHistorySyncCoordinator != null) {
-            Profile profile = mProfileSupplier.get();
-            assert profile != null;
+            assert mProfile != null;
             mHistorySyncCoordinator.maybeRecreateView();
             showDialogContentView();
         }
@@ -200,7 +340,29 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void addAccount() {
-        mDelegate.addAccount();
+        if (mActivityDelegate == null) {
+            assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+            SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
+            AccountManagerFacadeProvider.getInstance()
+                    .createAddAccountIntent(
+                            null,
+                            intent -> {
+                                if (intent == null) {
+                                    // AccountManagerFacade couldn't create the intent, use
+                                    // SigninUtils to open settings instead.
+                                    SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
+                                    SigninUtils.openSettingsForAllAccounts(mActivity);
+                                    return;
+                                }
+                                SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
+                                // TODO(https://crbug.com/437039516): Save the config in instance
+                                // state via ActivityResultTracker.
+                                mActivityResultTracker.startActivity(
+                                        ADD_ACCOUNT_ACTIVITY_KEY, intent);
+                            });
+        } else {
+            mActivityDelegate.addAccount();
+        }
     }
 
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
@@ -208,9 +370,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     public void onSignInComplete() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
-            Profile profile = mProfileSupplier.get();
             SyncService syncService =
-                    assumeNonNull(SyncServiceFactory.getForProfile(assertNonNull(profile)));
+                    assumeNonNull(SyncServiceFactory.getForProfile(assertNonNull(mProfile)));
             syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
             syncService.setSelectedType(UserSelectableType.READING_LIST, true);
         }
@@ -246,13 +407,16 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(@ColorInt int color) {
+        if (mActivityDelegate == null) {
+            return;
+        }
         // INVALID_COLOR is set at the start and end of the bottom sheet scrim fade out animation.
         // After the scrim fades out, the status bar background needs to be reset to match the
         // history sync full screen dialog if it's appearing next. In case the history sync dialog
         // is skipped, the activity will finish and the status bar color change is not shown to the
         // user.
         if (color != ScrimProperties.INVALID_COLOR) {
-            mDelegate.setStatusBarColor(color);
+            mActivityDelegate.setStatusBarColor(color);
         } else if (mDialogModel != null && mScrimStatusBarColor != ScrimProperties.INVALID_COLOR) {
             updateStatusBarColorForHistorySync();
         }
@@ -282,18 +446,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         }
     }
 
-    private void onProfileAvailable(Profile profile) {
-        if (profile.isOffTheRecord()) {
-            throw new IllegalStateException(
-                    "Sign-in & history opt-in flow is using incognito profile");
-        }
-
+    private void onProfileAvailable(ProfileProvider profileProvider) {
+        mProfile = assumeNonNull(profileProvider.getOriginalProfile());
         AccountManagerFacadeProvider.getInstance()
                 .getAccounts()
                 .then(
                         accounts -> {
                             finishLoadingAndSelectSigninFlow(accounts);
-                            mFlowInitialized = true;
                         });
     }
 
@@ -302,8 +461,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         // become available to avoid showing additional loading UI after history
         // opt-in screen is shown.
         IdentityManager identityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(assertNonNull(mProfileSupplier.get()));
+                IdentityServicesProvider.get().getIdentityManager(assertNonNull(mProfile));
         assumeNonNull(identityManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             maybeShowHistoryOptInDialog();
@@ -330,8 +488,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     private void showSigninBottomSheet() {
         SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(assertNonNull(mProfileSupplier.get()));
+                IdentityServicesProvider.get().getSigninManager(assertNonNull(mProfile));
         assumeNonNull(signinManager);
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
         switch (mConfig.withAccountSigninMode) {
@@ -360,11 +517,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     }
 
     private void maybeShowHistoryOptInDialog() {
-        Profile profile = mProfileSupplier.get();
-        assert profile != null;
+        assert mProfile != null;
         if (!SigninAndHistorySyncCoordinator.shouldShowHistorySync(
-                profile, mConfig.historyOptInMode)) {
-            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+                mProfile, mConfig.historyOptInMode)) {
+            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
             onFlowComplete(new SigninAndHistorySyncCoordinator.Result(mDidShowSigninStep, false));
@@ -424,7 +580,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                 })
                         .build();
 
-        createHistorySyncCoordinator(profile);
+        createHistorySyncCoordinator(mProfile);
         showDialogContentView();
 
         // Updating the status bar color for the history sync view in case animations are disabled
@@ -472,12 +628,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (mConfig.shouldShowSigninSnackbar) {
             SigninSnackbarController.showUndoSnackbarIfNeeded(
                     mActivity,
-                    assertNonNull(mProfileSupplier.get()),
+                    assertNonNull(mProfile),
                     mSigninAccessPoint,
                     mSnackbarManager,
                     this,
                     result);
         }
+        // TODO(https://crbug.com/437039516): Dismiss history sync dialog.
         mDelegate.onFlowComplete(result);
     }
 
@@ -486,8 +643,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     }
 
     private void updateStatusBarColorForHistorySync() {
-        if (mDelegate.isHistorySyncShownFullScreen()) {
-            mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
+        if (mActivityDelegate == null) {
+            return;
+        }
+        if (mActivityDelegate.isHistorySyncShownFullScreen()) {
+            mActivityDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
         }
     }
 }
