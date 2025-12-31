@@ -27,6 +27,17 @@ inline constexpr char kAddressSignInPromoShownCountPerProfile[] =
 inline constexpr char kBookmarkSignInPromoShownCountPerProfile[] =
     "signin.BookmarkSignInPromoShownCount";
 
+// A timestamp of the last time the history sync promo was dismissed.
+inline constexpr char
+    kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile[] =
+        "signin.HistoryPageHistorySyncPromoLastDismissedTimestampPerProfile";
+
+// A boolean pref to store whether the history sync promo was shown one time
+// after dismissal.
+inline constexpr char
+    kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile[] =
+        "signin.HistoryPageHistorySyncPromoShownAfterDismissalPerProfile";
+
 // Integer pref to store the number of times the history sync promo has been
 // shown on the history page per profile while the user is signed out.
 inline constexpr char kHistoryPageHistorySyncPromoShownCountPerProfile[] =
