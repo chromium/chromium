@@ -1,0 +1,5 @@
+error: unsupported unique_ptr target type
+ --> tests/ui/explicit_impl_of_bad_unique_ptr.rs:3:10
+  |
+3 |     impl UniquePtr<Vec<u8>> {}
+  |          ^^^^^^^^^^^^^^^^^^

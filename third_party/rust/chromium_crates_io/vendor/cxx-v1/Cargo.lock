@@ -69,7 +69,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.191"
+version = "1.0.192"
 dependencies = [
  "cc",
  "cxx-build",
@@ -92,9 +92,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.191"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b78549cfae183ba0391f186544fdf1f5d96e9d3cf2683ee1449a3aea066e4e32"
+checksum = "af9efde466c5d532d57efd92f861da3bdb7f61e369128ce8b4c3fe0c9de4fa4d"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -107,9 +107,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-gen"
-version = "0.7.191"
+version = "0.7.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17418c5875cdedaa3d1cfd18736f27356c73d729928da59e956973fb15d91359"
+checksum = "ee08d1131e8f050a1d1acbb7c699e5c8d29c325dffc382331c280d99f98c2618"
 dependencies = [
  "codespan-reporting",
  "indexmap",
@@ -126,9 +126,9 @@ checksum = "2a0a413bcefc6b37668d9eae784f5fe11232343e11101f1d1834163a509610e7"
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.191"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5f593aa804e4cd4fda75ca4c56820c15a27ac667f02bffe626c2ed16e2d747d"
+checksum = "3efb93799095bccd4f763ca07997dc39a69e5e61ab52d2c407d4988d21ce144d"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -140,15 +140,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.191"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5e77806f6ca008fe3cb35ac747db8f5cf30c038b81ae97077a6aecd7ca01a31"
+checksum = "3092010228026e143b32a4463ed9fa8f86dca266af4bf5f3b2a26e113dbe4e45"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.191"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e751ebe2dee4a88a26df4f11c2baf6aa1e7f652af9a3bef5b4db5ae33397577d"
+checksum = "31d72ebfcd351ae404fb00ff378dfc9571827a00722c9e735c9181aec320ba0a"
 dependencies = [
  "indexmap",
  "proc-macro2",

@@ -1670,8 +1670,7 @@ fn expand_rust_box(
         .explicit_impl
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
-    let prevent_unwind_drop_label =
-        format!("::{} as Drop>::drop", generics::local_type(key.inner).rust);
+    let prevent_unwind_type_label = generics::format_for_prevent_unwind_label(key.inner);
 
     quote_spanned!(end_span=> {
         #cfg
@@ -1699,7 +1698,7 @@ fn expand_rust_box(
         #[doc(hidden)]
         #[unsafe(export_name = #link_drop)]
         unsafe extern "C" fn __drop #impl_generics(this: *mut ::cxx::alloc::boxed::Box<#inner_with_generics>) {
-            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
+            let __fn = ::cxx::core::concat!("<", #prevent_unwind_type_label, " as Drop>::drop");
             ::cxx::private::prevent_unwind(__fn, || unsafe { ::cxx::core::ptr::drop_in_place(this) });
         }
     })
@@ -1731,8 +1730,7 @@ fn expand_rust_vec(
         .explicit_impl
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
-    let prevent_unwind_drop_label =
-        format!("::{} as Drop>::drop", generics::local_type(key.inner).rust);
+    let prevent_unwind_type_label = generics::format_for_prevent_unwind_label(key.inner);
 
     quote_spanned!(end_span=> {
         #cfg
@@ -1754,7 +1752,7 @@ fn expand_rust_vec(
         #[doc(hidden)]
         #[unsafe(export_name = #link_drop)]
         unsafe extern "C" fn __drop #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>) {
-            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
+            let __fn = ::cxx::core::concat!("<", #prevent_unwind_type_label, " as Drop>::drop");
             ::cxx::private::prevent_unwind(
                 __fn,
                 || unsafe { ::cxx::core::ptr::drop_in_place(this) },
@@ -1809,7 +1807,7 @@ fn expand_rust_vec(
         #[doc(hidden)]
         #[unsafe(export_name = #link_truncate)]
         unsafe extern "C" fn __truncate #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>, len: ::cxx::core::primitive::usize) {
-            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
+            let __fn = ::cxx::core::concat!("<", #prevent_unwind_type_label, " as Drop>::drop");
             ::cxx::private::prevent_unwind(
                 __fn,
                 || unsafe { (*this).truncate(len) },

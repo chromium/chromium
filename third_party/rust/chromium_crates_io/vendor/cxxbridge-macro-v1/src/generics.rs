@@ -1,9 +1,9 @@
 use crate::expand::display_namespaced;
 use crate::syntax::instantiate::NamedImplKey;
 use crate::syntax::types::ConditionalImpl;
-use crate::syntax::{Lifetimes, NamedType, Type, Types};
+use crate::syntax::{Lifetimes, Type, Types};
 use proc_macro2::TokenStream;
-use quote::ToTokens;
+use quote::{quote, ToTokens};
 use syn::{Lifetime, Token};
 
 pub(crate) struct ResolvedGenericType<'a> {
@@ -26,7 +26,7 @@ pub(crate) fn split_for_impl<'a>(
     let impl_generics = if let Some(explicit_impl) = conditional_impl.explicit_impl {
         &explicit_impl.impl_generics
     } else {
-        types.resolve(local_type(key.inner)).generics
+        get_impl_generics(key.inner, types)
     };
     let ty_generics = ResolvedGenericType {
         ty: key.inner,
@@ -61,14 +61,43 @@ impl<'a> ToTokens for ResolvedGenericType<'a> {
                     }
                 }
             }
+            Type::RustBox(ty1) => {
+                let inner = ResolvedGenericType {
+                    ty: &ty1.inner,
+                    explicit_impl: self.explicit_impl,
+                    types: self.types,
+                };
+                tokens.extend(quote! {
+                    ::cxx::alloc::boxed::Box<#inner>
+                });
+            }
             _ => unreachable!("syntax/check.rs should reject other types"),
         }
     }
 }
 
-pub(crate) fn local_type(ty: &Type) -> &NamedType {
+fn get_impl_generics<'a>(ty: &Type, types: &Types<'a>) -> &'a Lifetimes {
     match ty {
-        Type::Ident(named_type) => named_type,
+        Type::Ident(named_type) => types.resolve(named_type).generics,
+        Type::RustBox(ty1) => get_impl_generics(&ty1.inner, types),
+        _ => unreachable!("syntax/check.rs should reject other types"),
+    }
+}
+
+pub(crate) fn format_for_prevent_unwind_label(ty: &Type) -> TokenStream {
+    match ty {
+        Type::Ident(named_type) => {
+            let rust_name = named_type.rust.to_string();
+            quote! {
+                ::cxx::core::concat!(::cxx::core::module_path!(), "::", #rust_name)
+            }
+        }
+        Type::RustBox(ty1) => {
+            let inner = format_for_prevent_unwind_label(&ty1.inner);
+            quote! {
+                ::cxx::core::concat!("Box<", #inner, ">")
+            }
+        }
         _ => unreachable!("syntax/check.rs should reject other types"),
     }
 }
@@ -76,6 +105,10 @@ pub(crate) fn local_type(ty: &Type) -> &NamedType {
 pub(crate) fn concise_rust_name(ty: &Type) -> String {
     match ty {
         Type::Ident(named_type) => named_type.rust.to_string(),
+        Type::RustBox(ty1) => {
+            let inner = concise_rust_name(&ty1.inner);
+            format!("Box<{inner}>")
+        }
         _ => unreachable!("syntax/check.rs should reject other types"),
     }
 }
@@ -85,6 +118,10 @@ pub(crate) fn concise_cxx_name(ty: &Type, types: &Types) -> String {
         Type::Ident(named_type) => {
             let res = types.resolve(&named_type.rust);
             display_namespaced(res.name).to_string()
+        }
+        Type::RustBox(ty1) => {
+            let inner = concise_cxx_name(&ty1.inner, types);
+            format!("rust::Box<{inner}>")
         }
         _ => unreachable!("syntax/check.rs should reject other types"),
     }

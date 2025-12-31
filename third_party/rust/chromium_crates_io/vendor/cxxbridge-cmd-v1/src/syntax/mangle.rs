@@ -134,6 +134,7 @@ pub(crate) fn typename(t: &Type, res: &UnorderedMap<&Ident, Resolution>) -> Opti
     match t {
         Type::Ident(named_type) => res.get(&named_type.rust).map(|res| res.name.to_symbol()),
         Type::CxxVector(ty1) => typename(&ty1.inner, res).map(|s| join!("std", "vector", s)),
+        Type::RustBox(ty1) => typename(&ty1.inner, res).map(|s| join!("box", s)),
         _ => None,
     }
 }

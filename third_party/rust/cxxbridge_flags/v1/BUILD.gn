@@ -26,7 +26,7 @@ cargo_crate("buildrs_support") {
   cargo_pkg_description =
       "Compiler configuration of the `cxx` crate (implementation detail)"
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.191"
+  cargo_pkg_version = "1.0.192"
 
   allow_unsafe = false
 

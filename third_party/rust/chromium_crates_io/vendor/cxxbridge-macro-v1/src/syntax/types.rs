@@ -338,6 +338,8 @@ impl<'a> Types<'a> {
                     || self.aliases.contains_key(ident)
             }
             Type::CxxVector(_) => false,
+            // No other type can appear as the inner type of CxxVector,
+            // UniquePtr, or SharedPtr.
             _ => unreachable!("syntax/check.rs should reject other types"),
         }
     }
@@ -371,10 +373,11 @@ impl<'a> Types<'a> {
             Type::Ident(ident) => {
                 Atom::from(&ident.rust).is_none() && !self.aliases.contains_key(&ident.rust)
             }
-            Type::RustBox(_) => {
-                // TODO: We should treat Box<LocalType> as local.
-                // https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.fundamental
-                false
+            Type::RustBox(ty1) => {
+                // https://doc.rust-lang.org/reference/glossary.html#fundamental-type-constructors
+                // "Any time a type T is considered local [...] Box<T> [... is]
+                // also considered local."
+                self.is_local(&ty1.inner)
             }
             Type::Array(_)
             | Type::CxxVector(_)
