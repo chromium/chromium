@@ -133,16 +133,16 @@ void PrintDebugInstructions(const base::FilePath& command_file_path) {
 To proceed, you should create a named pipe:
   $ mkfifo %1$s
 and then write commands into it:
-  $ echo run     >%1$s  # unpauses execution
-  $ echo next 2  >%1$s  # executes the next 2 actions
-  $ echo next -1 >%1$s  # executes until the last action
-  $ echo skip -3 >%1$s  # jumps back 3 actions
-  $ echo skip 4  >%1$s  # skips the next 4 actions
-  $ echo where   >%1$s  # prints the current position
-  $ echo show -1 >%1$s  # prints last 1 actions
-  $ echo show 1  >%1$s  # prints next 1 actions
-  $ echo failure >%1$s  # executes until failure
-  $ echo help    >%1$s  # prints this text
+  $ echo run               >%1$s  # unpauses execution
+  $ echo run until failure >%1$s  # executes until failure
+  $ echo next 2            >%1$s  # executes the next 2 actions
+  $ echo next -1           >%1$s  # executes until the last action
+  $ echo skip -3           >%1$s  # jumps back 3 actions
+  $ echo skip 4            >%1$s  # skips the next 4 actions
+  $ echo where             >%1$s  # prints the current position
+  $ echo show -1           >%1$s  # prints last 1 actions
+  $ echo show 1            >%1$s  # prints next 1 actions
+  $ echo help              >%1$s  # prints this text
 )";
   VLOG(1) << base::StringPrintf(msg, command_file_path.AsUTF8Unsafe().c_str());
 }
@@ -209,7 +209,9 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         return value;
       };
 
-      if (command.starts_with("run")) {
+      if (command.starts_with("run until failure")) {
+        commands.emplace_back(ExecutionCommand::Type::kRunUntilFailure);
+      } else if (command.starts_with("run")) {
         commands.emplace_back(ExecutionCommand::Type::kRunWithAbsoluteLimit,
                               std::numeric_limits<int>::max());
       } else if (command.starts_with("next")) {
@@ -223,11 +225,6 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
                               GetParamOr(1));
       } else if (command.starts_with("where")) {
         commands.emplace_back(ExecutionCommand::Type::kWhereAmI);
-      } else if (command.starts_with("failure")) {
-        commands.emplace_back(ExecutionCommand::Type::kRunUntilFailure);
-        // Same commands as for "run":
-        commands.emplace_back(ExecutionCommand::Type::kRunWithAbsoluteLimit,
-                              std::numeric_limits<int>::max());
       } else if (command.starts_with("help")) {
         PrintDebugInstructions(command_file_path);
       }
@@ -268,6 +265,12 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
           }
           break;
         }
+        case ExecutionCommand::Type::kRunUntilFailure: {
+          VLOG(1) << "Will stop when a failure is found.";
+          execution_state.limit = command.param;
+          execution_state.pause_on_failure = true;
+          break;
+        }
         case ExecutionCommand::Type::kSkipAction: {
           execution_state.index += command.param;
           execution_state.index = std::min(std::max(execution_state.index, 0),
@@ -289,11 +292,6 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
           VLOG(1) << "Next action is at position " << execution_state.index
                   << ", limit (excl) is at " << execution_state.limit
                   << ", last (excl) is at " << execution_state.length;
-          break;
-        }
-        case ExecutionCommand::Type::kRunUntilFailure: {
-          VLOG(1) << "Will stop when a failure is found.";
-          execution_state.pause_on_failure = true;
           break;
         }
       }
