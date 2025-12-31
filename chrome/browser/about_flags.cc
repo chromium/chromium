@@ -4137,16 +4137,6 @@ const FeatureEntry::FeatureVariation kSkiaGraphiteVariations[] = {
      std::size(kSkiaGraphite_DebugLabelsEnabled), nullptr},
 };
 
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
-    {"TranslationAPIAcceptLanguagesCheck", "false"},
-    {"TranslationAPILimitLanguagePackCount", "false"}};
-
-const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
-    {"without language pack limit", kTranslationAPI_SkipLanguagePackLimit,
-     std::size(kTranslationAPI_SkipLanguagePackLimit), nullptr}};
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
     {"sensitive_content_use_pwm_heuristics", "true"}};
@@ -11375,12 +11365,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)},
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-    {"translation-api", flag_descriptions::kTranslationAPIName,
-     flag_descriptions::kTranslationAPIDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kTranslationAPI,
-                                    kTranslationAPIVariations,
-                                    "TranslationAPI")},
-
     {"translation-api-streaming-by-sentence",
      flag_descriptions::kTranslationAPIStreamingBySentenceName,
      flag_descriptions::kTranslationAPIStreamingBySentenceDescription,

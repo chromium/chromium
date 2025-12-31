@@ -4238,11 +4238,6 @@ inline constexpr char kTouchTextEditingRedesignName[] =
 inline constexpr char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";
 
-inline constexpr char kTranslationAPIName[] = "Experimental translation API";
-inline constexpr char kTranslationAPIDescription[] =
-    "Enables the on-device language translation API. "
-    "See https://github.com/WICG/translation-api/blob/main/README.md";
-
 inline constexpr char kTranslationAPIStreamingBySentenceName[] =
     "Translation API streaming split by sentence";
 inline constexpr char kTranslationAPIStreamingBySentenceDescription[] =
