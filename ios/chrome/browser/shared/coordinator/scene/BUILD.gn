@@ -109,6 +109,7 @@ source_set("scene") {
     "//ios/chrome/browser/app_store_rating/model",
     "//ios/chrome/browser/app_store_rating/model:features",
     "//ios/chrome/browser/appearance/ui_bundled",
+    "//ios/chrome/browser/assistant/coordinator",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/signin/fullscreen_promo/model",

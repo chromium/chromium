@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/app_store_rating/model/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -536,6 +537,10 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 @property(nonatomic, strong)
     YoutubeIncognitoCoordinator* youtubeIncognitoCoordinator;
+
+// The coordinator for the Assistant Sheet.
+@property(nonatomic, strong)
+    AssistantSheetCoordinator* assistantSheetCoordinator;
 
 // The profile of the current scene.
 @property(nonatomic, readonly) ProfileIOS* profile;
@@ -1502,6 +1507,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _mainCoordinator = nil;
 
   [self stopAccountMenu];
+
+  [self.assistantSheetCoordinator stop];
+  self.assistantSheetCoordinator = nil;
 
   [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
 
@@ -2583,7 +2591,14 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showAssistant {
-  // TODO(crbug.com/472279443): Implement this.
+  if (!IsAssistantSheetEnabled()) {
+    return;
+  }
+  self.assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
+      initWithBaseViewController:self.currentInterface.viewController
+                         browser:self.currentInterface.browser];
+  self.assistantSheetCoordinator.mode = AssistantSheetModeGemini;
+  [self.assistantSheetCoordinator start];
 }
 
 - (void)displaySafariDataImportFromEntryPoint:
@@ -4106,6 +4121,10 @@ using UserFeedbackDataCallback =
   // If History is active, stop it.
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
+
+  // If Assistant Sheet is active, stop it.
+  [self.assistantSheetCoordinator stop];
+  self.assistantSheetCoordinator = nil;
 
   // If the Safari data import workflow is active, stop it.
   [self safariImportWorkflowDidEndForCoordinator:_safariImportCoordinator];
