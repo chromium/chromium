@@ -1363,6 +1363,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.TimeToInitDiskCache" units="ms"
+    expires_after="2026-12-18">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <summary>
+    The time taken to initialize the disk cache at
+    disk_cache::CreateCacheBackend level.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}"
     units="ms" expires_after="2026-05-24">
   <owner>bashi@chromium.org</owner>

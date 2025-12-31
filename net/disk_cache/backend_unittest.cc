@@ -5936,3 +5936,17 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<BackendToTest>& info) {
       return DiskCacheTestWithCache::BackendToTestName(info.param);
     });
+
+#if !BUILDFLAG(IS_FUCHSIA)
+TEST_F(DiskCacheTest, TimeToInitDiskCache) {
+  base::HistogramTester histogram_tester;
+  TestBackendResultCompletionCallback cb;
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, net::CACHE_BACKEND_DEFAULT,
+      /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset, nullptr, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_THAT(rv.net_error, IsOk());
+  histogram_tester.ExpectTotalCount("HttpCache.TimeToInitDiskCache", 1);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
