@@ -135,6 +135,7 @@ To proceed, you should create a named pipe:
 and then write commands into it:
   $ echo run               >%1$s  # unpauses execution
   $ echo run until failure >%1$s  # executes until failure
+  $ echo run until foo     >%1$s  # executes until the next action is of type foo (e.g., "autofill")
   $ echo next 2            >%1$s  # executes the next 2 actions
   $ echo next -1           >%1$s  # executes until the last action
   $ echo skip -3           >%1$s  # jumps back 3 actions
@@ -170,22 +171,26 @@ std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
 struct ExecutionCommand {
   enum class Type {
     // Resumes execution and stops when the next action's index is equal to or
-    // greater than `param`.
+    // greater than `param_int`.
     kRunWithAbsoluteLimit,
-    // Resumes execution and stops after `param` actions.
+    // Resumes execution and stops after `param_int` actions.
     kRunWithRelativeLimit,
+    // Resumes execution and stops when the next action's type is
+    // `param_string`.
+    kRunUntilAction,
     // Resumes execution and stops when a failure happens.
     kRunUntilFailure,
-    // Jumps `param` actions forward or backward.
+    // Jumps `param_int` actions forward or backward.
     kSkipAction,
-    // Prints the `param` previous (if < 0) or upcoming (if > 0) actions.
+    // Prints the `param_int` previous (if < 0) or upcoming (if > 0) actions.
     kShowAction,
     // Prints the current execution position.
     kWhereAmI,
   };
 
   const Type type = Type::kRunWithAbsoluteLimit;
-  const int param = std::numeric_limits<int>::max();
+  const int param_int = std::numeric_limits<int>::max();
+  const std::string param_string;
 };
 
 // Blockingly reads the content of `command_file_path`, parses it into
@@ -211,6 +216,13 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
 
       if (command.starts_with("run until failure")) {
         commands.emplace_back(ExecutionCommand::Type::kRunUntilFailure);
+      } else if (command.starts_with("run until ")) {
+        static constexpr size_t kOffset =
+            std::string_view("run until ").length();
+        const std::string_view param =
+            base::TrimWhitespaceASCII(command.substr(kOffset), base::TRIM_ALL);
+        commands.emplace_back(ExecutionCommand::Type::kRunUntilAction, 0,
+                              std::string(param));
       } else if (command.starts_with("run")) {
         commands.emplace_back(ExecutionCommand::Type::kRunWithAbsoluteLimit,
                               std::numeric_limits<int>::max());
@@ -254,32 +266,54 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
     for (ExecutionCommand command : ReadExecutionCommands(command_file_path)) {
       switch (command.type) {
         case ExecutionCommand::Type::kRunWithAbsoluteLimit: {
-          execution_state.limit = command.param;
+          execution_state.limit = command.param_int;
           break;
         }
         case ExecutionCommand::Type::kRunWithRelativeLimit: {
-          if (command.param >= 0) {
-            execution_state.limit += command.param;
+          if (command.param_int >= 0) {
+            execution_state.limit += command.param_int;
           } else {
-            execution_state.limit = execution_state.length + command.param;
+            execution_state.limit = execution_state.length + command.param_int;
           }
+          break;
+        }
+        case ExecutionCommand::Type::kRunUntilAction: {
+          int offset_of_action = execution_state.index;
+          while (offset_of_action < execution_state.length) {
+            const base::Value::Dict* dict =
+                action_list[offset_of_action].GetIfDict();
+            if (!dict) {
+              continue;
+            }
+            const std::string* type = dict->FindString("type");
+            if (!type) {
+              continue;
+            }
+            if (*type == command.param_string) {
+              break;
+            }
+            ++offset_of_action;
+          }
+          execution_state.limit += offset_of_action;
           break;
         }
         case ExecutionCommand::Type::kRunUntilFailure: {
           VLOG(1) << "Will stop when a failure is found.";
-          execution_state.limit = command.param;
+          execution_state.limit = command.param_int;
           execution_state.pause_on_failure = true;
           break;
         }
         case ExecutionCommand::Type::kSkipAction: {
-          execution_state.index += command.param;
+          execution_state.index += command.param_int;
           execution_state.index = std::min(std::max(execution_state.index, 0),
                                            execution_state.length - 1);
           break;
         }
         case ExecutionCommand::Type::kShowAction: {
-          int min_index = execution_state.index + std::min(command.param, 0);
-          int max_index = execution_state.index + std::max(command.param, 0);
+          int min_index =
+              execution_state.index + std::min(command.param_int, 0);
+          int max_index =
+              execution_state.index + std::max(command.param_int, 0);
           min_index = std::max(min_index, 0);
           max_index = std::min(max_index, execution_state.length);
           for (int i = min_index; i < max_index; ++i) {
