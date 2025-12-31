@@ -262,7 +262,7 @@ void TabBasedIPHBrowserAgent::PageLoaded(
     ResetFeatureStatesAndRemoveIPHViews();
     return;
   }
-  if (multi_gesture_refresh_) {
+  if (multi_gesture_refresh_ && !is_bvc_covered_) {
     [HelpHandler()
         presentInProductHelpWithType:InProductHelpType::kPullToRefresh];
     multi_gesture_refresh_ = false;
@@ -331,13 +331,19 @@ id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
 void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
     BrowserViewVisibilityState current_state,
     BrowserViewVisibilityState previous_state) {
+  is_bvc_covered_ = current_state != BrowserViewVisibilityState::kVisible;
   if (current_state == BrowserViewVisibilityState::kVisible) {
     web::WebState* current_web_state = web_state_list_->GetActiveWebState();
-    if (tapped_adjacent_tab_ && current_web_state &&
-        !current_web_state->IsLoading()) {
-      [HelpHandler()
-          presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
-      tapped_adjacent_tab_ = false;
+    if (current_web_state && !current_web_state->IsLoading()) {
+      if (multi_gesture_refresh_) {
+        [HelpHandler()
+            presentInProductHelpWithType:InProductHelpType::kPullToRefresh];
+        multi_gesture_refresh_ = false;
+      } else if (tapped_adjacent_tab_) {
+        [HelpHandler()
+            presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
+        tapped_adjacent_tab_ = false;
+      }
     }
   } else if (previous_state == BrowserViewVisibilityState::kVisible) {
     ResetFeatureStatesAndRemoveIPHViews();
