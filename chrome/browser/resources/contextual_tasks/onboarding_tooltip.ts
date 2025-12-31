@@ -69,6 +69,33 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     }
   }
 
+  updatePosition() {
+    if (this.tooltip_ && this.target) {
+      const targetRect = this.target.getBoundingClientRect();
+
+      // Margin to the right of the window.
+      const MARGIN_RIGHT = 24;
+      const availableWidth =
+          window.innerWidth - targetRect.left - MARGIN_RIGHT;
+      this.tooltip_.style.setProperty(
+          '--onboarding-tooltip-width', `${availableWidth}px`);
+
+      const parentRect = this.tooltip_.offsetParent?.getBoundingClientRect();
+      const tooltipRect = this.tooltip_.getBoundingClientRect();
+
+      if (parentRect) {
+        const left = targetRect.left - parentRect.left;
+        // Position top: targetTop - tooltipHeight.
+        // We use offset=0 as configured in HTML.
+        const top = (targetRect.top - parentRect.top) - tooltipRect.height;
+
+        this.tooltip_.style.left = `${left}px`;
+        this.tooltip_.style.top = `${top}px`;
+        this.tooltip_.style.right = 'auto';
+      }
+    }
+  }
+
   protected onTooltipClose_(e: Event) {
     e.stopPropagation();
     BrowserProxyImpl.getInstance().handler.onboardingTooltipDismissed();

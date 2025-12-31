@@ -88,6 +88,9 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   private isOnboardingTooltipDismissCountBelowCap_: boolean =
       loadTimeData.getBoolean('isOnboardingTooltipDismissCountBelowCap');
   private userDismissedTooltip_: boolean = false;
+  // The resize observer is needed for horizontal changes; the
+  // composebox-resize event only emits height changes
+  private resizeObserver_: ResizeObserver|null = null;
 
   constructor() {
     super();
@@ -127,6 +130,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
             if (e.detail.carouselHeight !== undefined) {
               composebox.style.setProperty(
                   '--carousel-height', `${e.detail.carouselHeight}px`);
+              this.updateTooltipVisibility_();
             }
             if (e.detail.height !== undefined) {
               this.composeboxHeight_ = e.detail.height;
@@ -153,24 +157,29 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       return;
     }
 
-    if (!tooltip.target) {
-      tooltip.target = this.$.composebox;
-    }
 
     if (this.onboardingTooltipIsVisible_ &&
         !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
       tooltip.hide();
       this.onboardingTooltipIsVisible_ = false;
+      this.stopObservingResize_();
     } else if (this.$.composebox.getHasAutomaticActiveTabChipToken()) {
+      const target = this.$.composebox.getAutomaticActiveTabChipElement();
+      if (target) {
+        tooltip.target = target;
+      }
+
       const shouldShow = this.shouldShowOnboardingTooltip();
       if (shouldShow) {
         tooltip.show();
+        this.startObservingResize_(target);
         this.numberOfTimesTooltipShown_++;
         this.onboardingTooltipIsVisible_ = true;
       }
     }
     tooltip.shouldShow = this.onboardingTooltipIsVisible_;
   }
+
   private shouldShowOnboardingTooltip(): boolean {
     return this.showOnboardingTooltip_ &&
         this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_ &&
@@ -181,10 +190,12 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected onTooltipDismissed_() {
     this.userDismissedTooltip_ = true;
     this.onboardingTooltipIsVisible_ = false;
+    this.stopObservingResize_();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.stopObservingResize_();
     this.eventTracker_.removeAll();
     this.searchboxListenerIds_.forEach(
         id => assert(this.searchboxCallbackRouter_.removeListener(id)));
@@ -216,6 +227,29 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
      */
     composebox.animationState = GlowAnimationState.NONE;
     composebox.animationState = GlowAnimationState.EXPANDING;
+  }
+
+  private startObservingResize_(target: Element|null) {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const tooltip = this.$.onboardingTooltip;
+      if (tooltip && tooltip.target) {
+        tooltip.updatePosition();
+      }
+    });
+    this.resizeObserver_.observe(this.$.composebox);
+    if (target) {
+      this.resizeObserver_.observe(target);
+    }
+  }
+
+  private stopObservingResize_() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
   }
 }
 
