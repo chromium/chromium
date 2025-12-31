@@ -32,16 +32,13 @@ class ProcessMemoryDump;
 namespace storage {
 class AsyncDomStorageDatabase;
 
-// This is a wrapper around a AsyncDomStorageDatabase. Multiple interface
+// This is a wrapper around a `AsyncDomStorageDatabase`. Multiple interface
 // endpoints can be bound to the same object. The wrapper adds a couple of
-// features not found directly in leveldb:
+// features not found directly in the `AsyncDomStorageDatabase` code:
 //
-// 1) Adds the given prefix, if any, to all keys. This allows the sharing of one
-//    database across many, possibly untrusted, consumers and ensuring that they
-//    can't access each other's values.
-// 2) Enforces a max_size constraint.
-// 3) Informs observers when values scoped by prefix are modified.
-// 4) Throttles requests to avoid overwhelming the disk.
+// 1) Enforces a max_size constraint.
+// 2) Informs observers when values are modified.
+// 3) Throttles requests to avoid overwhelming the disk.
 //
 // The wrapper supports two different caching modes.
 class StorageAreaImpl : public blink::mojom::StorageArea,
@@ -95,13 +92,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // bindings and all pending modifications have been processed.
   StorageAreaImpl(
       AsyncDomStorageDatabase* database,
-      const std::string& prefix,
-      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
-      Delegate* delegate,
-      const Options& options);
-  StorageAreaImpl(
-      AsyncDomStorageDatabase* database,
-      std::vector<uint8_t> prefix,
       scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       Delegate* delegate,
       const Options& options);
@@ -116,30 +106,24 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // that would load data from the database.
   // This avoids hitting disk to load a map that the implementer already knows
   // must be empty. Do not use this option unless you are absolutely certain
-  // that there must be no data for the |prefix|, as the data will not be loaded
-  // to check.
+  // that there must be no data for the `keys_values_map_`, as the data will not
+  // be loaded to check.
   void InitializeAsEmpty();
 
   void Bind(mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
-  // Forks, or copies, all data in this prefix to another prefix.
+  // Forks, or copies, all data in this map to another map with a unique ID.
   // Note: this object (the parent) must stay alive until the forked area
   // has been loaded (see initialized()).
-  std::unique_ptr<StorageAreaImpl> ForkToNewPrefix(
-      const std::string& new_prefix,
-      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
-      Delegate* delegate,
-      const Options& options);
-  std::unique_ptr<StorageAreaImpl> ForkToNewPrefix(
-      std::vector<uint8_t> new_prefix,
-      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+  std::unique_ptr<StorageAreaImpl> ForkToNewMap(
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> new_map_locator,
       Delegate* delegate,
       const Options& options);
 
   // Cancels all pending load tasks. Useful for emergency destructions. If the
   // area is unloaded (initialized() returns false), this will DROP all
   // pending changes to the database, and any uninitialized areas created
-  // through |ForkToNewPrefix| will stay BROKEN and unresponsive.
+  // through `ForkToNewMap()` will stay BROKEN and unresponsive.
   void CancelAllPendingRequests();
 
   // The total bytes used by items which counts towards the quota.
@@ -160,8 +144,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   }
 
   bool has_changes_to_commit() const { return commit_batch_.get(); }
-
-  const std::vector<uint8_t>& prefix() { return prefix_; }
 
   AsyncDomStorageDatabase* database() { return database_; }
 
@@ -226,6 +208,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
                            PutLoadsValuesAfterCacheModeUpgrade);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, SetCacheModeConsistent);
+  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, PrefixForkingPseudoFuzzer);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplCacheModeTest,
                            CommitOnDifferentCacheModes);
 
@@ -326,13 +309,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   void OnForkStateLoaded(bool database_enabled,
                          const ValueMap& map,
                          const KeysOnlyMap& key_only_map);
-
-  // The prefix of the LevelDB keys for this map's key/value pairs.
-  //
-  // TODO(crbug.com/377242771): Remove after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  std::vector<uint8_t> prefix_;
 
   // Identifies where to read and write this map's key/value pairs in the
   // database.

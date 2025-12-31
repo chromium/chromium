@@ -129,7 +129,6 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
 
 std::map<blink::StorageKey, scoped_refptr<DomStorageDatabase::SharedMapLocator>>
 SessionStorageMetadata::TakeNamespace(const std::string& namespace_id) {
-  std::vector<DomStorageDatabase::Key> prefixes_to_delete;
   auto it = namespace_storage_key_map_.find(namespace_id);
   if (it == namespace_storage_key_map_.end()) {
     return {};

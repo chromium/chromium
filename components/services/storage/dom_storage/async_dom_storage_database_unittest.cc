@@ -182,4 +182,35 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
   EXPECT_EQ(metadata->next_map_id, std::nullopt);
 }
 
+TEST_F(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutSessions) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey,
+                                             /*map_id=*/216};
+  map_locator.RemoveSession("session_id1");
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:, storage_key:{ origin: https://a-fake-url.test, "
+            "top-level site: https://a-fake-url.test, nonce: <null>, ancestor "
+            "chain bit: Same-Site }, map_id:216");
+}
+
+TEST_F(AsyncDomStorageDatabaseTest,
+       MapLocatorToDebugStringWithMultipleSessions) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey,
+                                             /*map_id=*/216};
+  map_locator.AddSession("session_id2");
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:session_id1:session_id2, storage_key:{ origin: "
+            "https://a-fake-url.test, top-level site: https://a-fake-url.test, "
+            "nonce: <null>, ancestor chain bit: Same-Site }, "
+            "map_id:216");
+}
+
+TEST_F(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutMapId) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey};
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:session_id1, storage_key:{ origin: "
+            "https://a-fake-url.test, top-level site: https://a-fake-url.test, "
+            "nonce: <null>, ancestor chain bit: Same-Site }, "
+            "map_id:null");
+}
+
 }  // namespace storage
