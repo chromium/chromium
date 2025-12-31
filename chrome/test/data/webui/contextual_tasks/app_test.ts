@@ -272,4 +272,32 @@ suite('ContextualTasksAppTest', function() {
 
     assertFalse(appElement.hasAttribute('is-ai-page_'));
   });
+
+  test('lens overlay state reflected in dom', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const composebox =
+        appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+    if (!composebox) {
+      throw new Error('composebox not found');
+    }
+    assertFalse(composebox.hasAttribute('is-lens-overlay-showing'));
+
+    proxy.callbackRouterRemote.onLensOverlayStateChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(composebox.hasAttribute('is-lens-overlay-showing'));
+
+    proxy.callbackRouterRemote.onLensOverlayStateChanged(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertFalse(composebox.hasAttribute('is-lens-overlay-showing'));
+  });
 });

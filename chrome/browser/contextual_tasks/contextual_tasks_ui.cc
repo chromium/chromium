@@ -670,6 +670,12 @@ void ContextualTasksUI::DisableActiveTabContextSuggestion() {
   ui_service_->set_auto_tab_context_suggestion_enabled(false);
 }
 
+void ContextualTasksUI::OnLensOverlayStateChanged(bool is_showing) {
+  if (page_) {
+    page_->OnLensOverlayStateChanged(is_showing);
+  }
+}
+
 void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   if (!GetBrowser()) {
     return;

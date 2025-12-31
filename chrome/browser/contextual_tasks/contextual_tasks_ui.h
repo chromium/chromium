@@ -188,6 +188,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // the side panel.
   void OnActiveTabContextStatusChanged();
 
+  // Notify the UI that the Lens overlay has either started showing or is now
+  // hidden.
+  void OnLensOverlayStateChanged(bool is_showing);
+
   void SetComposeboxHandlerForTesting(
       std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
     composebox_handler_ = std::move(handler);

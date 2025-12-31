@@ -144,6 +144,9 @@ interface Page {
   // Called by the browser process (C++) to notify the UI if the current page
   // is an AI page or not.
   OnAiPageStatusChanged(bool is_ai_page);
+
+  // Called by the browser process (C++) when the Lens overlay is shown/hidden.
+  OnLensOverlayStateChanged(bool is_showing);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

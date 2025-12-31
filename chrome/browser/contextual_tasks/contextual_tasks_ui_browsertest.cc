@@ -68,6 +68,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, RestoreInput, (), (override));
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
+  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool), (override));
   MOCK_METHOD(void,
               SetTaskDetails,
               (const base::Uuid&, const std::string&, const std::string&),
@@ -338,4 +339,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensBrowserTest, HandleLensButtonClick) {
 
   // Flush to ensure message processing on UI thread
   handler_remote.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       OnLensOverlayStateChanged) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(true))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    controller_->OnLensOverlayStateChanged(true);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    controller_->OnLensOverlayStateChanged(false);
+    run_loop.Run();
+  }
 }

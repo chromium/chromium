@@ -44,6 +44,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      isLensOverlayShowing: {
+        type: Boolean,
+        reflect: true,
+      },
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
       isComposeboxFocused_: {
@@ -64,6 +68,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
+  accessor isLensOverlayShowing: boolean = false;
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
   protected accessor isComposeboxFocused_: boolean = false;

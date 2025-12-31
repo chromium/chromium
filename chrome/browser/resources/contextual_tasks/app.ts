@@ -128,11 +128,13 @@ export class ContextualTasksAppElement extends CrLitElement {
         reflect: true,
       },
       isAiPage_: {type: Boolean, reflect: true},
+      isLensOverlayShowing_: {type: Boolean},
     };
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor isAiPage_: boolean = false;
+  protected accessor isLensOverlayShowing_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
   protected accessor isShownInTab_: boolean = true;
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
@@ -211,6 +213,10 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
         this.isZeroState_ = isZeroState;
       }),
+      callbackRouter.onLensOverlayStateChanged.addListener(
+          (isOverlayShowing: boolean) => {
+            this.isLensOverlayShowing_ = isOverlayShowing;
+          }),
     ];
 
     this.updateSidePanelState();

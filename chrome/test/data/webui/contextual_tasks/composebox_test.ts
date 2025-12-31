@@ -10,7 +10,7 @@ import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -173,5 +173,19 @@ suite('ContextualTasksComposeboxTest', () => {
     await mockComposeboxPageHandler.whenCalled('handleLensButtonClick');
     assertEquals(
         1, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
+  });
+
+  test('LensButtonDisabledWhenOverlayShowing', async () => {
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    contextualTasksApp.$.composebox.isSidePanel = true;
+    contextualTasksApp.$.composebox.isLensOverlayShowing = false;
+    await microtasksFinished();
+
+    assertFalse(composebox.lensButtonDisabled);
+
+    contextualTasksApp.$.composebox.isLensOverlayShowing = true;
+    await microtasksFinished();
+
+    assertTrue(composebox.lensButtonDisabled);
   });
 });

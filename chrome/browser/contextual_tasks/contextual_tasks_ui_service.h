@@ -139,6 +139,12 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is for the search results page.
   bool IsValidSearchResultsPage(const GURL& url);
 
+  // Called when the Lens overlay is shown/hidden. No-op if the active UI is not
+  // in the side panel since the Lens button is always hidden in a tab.
+  virtual void OnLensOverlayStateChanged(
+      BrowserWindowInterface* browser_window_interface,
+      bool is_showing);
+
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.
   void AssociateWebContentsToTask(content::WebContents* web_contents,

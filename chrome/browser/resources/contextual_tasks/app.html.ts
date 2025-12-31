@@ -39,7 +39,8 @@ export function getHtml(this: ContextualTasksAppElement) {
     <contextual-tasks-composebox id="composebox"
           ?hidden="${!this.showComposebox_}"
           .isZeroState="${this.isZeroState_}"
-          .isSidePanel="${!this.isShownInTab_}">
+          .isSidePanel="${!this.isShownInTab_}"
+          .isLensOverlayShowing="${this.isLensOverlayShowing_}">
     </contextual-tasks-composebox>
   </div>
   <!--_html_template_end_-->`;

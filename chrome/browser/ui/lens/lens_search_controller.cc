@@ -745,7 +745,8 @@ void LensSearchController::StartLensSession(
 
   // Set the results panel delegate to the side panel coordinator owned by
   // this controller.
-  results_panel_router_ = std::make_unique<lens::LensResultsPanelRouter>(this);
+  results_panel_router_ = std::make_unique<lens::LensResultsPanelRouter>(
+      tab_->GetBrowserWindowInterface()->GetProfile(), this);
 
   // Reset session state.
   hats_triggered_in_session_ = false;
