@@ -137,7 +137,6 @@ crbug.com/426594100 [ android android-pixel-6 graphite-disabled ] ExpectedColor_
 
 crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
-crbug.com/458633863 [ win qualcomm-0x36334330 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 crbug.com/467247264 [ win11 nvidia-0x2184 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
