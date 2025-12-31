@@ -80,7 +80,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                ContextualTasksUI* webui_controller),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
-  MOCK_METHOD(bool, IsSignedInToBrowser, (const GURL& url), (override));
+  MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -121,7 +121,7 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
-    ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
+    ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
         .WillByDefault(Return(true));
 
     ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
@@ -361,7 +361,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
 
   ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
       .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
@@ -388,7 +388,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL());
 
-  ON_CALL(*service_for_nav_, IsSignedInToBrowser(_))
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
       .WillByDefault(Return(false));
 
   base::RunLoop run_loop;

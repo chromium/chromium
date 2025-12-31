@@ -176,9 +176,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
-  // Return whether there is a user is either signed into the browser or has
-  // an account tied to the provided URL.
-  virtual bool IsSignedInToBrowser(const GURL& url);
+  // Return whether there is a user signed into the browser with valid
+  // credentials (aka, an OAuth token can be obtained).
+  virtual bool IsSignedInToBrowserWithValidCredentials();
 
  private:
   // Focus an existing tab based on the provided URL if it exists. The URLs must
