@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -168,6 +169,27 @@ class UpdaterIPCTestCase : public testing::Test {
     EXPECT_EQ(a.existence_checker_path, b.existence_checker_path);
   }
 
+  static base::flat_map<std::string, UpdateService::PolicyValue>
+  GetExampleUpdaterPolicies() {
+    UpdateService::PolicyValue ex1;
+    ex1.policy_value = "true";
+    ex1.policy_source = UpdateService::PolicySource::kSourceExternalConstants;
+    ex1.external_constants_value = "true";
+
+    return {{"policy1", ex1}};
+  }
+
+  static base::flat_map<std::string,
+                        base::flat_map<std::string, UpdateService::PolicyValue>>
+  GetExampleAppPolicies() {
+    UpdateService::PolicyValue ex1;
+    ex1.policy_value = "foo";
+    ex1.policy_source = UpdateService::PolicySource::kSourceCloud;
+    ex1.cloud_value = "true";
+
+    return {{"app1", {{"policy2", ex1}}}};
+  }
+
  protected:
   class MockUpdateService final : public UpdateService {
    public:
@@ -240,6 +262,24 @@ class UpdaterIPCTestCase : public testing::Test {
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
+    MOCK_METHOD(void,
+                GetUpdaterState,
+                (base::OnceCallback<void(const UpdaterState&)> callback),
+                (override));
+    MOCK_METHOD(
+        void,
+        GetUpdaterPolicies,
+        (base::OnceCallback<
+            void(const base::flat_map<std::string, PolicyValue>&)> callback),
+        (override));
+    MOCK_METHOD(
+        void,
+        GetAppPolicies,
+        (base::OnceCallback<void(
+             const base::flat_map<std::string,
+                                  base::flat_map<std::string, PolicyValue>>&)>
+             callback),
+        (override));
 
    protected:
     ~MockUpdateService() override = default;
@@ -383,6 +423,30 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             std::move(callback).Run(UpdateService::Result::kInstallFailed);
           });
 
+  EXPECT_CALL(*mock_service, GetUpdaterState)
+      .WillOnce([](base::OnceCallback<void(const UpdateService::UpdaterState&)>
+                       callback) {
+        std::move(callback).Run(UpdateService::UpdaterState("9", {}, {}, {}));
+      });
+
+  EXPECT_CALL(*mock_service, GetUpdaterPolicies)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 const base::flat_map<std::string,
+                                      UpdateService::PolicyValue>&)> callback) {
+            std::move(callback).Run(GetExampleUpdaterPolicies());
+          });
+
+  EXPECT_CALL(*mock_service, GetAppPolicies)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 const base::flat_map<
+                     std::string,
+                     base::flat_map<std::string, UpdateService::PolicyValue>>&)>
+                 callback) {
+            std::move(callback).Run(GetExampleAppPolicies());
+          });
+
 #if BUILDFLAG(IS_WIN)
   ASSERT_HRESULT_SUCCEEDED(
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
@@ -510,6 +574,40 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
         "install_args", "install_data", "install_settings", "en-us",
         UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
         UpdaterIPCTestCase::ExpectResultCallback(run_loop));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetUpdaterState(
+        base::BindOnce([](const UpdateService::UpdaterState& updater_state) {
+          EXPECT_EQ(updater_state.active_version, "9");
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetUpdaterPolicies(
+        base::BindOnce(
+            [](const base::flat_map<std::string, UpdateService::PolicyValue>&
+                   updater_policies) {
+              EXPECT_EQ(updater_policies,
+                        UpdaterIPCTestCase::GetExampleUpdaterPolicies());
+            })
+            .Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetAppPolicies(
+        base::BindOnce(
+            [](const base::flat_map<
+                std::string,
+                base::flat_map<std::string, UpdateService::PolicyValue>>&
+                   app_policies) {
+              EXPECT_EQ(app_policies,
+                        UpdaterIPCTestCase::GetExampleAppPolicies());
+            })
+            .Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 

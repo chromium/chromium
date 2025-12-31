@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -78,6 +79,15 @@ class UpdateServiceProxy : public UpdateService {
       const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
+  void GetUpdaterState(base::OnceCallback<void(const UpdaterState&)>) override;
+  void GetUpdaterPolicies(
+      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
+          callback) override;
+  void GetAppPolicies(
+      base::OnceCallback<
+          void(const base::flat_map<std::string,
+                                    base::flat_map<std::string, PolicyValue>>&)>
+          callback) override;
 
  private:
   ~UpdateServiceProxy() override;

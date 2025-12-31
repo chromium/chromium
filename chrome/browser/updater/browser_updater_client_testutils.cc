@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -98,6 +99,24 @@ class FakeUpdateService : public UpdateService {
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override {
     std::move(callback).Run(result_);
+  }
+  void GetUpdaterState(
+      base::OnceCallback<void(const UpdaterState&)> callback) override {
+    std::move(callback).Run(UpdaterState());
+  }
+  void GetUpdaterPolicies(
+      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
+          callback) override {
+    std::move(callback).Run(base::flat_map<std::string, PolicyValue>());
+  }
+  void GetAppPolicies(
+      base::OnceCallback<
+          void(const base::flat_map<std::string,
+                                    base::flat_map<std::string, PolicyValue>>&)>
+          callback) override {
+    std::move(callback).Run(
+        base::flat_map<std::string,
+                       base::flat_map<std::string, PolicyValue>>());
   }
 
  private:
