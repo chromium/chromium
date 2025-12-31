@@ -305,7 +305,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
   EXPECT_CALL(query_controller(), GetFileInfo(delete_file_token))
-      .Times(2)
+      .Times(1)
       .WillRepeatedly(testing::Return(file_info.get()));
   EXPECT_CALL(query_controller(), DeleteFile(delete_file_token))
       .WillOnce([&token_arg](const base::UnguessableToken& token) {

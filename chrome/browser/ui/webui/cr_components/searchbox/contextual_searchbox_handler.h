@@ -34,7 +34,6 @@ class Profile;
 class SkBitmap;
 
 namespace contextual_tasks {
-class ContextualTasksService;
 
 #if !BUILDFLAG(IS_ANDROID)
 class ContextualTasksContextService;
@@ -238,8 +237,6 @@ class ContextualSearchboxHandler
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
 #endif
-
-  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
