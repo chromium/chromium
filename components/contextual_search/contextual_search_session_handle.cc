@@ -330,15 +330,22 @@ void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
   submitted_context_tokens_.clear();
 }
 
+void ContextualSearchSessionHandle::set_submitted_context_tokens(
+    const std::vector<base::UnguessableToken>& tokens) {
+  submitted_context_tokens_ = tokens;
+}
+
 bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
   ContextualSearchContextController* controller = GetController();
   if (!controller) {
     return false;
   }
 
-  for (const auto& file_info : GetController()->GetFileInfoList()) {
-    if (file_info && file_info->tab_session_id.has_value() &&
-        file_info->tab_session_id.value() == session_id) {
+  // TODO(crbug.com/468453630): The context needs to actually be populated
+  // with tab data from the server-managed context list.
+  for (const auto& file_info : GetSubmittedContextFileInfos()) {
+    if (file_info.tab_session_id.has_value() &&
+        file_info.tab_session_id.value() == session_id) {
       return true;
     }
   }
