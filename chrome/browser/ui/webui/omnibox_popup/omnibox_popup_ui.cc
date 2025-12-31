@@ -117,8 +117,11 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   source->AddBoolean("composeboxShowContextMenu",
                      omnibox::kShowContextMenu.Get());
-  source->AddBoolean("composeboxShowContextMenuDescription",
-                     omnibox::kShowContextMenuDescription.Get());
+  source->AddBoolean(
+      "composeboxShowContextMenuDescription",
+      omnibox::kShowContextMenuDescription.Get() &&
+          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() !=
+              omnibox::AddContextButtonVariant::kInline);
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      omnibox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowCreateImageButton",
