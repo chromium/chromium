@@ -48,7 +48,7 @@ void FakeBaseProvider::RequestInternal(
       /*url_loader_factory=*/url_loader_factory_,
       identity_manager_observation_.GetSource(),
       EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
-          .SetConsentLevel(signin::ConsentLevel::kSync)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
           .SetContentType(kMockContentType)
           .SetTimeout(kMockTimeout)
           .SetUrl(GURL{kMockEndpoint})
@@ -69,8 +69,8 @@ BaseProviderTest::~BaseProviderTest() = default;
 
 void BaseProviderTest::SetUp() {
   identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-  identity_test_env_->MakePrimaryAccountAvailable(kEmail,
-                                                  signin::ConsentLevel::kSync);
+  identity_test_env_->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 }
 
