@@ -126,6 +126,11 @@ const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
     "EnableExpandedComposeboxVoiceSearch",
     true);
 
+const base::FeatureParam<std::string> kContextualTasksHelpUrl(
+    &kContextualTasks,
+    "ContextualTasksHelpUrl",
+    "https://support.google.com/websearch/");
+
 const base::FeatureParam<std::string> kContextualTasksOnboardingTooltipHelpUrl(
     &kContextualTasksShowOnboardingTooltip,
     "ContextualTasksOnboardingTooltipHelpUrl",
@@ -238,6 +243,10 @@ bool ShouldLogContextualTasksContextQuality() {
 
 std::string GetContextualTasksOnboardingTooltipHelpUrl() {
   return kContextualTasksOnboardingTooltipHelpUrl.Get();
+}
+
+std::string GetContextualTasksHelpUrl() {
+  return kContextualTasksHelpUrl.Get();
 }
 
 namespace flag_descriptions {

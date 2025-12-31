@@ -35,7 +35,6 @@
 namespace {
 
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
-constexpr char kHelpUrl[] = "https://support.google.com/websearch/";
 
 void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
   NavigateParams params(Profile::FromWebUI(web_ui), url,
@@ -134,7 +133,8 @@ void ContextualTasksPageHandler::OpenMyActivityUi() {
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
-  OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kHelpUrl));
+  OpenUrlInNewTab(web_ui_controller_->web_ui(),
+                  GURL(contextual_tasks::GetContextualTasksHelpUrl()));
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {

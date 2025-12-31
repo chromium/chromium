@@ -84,8 +84,10 @@ extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 
-// The maximum number of times the onboarding tooltip can be shown to the user
-// before it no longer shows up.
+// The URL for the help center article from the toolbar.
+extern const base::FeatureParam<std::string> kContextualTasksHelpUrl;
+
+// The URL for the help center article linked from the onboarding tooltip.
 extern const base::FeatureParam<std::string>
     kContextualTasksOnboardingTooltipHelpUrl;
 
@@ -139,6 +141,9 @@ extern bool ShouldLogContextualTasksContextQuality();
 
 // Returns the help URL for the onboarding tooltip.
 extern std::string GetContextualTasksOnboardingTooltipHelpUrl();
+
+// Returns the help URL for the help center article from the toolbar.
+extern std::string GetContextualTasksHelpUrl();
 
 namespace flag_descriptions {
 
