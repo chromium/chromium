@@ -1380,12 +1380,9 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
       browser_context(), include_incognito_information(), download_id);
   // We have a WeakPtr to the ExtensionFunctionDispatcher, so remove the
   // download if it's invalid. This indicates the owning WebContents has
-  // been destroyed, so we can't proceed. Additionally, there may not be
-  // a visible WebContents, which also means we can't proceed.
+  // been destroyed, so we can't proceed.
   ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
-  content::WebContents* web_contents =
-      extension_dispatcher ? extension_dispatcher->GetVisibleWebContents()
-                           : nullptr;
+  content::WebContents* web_contents = GetSenderWebContents();
   if (!extension_dispatcher || !web_contents) {
     download_item->Remove();
     Respond(NoArguments());
@@ -1727,12 +1724,7 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   DCHECK(icon_extractor_.get());
   DCHECK(icon_size == 16 || icon_size == 32);
   float scale = 1.0;
-  // We have a WeakPtr to the ExtensionFunctionDispatcher, so validate it
-  // before attempting to use it.
-  ExtensionFunctionDispatcher* const extension_dispatcher = dispatcher();
-  EXTENSION_FUNCTION_VALIDATE(extension_dispatcher);
-  content::WebContents* web_contents =
-      extension_dispatcher->GetVisibleWebContents();
+  content::WebContents* web_contents = GetSenderWebContents();
   if (web_contents && web_contents->GetRenderWidgetHostView())
     scale = web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   EXTENSION_FUNCTION_VALIDATE(icon_extractor_->ExtractIconURLForPath(
