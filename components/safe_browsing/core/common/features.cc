@@ -220,10 +220,6 @@ BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal,
              "SafeBrowsingExtensionTelemetryDeclarativeNetRequestActionSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
-             "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetrySearchHijackingSignal,
              "SafeBrowsingExtensionTelemetrySearchHijackingSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);

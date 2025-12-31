@@ -201,7 +201,6 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   // Test directory that serves as the root directory for all test extension
   // files.
   base::ScopedTempDir extensions_root_dir_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -216,11 +215,6 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
     base::test::TaskEnvironment::TimeSource time_source)
     : task_environment_{time_source} {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {kExtensionTelemetryFileDataForCommandLineExtensions},
-      /*disabled_features=*/{});
-
   // Create extension prefs and registry instances.
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
   extension_registrar_ = extensions::ExtensionRegistrar::Get(&profile_);

@@ -558,15 +558,12 @@ void ExtensionTelemetryService::SetEnabledForESB(bool enable) {
     }
 
     // File data for Command Line extensions.
-    if (base::FeatureList::IsEnabled(
-            kExtensionTelemetryFileDataForCommandLineExtensions)) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(CollectCommandLineExtensionInfo),
-          base::BindOnce(
-              &ExtensionTelemetryService::OnCommandLineExtensionsInfoCollected,
-              weak_factory_.GetWeakPtr()));
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(CollectCommandLineExtensionInfo),
+        base::BindOnce(
+            &ExtensionTelemetryService::OnCommandLineExtensionsInfoCollected,
+            weak_factory_.GetWeakPtr()));
 
     // Telemetry Configuration
     if (base::FeatureList::IsEnabled(kExtensionTelemetryConfiguration)) {
