@@ -17093,7 +17093,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableOAuthMultiloginStandardCookiesBinding"
+                        "EnableOAuthMultiloginStandardCookiesBinding",
+                        "UseUnexportableKeyServiceInBrowserProcess"
                     ]
                 }
             ]
