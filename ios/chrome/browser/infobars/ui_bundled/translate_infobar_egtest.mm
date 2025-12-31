@@ -1397,14 +1397,6 @@ void TestResponseProvider::GetLanguageResponse(
                      kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
-  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
-  NSString* imageViewIdentifier =
-      [ChromeEarlGrey isAskGeminiChipEnabled]
-          ? kLocationBarBadgeImageViewIdentifier
-          : @"ContextualPanelEntrypointImageViewAXID";
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
-                                                       imageViewIdentifier)];
 }
 
 // Tests that translation settings in Reader Mode is displayed and that
