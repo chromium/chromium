@@ -59,6 +59,7 @@ contextual-entrypoint-and-carousel {
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
+  --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
 }
 
 contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
