@@ -42,6 +42,7 @@ pub extern crate small_ctor;
 /// #[extern_test_suite("cpp::type::wrapped::by::Foo")
 /// unsafe impl TestSuite for Foo {}
 /// ```
+#[allow(clippy::missing_safety_doc)] // TODO(https://crbug.com/472355480)
 pub unsafe trait TestSuite {
     /// Gives the Gtest factory function on the C++ side which constructs the
     /// C++ class for which the implementing Rust type is an FFI wrapper.
