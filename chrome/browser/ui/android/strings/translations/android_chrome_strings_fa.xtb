@@ -798,7 +798,7 @@
 <translation id="4484496141267039529">اتصال برقرار نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="4487967297491345095">‏همه داده‌های برنامه Chrome به‌طور دائم حذف خواهند شد. این داده‌ها شامل همه فایل‌ها، تنظیمات، حساب‌ها، پایگاه‌های داده و غیره می‌شود.</translation>
 <translation id="4494315997125191493">برای دیدن همه پنجره‌ها، مدیریت کردن را انتخاب کنید</translation>
-<translation id="4494806687727322324">سرپرستتان ذخیره کردن گذرواژه را روشن کرده است</translation>
+<translation id="4494806687727322324">سرپرستتان ذخیره گذرواژه را روشن کرده است</translation>
 <translation id="4508528996305412043">منوی کارت فید باز شد</translation>
 <translation id="4509741852167209430">انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود تا سایت‌ها بتوانند عملکرد آگهی‌هایشان را بسنجند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{۱ روز قبل}one{#  روز قبل}other{#  روز قبل}}</translation>
@@ -1002,7 +1002,7 @@
 <translation id="5304593522240415983">این قسمت باید پر شود</translation>
 <translation id="5306014156308790439">«افزودن به مجموعه» غیرفعال شده است</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
-<translation id="5316947901395241499">سرپرستتان ذخیره کردن گذرواژه را خاموش کرده است</translation>
+<translation id="5316947901395241499">سرپرستتان ذخیره گذرواژه را خاموش کرده است</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319359161174645648">‏Google،‏ Chrome را توصیه می‌کند</translation>
 <translation id="5326246328175179736">نمی‌توانید با این حساب به سیستم وارد شوید</translation>
@@ -1291,7 +1291,7 @@
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{فایل بارگیری شد}one{# بارگیری کامل شد}other{# بارگیری کامل شد}}</translation>
 <translation id="6508722015517270189">‏بازراه‌اندازی Chrome</translation>
 <translation id="6513924416597632811">کپی کردن پیوند صفحه نتایج جستجو برای: <ph name="SEARCH_QUERY" />. منبع: <ph name="PAGE_URL" /></translation>
-<translation id="6518133107902771759">درستی‌سنجی</translation>
+<translation id="6518133107902771759">تأیید</translation>
 <translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="652948702951888897">‏سابقه Chrome</translation>
 <translation id="6532866250404780454">‏سایت‌هایی که در Chrome بازدید می‌کنید، نشان داده نخواهد شد. همه تایمرهای سایت حذف خواهد شد.</translation>

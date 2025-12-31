@@ -80,7 +80,7 @@
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
 <translation id="1048986595386481879">动态分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
-<translation id="1049743911850919806">无痕模式</translation>
+<translation id="1049743911850919806">无痕</translation>
 <translation id="1049795001945932310">语言设置(&amp;L)</translation>
 <translation id="1050693411695664090">较差</translation>
 <translation id="1053226848101751430">条目已删除</translation>
@@ -527,6 +527,7 @@
 <translation id="1342886103232377846">若要检查是否存在已泄露的密码，请前往 Google 密码管理工具</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
 <translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
+<translation id="13449088910457661">Gemini 可在标签页中运行，帮您处理各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK1" />详细了解指标<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -893,7 +894,7 @@
 <translation id="1603116295689434284">Chrome 系统信息</translation>
 <translation id="1603411913360944381">清除“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1603879843804174953">长按</translation>
-<translation id="1603914832182249871">（无痕模式）</translation>
+<translation id="1603914832182249871">（无痕）</translation>
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
 <translation id="1604567162047669454">识别视觉布局语义</translation>
 <translation id="1604774728851271529">您需要连接到网络才能升级 Linux。请连接到互联网，然后重试。</translation>
@@ -1964,7 +1965,6 @@
 <translation id="2319072477089403627">正在连接到您的 Android 手机…</translation>
 <translation id="2319459402137712349">选择文本字段即可打开键盘。您也可以选择屏幕底部的“键盘”图标。</translation>
 <translation id="2319993584768066746">在登录屏幕上显示照片</translation>
-<translation id="2321487076181785382">拆分标签页</translation>
 <translation id="2322193970951063277">页眉和页脚</translation>
 <translation id="2322318151094136999">在网站想访问串行端口时询问您（推荐）</translation>
 <translation id="2322622365472107569">结束时间：<ph name="TIME" /></translation>
@@ -6151,6 +6151,7 @@
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5205484256512407285">一律不使用移动数据进行传输</translation>
 <translation id="520568280985468584">已成功添加网络。不过，您的移动网络可能要过几分钟才可用。</translation>
+<translation id="520576054436518354">让 Gemini 代您浏览</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />需要检查您使用的是否为符合条件的 Chrome 操作系统设备。</translation>
 <translation id="5208722776934437424">更改权限</translation>
@@ -10192,7 +10193,6 @@
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="8012188750847319132">CapsLock 键</translation>
 <translation id="8012463809859447963">智能热点详情</translation>
-<translation id="8013181884974864006">情境任务</translation>
 <translation id="8013534738634318212">这些网站属于由 <ph name="RWS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>

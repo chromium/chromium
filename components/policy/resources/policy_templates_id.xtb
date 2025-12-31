@@ -4484,7 +4484,7 @@ Selama interval yang dibatasi, semua sesi yang sedang berlangsung akan ditutup d
 
 Pertimbangan:
 
-* Interval yang tumpang tindih tidak didukung.
+* Interval yang tumpang-tindih tidak didukung.
 * Jadwal pembatasan perangkat menggunakan zona waktu perangkat.
 * Untuk mencegah pengguna mengedit zona waktu perangkatnya, gunakan SystemTimezone.
 * Untuk mencegah pengguna mengedit waktu perangkatnya, gunakan SystemFeaturesDisableList untuk menonaktifkan Crosh, dan URLBlocklist untuk memblokir chrome://set-time.</translation>
@@ -9838,7 +9838,7 @@ Jika kebijakan ini disetel ke Nonaktif, pengguna tidak dapat menyimpan kunci san
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
 <translation id="7196336906814426783">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
 
-Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang tindih.
+Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang-tindih.
 
 Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.
 

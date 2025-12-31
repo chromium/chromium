@@ -527,6 +527,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1342886103232377846">Ohustatud paroolide kontrollimiseks avage Google'i paroolihaldur</translation>
 <translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
 <translation id="1344141078024003905">Olete oma ekraani üle kandmas. Saate ekraani ülekandmise igal ajal peatada või lõpetada.</translation>
+<translation id="13449088910457661">Gemini töötab teie vahelehtedel, et täita teie antud ülesandeid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Kinnita ja taaskäivita</translation>
 <translation id="1346748346194534595">Paremale</translation>
@@ -1975,7 +1976,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2319072477089403627">Ühenduse loomine teie Android-telefoniga...</translation>
 <translation id="2319459402137712349">Klaviatuuri avamiseks valige tekstiväli. Samuti võite valida ekraani allosas oleva klaviatuuriikooni.</translation>
 <translation id="2319993584768066746">Fotod sisselogimiskuval</translation>
-<translation id="2321487076181785382">Vahelehtede poolitamine</translation>
 <translation id="2322193970951063277">Päised ja jalused</translation>
 <translation id="2322318151094136999">Küsi, kui sait soovib juurdepääsu jadaportidele (soovitatud)</translation>
 <translation id="2322622365472107569">Lõppaeg <ph name="TIME" /></translation>
@@ -6167,6 +6167,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5204967432542742771">Sisestage parool</translation>
 <translation id="5205484256512407285">Mobiilset andmesidet ei kasutata ülekandmiseks kunagi</translation>
 <translation id="520568280985468584">Võrgu lisamine õnnestus. Teie mobiilsidevõrgu aktiveerimine võib võtta mitu minutit.</translation>
+<translation id="520576054436518354">Laske Geminil enda eest sirvida</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="520840839826327499">Teenus <ph name="SERVICE_NAME" /> soovib kontrollida, kas kasutate sobilikku Chrome OS-i seadet.</translation>
 <translation id="5208722776934437424">Lubade muutmine</translation>
@@ -10212,7 +10213,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ teisaldati.</translation>
 <translation id="8012188750847319132">suurtähelukk</translation>
 <translation id="8012463809859447963">Vahetu kuumkoha üksikasjad</translation>
-<translation id="8013181884974864006">Kontekstipõhised toimingud</translation>
 <translation id="8013534738634318212">Need saidid on domeeni <ph name="RWS_OWNER" /> määratud grupis. Grupis olevad saidid saavad teie tegevusi grupis vaadata.</translation>
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="8014154204619229810">Värskendaja töötab praegu. Värskendage uuesti kontrollimiseks minuti pärast.</translation>

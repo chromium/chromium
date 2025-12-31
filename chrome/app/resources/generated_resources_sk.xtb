@@ -529,6 +529,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1342886103232377846">Ak chcete skontrolovať odhalené heslá, prejdite do Správcu hesiel Google</translation>
 <translation id="1343920184519992513">Pokračovať, kde ste prestali, a otvoriť konkrétnu skupinu stránok</translation>
 <translation id="1344141078024003905">Prenášate obrazovku. Prenos obrazovky môžete kedykoľvek pozastaviť alebo ukončiť.</translation>
+<translation id="13449088910457661">Gemini pracuje vo vašich kartách a dokončuje úlohy, ktoré mu zadáte. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Odosielajte údaje o využití a diagnostike. Pomôžte zlepšiť prostredie Androidu svojho dieťaťa automatickým odosielaním diagnostík a údajov o využití zariadenia a používaní aplikácií do Googlu. Pomocou daných údajov sa nebude zisťovať totožnosť vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak pre dieťa zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do jeho účtu Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Potvrdiť a reštartovať</translation>
 <translation id="1346748346194534595">Doprava</translation>
@@ -1973,7 +1974,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2319072477089403627">Pripája sa k vášmu telefónu s Androidom…</translation>
 <translation id="2319459402137712349">Výberom textového poľa otvorte klávesnicu. Môžete vybrať aj ikonu klávesnice v dolnej časti obrazovky.</translation>
 <translation id="2319993584768066746">Fotky na prihlasovacej obrazovke</translation>
-<translation id="2321487076181785382">Rozdelenie kariet</translation>
 <translation id="2322193970951063277">Hlavičky a päty</translation>
 <translation id="2322318151094136999">Opýtať sa, keď chce web používať sériové porty (odporúčané)</translation>
 <translation id="2322622365472107569">Čas ukončenia: <ph name="TIME" /></translation>
@@ -6164,6 +6164,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5204967432542742771">Zadajte heslo</translation>
 <translation id="5205484256512407285">Na prenos nikdy nepoužívať mobilné dáta</translation>
 <translation id="520568280985468584">Mobilná sieť bola úspešne pridaná. Jej aktivácia môže trvať niekoľko minút.</translation>
+<translation id="520576054436518354">Nechajte Gemini prehliadať za vás</translation>
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="520840839826327499">Služba <ph name="SERVICE_NAME" /> chce overiť, či používate vhodné zariadenie so systémom Chrome OS.</translation>
 <translation id="5208722776934437424">Zmeniť povolenia</translation>
@@ -10211,7 +10212,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8011372169388649948">Záložka <ph name="BOOKMARK_TITLE" /> bola presunutá.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Podrobnosti o okamžitom hotspote</translation>
-<translation id="8013181884974864006">Kontextové úlohy</translation>
 <translation id="8013534738634318212">Tieto weby sú v skupine definovanej vlastníkom <ph name="RWS_OWNER" />. Webom v skupine sa zobrazuje vaša aktivita v nej.</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8014154204619229810">Aktualizačný nástroj je práve spustený. Obnovením stránky o minútu to znova skontrolujte.</translation>

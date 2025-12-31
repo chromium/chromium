@@ -527,6 +527,7 @@
 <translation id="1342886103232377846">Google パスワード マネージャーに移動して、不正使用されたパスワードを確認してください。</translation>
 <translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
 <translation id="1344141078024003905">画面をキャストしています。いつでも画面のキャストを一時停止または停止できます。</translation>
+<translation id="13449088910457661">Gemini がタブの情報を使用して、リクエストされたタスクを行います。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />統計情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">確定して再起動</translation>
 <translation id="1346748346194534595">右</translation>
@@ -1967,7 +1968,6 @@
 <translation id="2319072477089403627">Android スマートフォンに接続中...</translation>
 <translation id="2319459402137712349">テキスト フィールドを選択してキーボードを開きます。画面の下部にあるキーボード アイコンを選択することもできます。</translation>
 <translation id="2319993584768066746">ログイン画面の写真</translation>
-<translation id="2321487076181785382">タブを分割</translation>
 <translation id="2322193970951063277">ヘッダーとフッター</translation>
 <translation id="2322318151094136999">サイトからシリアルポートへのアクセス許可を求められたときに確認する（推奨）</translation>
 <translation id="2322622365472107569">終了時間: <ph name="TIME" /></translation>
@@ -6150,6 +6150,7 @@
 <translation id="5204967432542742771">パスワードを入力</translation>
 <translation id="5205484256512407285">転送にモバイルデータを使用しない</translation>
 <translation id="520568280985468584">ネットワークを追加しました。モバイル ネットワークが有効になるまでに数分かかる場合があります。</translation>
+<translation id="520576054436518354">Gemini のブラウジング サポート</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> により、ご使用の ChromeOS デバイスが対象かどうかの確認が行われます。</translation>
 <translation id="5208722776934437424">権限を変更</translation>
@@ -10190,7 +10191,6 @@
 <translation id="8011372169388649948">「<ph name="BOOKMARK_TITLE" />」を移動しました。</translation>
 <translation id="8012188750847319132">CapsLock</translation>
 <translation id="8012463809859447963">インスタント アクセス ポイントの詳細</translation>
-<translation id="8013181884974864006">コンテキスト タスク</translation>
 <translation id="8013534738634318212">これらのサイトは、<ph name="RWS_OWNER" /> により定義されたグループに属しています。グループ内のサイトは、グループでのあなたのアクティビティを確認できます。</translation>
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
 <translation id="8014154204619229810">現在アップデータを実行中です。しばらくしてから更新して、もう一度ご確認ください。</translation>
