@@ -653,14 +653,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 // be visible because there's enough space for it. Extensions container should
 // not have animation because its visibility didn't change.
 // TODO(crbug.com/41495158): Flaky on Windows and Mac.
-// TODO(crbug.com/472508632): Test is failing on Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ExtensionHasNoAnimationLoop DISABLED_ExtensionHasNoAnimationLoop
-#else
-#define MAYBE_ExtensionHasNoAnimationLoop ExtensionHasNoAnimationLoop
-#endif
+// TODO(crbug.com/472508632): Test is failing on Linux & CrOS.
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       MAYBE_ExtensionHasNoAnimationLoop) {
+                       DISABLED_ExtensionHasNoAnimationLoop) {
   RunTestSequence(
       LoadAndPinExtensionButton(), PinBookmarkToToolbar(),
       PinReadingModeToToolbar(), Do([this]() {
