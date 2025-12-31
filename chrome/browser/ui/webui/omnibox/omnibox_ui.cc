@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_page_handler.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
@@ -33,7 +34,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types parse-html-subset;");
+      "trusted-types static-types parse-html-subset lit-html-desktop;");
 
   // Expose version information to client because it is useful in output.
   VersionUI::AddVersionDetailStrings(source);
@@ -42,6 +43,8 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->AddResourcePaths(kOmniboxResources);
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
   source->AddResourcePath("ml", IDR_OMNIBOX_ML_ML_HTML);
+  source->AddResourcePath("aim-eligibility",
+                          IDR_OMNIBOX_AIM_ELIGIBILITY_AIM_ELIGIBILITY_HTML);
 
   source->AddBoolean("isMlUrlScoringEnabled",
                      OmniboxFieldTrial::IsMlUrlScoringEnabled());
@@ -55,4 +58,20 @@ void OmniboxUI::BindInterface(
     mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver) {
   omnibox_handler_ = std::make_unique<OmniboxPageHandler>(
       Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
+void OmniboxUI::BindInterface(
+    mojo::PendingReceiver<aim_eligibility::mojom::PageHandlerFactory>
+        receiver) {
+  if (aim_eligibility_factory_receiver_.is_bound()) {
+    aim_eligibility_factory_receiver_.reset();
+  }
+  aim_eligibility_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxUI::CreatePageHandler(
+    mojo::PendingRemote<aim_eligibility::mojom::Page> page,
+    mojo::PendingReceiver<aim_eligibility::mojom::PageHandler> handler) {
+  aim_eligibility_page_handler_ = std::make_unique<AimEligibilityPageHandler>(
+      Profile::FromWebUI(web_ui()), std::move(handler), std::move(page));
 }

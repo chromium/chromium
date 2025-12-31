@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module aim_eligibility.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// The AIM eligibility state.
+struct EligibilityState {
+  // Whether AIM is eligible. Combines local and server eligibility, if enabled.
+  bool is_eligible;
+  // Whether AIM is eligible by enterprise policy.
+  bool is_eligible_by_policy;
+  // Whether AIM is eligible by DSE, i.e., Google is the default search engine.
+  bool is_eligible_by_dse;
+  // Whether AIM is eligible by server response. Only populated if server
+  // eligibility checking is enabled.
+  bool is_eligible_by_server;
+  // Whether server eligibility checking is enabled.
+  bool is_server_eligibility_enabled;
+  // Base64 encoded server response proto from prefs. Populated if server
+  // eligibility checking is enabled.
+  string server_response_base64_encoded;
+  // Base64url encoded server response proto. Populated if server
+  // eligibility checking is enabled.
+  string server_response_base64_url_encoded;
+  // Source of the server response, e.g., "Server", "Prefs".
+  string server_response_source;
+  // Last updated time.
+  mojo_base.mojom.JSTime last_updated;
+};
+
+// WebUI page side handler for receiving calls from the browser.
+interface Page {
+  // Called when eligibility state changes.
+  OnEligibilityStateChanged(EligibilityState state);
+};
+
+// Browser side handler for receiving calls from the page.
+interface PageHandler {
+  // Gets the current eligibility state.
+  GetEligibilityState() => (EligibilityState state);
+  // Triggers a server eligibility request.
+  RequestServerEligibilityForDebugging();
+  // Sets the eligibility response directly from a base64-encoded string.
+  // Returns true if the response was successfully parsed and stored in prefs.
+  SetEligibilityResponseForDebugging(string base64_encoded_response) => (bool success);
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // Creates the page handler and binds the pending endpoints.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};

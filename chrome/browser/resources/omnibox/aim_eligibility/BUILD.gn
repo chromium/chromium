@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "omnibox_aim_eligibility"
+  generate_grdp = true
+
+  static_files = [ "aim_eligibility.html" ]
+
+  css_files = [ "app.css" ]
+
+  ts_files = [
+    "app.ts",
+    "app.html.ts",
+    "browser_proxy.ts",
+  ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings_ts__generator" ]
+
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "trusted"
+}
