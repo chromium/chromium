@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -178,12 +177,11 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
 
   CloseAllUnexpectedBrowserWindows();
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-KioskBrowserWindowHandler::~KioskBrowserWindowHandler() {
-  BrowserList::RemoveObserver(this);
-}
+KioskBrowserWindowHandler::~KioskBrowserWindowHandler() = default;
 
 bool KioskBrowserWindowHandler::TriageNewSettingsBrowserWindow(
     Browser* browser) {
@@ -301,13 +299,15 @@ void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
       });
 }
 
-void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
+void KioskBrowserWindowHandler::OnBrowserCreated(
+    BrowserWindowInterface* browser_window_interface) {
   // At this point no WebContents has been added to the browser, so we need to
   // post once to ensure we have a WebContents.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&KioskBrowserWindowHandler::OnCompleteBrowserAdded,
-                     weak_ptr_factory_.GetWeakPtr(), browser));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     browser_window_interface->GetBrowserForMigrationOnly()));
 }
 
 void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
@@ -335,9 +335,12 @@ void KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded(
   }
 }
 
-void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
+void KioskBrowserWindowHandler::OnBrowserClosed(
+    BrowserWindowInterface* browser_window_interface) {
+  Browser* browser = browser_window_interface->GetBrowserForMigrationOnly();
+
   url_waiters_.erase(browser);
-  closing_browsers_.erase(browser);
+  closing_browsers_.erase(browser_window_interface);
 
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() && GetBrowserCount() == 0) {
