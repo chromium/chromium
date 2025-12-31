@@ -49,9 +49,11 @@ ACCOUNT_CAPABILITY(kCanMakeChromeSearchEngineChoiceScreenChoice,
                    "accountcapabilities/ge4tenznmnqxa")
 #endif
 
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
                    "accountcapabilities/gu2dqlldmfya")
+#endif
 
 ACCOUNT_CAPABILITY(
     kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,

@@ -29,7 +29,9 @@ class AccountCapabilitiesTestMutator {
 #if !BUILDFLAG(IS_ANDROID)
   void set_can_make_chrome_search_engine_choice_screen_choice(bool value);
 #endif
+#if !BUILDFLAG(IS_IOS)
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
+#endif
   void set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       bool value);
   void set_can_toggle_auto_updates(bool value);

@@ -44,12 +44,14 @@ void AccountCapabilitiesTestMutator::
 }
 #endif
 
+#if !BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
     bool value) {
   capabilities_
       ->capabilities_map_[kCanRunChromePrivacySandboxTrialsCapabilityName] =
       value;
 }
+#endif
 
 void AccountCapabilitiesTestMutator::
     set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(

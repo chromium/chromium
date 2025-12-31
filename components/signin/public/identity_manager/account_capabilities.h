@@ -71,8 +71,10 @@ class AccountCapabilities {
   signin::Tribool can_make_chrome_search_engine_choice_screen_choice() const;
 #endif
 
+#if !BUILDFLAG(IS_IOS)
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
+#endif
 
   // Chrome can show history sync opt in screens without minor mode
   // restrictions with this capability.

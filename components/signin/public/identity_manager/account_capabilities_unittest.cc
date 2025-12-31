@@ -134,6 +134,7 @@ TEST_F(AccountCapabilitiesTest,
       signin::Tribool::kFalse);
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
@@ -148,6 +149,7 @@ TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
   EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
             signin::Tribool::kFalse);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AccountCapabilitiesTest, IsOptedInToParentalSupervision) {
   AccountCapabilities capabilities;
