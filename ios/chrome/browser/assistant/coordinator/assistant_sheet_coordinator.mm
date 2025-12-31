@@ -35,7 +35,7 @@
   _viewController.delegate = self;
 
   // Resolve Layout Guide.
-  GuideName* guideName = kDiamondBottomAppBarGuide;
+  GuideName* guideName = kAppBarGuide;
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
   _viewController.anchorView = [center referencedViewUnderName:guideName];
 

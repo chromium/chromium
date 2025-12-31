@@ -91,8 +91,7 @@ extern GuideName* const kSelectedRegularCellGuide;
 extern GuideName* const kLocationBarBadgeLargeEntrypointGuide;
 // A guide tracking the input accessory view being presented.
 extern GuideName* const kInputAccessoryViewLayoutGuide;
-// A guide that is constrained to match the frame of the bottom app bar in the
-// Diamond Tab Grid.
-extern GuideName* const kDiamondBottomAppBarGuide;
+// A guide that is constrained to match the frame of the app bar.
+extern GuideName* const kAppBarGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

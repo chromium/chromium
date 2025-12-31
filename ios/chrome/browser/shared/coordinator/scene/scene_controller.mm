@@ -2582,6 +2582,10 @@ using UserFeedbackDataCallback =
   [self.AIPrototypingCoordinator start];
 }
 
+- (void)showAssistant {
+  // TODO(crbug.com/472279443): Implement this.
+}
+
 - (void)displaySafariDataImportFromEntryPoint:
             (SafariDataImportEntryPoint)entryPoint
                                 withUIHandler:

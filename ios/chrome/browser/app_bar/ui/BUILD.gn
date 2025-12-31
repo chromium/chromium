@@ -12,9 +12,11 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

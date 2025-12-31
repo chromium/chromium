@@ -24,6 +24,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
+#import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
@@ -283,8 +284,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   GuidedTourCoordinator* _guidedTourCoordinator;
   // Completion block for when the `_guidedTourCoordinator` finishes.
   ProceduralBlock _guidedTourCompletionBlock;
-  // App bar for the prototype.
-  ChromeAppBarPrototype* _appBar;
+  // Coordinator for the AppBar.
+  AppBarCoordinator* _appBarCoordinator;
   // Coordinator for the Assistant Sheet.
   AssistantSheetCoordinator* _assistantSheetCoordinator;
 }
@@ -372,8 +373,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                      forProtocol:@protocol(BookmarksCommands)];
   }
 
-  if (IsDiamondPrototypeEnabled()) {
-    _appBar.incognitoBrowser = incognitoBrowser;
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator.incognitoBrowser = incognitoBrowser;
   }
 }
 
@@ -1031,23 +1032,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
 
-  if (IsDiamondPrototypeEnabled()) {
-    _appBar = [[ChromeAppBarPrototype alloc] init];
-    _appBar.regularBrowser = _regularBrowser;
-    _appBar.incognitoBrowser = _incognitoBrowser;
-    [_appBar.askGeminiButton addTarget:self
-                                action:@selector(prototypeGeminiCallback)
-                      forControlEvents:UIControlEventTouchUpInside];
-    [_appBar.openNewTabButton addTarget:self
-                                 action:@selector(prototypeNewTabCallback)
-                       forControlEvents:UIControlEventTouchUpInside];
-    [_appBar.tabGridButton addTarget:self
-                              action:@selector(prototypeTabGridCallback)
-                    forControlEvents:UIControlEventTouchUpInside];
-    [self.baseViewController setAppBar:_appBar];
-
-    LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
-    [center referenceView:_appBar underName:kDiamondBottomAppBarGuide];
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator =
+        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser
+                                         incognitoBrowser:_incognitoBrowser];
+    [_appBarCoordinator start];
+    [self.baseViewController setAppBar:_appBarCoordinator.viewController];
   }
 
   _regularGridCoordinator = [[RegularGridCoordinator alloc]

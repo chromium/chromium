@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -140,7 +141,14 @@
 // Prepares items for the Tab Grid to Browser transition.
 - (void)prepareTabGridToBrowserTransition {
   [_tabGridViewController addChildViewController:_BVCContainerViewController];
-  _BVCContainerViewController.view.frame = _tabGridViewController.view.bounds;
+  if (IsChromeNextIaEnabled()) {
+    CGRect frame = _tabGridViewController.view.bounds;
+    // TODO(crbug.com/472279443): Use autolayout instead of fixed margins.
+    frame.size.height -= 50;
+    _BVCContainerViewController.view.frame = frame;
+  } else {
+    _BVCContainerViewController.view.frame = _tabGridViewController.view.bounds;
+  }
   [_tabGridViewController.view addSubview:_BVCContainerViewController.view];
 
   _BVCContainerViewController.view.accessibilityViewIsModal = YES;

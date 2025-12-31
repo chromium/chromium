@@ -232,6 +232,9 @@ bool IsTabGridDragAndDropEnabled() {
 BASE_FEATURE(kTabGridNewTransitions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewTabGridTransitionsEnabled() {
+  if (IsChromeNextIaEnabled()) {
+    return true;
+  }
   if (IsDiamondPrototypeEnabled()) {
     return false;
   }

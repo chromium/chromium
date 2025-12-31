@@ -192,7 +192,7 @@ enum class TabGridPageConfiguration {
 - (void)updateActivePageToCurrent;
 
 // Sets the app bar.
-- (void)setAppBar:(ChromeAppBarPrototype*)appBar;
+- (void)setAppBar:(UIViewController*)appBar;
 
 @end
 

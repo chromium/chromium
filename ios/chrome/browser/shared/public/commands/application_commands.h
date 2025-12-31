@@ -166,6 +166,9 @@ enum class TabGridOpeningMode {
 // Opens a debug menu for AI prototyping.
 - (void)openAIMenu;
 
+// Opens the assistant sheet.
+- (void)showAssistant;
+
 // Shows the fullscreen sign-in promo with a completion block that is called
 // when the promo is dismissed.
 - (void)showFullscreenSigninPromoWithCompletion:
