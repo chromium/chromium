@@ -66,6 +66,7 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 
+contextual-entrypoint-and-carousel[searchbox-layout-mode="Compact"]:not([show-dropdown]),
 contextual-entrypoint-and-carousel[searchbox-layout-mode="TallTopContext"]:not([show-dropdown]) {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
