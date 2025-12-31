@@ -469,7 +469,6 @@ class AppWindow : public content::WebContentsDelegate,
 
   // ExtensionFunctionDispatcher::Delegate implementation.
   WindowController* GetExtensionWindowController() override;
-  content::WebContents* GetAssociatedWebContents() override;
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

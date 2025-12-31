@@ -231,10 +231,6 @@ WindowController* TabHelper::GetExtensionWindowController() {
   return ExtensionTabUtil::GetWindowControllerOfTab(web_contents());
 }
 
-WebContents* TabHelper::GetAssociatedWebContents() {
-  return web_contents();
-}
-
 void TabHelper::OnExtensionLoaded(content::BrowserContext* browser_context,
                                   const Extension* extension) {
   // Clear the back forward cache for the associated tab to accommodate for any

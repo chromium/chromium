@@ -153,16 +153,6 @@ ExtensionFunctionDispatcher::Delegate::GetExtensionWindowController() {
   return nullptr;
 }
 
-content::WebContents*
-ExtensionFunctionDispatcher::Delegate::GetAssociatedWebContents() {
-  return nullptr;
-}
-
-content::WebContents*
-ExtensionFunctionDispatcher::Delegate::GetVisibleWebContents() {
-  return GetAssociatedWebContents();
-}
-
 ExtensionFunctionDispatcher::ExtensionFunctionDispatcher(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context), delegate_(nullptr) {}
@@ -519,10 +509,6 @@ void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
 
 WindowController* ExtensionFunctionDispatcher::GetExtensionWindowController() {
   return delegate_ ? delegate_->GetExtensionWindowController() : nullptr;
-}
-
-content::WebContents* ExtensionFunctionDispatcher::GetVisibleWebContents() {
-  return delegate_ ? delegate_->GetVisibleWebContents() : nullptr;
 }
 
 void ExtensionFunctionDispatcher::AddResponseTarget(ExtensionFunction* func) {

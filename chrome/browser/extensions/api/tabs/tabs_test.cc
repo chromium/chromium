@@ -167,7 +167,6 @@ class TestFunctionDispatcherDelegate
   extensions::WindowController* GetExtensionWindowController() override {
     return BrowserExtensionWindowController::From(browser_);
   }
-  content::WebContents* GetAssociatedWebContents() override { return nullptr; }
 
   raw_ptr<BrowserWindowInterface> browser_;
 };

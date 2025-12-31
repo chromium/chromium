@@ -123,11 +123,6 @@ ExtensionWebContentsObserver::ExtensionWebContentsObserver(
 ExtensionWebContentsObserver::~ExtensionWebContentsObserver() {
 }
 
-content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents() {
-  DCHECK(initialized_);
-  return web_contents();
-}
-
 void ExtensionWebContentsObserver::InitializeRenderFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);

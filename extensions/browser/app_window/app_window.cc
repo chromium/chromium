@@ -983,10 +983,6 @@ WindowController* AppWindow::GetExtensionWindowController() {
   return app_window_contents_->GetWindowController();
 }
 
-content::WebContents* AppWindow::GetAssociatedWebContents() {
-  return web_contents();
-}
-
 void AppWindow::OnExtensionUnloaded(BrowserContext* browser_context,
                                     const Extension* extension,
                                     UnloadedExtensionReason reason) {

@@ -189,12 +189,6 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() {
   return delegate_->GetExtensionWindowController();
 }
 
-content::WebContents* ExtensionViewHost::GetVisibleWebContents() {
-  return (extension_host_type() == mojom::ViewType::kExtensionPopup)
-             ? host_contents()
-             : nullptr;
-}
-
 void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
     content::BrowserContext* host_browser_context,
     ExtensionHost* extension_host) {

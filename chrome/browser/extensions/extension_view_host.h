@@ -117,7 +117,6 @@ class ExtensionViewHost
 
   // extensions::ExtensionFunctionDispatcher::Delegate
   WindowController* GetExtensionWindowController() override;
-  content::WebContents* GetVisibleWebContents() override;
 
   // ExtensionHostRegistry::Observer:
   void OnExtensionHostDocumentElementAvailable(

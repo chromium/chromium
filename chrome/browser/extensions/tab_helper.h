@@ -85,7 +85,6 @@ class TabHelper : public content::WebContentsObserver,
 
   // ExtensionFunctionDispatcher::Delegate overrides.
   WindowController* GetExtensionWindowController() override;
-  content::WebContents* GetAssociatedWebContents() override;
 
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
