@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -133,38 +132,6 @@ TEST(UpdateServiceImplInactiveTest, All) {
         base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  {
-    base::RunLoop run_loop;
-    update_service->GetUpdaterState(base::BindLambdaForTesting(
-        [&run_loop](const UpdateService::UpdaterState& updater_state) {
-          EXPECT_TRUE(updater_state.active_version.empty());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  {
-    base::RunLoop run_loop;
-    update_service->GetUpdaterPolicies(base::BindLambdaForTesting(
-        [&run_loop](
-            const base::flat_map<std::string, UpdateService::PolicyValue>&
-                policies) {
-          EXPECT_TRUE(policies.empty());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  {
-    base::RunLoop run_loop;
-    update_service->GetAppPolicies(base::BindLambdaForTesting(
-        [&run_loop](const base::flat_map<
-                    std::string,
-                    base::flat_map<std::string, UpdateService::PolicyValue>>&
-                        policies) {
-          EXPECT_TRUE(policies.empty());
           run_loop.Quit();
         }));
     run_loop.Run();

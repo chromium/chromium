@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -101,21 +100,6 @@ class UpdateServiceProxyWinImpl : public UpdateServiceProxyImpl {
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) override;
-  void GetUpdaterState(
-      base::OnceCallback<void(
-          base::expected<UpdateService::UpdaterState, RpcError>)>) override;
-  void GetUpdaterPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)>) override;
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)>) override;
 
  private:
   ~UpdateServiceProxyWinImpl() override;

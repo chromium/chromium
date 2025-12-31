@@ -5,7 +5,6 @@
 module updater.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // Struct containing the information required to register an application with
@@ -170,65 +169,9 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
   [MinVersion=2] string? cohort;
 };
 
-// Policy values for a single policy provided by various sources.
-[Stable] struct PolicyValue {
-  // Possible sources for the policy values.
-  [Stable, Extensible]
-  enum PolicySource {
-    [Default] kSourceUnknown = 0,
-
-    // The default value, if any.
-    kSourceDefault,
-
-    // Value from external constants file (used in testing only).
-    kSourceExternalConstants,
-
-    // Value from OS policy manager (e.g., Group Policy, Managed Preferences).
-    kSourcePlatform,
-
-    // Value from cloud service.
-    kSourceCloud,
-  };
-
-  // The updater uses `policy_value` as the effective policy from source
-  // `policy_source`, and the value will be equivalent to whatever the value of
-  // the `policy_source` is.
-  // In addition, the values of the individual sources are also aggregated here
-  // for informative as well as diagnostic purposes.
-  string policy_value;
-  PolicySource policy_source;
-
-  // The default value, if any.
-  string? default_value;
-
-  // Value from external constants file (used in testing only).
-  string? external_constants_value;
-
-  // Value from OS policy manager (e.g., Group Policy, Managed Preferences).
-  string? platform_value;
-
-  // Value from cloud service.
-  string? cloud_value;
-};
-
-// A snapshot of the the updater's persisted state.
-[Stable] struct UpdaterState {
-  // The active version of the updater which is responding to this request.
-  string active_version;
-
-  // Any inactive versions of the updater present in this installation.
-  array<string> inactive_versions;
-
-  // The time at which the updater last performed an update check.
-  mojo_base.mojom.Time last_checked;
-
-  // The time at which the updater last attempted its periodic tasks.
-  mojo_base.mojom.Time last_started;
-};
-
 // The UpdateService is the cross-platform core of the updater.
 // All functions and callbacks must be called on the same sequence.
-// Next version: 6
+// Next version: 5
 [Stable] interface UpdateService {
   // Defines the behavior of the update stack for over-installs.
   // Typically, same versions updates are not allowed, in which case, the update
@@ -460,22 +403,6 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     // The language for the update check, if any.
     [MinVersion=3] string? language) =>
     (pending_receiver<StateChangeObserver> observer);
-
-  // Gets the current state of the updater.
-  [MinVersion=5] GetUpdaterState@11() => (UpdaterState updater_state);
-
-  // Gets the current policies for the updater.
-  [MinVersion=5] GetUpdaterPolicies@12() => (
-    // Each element in the `updater_policies` map is
-    // `policy_name` = `policy value`.
-    map<string, PolicyValue> updater_policies);
-
-  // Gets the current policies for apps.
-  [MinVersion=5] GetAppPolicies@13() => (
-    // Each element in the `app_policies` map is `app_id` = `policy values`.
-    // Each element in the `policy values` map is
-    // `policy_name` = `policy value`.
-    map<string, map<string, PolicyValue>> app_policies);
 };
 
 // Callback interface for repeated state change notifications produced by

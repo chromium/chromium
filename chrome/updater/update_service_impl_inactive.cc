@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -127,36 +126,6 @@ class UpdateServiceImplInactive : public UpdateService {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
-  }
-
-  void GetUpdaterState(
-      base::OnceCallback<void(const UpdaterState&)> callback) override {
-    VLOG(1) << __func__ << " (Inactive)";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), UpdaterState()));
-  }
-
-  void GetUpdaterPolicies(
-      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-          callback) override {
-    VLOG(1) << __func__ << " (Inactive)";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<std::string, PolicyValue>()));
-  }
-
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(const base::flat_map<std::string,
-                                    base::flat_map<std::string, PolicyValue>>&)>
-          callback) override {
-    VLOG(1) << __func__ << " (Inactive)";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            base::flat_map<std::string,
-                           base::flat_map<std::string, PolicyValue>>()));
   }
 
  private:

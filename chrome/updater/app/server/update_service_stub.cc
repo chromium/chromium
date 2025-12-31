@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -36,28 +35,6 @@ namespace {
 [[nodiscard]] mojom::AppStatePtr MakeMojoAppState(
     const updater::UpdateService::AppState& app_state) {
   return mojom::AppState::New(app_state);
-}
-
-[[nodiscard]] std::pair<std::string, mojom::PolicyValuePtr>
-MakeMojoPolicyValues(
-    const std::pair<std::string, updater::UpdateService::PolicyValue>&
-        policy_value) {
-  return std::make_pair(policy_value.first,
-                        mojom::PolicyValue::New(policy_value.second));
-}
-
-[[nodiscard]] std::pair<std::string,
-                        base::flat_map<std::string, mojom::PolicyValuePtr>>
-MakeMojoAppPolicyValues(
-    const std::pair<
-        std::string,
-        base::flat_map<std::string, updater::UpdateService::PolicyValue>>&
-        policy_values) {
-  base::flat_map<std::string, mojom::PolicyValuePtr> policies_mojom;
-  std::ranges::transform(policy_values.second,
-                         std::inserter(policies_mojom, policies_mojom.end()),
-                         &MakeMojoPolicyValues);
-  return std::make_pair(policy_values.first, std::move(policies_mojom));
 }
 
 [[nodiscard]] mojom::UpdateStatePtr MakeMojoUpdateState(
@@ -201,21 +178,6 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     mojo::Remote<mojom::StateChangeObserver> observer;
     std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
     observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
-  }
-
-  void GetUpdaterState(GetUpdaterStateCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->GetUpdaterState(std::move(callback));
-  }
-
-  void GetUpdaterPolicies(GetUpdaterPoliciesCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->GetUpdaterPolicies(std::move(callback));
-  }
-
-  void GetAppPolicies(GetAppPoliciesCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->GetAppPolicies(std::move(callback));
   }
 
  private:
@@ -380,57 +342,6 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                       install_settings, language.value_or(""),
                       std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
-}
-
-void UpdateServiceStub::GetUpdaterState(GetUpdaterStateCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_start_listener_.Run();
-  impl_->GetUpdaterState(
-      base::BindOnce(
-          [](const updater::UpdateService::UpdaterState& updater_state) {
-            return mojom::UpdaterState::New(updater_state);
-          })
-          .Then(std::move(callback))
-          .Then(task_end_listener_));
-}
-
-void UpdateServiceStub::GetUpdaterPolicies(
-    GetUpdaterPoliciesCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_start_listener_.Run();
-  impl_->GetUpdaterPolicies(
-      base::BindOnce(
-          [](const base::flat_map<
-              std::string, updater::UpdateService::PolicyValue>& policies) {
-            base::flat_map<std::string, mojom::PolicyValuePtr> policies_mojom;
-            std::ranges::transform(
-                policies, std::inserter(policies_mojom, policies_mojom.end()),
-                &MakeMojoPolicyValues);
-            return policies_mojom;
-          })
-          .Then(std::move(callback))
-          .Then(task_end_listener_));
-}
-
-void UpdateServiceStub::GetAppPolicies(GetAppPoliciesCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_start_listener_.Run();
-  impl_->GetAppPolicies(
-      base::BindOnce(
-          [](const base::flat_map<
-              std::string,
-              base::flat_map<std::string, updater::UpdateService::PolicyValue>>&
-                 policies) {
-            base::flat_map<std::string,
-                           base::flat_map<std::string, mojom::PolicyValuePtr>>
-                policies_mojom;
-            std::ranges::transform(
-                policies, std::inserter(policies_mojom, policies_mojom.end()),
-                &MakeMojoAppPolicyValues);
-            return policies_mojom;
-          })
-          .Then(std::move(callback))
-          .Then(task_end_listener_));
 }
 
 void UpdateServiceStub::CheckForUpdate(

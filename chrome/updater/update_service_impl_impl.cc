@@ -1555,45 +1555,6 @@ void UpdateServiceImplImpl::RunInstallerImpl(
           app_info.brand, language, new_install, std::move(callback)));
 }
 
-void UpdateServiceImplImpl::GetUpdaterState(
-    base::OnceCallback<void(const UpdaterState&)> callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/456497861): populate `UpdaterState`.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), UpdaterState()));
-}
-
-void UpdateServiceImplImpl::GetUpdaterPolicies(
-    base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-        callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/456497861): populate the vector of `PolicyValues`.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                base::flat_map<std::string, PolicyValue>()));
-}
-
-void UpdateServiceImplImpl::GetAppPolicies(
-    base::OnceCallback<
-        void(const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-        callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/456497861): populate the vector of `PolicyValues`.
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          base::flat_map<std::string,
-                         base::flat_map<std::string, PolicyValue>>()));
-}
-
 bool UpdateServiceImplImpl::IsUpdateDisabledByPolicy(const std::string& app_id,
                                                      Priority priority,
                                                      bool is_install,

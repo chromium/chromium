@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/base_paths.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -185,24 +184,6 @@ TEST(KSAdminTest, Register) {
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
-    MOCK_METHOD(void,
-                GetUpdaterState,
-                (base::OnceCallback<void(const UpdaterState&)> callback),
-                (override));
-    MOCK_METHOD(
-        void,
-        GetUpdaterPolicies,
-        (base::OnceCallback<
-            void(const base::flat_map<std::string, PolicyValue>&)> callback),
-        (override));
-    MOCK_METHOD(
-        void,
-        GetAppPolicies,
-        (base::OnceCallback<void(
-             const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-             callback),
-        (override));
 
    protected:
     ~MockUpdateService() override = default;

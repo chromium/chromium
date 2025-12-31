@@ -74,9 +74,6 @@ class UpdateServiceStub : public mojom::UpdateService {
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
       const std::optional<std::string>& language,
       UpdateCallback callback) override;
-  void GetUpdaterState(GetUpdaterStateCallback callback) override;
-  void GetUpdaterPolicies(GetUpdaterPoliciesCallback callback) override;
-  void GetAppPolicies(GetAppPoliciesCallback callback) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UpdaterIPCTestCase, AllRpcsComplete);

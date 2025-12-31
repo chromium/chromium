@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
@@ -92,21 +91,6 @@ class UpdateServiceProxyImpl
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) = 0;
-  virtual void GetUpdaterState(
-      base::OnceCallback<
-          void(base::expected<UpdateService::UpdaterState, RpcError>)>) = 0;
-  virtual void GetUpdaterPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)>) = 0;
-  virtual void GetAppPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)>) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;

@@ -87,16 +87,6 @@ class UpdateServiceImplImpl : public UpdateService {
       const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
-  void GetUpdaterState(
-      base::OnceCallback<void(const UpdaterState&)> callback) override;
-  void GetUpdaterPolicies(
-      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-          callback) override;
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(const base::flat_map<std::string,
-                                    base::flat_map<std::string, PolicyValue>>&)>
-          callback) override;
 
  private:
   ~UpdateServiceImplImpl() override;
