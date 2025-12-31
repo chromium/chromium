@@ -188,6 +188,10 @@ class LensSearchController {
   // Returns whether the handshake with the Lens backend is complete.
   bool IsHandshakeComplete();
 
+  // Returns whether the current Lens session should be routed to the contextual
+  // tasks side panel.
+  virtual bool should_route_to_contextual_tasks() const;
+
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
 
@@ -435,6 +439,11 @@ class LensSearchController {
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // Whether the current Lens session should be routed to the contextual tasks
+  // side panel. This is set when the Lens session is initialized and is used to
+  // determine whether to route the queries and results to the contextual tasks.
+  bool should_route_to_contextual_tasks_ = false;
 
   // Tracks the state of the Lens Search feature when the tab is backgrounded.
   // This state is used to restore the Lens Search feature to the same state

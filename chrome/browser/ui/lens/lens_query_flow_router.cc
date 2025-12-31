@@ -52,7 +52,7 @@ LensQueryFlowRouter::LensQueryFlowRouter(
     : lens_search_controller_(lens_search_controller) {}
 
 LensQueryFlowRouter::~LensQueryFlowRouter() {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     auto* session_handle = GetContextualSearchSessionHandle();
     if (session_handle && session_handle->GetController()) {
       session_handle->GetController()->RemoveObserver(this);
@@ -62,7 +62,7 @@ LensQueryFlowRouter::~LensQueryFlowRouter() {
 }
 
 bool LensQueryFlowRouter::IsOff() const {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     return !GetContextualSearchSessionHandle();
   }
   return lens_overlay_query_controller()->IsOff();
@@ -78,7 +78,7 @@ void LensQueryFlowRouter::StartQueryFlow(
     std::optional<uint32_t> pdf_current_page,
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     CHECK(lens_search_controller_->invocation_source().has_value());
     gen204_id_ = base::RandUint64();
     gen204_controller()->OnQueryFlowStart(
@@ -121,14 +121,13 @@ void LensQueryFlowRouter::StartQueryFlow(
 }
 
 void LensQueryFlowRouter::MaybeResumeQueryFlow() {
-  if (contextual_tasks::GetEnableLensInContextualTasks() &&
-      pending_upload_request_) {
+  if (ShouldRouteToContextualTasks() && pending_upload_request_) {
     std::move(pending_upload_request_).Run();
   }
 }
 
 void LensQueryFlowRouter::MaybeRestartQueryFlow() {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     return;
   }
   lens_overlay_query_controller()->MaybeRestartQueryFlow();
@@ -136,7 +135,7 @@ void LensQueryFlowRouter::MaybeRestartQueryFlow() {
 
 void LensQueryFlowRouter::SendTaskCompletionGen204IfEnabled(
     lens::mojom::UserAction user_action) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     auto* session_handle = GetContextualSearchSessionHandle();
     if (!session_handle || !session_handle->GetController() ||
         !overlay_tab_context_file_token_.has_value()) {
@@ -160,7 +159,7 @@ void LensQueryFlowRouter::SendTaskCompletionGen204IfEnabled(
 
 void LensQueryFlowRouter::SendSemanticEventGen204IfEnabled(
     lens::mojom::SemanticEvent event) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     auto* session_handle = GetContextualSearchSessionHandle();
     if (!session_handle || !session_handle->GetController() ||
         !overlay_tab_context_file_token_.has_value()) {
@@ -185,7 +184,7 @@ LensQueryFlowRouter::GetSuggestInputs() {
     return std::nullopt;
   }
 
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     auto* session_handle = GetContextualSearchSessionHandle();
     if (session_handle) {
       return session_handle->GetSuggestInputs();
@@ -205,7 +204,7 @@ void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     return;
   }
 
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     suggest_inputs_ready_callback_ = std::move(callback);
 
     // If the session handle doesn't exist yet, the observer will be added
@@ -227,7 +226,7 @@ void LensQueryFlowRouter::SendRegionSearch(
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes,
     lens::LensOverlayInvocationSource invocation_source) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         std::move(region), std::move(region_bytes), /*query_text=*/std::nullopt,
         lens_selection_type, additional_search_query_params, query_start_time,
@@ -246,7 +245,7 @@ void LensQueryFlowRouter::SendTextOnlyQuery(
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         /*region=*/nullptr, /*region_bytes=*/std::nullopt, query_text,
         lens_selection_type, additional_search_query_params, query_start_time,
@@ -265,7 +264,7 @@ void LensQueryFlowRouter::SendContextualTextQuery(
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     auto request_info = CreateSearchUrlRequestInfoFromInteraction(
         /*region=*/nullptr, /*region_bytes=*/std::nullopt, query_text,
         lens_selection_type, additional_search_query_params, query_start_time,
@@ -288,7 +287,7 @@ void LensQueryFlowRouter::SendMultimodalRequest(
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes,
     lens::LensOverlayInvocationSource invocation_source) {
-  if (contextual_tasks::GetEnableLensInContextualTasks()) {
+  if (ShouldRouteToContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         std::move(region), std::move(region_bytes), query_text,
         lens_selection_type, additional_search_query_params, query_start_time,

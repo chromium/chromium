@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -42,6 +45,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -49,6 +53,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
@@ -66,6 +72,46 @@ constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
+
+// A test AimEligibilityService that returns a fixed eligibility value.
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  explicit TestingAimEligibilityService(
+      bool is_locally_eligible,
+      bool is_server_eligible,
+      bool server_eligibility_enabled,
+      PrefService& pref_service,
+      TemplateURLService* template_url_service)
+      : ChromeAimEligibilityService(pref_service,
+                                    template_url_service,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*is_off_the_record=*/false),
+        is_locally_eligible_(is_locally_eligible),
+        is_server_eligible_(is_server_eligible),
+        server_eligibility_enabled_(server_eligibility_enabled) {}
+
+  ~TestingAimEligibilityService() override = default;
+
+  bool IsAimLocallyEligible() const override { return is_locally_eligible_; }
+  bool IsServerEligibilityEnabled() const override {
+    return server_eligibility_enabled_;
+  }
+  bool IsAimEligible() const override {
+    if (!IsAimLocallyEligible()) {
+      return false;
+    }
+    if (IsServerEligibilityEnabled()) {
+      return is_server_eligible_;
+    }
+    return true;
+  }
+
+ private:
+  bool is_locally_eligible_;
+  bool is_server_eligible_;
+  bool server_eligibility_enabled_;
+};
 
 class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
  public:
@@ -1513,6 +1559,52 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
         /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    LensOverlayControllerCUJTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ContextualTasksLensOverlayControllerInteractiveUiTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<TestingAimEligibilityService>(
+              /*is_locally_eligible=*/true,
+              /*is_server_eligible=*/true,
+              /*server_eligibility_enabled=*/true, *profile->GetPrefs(),
+              /*template_url_service=*/nullptr);
+        }));
+  }
+
+  void SetUpOnMainThread() override {
+    LensOverlayControllerCUJTest::SetUpOnMainThread();
+
+    WaitForTemplateURLServiceToLoad();
+
+    identity_test_environment_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+
+    identity_test_environment_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("user@example.com",
+                                      signin::ConsentLevel::kSignin);
+    identity_test_environment_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  void TearDownOnMainThread() override {
+    identity_test_environment_adaptor_.reset();
+    LensOverlayControllerCUJTest::TearDownOnMainThread();
+  }
+
   InteractiveTestApi::MultiStep WaitForContextualPanelAndLensToClose(
       int tab_index = 0) {
     return Steps(
@@ -1526,6 +1618,11 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
           EXPECT_TRUE(lens_controller->IsClosing() || lens_controller->IsOff());
         }));
   }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_environment_adaptor_;
 };
 
 #if BUILDFLAG(IS_WIN)

@@ -553,6 +553,8 @@ class LensQueryFlowRouterContextualTaskEnabledTest
 
     ON_CALL(*mock_lens_search_controller_, lens_overlay_controller())
         .WillByDefault(Return(mock_lens_overlay_controller_.get()));
+    ON_CALL(*mock_lens_search_controller_, should_route_to_contextual_tasks())
+        .WillByDefault(Return(true));
     ON_CALL(*mock_lens_search_controller_, invocation_source())
         .WillByDefault(Return(lens::LensOverlayInvocationSource::kAppMenu));
   }

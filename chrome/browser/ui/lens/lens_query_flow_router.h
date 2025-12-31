@@ -139,6 +139,10 @@ class LensQueryFlowRouter
     return lens_search_controller_->lens_overlay_query_controller();
   }
 
+  bool ShouldRouteToContextualTasks() const {
+    return lens_search_controller_->should_route_to_contextual_tasks();
+  }
+
   LensOverlayGen204Controller* gen204_controller() const {
     return lens_search_controller_->gen204_controller();
   }
