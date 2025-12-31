@@ -90,12 +90,21 @@ class MockContextualTasksService : public ContextualTasksService {
               (const base::Uuid&, const GURL&),
               (override));
   MOCK_METHOD(void,
+              SetUrlResourcesFromServer,
+              (const base::Uuid& task_id,
+               std::vector<UrlResource> url_resources),
+              (override));
+  MOCK_METHOD(void,
               AssociateTabWithTask,
               (const base::Uuid&, SessionID),
               (override));
   MOCK_METHOD(void,
               DisassociateTabFromTask,
               (const base::Uuid&, SessionID),
+              (override));
+  MOCK_METHOD(void,
+              DisassociateAllTabsFromTask,
+              (const base::Uuid& task_id),
               (override));
   MOCK_METHOD(std::vector<SessionID>,
               GetTabsAssociatedWithTask,

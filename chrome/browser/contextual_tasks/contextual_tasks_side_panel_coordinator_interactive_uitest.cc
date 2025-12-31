@@ -5,8 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -90,25 +90,24 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     // Add tab3.
     chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
 
-    ContextualTasksContextController* contextual_tasks_controller =
-        ContextualTasksContextControllerFactory::GetForProfile(
-            browser()->profile());
+    ContextualTasksService* contextual_tasks_service =
+        ContextualTasksServiceFactory::GetForProfile(browser()->profile());
 
     // Create task1 and associate with tab0 and tab2, create task2 and associate
     // with tab1. Left tab3 with no task associated with.
-    ContextualTask task1 = contextual_tasks_controller->CreateTask();
+    ContextualTask task1 = contextual_tasks_service->CreateTask();
     task_id1_ = task1.GetTaskId();
-    contextual_tasks_controller->AssociateTabWithTask(
+    contextual_tasks_service->AssociateTabWithTask(
         task1.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(0)));
-    ContextualTask task2 = contextual_tasks_controller->CreateTask();
+    ContextualTask task2 = contextual_tasks_service->CreateTask();
     task_id2_ = task2.GetTaskId();
-    contextual_tasks_controller->AssociateTabWithTask(
+    contextual_tasks_service->AssociateTabWithTask(
         task2.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(1)));
-    contextual_tasks_controller->AssociateTabWithTask(
+    contextual_tasks_service->AssociateTabWithTask(
         task1.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(2)));
@@ -369,15 +368,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   EXPECT_EQ(4, detach_index);
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
-  ContextualTasksContextController* contextual_tasks_controller =
-      ContextualTasksContextControllerFactory::GetForProfile(
-          browser()->profile());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
 
   content::WebContents* tab_web_contents;
-  ContextualTask task3 = contextual_tasks_controller->CreateTask();
+  ContextualTask task3 = contextual_tasks_service->CreateTask();
 
   // Associate tab_web_contents to task3.
-  contextual_tasks_controller->AssociateTabWithTask(
+  contextual_tasks_service->AssociateTabWithTask(
       task3.GetTaskId(), sessions::SessionTabHelper::IdForTab(
                              tab_strip_model->GetActiveWebContents()));
 
@@ -389,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         int current_index = tab_strip_model->GetIndexOfWebContents(
             tab_strip_model->GetActiveWebContents());
         EXPECT_EQ(5, current_index);
-        contextual_tasks_controller->AssociateTabWithTask(
+        contextual_tasks_service->AssociateTabWithTask(
             task3.GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
                 tab_strip_model->GetWebContentsAt(current_index)));
@@ -413,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         EXPECT_EQ(tab_web_contents, coordinator->GetActiveWebContents());
 
         // Verify the tab web contents is still associated with task3.
-        EXPECT_TRUE(contextual_tasks_controller->GetContextualTaskForTab(
+        EXPECT_TRUE(contextual_tasks_service->GetContextualTaskForTab(
             sessions::SessionTabHelper::IdForTab(tab_web_contents)));
       }));
 }
@@ -441,15 +439,14 @@ IN_PROC_BROWSER_TEST_F(
 
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
-  ContextualTasksContextController* contextual_tasks_controller =
-      ContextualTasksContextControllerFactory::GetForProfile(
-          browser()->profile());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
 
   content::WebContents* tab_web_contents;
-  ContextualTask task3 = contextual_tasks_controller->CreateTask();
+  ContextualTask task3 = contextual_tasks_service->CreateTask();
 
   // Associate tab_web_contents to task3.
-  contextual_tasks_controller->AssociateTabWithTask(
+  contextual_tasks_service->AssociateTabWithTask(
       task3.GetTaskId(), sessions::SessionTabHelper::IdForTab(
                              tab_strip_model->GetActiveWebContents()));
 
@@ -461,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(
         int current_index = tab_strip_model->GetIndexOfWebContents(
             tab_strip_model->GetActiveWebContents());
         EXPECT_EQ(5, current_index);
-        contextual_tasks_controller->AssociateTabWithTask(
+        contextual_tasks_service->AssociateTabWithTask(
             task3.GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
                 tab_strip_model->GetWebContentsAt(current_index)));
@@ -504,11 +501,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         content::WebContents* web_contents1 =
             coordinator->GetActiveWebContents();
         // Change current task from task1 to a new task.
-        ContextualTasksContextController* contextual_tasks_controller =
-            ContextualTasksContextControllerFactory::GetForProfile(
-                browser()->profile());
-        ContextualTask new_task = contextual_tasks_controller->CreateTask();
-        contextual_tasks_controller->AssociateTabWithTask(
+        ContextualTasksService* contextual_tasks_service =
+            ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+        ContextualTask new_task = contextual_tasks_service->CreateTask();
+        contextual_tasks_service->AssociateTabWithTask(
             new_task.GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
                 browser()->tab_strip_model()->GetActiveWebContents()));
@@ -541,10 +537,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         content::WebContents* web_contents1 =
             coordinator->GetActiveWebContents();
         // Change current task from task1 to task2.
-        ContextualTasksContextController* contextual_tasks_controller =
-            ContextualTasksContextControllerFactory::GetForProfile(
-                browser()->profile());
-        contextual_tasks_controller->AssociateTabWithTask(
+        ContextualTasksService* contextual_tasks_service =
+            ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+        contextual_tasks_service->AssociateTabWithTask(
             task_id2_,
             sessions::SessionTabHelper::IdForTab(
                 browser()->tab_strip_model()->GetActiveWebContents()));
@@ -648,22 +643,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         content::WebContents* web_contents1 =
             coordinator->GetActiveWebContents();
-        ContextualTasksContextController* contextual_tasks_controller =
-            ContextualTasksContextControllerFactory::GetForProfile(
-                browser()->profile());
+        ContextualTasksService* contextual_tasks_service =
+            ContextualTasksServiceFactory::GetForProfile(browser()->profile());
 
         SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(0));
 
         // Close tab0, verify tab0 is removed from task1.
         EXPECT_EQ(task_id1_,
-                  contextual_tasks_controller->GetContextualTaskForTab(tab_id0)
+                  contextual_tasks_service->GetContextualTaskForTab(tab_id0)
                       ->GetTaskId());
         browser()->tab_strip_model()->CloseWebContentsAt(
             0, TabCloseTypes::CLOSE_NONE);
-        EXPECT_EQ(
-            std::nullopt,
-            contextual_tasks_controller->GetContextualTaskForTab(tab_id0));
+        EXPECT_EQ(std::nullopt,
+                  contextual_tasks_service->GetContextualTaskForTab(tab_id0));
 
         // Activate tab1, verify the side panel cache is still present.
         browser()->tab_strip_model()->ActivateTabAt(1);
@@ -675,13 +668,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         // Close tab1, verify tab1 is removed from task1 and side panel
         // WebContents is removed.
         EXPECT_EQ(task_id1_,
-                  contextual_tasks_controller->GetContextualTaskForTab(tab_id1)
+                  contextual_tasks_service->GetContextualTaskForTab(tab_id1)
                       ->GetTaskId());
         browser()->tab_strip_model()->CloseWebContentsAt(
             1, TabCloseTypes::CLOSE_NONE);
-        EXPECT_EQ(
-            std::nullopt,
-            contextual_tasks_controller->GetContextualTaskForTab(tab_id1));
+        EXPECT_EQ(std::nullopt,
+                  contextual_tasks_service->GetContextualTaskForTab(tab_id1));
 
         EXPECT_EQ(nullptr, coordinator->GetActiveWebContents());
       }));
@@ -698,15 +690,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 
   // Tab4 will not inherit the task from tab1 as it is not created through link
   // click.
-  ContextualTasksContextController* contextual_tasks_controller =
-      ContextualTasksContextControllerFactory::GetForProfile(
-          browser()->profile());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
   std::optional<ContextualTask> task1 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(
               browser()->tab_strip_model()->GetWebContentsAt(1)));
   std::optional<ContextualTask> task1_2 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(
               browser()->tab_strip_model()->GetWebContentsAt(4)));
   ASSERT_TRUE(task1);
@@ -724,15 +715,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 
   // Since tab1 is associated with task1, verify tab 2 is associated with the
   // same task.
-  ContextualTasksContextController* contextual_tasks_controller =
-      ContextualTasksContextControllerFactory::GetForProfile(
-          browser()->profile());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
   std::optional<ContextualTask> task1 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(
               browser()->tab_strip_model()->GetWebContentsAt(1)));
   std::optional<ContextualTask> task1_2 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(
               browser()->tab_strip_model()->GetWebContentsAt(2)));
   ASSERT_TRUE(task1);
@@ -743,15 +733,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        MoveTabToNewWindowKeepTaskAssociation) {
   SetUpTasks();
-  ContextualTasksContextController* contextual_tasks_controller =
-      ContextualTasksContextControllerFactory::GetForProfile(
-          browser()->profile());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
 
   // Verify tab0 is associated to a task.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   std::optional<ContextualTask> task1 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(web_contents));
   ASSERT_TRUE(task1.has_value());
 
@@ -760,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 
   // Verify tab0 is still associated to the same task.
   std::optional<ContextualTask> task2 =
-      contextual_tasks_controller->GetContextualTaskForTab(
+      contextual_tasks_service->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(web_contents));
   ASSERT_TRUE(task2.has_value());
   ASSERT_EQ(task1->GetTaskId(), task2->GetTaskId());

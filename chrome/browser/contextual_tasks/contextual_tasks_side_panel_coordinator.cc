@@ -10,8 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -137,9 +136,9 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     SidePanelUI* side_panel_ui,
     ActiveTaskContextProvider* active_task_context_provider)
     : browser_window_(browser_window),
-      context_controller_(
-          ContextualTasksContextControllerFactory::GetForProfile(
-              browser_window->GetProfile())),
+      contextual_tasks_service_(ContextualTasksServiceFactory::GetForProfile(
+
+          browser_window->GetProfile())),
       ui_service_(ContextualTasksUiServiceFactory::GetForBrowserContext(
           browser_window->GetProfile())),
       pref_service_(browser_window->GetProfile()->GetPrefs()),
@@ -208,7 +207,7 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
     // tab.
-    ContextualTask task = context_controller_->CreateTask();
+    ContextualTask task = contextual_tasks_service_->CreateTask();
     ui_service_->AssociateWebContentsToTask(active_tab_interface->GetContents(),
                                             task.GetTaskId());
   }
@@ -398,7 +397,7 @@ ContextualTasksSidePanelCoordinator::GetCurrentTask() {
     return std::nullopt;
   }
 
-  return context_controller_->GetContextualTaskForTab(
+  return contextual_tasks_service_->GetContextualTaskForTab(
       sessions::SessionTabHelper::IdForTab(
           active_tab_interface->GetContents()));
 }
@@ -429,7 +428,7 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
     // window, then remove it.
     bool found = false;
     for (auto tab_id :
-         context_controller_->GetTabsAssociatedWithTask(task_id)) {
+         contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
       if (base::Contains(tab_ids, tab_id)) {
         found = true;
         break;
@@ -504,7 +503,7 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& content : change.GetInsert()->contents) {
       // If the new tab is already associated with a task, do nothing.
-      if (context_controller_->GetContextualTaskForTab(
+      if (contextual_tasks_service_->GetContextualTaskForTab(
               sessions::SessionTabHelper::IdForTab(content.contents))) {
         continue;
       }
@@ -526,7 +525,7 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
         continue;
       }
       std::optional<ContextualTask> task =
-          context_controller_->GetContextualTaskForTab(
+          contextual_tasks_service_->GetContextualTaskForTab(
               sessions::SessionTabHelper::IdForTab(opener->GetContents()));
       if (task) {
         ui_service_->AssociateWebContentsToTask(content.contents,
@@ -693,9 +692,10 @@ void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
     content::WebContents* web_contents) {
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
   std::optional<ContextualTask> task =
-      context_controller_->GetContextualTaskForTab(tab_id);
+      contextual_tasks_service_->GetContextualTaskForTab(tab_id);
   if (task) {
-    context_controller_->DisassociateTabFromTask(task->GetTaskId(), tab_id);
+    contextual_tasks_service_->DisassociateTabFromTask(task->GetTaskId(),
+                                                       tab_id);
   }
   if (!kTaskScopedSidePanel.Get()) {
     tab_scoped_open_state_.erase(tab_id);
@@ -787,7 +787,7 @@ void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
     const ContextualTask& task) {
   TabStripModel* tab_strip_model = browser_window_->GetTabStripModel();
   const auto associated_tab_ids =
-      context_controller_->GetTabsAssociatedWithTask(task.GetTaskId());
+      contextual_tasks_service_->GetTabsAssociatedWithTask(task.GetTaskId());
 
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);

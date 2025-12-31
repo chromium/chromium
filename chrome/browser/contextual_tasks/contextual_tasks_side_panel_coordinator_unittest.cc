@@ -9,10 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -21,7 +20,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -38,8 +39,7 @@ namespace contextual_tasks {
 
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
-  explicit MockContextualTasksUiService(
-      ContextualTasksContextController* controller)
+  explicit MockContextualTasksUiService(ContextualTasksService* controller)
       : ContextualTasksUiService(nullptr, controller, nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
@@ -134,7 +134,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
 
-    ContextualTasksContextControllerFactory::GetInstance()->SetTestingFactory(
+    ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
         base::BindRepeating(&ContextualTasksSidePanelCoordinatorTest::
                                 CreateMockContextController,
@@ -144,9 +144,8 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
         profile_.get(),
         base::BindRepeating([](content::BrowserContext* context)
                                 -> std::unique_ptr<KeyedService> {
-          auto* controller =
-              ContextualTasksContextControllerFactory::GetForProfile(
-                  Profile::FromBrowserContext(context));
+          auto* controller = ContextualTasksServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(context));
           return std::make_unique<NiceMock<MockContextualTasksUiService>>(
               controller);
         }));
@@ -188,8 +187,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 
   std::unique_ptr<KeyedService> CreateMockContextController(
       content::BrowserContext* context) {
-    auto mock =
-        std::make_unique<NiceMock<MockContextualTasksContextController>>();
+    auto mock = std::make_unique<NiceMock<MockContextualTasksService>>();
     mock_controller_ = mock.get();
     return mock;
   }
@@ -207,7 +205,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   NiceMock<MockSidePanelUI> mock_side_panel_ui_;
   NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider_;
-  raw_ptr<MockContextualTasksContextController> mock_controller_ = nullptr;
+  raw_ptr<MockContextualTasksService> mock_controller_ = nullptr;
 
   std::unique_ptr<ContextualTasksSidePanelCoordinator> coordinator_;
 };

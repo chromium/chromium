@@ -16,11 +16,10 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -47,8 +46,8 @@
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/contextual_tasks/public/utils.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
@@ -172,9 +171,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       ui_service_(contextual_tasks::ContextualTasksUiServiceFactory::
                       GetForBrowserContext(
                           web_ui->GetWebContents()->GetBrowserContext())),
-      context_controller_(
-          contextual_tasks::ContextualTasksContextControllerFactory::
-              GetForProfile(Profile::FromBrowserContext(
+      contextual_tasks_service_(
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
@@ -359,7 +358,7 @@ void ContextualTasksUI::CreatePageHandler(
 
   page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page_handler), this, ui_service_, context_controller_);
+      std::move(page_handler), this, ui_service_, contextual_tasks_service_);
 
   // Request the initial OAuth token to be used by the embedded page.
   RequestOAuthToken();
@@ -561,7 +560,7 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
   // This should only ever happen once per WebUI.
   CHECK(!nav_observer_);
   nav_observer_ = std::make_unique<FrameNavObserver>(
-      inner_contents, ui_service_, context_controller_, this);
+      inner_contents, ui_service_, contextual_tasks_service_, this);
   inner_web_contents_creation_observer_.reset();
   embedded_web_contents_ = inner_contents->GetWeakPtr();
 }
@@ -676,7 +675,7 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
       std::make_unique<contextual_tasks::ContextDecorationParams>();
   context_decoration_params->contextual_search_session_handle =
       GetOrCreateContextualSessionHandle()->AsWeakPtr();
-  context_controller_->GetContextForTask(
+  contextual_tasks_service_->GetContextForTask(
       GetTaskId().value(),
       {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},
       std::move(context_decoration_params),
@@ -709,16 +708,16 @@ void ContextualTasksUI::PushTaskDetailsToPage() {
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,
-    contextual_tasks::ContextualTasksContextController* context_controller,
+    contextual_tasks::ContextualTasksService* contextual_tasks_service,
     TaskInfoDelegate* task_info_delegate)
     : content::WebContentsObserver(web_contents),
       ui_service_(ui_service),
-      context_controller_(context_controller),
+      contextual_tasks_service_(contextual_tasks_service),
       task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
 
 void ContextualTasksUI::FrameNavObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!ui_service_ || !context_controller_) {
+  if (!ui_service_ || !contextual_tasks_service_) {
     return;
   }
 
@@ -733,7 +732,7 @@ void ContextualTasksUI::FrameNavObserver::DidStartNavigation(
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!ui_service_ || !context_controller_) {
+  if (!ui_service_ || !contextual_tasks_service_) {
     return;
   }
 
@@ -795,7 +794,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       (!webui_thread_id || (webui_thread_id.value() != url_thread_id))) {
     // Check if there's an existing task for the thread.
     std::optional<contextual_tasks::ContextualTask> existing_task =
-        context_controller_->GetTaskFromServerId(
+        contextual_tasks_service_->GetTaskFromServerId(
             contextual_tasks::ThreadType::kAiMode, url_thread_id);
 
     if (existing_task) {
@@ -806,7 +805,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       task_info_delegate_->SetThreadTitle(existing_task.value().GetTitle());
     } else {
       task_changed = true;
-      auto task = context_controller_->CreateTaskFromUrl(url);
+      auto task = contextual_tasks_service_->CreateTaskFromUrl(url);
       task_info_delegate_->SetTaskId(task.GetTaskId());
     }
   }
@@ -830,7 +829,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     mstk = std::nullopt;
   }
 
-  context_controller_->UpdateThreadForTask(
+  contextual_tasks_service_->UpdateThreadForTask(
       task_info_delegate_->GetTaskId().value(),
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
@@ -874,14 +873,14 @@ void ContextualTasksUI::CreatePageHandler(
         contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
         receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  auto* context_service =
+  auto* contextual_tasks_service =
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
           profile);
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   contextual_tasks_internals_page_handler_ =
       std::make_unique<ContextualTasksInternalsPageHandler>(
-          context_service, optimization_guide_keyed_service,
+          contextual_tasks_service, optimization_guide_keyed_service,
           std::move(receiver), std::move(page));
 }
 

@@ -7,11 +7,11 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/page_navigator.h"
@@ -53,8 +53,8 @@ constexpr char kLabsUrl[] = "https://labs.google.com/search";
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
-      ContextualTasksContextController* context_controller)
-      : ContextualTasksUiService(nullptr, context_controller, nullptr) {}
+      contextual_tasks::ContextualTasksService* contextual_tasks_service)
+      : ContextualTasksUiService(nullptr, contextual_tasks_service, nullptr) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -114,28 +114,28 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     profile_ = std::make_unique<TestingProfile>();
-    context_controller_ =
-        std::make_unique<MockContextualTasksContextController>();
+    contextual_tasks_service_ = std::make_unique<MockContextualTasksService>();
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
-        context_controller_.get());
+        contextual_tasks_service_.get());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
     ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
         .WillByDefault(Return(true));
 
-    ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
-      FeatureEligibility eligibility;
-      eligibility.contextual_tasks_enabled = true;
-      eligibility.aim_eligible = true;
-      eligibility.context_sharing_enabled = true;
-      return eligibility;
-    });
+    ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
+        .WillByDefault([]() {
+          FeatureEligibility eligibility;
+          eligibility.contextual_tasks_enabled = true;
+          eligibility.aim_eligible = true;
+          eligibility.context_sharing_enabled = true;
+          return eligibility;
+        });
   }
 
   void TearDown() override {
     service_for_nav_ = nullptr;
-    context_controller_ = nullptr;
+    contextual_tasks_service_ = nullptr;
     profile_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -147,7 +147,7 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
  protected:
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
-  std::unique_ptr<MockContextualTasksContextController> context_controller_;
+  std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
 };
 
 TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
@@ -252,13 +252,14 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(tab_url);
 
-  ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
-    FeatureEligibility eligibility;
-    eligibility.contextual_tasks_enabled = false;
-    eligibility.aim_eligible = false;
-    eligibility.context_sharing_enabled = false;
-    return eligibility;
-  });
+  ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
+      .WillByDefault([]() {
+        FeatureEligibility eligibility;
+        eligibility.contextual_tasks_enabled = false;
+        eligibility.aim_eligible = false;
+        eligibility.context_sharing_enabled = false;
+        return eligibility;
+      });
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -495,7 +496,7 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
   task.SetTitle(title);
   task.AddThread(thread);
 
-  ON_CALL(*context_controller_, GetTaskById)
+  ON_CALL(*contextual_tasks_service_, GetTaskById)
       .WillByDefault([&](const base::Uuid& task_id,
                          base::OnceCallback<void(std::optional<ContextualTask>)>
                              callback) { std::move(callback).Run(task); });
@@ -519,7 +520,8 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
-  ContextualTasksUiService service(nullptr, context_controller_.get(), nullptr);
+  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
+                                   nullptr);
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -534,9 +536,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(intercepted_url))
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
       .WillOnce(Return(task));
-  EXPECT_CALL(*context_controller_,
+  EXPECT_CALL(*contextual_tasks_service_,
               AssociateTabWithTask(
                   task.GetTaskId(),
                   sessions::SessionTabHelper::IdForTab(web_contents.get())))

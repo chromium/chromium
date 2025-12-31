@@ -48,7 +48,7 @@ struct AccessTokenInfo;
 }  // namespace signin
 
 namespace contextual_tasks {
-class ContextualTasksContextController;
+class ContextualTasksService;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
@@ -76,7 +76,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
     explicit FrameNavObserver(
         content::WebContents* web_contents,
         contextual_tasks::ContextualTasksUiService* ui_service,
-        contextual_tasks::ContextualTasksContextController* context_controller,
+        contextual_tasks::ContextualTasksService* contextual_tasks_service,
         TaskInfoDelegate* task_info_delegate);
     ~FrameNavObserver() override = default;
 
@@ -87,8 +87,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
    private:
     raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
-    raw_ptr<contextual_tasks::ContextualTasksContextController>
-        context_controller_;
+    raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
     raw_ref<TaskInfoDelegate> task_info_delegate_;
 
     // Last committed URL used to check if URL changes.
@@ -259,11 +258,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
-  // A handle to the class that extends the ContextualTasksService - the backend
-  // component responsible for maintaining associations between open tabs and
-  // threads.
-  raw_ptr<contextual_tasks::ContextualTasksContextController>
-      context_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};

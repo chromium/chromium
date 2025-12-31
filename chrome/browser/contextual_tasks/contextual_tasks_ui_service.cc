@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -122,10 +121,10 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 
 ContextualTasksUiService::ContextualTasksUiService(
     Profile* profile,
-    ContextualTasksContextController* context_controller,
+    contextual_tasks::ContextualTasksService* contextual_tasks_service,
     signin::IdentityManager* identity_manager)
     : profile_(profile),
-      context_controller_(context_controller),
+      contextual_tasks_service_(contextual_tasks_service),
       identity_manager_(identity_manager) {
   ai_page_host_ = GURL(kAiPageHost);
 }
@@ -136,7 +135,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> source_tab,
     bool is_to_new_tab) {
-  CHECK(context_controller_);
+  CHECK(contextual_tasks_service_);
 
   // Get the session handle from the source web contents, if provided, to
   // propagate context from the source WebUI.
@@ -175,7 +174,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       ConvertContextualSearchSourceToEntrypointSource(source));
 
   // Create a task for the URL that was just intercepted.
-  ContextualTask task = context_controller_->CreateTaskFromUrl(url);
+  ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
 
   // Map the task ID to the intercepted url. This is done so the UI knows which
   // URL to load initially in the embedded frame.
@@ -233,7 +232,7 @@ bool ContextualTasksUiService::MaybeFocusExistingOpenTab(
     content::WebContents* web_contents =
         tab_strip_model->GetTabAtIndex(i)->GetContents();
     std::optional<ContextualTask> task =
-        context_controller_->GetContextualTaskForTab(
+        contextual_tasks_service_->GetContextualTaskForTab(
             SessionTabHelper::IdForTab(web_contents));
     if (web_contents->GetLastCommittedURL() == url && task &&
         task->GetTaskId() == task_id) {
@@ -385,8 +384,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     bool is_to_new_tab) {
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
-  if (!context_controller_ ||
-      !context_controller_->GetFeatureEligibility().IsEligible()) {
+  if (!contextual_tasks_service_ ||
+      !contextual_tasks_service_->GetFeatureEligibility().IsEligible()) {
     return false;
   }
 
@@ -552,7 +551,7 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
 void ContextualTasksUiService::GetThreadUrlFromTaskId(
     const base::Uuid& task_id,
     base::OnceCallback<void(GURL)> callback) {
-  context_controller_->GetTaskById(
+  contextual_tasks_service_->GetTaskById(
       task_id, base::BindOnce(
                    [](base::WeakPtr<ContextualTasksUiService> service,
                       base::OnceCallback<void(GURL)> callback,
@@ -605,7 +604,7 @@ void ContextualTasksUiService::OnTaskChanged(
     base::Uuid new_task_id = task_id;
     if (!task_id.is_valid()) {
       // If the panel is in zero state, create an empty task.
-      ContextualTask task = context_controller_->CreateTask();
+      ContextualTask task = contextual_tasks_service_->CreateTask();
       new_task_id = task.GetTaskId();
     }
 
@@ -619,17 +618,17 @@ void ContextualTasksUiService::OnTaskChanged(
       // If the current tab is associated with any task, change associations for
       // all tabs associated with that task.
       std::optional<ContextualTask> current_task =
-          context_controller_->GetContextualTaskForTab(active_id);
+          contextual_tasks_service_->GetContextualTaskForTab(active_id);
       if (current_task) {
         std::vector<SessionID> tab_ids =
-            context_controller_->GetTabsAssociatedWithTask(
+            contextual_tasks_service_->GetTabsAssociatedWithTask(
                 current_task->GetTaskId());
         for (const auto& id : tab_ids) {
-          context_controller_->AssociateTabWithTask(new_task_id, id);
+          contextual_tasks_service_->AssociateTabWithTask(new_task_id, id);
         }
       }
     } else {
-      context_controller_->AssociateTabWithTask(new_task_id, active_id);
+      contextual_tasks_service_->AssociateTabWithTask(new_task_id, active_id);
     }
 
     ContextualTasksSidePanelCoordinator* coordinator =
@@ -695,7 +694,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
-  CHECK(context_controller_);
+  CHECK(contextual_tasks_service_);
 
   // Get the coordinator for the current window.
   auto* coordinator =
@@ -704,7 +703,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 
   // Create a task for the URL if the side panel wasn't already showing a task.
   if (!panel_contents || !coordinator->IsSidePanelOpenForContextualTask()) {
-    ContextualTask task = context_controller_->CreateTaskFromUrl(url);
+    ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
     task_id_to_creation_url_[task.GetTaskId()] = url;
     AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
     coordinator->Show();
@@ -805,7 +804,7 @@ void ContextualTasksUiService::AssociateWebContentsToTask(
     const base::Uuid& task_id) {
   SessionID session_id = SessionTabHelper::IdForTab(web_contents);
   if (session_id.is_valid()) {
-    context_controller_->AssociateTabWithTask(task_id, session_id);
+    contextual_tasks_service_->AssociateTabWithTask(task_id, session_id);
   }
 }
 

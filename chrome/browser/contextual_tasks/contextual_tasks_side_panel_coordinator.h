@@ -31,7 +31,7 @@ class WebView;
 namespace contextual_tasks {
 
 class ContextualTask;
-class ContextualTasksContextController;
+class ContextualTasksService;
 class ContextualTasksUiService;
 class ContextualTasksWebView;
 class ActiveTaskContextProvider;
@@ -198,7 +198,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
   // Context controller to query task information.
-  const raw_ptr<ContextualTasksContextController> context_controller_;
+  const raw_ptr<ContextualTasksService> contextual_tasks_service_;
 
   const raw_ptr<ContextualTasksUiService> ui_service_;
 

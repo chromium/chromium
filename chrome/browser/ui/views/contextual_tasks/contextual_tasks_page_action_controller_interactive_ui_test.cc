@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
@@ -44,21 +44,20 @@ class ContextualTasksPageActionControllerInteractiveTest
     return embedded_test_server()->GetURL("example.com", "/title1.html");
   }
 
-  contextual_tasks::ContextualTasksContextController*
-  GetContextualTasksController() {
-    return contextual_tasks::ContextualTasksContextControllerFactory::
-        GetForProfile(browser()->profile());
+  contextual_tasks::ContextualTasksService* GetContextualTasksService() {
+    return contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+        browser()->profile());
   }
 
   auto CreateTaskForTab(int tab_index) {
     return Do([&, tab_index] {
       contextual_tasks::ContextualTask task =
-          GetContextualTasksController()->CreateTask();
+          GetContextualTasksService()->CreateTask();
       content::WebContents* const web_contents =
           browser()->tab_strip_model()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
-      GetContextualTasksController()->AssociateTabWithTask(task.GetTaskId(),
-                                                           session_id);
+      GetContextualTasksService()->AssociateTabWithTask(task.GetTaskId(),
+                                                        session_id);
     });
   }
 
@@ -68,9 +67,9 @@ class ContextualTasksPageActionControllerInteractiveTest
           browser()->tab_strip_model()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
       std::optional<contextual_tasks::ContextualTask> task =
-          GetContextualTasksController()->GetContextualTaskForTab(session_id);
+          GetContextualTasksService()->GetContextualTaskForTab(session_id);
       if (task.has_value()) {
-        GetContextualTasksController()->DisassociateTabFromTask(
+        GetContextualTasksService()->DisassociateTabFromTask(
             task.value().GetTaskId(), session_id);
       }
     });

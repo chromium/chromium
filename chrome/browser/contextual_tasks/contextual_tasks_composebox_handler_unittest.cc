@@ -12,11 +12,10 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -30,6 +29,8 @@
 #include "components/contextual_search/fake_variations_client.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -124,20 +125,20 @@ class TestContextualTasksComposeboxHandler
               (override));
 
  protected:
-  contextual_tasks::ContextualTasksContextController* GetContextController()
+  contextual_tasks::ContextualTasksService* GetContextualTasksService()
       override {
-    return mock_controller_;
+    return mock_contextual_tasks_service_;
   }
 
  public:
-  void SetMockController(
-      contextual_tasks::ContextualTasksContextController* controller) {
-    mock_controller_ = controller;
+  void SetMockContextualTasksService(
+      contextual_tasks::ContextualTasksService* contextual_tasks_service) {
+    mock_contextual_tasks_service_ = contextual_tasks_service;
   }
 
  private:
-  raw_ptr<contextual_tasks::ContextualTasksContextController> mock_controller_ =
-      nullptr;
+  raw_ptr<contextual_tasks::ContextualTasksService>
+      mock_contextual_tasks_service_ = nullptr;
 };
 
 class ContextualTasksComposeboxHandlerTest
@@ -180,9 +181,10 @@ class ContextualTasksComposeboxHandlerTest
         .WillByDefault(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
 
     // Create mock controller directly.
-    mock_tasks_context_controller_owner_ = std::make_unique<testing::NiceMock<
-        contextual_tasks::MockContextualTasksContextController>>();
-    mock_tasks_controller_ptr_ = mock_tasks_context_controller_owner_.get();
+    mock_contextual_tasks_service_owner_ = std::make_unique<
+        testing::NiceMock<contextual_tasks::MockContextualTasksService>>();
+    mock_contextual_tasks_service_ptr_ =
+        mock_contextual_tasks_service_owner_.get();
 
     handler_ = std::make_unique<TestContextualTasksComposeboxHandler>(
         mock_ui_.get(), profile(), web_contents(),
@@ -192,7 +194,7 @@ class ContextualTasksComposeboxHandlerTest
         base::BindRepeating(
             &ContextualTasksUI::GetOrCreateContextualSessionHandle,
             base::Unretained(mock_ui_.get())));
-    handler_->SetMockController(mock_tasks_controller_ptr_);
+    handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
 
     // Setup MockTabContextualizationController
     tabs::TabInterface* active_tab =
@@ -208,13 +210,13 @@ class ContextualTasksComposeboxHandlerTest
         std::move(mock_tab_controller));
   }
 
-  std::unique_ptr<contextual_tasks::MockContextualTasksContextController>
-      mock_tasks_context_controller_owner_;
+  std::unique_ptr<contextual_tasks::MockContextualTasksService>
+      mock_contextual_tasks_service_owner_;
 
   void TearDown() override {
     handler_.reset();
     mock_controller_ = nullptr;
-    mock_tasks_controller_ptr_ = nullptr;
+    mock_contextual_tasks_service_ptr_ = nullptr;
     mock_tab_controller_ = nullptr;
     session_handle_.reset();
     service_.reset();
@@ -233,14 +235,14 @@ class ContextualTasksComposeboxHandlerTest
       session_handle_;
   raw_ptr<contextual_search::MockContextualSearchContextController>
       mock_controller_;
-  raw_ptr<contextual_tasks::MockContextualTasksContextController>
-      mock_tasks_controller_ptr_ = nullptr;
+  raw_ptr<contextual_tasks::MockContextualTasksService>
+      mock_contextual_tasks_service_ptr_ = nullptr;
 
   raw_ptr<MockTabContextualizationController> mock_tab_controller_ = nullptr;
 };
 
 TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr)
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL in SubmitQuery!";
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
@@ -267,7 +269,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_RecontextualizeExpiredTab) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "recontextualize query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -289,7 +292,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -352,7 +355,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_RecontextualizeContentChanged) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "recontextualize query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -373,7 +377,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -442,7 +446,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_AlwaysRecontextualizes) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "valid tab query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -460,7 +465,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -531,7 +536,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_ActiveTabNotInContext) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "query with unrelated active tab";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -548,7 +554,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -580,7 +586,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_ActiveTabUrlMismatch) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "query with url mismatch";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -602,7 +609,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -744,7 +751,8 @@ INSTANTIATE_TEST_SUITE_P(
             true}));
 
 TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "delayed tab query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -756,7 +764,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
@@ -829,7 +837,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
-  ASSERT_NE(mock_tasks_controller_ptr_, nullptr) << "Mock controller is NULL!";
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
   std::string kQuery = "delete context query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -841,7 +850,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
       std::make_unique<contextual_tasks::ContextualTaskContext>(task);
 
   EXPECT_CALL(
-      *mock_tasks_controller_ptr_,
+      *mock_contextual_tasks_service_ptr_,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::

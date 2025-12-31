@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_page_action_controller.h"
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,10 +28,9 @@ ContextualTasksPageActionController::ContextualTasksPageActionController(
                                 *this) {
   Profile* const profile =
       tab_interface->GetBrowserWindowInterface()->GetProfile();
-  contextual_tasks::ContextualTasksContextController* const context_controller =
-      contextual_tasks::ContextualTasksContextControllerFactory::GetForProfile(
-          profile);
-  contextual_task_observation_.Observe(context_controller);
+  contextual_tasks::ContextualTasksService* const contextual_tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
+  contextual_task_observation_.Observe(contextual_tasks_service);
 }
 
 ContextualTasksPageActionController::~ContextualTasksPageActionController() =
@@ -83,14 +81,13 @@ void ContextualTasksPageActionController::OnTaskDisassociatedFromTab(
 void ContextualTasksPageActionController::UpdatePageActionVisibility() {
   Profile* const profile =
       tab_interface_->GetBrowserWindowInterface()->GetProfile();
-  contextual_tasks::ContextualTasksContextController* const context_controller =
-      contextual_tasks::ContextualTasksContextControllerFactory::GetForProfile(
-          profile);
+  contextual_tasks::ContextualTasksService* const contextual_tasks_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
   const SessionID tab_id =
       sessions::SessionTabHelper::IdForTab(tab_interface_->GetContents());
   page_actions::PageActionController* const page_action_controller =
       tab_interface_->GetTabFeatures()->page_action_controller();
-  if (context_controller->GetContextualTaskForTab(tab_id).has_value()) {
+  if (contextual_tasks_service->GetContextualTaskForTab(tab_id).has_value()) {
     page_action_controller->Show(kActionSidePanelShowContextualTasks);
   } else {
     page_action_controller->Hide(kActionSidePanelShowContextualTasks);
