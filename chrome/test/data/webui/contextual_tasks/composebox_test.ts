@@ -156,4 +156,22 @@ suite('ContextualTasksComposeboxTest', () => {
         '', inputElement.value,
         'Input should be cleared, but input = ' + inputElement.value);
   });
+
+  test('LensButtonTriggersOverlay', async () => {
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    contextualTasksApp.$.composebox.isSidePanel = true;
+    await microtasksFinished();
+
+    assertTrue(composebox.lensButtonTriggersOverlay);
+
+    const lensButton = composebox.shadowRoot.querySelector('#lensIcon');
+    assertTrue(
+        lensButton instanceof HTMLElement,
+        'Lens button should be an HTMLElement');
+    lensButton.click();
+
+    await mockComposeboxPageHandler.whenCalled('handleLensButtonClick');
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
+  });
 });
