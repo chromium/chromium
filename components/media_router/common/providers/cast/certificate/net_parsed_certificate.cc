@@ -24,8 +24,7 @@ ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
     openscreen::ByteView der_cert) {
   std::shared_ptr<const bssl::ParsedCertificate> cert =
       bssl::ParsedCertificate::Create(
-          net::x509_util::CreateCryptoBuffer(UNSAFE_TODO(
-              base::span<const uint8_t>(der_cert.cbegin(), der_cert.cend()))),
+          net::x509_util::CreateCryptoBuffer(der_cert),
           cast_certificate::GetCertParsingOptions(), nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
