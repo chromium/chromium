@@ -2134,8 +2134,7 @@ Chromium is unable to recover your settings.
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing uawea what information will be sent to the server. Includes placeholder for learn more link.">
           When you use Image Search, the page title, URL, and content, including PDFs, are sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
-        <!-- TODO(crbug.com/467451572): Remove non-translateable flag. -->
-        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_NON_BLOCKING_DESCRIPTION" translateable="false"
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_NON_BLOCKING_DESCRIPTION"
           desc="Text that is shown in the Lens non-blocking privacy notice, giving examples of what Lens can do and informing users what information will be sent to Google. Includes placeholder for learn more link.">
           When you open Image Search, the page title, URL, and content, including PDFs, will automatically be sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
@@ -2159,13 +2158,11 @@ Chromium is unable to recover your settings.
           desc="Instructs the user to press Tab to begin using the feature.">
           Tab to continue
         </message>
-        <!-- TODO(crbug.com/467451572): Remove non-translateable flag. -->
-        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT" translateable="false"
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT"
           desc="Text on button in privacy notice, indicating that user understands that information will be sent to Google.">
           Got it
         </message>
-        <!-- TODO(crbug.com/467451572): Remove non-translateable flag. -->
-        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER" translateable="false"
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER"
           desc="Text on button to dismiss privacy notice, indicating that the privacy notice will be shown again later.">
           Remind me later
         </message>
