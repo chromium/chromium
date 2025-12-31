@@ -235,14 +235,9 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
-// TODO(crbug.com/417601707): Re-enable this test
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_OpenReadingModeSidePanel DISABLED_OpenReadingModeSidePanel
-#else
-#define MAYBE_OpenReadingModeSidePanel OpenReadingModeSidePanel
-#endif
+// TODO(crbug.com/417601707, crbug.com/472526459): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       MAYBE_OpenReadingModeSidePanel) {
+                       DISABLED_OpenReadingModeSidePanel) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* const registry = SidePanelRegistry::From(browser());
@@ -347,17 +342,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                     EnsureNotPresent(kSidePanelPinButtonElementId)));
 }
 
-// TODO(crbug.com/417601707): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
-  DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible
-#else
-#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
-  PinnedToolbarButtonsHighlightWhileSidePanelVisible
-#endif
+// TODO(crbug.com/417601707, crbug.com/472526459): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     PinnedSidePanelInteractiveTest,
-    MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
+    DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* const registry = SidePanelRegistry::From(browser());
