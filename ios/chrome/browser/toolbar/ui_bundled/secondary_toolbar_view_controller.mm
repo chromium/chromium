@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -58,24 +57,6 @@
                name:UIKeyboardWillShowNotification
              object:nil];
   }
-
-  if (IsDiamondPrototypeEnabled()) {
-    UIButton* button = self.view.diamondPrototypeButton;
-    UIMenu* emptyMenu = [UIMenu menuWithChildren:@[]];
-    button.menu = emptyMenu;
-    UIAction* action = [UIAction
-        actionWithTitle:@""
-                  image:nil
-             identifier:nil
-                handler:^(UIAction* uiAction) {
-                  TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
-                  [[NSNotificationCenter defaultCenter]
-                      postNotificationName:kDiamondLongPressButton
-                                    object:button];
-                }];
-    [button addAction:action
-        forControlEvents:UIControlEventMenuActionTriggered];
-  }
 }
 
 - (void)disconnect {
@@ -84,12 +65,6 @@
 }
 
 #pragma mark - Setters
-
-// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
-- (void)setUsedAsPrimaryToolbar:(BOOL)usedAsPrimaryToolbar {
-  _usedAsPrimaryToolbar = usedAsPrimaryToolbar;
-  self.view.usedAsPrimaryToolbar = usedAsPrimaryToolbar;
-}
 
 - (void)setLocationIndicatorActive:(BOOL)locationIndicatorActive {
   if (locationIndicatorActive == _locationIndicatorActive) {
@@ -147,13 +122,6 @@
     self.view.buttonStackView.alpha = alphaValue;
   }
 
-  if (IsDiamondPrototypeEnabled()) {
-    self.view.toolsMenuButton.alpha = alphaValue;
-    self.view.diamondPrototypeButton.alpha = alphaValue;
-    self.view.backButton.alpha = alphaValue;
-    self.view.forwardButton.alpha = alphaValue;
-  }
-
   self.view.locationBarTopConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
 }
@@ -190,10 +158,6 @@
   const CGFloat fullscreenMargin =
       hasBottomSafeArea ? kBottomAdaptiveLocationBarVerticalMarginFullscreen
                         : 0;
-
-  if (IsDiamondPrototypeEnabled()) {
-    return AlignValueToPixel(kBottomAdaptiveLocationBarTopMargin * progress);
-  }
 
   return AlignValueToPixel((kBottomAdaptiveLocationBarTopMargin * progress +
                             fullscreenMargin * (1 - progress)) *

@@ -77,9 +77,6 @@ CGFloat CompactButtonHorizontalPadding() {
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (IsDiamondPrototypeEnabled()) {
-      return self;
-    }
     [self setupViews];
     [self updateLayout];
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
@@ -505,10 +502,6 @@ CGFloat CompactButtonHorizontalPadding() {
 
 // Updates the bottom toolbar layout.
 - (void)updateLayout {
-  if (IsDiamondPrototypeEnabled()) {
-    return;
-  }
-
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
   [self hideAllButtons];

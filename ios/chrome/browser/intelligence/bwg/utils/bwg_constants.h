@@ -23,8 +23,8 @@ enum class EntryPoint {
   OmniboxChip = 3,
   // Gemini was opened via re opening a tab that had Gemini open.
   TabReopen = 4,
-  // Gemini was opened from the Diamond prototype.
-  Diamond = 5,
+  // Gemini was opened from the AppBar.
+  AppBar = 5,
   // Gemini was opened via the image long-press context menu.
   ImageContextMenu = 6,
   kMaxValue = ImageContextMenu,

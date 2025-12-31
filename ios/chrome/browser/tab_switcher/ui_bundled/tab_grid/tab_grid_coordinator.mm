@@ -87,9 +87,6 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/diamond_grid_button.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -424,12 +421,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   [[TabGridSceneAgent agentFromScene:sceneState] willEnterTabGrid];
 
-  if (IsDiamondPrototypeEnabled()) {
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:kDiamondEnterTabGridNotification
-                      object:nil];
-  }
-
   BOOL animated = !self.animationsDisabledForTesting;
 
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
@@ -585,26 +576,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [[TabGridSceneAgent agentFromScene:sceneState] willExitTabGrid];
 
   __weak TabGridCoordinator* weakSelf = self;
-
-  if (IsDiamondPrototypeEnabled()) {
-    Browser* browser =
-        incognito ? _incognitoBrowser.get() : self.regularBrowser;
-    // Don't open the TabGrid if there is no web state. It can happen at
-    // startup.
-    if (browser && browser->GetWebStateList()->count() == 0) {
-      TabGridViewController* baseViewController = self.baseViewController;
-      [baseViewController contentWillAppearAnimated:NO];
-      [baseViewController contentDidAppear];
-      if (completion) {
-        completion();
-      }
-      return;
-    }
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:kDiamondLeaveTabGridNotification
-                      object:nil];
-  }
 
   completion = ^{
     if (self.tabGridEnterTime.is_null()) {
@@ -928,50 +899,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                        FlowType::kShareOrManage));
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
-}
-
-- (void)prototypeGeminiCallback {
-  CHECK(IsDiamondPrototypeEnabled());
-
-  if (IsAssistantSheetEnabled()) {
-    if (!_assistantSheetCoordinator) {
-      _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.regularBrowser];
-    }
-    [_assistantSheetCoordinator start];
-    return;
-  }
-
-  TabGridPage page = self.baseViewController.currentPage;
-  if (page == TabGridPageTabGroups) {
-    page = self.baseViewController.activePage;
-  }
-  DiamondPrototypeStartGemini(
-      !self.bvcContainer, page == TabGridPageIncognitoTabs, self.regularBrowser,
-      self.incognitoBrowser, self.baseViewController);
-}
-
-- (void)prototypeNewTabCallback {
-  CHECK(IsDiamondPrototypeEnabled());
-  TabGridPage page = self.baseViewController.currentPage;
-  if (page == TabGridPageTabGroups) {
-    page = self.baseViewController.activePage;
-  }
-  DiamondPrototypeStartNewTab(
-      !self.bvcContainer, page == TabGridPageIncognitoTabs, self.regularBrowser,
-      self.incognitoBrowser, self.baseViewController);
-}
-
-- (void)prototypeTabGridCallback {
-  CHECK(IsDiamondPrototypeEnabled());
-  if (self.bvcContainer) {
-    id<ApplicationCommands> applicationHandler =
-        HandlerForProtocol(self.dispatcher, ApplicationCommands);
-    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
-  } else {
-    [self exitTabGrid];
-  }
 }
 
 // Cancels all the currently active collaboration flows.

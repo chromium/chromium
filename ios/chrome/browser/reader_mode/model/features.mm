@@ -64,9 +64,6 @@ const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
 }
 
 bool IsReaderModeAvailable() {
-  if (IsDiamondPrototypeEnabled()) {
-    return true;
-  }
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
     return base::FeatureList::IsEnabled(kEnableReaderMode) &&

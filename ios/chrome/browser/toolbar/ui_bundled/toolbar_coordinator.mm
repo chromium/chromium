@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_coordinator.h"
@@ -401,11 +400,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 #pragma mark ToolbarHeightProviding
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
-  if (IsDiamondPrototypeEnabled() &&
-      _omniboxPosition == ToolbarType::kPrimary) {
-    return kDiamondCollapsedToolbarHeight;
-  }
-
   if (_omniboxPosition == ToolbarType::kSecondary) {
     // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
@@ -417,11 +411,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (CGFloat)expandedPrimaryToolbarHeight {
-  if (IsDiamondPrototypeEnabled() &&
-      _omniboxPosition == ToolbarType::kPrimary) {
-    return kDiamondToolbarHeight;
-  }
-
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
   if (!IsSplitToolbarMode(self.traitEnvironment) ||
@@ -451,9 +440,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
   CGFloat height =
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
-  if (IsDiamondPrototypeEnabled()) {
-    height = 0;
-  }
   if (_omniboxPosition == ToolbarType::kSecondary) {
     height += ToolbarExpandedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
@@ -746,17 +732,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       OmniboxPositionBrowserAgent::FromBrowser(self.browser);
   switch (toolbarType) {
     case ToolbarType::kPrimary: {
-      if (IsDiamondPrototypeEnabled()) {
-        [self.secondaryToolbarCoordinator
-            setLocationBarViewController:self.locationBarCoordinator
-                                             .locationBarViewController];
-        [self.primaryToolbarCoordinator setLocationBarViewController:nil];
-      } else {
-        [self.primaryToolbarCoordinator
-            setLocationBarViewController:self.locationBarCoordinator
-                                             .locationBarViewController];
-        [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
-      }
+      [self.primaryToolbarCoordinator
+          setLocationBarViewController:self.locationBarCoordinator
+                                           .locationBarViewController];
+      [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
       positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(false);
       break;
     }
@@ -767,11 +746,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       [self.primaryToolbarCoordinator setLocationBarViewController:nil];
       positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(true);
       break;
-  }
-  if (IsDiamondPrototypeEnabled()) {
-    [self.toolbarHeightDelegate diamondToolbarTypeChanged:toolbarType];
-    self.secondaryToolbarCoordinator.usedAsPrimaryToolbar =
-        toolbarType == ToolbarType::kPrimary;
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }

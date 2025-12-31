@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 namespace {
@@ -59,11 +58,7 @@ const CGFloat kScalingMultiplier = 0.75;
     tabFinalTransform = animatedView.transform;
     animatedView.transform = CGAffineTransformScale(
         tabFinalTransform, kScalingMultiplier, kScalingMultiplier);
-    if (IsDiamondPrototypeEnabled()) {
-      tabFinalCornerRadius = kDiamondBrowserCornerRadius;
-    } else {
-      tabFinalCornerRadius = DeviceCornerRadius();
-    }
+    tabFinalCornerRadius = DeviceCornerRadius();
     animatedView.layer.cornerRadius = kScaledAnimatedViewCornerRadius;
   } else {
     // If dismissing, the the tab view animates out to 0% opacity, 75% scale,
@@ -71,11 +66,7 @@ const CGFloat kScalingMultiplier = 0.75;
     tabFinalAlpha = 0;
     tabFinalTransform = CGAffineTransformScale(
         animatedView.transform, kScalingMultiplier, kScalingMultiplier);
-    if (IsDiamondPrototypeEnabled()) {
-      animatedView.layer.cornerRadius = kDiamondBrowserCornerRadius;
-    } else {
-      animatedView.layer.cornerRadius = DeviceCornerRadius();
-    }
+    animatedView.layer.cornerRadius = DeviceCornerRadius();
     tabFinalCornerRadius = kScaledAnimatedViewCornerRadius;
   }
 

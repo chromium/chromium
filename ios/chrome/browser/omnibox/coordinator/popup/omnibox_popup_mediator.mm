@@ -194,9 +194,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     [self.omniboxAutocompleteController
         selectMatchForOpening:match
                         inRow:row
-                       openIn:IsDiamondPrototypeEnabled()
-                                  ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                  : WindowOpenDisposition::CURRENT_TAB];
+                       openIn:WindowOpenDisposition::CURRENT_TAB];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)

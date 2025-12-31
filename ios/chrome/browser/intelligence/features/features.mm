@@ -19,7 +19,6 @@
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/intelligence/actuation/actuation_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 
 BASE_FEATURE(kEnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -37,10 +36,6 @@ const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
 
 bool IsPageActionMenuEnabled() {
-  if (IsDiamondPrototypeEnabled()) {
-    return true;
-  }
-
   // Checks the killswtich, allowing to disable the feature for any user
   // including those in launched locales.
   bool is_killswitch_enabled = base::FeatureList::IsEnabled(kGeminiKillSwitch);

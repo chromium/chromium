@@ -32,10 +32,6 @@ enum class ToolbarType;
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve;
 
-/// Called when the toolbar type changed.
-/// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
-- (void)diamondToolbarTypeChanged:(ToolbarType)type;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PUBLIC_TOOLBAR_HEIGHT_DELEGATE_H_

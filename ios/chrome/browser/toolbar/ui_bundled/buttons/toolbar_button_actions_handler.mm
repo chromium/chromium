@@ -82,15 +82,6 @@
   [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }
 
-- (void)diamondPrototypeAction:(id)sender {
-  CHECK(IsDiamondPrototypeEnabled());
-  id<LensOverlayCommands> overlayHandler =
-      (id<LensOverlayCommands>)self.applicationHandler;
-  [overlayHandler createAndShowLensUI:YES
-                           entrypoint:LensOverlayEntrypoint::kLocationBar
-                           completion:nil];
-}
-
 - (void)cancelOmniboxFocusAction {
   [self.omniboxHandler cancelOmniboxEdit];
 }

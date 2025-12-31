@@ -182,9 +182,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 
 - (UIInterfaceOrientationMask)application:(UIApplication*)application
     supportedInterfaceOrientationsForWindow:(UIWindow*)window {
-  if (IsDiamondPrototypeEnabled()) {
-    return UIInterfaceOrientationMaskPortrait;
-  }
   if (_appState.portraitOnly) {
     return UIInterfaceOrientationMaskPortrait;
   }

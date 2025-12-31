@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_animation.h"
@@ -124,15 +123,7 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
                withCompletion:(void (^)(void))completion {
   [tabGrid addChildViewController:browser];
 
-  if (IsDiamondPrototypeEnabled()) {
-    CGRect frame = tabGrid.view.bounds;
-    CGFloat bottomInset =
-        tabGrid.view.safeAreaInsets.bottom + kChromeAppBarPrototypeHeight;
-    frame.size.height -= bottomInset;
-    browser.view.frame = frame;
-  } else {
-    browser.view.frame = tabGrid.view.bounds;
-  }
+  browser.view.frame = tabGrid.view.bounds;
   [tabGrid.view addSubview:browser.view];
 
   browser.view.accessibilityViewIsModal = YES;
@@ -268,22 +259,14 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
     tabFinalAlpha = 1;
     tabFinalTransform = tab.transform;
     tab.transform = CGAffineTransformScale(tabFinalTransform, 0.75, 0.75);
-    if (IsDiamondPrototypeEnabled()) {
-      tabFinalCornerRadius = kDiamondBrowserCornerRadius;
-    } else {
-      tabFinalCornerRadius = DeviceCornerRadius();
-    }
+    tabFinalCornerRadius = DeviceCornerRadius();
     tab.layer.cornerRadius = 26.0;
   } else {
     // If dismissing, the the tab view animates out to 0% opacity, 75% scale,
     // and 26px corner radius.
     tabFinalAlpha = 0;
     tabFinalTransform = CGAffineTransformScale(tab.transform, 0.75, 0.75);
-    if (IsDiamondPrototypeEnabled()) {
-      tab.layer.cornerRadius = kDiamondBrowserCornerRadius;
-    } else {
-      tab.layer.cornerRadius = DeviceCornerRadius();
-    }
+    tab.layer.cornerRadius = DeviceCornerRadius();
     tabFinalCornerRadius = 26.0;
   }
 

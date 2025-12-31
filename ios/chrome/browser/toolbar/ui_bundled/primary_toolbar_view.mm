@@ -166,7 +166,6 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 @synthesize backButton = _backButton;
 @synthesize forwardButton = _forwardButton;
 @synthesize tabGridButton = _tabGridButton;
-@synthesize diamondPrototypeButton = _diamondPrototypeButton;
 @synthesize stopButton = _stopButton;
 @synthesize reloadButton = _reloadButton;
 @synthesize locationBarContainer = _locationBarContainer;

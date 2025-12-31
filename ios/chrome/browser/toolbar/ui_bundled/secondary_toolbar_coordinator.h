@@ -12,10 +12,6 @@
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarCoordinator : AdaptiveToolbarCoordinator
 
-// Whether this toolbar is used and positioned like the primary toolbar.
-// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
-@property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
-
 // A reference to the view controller that implements the toolbar animation
 // protocol.
 @property(nonatomic, weak, readonly) id<ToolbarAnimatee> toolbarAnimatee;

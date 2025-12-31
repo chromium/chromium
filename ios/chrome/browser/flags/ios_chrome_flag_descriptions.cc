@@ -481,9 +481,6 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
-const char kDiamondPrototypeName[] = "Enable the diamon prototype";
-const char kDiamondPrototypeDescription[] = "Turn on prototype for diamond.";
-
 const char kDisableAutofillStrikeSystemName[] =
     "Disable the Autofill strike system";
 const char kDisableAutofillStrikeSystemDescription[] =

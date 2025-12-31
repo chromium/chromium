@@ -235,9 +235,6 @@ bool IsNewTabGridTransitionsEnabled() {
   if (IsChromeNextIaEnabled()) {
     return true;
   }
-  if (IsDiamondPrototypeEnabled()) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
@@ -1001,15 +998,6 @@ BASE_FEATURE(kIOSTrustedVaultNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSTrustedVaultNotificationEnabled() {
   return base::FeatureList::IsEnabled(kIOSTrustedVaultNotification);
-}
-
-BASE_FEATURE(kDiamondPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsDiamondPrototypeEnabled() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kDiamondPrototype);
 }
 
 BASE_FEATURE(kIOSDefaultBrowserOffCyclePromo,

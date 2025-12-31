@@ -57,9 +57,6 @@ class WebNavigationBrowserAgent;
 // Action when the new tab button is tapped.
 - (void)newTabAction:(id)sender;
 
-// Action when the diamond prototype button is tapped.
-- (void)diamondPrototypeAction:(id)sender;
-
 // Action when the button to cancel the omnibox focus is tapped.
 - (void)cancelOmniboxFocusAction;
 

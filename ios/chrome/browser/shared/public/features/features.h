@@ -971,12 +971,6 @@ BASE_DECLARE_FEATURE(kIOSTrustedVaultNotification);
 // Returns whether `kIOSTrustedVaultNotification` is enabled.
 bool IsIOSTrustedVaultNotificationEnabled();
 
-// Feature flag for diamond prototype
-BASE_DECLARE_FEATURE(kDiamondPrototype);
-
-// Whether the diamond prototype is enabled.
-bool IsDiamondPrototypeEnabled();
-
 // Feature flag for the Default Browser off-cycle promo.
 BASE_DECLARE_FEATURE(kIOSDefaultBrowserOffCyclePromo);
 

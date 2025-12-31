@@ -28,10 +28,6 @@ const CGFloat kStackLeadingMargin = 16.0f;
 const CGFloat kMinStackSpacing = 8.0f;
 
 UIColor* CarouselBackgroundColor() {
-  if (IsDiamondPrototypeEnabled()) {
-    return UIColor.clearColor;
-  }
-
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return [UIColor colorNamed:kPrimaryBackgroundColor];
   }

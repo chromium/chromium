@@ -44,9 +44,6 @@ class Tracker;
 // Notifies the delegate about a tap on the Copy entry in the editing menu.
 - (void)locationBarCopyTapped;
 
-// Notifies the delegate about a tap on the Share entry in the editing menu.
-- (void)locationBarShareTapped;
-
 // Returns the target that location bar scribble events should be forwarded to.
 - (UIResponder<UITextInput>*)omniboxScribbleForwardingTarget;
 

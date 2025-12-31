@@ -29,10 +29,6 @@ class FullscreenController;
 /// Fullscreen controller used for collapsing the view above the keyboard.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
-// Whether this toolbar is used and positioned like the primary toolbar.
-// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
-@property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
-
 /// Disconnects observations and references.
 - (void)disconnect;
 

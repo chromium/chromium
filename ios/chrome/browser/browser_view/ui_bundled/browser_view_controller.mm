@@ -64,7 +64,6 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -255,11 +254,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // Whether the Lens Overlay is currently active and visible for the browser
   // view.
   BOOL _lensOverlayVisible;
-
-  // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
-  ToolbarType _diamondToolbarType;
-  NSArray<NSLayoutConstraint*>* _diamondToolbarTopConstraints;
-  NSArray<NSLayoutConstraint*>* _diamondToolbarBottomConstraints;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -1369,9 +1363,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (!height) {
     return 0.0;
   }
-  if (IsDiamondPrototypeEnabled()) {
-    return kDiamondToolbarHeight;
-  }
 
   // Add the safe area inset to the toolbar height.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
@@ -1433,14 +1424,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // The bottom toolbar can be constraint to the keyboard in some cases.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
   self.secondaryToolbarHeightConstraint.active = YES;
-  if (IsDiamondPrototypeEnabled()) {
-    AddSameConstraintsToSides(self.view, toolbarView,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
-  } else {
-    AddSameConstraintsToSides(
-        self.view, toolbarView,
-        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-  }
+  AddSameConstraintsToSides(
+      self.view, toolbarView,
+      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -1545,27 +1531,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     UIView* secondaryToolbarView =
         self.toolbarCoordinator.secondaryToolbarViewController.view;
 
-    if (IsDiamondPrototypeEnabled()) {
-      _diamondToolbarTopConstraints = @[
-        [secondaryToolbarView.topAnchor
-            constraintEqualToAnchor:primaryToolbarView.topAnchor],
-        [secondaryToolbarView.bottomAnchor
-            constraintEqualToAnchor:primaryToolbarView.bottomAnchor],
-        [contentAreaGuide.bottomAnchor
-            constraintEqualToAnchor:self.view.bottomAnchor],
-      ];
-      _diamondToolbarBottomConstraints = @[
-        [secondaryToolbarView.bottomAnchor
-            constraintEqualToAnchor:self.view.bottomAnchor],
-        [contentAreaGuide.bottomAnchor
-            constraintEqualToAnchor:secondaryToolbarView.topAnchor],
-      ];
-      [self diamondToolbarTypeChanged:_diamondToolbarType];
-    } else {
-      [contentAreaGuide.bottomAnchor
-          constraintEqualToAnchor:secondaryToolbarView.topAnchor]
-          .active = YES;
-    }
+    [contentAreaGuide.bottomAnchor
+        constraintEqualToAnchor:secondaryToolbarView.topAnchor]
+        .active = YES;
 
     AddSameConstraintsToSides(self.view, contentAreaGuide, contentSides);
   }
@@ -2141,9 +2109,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   CGFloat height = self.toolbarCoordinator.collapsedSecondaryToolbarHeight;
   if (!height) {
     return 0.0;
-  }
-  if (IsDiamondPrototypeEnabled()) {
-    return kDiamondCollapsedToolbarHeight;
   }
   // Height is non-zero only when bottom omnibox is enabled.
   return self.rootSafeAreaInsets.bottom + height;
@@ -2926,23 +2891,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                      [self.view layoutIfNeeded];
                    }
                    completion:nil];
-}
-
-- (void)diamondToolbarTypeChanged:(ToolbarType)type {
-  CHECK(IsDiamondPrototypeEnabled());
-  _diamondToolbarType = type;
-  switch (type) {
-    case ToolbarType::kPrimary:
-      [NSLayoutConstraint
-          deactivateConstraints:_diamondToolbarBottomConstraints];
-      [NSLayoutConstraint activateConstraints:_diamondToolbarTopConstraints];
-      break;
-
-    case ToolbarType::kSecondary:
-      [NSLayoutConstraint deactivateConstraints:_diamondToolbarTopConstraints];
-      [NSLayoutConstraint activateConstraints:_diamondToolbarBottomConstraints];
-      break;
-  }
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)

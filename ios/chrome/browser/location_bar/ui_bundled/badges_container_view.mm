@@ -190,9 +190,6 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
 - (void)setContextualPanelEntrypointView:
     (UIView*)contextualPanelEntrypointView {
-  if (IsDiamondPrototypeEnabled()) {
-    return;
-  }
   if (_contextualPanelEntrypointView) {
     return;
   }
@@ -212,9 +209,6 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 }
 
 - (void)setReaderModeChipView:(UIView*)readerModeChipView {
-  if (IsDiamondPrototypeEnabled()) {
-    return;
-  }
   if (_readerModeChipView) {
     return;
   }
@@ -234,9 +228,6 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 }
 
 - (void)setPlaceholderView:(UIView*)placeholderView {
-  if (IsDiamondPrototypeEnabled()) {
-    return;
-  }
   if (_placeholderView == placeholderView) {
     return;
   }
@@ -316,9 +307,8 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   }
 
   // The badge view used by e.g. Translate, Permissions, etc, is visible if it
-  // wants to be visible and `IsDiamondPrototypeEnabled()` returns false.
-  badgeViewShouldBeVisibleFinal =
-      _badgeViewShouldBeVisible && !IsDiamondPrototypeEnabled();
+  // wants to be visible.
+  badgeViewShouldBeVisibleFinal = _badgeViewShouldBeVisible;
 
   // Other badges can be visible only outside of Reader mode unless badge
   // support is explicitly enabled.

@@ -291,9 +291,6 @@ extern const char kDefaultBrowserPromoRefreshDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
-extern const char kDiamondPrototypeName[];
-extern const char kDiamondPrototypeDescription[];
-
 extern const char kDisableAutofillStrikeSystemName[];
 extern const char kDisableAutofillStrikeSystemDescription[];
 

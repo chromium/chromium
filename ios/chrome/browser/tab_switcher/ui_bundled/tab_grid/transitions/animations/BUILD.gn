@@ -24,7 +24,6 @@ source_set("animations") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",

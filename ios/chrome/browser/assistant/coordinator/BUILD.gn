@@ -17,7 +17,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
