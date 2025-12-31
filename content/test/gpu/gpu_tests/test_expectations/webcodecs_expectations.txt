@@ -285,9 +285,6 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_a
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 
-#Mac Intel WebCodecs Flakes
-crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
-crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_3000000 [ Failure ]
 
 # Pixel 10
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_constant_1500000 [ Failure ]
