@@ -30,6 +30,7 @@ ${this.showContextEntrypoint_ ? html`
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
       .tabSuggestions="${this.tabSuggestions_}"
+      ?hide-entrypoint-button="${this.shouldHideEntrypointButton_}"
       ?show-dropdown="${this.hasVisibleMatches_}"
       ?show-lens-search-chip="${this.isLensSearchEligible_}"
       ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"

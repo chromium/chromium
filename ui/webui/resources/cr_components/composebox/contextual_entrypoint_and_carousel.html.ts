@@ -73,6 +73,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @delete-tab-context="${this.onDeleteFile_}"
             .inCreateImageMode="${this.inCreateImageMode_}"
             .hasImageFiles="${this.hasImageFiles()}"
+            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
             .disabledTabIds="${this.addedTabsIds_}"
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"
@@ -84,7 +85,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
-        ${this.searchboxLayoutMode !== 'Compact' ? toolChips : ''}
+        ${this.shouldShowToolChips_ ? toolChips : ''}
         ${
       this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
           voiceSearchButton :
@@ -114,13 +115,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       ''}
   </div>
   ${this.searchboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
-  ${this.showDropdown && (this.showFileCarousel_ ||
-    this.searchboxLayoutMode === 'TallTopContext' ||
-    this.submitButtonShown) ? html`
-  <div class="carousel-divider" part="carousel-divider"></div>` : ''}
+  ${this.shouldShowDivider_ ? html`
+    <div class="carousel-divider" part="carousel-divider"></div>
+  ` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
-  ${this.searchboxLayoutMode === 'Compact' && toolChipsVisible ? html`
+  ${this.searchboxLayoutMode === 'Compact' && toolChipsVisible && this.entrypointName === 'Realbox' ? html`
     <div class="context-menu-container" id="toolChipsContainer"
         part="tool-chips-container">${toolChips}</div>
   ` : ''}
