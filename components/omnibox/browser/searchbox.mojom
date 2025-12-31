@@ -411,4 +411,7 @@ interface Page {
 
   // Notifies the UI to show or hide AI features.
   UpdateAimEligibility(bool eligible);
+
+  // Called when pref 'omnibox::kShowAiModeOmniboxButton' changes.
+  OnShowAiModePrefChanged(bool canShow);
 };

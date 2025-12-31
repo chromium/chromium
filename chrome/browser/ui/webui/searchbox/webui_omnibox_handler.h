@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -57,6 +59,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                      AddTabContextCallback) override;
 
   void OnShow();
+  void OnShowAiModeButtonPrefChanged();
 
   // ContextualSearchboxHandler:
   void SetPage(
@@ -127,6 +130,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       edit_model_observation_{this};
 
   raw_ptr<MetricsReporter> metrics_reporter_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 

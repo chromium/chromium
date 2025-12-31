@@ -149,6 +149,9 @@ suite('AppTest', function() {
       document.body.appendChild(localApp);
       testProxy.page.updateAimEligibility(true);
       await microtasksFinished();
+
+      testProxy.page.onShowAiModePrefChanged(true);
+      await microtasksFinished();
     });
 
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
@@ -157,6 +160,28 @@ suite('AppTest', function() {
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertFalse(!!carousel);
+    });
+
+    test('AiModePrefUpdatesCarouselVisibility', async () => {
+      let carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(!!carousel);
+      assertTrue(isVisible(carousel));
+
+      // Disable AI Mode Shortcuts.
+      testProxy.page.onShowAiModePrefChanged(false);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(!!carousel);
+
+      // Enable AI Mode Shortcuts.
+      testProxy.page.onShowAiModePrefChanged(true);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(!!carousel);
+      assertTrue(isVisible(carousel));
     });
 
     test('KeywordModeUpdatesCarouselVisibility', async () => {
@@ -219,6 +244,9 @@ suite('AppTest', function() {
       document.body.appendChild(localApp);
       await microtasksFinished();
 
+      testProxy.page.onShowAiModePrefChanged(true);
+      await microtasksFinished();
+
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertTrue(!!carousel);
@@ -245,11 +273,14 @@ suite('AppTest', function() {
   suite('AimEligibility', () => {
     let localApp: OmniboxPopupAppElement;
 
-    setup(() => {
+    setup(async () => {
       // Use setup instead of suiteSetup to ensure a clean state for each test.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
+
+      testProxy.page.onShowAiModePrefChanged(true);
+      await microtasksFinished();
     });
 
     test('AimEligibility', async () => {
