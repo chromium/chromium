@@ -83,6 +83,7 @@ source_set("eg2_tests") {
   sources = [ "composebox_egtest.mm" ]
   deps = [
     ":ui_constants",
+    "//components/omnibox/browser:aim_eligibility_service_features",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
