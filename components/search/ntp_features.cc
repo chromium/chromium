@@ -362,7 +362,7 @@ const base::FeatureParam<int> kMaxTilesBeforeShowMore{
 const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
     &ntp_features::kNtpNextFeatures,
     "AddTabUploadDelayOnActionChipClick",
-    true);
+    false);
 
 const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
     &ntp_features::kNtpCustomizeChromeAutoOpen,
