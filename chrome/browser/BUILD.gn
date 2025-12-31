@@ -8591,7 +8591,6 @@ static_library("browser_generated_files") {
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
     "//chrome/browser/ui/webui/location_internals:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
@@ -8605,6 +8604,7 @@ static_library("browser_generated_files") {
     "//chrome/common/request_header_integrity:buildflags",
     "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     "//components/data_sharing/data_sharing_internals/webui:mojo_bindings",
+    "//components/enterprise/connectors:mojom",
     "//components/webui/chrome_urls/mojom:mojo_bindings",
   ]
   if (is_android) {

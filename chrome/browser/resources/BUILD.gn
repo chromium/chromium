@@ -19,9 +19,9 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 group("resources") {
   public_deps = [
-    "connectors_internals:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
+    "//components/enterprise/connectors/resources",
   ]
 
   if (enable_extensions_core) {

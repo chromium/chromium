@@ -7,3 +7,6 @@ nancylanxiao@google.com
 cep-review@google.com
 
 file://components/enterprise/CEP_OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -33,7 +33,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/app_home:mojo_bindings",
   "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
   "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
-  "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
+  "//components/enterprise/connectors:mojom",
   "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
   "//chrome/browser/ui/webui/discards:mojo_bindings",
   "//chrome/browser/ui/webui/downloads:mojo_bindings",
