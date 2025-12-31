@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 
+#include <set>
+
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -320,21 +322,31 @@ std::vector<tabs::TabInterface*>
 ContextualTasksComposeboxHandler::GetTabsToUpdate(
     const contextual_tasks::ContextualTaskContext& context,
     tabs::TabInterface* active_tab) {
-  std::vector<tabs::TabInterface*> tabs_to_update;
+  std::set<tabs::TabInterface*> tabs_to_update;
   // TODO(crbug.com/469807132): Add suggested tabs to the list of tabs to
   // update.
+
+  // Add delayed tabs to the list of tabs to update.
+  for (const auto& [token, tab_id] : delayed_tabs_) {
+    tabs::TabHandle handle = tabs::TabHandle(tab_id);
+    if (tabs::TabInterface* tab = handle.Get()) {
+      tabs_to_update.insert(tab);
+    }
+  }
 
   // TODO(crbug.com/468430623): Support updating multiple tabs.
   // Currently this only checks the active tab.
   if (!active_tab) {
-    return tabs_to_update;
+    return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
+                                            tabs_to_update.end());
   }
 
   // Check if the active tab is in the context.
   SessionID active_tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
   if (!active_tab_session_id.is_valid()) {
-    return tabs_to_update;
+    return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
+                                            tabs_to_update.end());
   }
 
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
@@ -347,12 +359,13 @@ ContextualTasksComposeboxHandler::GetTabsToUpdate(
 
   for (const auto* attachment : matching_attachments) {
     if (attachment->GetTabSessionId() == active_tab_session_id) {
-      tabs_to_update.push_back(active_tab);
+      tabs_to_update.insert(active_tab);
       break;
     }
   }
 
-  return tabs_to_update;
+  return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
+                                          tabs_to_update.end());
 }
 
 std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
@@ -528,10 +541,34 @@ void ContextualTasksComposeboxHandler::FileSelectionCanceled() {
   file_dialog_.reset();
 }
 
+void ContextualTasksComposeboxHandler::AddTabContext(
+    int32_t tab_id,
+    bool delay_upload,
+    AddTabContextCallback callback) {
+  // The delay_upload flag is used to indicate that the tab was auto-added
+  // via the composebox. In the contextual-tasks case, added tabs should be
+  // contextualized as late as possible so that the viewport and APC are
+  // as recent as possible, put the tab in delayed_tabs_ instead of using the
+  // superclass method that contextualizes immediately and caches the tab
+  // context for uploading in UploadSnapshotTabContextIfPresent.
+  if (delay_upload) {
+    base::UnguessableToken token = base::UnguessableToken::Create();
+    delayed_tabs_[token] = tab_id;
+    std::move(callback).Run(token);
+    return;
+  }
+
+  ContextualSearchboxHandler::AddTabContext(tab_id, delay_upload,
+                                            std::move(callback));
+}
+
 void ContextualTasksComposeboxHandler::DeleteContext(
     const base::UnguessableToken& file_token,
     bool from_automatic_chip) {
-  ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
+  if (!delayed_tabs_.erase(file_token)) {
+    ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
+  }
+
   if (from_automatic_chip) {
     web_ui_controller_->DisableActiveTabContextSuggestion();
   }
