@@ -499,21 +499,6 @@ class AutofillCapturedSitesInteractiveTest
       const int attempts,
       content::RenderFrameHost* frame,
       std::optional<FieldType> triggered_field_type) {
-    std::optional<std::u16string> cvc = profile_controller_->cvc();
-    // If CVC is available in the Action Recorder receipts and this is a
-    // payment form, this means it's running the test with a server card. So
-    // the "Enter CVC" dialog will pop up for card autofill.
-    // TODO(crbug.com/333815150): Fix the TestCardUnmaskPromptWaiter.
-    bool is_credit_card_field =
-        triggered_field_type.has_value() &&
-        GroupTypeOfFieldType(triggered_field_type.value()) ==
-            FieldTypeGroup::kCreditCard;
-    bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
-    CHECK(!should_cvc_dialog_pop_up)
-        << "Tests with CVC dialogs are currently not supported due to "
-           "crbug.com/333815150. See crrev.com/c/5458703 for the code to bring "
-           "back the TestCardUnmaskPromptWaiter.";
-
     // Use AutofillFlow library to trigger the autofill behavior. Try both ways.
     testing::AssertionResult autofill_assertion_by_arrow =
         AutofillFlow(GetElementByXpath(focus_element_css_selector), this,
