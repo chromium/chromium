@@ -100,13 +100,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseChromeIpProtection capability value.
-     */
-    public @Tribool int canUseChromeIpProtection() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
-    }
-
-    /**
      * @return canUseChromeOSGenerativeAi capability value.
      */
     public @Tribool int canUseChromeOSGenerativeAi() {

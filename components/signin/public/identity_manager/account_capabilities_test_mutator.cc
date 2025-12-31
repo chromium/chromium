@@ -67,11 +67,6 @@ void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
 }
 #endif
 
-void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
-    bool value) {
-  capabilities_->capabilities_map_[kCanUseChromeIpProtectionName] = value;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void AccountCapabilitiesTestMutator::set_can_use_chromeos_generative_ai(
     bool value) {

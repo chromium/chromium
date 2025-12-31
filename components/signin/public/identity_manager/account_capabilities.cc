@@ -128,10 +128,6 @@ signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
 }
 #endif
 
-signin::Tribool AccountCapabilities::can_use_chrome_ip_protection() const {
-  return GetCapabilityByName(kCanUseChromeIpProtectionName);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 signin::Tribool AccountCapabilities::can_use_chromeos_generative_ai() const {
   return GetCapabilityByName(kCanUseChromeOSGenerativeAi);

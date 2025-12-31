@@ -66,10 +66,6 @@ ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    "accountcapabilities/gu4dmlldmfya")
 #endif
 
-ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
-                   CAN_USE_CHROME_IP_PROTECTION_NAME,
-                   "accountcapabilities/geydgnznmnqxa")
-
 ACCOUNT_CAPABILITY(kCanUseChromeOSGenerativeAi,
                    CAN_USE_CHROMEOS_GENERATIVE_AI,
                    "accountcapabilities/ge3dgmjnmnqxa")

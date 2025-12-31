@@ -86,9 +86,6 @@ class AccountCapabilities {
   signin::Tribool can_toggle_auto_updates() const;
 #endif
 
-  // The user account is able to use IP Protection.
-  signin::Tribool can_use_chrome_ip_protection() const;
-
 #if BUILDFLAG(IS_CHROMEOS)
   // The user account is able to use generative AI features. Since many
   // generative AI features inherit the same capability (minor restrictions),

@@ -180,21 +180,6 @@ TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
-  AccountCapabilities capabilities;
-  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
-            signin::Tribool::kUnknown);
-
-  AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_use_chrome_ip_protection(true);
-  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
-            signin::Tribool::kTrue);
-
-  mutator.set_can_use_chrome_ip_protection(false);
-  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
-            signin::Tribool::kFalse);
-}
-
 TEST_F(AccountCapabilitiesTest, CanUseDevToolsGenerativeAiFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),

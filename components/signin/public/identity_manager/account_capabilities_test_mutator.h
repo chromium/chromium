@@ -37,7 +37,6 @@ class AccountCapabilitiesTestMutator {
 #if BUILDFLAG(IS_CHROMEOS)
   void set_can_toggle_auto_updates(bool value);
 #endif
-  void set_can_use_chrome_ip_protection(bool value);
 #if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_chromeos_generative_ai(bool value);
 #endif  // BUILDFLAG(IS_CHROMEOS)
