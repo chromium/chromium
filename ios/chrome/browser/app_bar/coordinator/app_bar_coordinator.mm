@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 
 @implementation AppBarCoordinator {
   AppBarViewController* _viewController;
@@ -27,13 +28,15 @@
 
 - (void)start {
   _viewController = [[AppBarViewController alloc] init];
-  _mediator = [[AppBarMediator alloc] init];
+  _mediator = [[AppBarMediator alloc]
+      initWithRegularWebStateList:_regularBrowser->GetWebStateList()
+            incognitoWebStateList:_incognitoBrowser->GetWebStateList()];
   _mediator.consumer = _viewController;
-  _mediator.webStateList = _regularBrowser->GetWebStateList();
+
+  SceneState* sceneState = _regularBrowser->GetSceneState();
+  [[TabGridSceneAgent agentFromScene:sceneState] addObserver:_mediator];
 
   _viewController.mutator = _mediator;
-
-  // TODO(crbug.com/472279443): Add incognito browser support.
 }
 
 - (void)stop {

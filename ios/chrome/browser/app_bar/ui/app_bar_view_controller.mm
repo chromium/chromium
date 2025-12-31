@@ -27,6 +27,8 @@ const CGFloat kButtonShadowRadius = 3;
 const CGFloat kButtonShadowOpacity = 0.2;
 // The shadow offset for the buttons.
 const CGFloat kButtonShadowOffset = 1;
+// The duration of the animation to update the TabGrid button.
+const CGFloat kTabGridAnimationDuration = 0.25;
 
 // Returns the configuration for all the symbols.
 UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
@@ -59,7 +61,9 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   UIButton* _assistantButton;
   UIButton* _openNewTabButton;
   UIButton* _tabGridButton;
+  UIImageView* _tabGridSymbolView;
   UILabel* _tabCountLabel;
+  NSUInteger _tabCount;
 }
 
 - (void)viewDidLoad {
@@ -83,7 +87,16 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 #pragma mark - AppBarConsumer
 
 - (void)updateTabCount:(NSUInteger)count {
+  _tabCount = count;
   _tabCountLabel.attributedText = TextForTabCount(count, kTabGridFontSize);
+}
+
+- (void)willEnterTabGrid {
+  [self updateTabGridButtonForTabGridShowing:YES];
+}
+
+- (void)willExitTabGrid {
+  [self updateTabGridButtonForTabGridShowing:NO];
 }
 
 #pragma mark - Private
@@ -137,16 +150,17 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
   // Use a custom Symbol and Label instead of the ones from the button to be
   // able to modify them as necessary.
-  UIImageView* symbolView = [[UIImageView alloc] init];
-  symbolView.translatesAutoresizingMaskIntoConstraints = NO;
-  symbolView.tintColor = UIColor.whiteColor;
-  symbolView.image = DefaultAppBarSymbol(kAppSymbol);
-  [button addSubview:symbolView];
-  AddSameCenterConstraints(symbolView, button.imageView);
+  _tabGridSymbolView = [[UIImageView alloc] init];
+  _tabGridSymbolView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tabGridSymbolView.tintColor = UIColor.whiteColor;
+  _tabGridSymbolView.image = DefaultAppBarSymbol(kAppSymbol);
+  [button addSubview:_tabGridSymbolView];
+  AddSameCenterConstraints(_tabGridSymbolView, button.imageView);
 
   _tabCountLabel = [[UILabel alloc] init];
   _tabCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _tabCountLabel.textColor = UIColor.whiteColor;
+  [self updateTabCount:_tabCount];
   [button addSubview:_tabCountLabel];
   AddSameCenterConstraints(_tabCountLabel, button.imageView);
 
@@ -175,6 +189,23 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   button.layer.masksToBounds = NO;
 
   return button;
+}
+
+// Updates the tab grid button for the given tab grid showing state.
+- (void)updateTabGridButtonForTabGridShowing:(BOOL)showing {
+  NSString* symbolName = showing ? kAppFillSymbol : kAppSymbol;
+  [_tabGridSymbolView setSymbolImage:DefaultAppBarSymbol(symbolName)
+               withContentTransition:[NSSymbolReplaceContentTransition
+                                         replaceOffUpTransition]];
+  UILabel* label = _tabCountLabel;
+  UIColor* labelColor = showing ? UIColor.blackColor : UIColor.whiteColor;
+  [UIView transitionWithView:label
+                    duration:kTabGridAnimationDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    label.textColor = labelColor;
+                  }
+                  completion:nil];
 }
 
 // Called when the Assistant button is tapped.

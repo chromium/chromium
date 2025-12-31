@@ -34,6 +34,10 @@
   [_observers willExitTabGrid];
 }
 
+- (void)willChangePageTo:(TabGridPage)page {
+  [_observers willChangePageTo:page];
+}
+
 - (void)addObserver:(id<TabGridObserving>)observer {
   [_observers addObserver:observer];
 }

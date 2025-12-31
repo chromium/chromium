@@ -121,6 +121,7 @@ source_set("scene_agent") {
   ]
   deps = [
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ui/base",
   ]
 }

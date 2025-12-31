@@ -12,29 +12,32 @@
 #import "ios/web/public/web_state.h"
 
 @interface AppBarMediator () <WebStateListObserving>
+
+// The web state list currently observed by this mediator.
+@property(nonatomic, assign) WebStateList* webStateList;
+
 @end
 
 @implementation AppBarMediator {
   std::unique_ptr<WebStateListObserverBridge> _observerBridge;
+  raw_ptr<WebStateList> _regularWebStateList;
+  raw_ptr<WebStateList> _incognitoWebStateList;
+  TabGridPage _currentPage;
 }
 
-- (instancetype)init {
+- (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
+                      incognitoWebStateList:
+                          (WebStateList*)incognitoWebStateList {
   self = [super init];
   if (self) {
+    _regularWebStateList = regularWebStateList;
+    _incognitoWebStateList = incognitoWebStateList;
     _observerBridge = std::make_unique<WebStateListObserverBridge>(self);
+    // The app starts in the regular tab grid.
+    self.webStateList = _regularWebStateList;
+    _currentPage = TabGridPageRegularTabs;
   }
   return self;
-}
-
-- (void)setWebStateList:(WebStateList*)webStateList {
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_observerBridge.get());
-  }
-  _webStateList = webStateList;
-  if (_webStateList) {
-    _webStateList->AddObserver(_observerBridge.get());
-  }
-  [self updateConsumer];
 }
 
 - (void)setConsumer:(id<AppBarConsumer>)consumer {
@@ -42,12 +45,25 @@
   [self updateConsumer];
 }
 
+- (void)setIncognitoWebStateList:(WebStateList*)incognitoWebStateList {
+  // TODO(crbug.com/472279443): How to handle the destruction of the incognito
+  // web state list?
+  _incognitoWebStateList = incognitoWebStateList;
+  if (_currentPage == TabGridPageIncognitoTabs) {
+    self.webStateList = _incognitoWebStateList;
+    [self updateConsumer];
+  }
+}
+
 - (void)disconnect {
   self.consumer = nil;
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_observerBridge.get());
-    _webStateList = nullptr;
+  if (self.webStateList) {
+    self.webStateList->RemoveObserver(_observerBridge.get());
+    self.webStateList = nullptr;
   }
+  _observerBridge.reset();
+  _regularWebStateList = nullptr;
+  _incognitoWebStateList = nullptr;
 }
 
 #pragma mark - WebStateListObserving
@@ -58,12 +74,50 @@
   [self updateConsumer];
 }
 
+#pragma mark - TabGridObserving
+
+- (void)willEnterTabGrid {
+  [self.consumer willEnterTabGrid];
+}
+
+- (void)willExitTabGrid {
+  [self.consumer willExitTabGrid];
+}
+
+- (void)willChangePageTo:(TabGridPage)page {
+  _currentPage = page;
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      self.webStateList = _incognitoWebStateList;
+      break;
+    case TabGridPageRegularTabs:
+      self.webStateList = _regularWebStateList;
+      break;
+    case TabGridPageTabGroups:
+      // TODO(crbug.com/472279443): Handle tab groups page.
+      break;
+  }
+}
+
 #pragma mark - AppBarMutator
 
 - (void)createNewTab {
   // TODO(crbug.com/472279443): Add the logic to add a new tab. This might be a
   // bit different if the TabGrid is presented as there is a lot of custom
   // logic.
+}
+
+#pragma mark - Properties
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_observerBridge.get());
+  }
+  _webStateList = webStateList;
+  if (_webStateList) {
+    _webStateList->AddObserver(_observerBridge.get());
+  }
+  [self updateConsumer];
 }
 
 #pragma mark - Private

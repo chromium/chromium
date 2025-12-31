@@ -1003,6 +1003,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                    GetForProfile(profile)
                     modeHolder:_modeHolder];
 
+  _mediator.sceneAgent =
+      [TabGridSceneAgent agentFromScene:_regularBrowser->GetSceneState()];
+
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
 

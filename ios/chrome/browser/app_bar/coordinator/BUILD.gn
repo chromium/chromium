@@ -15,6 +15,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/root_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:scene_agent",
     "//ios/web/public",
   ]
 }
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
