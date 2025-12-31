@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
 
+#import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
+#import "ios/chrome/browser/assistant/ui/assistant_bar_item.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -55,7 +59,7 @@ constexpr CGFloat kSpringDamping = 0.85;
 
   // Apply pending configuration.
   if (_barConfiguration) {
-    [_assistantSheetView setTitle:_barConfiguration.title];
+    _assistantSheetView.configuration = _barConfiguration;
   }
   if (_childViewController) {
     [self addChildViewController:_childViewController];
@@ -74,20 +78,16 @@ constexpr CGFloat kSpringDamping = 0.85;
   _heightConstraint.active = YES;
 }
 
-// Calculates the maximum allowable height for the sheet, respecting the safe
-// area.
-- (CGFloat)maxHeight {
-  UIView* superview = self.view.superview;
-  if (!superview) {
-    return 0.0;
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (parent) {
+    [self layoutInParentView:parent.view];
   }
+}
 
-  // We use the view's frame max Y because the sheet is anchored to a view (e.g.
-  // toolbar) that is above the screen bottom.
-  CGFloat bottomY = CGRectGetMaxY(self.view.frame);
-  CGFloat safeAreaTop = superview.safeAreaInsets.top;
-
-  return bottomY - safeAreaTop - kSheetMargin;
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateHeightConstraint];
 }
 
 #pragma mark - Private
@@ -188,11 +188,20 @@ constexpr CGFloat kSpringDamping = 0.85;
   [self.delegate assistantSheetViewControllerDidTapClose:self];
 }
 
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  if (parent) {
-    [self layoutInParentView:parent.view];
+// Calculates the maximum allowable height for the sheet, respecting the safe
+// area.
+- (CGFloat)maxHeight {
+  UIView* superview = self.view.superview;
+  if (!superview) {
+    return 0.0;
   }
+
+  // We use the view's frame max Y because the sheet is anchored to a view (e.g.
+  // toolbar) that is above the screen bottom.
+  CGFloat bottomY = CGRectGetMaxY(self.view.frame);
+  CGFloat safeAreaTop = superview.safeAreaInsets.top;
+
+  return bottomY - safeAreaTop - kSheetMargin;
 }
 
 // Lays out the view anchored to the guide/view within the parent view.
@@ -226,46 +235,6 @@ constexpr CGFloat kSpringDamping = 0.85;
     CGFloat initialHeight = MAX(preferredHeight, kMinSheetHeight);
     _heightConstraint.constant = initialHeight;
   }
-}
-
-#pragma mark - AssistantSheetConsumer
-
-- (void)setNavigationBarConfiguration:
-    (AssistantBarConfiguration*)configuration {
-  _barConfiguration = configuration;
-  if (self.isViewLoaded) {
-    [_assistantSheetView setTitle:configuration.title];
-    // Update height in case title lines changed.
-    [self updateHeightConstraint];
-  }
-}
-
-- (void)setChildViewController:(UIViewController*)viewController {
-  if (viewController == _childViewController) {
-    return;
-  }
-
-  // Remove existing child view controllers.
-  if (_childViewController) {
-    [_childViewController willMoveToParentViewController:nil];
-    [_childViewController.view removeFromSuperview];
-    [_childViewController removeFromParentViewController];
-  }
-
-  _childViewController = viewController;
-
-  if (self.isViewLoaded) {
-    [self addChildViewController:viewController];
-    viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_assistantSheetView.contentView addSubview:viewController.view];
-    AddSameConstraints(viewController.view, _assistantSheetView.contentView);
-    [viewController didMoveToParentViewController:self];
-  }
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  [self updateHeightConstraint];
 }
 
 // Updates the height constraint based on preferred content size and detents.
@@ -310,6 +279,42 @@ constexpr CGFloat kSpringDamping = 0.85;
   target = MAX(target, kMinSheetHeight);
   if (ABS(_heightConstraint.constant - target) > 0.1) {
     _heightConstraint.constant = target;
+  }
+}
+
+#pragma mark - AssistantSheetConsumer
+
+- (void)setNavigationBarConfiguration:
+    (AssistantBarConfiguration*)configuration {
+  _barConfiguration = configuration;
+  if (self.isViewLoaded) {
+    _assistantSheetView.configuration = configuration;
+    // Update height in case title lines changed.
+    [self.view layoutIfNeeded];
+    [self updateHeightConstraint];
+  }
+}
+
+- (void)setChildViewController:(UIViewController*)viewController {
+  if (viewController == _childViewController) {
+    return;
+  }
+
+  // Remove existing child view controllers.
+  if (_childViewController) {
+    [_childViewController willMoveToParentViewController:nil];
+    [_childViewController.view removeFromSuperview];
+    [_childViewController removeFromParentViewController];
+  }
+
+  _childViewController = viewController;
+
+  if (self.isViewLoaded) {
+    [self addChildViewController:viewController];
+    viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_assistantSheetView.contentView addSubview:viewController.view];
+    AddSameConstraints(viewController.view, _assistantSheetView.contentView);
+    [viewController didMoveToParentViewController:self];
   }
 }
 

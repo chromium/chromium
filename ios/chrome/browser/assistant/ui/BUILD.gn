@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "assistant_bar_configuration.h",
     "assistant_bar_configuration.mm",
+    "assistant_bar_item.h",
+    "assistant_bar_item.mm",
     "assistant_sheet_animator.h",
     "assistant_sheet_animator.mm",
     "assistant_sheet_consumer.h",

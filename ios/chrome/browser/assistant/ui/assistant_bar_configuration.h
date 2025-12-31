@@ -7,14 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/assistant/ui/assistant_bar_item.h"
+
+@class AssistantBarItem;
+
 // Configuration for the assistant bar.
 @interface AssistantBarConfiguration : NSObject
 
 @property(nonatomic, copy) NSString* title;
 
-// TODO(crbug.com/469050167): Add support for leading and trailing buttons.
-// @property(nonatomic, copy) NSArray<AssistantBarButton*>* leadingButtons;
-// @property(nonatomic, copy) NSArray<AssistantBarButton*>* trailingButtons;
+@property(nonatomic, copy) NSArray<AssistantBarItem*>* leadingButtons;
+@property(nonatomic, copy) NSArray<AssistantBarItem*>* trailingButtons;
 
 @end
 
