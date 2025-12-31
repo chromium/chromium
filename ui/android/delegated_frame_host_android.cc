@@ -326,7 +326,7 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
               std::move(callback), std::move(release_callback),
               std::move(keep_surface_alive)));
 
-  auto sync_token = shared_image->creation_sync_token();
+  auto sync_token = shared_image_interface->GenVerifiedSyncToken();
   viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
                                       surface_size_in_pixels_);
   if (!request->has_result_selection()) {
