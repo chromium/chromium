@@ -1180,6 +1180,7 @@ public class StripLayoutHelperManager
 
     @Override
     public void updateOffsetTagsInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        // LINT.IfChange(updateOffsetTagsInfo)
         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && offsetTagsInfo != null) {
             // Use the content OffsetTag here, because the tab strip and content are part of
             // the same subtree and move together with the same offset. We need to release the
@@ -1190,6 +1191,7 @@ public class StripLayoutHelperManager
             mTabStripTreeProvider.updateOffsetTag(null);
             mStaticLayoutNeedsOffsetTagSupplier.set(true);
         }
+        // LINT.ThenChange(chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/StaticLayout.java:updateOffsetTag)
     }
 
     public NonNullObservableSupplier<Boolean> getLayoutNeedOffsetTagSupplier() {

@@ -182,14 +182,7 @@ public class StaticLayout extends Layout {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
 
-        mUpdateOffsetTagsCallback =
-                (ignored) -> {
-                    mModel.set(
-                            LayoutTab.CONTENT_OFFSET_TAG,
-                            mNeedsOffsetTag.get() && mOffsetTagsInfo != null
-                                    ? mOffsetTagsInfo.getContentOffsetTag()
-                                    : null);
-                };
+        mUpdateOffsetTagsCallback = (ignored) -> updateOffsetTag();
         mNeedsOffsetTag.addObserver(mUpdateOffsetTagsCallback);
 
         mBrowserControlsStateProviderObserver =
@@ -202,7 +195,7 @@ public class StaticLayout extends Layout {
                             boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             mOffsetTagsInfo = offsetTagsInfo;
-                            mUpdateOffsetTagsCallback.onResult(mNeedsOffsetTag.get());
+                            updateOffsetTag();
 
                             if (shouldUpdateOffsets) {
                                 mModel.set(
@@ -451,6 +444,26 @@ public class StaticLayout extends Layout {
         final boolean isBFScreenshotDrawing =
                 isNativePage && tab.isDisplayingBackForwardAnimation();
         return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
+    }
+
+    private void updateOffsetTag() {
+        // LINT.IfChange(updateOffsetTag)
+        var offsetTag =
+                mNeedsOffsetTag.get() && mOffsetTagsInfo != null
+                        ? mOffsetTagsInfo.getContentOffsetTag()
+                        : null;
+
+        if (offsetTag == mModel.get(LayoutTab.CONTENT_OFFSET_TAG)) return;
+
+        mModel.set(LayoutTab.CONTENT_OFFSET_TAG, offsetTag);
+
+        // When static layout has an offset tag update, we need to update the render immediately.
+        // This is needed when tab strip hand-off the offset tag, the static layout has to remove
+        // the current one before applying a new one. See crbug.com/472542453.
+        if (offsetTag == null) {
+            mSceneLayer.update(mModel);
+        }
+        // LINT.ThenChange()
     }
 
     @Override

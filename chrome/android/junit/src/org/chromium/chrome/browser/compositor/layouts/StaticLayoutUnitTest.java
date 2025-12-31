@@ -12,12 +12,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -469,6 +471,10 @@ public class StaticLayoutUnitTest {
                 tagsInfo.getContentOffsetTag(),
                 mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
 
+        // The update to new offset tag is not happening immediately; the update will be deferred to
+        // compositorMCP.
+        verify(mStaticTabSceneLayer, times(0)).update(mModel);
+
         // Toggle to false
         mNeedsOffsetTagsSupplier.set(false);
         mBrowserControlsStateProviderObserverCaptor
@@ -483,6 +489,10 @@ public class StaticLayoutUnitTest {
                 null,
                 mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
 
+        // The update to reset offset tag will happen immediately.
+        verify(mStaticTabSceneLayer).update(mModel);
+        clearInvocations(mStaticTabSceneLayer);
+
         // Toggle back to true
         mNeedsOffsetTagsSupplier.set(true);
         mBrowserControlsStateProviderObserverCaptor
@@ -496,5 +506,8 @@ public class StaticLayoutUnitTest {
                 "Content offset tag should be updated.",
                 tagsInfo.getContentOffsetTag(),
                 mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
+
+        // The update will be handled by compositorMCP.
+        verify(mStaticTabSceneLayer, times(0)).update(mModel);
     }
 }
