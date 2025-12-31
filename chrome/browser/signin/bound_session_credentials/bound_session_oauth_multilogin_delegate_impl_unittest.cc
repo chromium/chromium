@@ -95,8 +95,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {}
@@ -128,8 +127,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {},
@@ -187,8 +185,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             },
             {
               "name": "__Secure-Google-Cookie",
@@ -198,8 +195,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {},
@@ -286,8 +282,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {},
@@ -348,8 +343,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             },
             {
               "name": "__Secure-Google-Cookie",
@@ -359,8 +353,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {},
@@ -438,8 +431,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "token_binding_directed_response": {},
@@ -501,8 +493,7 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               "isSecure": true,
               "isHttpOnly": true,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             },
             {
               "domain": "GOOGLE_COM",

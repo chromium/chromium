@@ -235,8 +235,7 @@ const char
               "isSecure": true,
               "isHttpOnly": false,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "device_bound_session_info": [
@@ -1504,8 +1503,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
               "isSecure": true,
               "isHttpOnly": false,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "device_bound_session_info": [
@@ -1693,8 +1691,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
               "isSecure": true,
               "isHttpOnly": false,
               "maxAge": 31536000,
-              "priority": "HIGH",
-              "sameParty": "1"
+              "priority": "HIGH"
             }
           ],
           "device_bound_session_info": [
