@@ -61,9 +61,11 @@ void AccountCapabilitiesTestMutator::
       value;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
   capabilities_->capabilities_map_[kCanToggleAutoUpdatesName] = value;
 }
+#endif
 
 void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
     bool value) {

@@ -48,8 +48,6 @@ public final class AccountCapabilitiesTest {
             case AccountCapabilitiesConstants
                     .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME:
                 return capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions();
-            case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
-                return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
                 return capabilities.canUseChromeOSGenerativeAi();
             case AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME:
@@ -122,9 +120,6 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanToggleAutoUpdates")
-                                .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME),
                         new ParameterSet()
                                 .name("CanUseChromeIpProtection")
                                 .value(

@@ -81,8 +81,10 @@ class AccountCapabilities {
   signin::Tribool
   can_show_history_sync_opt_ins_without_minor_mode_restrictions() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;
+#endif
 
   // The user account is able to use IP Protection.
   signin::Tribool can_use_chrome_ip_protection() const;

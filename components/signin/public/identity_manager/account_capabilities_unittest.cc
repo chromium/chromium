@@ -166,6 +166,7 @@ TEST_F(AccountCapabilitiesTest, IsOptedInToParentalSupervision) {
             signin::Tribool::kFalse);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kUnknown);
@@ -177,6 +178,7 @@ TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
   mutator.set_can_toggle_auto_updates(false);
   EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kFalse);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
   AccountCapabilities capabilities;

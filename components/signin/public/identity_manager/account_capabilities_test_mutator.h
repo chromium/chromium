@@ -34,7 +34,9 @@ class AccountCapabilitiesTestMutator {
 #endif
   void set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       bool value);
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_toggle_auto_updates(bool value);
+#endif
   void set_can_use_chrome_ip_protection(bool value);
 #if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_chromeos_generative_ai(bool value);
