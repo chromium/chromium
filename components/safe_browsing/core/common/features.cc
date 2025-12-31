@@ -216,10 +216,6 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal,
-             "SafeBrowsingExtensionTelemetryDeclarativeNetRequestActionSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetrySearchHijackingSignal,
              "SafeBrowsingExtensionTelemetrySearchHijackingSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -407,7 +403,6 @@ base::Value::List GetFeatureStatusList() {
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
       &kEsbAsASyncedSetting,
-      &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
       &kLocalListsUseSBv5,
