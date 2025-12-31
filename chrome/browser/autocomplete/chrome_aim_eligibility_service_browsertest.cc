@@ -31,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -204,6 +205,7 @@ class ChromeAimEligibilityServiceBrowserTest
           {"request_on_primary_account_changes", "false"}}});
     disabled_features.push_back(
         omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+    disabled_features.push_back(contextual_tasks::kContextualTasks);
 
     if (!server_eligibility_enabled) {
       disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
@@ -627,7 +629,7 @@ class ChromeAimEligibilityServiceStartupRequestBrowserTest
          omnibox::kAimServerRequestOnStartupEnabled,
          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
@@ -805,7 +807,7 @@ class ChromeAimEligibilityServiceRetryRequestBrowserTest
          omnibox::kAimServerRequestOnStartupEnabled,
          omnibox::kAimServerEligibilityCustomRetryPolicyEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
@@ -933,7 +935,7 @@ class ChromeAimEligibilityServiceCacheBrowserTest
          omnibox::kAimServerEligibilityEnabled,
          omnibox::kAimServerRequestOnStartupEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
@@ -994,7 +996,8 @@ class ChromeAimEligibilityServiceOffTheRecordBrowserTest
         // Enabled features.
         {omnibox::kAimEnabled},
         // Disabled features.
-        {omnibox::kAimServerEligibilityEnabled});
+        {contextual_tasks::kContextualTasks,
+         omnibox::kAimServerEligibilityEnabled});
     InProcessBrowserTest::SetUp();
   }
 

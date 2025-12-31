@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
@@ -201,6 +202,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           omnibox::kOnDeviceHeadProviderNonIncognito,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           switches::kSyncEnableBookmarksInTransportMode,
+          contextual_tasks::kContextualTasks,
         },
         {});
     // clang-format on
@@ -387,6 +389,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BrowserManagerService",
     "BrowsingDataLifetimeManager",
     "BrowsingDataRemover",
+    "ContextualTasksContextController",
+    "ContextualTasksService",
+    "ContextualTasksUiService",
     "CookieSettings",
 #if BUILDFLAG(IS_WIN)
     "BoundSessionCookieRefreshService",
@@ -626,6 +631,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ContentIndexProvider",
     "ContentSettingsService",
+    "ContextualTasksContextController",
+    "ContextualTasksService",
+    "ContextualTasksUiService",
     "CookieSettings",
     "CookiesAPI",
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

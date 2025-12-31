@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -192,7 +193,8 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensAimSuggestions,
           {{"lens-aim-suggestions-type", "Contextual"}}},
          {lens::features::kLensSearchReinvocationAffordance, {}}},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               omnibox::kAimServerEligibilityEnabled});
 
     InProcessBrowserTest::SetUp();
   }

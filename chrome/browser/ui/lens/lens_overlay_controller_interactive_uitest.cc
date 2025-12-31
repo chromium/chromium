@@ -95,7 +95,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                               {lens::features::kLensOverlayContextualSearchbox,
                                {{"use-pdfs-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
-        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               lens::features::kLensSearchZeroStateCsb});
   }
 
   void WaitForTemplateURLServiceToLoad() {
@@ -1217,7 +1218,8 @@ class LensOverlayControllerStraightToSrpTest
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {lens::features::kLensOverlayOptimizationFilter});
+        {contextual_tasks::kContextualTasks,
+         lens::features::kLensOverlayOptimizationFilter});
   }
 };
 
@@ -1290,7 +1292,8 @@ class LensOverlayControllerStraightToSrpCustomQueryTest
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {lens::features::kLensOverlayOptimizationFilter});
+        {contextual_tasks::kContextualTasks,
+         lens::features::kLensOverlayOptimizationFilter});
   }
 };
 

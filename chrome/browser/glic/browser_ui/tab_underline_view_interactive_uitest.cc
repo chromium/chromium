@@ -176,7 +176,7 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
                       "UiGpuRasterization"});
     features_.InitFromCommandLine(
         enabled_features, /*disable_features=*/
-        "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
+        "ContextualTasks,GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
   }
   ~TabUnderlineViewUiTest() override = default;
 
