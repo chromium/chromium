@@ -328,6 +328,25 @@ void LensQueryFlowRouter::OnFileUploadStatusChangedForTesting(
                             error_type);
 }
 
+void LensQueryFlowRouter::HandleInteractionResponse(
+    std::optional<lens::ImageCrop> image_crop,
+    lens::LensOverlayInteractionResponse interaction_response) {
+  if (interaction_response.has_text()) {
+    lens::ZoomedCrop zoomed_crop;
+    if (image_crop.has_value()) {
+      zoomed_crop.CopyFrom(image_crop->zoomed_crop());
+    }
+    // TODO(crbug.com/469836056): Verify that this is the correct resized bitmap
+    // to be using to generate the text once the interaction response returns
+    // text.
+    lens_search_controller_->HandleInteractionResponse(
+        lens::CreateTextMojomFromInteractionResponse(
+            interaction_response, zoomed_crop,
+            gfx::Size(GetViewportScreenshot().width(),
+                      GetViewportScreenshot().height())));
+  }
+}
+
 void LensQueryFlowRouter::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
@@ -519,6 +538,9 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
       request_info->image_crop = std::move(image_crop_and_bitmap->image_crop);
     }
   }
+  request_info->interaction_response_callback =
+      base::BindOnce(&LensQueryFlowRouter::HandleInteractionResponse,
+                     weak_factory_.GetWeakPtr(), request_info->image_crop);
   return request_info;
 }
 

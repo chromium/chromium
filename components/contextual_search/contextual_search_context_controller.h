@@ -10,7 +10,7 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
@@ -138,6 +138,10 @@ class ContextualSearchContextController {
     // The client logs corresponding to the interaction. This should only be set
     // if the selection type is set for an interaction.
     std::optional<lens::LensOverlayClientLogs> client_logs;
+
+    // The callback to run when the interaction response is received.
+    base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+        interaction_response_callback;
   };
 
   // Struct containing information needed to create a ClientToAimMessage.

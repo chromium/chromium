@@ -111,6 +111,8 @@ TestComposeboxQueryController::CreateEndpointFetcher(
     sent_request.ParseFromString(request_string);
 
     if (sent_request.has_interaction_request()) {
+      fake_server_response_string =
+          fake_interaction_response_.SerializeAsString();
       sent_interaction_requests_.push_back(sent_request);
     } else {
     sent_upload_requests_.push_back(sent_request);

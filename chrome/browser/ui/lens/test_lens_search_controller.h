@@ -44,6 +44,11 @@ class MockLensSearchController : public LensSearchController {
               invocation_source,
               (),
               (override));
+
+  MOCK_METHOD(void,
+              HandleInteractionResponse,
+              (lens::mojom::TextPtr text),
+              (override));
 };
 
 class TestLensSearchController : public LensSearchController {
