@@ -62,6 +62,10 @@ class MockContextualSearchContextController
               (const base::UnguessableToken& file_token),
               (override));
   MOCK_METHOD(std::vector<const FileInfo*>, GetFileInfoList, (), (override));
+  MOCK_METHOD(base::WeakPtr<ContextualSearchContextController>,
+              AsWeakPtr,
+              (),
+              (override));
 };
 
 }  // namespace contextual_search

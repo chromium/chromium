@@ -8,9 +8,9 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
@@ -22,46 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace contextual_tasks {
-
-class MockContextualSearchContextController
-    : public contextual_search::ContextualSearchContextController {
- public:
-  MockContextualSearchContextController() = default;
-  ~MockContextualSearchContextController() override = default;
-
-  MOCK_METHOD(void, InitializeIfNeeded, (), (override));
-  MOCK_METHOD(void,
-              CreateSearchUrl,
-              (std::unique_ptr<CreateSearchUrlRequestInfo>,
-               base::OnceCallback<void(GURL)>),
-              (override));
-  MOCK_METHOD(lens::ClientToAimMessage,
-              CreateClientToAimRequest,
-              (std::unique_ptr<CreateClientToAimRequestInfo>),
-              (override));
-  MOCK_METHOD(void, AddObserver, (FileUploadStatusObserver*), (override));
-  MOCK_METHOD(void, RemoveObserver, (FileUploadStatusObserver*), (override));
-  MOCK_METHOD(void,
-              StartFileUploadFlow,
-              (const base::UnguessableToken&,
-               std::unique_ptr<lens::ContextualInputData>,
-               std::optional<lens::ImageEncodingOptions>),
-              (override));
-  MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&), (override));
-  MOCK_METHOD(void, ClearFiles, (), (override));
-  MOCK_METHOD(std::unique_ptr<lens::proto::LensOverlaySuggestInputs>,
-              CreateSuggestInputs,
-              (const std::vector<base::UnguessableToken>&),
-              (override));
-  MOCK_METHOD(const contextual_search::FileInfo*,
-              GetFileInfo,
-              (const base::UnguessableToken&),
-              (override));
-  MOCK_METHOD(std::vector<const contextual_search::FileInfo*>,
-              GetFileInfoList,
-              (),
-              (override));
-};
 
 class PendingContextDecoratorTest : public testing::Test {
  public:
@@ -103,8 +63,8 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
   // Set up the Contextual Search service and a mock controller.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
@@ -213,8 +173,8 @@ TEST_F(PendingContextDecoratorTest, DecorateWithNoContextTokens) {
   // Set up a session handle with no context tokens.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
   // Check the search content sharing settings to notify the session handle
@@ -248,8 +208,8 @@ TEST_F(PendingContextDecoratorTest, DecorateWithIncompleteData) {
   // Set up the service and session handle.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);

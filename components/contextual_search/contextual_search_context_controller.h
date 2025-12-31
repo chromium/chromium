@@ -213,6 +213,9 @@ class ContextualSearchContextController {
 
   // Return the file infos for all files in the request.
   virtual std::vector<const FileInfo*> GetFileInfoList() = 0;
+
+  // Returns a weak pointer to the context controller.
+  virtual base::WeakPtr<ContextualSearchContextController> AsWeakPtr() = 0;
 };
 
 }  // namespace contextual_search

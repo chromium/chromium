@@ -238,12 +238,8 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
                        web_contents,
                        std::move(controller)),
       get_session_callback_(std::move(get_session_callback)) {
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (contextual_session_handle) {
-    if (auto* query_controller = contextual_session_handle->GetController()) {
-      file_upload_status_observer_.Observe(query_controller);
-    }
-  }
+  // This implicitly also initializes the file upload status observer.
+  GetContextualSessionHandle();
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
@@ -259,8 +255,25 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
 }
 
 contextual_search::ContextualSearchSessionHandle*
-ContextualSearchboxHandler::GetContextualSessionHandle() const {
-  return get_session_callback_ ? get_session_callback_.Run() : nullptr;
+ContextualSearchboxHandler::GetContextualSessionHandle() {
+  if (!get_session_callback_) {
+    return nullptr;
+  }
+
+  auto* session_handle = get_session_callback_.Run();
+  auto* context_controller =
+      session_handle ? session_handle->GetController() : nullptr;
+  // Remove the old context controller if it's different from the new one.
+  if (context_controller_ && context_controller_.get() != context_controller) {
+    context_controller_->RemoveObserver(this);
+    context_controller_ = nullptr;
+  }
+  // Reset to the new context controller if it is different.
+  if (context_controller && !context_controller_) {
+    context_controller->AddObserver(this);
+    context_controller_ = context_controller->AsWeakPtr();
+  }
+  return session_handle;
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
@@ -268,6 +281,9 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
       webui::GetBrowserWindowInterface(web_contents_);
   if (browser_window_interface) {
     browser_window_interface->GetTabStripModel()->RemoveObserver(this);
+  }
+  if (context_controller_) {
+    context_controller_->RemoveObserver(this);
   }
 }
 
@@ -280,7 +296,7 @@ ContextualSearchboxHandler::GetMetricsRecorder() {
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
-ContextualSearchboxHandler::GetSuggestInputs() const {
+ContextualSearchboxHandler::GetSuggestInputs() {
   auto* contextual_session_handle = GetContextualSessionHandle();
   return contextual_session_handle
              ? contextual_session_handle->GetSuggestInputs()

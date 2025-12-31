@@ -1639,6 +1639,11 @@ ComposeboxQueryController::GetFileInfoList() {
   return file_infos;
 }
 
+base::WeakPtr<contextual_search::ContextualSearchContextController>
+ComposeboxQueryController::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ComposeboxQueryController::FileInfo*
 ComposeboxQueryController::GetMutableFileInfo(
     const base::UnguessableToken& file_token) {
