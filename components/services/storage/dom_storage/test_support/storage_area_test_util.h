@@ -58,10 +58,10 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
     std::vector<blink::mojom::KeyValuePtr>* data_out);
 
 // Mock observer implementation for use with StorageArea.
-class MockLevelDBObserver : public blink::mojom::StorageAreaObserver {
+class MockStorageAreaObserver : public blink::mojom::StorageAreaObserver {
  public:
-  MockLevelDBObserver();
-  ~MockLevelDBObserver() override;
+  MockStorageAreaObserver();
+  ~MockStorageAreaObserver() override;
 
   MOCK_METHOD4(KeyChanged,
                void(const std::vector<uint8_t>& key,

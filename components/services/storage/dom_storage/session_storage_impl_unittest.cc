@@ -648,7 +648,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
   base::RunLoop delete_loop;
   bool success = true;
-  test::MockLevelDBObserver observer4;
+  test::MockStorageAreaObserver observer4;
   area_o1->AddObserver(observer4.Bind());
   area_o1->Delete(StringViewToUint8Vector("key"), std::nullopt, "source",
                   base::BindLambdaForTesting([&](bool success_in) {

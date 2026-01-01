@@ -378,7 +378,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
                            namespace_entry1);
 
   // Create an observer to make sure the deletion is observed.
-  testing::StrictMock<test::MockLevelDBObserver> mock_observer;
+  testing::StrictMock<test::MockStorageAreaObserver> mock_observer;
   leveldb_1->AddObserver(mock_observer.Bind());
   leveldb_1.FlushForTesting();
 

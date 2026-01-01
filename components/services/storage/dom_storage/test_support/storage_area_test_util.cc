@@ -115,12 +115,12 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
       std::move(callback), data_out);
 }
 
-MockLevelDBObserver::MockLevelDBObserver() = default;
+MockStorageAreaObserver::MockStorageAreaObserver() = default;
 
-MockLevelDBObserver::~MockLevelDBObserver() = default;
+MockStorageAreaObserver::~MockStorageAreaObserver() = default;
 
 mojo::PendingRemote<blink::mojom::StorageAreaObserver>
-MockLevelDBObserver::Bind() {
+MockStorageAreaObserver::Bind() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
