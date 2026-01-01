@@ -1890,7 +1890,7 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
   lens::LensOverlayClientContext client_context = controller().client_context();
 
   // Assert: Validate the client context values.
-  EXPECT_EQ(client_context.surface(), lens::SURFACE_CHROME_NTP);
+  EXPECT_EQ(client_context.surface(), lens::SURFACE_LENS_OVERLAY);
   EXPECT_EQ(client_context.platform(), lens::PLATFORM_LENS_OVERLAY);
   EXPECT_EQ(client_context.locale_context().language(), kLocale);
   EXPECT_EQ(client_context.locale_context().region(), kRegion);
@@ -2920,7 +2920,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurfaceAndNoImage) {
   std::string lns_surface_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsSurfaceParameterKey,
                                          &lns_surface_value));
-  EXPECT_EQ(lns_surface_value, "47");
+  EXPECT_EQ(lns_surface_value, "42");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
