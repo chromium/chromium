@@ -36,6 +36,11 @@ interface PageHandler {
   // Sets the task ID for the WebUI instance running the feature.
   SetTaskId(mojo_base.mojom.Uuid uuid);
 
+  // Returns if the given URL is an AI page zero state. `is_zero_state` is true
+  // if the URL is an AI page and no queries have been submitted yet in this
+  // thread.
+  IsZeroState(url.mojom.Url url) => (bool is_zero_state);
+
   // Set the title of the active thread.
   SetThreadTitle(string title);
 
@@ -96,7 +101,8 @@ interface Page {
   // Sets the task details (task ID, thread ID, and turn ID) for the active
   // thread in the UI. This is primarily used to ensure the params in the URL
   // are kept up to date without necessarily reloading the page.
-  SetTaskDetails(mojo_base.mojom.Uuid uuid, string thread_id, string turn_id);
+  SetTaskDetails(
+      mojo_base.mojom.Uuid uuid, string thread_id, string turn_id);
 
   // A notification that WebUI has moved into or out of the side panel. The UI
   // code should query the `IsShownInTab` method to get the current state.
@@ -143,6 +149,6 @@ interface Page {
 // Used to bootstrip bi-directional communication between the browser and webui.
 interface PageHandlerFactory {
   // Create a page handler for the file manager and link it to the UI.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> page_handler);
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> page_handler);
 };

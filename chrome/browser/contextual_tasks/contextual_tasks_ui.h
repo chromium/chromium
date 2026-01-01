@@ -80,8 +80,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
         TaskInfoDelegate* task_info_delegate);
     ~FrameNavObserver() override = default;
 
-    void DidStartNavigation(
-        content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
 
@@ -127,6 +125,13 @@ class ContextualTasksUI : public TaskInfoDelegate,
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
   void OnZeroStateChange(bool is_zero_state) override;
+
+  // Returns whether the given URL is an AI page zero state. This is used to
+  // determine if the UI should be rendered in zero state. Static so it can be
+  // used by the FrameNavObserver and easily tested.
+  static bool IsZeroState(
+      const GURL& url,
+      contextual_tasks::ContextualTasksUiService* ui_service);
 
   // Get the URL of the page currently embedded in this WebUI.
   const GURL& GetInnerFrameUrl() const;
