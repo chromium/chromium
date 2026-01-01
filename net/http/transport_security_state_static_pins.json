@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2025-12-31 12:53 UTC
+// Last updated: 2026-01-01 12:53 UTC
 //
 {
   "pinsets": [
