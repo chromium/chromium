@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
-#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,6 +206,23 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
   *result = std::move(database);
 }
 
+void ReadMapKeyValuesSync(
+    AsyncDomStorageDatabase& database,
+    DomStorageDatabase::MapLocator map_locator,
+    std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>*
+        key_value_results) {
+  base::test::TestFuture<
+      StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>>
+      map_key_values_future;
+  database.ReadMapKeyValues(std::move(map_locator),
+                            map_key_values_future.GetCallback());
+
+  StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+      map_key_values = map_key_values_future.Take();
+  ASSERT_TRUE(map_key_values.has_value()) << map_key_values.error().ToString();
+  *key_value_results = *std::move(map_key_values);
+}
+
 void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
                          DomStorageDatabase::Metadata* metadata_results) {
   base::test::TestFuture<StatusOr<DomStorageDatabase::Metadata>>
@@ -253,6 +270,54 @@ void DeleteSessionsSync(
 
   const DbStatus& status = status_future.Get();
   EXPECT_TRUE(status.ok()) << status.ToString();
+}
+
+FakeCommitter::FakeCommitter(AsyncDomStorageDatabase* database,
+                             DomStorageDatabase::MapLocator map_locator)
+    : database_(database), map_locator_(std::move(map_locator)) {
+  database_->AddCommitter(this);
+}
+
+FakeCommitter::~FakeCommitter() {
+  database_->RemoveCommitter(this);
+}
+
+void FakeCommitter::PutMapKeyValueSync(DomStorageDatabase::Key key,
+                                       DomStorageDatabase::Value value) {
+  // Create a batch update that writes `key` and `value`.
+  DomStorageDatabase::MapBatchUpdate map_update(map_locator_.Clone());
+  map_update.entries_to_add.emplace_back(std::move(key), std::move(value));
+  pending_commit_ = std::move(map_update);
+
+  // Commit the update to the database.
+  CHECK(!commit_complete_run_loop_);
+  commit_complete_run_loop_ = std::make_unique<base::RunLoop>();
+  database_->InitiateCommit();
+
+  // Wait for the commit to complete.
+  commit_complete_run_loop_->Run();
+  commit_complete_run_loop_.reset();
+
+  // Verify that Put() successfully wrote an entry to the database.
+  ASSERT_NE(commit_complete_result_, std::nullopt);
+  EXPECT_TRUE(commit_complete_result_->ok())
+      << commit_complete_result_->ToString();
+  commit_complete_result_.reset();
+}
+
+std::optional<DomStorageDatabase::MapBatchUpdate>
+FakeCommitter::CollectCommit() {
+  return std::move(pending_commit_);
+}
+
+base::OnceCallback<void(DbStatus)> FakeCommitter::GetCommitCompleteCallback() {
+  return base::BindOnce(&FakeCommitter::OnCommitCompleted,
+                        base::Unretained(this));
+}
+
+void FakeCommitter::OnCommitCompleted(DbStatus status) {
+  commit_complete_result_ = status;
+  commit_complete_run_loop_->Quit();
 }
 
 }  // namespace storage

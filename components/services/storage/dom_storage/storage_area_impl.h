@@ -208,7 +208,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
                            PutLoadsValuesAfterCacheModeUpgrade);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, SetCacheModeConsistent);
-  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, PrefixForkingPseudoFuzzer);
+  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, MapForkingPseudoFuzzer);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplCacheModeTest,
                            CommitOnDifferentCacheModes);
 

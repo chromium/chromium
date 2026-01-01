@@ -6,17 +6,22 @@
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_TEST_SUPPORT_DOM_STORAGE_DATABASE_TESTING_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+namespace base {
+class RunLoop;
+}
+
 namespace storage {
-class AsyncDomStorageDatabase;
 
 void ExpectEqualsMapLocator(const DomStorageDatabase::MapLocator& left,
                             const DomStorageDatabase::MapLocator& right);
@@ -50,6 +55,14 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
     std::unique_ptr<AsyncDomStorageDatabase>* result);
 
 // A synchronous wrapper for
+// `AsyncDomStorageDatabase::ReadMapKeyValues()`.  Asserts success.
+void ReadMapKeyValuesSync(
+    AsyncDomStorageDatabase& database,
+    DomStorageDatabase::MapLocator map_locator,
+    std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>*
+        key_value_results);
+
+// A synchronous wrapper for
 // `AsyncDomStorageDatabase::ReadAllMetadata()`.  Expects success.
 void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
                          DomStorageDatabase::Metadata* metadata_results);
@@ -73,6 +86,34 @@ void DeleteSessionsSync(
     AsyncDomStorageDatabase& database,
     std::vector<std::string> session_ids,
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
+
+// Synchronously write key/value pairs to a map in the database.
+class FakeCommitter : public AsyncDomStorageDatabase::Committer {
+ public:
+  FakeCommitter(AsyncDomStorageDatabase* database,
+                DomStorageDatabase::MapLocator map_locator);
+  virtual ~FakeCommitter();
+
+  void PutMapKeyValueSync(DomStorageDatabase::Key key,
+                          DomStorageDatabase::Value value);
+
+  // `AsyncDomStorageDatabase::Committer`:
+  std::optional<DomStorageDatabase::MapBatchUpdate> CollectCommit() override;
+  base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
+
+ private:
+  // Records `commit_complete_result_` then quits `commit_complete_run_loop_`.
+  void OnCommitCompleted(DbStatus status);
+
+  raw_ptr<AsyncDomStorageDatabase> database_;
+  DomStorageDatabase::MapLocator map_locator_;
+
+  // `PutMapKeyValueSync()` sets these members to start the commit.
+  // `PutMapKeyValueSync()` also resets these members after the commit finishes.
+  std::optional<DomStorageDatabase::MapBatchUpdate> pending_commit_;
+  std::unique_ptr<base::RunLoop> commit_complete_run_loop_;
+  std::optional<DbStatus> commit_complete_result_;
+};
 
 }  // namespace storage
 
