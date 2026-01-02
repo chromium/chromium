@@ -45,8 +45,8 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
-  if (enclave_manager->is_loaded()) {
-    enclave_ready_ = enclave_manager->is_ready();
+  if (enclave_manager->IsLoaded()) {
+    enclave_ready_ = enclave_manager->IsReady();
     MaybeRecordDelayedPasskeyReadinessHistogram();
   } else {
     enclave_manager->LoadAfterDelay(
@@ -247,7 +247,7 @@ void PasskeyUnlockManager::Shutdown() {
 }
 
 void PasskeyUnlockManager::OnStateUpdated() {
-  enclave_ready_ = enclave_manager()->is_ready();
+  enclave_ready_ = enclave_manager()->IsReady();
   ComputeShouldDisplayErrorUiAndNotifyObservers();
   MaybeRecordDelayedPasskeyReadinessHistogram();
 }
@@ -301,7 +301,7 @@ void PasskeyUnlockManager::RecordPasskeyCountHistogram() {
 
 void PasskeyUnlockManager::MaybeRecordDelayedPasskeyReadinessHistogram() {
   if (passkey_readiness_recorded_on_startup_ ||
-      !enclave_manager()->is_loaded()) {
+      !enclave_manager()->IsLoaded()) {
     return;
   }
   passkey_readiness_recorded_on_startup_ = true;
@@ -314,7 +314,7 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasskeyReadinessHistogram() {
 
 void PasskeyUnlockManager::RecordPasskeyReadinessHistogram() {
   base::UmaHistogramBoolean(kPasskeyReadinessHistogram,
-                            enclave_manager()->is_ready());
+                            enclave_manager()->IsReady());
 }
 
 void PasskeyUnlockManager::MaybeRecordDelayedGpmPinStatusHistogram(

@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   enclave_manager().ResetForTesting();
 
-  EXPECT_EQ(enclave_manager().is_loaded(), false);
+  EXPECT_EQ(enclave_manager().IsLoaded(), false);
 
   // Checks that a following request goes straight to ready state.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);

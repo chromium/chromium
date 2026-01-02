@@ -979,7 +979,7 @@ bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
     return false;
   }
 
-  return enclave_manager->is_registered();
+  return enclave_manager->IsRegistered();
 }
 
 void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(

@@ -110,9 +110,9 @@ class PasskeyUnlockManagerTest : public testing::Test {
       content::BrowserContext* ctx) {
     std::unique_ptr<MockEnclaveManager> enclave_manager_mock =
         std::make_unique<MockEnclaveManager>();
-    ON_CALL(*enclave_manager_mock, is_loaded())
+    ON_CALL(*enclave_manager_mock, IsLoaded())
         .WillByDefault(testing::Return(is_enclave_manager_loaded));
-    ON_CALL(*enclave_manager_mock, is_ready())
+    ON_CALL(*enclave_manager_mock, IsReady())
         .WillByDefault(testing::Return(is_enclave_manager_ready));
     ON_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_))
         .WillByDefault(

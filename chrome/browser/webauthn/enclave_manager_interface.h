@@ -84,22 +84,16 @@ class EnclaveManagerInterface : public KeyedService {
   virtual EnclaveManager* GetEnclaveManager();
 
   // Returns true if the current user has been registered with the enclave.
-  // TODO(crbug.com/462438488): Change the name to the PascalCase naming
-  // convention because this function is virtual.
-  virtual bool is_registered() const = 0;
+  virtual bool IsRegistered() const = 0;
 
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
-  // TODO(crbug.com/462438488): Change the name to the PascalCase naming
-  // convention because this function is virtual.
-  virtual bool is_loaded() const = 0;
+  virtual bool IsLoaded() const = 0;
 
   // Returns true if the current user has joined the security domain and has one
   // or more wrapped security domain secrets available. (This implies
-  // `is_registered`.)
-  // TODO(crbug.com/462438488): Change the name to the PascalCase naming
-  // convention because this function is virtual.
-  virtual bool is_ready() const = 0;
+  // `IsRegistered`.)
+  virtual bool IsReady() const = 0;
 
   // Send a request to the enclave to delete the registration for the current
   // user, erase local keys, and erase local state for the user. Safe to call in

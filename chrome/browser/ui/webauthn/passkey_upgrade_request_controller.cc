@@ -60,7 +60,7 @@ PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
       enclave_manager_(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())),
       enclave_request_callback_(enclave_request_callback) {
-  if (enclave_manager_->is_loaded()) {
+  if (enclave_manager_->IsLoaded()) {
     OnEnclaveLoaded();
     return;
   }
@@ -233,9 +233,9 @@ Profile* PasskeyUpgradeRequestController::profile() const {
 }
 
 void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
-  CHECK(enclave_manager_->is_loaded());
-  enclave_state_ = enclave_manager_->is_ready() ? EnclaveState::kReady
-                                                : EnclaveState::kError;
+  CHECK(enclave_manager_->IsLoaded());
+  enclave_state_ =
+      enclave_manager_->IsReady() ? EnclaveState::kReady : EnclaveState::kError;
   if (!pending_request_) {
     return;
   }

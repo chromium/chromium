@@ -2907,12 +2907,12 @@ bool EnclaveManager::is_idle() const {
   return !loading_ && !state_machine_;
 }
 
-bool EnclaveManager::is_loaded() const {
+bool EnclaveManager::IsLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return static_cast<bool>(local_state_);
 }
 
-bool EnclaveManager::is_registered() const {
+bool EnclaveManager::IsRegistered() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_ && user_->registered();
 }
@@ -2922,9 +2922,9 @@ bool EnclaveManager::has_pending_keys() const {
   return pending_keys_ != nullptr;
 }
 
-bool EnclaveManager::is_ready() const {
+bool EnclaveManager::IsReady() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_registered() && !user_->wrapped_security_domain_secrets().empty();
+  return IsRegistered() && !user_->wrapped_security_domain_secrets().empty();
 }
 
 unsigned EnclaveManager::store_keys_count() const {
@@ -2942,7 +2942,7 @@ void EnclaveManager::LoadAfterDelay(base::TimeDelta delay,
 void EnclaveManager::Load(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_loaded()) {
+  if (IsLoaded()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(closure));
     return;
@@ -3101,7 +3101,7 @@ void EnclaveManager::Unenroll(EnclaveManager::Callback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   action->unregister = true;
 
-  if (!user_ || !is_registered()) {
+  if (!user_ || !IsRegistered()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(action->callback), true));
     return;
@@ -3117,7 +3117,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_);
-  bool ret = is_ready();
+  bool ret = IsReady();
 
   if (IsSecurityDomainReset(state)) {
     ClearRegistration();
@@ -3567,7 +3567,7 @@ void EnclaveManager::AddPendingUvRequest(
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
     int32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_ready());
+  CHECK(IsReady());
   const auto it = user_->wrapped_security_domain_secrets().find(version);
   if (it == user_->wrapped_security_domain_secrets().end()) {
     return std::nullopt;
@@ -3578,7 +3578,7 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
 std::pair<int32_t, std::vector<uint8_t>>
 EnclaveManager::GetCurrentWrappedSecret() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_ready());
+  CHECK(IsReady());
 
   return GetCurrentWrappedSecretForUser(user_);
 }
@@ -3594,7 +3594,7 @@ EnclaveManager::TakeSecret() {
 }
 
 bool EnclaveManager::has_wrapped_pin() const {
-  CHECK(is_ready());
+  CHECK(IsReady());
   return user_->has_wrapped_pin();
 }
 
@@ -3621,7 +3621,7 @@ void EnclaveManager::SetWrappedPINDataForTesting(
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
     bool platform_has_biometrics) const {
-  CHECK(is_ready());
+  CHECK(IsReady());
 #if BUILDFLAG(IS_WIN)
   if (user_->deferred_uv_key_creation()) {
     return UvKeyState::kUsesSystemUIDeferredCreation;
@@ -3757,7 +3757,7 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   pending_keys->keys = std::move(keys);
   pending_keys->last_key_version = last_key_version;
 
-  if (is_registered()) {
+  if (IsRegistered()) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
                     << last_key_version;
     NotifyObserversAboutOutOfContextRecoveryOutcome(
@@ -4280,7 +4280,7 @@ void EnclaveManager::ConsiderPinRenewal() {
                                 PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !is_ready() || !user_->has_wrapped_pin()) {
+  if (!user_ || !IsReady() || !user_->has_wrapped_pin()) {
     base::UmaHistogramEnumeration(kPinRenewalHistogram,
                                   PinRenewalEvent::kNothingToRenew);
     return;

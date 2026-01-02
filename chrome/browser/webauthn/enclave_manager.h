@@ -199,16 +199,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   bool is_idle() const;
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
-  bool is_loaded() const override;
+  bool IsLoaded() const override;
   // Returns true if the current user has been registered with the enclave.
-  bool is_registered() const override;
+  bool IsRegistered() const override;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
   // or `AddDeviceAndPINToAccount` can be called.
   bool has_pending_keys() const;
   // Returns true if the current user has joined the security domain and has one
   // or more wrapped security domain secrets available. (This implies
-  // `is_registered`.)
-  bool is_ready() const override;
+  // `IsRegistered`.)
+  bool IsReady() const override;
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
 

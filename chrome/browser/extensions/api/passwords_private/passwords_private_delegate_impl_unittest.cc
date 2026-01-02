@@ -1861,7 +1861,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsConnecetdToCloudAuthenticator) {
 
   MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
       EnclaveManagerFactory::GetForProfile(profile()));
-  EXPECT_CALL(*enclave_manager_mock, is_registered).Times(1);
+  EXPECT_CALL(*enclave_manager_mock, IsRegistered).Times(1);
 
   delegate->IsConnectedToCloudAuthenticator(web_contents.get());
 }

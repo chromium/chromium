@@ -43,7 +43,7 @@ ChangePinControllerImpl::~ChangePinControllerImpl() {
 
 void ChangePinControllerImpl::IsChangePinFlowAvailable(
     PinAvailableCallback callback) {
-  if (enclave_manager_->is_loaded()) {
+  if (enclave_manager_->IsLoaded()) {
     NotifyPinAvailability(std::move(callback));
     return;
   }
@@ -53,7 +53,7 @@ void ChangePinControllerImpl::IsChangePinFlowAvailable(
 }
 
 void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
-  if (notify_pin_change_callback_ || !enclave_manager_->is_registered()) {
+  if (notify_pin_change_callback_ || !enclave_manager_->IsRegistered()) {
     std::move(callback).Run(false);
     return;
   }
@@ -69,7 +69,7 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
 }
 
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
-  if (!enclave_manager_->is_registered()) {
+  if (!enclave_manager_->IsRegistered()) {
     model_->SetStep(Step::kGPMError);
     RecordHistogram(ChangePinEvent::kFailed);
     return;
@@ -87,7 +87,7 @@ void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
-  if (!enclave_manager_->is_registered()) {
+  if (!enclave_manager_->IsRegistered()) {
     model_->SetStep(Step::kGPMError);
     RecordHistogram(ChangePinEvent::kFailed);
     return;
@@ -137,8 +137,8 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
 
 void ChangePinControllerImpl::NotifyPinAvailability(
     PinAvailableCallback callback) {
-  std::move(callback).Run(enclave_manager_->is_registered() &&
-                          enclave_manager_->is_ready() &&
+  std::move(callback).Run(enclave_manager_->IsRegistered() &&
+                          enclave_manager_->IsReady() &&
                           enclave_manager_->has_wrapped_pin());
 }
 
