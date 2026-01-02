@@ -180,11 +180,6 @@ void SafeBrowsingBlockingPage::ShowInfobar() {
   tracker->NotifyEvent(
       feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
 
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kEnhancedSafeBrowsingPromo)) {
-    return;
-  }
-
   client_->ShowEnhancedSafeBrowsingInfobar();
 }
 

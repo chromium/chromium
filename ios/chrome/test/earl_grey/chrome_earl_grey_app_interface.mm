@@ -1252,11 +1252,6 @@ NSString* GetIdForWebState(web::WebState* web_state) {
   return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
 }
 
-+ (BOOL)isEnhancedSafeBrowsingInfobarEnabled {
-  return base::FeatureList::IsEnabled(
-      safe_browsing::kEnhancedSafeBrowsingPromo);
-}
-
 + (BOOL)isComposeboxIOSEnabled {
   return base::FeatureList::IsEnabled(kComposeboxIOS);
 }

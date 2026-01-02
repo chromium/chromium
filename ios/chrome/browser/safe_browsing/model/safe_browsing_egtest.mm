@@ -360,21 +360,6 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 #pragma mark - Helper methods
 
-// Instantiates an ElementSelector to detect the enhanced protection message on
-// interstitial page.
-- (ElementSelector*)enhancedProtectionMessage {
-  NSString* selector =
-      @"(function() {"
-       "  var element = document.getElementById('enhanced-protection-message');"
-       "  if (element == null) return false;"
-       "  if (element.classList.contains('hidden')) return false;"
-       "  return true;"
-       "})()";
-  NSString* description = @"Enhanced Safe Browsing message.";
-  return [ElementSelector selectorWithScript:selector
-                         selectorDescription:description];
-}
-
 - (BOOL)isRunningEnterpriseReportingTest {
   return [self isRunningTest:@selector
                (testProceedingPastPhishingWarningReported)] ||
@@ -752,22 +737,14 @@ void EnableEnterpriseUrlFilteringPrefs() {
 // Tests enabling Enhanced Protection from a Standard Protection state (Default
 // state) from the interstitial blocking page.
 - (void)testDisableAndEnableEnhancedSafeBrowsing {
-  BOOL isInfobarEnabled = [ChromeEarlGrey isEnhancedSafeBrowsingInfobarEnabled];
   // Disable Enhanced Safe Browsing and verify that a dark red box prompting to
   // turn on Enhanced Protection is visible.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
-  ElementSelector* enhancedSafeBrowsingMessage =
-      [self enhancedProtectionMessage];
 
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
   [ChromeEarlGrey loadURL:_phishingURL];
-  if (isInfobarEnabled) {
-    [ChromeEarlGrey waitForMatcher:EnhancedSafeBrowsingInfobarButtonMatcher()];
-  } else {
-    [ChromeEarlGrey
-        waitForWebStateContainingElement:enhancedSafeBrowsingMessage];
-  }
+  [ChromeEarlGrey waitForMatcher:EnhancedSafeBrowsingInfobarButtonMatcher()];
 
   // Re-enable Enhanced Safe Browsing and verify that a dark red box prompting
   // to turn on Enhanced Protection is not visible.
@@ -777,35 +754,21 @@ void EnableEnterpriseUrlFilteringPrefs() {
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
-  if (isInfobarEnabled) {
-    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                        EnhancedSafeBrowsingInfobarButtonMatcher()];
-  } else {
-    [ChromeEarlGrey
-        waitForWebStateNotContainingElement:enhancedSafeBrowsingMessage];
-  }
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      EnhancedSafeBrowsingInfobarButtonMatcher()];
 }
 
 - (void)testEnhancedSafeBrowsingLink {
-  BOOL isInfobarEnabled = [ChromeEarlGrey isEnhancedSafeBrowsingInfobarEnabled];
   // Disable Enhanced Safe Browsing and verify that a dark red box prompting to
   // turn on Enhanced Protection is visible.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
-  ElementSelector* enhancedSafeBrowsingMessage =
-      [self enhancedProtectionMessage];
 
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
   [ChromeEarlGrey loadURL:_phishingURL];
-  if (isInfobarEnabled) {
-    [[EarlGrey
-        selectElementWithMatcher:EnhancedSafeBrowsingInfobarButtonMatcher()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGrey
-        waitForWebStateContainingElement:enhancedSafeBrowsingMessage];
-    [ChromeEarlGrey tapWebStateElementWithID:@"enhanced-protection-link"];
-  }
+  [[EarlGrey
+      selectElementWithMatcher:EnhancedSafeBrowsingInfobarButtonMatcher()]
+      performAction:grey_tap()];
 
   [[EarlGrey
       selectElementWithMatcher:
@@ -821,13 +784,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
   [ChromeEarlGrey loadURL:_phishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
-  if (isInfobarEnabled) {
-    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                        EnhancedSafeBrowsingInfobarButtonMatcher()];
-  } else {
-    [ChromeEarlGrey
-        waitForWebStateNotContainingElement:enhancedSafeBrowsingMessage];
-  }
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      EnhancedSafeBrowsingInfobarButtonMatcher()];
 }
 
 // Tests displaying a warning for an unsafe page in incognito mode, and

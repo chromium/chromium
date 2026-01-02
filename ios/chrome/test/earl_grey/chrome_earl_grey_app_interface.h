@@ -565,9 +565,6 @@ enum class TipsNotificationType;
 // Returns whether the current layout is showing the bottom omnibox.
 + (BOOL)isCurrentLayoutBottomOmnibox;
 
-// Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
-+ (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
-
 // Returns whether the ComposeboxIOS feature is enabled.
 + (BOOL)isComposeboxIOSEnabled;
 

@@ -1916,10 +1916,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(page_content_annotations::features::
                             kPageVisibilityPageContentAnnotations)},
-    {"enhanced-safe-browsing-promo",
-     flag_descriptions::kEnhancedSafeBrowsingPromoName,
-     flag_descriptions::kEnhancedSafeBrowsingPromoDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(safe_browsing::kEnhancedSafeBrowsingPromo)},
     {"cpe-passkey-prf-support",
      flag_descriptions::kCredentialProviderPasskeyPRFName,
      flag_descriptions::kCredentialProviderPasskeyPRFDescription,

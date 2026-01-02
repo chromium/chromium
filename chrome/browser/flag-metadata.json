@@ -4838,14 +4838,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enhanced-safe-browsing-promo",
-    "owners": [
-      "danieltwhite@google.com",
-      "bling-flags@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "enterprise-reporting-ui",
     "owners": ["cros-reporting-team@google.com"],
     "expiry_milestone": 150

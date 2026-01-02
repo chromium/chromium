@@ -617,12 +617,6 @@ const char kEnhancedCalendarDescription[] =
     "When enabled, the enhanced calendar flow will be available to eligible "
     "users when adding a calendar event.";
 
-const char kEnhancedSafeBrowsingPromoName[] =
-    "Enable Enhanced Safe Browsing Promos";
-const char kEnhancedSafeBrowsingPromoDescription[] =
-    "When enabled, the Enhanced Safe Browsing inline and infobar promos are "
-    "displayed given certain preconditions are met.";
-
 const char kFRESignInHeaderTextUpdateName[] =
     "Enable header text variations on the FRE sign-in page.";
 const char kFRESignInHeaderTextUpdateDescription[] =
