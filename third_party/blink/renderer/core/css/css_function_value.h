@@ -16,6 +16,9 @@ class CSSFunctionValue : public CSSValueList {
   CSSFunctionValue(CSSValueID id)
       : CSSValueList(kFunctionClass, kCommaSeparator), value_id_(id) {}
 
+  CSSFunctionValue(CSSValueID id, ValueListSeparator argument_separator)
+      : CSSValueList(kFunctionClass, argument_separator), value_id_(id) {}
+
   CSSFunctionValue(CSSValueID id,
                    ValueListSeparator argument_separator,
                    HeapVector<Member<const CSSValue>, 4> values)
@@ -28,6 +31,10 @@ class CSSFunctionValue : public CSSValueList {
     return value_id_ == other.value_id_ && CSSValueList::Equals(other);
   }
   CSSValueID FunctionType() const { return value_id_; }
+
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);

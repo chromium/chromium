@@ -48,6 +48,7 @@
     margin: random(element-shared 0px, 100000px) random(element-shared 0px, 100000px);
     translate: random(10%, 30%);
     scale: random(element-shared, 1, 3) random(element-shared, 3, 9);
+    math-depth: add(random(element-shared, 1, 100));
   }
   .randomIdentifier {
     width: random(--identifier, 0px, 100px);
@@ -323,6 +324,9 @@ test_random_computed_value('font-size', 'random(10px * 10% / 1%, 0%)', '100px');
 test_random_base_is_not_1('width', 'random(fixed random(1, 2), 10px, 100px)');
 test_random_computed_value_has_fixed('translate', 'random(fixed random(-2, -1), 10%, 100%)', '10%', '100%', 0);
 
+// Random inside function
+test_random_computed_value('math-depth', 'add(random(30, 10))', '30');
+
 // Test random value sharing
 test(() => {
   const holder = document.createElement('div');
@@ -546,6 +550,30 @@ test(() => {
     document.body.removeChild(holder);
   }
 }, `Shared between elements within a property: random(element-shared, a, b)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    for (i = 0; i < iterations; ++i) {
+      const t1 = document.createElement('div');
+      t1.className = 'randomMatchElement';
+      holder.appendChild(t1);
+      const t2 = document.createElement('div');
+      t2.className = 'randomMatchElement';
+      holder.appendChild(t2);
+
+      let t1ComputedMathDepth = getComputedStyle(t1)['math-depth'];
+      let t2ComputedMathDepth = getComputedStyle(t2)['math-depth'];
+
+      test_random_equals(t1ComputedMathDepth, t2ComputedMathDepth,
+                         "math-depth values on different elements should be equal");
+    }
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Shared between elements within a property, random inside function: random(element-shared, a, b)`);
 
 test(() => {
   const holder = document.createElement('div');

@@ -43,6 +43,7 @@ test_valid_value('width', 'random(fixed calc(2 / 4), 0px, 100px)', 'random(fixed
 
 // Test nested in expressions
 test_valid_value('width', 'calc(2 * random(0px, 100px))');
+test_valid_value('math-depth', 'add(random(0, 3))');
 
 // Test other types
 test_valid_value('max-lines', 'random(25, 50)');

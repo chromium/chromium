@@ -1133,20 +1133,22 @@ String CSSValue::ClassTypeToString() const {
 const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
     wtf_size_t property_value_index) const {
-  if (IsMathFunctionValue()) {
-    return To<CSSMathFunctionValue>(this)
-        ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index);
+  switch (GetClassType()) {
+    case kMathFunctionClass:
+      return To<CSSMathFunctionValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    case kValueListClass:
+      return To<CSSValueList>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    case kFunctionClass:
+      return To<CSSFunctionValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    default:
+      return this;
   }
-  if (IsBaseValueList()) {
-    return To<CSSValueList>(this)
-        ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index);
-  }
-  // TODO(crbug.com/413385732): CSS random() function values can be part of
-  // other CSS list values, like CSSAxisValue, CSSFunctionValue, etc. We need to
-  // pass property info there as well.
-  return this;
 }
 
 }  // namespace blink
