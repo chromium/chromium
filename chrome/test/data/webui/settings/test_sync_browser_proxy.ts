@@ -63,7 +63,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       // </if>
       'setChromeSigninUserChoice',
       'getChromeSigninUserChoiceInfo',
-      'showBookmarkLimitExceededHelp',
     ]);
     // clang-format on
   }
@@ -168,10 +167,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   startKeyRetrieval() {}
 
   showSyncPassphraseDialog() {}
-
-  showBookmarkLimitExceededHelp() {
-    this.methodCalled('showBookmarkLimitExceededHelp');
-  }
 
   // <if expr="is_chromeos">
   attemptUserExit() {}

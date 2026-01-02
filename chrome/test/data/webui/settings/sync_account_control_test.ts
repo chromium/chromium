@@ -354,24 +354,6 @@ suite('SyncAccountControl', function() {
             isVisible(testElement.shadowRoot!.querySelector('#banner')));
       });
 
-  test('signed in, has bookmark limit exceeded error', async function() {
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SIGNED_IN,
-      hasError: true,
-      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
-      statusText: 'bookmarks limit exceeded',
-      disabled: false,
-    };
-    flush();
-
-    assertTrue(isChildVisible(testElement, '#sync-error-button'));
-
-    testElement.shadowRoot!.querySelector<HTMLElement>(
-                               '#sync-error-button')!.click();
-    await browserProxy.whenCalled('showBookmarkLimitExceededHelp');
-  });
-
   test(
       'user in sync paused state', function() {
         testElement.syncStatus = {

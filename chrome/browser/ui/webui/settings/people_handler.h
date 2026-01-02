@@ -224,7 +224,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandlePauseSync(const base::Value::List& args);
 #endif
   void HandleStartKeyRetrieval(const base::Value::List& args);
-  void HandleSyncShowBookmarkLimitExceededHelp(const base::Value::List& args);
   void HandleGetSyncStatus(const base::Value::List& args);
 
 #if !BUILDFLAG(IS_CHROMEOS)

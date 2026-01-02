@@ -265,11 +265,6 @@ export interface SyncBrowserProxy {
   startKeyRetrieval(): void;
 
   /**
-   * Forwards the user to the help center article about the bookmarks limit.
-   */
-  showBookmarkLimitExceededHelp(): void;
-
-  /**
    * Displays the sync passphrase dialog for users to enter passphrase to enable
    * sync.
    */
@@ -402,10 +397,6 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   startKeyRetrieval() {
     chrome.send('SyncStartKeyRetrieval');
-  }
-
-  showBookmarkLimitExceededHelp() {
-    chrome.send('SyncShowBookmarkLimitExceededHelp');
   }
 
   showSyncPassphraseDialog() {
