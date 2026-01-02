@@ -694,7 +694,8 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
     // intend to respond asynchronously. `message_dispatched_callback` will
     // check the results of the listeners to determine if a listener indicated
     // it intended to respond asynchronously.
-    if (port.event_name == messaging_util::kOnMessageEvent) {
+    if (port.event_name == messaging_util::kOnMessageEvent ||
+        port.event_name == messaging_util::kOnMessageExternalEvent) {
       CallbackID listener_throws_error_callback_id;
       if (IsMessagePolyfillSupportEnabled()) {
         auto listener_throws_error_callback =
