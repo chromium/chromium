@@ -178,26 +178,26 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
     // Test that Seed and AppSeed Freshness diff is correct and recorded
     @Test
     @MediumTest
-    public void testRecordSeedDiff() throws Exception {
-        // The first line is needed to set the seed freshness to zero
-        // in order to calculate the diff correctly
-        VariationsSeedLoader.cacheSeedFreshness(0);
+    public void testRecordSeedDiff() {
+        // Should log diff no matter which way round the two values are received.
         long seedFreshnessInMinutes = 100;
         long appSeedFreshnessInMinutes = 40;
         long diff = seedFreshnessInMinutes - appSeedFreshnessInMinutes;
-        var histogramWatcherOne =
+        // This call resets everything to its default value (different values may have been set
+        // during other tests).
+        VariationsSeedLoader.recordAppSeedFreshnessDiff(0);
+        try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
-                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
-        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
-        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
-        histogramWatcherOne.assertExpected();
-
-        var histogramWatcherTwo =
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff)) {
+            VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+            VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+        }
+        try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
-                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
-        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
-        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
-        histogramWatcherTwo.assertExpected();
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff)) {
+            VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+            VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+        }
     }
 
     // Test the case that:

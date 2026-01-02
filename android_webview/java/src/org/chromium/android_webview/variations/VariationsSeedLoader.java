@@ -116,8 +116,8 @@ public class VariationsSeedLoader {
     private static final String SEED_LOAD_RESULT_HISTOGRAM_NAME = "Variations.SeedLoadResult";
     // These two variables below are used for caching the difference between Seed and
     // AppSeed Freshness.
-    private static long sCachedSeedFreshness;
-    private static long sCachedAppSeedFreshness;
+    private static @Nullable Long sCachedSeedFreshness;
+    private static @Nullable Long sCachedAppSeedFreshness;
 
     @Nullable private FutureTask<SeedLoadResult> mLoadTask;
     private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
@@ -151,7 +151,7 @@ public class VariationsSeedLoader {
             return;
         }
         sCachedAppSeedFreshness = appSeedFreshnessMinutes;
-        calculateSeedFreshnessDiff();
+        maybeLogSeedFreshnessDiff();
     }
 
     // This method is to cache the SeedFreshness value
@@ -162,13 +162,13 @@ public class VariationsSeedLoader {
             return;
         }
         sCachedSeedFreshness = seedFreshness;
-        calculateSeedFreshnessDiff();
+        maybeLogSeedFreshnessDiff();
     }
 
-    // This method is to calculate the difference between SeedFreshness
+    // This method is to calculate and log the difference between SeedFreshness
     // and AppSeedFreshness
-    private static void calculateSeedFreshnessDiff() {
-        if (sCachedSeedFreshness == 0 || sCachedAppSeedFreshness == 0) {
+    private static void maybeLogSeedFreshnessDiff() {
+        if (sCachedSeedFreshness == null || sCachedAppSeedFreshness == null) {
             return;
         }
         long diff = sCachedSeedFreshness - sCachedAppSeedFreshness;
@@ -177,15 +177,16 @@ public class VariationsSeedLoader {
 
     // This method is to record the difference between SeedFreshness
     // and AppSeedFreshness
-    private static void recordAppSeedFreshnessDiff(long diff) {
+    @VisibleForTesting
+    public static void recordAppSeedFreshnessDiff(long diff) {
         RecordHistogram.recordCustomCountHistogram(
                 SEED_FRESHNESS_DIFF_HISTOGRAM_NAME,
                 (int) diff,
                 /* min= */ 1,
                 /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
                 /* numBuckets= */ 50);
-        sCachedSeedFreshness = 0;
-        sCachedAppSeedFreshness = 0;
+        sCachedSeedFreshness = null;
+        sCachedAppSeedFreshness = null;
     }
 
     private static void recordMinuteHistogram(String name, long value, long maxValue) {

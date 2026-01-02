@@ -661,9 +661,7 @@ chromium-metrics-reviews@google.com.
     recorded at the latter of these two events. In the case when a user's clock
     is set incorrectly, or when a user changes their clock backwards in between
     Chrome runs, the difference between the seed freshness and the app seed
-    freshness will be calculated and cached as long as both of them are greater
-    than 0. Nothing is emitted to this histogram if either seed freshness or app
-    seed freshness is zero or negative.
+    freshness will be calculated and cached.
   </summary>
 </histogram>
 
