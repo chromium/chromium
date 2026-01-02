@@ -1059,7 +1059,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Expect all three tabs to be returned.
   ASSERT_EQ(tabs.size(), 3u);
   EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
-  EXPECT_TRUE(tabs[0]->show_in_previous_tab_chip);
+  EXPECT_TRUE(tabs[0]->show_in_current_tab_chip);
+  EXPECT_FALSE(tabs[0]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[1]->tab_id, search_tab->GetHandle().raw_value());
   EXPECT_FALSE(tabs[1]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[2]->tab_id, example_tab->GetHandle().raw_value());
