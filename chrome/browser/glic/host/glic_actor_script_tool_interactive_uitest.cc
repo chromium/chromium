@@ -43,6 +43,15 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
       const auto& result = last_execution_result()->script_tool_results().at(0);
       EXPECT_EQ(result.index_of_script_tool_action(), 0);
       EXPECT_EQ(result.result(), expected_result);
+
+      ASSERT_EQ(last_execution_result()->tabs().size(), 1);
+      const auto& apc =
+          last_execution_result()->tabs().at(0).annotated_page_content();
+      const auto& main_frame_data = apc.main_frame_data();
+      ASSERT_EQ(main_frame_data.script_tool_results().size(), 1);
+
+      const auto& apc_result = main_frame_data.script_tool_results().at(0);
+      EXPECT_EQ(apc_result.result(), expected_result);
     }));
   }
 

@@ -1095,9 +1095,9 @@ void BuildActionsResultWithObservations(
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
       base::BindOnce(std::move(callback), actions_start_time, result_code,
-                     index_of_failed_action, std::move(action_results),
-                     task.id(), skip_async_observation_information,
-                     std::move(response), std::move(journal_entry)));
+                     index_of_failed_action, action_results, task.id(),
+                     skip_async_observation_information, std::move(response),
+                     std::move(journal_entry)));
   for (auto& [tab, tab_observation] : tabs_to_fetch) {
     // tab_observation can be Unretained because the underlying APC is owned
     // by the barrier which is ref-counted.
