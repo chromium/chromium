@@ -326,7 +326,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Use this with caution! No type checking is done!
   LayoutBox* PreviousSiblingBox() const;
   LayoutBox* NextSiblingBox() const;
-  LayoutBox* ParentBox() const;
 
   bool CanResize() const;
 
@@ -1450,11 +1449,6 @@ inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
   NOT_DESTROYED();
   return To<LayoutBox>(NextSibling());
-}
-
-inline LayoutBox* LayoutBox::ParentBox() const {
-  NOT_DESTROYED();
-  return To<LayoutBox>(Parent());
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {
