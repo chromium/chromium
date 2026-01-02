@@ -6230,7 +6230,7 @@
   {
     "name": "ios-best-features-screen",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 138
+    "expiry_milestone": 148
   },
   {
     "name": "ios-breadcrumbs",
@@ -6967,7 +6967,7 @@
   {
     "name": "manual-log-uploads-in-the-fre",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 137
+    "expiry_milestone": 148
   },
   {
     "name": "mark-all-credentials-as-leaked",
@@ -10201,7 +10201,7 @@
   {
     "name": "updated-fre-screens-sequence",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 148
   },
   {
     "name": "upload-office-to-cloud",
