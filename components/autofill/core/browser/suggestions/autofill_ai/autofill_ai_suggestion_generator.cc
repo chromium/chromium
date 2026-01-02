@@ -59,8 +59,7 @@ std::u16string GetEntitySuggestionMainText(
     const AttributeInstance& trigger_attribute,
     const std::string& app_locale) {
   const bool should_obfuscate_main_text =
-      ShouldFieldBeObfuscated(entity, trigger_field, app_locale) &&
-      base::FeatureList::IsEnabled(features::kAutofillAiReauthRequired);
+      ShouldFieldBeObfuscated(entity, trigger_field, app_locale);
 
   std::u16string main_text = trigger_attribute.GetInfo(
       trigger_field.field->Type().GetAutofillAiType(
@@ -376,17 +375,7 @@ Suggestion GetSuggestionForEntity(
   // The dereference is guaranteed by EntityShouldProduceSuggestion().
   const AttributeInstance& trigger_attribute =
       *entity.attribute(trigger_field.type);
-  const bool should_obfuscate_main_text =
-      ShouldFieldBeObfuscated(entity, trigger_field, app_locale) &&
-      base::FeatureList::IsEnabled(features::kAutofillAiReauthRequired);
 
-  std::u16string main_text = trigger_attribute.GetInfo(
-      trigger_field.field->Type().GetAutofillAiType(
-          trigger_attribute.type().entity_type()),
-      app_locale, trigger_field.field->format_string());
-  if (should_obfuscate_main_text) {
-    main_text = GetObfuscatedValue(main_text);
-  }
   Suggestion suggestion =
       Suggestion(GetEntitySuggestionMainText(entity, trigger_field,
                                              trigger_attribute, app_locale),

@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
@@ -302,7 +303,8 @@ bool ShouldFieldBeObfuscated(const EntityInstance& entity,
          !attribute
               ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
                         app_locale, f.field->format_string())
-              .empty();
+              .empty() &&
+         base::FeatureList::IsEnabled(features::kAutofillAiReauthRequired);
 }
 
 }  // namespace autofill
