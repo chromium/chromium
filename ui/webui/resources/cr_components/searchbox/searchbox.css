@@ -20,7 +20,6 @@
   --cr-compose-button-width: 104px;
   --cr-searchbox-icon-spacing: 11px;
   border-radius: var(--cr-searchbox-border-radius);
-  box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-searchbox-font-size, 16px);
   height: var(--cr-searchbox-height);
   width: var(--cr-searchbox-width);
@@ -99,51 +98,78 @@
   position: relative;
 }
 
-input {
+:host([multi-line-enabled]) textarea {
+  background-color: transparent;
+  box-sizing: border-box;
+  field-sizing: content;
+  line-height: 24px;
+  max-height: 190px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: calc((var(--cr-searchbox-height) - 24px) / 2);
+  resize: none;
+  scrollbar-width: none;
+  white-space: pre-wrap;
+}
+
+:host([multi-line-enabled]) #input::-webkit-scrollbar {
+  display: none;
+}
+
+:is(input, textarea) {
   --cr-searchbox-input-start-padding: calc(52px +
       var(--cr-searchbox-thumbnail-icon-offset, 0px));
   --cr-searchbox-input-trailing-padding:
       calc(var(--cr-searchbox-voice-icon-offset)
       + var(--cr-searchbox-voice-search-button-width)
       + var(--cr-searchbox-inner-icon-margin));
-  background-color: var(--color-searchbox-background);
+  background-color: transparent;
   border: none;
-  border-radius: var(--cr-searchbox-border-radius);
   color: var(--color-searchbox-foreground);
   font-family: inherit;
   font-size: inherit;
   height: 100%;
   outline: none;
-  padding-inline-end: var(--cr-searchbox-input-trailing-padding);
-  padding-inline-start: var(--cr-searchbox-input-start-padding);
+  padding-top: 20px;
   position: relative;
   width: 100%;
 }
 
-:host-context([dir='rtl']) input[dir='ltr'],
-:host-context([dir='ltr']) input[dir='rtl'] {
-  padding-inline-end: var(--cr-searchbox-input-start-padding);
-  padding-inline-start: var(--cr-searchbox-input-trailing-padding);
+:host-context([searchbox-layout-mode='Compact']) :is(input, textarea) {
+  padding-inline-start: 0;
 }
 
-:host([compose-button-enabled][dropdown-is-visible]) input,
-:host([searchbox-layout-mode^='Tall']) input {
+:host-context([multi-line-enabled][searchbox-layout-mode='Compact']) textarea {
+  padding-bottom: 10px;
+  padding-top: 16px;
+}
+
+:host-context(:not([ntp-realbox-next-enabled])) input {
+  padding-top: 15px;
+}
+
+:host-context([searchbox-layout-mode='Compact']) input {
+  padding-top: 19px;
+}
+
+:host([compose-button-enabled][dropdown-is-visible]) :is(input, textarea),
+:host([searchbox-layout-mode^='Tall']) :is(input, textarea) {
   --cr-searchbox-input-trailing-padding: calc(12px
       + var(--cr-compose-button-width)
       + var(--cr-searchbox-icon-spacing));
 }
 
-:host([searchbox-layout-mode='Compact'][dropdown-is-visible]) input {
+:host([searchbox-layout-mode='Compact'][dropdown-is-visible]) :is(input, textarea) {
   --cr-searchbox-input-trailing-padding: calc(var(--cr-searchbox-voice-search-button-width)
       + var(--cr-compose-button-width)
       + var(--cr-searchbox-icon-spacing));
 }
 
-:host-context([is-back-arrow-visible]) input {
+:host-context([is-back-arrow-visible]) :is(input, textarea) {
   padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
 }
 
-:host([searchbox-chrome-refresh-theming]) input::selection {
+:host([searchbox-chrome-refresh-theming]) :is(input, textarea)::selection {
   background-color: var(--color-searchbox-selection-background);
   color: var(--color-searchbox-selection-foreground)
 }
@@ -163,12 +189,12 @@ input::-webkit-search-cancel-button {
   margin: 0;
 }
 
-input::placeholder {
+:is(input, textarea)::placeholder {
   color: var(--color-searchbox-placeholder);
   opacity: var(--placeholder-opacity);
 }
 
-input:focus::placeholder {
+:is(input, textarea):focus::placeholder {
   /* Visually hide the placeholder on focus. The placeholder will still be
    * read by screen readers. Using color: transparent or other ways of
    * visually hiding the placeholder does not work well with 'Find in page...'
@@ -176,40 +202,31 @@ input:focus::placeholder {
   visibility: hidden;
 }
 
-:host([is-lens-searchbox_]) input:focus::placeholder{
+:host([is-lens-searchbox_]) :is(input, textarea):focus::placeholder{
   visibility: visible;
-}
-
-input:focus,
-:host([dropdown-is-visible]) input {
-  background-color: var(--color-searchbox-results-background);
 }
 
 /* Search bubble realbox input color shouldn't change when dropdown is
  * visible. */
-:host([is-lens-searchbox_][dropdown-is-visible]) input {
+:host([is-lens-searchbox_][dropdown-is-visible]) :is(input, textarea) {
   background-color: var(--color-bubble-searchbox-results-input-background, --color-searchbox-results-background);
 }
 
-:host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
+:host([is-lens-searchbox_]:not([dropdown-is-visible])) :is(input, textarea):focus {
   background-color: var(--color-searchbox-background);
-}
-
-:host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input {
-  background-color: var(--color-searchbox-background);
-}
-
-:host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
-input:hover {
-  background-color: var(--color-searchbox-background-hovered);
 }
 
 cr-searchbox-icon {
   height: 100%;
-  left: var(--cr-searchbox-icon-left-position);
-  position: absolute;
+  padding-inline-end: 4px;
+  padding-inline-start: var(--cr-searchbox-icon-left-position);
+  position: relative;
   top: var(--cr-searchbox-icon-top-position);
   pointer-events: none;
+}
+
+:host(:not([ntp-realbox-next-enabled])) cr-searchbox-icon {
+  top: 8px;
 }
 
 @media (forced-colors: active) {
@@ -221,11 +238,6 @@ cr-searchbox-icon {
 
 :host-context([is-back-arrow-visible]) #icon {
   display: none;
-}
-
-:host-context([dir='rtl']) cr-searchbox-icon {
-  left: unset;
-  right: 12px;
 }
 
 .searchbox-icon-button {
@@ -250,13 +262,19 @@ cr-searchbox-icon {
  * Webkit mask images hide borders so container rules are created to
  * show focus borders on these icons. */
 .searchbox-icon-button-container {
+  align-items: center;
   border-radius: 50%;
   display: flex;
+  flex-shrink: 0;
   height: 36px;
-  position: absolute;
-  inset-inline-end: 16px;
-  top: 6px;
+  justify-content: center;
+  position: relative;
+  width: 36px;
   z-index: 100;
+}
+
+:host(:not([ntp-realbox-next-enabled])) .searchbox-icon-button-container {
+  top: 6px;
 }
 
 @media (forced-colors: active) {
@@ -306,15 +324,6 @@ cr-searchbox-icon {
   --cr-searchbox-voice-icon-offset: calc(16px + 2 * var(--cr-searchbox-icon-spacing) + var(--cr-searchbox-icon-width) + var(--cr-compose-button-width));
 }
 
-:host([compose-button-enabled]) .searchbox-icon-button-container.lens {
- /* Since there is a 4px padding because of the glow effect, add 12px to right instead of 16px. */
-  inset-inline-end: calc(12px + var(--cr-compose-button-width) + var(--cr-searchbox-icon-spacing));
-}
-
-.searchbox-icon-button-container.voice {
-  inset-inline-end: var(--cr-searchbox-voice-icon-offset);
-}
-
 :host([compose-button-enabled][dropdown-is-visible])
     .searchbox-icon-button-container {
   display: none;
@@ -324,17 +333,10 @@ cr-searchbox-icon {
   z-index: 100;
 }
 
-:-webkit-any(input, cr-searchbox-icon, .searchbox-icon-button) {
+:is(input, textarea),
+cr-searchbox-icon,
+.searchbox-icon-button {
   z-index: 100;
-}
-
-.dropdownContainer,
-.contextualEntrypointContainer {
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 99;
 }
 
 .truncate {
@@ -367,13 +369,13 @@ search-animated-glow {
   --search-animated-glow-gradient-z-index: 102;
 }
 
-:host([ntp-realbox-next-enabled]) input::placeholder {
+:host([ntp-realbox-next-enabled]) :is(input, textarea)::placeholder {
   font-size: 18px;
   color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
   font-weight: 400;
 }
 
-:host([ntp-realbox-next-enabled]) input:focus::placeholder{
+:host([ntp-realbox-next-enabled]) :is(input, textarea):focus::placeholder{
   visibility: visible;
 }
 
@@ -388,17 +390,23 @@ search-animated-glow {
   --cr-searchbox-voice-lens-size: 36px;
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
   --text-input-inline-start-spacing: 16px;
+  height: auto;
+  min-height: var(--cr-searchbox-height);
 }
 
-:host([ntp-realbox-next-enabled]) cr-searchbox-dropdown::part(dropdown-content) {
+cr-searchbox-dropdown::part(dropdown-content) {
   background-color: unset;
   border-radius: unset;
   box-shadow: unset;
   gap: unset;
   margin-bottom: unset;
   overflow: unset;
-  padding-bottom: unset;
   padding-top: unset;
+}
+
+:host([ntp-realbox-next-enabled]) #inputWrapper {
+  height: auto;
+  min-height: var(--cr-searchbox-height);
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
@@ -416,11 +424,16 @@ search-animated-glow {
   --cr-icon-button-icon-size: 20px;
 }
 
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(context-menu-and-tools) {
+  padding-block: 10px;
+}
+
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel {
   position: relative;
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+  padding-inline-end: 6px;
   z-index: 101;
 }
 
@@ -436,13 +449,44 @@ search-animated-glow {
 
 :host([ntp-realbox-next-enabled]) .dropdownContainer,
 :host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
-  background-color: var(--color-searchbox-results-background);
-  border-radius: var(--cr-searchbox-border-radius);
-  gap: 16px;
-  margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
   overflow: visible;
-  padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
-  padding-top: var(--cr-searchbox-dropdown-padding-top);
+}
+
+#inputContainer {
+  background-color: var(--color-searchbox-background);
+  border-radius: 26px;
+  box-shadow: var(--cr-searchbox-shadow);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#inputInnerContainer {
+  align-items: flex-start;
+  display: flex;
+  min-height: 48px;
+  position: relative;
+  width: 100%;
+}
+
+:host([searchbox-layout-mode^='Tall']) #inputInnerContainer {
+  padding-bottom: 14px;
+}
+
+#inputInnerBottomContainer {
+  align-items: flex-start;
+  display: flex;
+  padding-bottom: 10px;
+  position: relative;
+  width: 100%;
+}
+
+:host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
+  left: unset;
+  position: relative;
+  right: unset;
+  top: unset;
+  width: 100%;
 }
 
 :host([ntp-realbox-next-enabled][dropdown-is-visible]),
@@ -450,23 +494,16 @@ search-animated-glow {
   box-shadow: none;
 }
 
-:host([ntp-realbox-next-enabled][dropdown-is-visible]) .dropdownContainer,
-:host([ntp-realbox-next-enabled][dropdown-is-visible]) .contextualEntrypointContainer,
-:host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) .dropdownContainer,
-:host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) .contextualEntrypointContainer {
-  box-shadow: var(--cr-searchbox-shadow);
-}
-
 :host([ntp-realbox-next-enabled]) #errorScrim {
   border-radius: 23px;
 }
 
-:host([ntp-realbox-next-enabled]) .searchbox-icon-button-container.lens,
-:host([ntp-realbox-next-enabled]) .searchbox-icon-button-container.voice {
-  align-items: center;
-  flex-shrink: 0;
-  justify-content: center;
-  width: 36px;
+.searchbox-icon-button-container.lens {
+  margin-inline-end: 10px;
+}
+
+.searchbox-icon-button-container.voice {
+  margin-inline-end: 4px;
 }
 
 :host([ntp-realbox-next-enabled]) .searchbox-icon-button-container.lens:hover,
@@ -475,20 +512,13 @@ search-animated-glow {
   border-radius: 50%;
 }
 
-:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
-:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) .searchbox-icon-button-container.voice {
-  inset-inline-end: calc(var(--cr-searchbox-voice-lens-size)
-      + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
 :host([searchbox-layout-mode^='Tall']) {
   --cr-searchbox-compose-button-position-top: 12px;
   --cr-searchbox-dropdown-padding-top: 60px;
   --cr-searchbox-height: 108px;
   --cr-searchbox-input-padding-top_: 18px;
+  height: auto;
+  min-height: var(--cr-searchbox-height);
 }
 
 @media (forced-colors: active) {
@@ -501,6 +531,8 @@ search-animated-glow {
 :host([searchbox-layout-mode^='Tall']) #inputWrapper {
   background-color: var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
+  height: auto;
+  min-height: var(--cr-searchbox-height);
 }
 
 :host([searchbox-layout-mode^='Tall']) input {
@@ -508,7 +540,12 @@ search-animated-glow {
   padding-top: var(--cr-searchbox-input-padding-top_);
 }
 
-:host([searchbox-layout-mode^='Tall']:not([dropdown-is-visible]):not([input-focused_])) input {
+:host([multi-line-enabled][searchbox-layout-mode^='Tall']) textarea {
+  height: auto;
+  padding-top: var(--cr-searchbox-input-padding-top_);
+}
+
+:host([searchbox-layout-mode^='Tall']:not([dropdown-is-visible]):not([input-focused_])) :is(input, textarea) {
   padding-inline-start: 24px;
 }
 
@@ -517,28 +554,10 @@ search-animated-glow {
   display: none;
 }
 
-:host([searchbox-layout-mode^='Tall']) .searchbox-icon-button-container {
-  bottom: 10px;
-  top: unset;
-  height: var(--cr-searchbox-voice-lens-size);
-}
-
 :host([searchbox-layout-mode^='Tall'][dropdown-is-visible]) cr-searchbox-icon,
 :host([searchbox-layout-mode^='Tall'][input-focused_]) cr-searchbox-icon {
   height: 24px;
-  inset-inline-start: 12px;
   top: var(--cr-searchbox-input-padding-top_);
-}
-
-:host([searchbox-layout-mode^='Tall'][compose-button-enabled])
-    .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(12px + var(--cr-searchbox-icon-spacing));
-}
-
-:host([searchbox-layout-mode^='Tall'][searchbox-lens-search-enabled_])
-    .searchbox-icon-button-container.voice {
-  inset-inline-end: calc(12px + var(--cr-searchbox-voice-lens-size)
-      + var(--cr-searchbox-icon-spacing));
 }
 
 :host-context([searchbox-layout-mode^='Tall']) #composeButton {
@@ -583,20 +602,6 @@ search-animated-glow {
       + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
 }
 
-:host([searchbox-layout-mode='Compact']) .dropdownContainer,
-:host([searchbox-layout-mode='Compact']) .contextualEntrypointContainer {
-  z-index: auto;
-}
-
-:host([searchbox-layout-mode='Compact']:not([dropdown-is-visible])) .dropdownContainer,
-:host([searchbox-layout-mode='Compact']:not([dropdown-is-visible])) .contextualEntrypointContainer {
-  min-height: 36px;
-}
-
-:host([searchbox-layout-mode='Compact']) cr-searchbox-dropdown::part(dropdown-content) {
-  padding-top: 48px;
-}
-
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-font-light);
   --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
@@ -632,7 +637,7 @@ search-animated-glow {
   --cr-searchbox-compose-button-z-index: 99;
 }
 
-:host([ntp-realbox-next-enabled][is-dragging-file]) input,
+:host([ntp-realbox-next-enabled][is-dragging-file]) :is(input, textarea),
 :host([ntp-realbox-next-enabled][is-dragging-file]) cr-searchbox-icon,
 :host([ntp-realbox-next-enabled][is-dragging-file]) .searchbox-icon-button-container,
 :host([ntp-realbox-next-enabled][is-dragging-file]) .searchbox-icon-button {
@@ -640,12 +645,13 @@ search-animated-glow {
 }
 
 #recentTabChipContainer {
-  padding-bottom: 6px;
+  padding-bottom: 10px;
   padding-inline: 16px;
-  padding-top: 12px;
+  padding-top: 6px;
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact'])
     .contextualEntrypointContainerCompact {
   box-shadow: none;
+  width: auto;
 }

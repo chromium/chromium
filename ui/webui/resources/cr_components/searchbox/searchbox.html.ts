@@ -31,7 +31,7 @@ export function getHtml(this: SearchboxElement) {
   const contextualEntrypoint = html`
     <contextual-entrypoint-and-carousel id="context"
         part="contextual-entrypoint-and-carousel"
-        exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon"
+        exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon, context-menu-and-tools"
         .tabSuggestions="${this.tabSuggestions_}"
         entrypoint-name="Realbox"
         @add-tab-context="${this.addTabContext_}"
@@ -51,6 +51,23 @@ export function getHtml(this: SearchboxElement) {
     </contextual-entrypoint-and-carousel>`;
 
   const inputContent = html`
+  <cr-searchbox-icon id="icon" .match="${this.selectedMatch_}"
+      default-icon="${this.searchboxIcon_}" in-searchbox>
+  </cr-searchbox-icon>
+  ${this.multiLineEnabled ? html`
+    <textarea id="input" autocomplete="off"
+        part="searchbox-input"
+        spellcheck="false" aria-live="${this.inputAriaLive_}" role="combobox"
+        aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
+        aria-description="${this.searchboxAriaDescription}"
+        placeholder="${this.computePlaceholderText_(this.placeholderText)}"
+        @copy="${this.onInputCutCopy_}"
+        @cut="${this.onInputCutCopy_}" @focus="${this.onInputFocus_}"
+        @focusout="${this.onInputFocusout_}"
+        @input="${this.onInputInput_}" @keydown="${this.onInputKeydown_}"
+        @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
+        @paste="${this.onInputPaste_}"></textarea>
+  ` : html`
     <input id="input" class="truncate" type="search" autocomplete="off"
         part="searchbox-input"
         spellcheck="false" aria-live="${this.inputAriaLive_}" role="combobox"
@@ -64,9 +81,7 @@ export function getHtml(this: SearchboxElement) {
         @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
         @paste="${this.onInputPaste_}">
     </input>
-    <cr-searchbox-icon id="icon" .match="${this.selectedMatch_}"
-        default-icon="${this.searchboxIcon_}" in-searchbox>
-    </cr-searchbox-icon>
+  `}
     ${this.showThumbnail ? html`
       <div id="thumbnailContainer">
         <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="${this.thumbnailUrl_}"
@@ -118,45 +133,58 @@ ${this.ntpRealboxNextEnabled ? html`
     @drop="${this.dragAndDropHandler?.handleDrop}">
   ${compactLayout ?
     html`
-      <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
-        ${contextualEntrypoint}
-      </div>
-      ${inputContent}
-      ${voiceSearchButton}
-      ${lensSearchButton}
-      ${composeButton}
-      <div class="dropdownContainer">
+      <div id="inputContainer">
         <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
         </search-animated-glow>
-        ${dropdown}
-        ${this.recentTabForChip_ && this.dropdownIsVisible ? html`
-        <div id="recentTabChipContainer">
-          <composebox-recent-tab-chip
-              .recentTab="${this.recentTabForChip_}"
-              @add-tab-context="${this.addTabContext_}">
-          </composebox-recent-tab-chip>
+        <div id="inputInnerContainer">
+          <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
+            ${contextualEntrypoint}
+          </div>
+          ${inputContent}
+          ${voiceSearchButton}
+          ${lensSearchButton}
+          ${composeButton}
         </div>
-        ` : nothing}
+        <div class="dropdownContainer">
+          ${dropdown}
+          ${this.recentTabForChip_ && this.dropdownIsVisible ? html`
+          <div id="recentTabChipContainer">
+            <composebox-recent-tab-chip
+                .recentTab="${this.recentTabForChip_}"
+                @add-tab-context="${this.addTabContext_}">
+            </composebox-recent-tab-chip>
+          </div>
+          ` : nothing}
+        </div>
       </div>
     ` :
     html`
-      ${inputContent}
-      ${composeButton}
-      ${this.ntpRealboxNextEnabled ? html`
-        <div class="contextualEntrypointContainer">
+      <div id="inputContainer">
+        ${this.ntpRealboxNextEnabled ? html`
           <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
           </search-animated-glow>
-          ${contextualEntrypoint}
+        ` : nothing}
+        <div id="inputInnerContainer">
+          ${inputContent}
+          ${!this.ntpRealboxNextEnabled ? html`
+            ${voiceSearchButton}
+            ${lensSearchButton}
+          ` : nothing}
+          ${composeButton}
         </div>
-      ` : dropdown}
+        ${!this.ntpRealboxNextEnabled ? dropdown : nothing}
+        ${this.ntpRealboxNextEnabled ? html`
+          <div id="inputInnerBottomContainer">
+              <div class="contextualEntrypointContainer">
+                ${contextualEntrypoint}
+              </div>
+              ${voiceSearchButton}
+              ${lensSearchButton}
+          </div>
+        ` : nothing}
+      </div>
   `}
 </div>
-
-${compactLayout ? nothing :
-    html`
-      ${voiceSearchButton}
-      ${lensSearchButton}
-    `}
 <!--_html_template_end_-->`;
   // clang-format on
 }
