@@ -186,13 +186,18 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return border_box_line_offset - BorderScrollbarPadding().block_start;
   }
 
+  // Return the inline-size of one column.
+  LayoutUnit ColumnInlineSize() const {
+    return combined_column_inline_size_ / used_column_count_;
+  }
+
   // Get the percentage resolution size to use for column content (i.e. not
   // spanners).
   LogicalSize ColumnPercentageResolutionSize() const {
     // Percentage block-size on children is resolved against the content-box of
     // the multicol container (just like in regular block layout), while
     // percentage inline-size is restricted by the columns.
-    return LogicalSize(column_inline_size_, ChildAvailableSize().block_size);
+    return LogicalSize(ColumnInlineSize(), ChildAvailableSize().block_size);
   }
 
   bool ShouldWrapColumns() const {
@@ -258,8 +263,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   const ColumnSpannerPath* spanner_path_ = nullptr;
 
   int used_column_count_;
-  LayoutUnit column_inline_size_;
-  LayoutUnit column_inline_progression_;
+
+  // The total inline-size of all columns (used `column-count`) if placed next
+  // to each other, without any column gaps. This is used to avoid rounding
+  // errors that would occur when dividing available size by the number of
+  // columns.
+  LayoutUnit combined_column_inline_size_;
 
   // The remaining space available to columns in the multicol container, if
   // block-size isn't auto.
@@ -270,6 +279,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   bool is_constrained_by_outer_fragmentation_context_ = false;
 
   LayoutUnit column_gap_size_;
+
+  // The offset from the inline-start of the first column in the fragment, to
+  // the inline-start of the first (imaginary or real) column that has (or would
+  // have) overflowed in the inline direction.
+  LayoutUnit inline_stride_;
+
   LayoutUnit row_gap_size_;
 
   // One entry for each row gap, and one entry between column content and

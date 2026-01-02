@@ -381,6 +381,10 @@ class PLATFORM_EXPORT Length {
 
   Length Zoom(double factor) const;
 
+  // Multiply the value by the factor, also percentages. If the value is
+  // kCalculated, it will be resolved to kFixed and then multiplied.
+  Length Multiplied(float max_value, double factor) const;
+
   unsigned GetCalculatedCountForTest() const;
 
   static wtf_size_t GetCalcHandleMapSizeForTest();

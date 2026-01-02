@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
+#include "third_party/blink/renderer/core/layout/geometry/layout_unit_diffuser.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -229,6 +230,21 @@ BlockNode GetSpannerFromPath(const ColumnSpannerPath* path) {
   return path->GetBlockNode();
 }
 
+// Return the inline-size of `gap_count` column gaps combined. This value is
+// used to avoid rounding errors.
+LayoutUnit CombinedColumnGapSize(const ComputedStyle& style,
+                                 LayoutUnit available_size,
+                                 int gap_count) {
+  if (gap_count < 1) {
+    return LayoutUnit();
+  }
+  if (const std::optional<Length>& gap = style.ColumnGap()) {
+    Length multiplied = gap->Multiplied(available_size, gap_count);
+    return MinimumValueForLength(multiplied, available_size);
+  }
+  return LayoutUnit(style.GetFontDescription().ComputedPixelSize() * gap_count);
+}
+
 }  // namespace
 
 ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
@@ -251,15 +267,37 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   DCHECK_GE(ChildAvailableSize().inline_size, LayoutUnit());
-  column_gap_size_ =
-      ResolveColumnGapForMulticol(Style(), ChildAvailableSize().inline_size);
   row_gap_size_ =
       ResolveRowGapForMulticol(Style(), ChildAvailableSize().block_size);
-  column_inline_size_ =
-      ResolveUsedColumnInlineSize(Style(), ChildAvailableSize().inline_size);
-  column_inline_progression_ = column_inline_size_ + column_gap_size_;
   used_column_count_ =
       ResolveUsedColumnCount(Style(), ChildAvailableSize().inline_size);
+
+  // Calculate the space needed by column gaps that fit within the content box
+  // of the multicol container fragment - i.e. `column-count` minus 1.
+  LayoutUnit gap_size_within_content_box = CombinedColumnGapSize(
+      Style(), ChildAvailableSize().inline_size, used_column_count_ - 1);
+
+  // Same as above, but this time the space needed by exactly `column-count`
+  // gaps. There is always one gap less than columns, and the value here will be
+  // the space needed by gaps from the first column until the first (real or
+  // imaginary) column that overflows in the inline direction, which is used to
+  // calculate the stride, in order to avoid rounding errors.
+  LayoutUnit column_gap_size_until_overflow = CombinedColumnGapSize(
+      Style(), ChildAvailableSize().inline_size, used_column_count_);
+
+  column_gap_size_ = column_gap_size_until_overflow / used_column_count_;
+
+  // Calculate the space (along the inline axis) needed by column boxes within
+  // the content box.
+  combined_column_inline_size_ =
+      ChildAvailableSize().inline_size - gap_size_within_content_box;
+  // The combined inline-size of gaps may be larger than available size. Don't
+  // become negative.
+  combined_column_inline_size_ =
+      combined_column_inline_size_.ClampNegativeToZero();
+
+  inline_stride_ =
+      combined_column_inline_size_ + column_gap_size_until_overflow;
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
   // context (if any), our columns may be constrained by that, meaning that we
@@ -808,7 +846,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     LayoutUnit minimum_column_block_size,
     bool has_wrapped,
     MarginStrut* margin_strut) {
-  LogicalSize column_size(column_inline_size_, remaining_content_block_size_);
+  LogicalSize column_size(ColumnInlineSize(), remaining_content_block_size_);
   if (!Style().HasAutoColumnHeight()) {
     // Use specified `column-height`, or what's left of it. May be clamped by
     // outer fragmentainer space further down.
@@ -929,6 +967,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     // balancing).
     LayoutUnit minimal_space_shortage = kIndefiniteSize;
 
+    LayoutUnitDiffuser progression_distributor(inline_stride_,
+                                               used_column_count_);
+
     min_break_appeal = std::nullopt;
     intrinsic_block_size_contribution = LayoutUnit();
 
@@ -1000,7 +1041,14 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       }
 
       has_violating_break |= result->GetBreakAppeal() != kBreakAppealPerfect;
-      column_inline_offset += column_inline_progression_;
+
+      column_inline_offset += progression_distributor.Next();
+
+      if ((actual_column_count % used_column_count_) == 0) {
+        // The diffuser has been spent. Restart it for any overflowing columns.
+        progression_distributor =
+            LayoutUnitDiffuser(inline_stride_, used_column_count_);
+      }
 
       if (result->HasForcedBreak())
         forced_break_count++;

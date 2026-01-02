@@ -73,9 +73,9 @@ class LayoutUnitDiffuser {
     DCHECK_LE(remainder, std::numeric_limits<uint64_t>::max() / 2);
     DCHECK_LE(remainder, buckets);
   }
-  const LayoutUnit base_;
-  const uint64_t dx_;
-  const uint64_t dy_;
+  LayoutUnit base_;
+  uint64_t dx_;
+  uint64_t dy_;
   uint64_t x_;
   uint64_t y_;
   uint64_t count_;
