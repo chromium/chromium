@@ -6359,7 +6359,7 @@
   {
     "name": "ios-reactivation-notifications",
     "owners": ["scottyoder@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 139
+    "expiry_milestone": 148
   },
   {
     "name": "ios-save-to-drive-client-folder",
