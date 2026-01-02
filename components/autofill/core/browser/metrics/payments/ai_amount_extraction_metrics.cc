@@ -13,14 +13,62 @@
 
 namespace autofill::autofill_metrics {
 
-void LogAiAmountExtractionResult(AiAmountExtractionResult result,
-                                 std::optional<base::TimeDelta> latency,
-                                 ukm::SourceId ukm_source_id) {
-  base::UmaHistogramEnumeration("Autofill.AiAmountExtraction.Result", result);
-
+void LogAiAmountExtractionResult(
+    payments::AiAmountExtractionResult::ResultType raw_result,
+    std::optional<base::TimeDelta> latency,
+    ukm::SourceId ukm_source_id) {
   ukm::builders::Autofill_AiAmountExtraction_Result ukm_builder(ukm_source_id);
-  CHECK(latency.has_value() || result == AiAmountExtractionResult::kTimeout);
+
+  AiAmountExtractionResult result;
+  std::optional<AiAmountExtractionInvalidResponseReason>
+      invalid_response_reason;
+  if (raw_result.has_value()) {
+    result = AiAmountExtractionResult::kSuccess;
+  } else {
+    switch (raw_result.error()) {
+      case payments::AiAmountExtractionResult::Error::kMissingServerResponse:
+        result = AiAmountExtractionResult::kFailed;
+        break;
+      case payments::AiAmountExtractionResult::Error::kTimeout:
+        result = AiAmountExtractionResult::kTimeout;
+        break;
+      case payments::AiAmountExtractionResult::Error::kNegativeAmount:
+        result = AiAmountExtractionResult::kInvalidResponse;
+        invalid_response_reason =
+            AiAmountExtractionInvalidResponseReason::kNegativeAmount;
+        break;
+      case payments::AiAmountExtractionResult::Error::kAmountMissing:
+        result = AiAmountExtractionResult::kInvalidResponse;
+        invalid_response_reason =
+            AiAmountExtractionInvalidResponseReason::kAmountMissing;
+        break;
+      case payments::AiAmountExtractionResult::Error::kMissingCurrency:
+        result = AiAmountExtractionResult::kInvalidResponse;
+        invalid_response_reason =
+            AiAmountExtractionInvalidResponseReason::kCurrencyCodeMissing;
+        break;
+      case payments::AiAmountExtractionResult::Error::kUnsupportedCurrency:
+        result = AiAmountExtractionResult::kInvalidResponse;
+        invalid_response_reason =
+            AiAmountExtractionInvalidResponseReason::kUnsupportedCurrency;
+        break;
+      case payments::AiAmountExtractionResult::Error::kFailureToGenerateApc:
+        NOTREACHED();
+    }
+  }
+
+  base::UmaHistogramEnumeration("Autofill.AiAmountExtraction.Result", result);
   ukm_builder.SetResult(static_cast<int64_t>(result));
+
+  if (invalid_response_reason.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AiAmountExtraction.InvalidResponseReason",
+        invalid_response_reason.value());
+    ukm_builder.SetInvalidResponseReason(
+        static_cast<int64_t>(invalid_response_reason.value()));
+  }
+
+  CHECK(latency.has_value() || result == AiAmountExtractionResult::kTimeout);
   if (latency) {
     switch (result) {
       case AiAmountExtractionResult::kSuccess:
@@ -64,33 +112,6 @@ void LogAiAmountExtractionApcFetchResult(bool success,
   ukm::builders::Autofill_AiAmountExtraction_ApcFetchResult(ukm_source_id)
       .SetApcFetchResult(success)
       .Record(ukm::UkmRecorder::Get());
-}
-
-void LogAiAmountExtractionInvalidResponseReason(
-    payments::AiAmountExtractionResult::Error error) {
-  AiAmountExtractionInvalidResponseReason reason;
-
-  switch (error) {
-    case payments::AiAmountExtractionResult::Error::kNegativeAmount:
-      reason = AiAmountExtractionInvalidResponseReason::kNegativeAmount;
-      break;
-    case payments::AiAmountExtractionResult::Error::kAmountMissing:
-      reason = AiAmountExtractionInvalidResponseReason::kAmountMissing;
-      break;
-    case payments::AiAmountExtractionResult::Error::kUnsupportedCurrency:
-      reason = AiAmountExtractionInvalidResponseReason::kUnsupportedCurrency;
-      break;
-    case payments::AiAmountExtractionResult::Error::kMissingCurrency:
-      reason = AiAmountExtractionInvalidResponseReason::kCurrencyCodeMissing;
-      break;
-    case payments::AiAmountExtractionResult::Error::kFailureToGenerateApc:
-    case payments::AiAmountExtractionResult::Error::kMissingServerResponse:
-    case payments::AiAmountExtractionResult::Error::kTimeout:
-      NOTREACHED();
-  }
-
-  base::UmaHistogramEnumeration(
-      "Autofill.AiAmountExtraction.InvalidResponseReason", reason);
 }
 
 }  // namespace autofill::autofill_metrics

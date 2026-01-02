@@ -2447,6 +2447,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InvalidResponseReason"
+      enum="AiAmountExtractionInvalidResponseReason">
+    <summary>
+      The reason the AI amount extraction response was invalid.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Result" enum="AiAmountExtractionResult">
     <summary>
       The result of the AI amount extraction.

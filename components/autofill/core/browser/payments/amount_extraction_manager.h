@@ -207,7 +207,7 @@ class AmountExtractionManager {
   // Logs the result of the AI-based amount extraction, but only if a result
   // has not been logged already.
   void LogAiAmountExtractionResultIfApplicable(
-      autofill_metrics::AiAmountExtractionResult result,
+      AiAmountExtractionResult::ResultType result,
       std::optional<base::TimeDelta> latency);
 
   // The owning BrowserAutofillManager.
@@ -217,11 +217,6 @@ class AmountExtractionManager {
   // lifetime of `this`. This ensures the amount extraction result metric is
   // logged once per page load.
   bool has_logged_amount_extraction_result_ = false;
-
-  // Set to true after the first time the AI-based amount extraction invalid
-  // response reason is logged. Ensures that logging occurs at most once per
-  // page load.
-  bool has_logged_ai_amount_extraction_invalid_response_reason_ = false;
 
   // Set to true after the first time the annotated page content (APC) fetch
   // result is logged. Ensures that logging occurs at most once per page load.

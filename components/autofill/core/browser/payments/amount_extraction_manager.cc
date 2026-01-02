@@ -97,11 +97,6 @@ AmountExtractionManager::ValidateAmountExtractionResponse(
   }
 
   if (error.has_value()) {
-    if (!has_logged_ai_amount_extraction_invalid_response_reason_) {
-      autofill_metrics::LogAiAmountExtractionInvalidResponseReason(*error);
-      has_logged_ai_amount_extraction_invalid_response_reason_ = true;
-    }
-
     return base::unexpected(*error);
   }
 
@@ -314,29 +309,16 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
                            *result.response)
                      : std::nullopt;
 
-  if (!response) {
-    bnpl_manager->OnAmountExtractionReturnedFromAi(base::unexpected(
-        AiAmountExtractionResult::Error::kMissingServerResponse));
-    LogAiAmountExtractionResultIfApplicable(
-        autofill_metrics::AiAmountExtractionResult::kFailed, latency);
-    Reset();
-    return;
-  }
-
-  AiAmountExtractionResult::ResultType validation_result =
-      ValidateAmountExtractionResponse(response.value());
-
-  if (validation_result.has_value()) {
-    LogAiAmountExtractionResultIfApplicable(
-        autofill_metrics::AiAmountExtractionResult::kSuccess, latency);
+  AiAmountExtractionResult::ResultType extraction_result;
+  if (!response.has_value()) {
+    extraction_result = base::unexpected(
+        AiAmountExtractionResult::Error::kMissingServerResponse);
   } else {
-    // All AiAmountExtractionResult::Error map to kInvalidResponse in metrics.
-    LogAiAmountExtractionResultIfApplicable(
-        autofill_metrics::AiAmountExtractionResult::kInvalidResponse, latency);
+    extraction_result = ValidateAmountExtractionResponse(response.value());
   }
 
-  bnpl_manager->OnAmountExtractionReturnedFromAi(std::move(validation_result));
-
+  LogAiAmountExtractionResultIfApplicable(extraction_result, latency);
+  bnpl_manager->OnAmountExtractionReturnedFromAi(std::move(extraction_result));
   Reset();
 }
 
@@ -347,14 +329,13 @@ void AmountExtractionManager::OnTimeoutReached() {
 
   if (base::FeatureList::IsEnabled(
           ::autofill::features::kAutofillEnableAiBasedAmountExtraction)) {
+    AiAmountExtractionResult::ResultType result =
+        base::unexpected(AiAmountExtractionResult::Error::kTimeout);
     if (BnplManager* bnpl_manager =
             autofill_manager_->GetPaymentsBnplManager()) {
-      bnpl_manager->OnAmountExtractionReturnedFromAi(
-          base::unexpected(AiAmountExtractionResult::Error::kTimeout));
+      bnpl_manager->OnAmountExtractionReturnedFromAi(result);
     }
-    LogAiAmountExtractionResultIfApplicable(
-        autofill_metrics::AiAmountExtractionResult::kTimeout,
-        /*latency=*/std::nullopt);
+    LogAiAmountExtractionResultIfApplicable(result, /*latency=*/std::nullopt);
   } else {
     // If the amount is found, ignore this callback.
     if (!search_request_pending_) {
@@ -421,11 +402,11 @@ void AmountExtractionManager::Reset() {
 }
 
 void AmountExtractionManager::LogAiAmountExtractionResultIfApplicable(
-    autofill_metrics::AiAmountExtractionResult result,
+    AiAmountExtractionResult::ResultType result,
     std::optional<base::TimeDelta> latency) {
   if (!has_logged_amount_extraction_result_) {
-    LogAiAmountExtractionResult(result, latency,
-                                GetMainFrameDriver()->GetPageUkmSourceId());
+    autofill_metrics::LogAiAmountExtractionResult(
+        result, latency, GetMainFrameDriver()->GetPageUkmSourceId());
     has_logged_amount_extraction_result_ = true;
   }
 }

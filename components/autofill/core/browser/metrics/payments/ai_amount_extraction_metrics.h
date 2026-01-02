@@ -45,11 +45,14 @@ enum class AiAmountExtractionInvalidResponseReason {
   kMaxValue = kCurrencyCodeMissing,
 };
 
-// Logs the result and latency of the AI-based amount extraction process.
+// Logs the result, latency, and invalid response reason of the AI-based amount
+// extraction process, if applicable. Latency is present if the AI-based amount
+// extraction response was received, and empty if the timeout was reached.
 // Logs to both UMA and UKM.
-void LogAiAmountExtractionResult(AiAmountExtractionResult result,
-                                 std::optional<base::TimeDelta> latency,
-                                 ukm::SourceId ukm_source_id);
+void LogAiAmountExtractionResult(
+    payments::AiAmountExtractionResult::ResultType raw_result,
+    std::optional<base::TimeDelta> latency,
+    ukm::SourceId ukm_source_id);
 
 // Logs if the amount extracted is within or outside the issuer's supported
 // range. Logs to both UMA and UKM.
@@ -61,12 +64,6 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
 // (APC). Logs to both UMA and UKM.
 void LogAiAmountExtractionApcFetchResult(bool success,
                                          ukm::SourceId ukm_source_id);
-
-// Logs the reason why the AI-based amount extraction response was invalid,
-// specifically when a response is present and it is an error.
-void LogAiAmountExtractionInvalidResponseReason(
-    payments::AiAmountExtractionResult::Error error);
-
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
