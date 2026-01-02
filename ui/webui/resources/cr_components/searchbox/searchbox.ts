@@ -256,6 +256,10 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
+      multiLineEnabled: {
+        type: Boolean,
+      },
+
       /** The aria description to include on the input element. */
       searchboxAriaDescription: {type: String},
 
@@ -413,6 +417,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor isDark: boolean = false;
   accessor matchSearchbox: boolean =
       loadTimeData.getBoolean('searchboxMatchSearchboxTheme');
+  accessor multiLineEnabled: boolean = false;
   accessor searchboxAriaDescription: string = '';
   accessor searchboxLensSearchEnabled: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');

@@ -260,6 +260,8 @@ export class AppElement extends AppElementBase {
       microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
 
+      multiLineEnabled_: {type: Boolean},
+
       ntpRealboxNextEnabled_: {
         type: Boolean,
         reflect: true,
@@ -367,6 +369,8 @@ export class AppElement extends AppElementBase {
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
   protected accessor microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
+  protected accessor multiLineEnabled_: boolean =
+      loadTimeData.getBoolean('multiLineEnabled');
   protected accessor promoAndModulesLoaded_: boolean = false;
   protected accessor lazyRender_: boolean = false;
   protected accessor scrolledToTop_: boolean =

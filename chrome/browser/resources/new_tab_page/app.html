@@ -56,7 +56,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
-        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}">
+        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
+        ?multi-line-enabled="${this.multiLineEnabled_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       ${this.enableModalComposebox_ ? html`
