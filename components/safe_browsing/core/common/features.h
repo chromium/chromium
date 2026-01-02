@@ -211,12 +211,6 @@ BASE_DECLARE_FEATURE(kEsbAsASyncedSetting);
 //   safebrowsing.scout_reporting_enabled
 BASE_DECLARE_FEATURE(kExtendedReportingRemovePrefDependency);
 
-// Controls whether Safe Browsing Extended Reporting (SBER) is deprecated for
-// Chrome on iOS.
-// This has the same behavior as kExtendedReportingRemovePrefDependency but
-// is separate for rollout purposes.
-BASE_DECLARE_FEATURE(kExtendedReportingRemovePrefDependencyIos);
-
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);

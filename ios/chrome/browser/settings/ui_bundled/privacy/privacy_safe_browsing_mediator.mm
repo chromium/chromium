@@ -169,7 +169,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     if (base::FeatureList::IsEnabled(
             safe_browsing::kMovePasswordLeakDetectionToggleIos) &&
         base::FeatureList::IsEnabled(
-            safe_browsing::kExtendedReportingRemovePrefDependencyIos)) {
+            safe_browsing::kExtendedReportingRemovePrefDependency)) {
       TableViewItem* safeBrowsingStandardProtectionItem = [self
                detailIconItemType:ItemTypeSafeBrowsingStandardProtection
                           titleId:

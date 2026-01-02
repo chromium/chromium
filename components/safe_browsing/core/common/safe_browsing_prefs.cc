@@ -609,9 +609,7 @@ bool MatchesPasswordProtectionChangePasswordURL(const GURL& url,
 }
 
 bool IsExtendedReportingDeprecated() {
-  return base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency) ||
-         base::FeatureList::IsEnabled(
-             kExtendedReportingRemovePrefDependencyIos);
+  return base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency);
 }
 
 }  // namespace safe_browsing

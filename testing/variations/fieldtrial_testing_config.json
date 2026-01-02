@@ -21699,21 +21699,6 @@
             ]
         }
     ],
-    "SafeBrowsingExtendedReportingRemovePrefDependencyIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledRemovePrefDependencyIos",
-                    "enable_features": [
-                        "ExtendedReportingRemovePrefDependencyIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingExtensionTelemetrySearchHijackingSignal": [
         {
             "platforms": [
