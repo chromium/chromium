@@ -143,4 +143,9 @@ UIImage* GetPHPickerViewControllerImage() {
   return nil;
 }
 
+std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
+    ProfileIOS* profile) {
+  return nullptr;
+}
+
 }  // namespace tests_hook

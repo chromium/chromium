@@ -10,6 +10,7 @@
 
 #import "base/containers/span.h"
 
+class AimEligibilityService;
 class PrefService;
 class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
@@ -232,6 +233,11 @@ std::optional<base::TimeDelta> GetOverrideInfobarDuration();
 // Returns a UIImage for users of PHPickerViewController to use to skip
 // presenting that picker view controller in tests.
 UIImage* GetPHPickerViewControllerImage();
+
+// Returns a mock AimEligibilityService for testing.
+// The real factory will be used if this hook returns null.
+std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
+    ProfileIOS* profile);
 
 }  // namespace tests_hook
 

@@ -38,6 +38,7 @@
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -464,6 +465,12 @@ std::optional<base::TimeDelta> GetOverrideInfobarDuration() {
 UIImage* GetPHPickerViewControllerImage() {
   return ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
       CGSizeMake(1000, 1000), UIColor.greenColor);
+}
+
+std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
+    ProfileIOS* profile) {
+  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
+      profile);
 }
 
 }  // namespace tests_hook
