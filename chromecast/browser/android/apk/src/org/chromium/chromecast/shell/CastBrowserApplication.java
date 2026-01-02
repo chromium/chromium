@@ -13,16 +13,19 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
  * Entry point for the Android cast shell application. Handles initialization of information that
  * needs to be shared across the main activity and the child services created.
  */
+@UsedByReflection("Used by mediashell main Application")
 public class CastBrowserApplication extends Application {
     private static final String TAG = "CastBrowserApplicatn";
     private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "cast_shell";
 
+    @UsedByReflection("Used by mediashell main Application")
     public static void initialize(Application application) {
         Log.d(TAG, "initialize");
         ContextUtils.initApplicationContext(application);
