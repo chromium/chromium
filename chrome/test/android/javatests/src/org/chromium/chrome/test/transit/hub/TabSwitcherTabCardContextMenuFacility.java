@@ -12,8 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
-
-import android.view.View;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import androidx.annotation.StringRes;
 
@@ -25,7 +24,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.test.R;
@@ -48,7 +46,10 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     // TODO(crbug.com/467931387): R.id.tab_group_action_menu_list implies tab group-related
     //  operations. Rename to something more appropriate.
     public final ViewElement<TouchTrackingListView> listElement =
-            declareView(TouchTrackingListView.class, withId(R.id.tab_group_action_menu_list));
+            declareContainerView(
+                    TouchTrackingListView.class,
+                    withId(R.id.tab_group_action_menu_list),
+                    ViewElement.defaultOptions());
     private final @TabId int mTabId;
 
     public Item share;
@@ -167,11 +168,7 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     }
 
     private Item declarePossibleItemWithText(ItemsBuilder builder, String text) {
-        return builder.declarePossibleItem(getItemViewSpec(text), withMenuItemTitle(text));
-    }
-
-    private ViewSpec<View> getItemViewSpec(String text) {
-        return listElement.descendant(withText(text));
+        return builder.declarePossibleItem(viewSpec(withText(text)), withMenuItemTitle(text));
     }
 
     private Matcher<MVCListAdapter.ListItem> withMenuItemTitle(String text) {

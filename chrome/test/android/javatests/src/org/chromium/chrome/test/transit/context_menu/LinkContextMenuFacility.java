@@ -22,13 +22,10 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
     protected void declareItems(ItemsBuilder items) {
         super.declareItems(items);
 
-        mOpenTabInNewTab =
-                items.declareItem(
-                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab)), null);
+        mOpenTabInNewTab = items.declareItem(withText(R.string.contextmenu_open_in_new_tab), null);
 
         mOpenTabInNewTabInGroup =
-                items.declareItem(
-                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab_group)), null);
+                items.declareItem(withText(R.string.contextmenu_open_in_new_tab_group), null);
     }
 
     /** Click the "Open in new tab" item in the context menu. */

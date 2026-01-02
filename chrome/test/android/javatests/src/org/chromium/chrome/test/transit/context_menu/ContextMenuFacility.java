@@ -16,7 +16,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -27,20 +26,18 @@ public class ContextMenuFacility extends ScrollableFacility<WebPageStation> {
     public ViewElement<View> menuListElement;
 
     public ContextMenuFacility() {
-        menuListElement = declareView(withId(R.id.context_menu_list_view));
+        menuListElement =
+                declareContainerView(
+                        View.class,
+                        withId(R.id.context_menu_list_view),
+                        ViewElement.defaultOptions());
     }
 
     @CallSuper
     @Override
     protected void declareItems(ScrollableFacility<WebPageStation>.ItemsBuilder items) {
         // Context menu always has a header.
-        items.declareItem(
-                itemViewSpec(withId(R.id.title_and_url)),
-                withMenuItemType(ContextMenuItemType.HEADER));
-    }
-
-    protected ViewSpec<View> itemViewSpec(Matcher<View> matcher) {
-        return menuListElement.descendant(matcher);
+        items.declareItem(withId(R.id.title_and_url), withMenuItemType(ContextMenuItemType.HEADER));
     }
 
     protected static Matcher<MVCListAdapter.ListItem> withMenuItemType(int type) {

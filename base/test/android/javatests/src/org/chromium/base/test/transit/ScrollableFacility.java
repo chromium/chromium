@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.View;
@@ -133,6 +134,12 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new item. */
         public Item declareItem(
+                Matcher<View> onScreenViewMatcher, @Nullable Matcher<?> offScreenDataMatcher) {
+            return declareItem(viewSpec(onScreenViewMatcher), offScreenDataMatcher);
+        }
+
+        /** Create a new item. */
+        public Item declareItem(
                 ViewSpec<? extends View> onScreenViewSpec,
                 @Nullable Matcher<?> offScreenDataMatcher) {
             Item item =
@@ -224,6 +231,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
          * Use one of {@link ScrollableFacility.ItemsBuilder}'s methods to instantiate:
          *
          * <ul>
+         *   <li>{@link ItemsBuilder#declareItem(Matcher, Matcher)}
          *   <li>{@link ItemsBuilder#declareItem(ViewSpec, Matcher)}
          *   <li>{@link ItemsBuilder#declareDisabledItem(ViewSpec, Matcher)}
          *   <li>{@link ItemsBuilder#declareAbsentItem(ViewSpec, Matcher)}

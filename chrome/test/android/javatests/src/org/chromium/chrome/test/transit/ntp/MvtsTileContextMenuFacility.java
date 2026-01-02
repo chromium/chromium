@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.widget.ListView;
 
 import org.hamcrest.Description;
@@ -143,45 +141,39 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
     protected void declareItems(ItemsBuilder items) {
         openInNewTab =
                 items.declareItem(
-                        viewSpec(withText("Open in new tab")),
-                        menuItemMatcher(ContextMenuItemId.OPEN_IN_NEW_TAB));
+                        withText("Open in new tab"),
+                        withMenuItemId(ContextMenuItemId.OPEN_IN_NEW_TAB));
         openInNewTabInGroup =
                 items.declareItem(
-                        viewSpec(withText("Open in new tab in group")),
-                        menuItemMatcher(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP));
+                        withText("Open in new tab in group"),
+                        withMenuItemId(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP));
         openInIncognitoTab =
                 items.declareItem(
-                        viewSpec(withText("Open in Incognito tab")),
-                        menuItemMatcher(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB));
+                        withText("Open in Incognito tab"),
+                        withMenuItemId(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB));
         openInIncognitoWindow =
                 items.declareItem(
-                        viewSpec(withText("Open in Incognito window")),
-                        menuItemMatcher(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW));
+                        withText("Open in Incognito window"),
+                        withMenuItemId(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW));
         openInOtherWindow =
                 items.declareItem(
-                        viewSpec(withText("Open in other window")),
-                        menuItemMatcher(ContextMenuItemId.OPEN_IN_OTHER_WINDOW));
+                        withText("Open in other window"),
+                        withMenuItemId(ContextMenuItemId.OPEN_IN_OTHER_WINDOW));
         downloadLink =
                 items.declareItem(
-                        viewSpec(withText("Download link")),
-                        menuItemMatcher(ContextMenuItemId.SAVE_FOR_OFFLINE));
+                        withText("Download link"),
+                        withMenuItemId(ContextMenuItemId.SAVE_FOR_OFFLINE));
         editShortcut =
                 items.declareItem(
-                        viewSpec(withText("Edit shortcut")),
-                        menuItemMatcher(ContextMenuItemId.EDIT_SHORTCUT));
-        remove =
-                items.declareItem(
-                        viewSpec(withText("Remove")), menuItemMatcher(ContextMenuItemId.REMOVE));
+                        withText("Edit shortcut"), withMenuItemId(ContextMenuItemId.EDIT_SHORTCUT));
+        remove = items.declareItem(withText("Remove"), withMenuItemId(ContextMenuItemId.REMOVE));
         pin =
                 items.declareItem(
-                        viewSpec(withText("Pin")),
-                        menuItemMatcher(ContextMenuItemId.PIN_THIS_SHORTCUT));
-        unpin =
-                items.declareItem(
-                        viewSpec(withText("Unpin")), menuItemMatcher(ContextMenuItemId.UNPIN));
+                        withText("Pin"), withMenuItemId(ContextMenuItemId.PIN_THIS_SHORTCUT));
+        unpin = items.declareItem(withText("Unpin"), withMenuItemId(ContextMenuItemId.UNPIN));
     }
 
-    private static Matcher<MVCListAdapter.ListItem> menuItemMatcher(@ContextMenuItemId int id) {
+    private static Matcher<MVCListAdapter.ListItem> withMenuItemId(@ContextMenuItemId int id) {
         return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(Description description) {

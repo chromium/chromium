@@ -29,7 +29,11 @@ public class TabSwitcherGroupCardAppMenuFacility<HostStationT extends TabSwitche
     public TabSwitcherGroupCardAppMenuFacility(boolean isIncognito, String title) {
         mIsIncognito = isIncognito;
         mTitle = title;
-        menuListElement = declareView(withId(R.id.tab_group_action_menu_list));
+        menuListElement =
+                declareContainerView(
+                        View.class,
+                        withId(R.id.tab_group_action_menu_list),
+                        ViewElement.defaultOptions());
     }
 
     @Override
@@ -37,8 +41,7 @@ public class TabSwitcherGroupCardAppMenuFacility<HostStationT extends TabSwitche
         if (!mIsIncognito) {
             mCloseRegularTabGroup =
                     items.declareItem(
-                            menuListElement.descendant(
-                                    withText(R.string.close_tab_group_menu_item)),
+                            withText(R.string.close_tab_group_menu_item),
                             /* offScreenDataMatcher= */ null);
         }
     }
