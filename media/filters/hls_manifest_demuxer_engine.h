@@ -23,7 +23,6 @@
 #include "media/filters/hls_demuxer_status.h"
 #include "media/filters/hls_network_access_impl.h"
 #include "media/filters/hls_rendition.h"
-#include "media/filters/hls_stats_reporter.h"
 #include "media/filters/manifest_demuxer.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/parse_status.h"
@@ -334,9 +333,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // When renditions are added, this ensures that they are all of the same
   // liveness, and allows access to the liveness check later.
   std::optional<bool> is_seekable_ = std::nullopt;
-
-  hls::HlsStatsReporter stats_reporter_
-      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Ensure that safe member fields are only accessed on the media sequence.
   SEQUENCE_CHECKER(media_sequence_checker_);

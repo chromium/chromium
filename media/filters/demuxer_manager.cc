@@ -51,49 +51,6 @@ enum class MimeType {
   kMaxValue = kTextVtt,  // For UMA histograms.
 };
 
-MimeType TranslateMimeTypeToHistogramEnum(std::string_view mime_type) {
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive)) {
-    return MimeType::kApplicationDashXml;
-  }
-  if (base::StartsWith(mime_type, "application/ogg", kCaseInsensitive)) {
-    return MimeType::kApplicationOgg;
-  }
-  if (base::StartsWith(mime_type, "application/mpegurl", kCaseInsensitive)) {
-    return MimeType::kApplicationMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "application/vnd.apple.mpegurl",
-                       kCaseInsensitive)) {
-    return MimeType::kApplicationVndAppleMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "application/x-mpegurl", kCaseInsensitive)) {
-    return MimeType::kApplicationXMpegUrl;
-  }
-
-  if (base::StartsWith(mime_type, "audio/mpegurl", kCaseInsensitive)) {
-    return MimeType::kAudioMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "audio/x-mpegurl", kCaseInsensitive)) {
-    return MimeType::kAudioXMpegUrl;
-  }
-
-  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive)) {
-    return MimeType::kNonspecificAudio;
-  }
-  if (base::StartsWith(mime_type, "image/", kCaseInsensitive)) {
-    return MimeType::kNonspecificImage;
-  }
-  if (base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
-    return MimeType::kNonspecificVideo;
-  }
-
-  if (base::StartsWith(mime_type, "text/vtt", kCaseInsensitive)) {
-    return MimeType::kTextVtt;
-  }
-
-  return MimeType::kOtherMimeType;
-}
-
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -158,13 +115,6 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
     // HLS content is considered CORS, but that will change.
     loaded_url_ = GetDataSourceUrlAfterRedirects().value();
     client_->UpdateLoadedUrl(loaded_url_);
-
-    if (auto* co_data_source = data_source_->GetAsCrossOriginDataSource()) {
-      MimeType mime_type =
-          TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
-      base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
-                                    mime_type);
-    }
 
     // The data source must be stopped after the client, after which the
     // old demuxer and data source can be freed.

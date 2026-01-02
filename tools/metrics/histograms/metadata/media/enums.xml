@@ -56,25 +56,6 @@ chromium-metrics-reviews@google.com.
   <int value="136" label="Other | Other (Non-active)"/>
 </enum>
 
-<enum name="AdaptationReason">
-  <int value="0" label="kUserSelection"/>
-  <int value="1" label="kResolutionChange"/>
-  <int value="2" label="kNetworkUpgrade"/>
-  <int value="3" label="kNetworkDowngrade"/>
-</enum>
-
-<enum name="AdvancedFeatureTagType">
-  <int value="0" label="kContentSteering"/>
-  <int value="1" label="kDiscontinuity"/>
-  <int value="2" label="kDiscontinuitySequence"/>
-  <int value="3" label="kGap"/>
-  <int value="4" label="kKey"/>
-  <int value="5" label="kPart"/>
-  <int value="6" label="kSessionKey"/>
-  <int value="7" label="kSkip"/>
-  <int value="8" label="kXNonStandard"/>
-</enum>
-
 <!-- LINT.IfChange(AndroidAudioDeviceType) -->
 
 <enum name="AndroidAudioDeviceType">
@@ -1284,13 +1265,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
 </enum>
 
-<enum name="HLSEncryptionMode">
-  <int value="0" label="None"/>
-  <int value="1" label="AES128"/>
-  <int value="2" label="SampleAES"/>
-  <int value="3" label="SampleAESCTR"/>
-</enum>
-
 <enum name="ImplementationClassification">
   <int value="0" label="Non-plugin; Apple"/>
   <int value="1" label="Non-plugin; third-party 'built-in' transport"/>
@@ -1825,24 +1799,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Input port is added"/>
   <int value="6" label="Output port is added"/>
   <int value="7" label="Error occurred on calling platform APIs"/>
-</enum>
-
-<enum name="MimeTypeOfHlsManifest">
-  <summary>
-    Captures the MIME type of the HTTP response that carried an HLS manifest.
-  </summary>
-  <int value="0" label="Other MIME type"/>
-  <int value="1" label="application/dash+xml"/>
-  <int value="2" label="application/ogg"/>
-  <int value="3" label="application/mpegurl"/>
-  <int value="4" label="application/vnd.apple.mpegurl"/>
-  <int value="5" label="application/x-mpegurl"/>
-  <int value="6" label="audio/mpegurl"/>
-  <int value="7" label="audio/x-mpegurl"/>
-  <int value="8" label="audio/*"/>
-  <int value="9" label="image/*"/>
-  <int value="10" label="video/*"/>
-  <int value="11" label="text/vtt"/>
 </enum>
 
 <enum name="MirroringServiceErrorType">

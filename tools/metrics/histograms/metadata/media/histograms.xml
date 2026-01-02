@@ -4769,65 +4769,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HLS.Adaptation" enum="AdaptationReason"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs what caused HLS stream adaptation. Recorded each time adaptation takes
-    place.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.AdvancedFeatureTags" enum="AdvancedFeatureTagType"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs an enum representing the presence of specific HLS tags which are used
-    to trigger features of the demuxer, including gaps, discontinuities, and
-    encryption, among others. Recorded whenever MediaPlayer successfully plays
-    HLS media using one of the advanced features in the enum.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.CrossOriginContent" enum="Boolean"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs whether HLS playback uses cross-origin content. Recorded once per
-    player.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.EncryptionMode" enum="HLSEncryptionMode"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the encryption mode used if a playlist has the #EXT-X-KEY or
-    #EXT-X-SESSION-KEY tags present. Recorded whenever MediaPlayer successfully
-    plays encrypted HLS media.
-  </summary>
-</histogram>
-
 <histogram name="Media.HLS.InitializationError" enum="HlsDemuxerStatus"
     expires_after="2026-05-03">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Logs any error which occurs during initialization of the hls demuxer.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.LiveContent" enum="Boolean"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs whether HLS playback is for Live content, as opposed to video-on-demand
-    (VOD) content. Recorded once per player.
   </summary>
 </histogram>
 
@@ -4858,18 +4805,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs any error which occurs during playback but NOT during initialization of
     the hls demuxer.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.UnparsableManifest" units="sparse"
-    expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the root cause failure reason for a playlist which cannot be parsed by
-    the built-in parser, but was successfully played by AndroidMediaPlayer.
-    Recorded whenever MediaPlayer successfully plays HLS media from a manifest
-    that the builtin parser would fail to parse.
   </summary>
 </histogram>
 
@@ -8512,26 +8447,6 @@ chromium-metrics-reviews@google.com.
     render buffer is cleared. If multiple conditions apply, only the first
     matching enum is reported.
   </summary>
-</histogram>
-
-<histogram name="Media.WebMediaPlayerImpl.HLS{Variant}.MimeType"
-    enum="MimeTypeOfHlsManifest" expires_after="2025-12-31">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When an HLS manifest is found during loading (on Android only), {Variant}
-    then this histogram records the MIME type of the response.
-
-    This metric should help assess the web compatibility risk of strict MIME
-    type enforcement, as discussed in
-    https://github.com/annevk/orb/issues/29#issuecomment-967432934
-  </summary>
-  <token key="Variant">
-    <variant name="" summary=""/>
-    <variant name=".CorsCrossOrigin"
-        summary="and the response is cross-origin/opaque,"/>
-  </token>
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"

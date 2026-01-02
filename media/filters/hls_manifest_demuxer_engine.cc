@@ -542,7 +542,6 @@ void HlsManifestDemuxerEngine::OnRenditionsReselected(
     std::optional<hls::RenditionGroup::RenditionTrack> primary,
     std::optional<hls::RenditionGroup::RenditionTrack> extra) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  stats_reporter_.OnAdaptation(reason);
   ProcessAsyncAction<HlsDemuxerStatus>(
       base::BindOnce(&HlsManifestDemuxerEngine::CheckActionState,
                      weak_factory_.GetWeakPtr()),
@@ -573,7 +572,6 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
   }
   auto stream = std::move(result).value();
   origin_tainted_ |= stream->would_taint_origin();
-  stats_reporter_.SetWouldTaintOrigin(origin_tainted_);
   total_stream_memory_ = stream->memory_usage();
   std::move(cb).Run(std::move(stream));
 }
@@ -659,7 +657,6 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
             .Run(HlsDemuxerStatus::Codes::kRecursiveMultivariantPlaylists);
         return;
       }
-      stats_reporter_.SetIsMultivariantPlaylist(true);
       auto playlist = hls::MultivariantPlaylist::Parse(
           stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
@@ -678,7 +675,6 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
         // Only a root playlist is allowed to be multivariant, so if the root
         // is only a media playlist, then this entire playback is not
         // multivariant.
-        stats_reporter_.SetIsMultivariantPlaylist(false);
       }
       auto playlist = ParseMediaPlaylistFromStringSource(
           stream->AsString(), parse_info.uri, (*m_info).version);
@@ -874,7 +870,6 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
   }
 
   is_seekable_ = seekable;
-  stats_reporter_.SetIsLiveContent(!seekable);
   renditions_[parse_info.role] = std::move(rendition);
   std::move(parse_complete_cb).Run(OkStatus());
 }

@@ -272,8 +272,6 @@ source_set("filters") {
       "hls_rendition.h",
       "hls_rendition_impl.cc",
       "hls_rendition_impl.h",
-      "hls_stats_reporter.cc",
-      "hls_stats_reporter.h",
       "manifest_demuxer.cc",
       "manifest_demuxer.h",
     ]
