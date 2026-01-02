@@ -58,14 +58,12 @@ void GlicActorNudgeController::OnStateUpdate(
 
 void GlicActorNudgeController::OnStateUpdateImpl(
     ActorTaskNudgeState actor_task_nudge_state) {
-  ActorTaskListBubbleController* bubble_controller =
-      ActorTaskListBubbleController::From(browser_);
-
   // If the task icon is inactive, hide it and perform no additional style
   // changes.
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
       actor_task_nudge_state.task_list_size < 1) {
     tab_strip_action_container_->HideGlicActorTaskIcon();
+    CloseBubble();
     return;
   }
 
@@ -76,11 +74,10 @@ void GlicActorNudgeController::OnStateUpdateImpl(
         tab_strip_action_container_->ShowGlicActorTaskIcon();
       } else {
         tab_strip_action_container_->HideGlicActorTaskIcon();
-        // All bubbles should close when the nudge is hidden.
-        if (bubble_controller->GetBubbleWidget()) {
-          bubble_controller->GetBubbleWidget()->Close();
-        }
       }
+      // In either case, close the bubble as the nudge has been either hidden or
+      // reset.
+      CloseBubble();
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
@@ -125,6 +122,14 @@ void GlicActorNudgeController::UpdateCurrentActorNudgeState() {
   if (auto* manager =
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
     OnStateUpdate(manager->GetCurrentActorTaskNudgeState());
+  }
+}
+
+void GlicActorNudgeController::CloseBubble() {
+  ActorTaskListBubbleController* bubble_controller =
+      ActorTaskListBubbleController::From(browser_);
+  if (bubble_controller->GetBubbleWidget()) {
+    bubble_controller->GetBubbleWidget()->Close();
   }
 }
 

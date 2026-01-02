@@ -49,6 +49,9 @@ class GlicActorNudgeController {
   // the nudge. Always shows the task list bubble after.
   void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label_text);
 
+  // Close the task list bubble if it is visible.
+  void CloseBubble();
+
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
