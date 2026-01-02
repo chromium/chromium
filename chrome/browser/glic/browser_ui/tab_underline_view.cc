@@ -36,10 +36,10 @@ constexpr static int kMinUnderlineWidth = kSmallUnderlineWidth - 4;
 constexpr static int kMinimumTabWidthThreshold = 42;
 
 // The height of the underline effect.
-constexpr static int kEffectHeight = 2;
+constexpr static int kEffectThickness = 2;
 
 // The radius to use for rounded corners of the underline effect.
-constexpr static float kCornerRadius = kEffectHeight / 2.0f;
+constexpr static float kCornerRadius = kEffectThickness / 2.0f;
 
 }  // namespace
 
@@ -69,6 +69,13 @@ TabUnderlineView::TabUnderlineView(
       controller_(std::move(controller)),
       tab_handle_(tab_handle) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
+
+  // Needed so that expectations of visibility that
+  // inform underline updates are correct on first show.
+  SetVisible(false);
+
+  // `glic_tab_underline_view_` should never receive input events.
+  SetCanProcessEventsWithinSubtree(false);
 
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time TabUnderlineView isn't fully initialized, which
@@ -149,39 +156,57 @@ std::vector<SkColor> TabUnderlineView::GetEffectColors() {
   return colors;
 }
 
-int TabUnderlineView::ComputeWidth() {
+int TabUnderlineView::ComputeDimension() {
+  int bounds_dim = (orientation_ == Orientation::kHorizontal) ? size().width()
+                                                              : size().height();
   // At the smallest tab sizes, favicons can be clipped and so a shorter
   // underline is required.
-  if (size().width() < kMinimumTabWidthThreshold) {
+  if (bounds_dim < kMinimumTabWidthThreshold) {
     return kMinUnderlineWidth;
   }
 
+  int insets_dim = (orientation_ == Orientation::kHorizontal)
+                       ? parent()->GetInsets().width()
+                       : parent()->GetInsets().height();
+
   // Underline should use either the width of the tab's contents bounds or the
   // width of the favicon, whichever is greater.
-  int underline_width = size().width() - parent()->GetInsets().width();
-  if (underline_width < gfx::kFaviconSize) {
+  int dimension = bounds_dim - insets_dim;
+  if (dimension < gfx::kFaviconSize) {
     return kSmallUnderlineWidth;
   }
 
-  return underline_width;
+  return dimension;
+}
+
+void TabUnderlineView::SetOrientation(Orientation orientation) {
+  orientation_ = orientation;
 }
 
 void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
                                   const cc::PaintFlags& flags) {
-  int underline_width = ComputeWidth();
-  int underline_x = (size().width() - underline_width + 1) / 2;
+  int dimension = ComputeDimension();
 
-  // Draw the underline in the bottom `kEffectHeight` area of the given bounds
-  // below the tab contents.
-  gfx::Point origin(underline_x, size().height() - kEffectHeight);
-  gfx::Size size(underline_width, kEffectHeight);
-  gfx::Rect effect_bounds(origin, size);
+  gfx::Rect effect_bounds;
+
+  if (orientation_ == Orientation::kHorizontal) {
+    int underline_x = (size().width() - dimension + 1) / 2;
+    gfx::Point origin(underline_x, size().height() - kEffectThickness);
+    gfx::Size size(dimension, kEffectThickness);
+    effect_bounds = gfx::Rect(origin, size);
+  } else {
+    // Vertical orientation: Draw on the left.
+    int underline_y = (size().height() - dimension + 1) / 2;
+    gfx::Point origin(kEffectThickness, underline_y);
+    gfx::Size size(kEffectThickness, dimension);
+    effect_bounds = gfx::Rect(origin, size);
+  }
 
   cc::PaintFlags new_flags(flags);
   const int kNumDefaultColors = 3;
   // At small sizes, paint the underline as a solid color instead of a gradient.
   // We also draw a solid color if we've got no shader and fewer than 3 colors.
-  if (underline_width < gfx::kFaviconSize * 2 ||
+  if (dimension < gfx::kFaviconSize * 2 ||
       (!new_flags.getShader() && colors_.size() < kNumDefaultColors)) {
     new_flags.setShader(nullptr);
     CHECK(!colors_.empty());

@@ -62,6 +62,13 @@ class TabUnderlineView : public AnimatedEffectView {
   // valid.
   tabs::TabInterface* GetTabInterface();
 
+  enum class Orientation {
+    kHorizontal,
+    kVertical,
+  };
+
+  void SetOrientation(Orientation orientation);
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicTabUnderlineElementId);
 
  protected:
@@ -87,13 +94,15 @@ class TabUnderlineView : public AnimatedEffectView {
   // `views::View`:
   void OnThemeChanged() override;
 
-  int ComputeWidth();
+  int ComputeDimension();
 
   // The controller responsible for notifying the view about various browser
   // UI status changes that affect showing and animating of the tab underlines.
   const std::unique_ptr<TabUnderlineViewController> controller_;
 
   tabs::TabHandle tab_handle_;
+
+  Orientation orientation_ = Orientation::kHorizontal;
 };
 
 BEGIN_VIEW_BUILDER(, TabUnderlineView, AnimatedEffectView)

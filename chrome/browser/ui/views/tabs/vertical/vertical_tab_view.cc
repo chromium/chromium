@@ -10,6 +10,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/common/buildflags.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -45,6 +47,13 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "components/contextual_tasks/public/features.h"
+#endif
 
 namespace {
 constexpr int kAfterIconPadding = 8;
@@ -107,6 +116,24 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
                             ? std::make_unique<GlowHoverController>(this)
                             : nullptr) {
+#if BUILDFLAG(ENABLE_GLIC)
+  tabs::TabInterface* tab = const_cast<tabs::TabInterface*>(GetTabInterface());
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
+  if (browser_window &&
+      ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+        glic::GlicEnabling::IsProfileEligible(browser_window->GetProfile())) ||
+       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
+    glic_tab_underline_view_ = AddChildView(
+        views::Builder<glic::TabUnderlineView>(
+            glic::TabUnderlineView::Factory::Create(
+                std::make_unique<glic::TabUnderlineViewControllerImpl>(),
+                browser_window->GetBrowserForMigrationOnly(), tab->GetHandle()))
+            .Build());
+    glic_tab_underline_view_->SetOrientation(
+        glic::TabUnderlineView::Orientation::kVertical);
+  }
+#endif
+
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -360,6 +387,13 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
                                kTitleHeight);
   layouts.child_layouts.emplace_back(title_.get(), title_->GetVisible(),
                                      title_bounds);
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_tab_underline_view_) {
+    layouts.child_layouts.emplace_back(glic_tab_underline_view_.get(),
+                                       glic_tab_underline_view_->GetVisible(),
+                                       gfx::Rect(0, 0, width, height));
+  }
+#endif
   return layouts;
 }
 
@@ -466,10 +500,19 @@ void VerticalTabView::UpdateBorder() {
 
 void VerticalTabView::UpdateAlertIndicatorVisibility() {
   alert_indicator_->UpdateAlertIndicatorAnimation();
-  alert_indicator_->SetVisible(
-      alert_indicator_->showing_alert_state().has_value());
+  bool alert_indicator_visible =
+      alert_indicator_->showing_alert_state().has_value();
 
-  icon_->SetVisible(!pinned_ || !alert_indicator_->GetVisible());
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_tab_underline_view_ && (alert_indicator_->showing_alert_state() ==
+                                       tabs::TabAlert::kGlicAccessing ||
+                                   alert_indicator_->showing_alert_state() ==
+                                       tabs::TabAlert::kGlicSharing)) {
+    alert_indicator_visible = false;
+  }
+#endif
+  alert_indicator_->SetVisible(alert_indicator_visible);
+  icon_->SetVisible(!pinned_ || !alert_indicator_visible);
 }
 
 void VerticalTabView::UpdateCloseButtonVisibility() {

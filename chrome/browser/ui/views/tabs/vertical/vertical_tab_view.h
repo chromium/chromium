@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
+#include "chrome/common/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
@@ -25,6 +26,12 @@ class TabIcon;
 namespace views {
 class Label;
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class TabUnderlineView;
+}
+#endif
 
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View,
@@ -115,6 +122,10 @@ class VerticalTabView : public views::View,
   const raw_ptr<views::Label> title_;
   const raw_ptr<AlertIndicatorButton> alert_indicator_;
   const raw_ptr<TabCloseButton> close_button_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  raw_ptr<glic::TabUnderlineView> glic_tab_underline_view_ = nullptr;
+#endif
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription data_changed_subscription_;

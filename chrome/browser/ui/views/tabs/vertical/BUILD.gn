@@ -57,6 +57,9 @@ source_set("impl") {
   deps = [
     ":vertical",
     "//chrome/browser:primitives",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui:glow",
+    "//chrome/browser/glic/browser_ui:glow_controller",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
@@ -69,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:utils",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/toolbar",
+    "//components/contextual_tasks/public:feature_list",
   ]
 
   public_deps = [

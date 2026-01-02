@@ -267,11 +267,6 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
             glic::TabUnderlineView::Factory::Create(
                 std::make_unique<glic::TabUnderlineViewControllerImpl>(),
                 controller->GetBrowser(), tab_handle_))
-            // Needed so that expectations of visibility that
-            // inform underline updates are correct on first show.
-            .SetVisible(false)
-            // `glic_tab_underline_view_` should never receive input events.
-            .SetCanProcessEventsWithinSubtree(false)
             .Build());
   }
 #endif
