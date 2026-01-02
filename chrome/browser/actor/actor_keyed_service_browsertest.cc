@@ -228,7 +228,11 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   auto add_tab_result = add_tab_future.Take();
   ASSERT_TRUE(add_tab_result);
 
-  TestFuture<std::unique_ptr<optimization_guide::proto::ActionsResult>,
+  TestFuture<base::TimeTicks /*start_time*/, mojom::ActionResultCode,
+             std::optional<size_t> /*index_of_failed_actions*/,
+             std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId,
+             bool /*skip_async_observation_information*/,
+             std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
       future;
   actor::BuildActionsResultWithObservations(
@@ -236,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       mojom::ActionResultCode::kOk, std::nullopt,
       std::vector<actor::ActionResultWithLatencyInfo>(), *task, true,
       future.GetCallback());
-  auto [actions_result, _] = future.Take();
+  const std::unique_ptr<optimization_guide::proto::ActionsResult>&
+      actions_result = future.Get<6>();
   ASSERT_TRUE(actions_result);
   EXPECT_EQ(actions_result->action_result(),
             static_cast<int32_t>(mojom::ActionResultCode::kOk));

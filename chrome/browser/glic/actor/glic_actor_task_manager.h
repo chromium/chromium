@@ -12,6 +12,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -71,6 +72,17 @@ class GlicActorTaskManager {
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
+  void DidFinishBuildObservation(
+      mojom::WebClientHandler::PerformActionsCallback callback,
+      base::TimeTicks start_time,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<actor::ActionResultWithLatencyInfo> action_results,
+      actor::TaskId task_id,
+      bool skip_async_observation_information,
+      std::unique_ptr<optimization_guide::proto::ActionsResult> result,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_entry);
   void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
                         actor::TaskId task_id,
                         base::OnceClosure callback);
@@ -93,6 +105,7 @@ class GlicActorTaskManager {
   // which will be noticed there and return with a TAB_OBSERVATION_PAGE_CRASHED
   // code.
   bool attempted_reload_after_crash_ = false;
+  bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};

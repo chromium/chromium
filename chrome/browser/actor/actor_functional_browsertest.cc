@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +31,7 @@
 
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::TabObservation;
 using ::testing::Property;
 
 namespace mojo {
@@ -54,6 +56,22 @@ struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
 
 namespace actor {
 namespace {
+
+// Helper to mock the result returned on a TabObservation built using
+// actor::BuildActionsResultWithObservations. While live, use the provided
+// function to set TabObservationResults. Unset on destruction.
+class ScopedMockTabObservationResult {
+ public:
+  explicit ScopedMockTabObservationResult(
+      base::RepeatingCallback<TabObservation::TabObservationResult()>
+          callback) {
+    SetTabObservationResultOverrideForTesting(callback);
+  }
+  ~ScopedMockTabObservationResult() {
+    SetTabObservationResultOverrideForTesting(
+        base::RepeatingCallback<TabObservation::TabObservationResult()>());
+  }
+};
 
 MATCHER_P(HasResultCode, expected_code, "") {
   return arg.action_result() == static_cast<int32_t>(expected_code);
@@ -508,6 +526,63 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
               HasResultCode(mojom::ActionResultCode::kRendererCrashed));
   EXPECT_TRUE(reload_observer.WaitForNavigationFinished());
   EXPECT_FALSE(web_contents()->IsCrashed());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       RetryFailedContextFetchAfterPerformActions) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ASSERT_NE(task_id, TaskId());
+
+  // Perform a click action.
+  ::optimization_guide::proto::Actions action =
+      MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                ::optimization_guide::proto::ClickAction::LEFT,
+                ::optimization_guide::proto::ClickAction::SINGLE);
+  action.set_task_id(task_id.value());
+
+  // Mock the context fetch so that the first time the TabObservationResult is a
+  // failure. This should result in a retry which then succeeds.
+  int num_calls = 0;
+  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting([&]() {
+    ++num_calls;
+    if (num_calls == 1) {
+      return TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
+    }
+
+    return TabObservation::TAB_OBSERVATION_OK;
+  }));
+
+  EXPECT_THAT(PerformActions(action),
+              HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_EQ(num_calls, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       FailedContextFetchOnlyRetriesOnce) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ASSERT_NE(task_id, TaskId());
+
+  // Perform a click action.
+  ::optimization_guide::proto::Actions action =
+      MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                ::optimization_guide::proto::ClickAction::LEFT,
+                ::optimization_guide::proto::ClickAction::SINGLE);
+  action.set_task_id(task_id.value());
+
+  int num_calls = 0;
+  ScopedMockTabObservationResult mock_result(base::BindLambdaForTesting([&]() {
+    ++num_calls;
+    return TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
+  }));
+
+  optimization_guide::proto::ActionsResult result = PerformActions(action);
+  EXPECT_THAT(result, HasResultCode(mojom::ActionResultCode::kOk));
+  ASSERT_EQ(result.tabs_size(), 1);
+  ASSERT_TRUE(result.tabs().at(0).has_result());
+  EXPECT_EQ(result.tabs().at(0).result(),
+            TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE);
+
+  EXPECT_EQ(num_calls, 2);
 }
 
 class ActorFunctionalBrowserTestCreateActorTab

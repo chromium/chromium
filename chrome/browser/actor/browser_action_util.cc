@@ -11,8 +11,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -91,6 +93,16 @@ using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
 namespace {
+
+// Test only callback for overriding the TabObservationResult provided from
+// BuildActionsResultWithObservations.
+base::RepeatingCallback<apc::TabObservation::TabObservationResult()>&
+GetTabObservationResultOverrideForTesting() {
+  static base::NoDestructor<
+      base::RepeatingCallback<apc::TabObservation::TabObservationResult()>>
+      callback;
+  return *callback;
+}
 
 struct PageScopedParams {
   std::string document_identifier;
@@ -822,6 +834,12 @@ void FetchCallback(
   auto* actor_service = actor::ActorKeyedService::Get(profile.get());
   TabInterface* const tab = tab_handle.Get();
 
+  if (!GetTabObservationResultOverrideForTesting().is_null()) {
+    tab_observation->set_result(
+        GetTabObservationResultOverrideForTesting().Run());
+    return;
+  }
+
   if (!tab || !tab->GetContents()) {
     actor_service->GetJournal().Log(GURL(), task_id, "FetchCallback",
                                     JournalDetailsBuilder()
@@ -929,7 +947,13 @@ void BuildActionsResultWithObservations(
     const ActorTask& task,
     bool skip_async_observation_information,
     base::OnceCallback<
-        void(std::unique_ptr<apc::ActionsResult>,
+        void(base::TimeTicks actions_start_time,
+             mojom::ActionResultCode result_code,
+             std::optional<size_t> index_of_failed_action,
+             std::vector<actor::ActionResultWithLatencyInfo> action_results,
+             actor::TaskId task_id,
+             bool skip_async_observation_information,
+             std::unique_ptr<apc::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback) {
   TRACE_EVENT0("actor", "BuildActionsResultWithObservations");
@@ -1063,13 +1087,18 @@ void BuildActionsResultWithObservations(
                                tabs_to_fetch.size());
 
   if (skip_async_observation_information) {
-    std::move(callback).Run(std::move(response), std::move(journal_entry));
+    std::move(callback).Run(actions_start_time, result_code,
+                            index_of_failed_action, std::move(action_results),
+                            task.id(), skip_async_observation_information,
+                            std::move(response), std::move(journal_entry));
     return;
   }
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
-      base::BindOnce(std::move(callback), std::move(response),
-                     std::move(journal_entry)));
+      base::BindOnce(std::move(callback), actions_start_time, result_code,
+                     index_of_failed_action, action_results,
+                     task.id(), skip_async_observation_information,
+                     std::move(response), std::move(journal_entry)));
   for (auto& [tab, tab_observation] : tabs_to_fetch) {
     // tab_observation can be Unretained because the underlying APC is owned
     // by the barrier which is ref-counted.
@@ -1080,6 +1109,13 @@ void BuildActionsResultWithObservations(
                        action_results, actions_start_time,
                        base::TimeTicks::Now(), base::Unretained(latency_info)));
   }
+}
+
+void SetTabObservationResultOverrideForTesting(
+    base::RepeatingCallback<
+        optimization_guide::proto::TabObservation::TabObservationResult()>
+        callback) {
+  GetTabObservationResultOverrideForTesting() = callback;
 }
 
 apc::ActionsResult BuildErrorActionsResult(
