@@ -4,78 +4,54 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/global_cache_storage.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-namespace {
+const char GlobalCacheStorage::kSupplementName[] = "GlobalCacheStorage";
 
-template <typename T>
-class GlobalCacheStorageImpl final
-    : public GarbageCollected<GlobalCacheStorageImpl<T>>,
-      public Supplement<T> {
- public:
-  static const char kSupplementName[];
+GlobalCacheStorage::GlobalCacheStorage(ExecutionContext& context)
+    : Supplement<ExecutionContext>(context) {}
 
-  static GlobalCacheStorageImpl& From(T& supplementable) {
-    GlobalCacheStorageImpl* supplement =
-        Supplement<T>::template From<GlobalCacheStorageImpl>(supplementable);
-    if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalCacheStorageImpl>(supplementable);
-      Supplement<T>::ProvideTo(supplementable, supplement);
-    }
-    return *supplement;
+GlobalCacheStorage& GlobalCacheStorage::From(ExecutionContext& context) {
+  GlobalCacheStorage* supplement =
+      Supplement<ExecutionContext>::From<GlobalCacheStorage>(context);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<GlobalCacheStorage>(context);
+    Supplement<ExecutionContext>::ProvideTo(context, supplement);
+  }
+  return *supplement;
+}
+
+CacheStorage* GlobalCacheStorage::Caches(ExecutionContext* context,
+                                         ExceptionState& exception_state) {
+  if (!GlobalCacheStorage::CanCreateCacheStorage(context, exception_state)) {
+    return nullptr;
   }
 
-  GlobalCacheStorageImpl(T& supplementable) : Supplement<T>(supplementable) {}
-  ~GlobalCacheStorageImpl() = default;
+  if (context->GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(context,
+                      blink::mojom::blink::WebFeature::kFileAccessedCache);
+  }
 
-  CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
-    ExecutionContext* context = fetching_scope.GetExecutionContext();
-    if (!GlobalCacheStorage::CanCreateCacheStorage(context, exception_state)) {
+  if (!caches_) {
+    if (&context->GetBrowserInterfaceBroker() ==
+        &GetEmptyBrowserInterfaceBroker()) {
+      exception_state.ThrowSecurityError(
+          "Cache storage isn't available on detached context. No browser "
+          "interface broker.");
       return nullptr;
     }
-
-    if (context->GetSecurityOrigin()->IsLocal()) {
-      UseCounter::Count(context, WebFeature::kFileAccessedCache);
-    }
-
-    if (!caches_) {
-      if (&context->GetBrowserInterfaceBroker() ==
-          &GetEmptyBrowserInterfaceBroker()) {
-        exception_state.ThrowSecurityError(
-            "Cache storage isn't available on detached context. No browser "
-            "interface broker.");
-        return nullptr;
-      }
-      caches_ = MakeGarbageCollected<CacheStorage>(
-          context, GlobalFetch::ScopedFetcher::From(fetching_scope));
-    }
-    return caches_.Get();
+    caches_ = MakeGarbageCollected<CacheStorage>(
+        context, GlobalFetch::ScopedFetcher::From(*context));
   }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(caches_);
-    Supplement<T>::Trace(visitor);
-  }
-
- private:
-  Member<CacheStorage> caches_;
-};
-
-// static
-template <typename T>
-const char GlobalCacheStorageImpl<T>::kSupplementName[] =
-    "GlobalCacheStorageImpl";
-
-}  // namespace
+  return caches_.Get();
+}
 
 bool GlobalCacheStorage::CanCreateCacheStorage(
     ExecutionContext* context,
@@ -97,16 +73,14 @@ bool GlobalCacheStorage::CanCreateCacheStorage(
   return false;
 }
 
-CacheStorage* GlobalCacheStorage::caches(LocalDOMWindow& window,
+CacheStorage* GlobalCacheStorage::caches(ExecutionContext& context,
                                          ExceptionState& exception_state) {
-  return GlobalCacheStorageImpl<LocalDOMWindow>::From(window).Caches(
-      window, exception_state);
+  return GlobalCacheStorage::From(context).Caches(&context, exception_state);
 }
 
-CacheStorage* GlobalCacheStorage::caches(WorkerGlobalScope& worker,
-                                         ExceptionState& exception_state) {
-  return GlobalCacheStorageImpl<WorkerGlobalScope>::From(worker).Caches(
-      worker, exception_state);
+void GlobalCacheStorage::Trace(Visitor* visitor) const {
+  visitor->Trace(caches_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink
