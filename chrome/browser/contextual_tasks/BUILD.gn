@@ -32,6 +32,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/profiles:profile",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//content/public/browser",
   ]
   if (!is_android) {
     public_deps += [

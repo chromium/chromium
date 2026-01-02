@@ -215,6 +215,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // handle.
   void NotifyActiveTaskContextProvider();
 
+  std::pair<std::optional<base::Uuid>,
+            contextual_search::ContextualSearchSessionHandle*>
+  GetSessionHandleForActiveTabOrSidePanel();
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 

@@ -11,22 +11,21 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class BrowserWindowInterface;
-
-namespace contextual_search {
-class ContextualSearchSessionHandle;
-}  // namespace contextual_search
 
 namespace contextual_tasks {
 class ContextualTask;
 struct ContextualTaskContext;
 
 class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
-                                      public ContextualTasksService::Observer {
+                                      public ContextualTasksService::Observer,
+                                      public content::WebContentsObserver {
  public:
   explicit ActiveTaskContextProviderImpl(
       BrowserWindowInterface* browser_window,
@@ -38,15 +37,15 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
       const ActiveTaskContextProviderImpl&) = delete;
 
   // ActiveTaskContextProvider implementation.
-  void OnSidePanelStateUpdated(contextual_search::ContextualSearchSessionHandle*
-                                   session_handle) override;
-  void OnPendingContextUpdated(
-      const contextual_search::ContextualSearchSessionHandle& session_handle)
-      override;
+  void OnSidePanelStateUpdated() override;
+  void SetSessionHandleGetter(
+      SessionHandleGetter session_handle_getter) override;
   void AddObserver(ActiveTaskContextProvider::Observer* observer) override;
   void RemoveObserver(ActiveTaskContextProvider::Observer* observer) override;
 
   // ContextualTasksService::Observer implementation.
+  void OnTaskAdded(const ContextualTask& task,
+                   ContextualTasksService::TriggerSource source) override;
   void OnTaskUpdated(const ContextualTask& task,
                      ContextualTasksService::TriggerSource source) override;
   void OnTaskRemoved(const base::Uuid& task_id,
@@ -55,6 +54,7 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
                              SessionID tab_id) override;
   void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
                                   SessionID tab_id) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   // Determines the active task and triggers a context fetch.
@@ -64,21 +64,19 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void OnGetContextForTask(int callback_id,
                            std::unique_ptr<ContextualTaskContext> context);
 
+  void AddAssociatedTabsToSet(const base::Uuid& task_id,
+                              std::set<tabs::TabHandle>& tabs_to_underline);
   void ResetStateAndNotifyObservers();
+  void OnActiveTabChanged(BrowserWindowInterface* browser_window_interface);
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<ContextualTasksService> contextual_tasks_service_;
 
+  // Obtains session handle and task ID info about current tab.
+  std::optional<SessionHandleGetter> session_handle_getter_;
+
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;
-
-  // Handle to the compose plate of the active tab.
-  std::optional<base::UnguessableToken> last_session_id_;
-
-  // The active session handle from the side panel. If null, side panel is
-  // closed.
-  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-      active_session_handle_;
 
   // An autoincrementing callback ID to filter out stale requests.
   int callback_id_ = 0;
@@ -90,9 +88,8 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
                           ContextualTasksService::Observer>
       contextual_tasks_service_observation_{this};
 
-  // Adds the tabs associated with the given `task_id` to `tabs_to_underline`.
-  void AddAssociatedTabsToSet(const base::Uuid& task_id,
-                              std::set<tabs::TabHandle>& tabs_to_underline);
+  // Subscription for tab switch events.
+  base::CallbackListSubscription active_tab_change_subscription_;
 
   base::WeakPtrFactory<ActiveTaskContextProviderImpl> weak_ptr_factory_{this};
 };
