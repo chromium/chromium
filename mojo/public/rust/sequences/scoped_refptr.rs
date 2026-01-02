@@ -28,7 +28,7 @@ use std::ptr::NonNull;
 
 /// Indicates an opaque C++ type with an internal mechanism for ref-counting.
 ///
-/// # SAFETY:
+/// # Safety
 /// The `impl` must guarantee that `T` can only be destroyed
 /// when the last ref-count is given up by calling `Release`.
 /// (For example, it must not be possible to allocate `T` on the stack.)
@@ -49,14 +49,17 @@ pub unsafe trait CxxRefCounted: cxx::ExternType<Kind = cxx::kind::Opaque> + 'sta
     /// it should take `self` by value, but we want to call it from `drop`,
     /// which only provides a mutable reference.
     ///
-    /// SAFETY: The caller must ensure that:
+    /// # Safety
+    /// The caller must ensure that:
     /// 1. They own 1 of this object's ref-counts.
     /// 2. No code will dereference `self` after the call.
-    unsafe fn release(&mut self);
+    unsafe fn release(&self);
 }
 
-/// A marker trait indicating that the implementation of CxxRefCounted for `T`
-/// is thread-safe, and therefore it is safe to use `ScopedRefPtr<T>`
+/// # Safety
+///
+/// An impl of this trait indicating that the implementation of CxxRefCounted
+/// for `T` is thread-safe, and therefore it is safe to use `ScopedRefPtr<T>`
 /// concurrently, provided it's safe to use `T` alone.
 ///
 /// Note that thread-safety for `T` is more subtle for C++ types than in Rust.
@@ -77,6 +80,14 @@ pub unsafe trait CxxRefCountedThreadSafe: CxxRefCounted {}
 ///    even if you have a mutable reference! The user is responsible for
 ///    ensuring any potential concurrent accesses are safe.
 pub struct ScopedRefPtr<T: CxxRefCounted> {
+    /// # Safety invariants
+    ///
+    /// * `ptr` is non-dangling, correctly aligned, and points to valid data
+    ///   (based on ref-counting guarantees of `unsafe fn wrap_ref_counted` and
+    ///   `impl<T> Drop for ScopedRefPtr<T>`)
+    /// * `T` is a ZST (a zero-sized type) so Rust aliasing/exclusivity
+    ///   requirements do not apply to `&mut T` (based on the `CxxRefCounted:
+    ///   ExternType<Kind = cxx::kind::Opaque>` constraint).
     ptr: NonNull<T>,
 }
 
@@ -84,8 +95,11 @@ impl<T: CxxRefCounted> ScopedRefPtr<T> {
     /// Create a new ScopedRefPtr from a pointer to a C++ value which was
     /// obtained from a C++ scoped_refptr.
     ///
-    /// SAFETY: ptr must generated from a C++ scoped_refptr to T which gave up
-    /// ownership without decrementing the ref count (e.g. by calling release())
+    /// # Safety
+    ///
+    /// `ptr` must come from a C++ `scoped_refptr` to `T` which gave up
+    /// ownership without decrementing the ref count (e.g. by calling
+    /// `release()`).
     pub unsafe fn wrap_ref_counted(ptr: *mut T) -> Option<ScopedRefPtr<T>> {
         NonNull::new(ptr).map(|nonnull| ScopedRefPtr { ptr: nonnull })
     }
@@ -103,31 +117,38 @@ impl<T: CxxRefCounted> ScopedRefPtr<T> {
     /// anything, for the same reason, so the pin exists to prevent surprising
     /// behavior. The return value of this function should typically only be
     /// used as an argument to C++ FFI methods.
+    #[allow(clippy::mut_from_ref)]
+    #[allow(mutable_transmutes)]
     pub fn as_pin(&self) -> std::pin::Pin<&mut T> {
-        // SAFETY: For `as_ptr`, see the implementation of `Deref`.
-        // For new_unchecked: this type won't move the underlying data anywhere.
-        unsafe { std::pin::Pin::new_unchecked(&mut *self.ptr.as_ptr()) }
+        let cpp_obj_ref: &T = self; // Via `impl Deref`.
+
+        // SAFETY: `&mut` exclusivity/aliasing rules don't apply to ZSTs
+        // (based on the `cxx::kind::Opaque` constraint of the type).
+        assert!(std::mem::size_of::<T>() == 0);
+        let cpp_obj_mut_ref = unsafe { std::mem::transmute::<&T, &mut T>(cpp_obj_ref) };
+
+        // SAFETY:
+        // * No public APIs expose `&mut T`
+        // * Private APIs don't move the underlying data
+        unsafe { std::pin::Pin::new_unchecked(cpp_obj_mut_ref) }
     }
 }
 
 impl<T: CxxRefCounted> Drop for ScopedRefPtr<T> {
     /// Decrement the object's ref-count before it goes out of scope.
     fn drop(&mut self) {
-        // SAFETY: for `as_mut`, see the implementation of `Deref`.
-        // We own one ref-count of this object (either from wrapping
+        // SAFETY: We own one ref-count of this object (either from wrapping
         // a released pointer, or cloning an existing one), and we're dropping
         // it so we know it won't be referenced any more.
-        unsafe { self.ptr.as_mut().release() };
+        unsafe { self.release() };
     }
 }
 
 impl<T: CxxRefCounted> Clone for ScopedRefPtr<T> {
     /// Clone the pointer, incrementing the value's ref-count.
     fn clone(&self) -> Self {
-        let mut cloned_ptr = self.ptr.clone();
-        // SAFETY: see the implementation of `Deref`.
-        unsafe { cloned_ptr.as_mut() }.add_ref();
-        ScopedRefPtr { ptr: cloned_ptr }
+        self.add_ref();
+        ScopedRefPtr { ptr: self.ptr }
     }
 }
 
@@ -137,8 +158,10 @@ impl<T: CxxRefCounted> std::ops::Deref for ScopedRefPtr<T> {
     type Target = T;
 
     fn deref(&self) -> &T {
-        // SAFETY: The pointer is not null, points to valid data, and is zero-
-        // sized, so we need not enforce aliasing rules.
+        // SAFETY: The safety invariants of the `ptr` field guarantee that
+        // aliasing rules don't apply (`T` is a ZST) and that `ptr` points to
+        // valid, aligned data.
+        assert!(std::mem::size_of::<T>() == 0);
         unsafe { self.ptr.as_ref() }
     }
 }
@@ -160,7 +183,7 @@ const _: () = {
     }
 };
 
-/// SAFETY it's safe to send/share T, and the CxxRefCountedThreadSafe
-/// implementation guarantees that the ref-counting is itself thread-safe.
+// SAFETY: it's safe to send/share T, and the CxxRefCountedThreadSafe
+// implementation guarantees that the ref-counting is itself thread-safe.
 unsafe impl<T: Send + Sync + CxxRefCountedThreadSafe> Send for ScopedRefPtr<T> {}
 unsafe impl<T: Send + Sync + CxxRefCountedThreadSafe> Sync for ScopedRefPtr<T> {}

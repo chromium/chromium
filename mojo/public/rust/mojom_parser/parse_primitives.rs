@@ -59,7 +59,7 @@ pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> ParsingRes
     let mk_err = || ParsingError {
         offset: data.bytes_parsed(),
         ty: ParsingErrorType::NotEnoughData {
-            tried_to_parse: format!("padding"),
+            tried_to_parse: "padding".to_string(),
             expected_size: bytes_to_parse,
             remaining_bytes: data.remaining_bytes.len(),
         },
@@ -71,14 +71,14 @@ pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> ParsingRes
 
 /// Returns a vector containing the next `bytes_to_parse` bytes, assuming they
 /// exist.
-pub fn parse_raw_bytes<'a, 'b>(
-    data: &'a mut ParserData<'b>,
+pub fn parse_raw_bytes<'a>(
+    data: &mut ParserData<'a>,
     bytes_to_parse: usize,
-) -> ParsingResult<&'b [u8]> {
+) -> ParsingResult<&'a [u8]> {
     let mk_err = || ParsingError {
         offset: data.bytes_parsed(),
         ty: ParsingErrorType::NotEnoughData {
-            tried_to_parse: format!("raw bytes"),
+            tried_to_parse: "raw bytes".to_string(),
             expected_size: bytes_to_parse,
             remaining_bytes: data.remaining_bytes.len(),
         },

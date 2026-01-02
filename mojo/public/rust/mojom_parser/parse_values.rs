@@ -193,7 +193,7 @@ fn parse_array(
     let num_tag_bitfields = if element_type.is_nullable_primitive() {
         // Nullable primitives need some bitfields at the beginning to hold
         // the tag bits; one bitfield for every 8 elements.
-        (num_elements + 7) / 8 // Divide by 8, rounding up
+        num_elements.div_ceil(8) // Divide by 8, rounding up
     } else {
         0
     };
@@ -488,7 +488,7 @@ where
 
                         let nested_info = NestedDataInfo {
                             ty: nested_data_type,
-                            ordinal: ordinal,
+                            ordinal,
                             field_name: name.clone(),
                             expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed

@@ -64,7 +64,7 @@ fn parse_header(data: &mut ParserData) -> ParsingResult<()> {
 // in the header.
 pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> ParsingResult<MojomValue> {
     let mut data = ParserData::new(data_slice);
-    let _ = parse_header(&mut data)?;
+    parse_header(&mut data)?;
     match ty {
         MojomWireType::Pointer {
             nested_data_type:

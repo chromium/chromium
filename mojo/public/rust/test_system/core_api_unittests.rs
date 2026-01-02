@@ -59,7 +59,6 @@ fn test_basic_message_write_and_send() {
     // * wait.
 
     // FOR_RELEASE: Implement all the above.
-    assert_eq!(0, 0);
 }
 
 #[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
@@ -79,8 +78,6 @@ fn test_data_pipe_write_and_send() {
     expect_eq!(&read_buffer[..bytes_read], hello);
 
     // TODO: implement and test two-phase read-write.
-
-    assert_eq!(0, 0);
 }
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_RawTrapSignalOnReadableTest)]
@@ -90,7 +87,7 @@ fn test_raw_trap_signal_on_readable() {
     // We need a few global values to keep track of our test trap events.
     static TEST_TRAP_EVENT_LIST: LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
         LazyLock::new(|| Mutex::new(Vec::new()));
-    static TEST_TRAP_EVENT_COND: LazyLock<Condvar> = LazyLock::new(|| Condvar::new());
+    static TEST_TRAP_EVENT_COND: LazyLock<Condvar> = LazyLock::new(Condvar::new);
 
     // Helper handler for testing.
     extern "C" fn test_trap_event_handler(event: &system::raw_trap::RawTrapEvent) {
@@ -198,7 +195,7 @@ fn test_raw_trap_signal_on_readable() {
             expect_true!(false, "trap incorrectly remained armed after event arrived")
         }
         system::raw_trap::ArmResult::Blocked(events) => {
-            let event = events.get(0).unwrap();
+            let event = events.first().unwrap();
             expect_eq!(event.trigger_context(), 1);
             expect_eq!(event.result(), system::mojo_types::MojoResult::Okay);
         }
@@ -320,10 +317,9 @@ fn test_clos_safe_trap_with_active_trigger() {
             expect_eq!(event.result(), Err(system::safe_trap::TrapError::Cancelled));
         },
     )
-    .expect(&format!("Failed to add trigger"));
+    .expect("Failed to add trigger");
     drop(trap);
     // `drop` completed without any errors wrt pointer management and such.
-    assert!(true);
 }
 
 #[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
@@ -382,7 +378,7 @@ fn test_safe_trap_multiple_blocking_events() {
                 }
             },
         )
-        .expect(&format!("Failed to add trigger {}", i));
+        .unwrap_or_else(|_| panic!("Failed to add trigger {}", i));
 
         // 2. Trigger the READABLE signal on ep_a by writing to ep_b.
         // This creates a blocking event for each trigger.
@@ -420,7 +416,7 @@ fn test_raw_trap_signal_on_readable() {
     // We need a few global values to keep track of our test trap events.
     static TEST_TRAP_EVENT_LIST: LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
         LazyLock::new(|| Mutex::new(Vec::new()));
-    static TEST_TRAP_EVENT_COND: LazyLock<Condvar> = LazyLock::new(|| Condvar::new());
+    static TEST_TRAP_EVENT_COND: LazyLock<Condvar> = LazyLock::new(Condvar::new);
 
     // Helper handler for testing.
     extern "C" fn test_trap_event_handler(event: &system::raw_trap::RawTrapEvent) {

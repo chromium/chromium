@@ -46,14 +46,14 @@ pub trait MojomParse:
         match contents {
             Some(wire_type_ref) => {
                 // Computed this before, return the cached result.
-                return wire_type_ref;
+                wire_type_ref
             }
             None => {
                 // No current entry, initialize it by packing the input type.
                 let wire_type_box = Box::new(pack_mojom_type(&Self::mojom_type()));
                 let wire_type_ref: &'static MojomWireType = Box::leak(wire_type_box);
                 WIRE_TYPE.write().unwrap().insert(TypeId::of::<Self>(), wire_type_ref);
-                return wire_type_ref;
+                wire_type_ref
             }
         }
     }
@@ -155,7 +155,7 @@ impl<T: MojomParse> TryFrom<MojomValue> for Vec<T> {
 
     fn try_from(value: MojomValue) -> anyhow::Result<Self> {
         if let MojomValue::Array(v) = value {
-            return Ok(v.into_iter().map(T::try_from).collect::<anyhow::Result<_>>()?);
+            v.into_iter().map(T::try_from).collect::<anyhow::Result<_>>()
         } else {
             anyhow::bail!(
                 "Cannot construct a value of type {} from this MojomValue: {:?}",
@@ -189,7 +189,7 @@ impl<T: MojomParse, const N: usize> TryFrom<MojomValue> for [T; N] {
                 std::any::type_name::<Self>(),
                 value
             )))?;
-            return Ok(arr_of_t);
+            Ok(arr_of_t)
         } else {
             anyhow::bail!(
                 "Cannot construct a value of type {} from this MojomValue: {:?}",
@@ -242,7 +242,7 @@ where
                 // FOR_RELEASE: It would be nice to use Itertools::process_results
                 // instead of collecting here
                 .collect::<Result<_, _>>()?;
-            return Ok(converted_map);
+            Ok(converted_map)
         } else {
             anyhow::bail!(
                 "Cannot construct a value of type {} from this MojomValue: {:?}",
@@ -279,7 +279,7 @@ impl<T: MojomParse> TryFrom<MojomValue> for Option<T> {
 
     fn try_from(value: MojomValue) -> anyhow::Result<Self> {
         if let MojomValue::Nullable(opt) = value {
-            return Ok(opt.map(|v| (*v).try_into()).transpose()?);
+            opt.map(|v| (*v).try_into()).transpose()
         } else {
             anyhow::bail!(
                 "Cannot construct a value of type {} from this MojomValue: {:?}",

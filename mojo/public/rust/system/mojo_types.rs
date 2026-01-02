@@ -211,7 +211,16 @@ pub enum WaitResult {
     Closed,
 }
 
-/// THE MOJO HANDLE EXTENDED UNIVERSE
+/// Implementing the Handle trait means we can access the native integer-based
+/// MojoHandle underneath.
+///
+/// FOR_RELEASE: Revisit if we want to limit the visibility of Handle.
+/// In particular: while mostly we want the underlying get_native_handle to be
+/// opaque, Traps really require access to the underlying value to work, which
+/// means this trait needs to be public. One way to handle this may be by
+/// "sealing" the trait: https://predr.ag/blog/definitive-guide-to-sealed-traits-in-rust/
+///
+/// # The `MojoHandle` Extended Universe
 ///
 /// `MojoHandle` always refers to the C type. It is an opaque handle for some
 /// Mojo object.
@@ -225,15 +234,6 @@ pub enum WaitResult {
 /// * (FOR_RELEASE: Fill out the other Rust handle types!)
 ///
 /// All Rust handles implement the Handle trait.
-
-/// Implementing the Handle trait means we can access the native integer-based
-/// MojoHandle underneath.
-///
-/// FOR_RELEASE: Revisit if we want to limit the visibility of Handle.
-/// In particular: while mostly we want the underlying get_native_handle to be
-/// opaque, Traps really require access to the underlying value to work, which
-/// means this trait needs to be public. One way to handle this may be by
-/// "sealing" the trait: https://predr.ag/blog/definitive-guide-to-sealed-traits-in-rust/
 pub trait Handle {
     /// Returns the native handle that the structure implementing this trait is
     /// wrapped around.
@@ -317,7 +317,7 @@ impl UntypedHandle {
     pub fn slice_as_ptr(handles: &[Self]) -> *const types::MojoHandle {
         // Passing nothing must be done explicitly:
         // https://davidben.net/2024/01/15/empty-slices.html
-        if handles.len() == 0 {
+        if handles.is_empty() {
             return ptr::null();
         }
         // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
@@ -330,7 +330,7 @@ impl UntypedHandle {
     pub fn slice_as_mut_ptr(handles: &mut [Self]) -> *mut types::MojoHandle {
         // Passing nothing must be done explicitly:
         // https://davidben.net/2024/01/15/empty-slices.html
-        if handles.len() == 0 {
+        if handles.is_empty() {
             return ptr::null_mut();
         }
         // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
@@ -358,9 +358,7 @@ impl Drop for UntypedHandle {
 
 pub use types::MojoTimeTicks;
 pub fn get_time_ticks_now() -> MojoTimeTicks {
-    unsafe {
-        return mojo_ffi::MojoGetTimeTicksNow();
-    }
+    unsafe { mojo_ffi::MojoGetTimeTicksNow() }
 }
 
 pub struct MessageEndpoint {
@@ -547,7 +545,7 @@ impl MessageEndpoint {
         }
 
         // Copy into the message storage
-        if bytes.len() > 0 {
+        if !bytes.is_empty() {
             // Will not panic if usize has at least 32 bits, which is true for Chromium
             // targets
             let buffer_size: usize = buffer_size.try_into().unwrap();
@@ -570,7 +568,7 @@ impl MessageEndpoint {
         // Send the message. This transfers ownership of the message_handle
         // object to the receiving process.
         let write_message_options = mojo_ffi::MojoWriteMessageOptions::new(0);
-        return MojoResult::from_code(unsafe {
+        MojoResult::from_code(unsafe {
             // SAFETY: message_handle and write_message_options were created
             // solely within this function and thus we will lose ownership of
             // them when the function returns—which is what we want; ownership
@@ -582,7 +580,7 @@ impl MessageEndpoint {
                 message_handle,
                 write_message_options.as_ptr(),
             )
-        });
+        })
     }
 }
 

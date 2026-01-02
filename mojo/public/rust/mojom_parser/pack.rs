@@ -24,7 +24,7 @@ use std::sync::Arc;
 
 /// Return the number of bytes we need to skip to reach the given alignment.
 fn bytes_to_align(current_offset: usize, required_alignment: usize) -> usize {
-    return (required_alignment - (current_offset % required_alignment)) % required_alignment;
+    (required_alignment - (current_offset % required_alignment)) % required_alignment
 }
 
 /// Represents a single field which has been packed into wire format, with
@@ -47,7 +47,7 @@ impl PackedField {
     /// Create a new PackedField given the original field's information and its
     /// location
     fn new(name: String, ty: StructuredBodyElementOwned, start_offset: usize) -> PackedField {
-        PackedField { start_offset: start_offset, end_offset: start_offset + ty.size(), name, ty }
+        PackedField { start_offset, end_offset: start_offset + ty.size(), name, ty }
     }
 }
 
@@ -68,15 +68,13 @@ fn try_pack_bool(
             StructuredBodyElement::Bitfield([new_ordinal, ..]),
         ) => {
             if let Some(first_empty_slot) = old_ordinals.iter().position(|opt| opt.is_none()) {
-                old_ordinals[first_empty_slot] = new_ordinal.clone();
-                return true;
+                old_ordinals[first_empty_slot] = *new_ordinal;
+                true
             } else {
-                return false;
+                false
             }
         }
-        _ => {
-            return false;
-        }
+        _ => false,
     }
 }
 
@@ -161,11 +159,11 @@ fn pack_struct(fields: &[MojomType], field_names: &[String]) -> PackedStructured
             .map(|packed_field| (packed_field.ty, packed_field.name.clone()))
             .unzip();
 
-    return PackedStructuredType::Struct {
+    PackedStructuredType::Struct {
         packed_field_types,
         packed_field_names,
         num_elements_in_value: fields.len(),
-    };
+    }
 }
 
 fn pack_union_variants(variants: &BTreeMap<u32, MojomType>) -> BTreeMap<u32, MojomWireType> {
@@ -295,7 +293,7 @@ pub fn pack_struct_field(
         _ => StructuredBodyElement::SingleValue(ordinal, packed_ty),
     };
 
-    return (tag_bit, final_packed_ty);
+    (tag_bit, final_packed_ty)
 }
 
 // Create a set of bitfields which contain exactly `n` bools, with ordinals
@@ -319,10 +317,7 @@ fn pack_n_bits(n: usize, is_tag_bits: bool) -> Vec<StructuredBodyElementMixed<'s
         }))
     }
 
-    return bitfields
-        .into_iter()
-        .map(|bitfield| StructuredBodyElement::Bitfield(bitfield))
-        .collect();
+    bitfields.into_iter().map(StructuredBodyElement::Bitfield).collect()
 }
 
 /// Create a structured body out of an array. This can be thought of as part of
@@ -354,5 +349,5 @@ pub fn pack_array_body<'a>(
             .collect(),
     };
 
-    return tag_bits.into_iter().chain(packed_body).collect();
+    tag_bits.into_iter().chain(packed_body).collect()
 }

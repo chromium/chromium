@@ -116,9 +116,9 @@ impl ParsingError {
 // deparser is misbehaving).
 impl std::fmt::Display for ParsingError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
+        writeln!(
             f,
-            "An error occurred at byte {} when parsing the message. Details:\n",
+            "An error occurred at byte {} when parsing the message. Details:",
             self.offset
         )?;
         match &self.ty {

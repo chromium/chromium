@@ -26,6 +26,7 @@ impl RustOnceClosure {
     /// Logically, this should take `self` by value, but we want to expose it
     /// in the cxx bridge and that doesn't allow opaque rust types to be taken
     /// by value. So we put it in a Box instead.
+    #[allow(clippy::boxed_local)]
     pub fn run(boxed: Box<Self>) {
         boxed.0();
     }

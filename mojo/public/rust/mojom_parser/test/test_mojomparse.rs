@@ -421,6 +421,7 @@ static TEN_BOOLS_AND_A_BYTE_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     ),
 });
 
+#[allow(clippy::too_many_arguments)]
 fn ten_bools_and_a_byte_mojom(
     b0: bool,
     b1: bool,
@@ -504,6 +505,7 @@ static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestTyp
     ),
 });
 
+#[allow(clippy::too_many_arguments)]
 fn ten_bools_and_two_bytes_mojom(
     b0: bool,
     b1: bool,
@@ -935,6 +937,7 @@ static WITH_MANY_UNIONS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     ),
 });
 
+#[allow(clippy::too_many_arguments)]
 fn with_many_unions_mojom(
     u1: MojomValue,
     i1: i8,
@@ -1250,6 +1253,7 @@ static ARRAYS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     ),
 });
 
+#[allow(clippy::too_many_arguments)]
 fn arrays_mojom(
     ints: Vec<i16>,
     ints_sized: [u64; 3],
@@ -1526,14 +1530,14 @@ fn maps_mojom(
 fn test_maps() {
     let eights_data = [(1, 2), (3, 4)];
     MAP_U8_U8_TY.validate_mojomparse::<HashMap<u8, u8>>(
-        eights_data.clone().into(),
-        map_u8_u8_mojom(eights_data.clone().into()),
+        eights_data.into(),
+        map_u8_u8_mojom(eights_data.into()),
     );
 
     let bools_data = [(true, 10), (false, 20)];
     MAP_BOOL_U16_TY.validate_mojomparse::<HashMap<bool, u16>>(
-        bools_data.clone().into(),
-        map_bool_u16_mojom(bools_data.clone().into()),
+        bools_data.into(),
+        map_bool_u16_mojom(bools_data.into()),
     );
 
     let enums_data = [(TestEnum::Zero, -1), (TestEnum::Seven, -2)];
@@ -1563,8 +1567,8 @@ fn test_maps() {
 
     MAPS_TY.validate_mojomparse(
         Maps {
-            eights: eights_data.clone().into(),
-            bools: bools_data.clone().into(),
+            eights: eights_data.into(),
+            bools: bools_data.into(),
             enums: enums_data.clone().into(),
             to_struct: to_struct_data.clone().into(),
             to_union: to_union_data.clone().into(),
@@ -1908,7 +1912,7 @@ static ARRAY_NULL_EMPTY_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn array_null_empty_mojom(elts: Vec<Option<Empty>>) -> MojomValue {
     MojomValue::Array(
-        elts.into_iter().map(|elt| nullable_val!(elt.map(|e| MojomValue::from(e)))).collect(),
+        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::from))).collect(),
     )
 }
 
@@ -1941,7 +1945,7 @@ static ARRAY_NULL_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn array_null_union_mojom(elts: Vec<Option<BaseUnion>>) -> MojomValue {
     MojomValue::Array(
-        elts.into_iter().map(|elt| nullable_val!(elt.map(|u| MojomValue::from(u)))).collect(),
+        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::from))).collect(),
     )
 }
 

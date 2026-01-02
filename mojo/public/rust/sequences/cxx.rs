@@ -20,10 +20,16 @@ pub mod ffi {
         // Self is implicitly SequencedTaskRunner because it's the only type
         // in this extern block
         fn AddRef(&self);
-        // SAFETY: The caller must assert that it owns 1 ref-count of this
-        // object, and no code will ever dereference this instance of `self`
-        // afterwards unless they know the ref-count is at least 1 (e.g. because
-        // they have a different ref-counted pointer to the same object).
+
+        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
+        #[allow(clippy::missing_safety_doc)]
+        /// # Safety
+        ///
+        /// The caller must assert that it owns 1 ref-count of this
+        /// object, and no code will ever dereference this instance of `self`
+        /// afterwards unless they know the ref-count is at least 1 (e.g.
+        /// because they have a different ref-counted pointer to the
+        /// same object).
         unsafe fn Release(&self);
     }
 
@@ -61,7 +67,7 @@ unsafe impl CxxRefCounted for ffi::SequencedTaskRunner {
     }
 
     // SAFETY: The trait imposes the same requirements as `Release`.
-    unsafe fn release(&mut self) {
+    unsafe fn release(&self) {
         unsafe {
             self.Release();
         }

@@ -21,8 +21,7 @@ impl SequencedTaskRunnerHandle {
     pub fn get_current_default() -> Option<Self> {
         let default_ptr = ffi::GetCurrentDefaultSequencedTaskRunnerForRust();
         // SAFETY: The ffi function above returns a pointer that owns one ref-count
-        unsafe { ScopedRefPtr::wrap_ref_counted(default_ptr) }
-            .map(|ptr| SequencedTaskRunnerHandle(ptr))
+        unsafe { ScopedRefPtr::wrap_ref_counted(default_ptr) }.map(SequencedTaskRunnerHandle)
     }
 
     /// Post a task to the sequenced task runner. This function corresponds to

@@ -213,7 +213,7 @@ impl Trap {
         let mut trigger_registry = owner.lock().unwrap();
 
         // Call the user's callback.
-        Self::call_callback_and_maybe_delete_data(&mut *trigger_registry, trigger_data, raw_event);
+        Self::call_callback_and_maybe_delete_data(&mut trigger_registry, trigger_data, raw_event);
     }
 
     // # Safety consideration
@@ -243,7 +243,7 @@ impl Trap {
                 handle: handle_to_trap.get_native_handle(),
                 trigger_id: id,
             });
-            if let Some(_) = trigger_registry.trigger_map.insert(id, trigger_data.clone()) {
+            if trigger_registry.trigger_map.insert(id, trigger_data.clone()).is_some() {
                 panic!("trigger_id unexpectedly already exists in trigger_map")
             }
 
@@ -319,7 +319,7 @@ impl Trap {
                         let trigger_data =
                             unsafe { Self::get_trigger_data_from_event(blocking_event) };
                         Self::call_callback_and_maybe_delete_data(
-                            &mut *trigger_registry,
+                            &mut trigger_registry,
                             trigger_data,
                             blocking_event,
                         )
@@ -443,8 +443,7 @@ impl Drop for Trap {
                 .values()
                 .map(|trigger_arc| {
                     // Convert &Arc<Trigger> to the raw usize context
-                    let context = Arc::downgrade(trigger_arc).into_raw() as usize;
-                    context
+                    Arc::downgrade(trigger_arc).into_raw() as usize
                 })
                 .collect();
         }
@@ -494,6 +493,7 @@ struct Trigger {
     // design.  It may be possible to send these to a fixed sequence or
     // the sequence the trap was armed on (once we have sequences available
     // in Rust).
+    #[allow(clippy::type_complexity)]
     callback: Mutex<Box<dyn FnMut(&TrapEvent) + Send + 'static>>,
     // Trigger points back to the TriggerRegistry that "owns" it.
     owner: Weak<Mutex<TriggerRegistry>>,

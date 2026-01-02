@@ -14,7 +14,7 @@ pub fn deserialize<T: MojomParse>(data_slice: &[u8]) -> ParsingResult<T> {
     let parsed_value = parse_message(data_slice, T::wire_type())?;
     // Convert the parsed MojomValue to a T. This conversion should never fail,
     // since we passed T's wire type to the parser.
-    return Ok(parsed_value.try_into().unwrap());
+    Ok(parsed_value.try_into().unwrap())
 }
 
 /// Serialize a Rust struct into a Mojom message
@@ -26,5 +26,5 @@ pub fn serialize<T: MojomParse>(value: T) -> ParsingResult<Vec<u8>> {
     // equivalent to parse_message here.
     let _: MojomValue = value.into();
     let _ = packed_format;
-    return Ok(data);
+    Ok(data)
 }

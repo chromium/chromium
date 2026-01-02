@@ -276,15 +276,17 @@ impl MojomWireType {
     /// Check if this type is valid as the key to a Mojom map.
     /// Valid keys are non-nullable primitives and strings.
     pub fn is_valid_map_key(&self) -> bool {
-        match self {
+        matches!(
+            self,
             MojomWireType::Leaf { is_nullable: false, .. }
-            | MojomWireType::Pointer {
-                nested_data_type:
-                    PackedStructuredType::Array { array_type: PackedArrayType::String, .. },
-                is_nullable: false,
-            } => true,
-            _ => false,
-        }
+                | MojomWireType::Pointer {
+                    nested_data_type: PackedStructuredType::Array {
+                        array_type: PackedArrayType::String,
+                        ..
+                    },
+                    is_nullable: false,
+                },
+        )
     }
 }
 
@@ -370,6 +372,7 @@ impl MojomString {
         String::from_utf8_lossy(&self.0)
     }
 
+    #[allow(clippy::should_implement_trait)] // Infallible, unlike the `FromStr` trait.
     pub fn from_str(s: &str) -> Self {
         MojomString(s.as_bytes().to_vec())
     }

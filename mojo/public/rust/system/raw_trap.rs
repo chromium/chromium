@@ -15,7 +15,7 @@ chromium::import! {
 
 use mojo_ffi::types;
 
-/// # Safety requirements
+/// # Safety
 /// * `Self` is a `struct` that has `struct_size: u32` as the first field (at
 ///   offset 0).
 /// * `Self` is a `#[repr(C)]` `struct`
@@ -227,16 +227,13 @@ impl RawTrap {
     /// in reinterpreting `RawTrapEvent::trigger_context` as a reference:
     /// the dereference will be safe if the lifetime of the referent is
     /// guaranteed to be longer than the lifetime of RawTrap.
-    pub fn add_trigger<H: Handle>(
+    pub fn add_trigger(
         &self,
-        monitored_handle: &H,
+        monitored_handle: &impl Trappable,
         signals: HandleSignals,
         condition: TriggerCondition,
         context: usize,
-    ) -> MojoResult
-    where
-        H: Trappable,
-    {
+    ) -> MojoResult {
         unsafe {
             // SAFETY: MojoAddTrigger requires two handles.
             // The first argument is a handle to the Trap object.
@@ -271,15 +268,14 @@ impl RawTrap {
     /// the lifetime of the referent is guaranteed to be longer than the
     /// lifetime of RawTrap.
     pub fn remove_trigger(&self, context: usize) -> MojoResult {
-        let result = unsafe {
+        unsafe {
             // SAFETY: As noted above, the caller must ensure `context` is valid.
             MojoResult::from_code(mojo_ffi::MojoRemoveTrigger(
                 self.handle.get_native_handle(),
                 context,
                 mojo_ffi::MojoRemoveTriggerOptions::new(0).as_ptr(),
             ))
-        };
-        return result;
+        }
     }
 
     /// Arm the trap to invoke event handler on any trigger condition.
