@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -27,13 +28,7 @@ namespace ash {
 
 class PaymentsAutofillAuthBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  PaymentsAutofillAuthBrowserTest()
-      : user_(AccountId::FromUserEmailGaiaId("test-user@example.com",
-                                             GaiaId("1234567890")),
-              test::UserAuthConfig::Create({AshAuthFactor::kLocalPassword})
-                  .WithLocalPassword(test::kLocalPassword)),
-        login_manager_(&mixin_host_, {user_}, nullptr, &cryptohome_) {}
-
+  PaymentsAutofillAuthBrowserTest() = default;
   ~PaymentsAutofillAuthBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -52,6 +47,40 @@ class PaymentsAutofillAuthBrowserTest : public MixinBasedInProcessBrowserTest {
       base::OnceCallback<void(ActiveSessionAuthControllerImpl*)>
           on_dialog_shown);
 
+  const LoginManagerMixin::TestUserInfo user_{
+      AccountId::FromUserEmailGaiaId("test-user@example.com",
+                                     GaiaId("1234567890")),
+      test::UserAuthConfig::Create({AshAuthFactor::kLocalPassword})
+          .WithLocalPassword(test::kLocalPassword)};
+  CryptohomeMixin cryptohome_{&mixin_host_};
+  LoginManagerMixin login_manager_{&mixin_host_,
+                                   {user_},
+                                   nullptr,
+                                   &cryptohome_};
+};
+
+class PaymentsAutofillNoAuthFactorsBrowserTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  PaymentsAutofillNoAuthFactorsBrowserTest()
+      : user_(AccountId::FromUserEmailGaiaId("test-user@example.com",
+                                             GaiaId("1234567890")),
+              test::UserAuthConfig::Create({})),
+        login_manager_(&mixin_host_, {user_}, nullptr, &cryptohome_) {}
+
+  ~PaymentsAutofillNoAuthFactorsBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
+  }
+
+  void SetUpOnMainThread() override {
+    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
   const LoginManagerMixin::TestUserInfo user_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   LoginManagerMixin login_manager_;
@@ -112,6 +141,18 @@ IN_PROC_BROWSER_TEST_F(PaymentsAutofillAuthBrowserTest, CloseDialog) {
           [](ActiveSessionAuthControllerImpl* controller) {
             ActiveSessionAuthControllerImpl::TestApi(controller).Close();
           }));
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentsAutofillNoAuthFactorsBrowserTest, VerifyNoAuth) {
+  // Log in the user.
+  login_manager_.LoginWithDefaultContext(user_);
+  test::WaitForPrimaryUserSessionStart();
+
+  base::test::TestFuture<bool, const std::string&, base::TimeDelta> future;
+  InSessionAuthDialogController::Get()->ShowAuthDialog(
+      InSessionAuthDialogController::Reason::kAccessAutofillPayments,
+      std::make_optional<std::string>("Test prompt"), future.GetCallback());
+  EXPECT_TRUE(future.Get<0>());
 }
 
 }  // namespace ash
