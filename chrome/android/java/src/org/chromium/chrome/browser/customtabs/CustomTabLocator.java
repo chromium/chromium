@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebappActivity;
@@ -56,7 +57,13 @@ public class CustomTabLocator {
             if (!(activity instanceof WebappActivity customTabActivity)) {
                 continue;
             }
-            WebappExtras webappExtras = customTabActivity.getIntentDataProvider().getWebappExtras();
+            BrowserServicesIntentDataProvider intentDataProvider =
+                    customTabActivity.getIntentDataProvider();
+            if (intentDataProvider == null) {
+                // See crbug.com/466939345.
+                continue;
+            }
+            WebappExtras webappExtras = intentDataProvider.getWebappExtras();
             if (webappExtras != null && TextUtils.equals(webappId, webappExtras.id)) {
                 return new WeakReference<>(customTabActivity);
             }
